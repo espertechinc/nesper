@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.rowrecog;
 
-// using static org.junit.Assert.assertFalse;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -43,9 +41,9 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
     
             for (int partition = 0; partition < 2; partition++) {
                 epService.EPRuntime.SendEvent(new SupportRecogBean("E1", "1", partition));
@@ -58,9 +56,9 @@ namespace com.espertech.esper.regression.rowrecog
                 Assert.IsTrue(listener.GetAndClearIsInvoked());
             }
     
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             long delta = end - start;
-            Assert.IsTrue("delta=" + delta, delta < 2000);
+            Assert.IsTrue(delta < 2000, "delta=" + delta);
         }
     }
 } // end of namespace

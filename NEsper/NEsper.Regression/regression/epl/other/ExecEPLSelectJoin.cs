@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -118,7 +117,7 @@ namespace com.espertech.esper.regression.epl.other
             string epl = "select irstream * from A#length(3) as streamA, B#length(3) as streamB where streamA.id = streamB.id";
             holder.stmt = epService.EPAdministrator.CreateEPL(epl);
             holder.listener = new SupportUpdateListener();
-            holder.stmt.AddListener(holder.listener);
+            holder.stmt.Events += holder.listener.Update;
     
             Assert.AreEqual(typeof(SupportBean_A), holder.stmt.EventType.GetPropertyType("streamA"));
             Assert.AreEqual(typeof(SupportBean_B), holder.stmt.EventType.GetPropertyType("streamB"));

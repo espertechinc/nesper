@@ -19,8 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertFalse;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -30,7 +28,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
         public override void Run(EPServiceProvider defaultEPService) {
             IDictionary<TimeUnit, EPServiceProvider> epServices = SupportEngineFactory.SetupEnginesByTimeUnit();
-            foreach (EPServiceProvider epService in epServices.Values()) {
+            foreach (EPServiceProvider epService in epServices.Values) {
                 epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             }
     
@@ -47,7 +45,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             var listener = new SupportUpdateListener();
             EPStatement stmt = isolated.EPAdministrator.CreateEPL("select * from SupportBean output every " + size + " seconds", "s0", null);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             isolated.EPRuntime.SendEvent(new SupportBean("E1", 10));
             isolated.EPRuntime.SendEvent(new CurrentTimeEvent(flipTime - 1));
@@ -63,7 +61,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             isolated.EPRuntime.SendEvent(new CurrentTimeEvent(repeatTime + flipTime));
             Assert.IsTrue(listener.IsInvokedAndReset());
     
-            isolated.Destroy();
+            isolated.Dispose();
         }
     }
 } // end of namespace

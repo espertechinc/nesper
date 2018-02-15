@@ -53,7 +53,7 @@ namespace com.espertech.esper.regression.client
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("@Name('X') select * from StatementMetric");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             string[] fields = "statementName,numInput".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -62,7 +62,7 @@ namespace com.espertech.esper.regression.client
             foreach (EventBean theEvent in received) {
                 Log.Info(theEvent.Get("statementName") + " = " + theEvent.Get("numInput"));
             }
-            EPAssertionUtil.AssertPropsPerRow(received, fields, new Object[][]{new object[] {"A", 2L}, new object[] {"B1", 1L}, new object[] {"B2", 1L}, new object[] {"C", 2L}, new object[] {"D", 2L}, new object[] {"M", 1L}, new object[] {"W", 1L}});
+            EPAssertionUtil.AssertPropsPerRow(received, fields, new object[][]{new object[] {"A", 2L}, new object[] {"B1", 1L}, new object[] {"B2", 1L}, new object[] {"C", 2L}, new object[] {"D", 2L}, new object[] {"M", 1L}, new object[] {"W", 1L}});
     
             /* Comment-in for printout.
             for (int i = 0; i < received.Length; i++) {

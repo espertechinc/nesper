@@ -22,11 +22,11 @@ namespace com.espertech.esper.regression.events.map
 {
     public class ExecEventMapNestedEscapeDot : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            IDictionary<string, Object> definition = ExecEventMap.MakeMap(new Object[][]{
+            IDictionary<string, Object> definition = ExecEventMap.MakeMap(new object[][]{
                     new object[] {"a.b", typeof(int)},
                     new object[] {"a.b.c", typeof(int)},
                     new object[] {"nes.", typeof(int)},
-                    new object[] {"nes.nes2", ExecEventMap.MakeMap(new Object[][]{new object[] {"x.y", typeof(int)}})}
+                    new object[] {"nes.nes2", ExecEventMap.MakeMap(new object[][]{new object[] {"x.y", typeof(int)}})}
             });
             configuration.AddEventType("DotMap", definition);
         }
@@ -35,19 +35,19 @@ namespace com.espertech.esper.regression.events.map
             string statementText = "select a\\.b, a\\.b\\.c, nes\\., nes\\.nes2.x\\.y from DotMap";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
-            IDictionary<string, Object> data = ExecEventMap.MakeMap(new Object[][]{
+            IDictionary<string, Object> data = ExecEventMap.MakeMap(new object[][]{
                     new object[] {"a.b", 10},
                     new object[] {"a.b.c", 20},
                     new object[] {"nes.", 30},
-                    new object[] {"nes.nes2", ExecEventMap.MakeMap(new Object[][]{new object[] {"x.y", 40}})}
+                    new object[] {"nes.nes2", ExecEventMap.MakeMap(new object[][]{new object[] {"x.y", 40}})}
             });
             epService.EPRuntime.SendEvent(data, "DotMap");
     
             string[] fields = "a.b,a.b.c,nes.,nes.nes2.x.y".Split(',');
             EventBean received = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(received, fields, new Object[]{10, 20, 30, 40});
+            EPAssertionUtil.AssertProps(received, fields, new object[]{10, 20, 30, 40});
         }
     
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

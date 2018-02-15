@@ -66,7 +66,7 @@ namespace com.espertech.esper.regression.pattern
             // For Testing, could also use this:
             /*
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSecWZone("2001-10-01T05:51:00.000GMT-0:00")));
-            epService.EPAdministrator.CreateEPL("select * from pattern[timer:Schedule('2008-03-01T13:00:00Z/P1Y2M10DT2H30M')]").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from pattern[timer:Schedule('2008-03-01T13:00:00Z/P1Y2M10DT2H30M')]").Events += listener.Update;
     
             long next = epService.EPRuntime.NextScheduledTime;
             Log.Info(DateTime.Print(next));
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regression.pattern
     
             string epl = "select * from pattern[every sb=SupportBean -> timer:Schedule(iso: ComputeISO8601String(sb))]";
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             SupportBean b1 = MakeSendEvent(iso, "E1", 5);
     
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regression.pattern
     
             string epl = "select * from pattern[every sb=SupportBean -> timer:Schedule(iso: 'R/1980-01-01T00:00:00Z/PT15S')]";
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             SupportBean b1 = MakeSendEvent(iso, "E1");
     
@@ -169,7 +169,7 @@ namespace com.espertech.esper.regression.pattern
             SendCurrentTime(iso, "2001-10-01T05:51:00.000GMT-0:00");
     
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             AssertReceivedAtTime(listener, iso, "2008-03-01T13:00:00.000GMT-0:00");
             AssertReceivedAtTime(listener, iso, "2009-05-11T15:30:00.000GMT-0:00");
@@ -191,7 +191,7 @@ namespace com.espertech.esper.regression.pattern
             // Repeat 3 times, starting "2012-10-01T05:52:00Z" (UTC), period of 2 seconds
             string epl = "select * from pattern[timer:Schedule(" + parameters + ")]";
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             AssertReceivedAtTime(listener, iso, "2012-10-01T05:52:02.000GMT-0:00");
             AssertSendNoMoreCallback(listener, iso, "2012-10-01T05:52:04.000GMT-0:00");
@@ -214,7 +214,7 @@ namespace com.espertech.esper.regression.pattern
             // Repeat 3 times, starting "2012-10-01T05:52:00Z" (UTC), period of 2 seconds
             string epl = (audit ? "@Audit " : "") + "select * from pattern[every timer:Schedule(" + parameters + ")]";
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             AssertReceivedAtTime(listener, iso, "2012-10-01T05:52:00.000GMT-0:00");
             AssertReceivedAtTime(listener, iso, "2012-10-01T05:52:02.000GMT-0:00");
@@ -238,7 +238,7 @@ namespace com.espertech.esper.regression.pattern
             // Fire once at "2012-10-01T05:52:00Z" (UTC)
             string epl = "select * from pattern[" + (hasEvery ? "every " : "") + "timer:Schedule(" + parameters + ")]";
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             AssertReceivedAtTime(listener, iso, "2012-10-01T05:52:00.000GMT-0:00");
             AssertSendNoMoreCallback(listener, iso, "2012-10-01T05:53:00.000GMT-0:00");
@@ -259,7 +259,7 @@ namespace com.espertech.esper.regression.pattern
             // Fire once at "2012-10-01T05:52:00Z" (UTC)
             string epl = "select * from pattern[" + (hasEvery ? "every " : "") + "timer:Schedule(iso: '2010-10-01T05:52:00Z')]";
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             AssertSendNoMoreCallback(listener, iso, "2012-10-01T05:53:00.000GMT-0:00");
     
@@ -279,7 +279,7 @@ namespace com.espertech.esper.regression.pattern
             // Fire once after 1 day and 2 hours
             string epl = "select * from pattern[timer:Schedule(" + parameters + ")]";
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             AssertReceivedAtTime(listener, iso, "2012-10-02T07:51:00.000GMT-0:00");
             AssertSendNoMoreCallback(listener, iso, "2012-10-03T09:51:00.000GMT-0:00");
@@ -301,7 +301,7 @@ namespace com.espertech.esper.regression.pattern
             SendCurrentTime(iso, "2012-10-01T05:52:00.000GMT-0:00");
             string epl = "select * from pattern[every timer:Schedule(" + parameters + ")]";
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             AssertReceivedAtTime(listener, iso, "2012-10-01T05:52:02.000GMT-0:00");
             AssertReceivedAtTime(listener, iso, "2012-10-01T05:52:04.000GMT-0:00");
@@ -320,7 +320,7 @@ namespace com.espertech.esper.regression.pattern
             SendCurrentTime(iso, "2012-10-01T05:52:00.000GMT-0:00");
             string epl = "select * from pattern[every timer:Schedule(iso:'R/PT1M10S')]";
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             AssertReceivedAtTime(listener, iso, "2012-10-01T05:53:10.000GMT-0:00");
             AssertReceivedAtTime(listener, iso, "2012-10-01T05:54:20.000GMT-0:00");
@@ -339,7 +339,7 @@ namespace com.espertech.esper.regression.pattern
             SendCurrentTime(iso, "2012-10-01T05:52:00.000GMT-0:00");
             string epl = "select * from pattern[every timer:Schedule(iso:'R/1980-01-01T00:00:00Z/PT1S')]";
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             AssertReceivedAtTime(listener, iso, "2012-10-01T05:52:01.000GMT-0:00");
             AssertReceivedAtTime(listener, iso, "2012-10-01T05:52:02.000GMT-0:00");
@@ -369,7 +369,7 @@ namespace com.espertech.esper.regression.pattern
             SendCurrentTime(iso, "2012-10-01T05:52:00.000GMT-0:00");
             string epl = "select * from pattern[every timer:Schedule(" + parameters + ")]";
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             AssertReceivedAtTime(listener, iso, "2012-10-01T05:52:01.000GMT-0:00");
             AssertReceivedAtTime(listener, iso, "2012-10-01T05:52:02.000GMT-0:00");
@@ -387,7 +387,7 @@ namespace com.espertech.esper.regression.pattern
             SendCurrentTime(iso, "2012-01-01T00:0:00.000GMT-0:00");
             string epl = "select * from pattern[every timer:Schedule(iso:'R/1980-01-01T00:00:00Z/PT10S')]";
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             SendCurrentTime(iso, "2012-01-01T00:0:15.000GMT-0:00");
             Assert.IsTrue(listener.IsInvokedAndReset());
@@ -413,7 +413,7 @@ namespace com.espertech.esper.regression.pattern
             SendCurrentTime(iso, "2012-01-01T00:0:00.000GMT-0:00");
             string epl = "select * from pattern[every timer:Schedule(iso: 'R/PT10S')]";
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             SendCurrentTime(iso, "2012-01-01T00:0:15.000GMT-0:00");
             Assert.IsTrue(listener.IsInvokedAndReset());
@@ -440,7 +440,7 @@ namespace com.espertech.esper.regression.pattern
             SendCurrentTime(iso, "2012-10-01T05:52:00.000GMT-0:00");
             string epl = "select * from pattern[every timer:Schedule(iso: 'R8/2012-10-01T05:51:00Z/PT10S')]";
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             AssertReceivedAtTime(listener, iso, "2012-10-01T05:52:10.000GMT-0:00");
             AssertSendNoMoreCallback(listener, iso, "2012-10-01T05:52:20.000GMT-0:00");
@@ -456,7 +456,7 @@ namespace com.espertech.esper.regression.pattern
             SendCurrentTime(iso, "2012-10-01T05:52:00.000GMT-0:00");
             string epl = "select * from pattern[every timer:Schedule(iso: 'R/2013-01-01T02:00:05Z/P1D')]";
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             AssertReceivedAtTime(listener, iso, "2013-01-01T02:00:05.000GMT-0:00");
             AssertReceivedAtTime(listener, iso, "2013-01-02T02:00:05.000GMT-0:00");

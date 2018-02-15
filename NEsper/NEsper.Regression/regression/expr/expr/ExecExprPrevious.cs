@@ -66,13 +66,13 @@ namespace com.espertech.esper.regression.expr.expr
                     "from SupportBean#Time(1 minutes) as sb";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             EventBean resultBean = listener.GetNewDataListFlattened()[1];
     
-            var rows = new Object[][]{
+            var rows = new object[][]{
                 new object[] {"Prev(1,intPrimitive)", typeof(int?)},
                 new object[] {"Prev(1,sb)", typeof(SupportBean)},
                 new object[] {"Prevtail(1,intPrimitive)", typeof(int?)},
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regression.expr.expr
                     "from S0#length(2) as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "result,tailresult,windowresult,countresult".Split(',');
     
@@ -116,18 +116,18 @@ namespace com.espertech.esper.regression.expr.expr
             epService.EPRuntime.SendEvent(e1);
     
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{null, e1, new Object[]{e1}, 1L});
+                    new object[]{null, e1, new object[]{e1}, 1L});
     
             var e2 = new SupportBean_S0(2);
             epService.EPRuntime.SendEvent(e2);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{e1, e1, new Object[]{e2, e1}, 2L});
+                    new object[]{e1, e1, new object[]{e2, e1}, 2L});
             Assert.AreEqual(typeof(SupportBean_S0), stmt.EventType.GetPropertyType("result"));
     
             var e3 = new SupportBean_S0(3);
             epService.EPRuntime.SendEvent(e3);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{e2, e2, new Object[]{e3, e2}, 2L});
+                    new object[]{e2, e2, new object[]{e3, e2}, 2L});
     
             stmt.Dispose();
         }
@@ -137,7 +137,7 @@ namespace com.espertech.esper.regression.expr.expr
                     "Prev(" + typeof(ExecExprPrevious).Name + ".IntToLong(count(*)) - 1, price) as firstPrice from " + typeof(SupportMarketDataBean).FullName + "#Time(60)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             AssertPrevCount(epService, listener);
     
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regression.expr.expr
                     "Prev(count(*) - 1, price) as firstPrice from " + typeof(SupportMarketDataBean).FullName + "#Time(60)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             AssertPrevCount(epService, listener);
     
@@ -167,33 +167,33 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             string[] fields = "symbol,feed,prevPrice,tailPrice,countPrice,windowPrice".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("IBM", 10, 0L, "F1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"IBM", "F1", null, 10d, 1L, SplitDoubles("10d")});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"IBM", "F1", null, 10d, 1L, SplitDoubles("10d")});
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("IBM", 11, 0L, "F1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"IBM", "F1", 10d, 10d, 2L, SplitDoubles("11d,10d")});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"IBM", "F1", 10d, 10d, 2L, SplitDoubles("11d,10d")});
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("MSFT", 100, 0L, "F2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"MSFT", "F2", null, 100d, 1L, SplitDoubles("100d")});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"MSFT", "F2", null, 100d, 1L, SplitDoubles("100d")});
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("IBM", 12, 0L, "F2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"IBM", "F2", null, 12d, 1L, SplitDoubles("12d")});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"IBM", "F2", null, 12d, 1L, SplitDoubles("12d")});
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("IBM", 13, 0L, "F1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"IBM", "F1", 11d, 11d, 2L, SplitDoubles("13d,11d")});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"IBM", "F1", 11d, 11d, 2L, SplitDoubles("13d,11d")});
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("MSFT", 101, 0L, "F2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"MSFT", "F2", 100d, 100d, 2L, SplitDoubles("101d,100d")});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"MSFT", "F2", 100d, 100d, 2L, SplitDoubles("101d,100d")});
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("IBM", 17, 0L, "F2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"IBM", "F2", 12d, 12d, 2L, SplitDoubles("17d,12d")});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"IBM", "F2", 12d, 12d, 2L, SplitDoubles("17d,12d")});
     
             // test length window overflow
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            epService.EPAdministrator.CreateEPL("select Prev(5,intPrimitive) as val0 from SupportBean#Groupwin(theString)#length(5)").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select Prev(5,intPrimitive) as val0 from SupportBean#Groupwin(theString)#length(5)").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 11));
             Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("val0"));
@@ -251,7 +251,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));
@@ -302,7 +302,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));
@@ -363,7 +363,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));
@@ -478,7 +478,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("prevSymbol"));
@@ -552,7 +552,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("prevSymbol"));
@@ -605,7 +605,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("prevSymbol"));
@@ -666,7 +666,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("prevSymbol"));
@@ -719,7 +719,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("prev0Symbol"));
@@ -758,7 +758,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("prev0Symbol"));
@@ -802,7 +802,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendMarketEvent(epService, "A", 1);
             SendMarketEvent(epService, "B", 130);
@@ -820,7 +820,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendBeanEvent(epService, "A", 1);
             EventBean theEvent = listener.AssertOneGetNewAndReset();
@@ -863,7 +863,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("prev0Symbol"));
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("prev0Price"));
@@ -911,7 +911,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendMarketEvent(epService, "A", 1, 1000);
             SendMarketEvent(epService, "B", 2, 1001);
@@ -919,7 +919,7 @@ namespace com.espertech.esper.regression.expr.expr
             SendMarketEvent(epService, "D", 4, 10000);
     
             EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), fields,
-                    new Object[][]{
+                    new object[][]{
                         new object[] {"A", "A", 1d, null, null, null, null, "A", 1d, "B", 2d, 3L, SplitDoubles("3d,2d,1d")},
                         new object[] {"B", "B", 2d, "A", 1d, null, null, "A", 1d, "B", 2d, 3L, SplitDoubles("3d,2d,1d")},
                         new object[] {"C", "C", 3d, "B", 2d, "A", 1d, "A", 1d, "B", 2d, 3L, SplitDoubles("3d,2d,1d")}
@@ -929,10 +929,10 @@ namespace com.espertech.esper.regression.expr.expr
             SendMarketEvent(epService, "E", 5, 20000);
     
             EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), fields,
-                    new Object[][]{
+                    new object[][]{
                         new object[] {"D", "D", 4d, null, null, null, null, "D", 4d, null, null, 1L, SplitDoubles("4d")},
                     },
-                    new Object[][]{
+                    new object[][]{
                         new object[] {"A", null, null, null, null, null, null, null, null, null, null, null, null},
                         new object[] {"B", null, null, null, null, null, null, null, null, null, null, null, null},
                         new object[] {"C", null, null, null, null, null, null, null, null, null, null, null, null},
@@ -966,7 +966,7 @@ namespace com.espertech.esper.regression.expr.expr
             string prevTail1Symbol,
             double? prevTail1Price,
             long? prevcount,
-            Object[] prevwindow)
+            object[] prevwindow)
         {
             Assert.AreEqual(currSymbol, eventBean.Get("currSymbol"));
             Assert.AreEqual(prevSymbol, eventBean.Get("prevSymbol"));
@@ -976,7 +976,7 @@ namespace com.espertech.esper.regression.expr.expr
             Assert.AreEqual(prevTail1Symbol, eventBean.Get("prevTail1Symbol"));
             Assert.AreEqual(prevTail1Price, eventBean.Get("prevTail1Price"));
             Assert.AreEqual(prevcount, eventBean.Get("prevCountPrice"));
-            EPAssertionUtil.AssertEqualsExactOrder((Object[]) eventBean.Get("prevWindowPrice"), prevwindow);
+            EPAssertionUtil.AssertEqualsExactOrder((object[]) eventBean.Get("prevWindowPrice"), prevwindow);
         }
 
         private void AssertNewEvents(
@@ -992,7 +992,7 @@ namespace com.espertech.esper.regression.expr.expr
             string prevTail1Symbol,
             double? prevTail1Price,
             long prevCount,
-            Object[] prevWindow)
+            object[] prevWindow)
         {
             EventBean[] oldData = listener.LastOldData;
             EventBean[] newData = listener.LastNewData;
@@ -1020,7 +1020,7 @@ namespace com.espertech.esper.regression.expr.expr
             string prevTail1Symbol,
             double? prevTail1Price,
             long? prevCount,
-            Object[] prevWindow)
+            object[] prevWindow)
         {
             Assert.AreEqual(currSymbol, eventBean.Get("currSymbol"));
             Assert.AreEqual(prev0Symbol, eventBean.Get("prev0Symbol"));
@@ -1034,7 +1034,7 @@ namespace com.espertech.esper.regression.expr.expr
             Assert.AreEqual(prevTail1Symbol, eventBean.Get("prevTail1Symbol"));
             Assert.AreEqual(prevTail1Price, eventBean.Get("prevTail1Price"));
             Assert.AreEqual(prevCount, eventBean.Get("prevCountPrice"));
-            EPAssertionUtil.AssertEqualsExactOrder((Object[]) eventBean.Get("prevWindowPrice"), prevWindow);
+            EPAssertionUtil.AssertEqualsExactOrder((object[]) eventBean.Get("prevWindowPrice"), prevWindow);
     
             listener.Reset();
         }
@@ -1076,7 +1076,7 @@ namespace com.espertech.esper.regression.expr.expr
             string prevTail1Symbol,
             double? prevTail1Price,
             long prevcount,
-            Object[] prevwindow)
+            object[] prevwindow)
         {
             EventBean[] oldData = listener.LastOldData;
             EventBean[] newData = listener.LastNewData;
@@ -1099,7 +1099,7 @@ namespace com.espertech.esper.regression.expr.expr
             string prevTail1Symbol,
             double? prevTail1Price,
             long? prevcount,
-            Object[] prevwindow)
+            object[] prevwindow)
         {
             EventBean[] oldData = listener.LastOldData;
             EventBean[] newData = listener.LastNewData;
@@ -1115,7 +1115,7 @@ namespace com.espertech.esper.regression.expr.expr
         private void AssertPerGroup(string statement, EPServiceProvider epService) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statement);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));
@@ -1167,7 +1167,7 @@ namespace com.espertech.esper.regression.expr.expr
             double? prevTail1Price, 
             double? prevTail2Price,
             long? countPrice,
-            Object[] windowPrice)
+            object[] windowPrice)
         {
             EventBean theEvent = listener.AssertOneGetNewAndReset();
             AssertReceived(theEvent, symbol, prevPrice, prevPrevPrice, prevTail1Price, prevTail2Price, countPrice, windowPrice);
@@ -1181,7 +1181,7 @@ namespace com.espertech.esper.regression.expr.expr
             double? prevTail0Price,
             double? prevTail1Price,
             long? countPrice,
-            Object[] windowPrice)
+            object[] windowPrice)
         {
             Assert.AreEqual(symbol, theEvent.Get("symbol"));
             Assert.AreEqual(prevPrice, theEvent.Get("prevPrice"));
@@ -1189,7 +1189,7 @@ namespace com.espertech.esper.regression.expr.expr
             Assert.AreEqual(prevTail0Price, theEvent.Get("prevTail0Price"));
             Assert.AreEqual(prevTail1Price, theEvent.Get("prevTail1Price"));
             Assert.AreEqual(countPrice, theEvent.Get("countPrice"));
-            EPAssertionUtil.AssertEqualsExactOrder(windowPrice, (Object[]) theEvent.Get("windowPrice"));
+            EPAssertionUtil.AssertEqualsExactOrder(windowPrice, (object[]) theEvent.Get("windowPrice"));
         }
     
         private void AssertCountAndPrice(EventBean theEvent, long total, double? price) {
@@ -1265,7 +1265,7 @@ namespace com.espertech.esper.regression.expr.expr
             }
         }
     
-        private Object[] SplitDoubles(string doubleList) {
+        private object[] SplitDoubles(string doubleList) {
             string[] doubles = doubleList.Split(',');
             var result = new Object[doubles.Length];
             for (int i = 0; i < result.Length; i++) {

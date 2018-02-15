@@ -17,8 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -34,39 +32,44 @@ namespace com.espertech.esper.regression.view
             string epl = "select symbol, price from " + typeof(SupportMarketDataBean).FullName + "#keepall";
             EPStatement statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendEvent(epService, "ABC", 20);
             SendEvent(epService, "DEF", 100);
     
             // check iterator results
             IEnumerator<EventBean> events = statement.GetEnumerator();
-            EventBean theEvent = events.Next();
+            Assert.IsTrue(events.MoveNext());
+            EventBean theEvent = events.Current;
             Assert.AreEqual("ABC", theEvent.Get("symbol"));
             Assert.AreEqual(20d, theEvent.Get("price"));
     
-            theEvent = events.Next();
+            Assert.IsTrue(events.MoveNext());
+            theEvent = events.Current;
             Assert.AreEqual("DEF", theEvent.Get("symbol"));
             Assert.AreEqual(100d, theEvent.Get("price"));
-            Assert.IsFalse(events.HasNext());
+            Assert.IsFalse(events.MoveNext());
     
             SendEvent(epService, "EFG", 50);
     
             // check iterator results
             events = statement.GetEnumerator();
-            theEvent = events.Next();
+            Assert.IsTrue(events.MoveNext());
+            theEvent = events.Current;
             Assert.AreEqual("ABC", theEvent.Get("symbol"));
             Assert.AreEqual(20d, theEvent.Get("price"));
-    
-            theEvent = events.Next();
+
+            Assert.IsTrue(events.MoveNext());
+            theEvent = events.Current;
             Assert.AreEqual("DEF", theEvent.Get("symbol"));
             Assert.AreEqual(100d, theEvent.Get("price"));
-    
-            theEvent = events.Next();
+
+            Assert.IsTrue(events.MoveNext());
+            theEvent = events.Current;
             Assert.AreEqual("EFG", theEvent.Get("symbol"));
             Assert.AreEqual(50d, theEvent.Get("price"));
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionWindowStats(EPServiceProvider epService) {
@@ -74,31 +77,31 @@ namespace com.espertech.esper.regression.view
                     "#keepall group by symbol";
             EPStatement statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             listener.Reset();
     
             SendEvent(epService, "S1", 100);
             var fields = new string[]{"symbol", "cnt", "mysum"};
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{"S1", 1L, 100d});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{"S1", 0L, null});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{"S1", 1L, 100d});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{"S1", 0L, null});
             listener.Reset();
     
             SendEvent(epService, "S2", 50);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{"S2", 1L, 50d});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{"S2", 0L, null});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{"S2", 1L, 50d});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{"S2", 0L, null});
             listener.Reset();
     
             SendEvent(epService, "S1", 5);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{"S1", 2L, 105d});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{"S1", 1L, 100d});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{"S1", 2L, 105d});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{"S1", 1L, 100d});
             listener.Reset();
     
             SendEvent(epService, "S2", -1);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{"S2", 2L, 49d});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{"S2", 1L, 50d});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{"S2", 2L, 49d});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{"S2", 1L, 50d});
             listener.Reset();
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void SendEvent(EPServiceProvider epService, string symbol, double price) {

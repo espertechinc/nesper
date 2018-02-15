@@ -58,7 +58,7 @@ namespace com.espertech.esper.supportregression.plugineventrep
     
             types.Add(eventType);
             
-            return new regression.events.MyPlugInPropertiesEventTypeHandler(eventType);
+            return new MyPlugInPropertiesEventTypeHandler(eventType);
         }
     
         public bool AcceptsEventBeanResolution(PlugInEventBeanReflectorContext eventBeanContext)

@@ -90,7 +90,7 @@ namespace com.espertech.esper.regression.support
             desc.Put(tagFour, beanFour);
         }
     
-        public void Add(String expectedOnEventId, Object[][] tagsAndBeans)
+        public void Add(String expectedOnEventId, object[][] tagsAndBeans)
         {
             EventDescriptor desc = AddDesc(expectedOnEventId);
             for (int i = 0; i < tagsAndBeans.Length; i++)

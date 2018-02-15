@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -37,7 +36,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statement);
             var updateListener = new SupportUpdateListener();
-            stmt.AddListener(updateListener);
+            stmt.Events += updateListener.Update;
     
             Log.Info(".testPerfAllProps Preloading events");
             long startTime = DateTimeHelper.CurrentTimeMillis;

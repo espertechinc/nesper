@@ -47,17 +47,17 @@ namespace com.espertech.esper.regression.events.avro
             var fields = "name,favorite_number,favorite_color";
             var stmt = epService.EPAdministrator.CreateEPL("select " + fields + " from User");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var eventOneJson = "{\"name\": \"Jane\", \"favorite_number\": 256, \"favorite_color\": \"red\"}";
             var record = Parse(schema, eventOneJson);
             epService.EPRuntime.SendEventAvro(record, "User");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields.Split(','), new Object[]{"Jane", 256, "red"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields.Split(','), new object[]{"Jane", 256, "red"});
     
             var eventTwoJson = "{\"name\": \"Hans\", \"favorite_number\": -1, \"favorite_color\": \"green\"}";
             record = Parse(schema, eventTwoJson);
             epService.EPRuntime.SendEventAvro(record, "User");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields.Split(','), new Object[]{"Hans", -1, "green"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields.Split(','), new object[]{"Hans", -1, "green"});
         }
     
         private static GenericRecord Parse(Schema schema, string json) {

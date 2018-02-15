@@ -27,12 +27,13 @@ namespace com.espertech.esper.regression.pattern
         public override void Run(EPServiceProvider epService) {
             string patternExpr = "not " + typeof(SupportBean).FullName;
             EPStatement patternStmt = epService.EPAdministrator.CreatePattern(patternExpr);
-            patternStmt.AddListener(new PatternUpdateListener(epService));
+            patternStmt.Events += new PatternUpdateListener(epService).Update;
             patternStmt.Stop();
             patternStmt.Start();
         }
     
-        class PatternUpdateListener : UpdateListener {
+        class PatternUpdateListener
+        {
             private readonly EPServiceProvider epService;
     
             public PatternUpdateListener(EPServiceProvider epService) {
@@ -40,22 +41,23 @@ namespace com.espertech.esper.regression.pattern
             }
     
             private int count = 0;
-    
-            public void Update(EventBean[] newEvents, EventBean[] oldEvents) {
+
+            public void Update(object sender, UpdateEventArgs e)
+            {
                 Log.Warn(".update");
     
                 if (count < 10) {
                     count++;
                     string patternExpr = "not " + typeof(SupportBean).FullName;
                     EPStatement patternStmt = epService.EPAdministrator.CreatePattern(patternExpr);
-                    patternStmt.AddListener(this);
+                    patternStmt.Events += this.Update;
                     patternStmt.Stop();
                     patternStmt.Start();
                 }
             }
-    
-            public int GetCount() {
-                return count;
+
+            public int Count {
+                get { return count; }
             }
         }
     

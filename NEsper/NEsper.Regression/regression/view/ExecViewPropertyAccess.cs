@@ -11,7 +11,6 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using NUnit.Framework;
-// using static org.junit.Assert.*;
 
 namespace com.espertech.esper.regression.view
 {
@@ -29,7 +28,7 @@ namespace com.espertech.esper.regression.view
 
             var testView = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            testView.AddListener(listener);
+            testView.Events += listener.Update;
 
             var eventObject = SupportBeanComplexProps.MakeDefaultBean();
             epService.EPRuntime.SendEvent(eventObject);

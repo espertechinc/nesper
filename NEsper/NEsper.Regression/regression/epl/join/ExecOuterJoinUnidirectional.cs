@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -63,7 +62,7 @@ namespace com.espertech.esper.regression.epl.join
     
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select a.id as aid, b.id as bid from SupportBean_A as a unidirectional " +
-                    "full outer join SupportBean_B as b unidirectional").AddListener(listener);
+                    "full outer join SupportBean_B as b unidirectional").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             AssertReceived2Stream(listener, "A1", null);
@@ -91,7 +90,7 @@ namespace com.espertech.esper.regression.epl.join
                     "full outer join SupportBean_B as b unidirectional " +
                     "full outer join SupportBean_C as c unidirectional";
             var listener = new SupportUpdateListener();
-            SupportModelHelper.CreateByCompileOrParse(epService, soda, epl).AddListener(listener);
+            SupportModelHelper.CreateByCompileOrParse(epService, soda, epl).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             AssertReceived3Stream(listener, "A1", null, null);
@@ -124,7 +123,7 @@ namespace com.espertech.esper.regression.epl.join
                     "full outer join " +
                     "SupportBean_D unidirectional";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_C("c1"));
             AssertReceived3StreamMixed(listener, null, null, "c1", null);
@@ -150,7 +149,7 @@ namespace com.espertech.esper.regression.epl.join
                     "full outer join SupportBean_D as d unidirectional " +
                     "where coalesce(a.id,b.id,c.id,d.id) in ('YES')";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             SendAssert(epService, listener, new SupportBean_A("A1"), false);
             SendAssert(epService, listener, new SupportBean_A("YES"), true);
@@ -168,17 +167,17 @@ namespace com.espertech.esper.regression.epl.join
     
         private void AssertReceived2Stream(SupportUpdateListener listener, string a, string b) {
             string[] fields = "aid,bid".Split(',');
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{a, b});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{a, b});
         }
     
         private void AssertReceived3Stream(SupportUpdateListener listener, string a, string b, string c) {
             string[] fields = "a.id,b.id,c.id".Split(',');
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{a, b, c});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{a, b, c});
         }
     
         private void AssertReceived3StreamMixed(SupportUpdateListener listener, string a, string b, string c, string d) {
             string[] fields = "aid,bid,cid,did".Split(',');
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{a, b, c, d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{a, b, c, d});
         }
     }
 } // end of namespace

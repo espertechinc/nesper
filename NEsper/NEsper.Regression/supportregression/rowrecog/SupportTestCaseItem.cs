@@ -6,25 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using NUnit.Framework;
-
-namespace com.espertech.esper.supportregression.rowrecog
-{
+namespace com.espertech.esper.supportregression.rowrecog {
     public class SupportTestCaseItem {
-        private string testdata;
-        private string[] expected;
-    
         public SupportTestCaseItem(string testdata, string[] expected) {
-            this.testdata = testdata;
-            this.expected = expected;
+            Testdata = testdata;
+            Expected = expected;
         }
-    
-        public string GetTestdata() {
-            return testdata;
-        }
-    
-        public string[] GetExpected() {
-            return expected;
-        }
+
+        public string Testdata { get; }
+
+        public string[] Expected { get; }
     }
 } // end of namespace

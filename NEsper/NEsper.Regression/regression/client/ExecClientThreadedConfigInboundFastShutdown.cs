@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -20,7 +20,7 @@ namespace com.espertech.esper.regression.client
 {
     public class ExecClientThreadedConfigInboundFastShutdown : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.Threading.ThreadPoolInbound = true;
+            configuration.EngineDefaults.Threading.IsThreadPoolInbound = true;
             configuration.EngineDefaults.Threading.ThreadPoolInboundNumThreads = 2;
             configuration.AddEventType(typeof(MyEvent));
             configuration.AddPlugInSingleRowFunction("sleepaLittle", GetType().FullName, "sleepaLittle");
@@ -36,13 +36,13 @@ namespace com.espertech.esper.regression.client
     
         public static void SleepaLittle(long time) {
             try {
-                Thread.Sleep(time);
-            } catch (InterruptedException e) {
+                Thread.Sleep((int) time);
+            } catch (ThreadInterruptedException e) {
             }
         }
     
         public class MySubscriber {
-            public void Update(Object[] args) {
+            public void Update(object[] args) {
             }
         }
     

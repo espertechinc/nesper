@@ -28,9 +28,7 @@ using com.espertech.esper.util;
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
 
-// using static junit.framework.TestCase.*;
 // using static org.apache.avro.SchemaBuilder.record;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -198,7 +196,7 @@ namespace com.espertech.esper.regression.epl.insertinto
     
             string stmtSelectText = "insert into ABCStream select * from SupportBean";
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL(stmtSelectText, "resilient i0");
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
             Assert.IsTrue(stmtSelect.EventType is BeanEventType);
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -249,10 +247,10 @@ namespace com.espertech.esper.regression.epl.insertinto
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtText, "stmt1");
             Assert.AreEqual(StatementType.INSERT_INTO, ((EPStatementSPI) stmtOne).StatementMetadata.StatementType);
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(otherText, "stmt2");
             var listenerTwo = new SupportUpdateListener();
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
     
             SupportBean theEvent = SendEvent(epService, 10, 11);
             Assert.IsTrue(listenerOne.GetAndClearIsInvoked());
@@ -348,7 +346,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             stmtText = "select mySymbol, sum(myPrice) as pricesum from StockTicks#length(100)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             SendEvent(epService, "IBM", 50);
@@ -397,9 +395,9 @@ namespace com.espertech.esper.regression.epl.insertinto
             var listenerTwo = new SupportUpdateListener();
             var listenerThree = new SupportUpdateListener();
     
-            epService.EPAdministrator.CreateEPL(statementOne).AddListener(listenerOne);
-            epService.EPAdministrator.CreateEPL(statementTwo).AddListener(listenerTwo);
-            epService.EPAdministrator.CreateEPL(statementThree).AddListener(listenerThree);
+            epService.EPAdministrator.CreateEPL(statementOne).Events += listenerOne.Update;
+            epService.EPAdministrator.CreateEPL(statementTwo).Events += listenerTwo.Update;
+            epService.EPAdministrator.CreateEPL(statementThree).Events += listenerThree.Update;
     
             SendSimpleEvent(epService, "one", 1);
             AssertSimple(listenerOne, "one", 1, null, 0);
@@ -418,12 +416,12 @@ namespace com.espertech.esper.regression.epl.insertinto
             string stmtOneText = "insert into streamA1 select * from pattern [every " + typeof(SupportBean).FullName + "]";
             var listenerOne = new SupportUpdateListener();
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtOneText);
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
     
             string stmtTwoText = "insert into streamA1 select * from pattern [every " + typeof(SupportBean).FullName + "]";
             var listenerTwo = new SupportUpdateListener();
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTwoText);
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
     
             EventType eventType = stmtOne.EventType;
             Assert.AreEqual(typeof(Map), eventType.UnderlyingType);
@@ -439,7 +437,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                     "and zoneID = '10'";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtOneTxt);
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
     
             string stmtTwoTxt = "insert into OutOfZone " +
                     "select 111 as statementId, mac, locationReportId " +
@@ -448,13 +446,13 @@ namespace com.espertech.esper.regression.epl.insertinto
                     "and zoneID != '10'";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTwoTxt);
             var listenerTwo = new SupportUpdateListener();
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
     
             string stmtThreeTxt = "select 111 as eventSpecId, A.locationReportId as locationReportId " +
                     " from pattern [every A=InZone -> (timer:Interval(1 sec) and not OutOfZone(mac=A.mac))]";
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL(stmtThreeTxt);
             var listener = new SupportUpdateListener();
-            stmtThree.AddListener(listener);
+            stmtThree.Events += listener.Update;
     
             // try the alert case with 1 event for the mac in question
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
@@ -490,7 +488,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             string stmtTwoTxt = "select dummy from InZoneTwo";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTwoTxt);
             var listener = new SupportUpdateListener();
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent("a");
             Assert.IsNull(listener.AssertOneGetNewAndReset().Get("dummy"));
@@ -527,7 +525,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                 stmt = epService.EPAdministrator.CreateEPL(stmtText);
             }
             var feedListener = new SupportUpdateListener();
-            stmt.AddListener(feedListener);
+            stmt.Events += feedListener.Update;
     
             // send event for joins to match on
             epService.EPRuntime.SendEvent(new SupportBean_A("myId"));
@@ -537,14 +535,14 @@ namespace com.espertech.esper.regression.epl.insertinto
                     "from " + typeName + "#Time(60)";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtText);
             var resultListenerDelta = new SupportUpdateListener();
-            stmtTwo.AddListener(resultListenerDelta);
+            stmtTwo.Events += resultListenerDelta.Update;
     
             // Attach prodict statement to statement and add listener
             stmtText = "select min(product) as minP, max(product) as maxP " +
                     "from " + typeName + "#Time(60)";
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL(stmtText);
             var resultListenerProduct = new SupportUpdateListener();
-            stmtThree.AddListener(resultListenerProduct);
+            stmtThree.Events += resultListenerProduct.Update;
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0)); // Set the time to 0 seconds
     
@@ -625,8 +623,8 @@ namespace com.espertech.esper.regression.epl.insertinto
                 epService.EPAdministrator.Configuration.AddEventType("S0", Collections.SingletonDataMap("theString", typeof(string)));
                 epService.EPAdministrator.Configuration.AddEventType("S1", Collections.SingletonDataMap("id", typeof(string)));
             } else if (rep.Value.IsObjectArrayEvent()) {
-                epService.EPAdministrator.Configuration.AddEventType("S0", new string[]{"theString"}, new Object[]{typeof(string)});
-                epService.EPAdministrator.Configuration.AddEventType("S1", new string[]{"id"}, new Object[]{typeof(string)});
+                epService.EPAdministrator.Configuration.AddEventType("S0", new string[]{"theString"}, new object[]{typeof(string)});
+                epService.EPAdministrator.Configuration.AddEventType("S1", new string[]{"id"}, new object[]{typeof(string)});
             } else if (rep.Value.IsAvroEvent()) {
                 epService.EPAdministrator.Configuration.AddEventTypeAvro("S0", new ConfigurationEventTypeAvro() {
                     AvroSchema = SchemaBuilder.Record("S0", RequiredString("theString"))
@@ -646,10 +644,10 @@ namespace com.espertech.esper.regression.epl.insertinto
             // Attach listener to feed
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(textOne);
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(textTwo);
             var listenerTwo = new SupportUpdateListener();
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
     
             // send event for joins to match on
             Object eventS1;
@@ -660,8 +658,8 @@ namespace com.espertech.esper.regression.epl.insertinto
                 eventS1 = Collections.SingletonMap("id", "myId");
                 epService.EPRuntime.SendEvent((Map) eventS1, "S1");
             } else if (rep.Value.IsObjectArrayEvent()) {
-                eventS1 = new Object[]{"myId"};
-                epService.EPRuntime.SendEvent((Object[]) eventS1, "S1");
+                eventS1 = new object[]{"myId"};
+                epService.EPRuntime.SendEvent((object[]) eventS1, "S1");
             } else if (rep.Value.IsAvroEvent()) {
                 var theEvent = new GenericRecord(SupportAvroUtil.GetAvroSchema(epService, "S1").AsRecordSchema());
                 theEvent.Put("id", "myId");
@@ -679,8 +677,8 @@ namespace com.espertech.esper.regression.epl.insertinto
                 eventS0 = Collections.SingletonMap("theString", "myId");
                 epService.EPRuntime.SendEvent((Map) eventS0, "S0");
             } else if (rep.Value.IsObjectArrayEvent()) {
-                eventS0 = new Object[]{"myId"};
-                epService.EPRuntime.SendEvent((Object[]) eventS0, "S0");
+                eventS0 = new object[]{"myId"};
+                epService.EPRuntime.SendEvent((object[]) eventS0, "S0");
             } else if (rep.Value.IsAvroEvent()) {
                 var theEvent = new GenericRecord(SupportAvroUtil.GetAvroSchema(epService, "S0").AsRecordSchema());
                 theEvent.Put("theString", "myId");
@@ -753,7 +751,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPAdministrator.CreateEPL("insert into TargetSchema select * from SourceSchema");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from TargetSchema");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // send event
             if (sourceBean) {
@@ -764,7 +762,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                 map.Put("p1", 10);
                 epService.EPRuntime.SendEvent(map, "SourceSchema");
             } else if (sourceType.Value.IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(new Object[]{"a", 10}, "SourceSchema");
+                epService.EPRuntime.SendEvent(new object[]{"a", 10}, "SourceSchema");
             } else if (sourceType.Value.IsAvroEvent()) {
                 var schema = SchemaBuilder.Record("schema",
                     RequiredString("p0"),
@@ -779,7 +777,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             }
     
             // assert
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "p0,p1,c0".Split(','), new Object[]{"a", 10, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "p0,p1,c0".Split(','), new object[]{"a", 10, null});
         }
     
         public class MyP0P1EventSource {

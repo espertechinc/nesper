@@ -17,7 +17,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     public class ExecAggregateExtInvalid : RegressionExecution {
     
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.Expression.ExtendedAggregation = false;
+            configuration.EngineDefaults.Expression.IsExtendedAggregation = false;
             configuration.AddEventType<SupportBean>();
         }
     

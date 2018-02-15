@@ -42,12 +42,12 @@ namespace com.espertech.esper.regression.view
             EPStatement statement = epService.EPAdministrator.CreateEPL(query, "myquery");
             EPStatement statement2 = epService.EPAdministrator.CreateEPL(query2, "myquery2");
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
-            statement2.AddListener(listener);
+            statement.Events += listener.Update;
+            statement2.Events += listener.Update;
     
             int i = 0;
             foreach (string csv in groups) {
-                Object[] @event = {csv, 0f};
+                object[] @event = {csv, 0f};
                 epService.EPRuntime.SendEvent(@event, "MyEvent");
                 i++;
     

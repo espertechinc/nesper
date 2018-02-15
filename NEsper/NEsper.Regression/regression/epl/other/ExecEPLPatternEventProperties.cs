@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -45,7 +44,7 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionWildcardOrPattern(EPServiceProvider epService) {
             SupportUpdateListener updateListener = SetupOrPattern(epService, "*");
     
-            var theEvent = new SupportBean();
+            object theEvent = new SupportBean();
             epService.EPRuntime.SendEvent(theEvent);
             EventBean eventBean = updateListener.AssertOneGetNewAndReset();
             Assert.AreSame(theEvent, eventBean.Get("a"));
@@ -113,7 +112,7 @@ namespace com.espertech.esper.regression.epl.other
             string stmtText = "select " + selectCriteria + " from pattern [a=" + typeof(SupportBean).FullName + "]";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             return listener;
         }
     
@@ -122,7 +121,7 @@ namespace com.espertech.esper.regression.epl.other
                     " or b=" + typeof(SupportBeanComplexProps).Name + ")]";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var updateListener = new SupportUpdateListener();
-            stmt.AddListener(updateListener);
+            stmt.Events += updateListener.Update;
             return updateListener;
         }
     }

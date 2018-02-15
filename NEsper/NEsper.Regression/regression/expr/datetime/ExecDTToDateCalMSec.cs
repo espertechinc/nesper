@@ -35,43 +35,36 @@ namespace com.espertech.esper.regression.expr.datetime
             string startTime = "2002-05-30T09:00:00.000";
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(startTime)));
     
-            string[] fields = "val0,val1,val2,val3,val4,val5,val6,val7,val8,val9,val10,val11,val12,val13,val14,val15,val16,val17".Split(',');
+            string[] fields = "val0,val1,val2,val3,val4,val5,val6,val7,val8".Split(',');
             string eplFragment = "select " +
-                    "current_timestamp.ToDate() as val0," +
-                    "utildate.ToDate() as val1," +
-                    "longdate.ToDate() as val2," +
-                    "caldate.ToDate() as val3," +
-                    "localdate.ToDate() as val4," +
-                    "zoneddate.ToDate() as val5," +
-                    "current_timestamp.ToCalendar() as val6," +
-                    "utildate.ToCalendar() as val7," +
-                    "longdate.ToCalendar() as val8," +
-                    "caldate.ToCalendar() as val9," +
-                    "localdate.ToCalendar() as val10," +
-                    "zoneddate.ToCalendar() as val11," +
-                    "current_timestamp.ToMillisec() as val12," +
-                    "utildate.ToMillisec() as val13," +
-                    "longdate.ToMillisec() as val14," +
-                    "caldate.ToMillisec() as val15," +
-                    "localdate.ToMillisec() as val16," +
-                    "zoneddate.ToMillisec() as val17" +
+                    "current_timestamp.toDate() as val0," +
+                    "utildate.toDate() as val1," +
+                    "longdate.toDate() as val2," +
+                    "current_timestamp.toCalendar() as val3," +
+                    "utildate.toCalendar() as val4," +
+                    "longdate.toCalendar() as val5," +
+                    "current_timestamp.toMillisec() as val6," +
+                    "utildate.toMillisec() as val7," +
+                    "longdate.toMillisec() as val8" +
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(Date), typeof(Date), typeof(Date), typeof(Date), typeof(Date), typeof(Date),
-                    typeof(Calendar), typeof(Calendar), typeof(Calendar), typeof(Calendar), typeof(Calendar), typeof(Calendar),
-                    typeof(long), typeof(long), typeof(long), typeof(long), typeof(long), typeof(long)});
+            stmtFragment.Events += listener.Update;
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{
+                typeof(DateTimeOffset), typeof(DateTimeOffset), typeof(DateTimeOffset),
+                typeof(DateTimeEx), typeof(DateTimeEx), typeof(DateTimeEx),
+                typeof(long), typeof(long), typeof(long)
+            });
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            Object[] expectedUtil = SupportDateTime.GetArrayCoerced(startTime, "util", "util", "util", "util", "util", "util");
-            Object[] expectedCal = SupportDateTime.GetArrayCoerced(startTime, "cal", "cal", "cal", "cal", "cal", "cal");
-            Object[] expectedMsec = SupportDateTime.GetArrayCoerced(startTime, "long", "long", "long", "long", "long", "long");
-            Object[] expected = EPAssertionUtil.ConcatenateArray(expectedUtil, expectedCal, expectedMsec);
+            object[] expectedUtil = SupportDateTime.GetArrayCoerced(startTime, "util", "util", "util");
+            object[] expectedCal = SupportDateTime.GetArrayCoerced(startTime, "cal", "cal", "cal");
+            object[] expectedMsec = SupportDateTime.GetArrayCoerced(startTime, "long", "long", "long");
+            object[] expected = EPAssertionUtil.ConcatenateArray(expectedUtil, expectedCal, expectedMsec);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, expected);
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{
                     SupportDateTime.GetValueCoerced(startTime, "util"), null, null, null, null, null,
                     SupportDateTime.GetValueCoerced(startTime, "cal"), null, null, null, null, null,
                     SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null});

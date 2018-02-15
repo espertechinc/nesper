@@ -29,10 +29,10 @@ namespace com.espertech.esper.supportregression.dataflow
         {
             var tokens = line.Split('\t', ' ');
             var wordCount = tokens.Length;
-            var charCount = tokens.sum(token => token.Length);
+            var charCount = tokens.Sum(token => token.Length);
 
             Log.Debug("Submitting stat words[" + wordCount + "] chars[" + charCount + "] for line '" + line + "'");
-            graphContext.Submit(new Object[] {1, wordCount, charCount});
+            graphContext.Submit(new object[] {1, wordCount, charCount});
         }
     }
 }

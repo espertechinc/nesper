@@ -10,7 +10,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -22,7 +21,7 @@ namespace com.espertech.esper.regression.context
             configuration.AddEventType<SupportBean>();
             configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
             configuration.AddEventType("SupportBean_S1", typeof(SupportBean_S1));
-            configuration.EngineDefaults.Logging.EnableExecutionDebug = true;
+            configuration.EngineDefaults.Logging.IsEnableExecutionDebug = true;
         }
     
         public override void Run(EPServiceProvider epService) {

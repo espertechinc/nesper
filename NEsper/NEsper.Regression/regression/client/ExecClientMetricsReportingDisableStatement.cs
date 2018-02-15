@@ -44,7 +44,7 @@ namespace com.espertech.esper.regression.client
     
             statements[0] = epService.EPAdministrator.CreateEPL("select * from " + typeof(StatementMetric).FullName, "MyStatement@METRIC");
             var listenerStmtMetric = new SupportUpdateListener();
-            statements[0].AddListener(listenerStmtMetric);
+            statements[0].Events += listenerStmtMetric.Update;
     
             statements[1] = epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive=1)#keepall where 2=2", "stmtone");
             SendEvent(epService, "E1", 1, CPUGOALONENANO);
@@ -52,27 +52,27 @@ namespace com.espertech.esper.regression.client
             SendEvent(epService, "E2", 1, CPUGOALONENANO);
     
             SendTimer(epService, 11000);
-            EPAssertionUtil.AssertPropsPerRow(listenerStmtMetric.GetNewDataListFlattened(), fields, new Object[][]{new object[] {"stmtone"}, new object[] {"stmttwo"}});
+            EPAssertionUtil.AssertPropsPerRow(listenerStmtMetric.GetNewDataListFlattened(), fields, new object[][]{new object[] {"stmtone"}, new object[] {"stmttwo"}});
             listenerStmtMetric.Reset();
     
             SendEvent(epService, "E1", 1, CPUGOALONENANO);
             SendTimer(epService, 21000);
-            EPAssertionUtil.AssertPropsPerRow(listenerStmtMetric.GetNewDataListFlattened(), fields, new Object[][]{new object[] {"stmtone"}, new object[] {"stmttwo"}});
+            EPAssertionUtil.AssertPropsPerRow(listenerStmtMetric.GetNewDataListFlattened(), fields, new object[][]{new object[] {"stmtone"}, new object[] {"stmttwo"}});
             listenerStmtMetric.Reset();
     
-            epService.EPAdministrator.Configuration.MetricsReportingStmtDisabled = "stmtone";
+            epService.EPAdministrator.Configuration.SetMetricsReportingStmtDisabled("stmtone");
     
             SendEvent(epService, "E1", 1, CPUGOALONENANO);
             SendTimer(epService, 31000);
-            EPAssertionUtil.AssertPropsPerRow(listenerStmtMetric.GetNewDataListFlattened(), fields, new Object[][]{new object[] {"stmttwo"}});
+            EPAssertionUtil.AssertPropsPerRow(listenerStmtMetric.GetNewDataListFlattened(), fields, new object[][]{new object[] {"stmttwo"}});
             listenerStmtMetric.Reset();
-    
-            epService.EPAdministrator.Configuration.MetricsReportingStmtEnabled = "stmtone";
-            epService.EPAdministrator.Configuration.MetricsReportingStmtDisabled = "stmttwo";
+
+            epService.EPAdministrator.Configuration.SetMetricsReportingStmtEnabled("stmtone");
+            epService.EPAdministrator.Configuration.SetMetricsReportingStmtDisabled("stmttwo");
     
             SendEvent(epService, "E1", 1, CPUGOALONENANO);
             SendTimer(epService, 41000);
-            EPAssertionUtil.AssertPropsPerRow(listenerStmtMetric.GetNewDataListFlattened(), fields, new Object[][]{new object[] {"stmtone"}});
+            EPAssertionUtil.AssertPropsPerRow(listenerStmtMetric.GetNewDataListFlattened(), fields, new object[][]{new object[] {"stmtone"}});
         }
     
         private void SendTimer(EPServiceProvider epService, long currentTime) {

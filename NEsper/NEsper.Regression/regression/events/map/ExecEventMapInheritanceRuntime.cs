@@ -21,11 +21,11 @@ namespace com.espertech.esper.regression.events.map
 {
     public class ExecEventMapInheritanceRuntime : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
-            IDictionary<string, Object> root = ExecEventMap.MakeMap(new Object[][]{new object[] {"base", typeof(string)}});
-            IDictionary<string, Object> sub1 = ExecEventMap.MakeMap(new Object[][]{new object[] {"sub1", typeof(string)}});
-            IDictionary<string, Object> sub2 = ExecEventMap.MakeMap(new Object[][]{new object[] {"sub2", typeof(string)}});
-            IDictionary<string, Object> suba = ExecEventMap.MakeMap(new Object[][]{new object[] {"suba", typeof(string)}});
-            IDictionary<string, Object> subb = ExecEventMap.MakeMap(new Object[][]{new object[] {"subb", typeof(string)}});
+            IDictionary<string, Object> root = ExecEventMap.MakeMap(new object[][]{new object[] {"base", typeof(string)}});
+            IDictionary<string, Object> sub1 = ExecEventMap.MakeMap(new object[][]{new object[] {"sub1", typeof(string)}});
+            IDictionary<string, Object> sub2 = ExecEventMap.MakeMap(new object[][]{new object[] {"sub2", typeof(string)}});
+            IDictionary<string, Object> suba = ExecEventMap.MakeMap(new object[][]{new object[] {"suba", typeof(string)}});
+            IDictionary<string, Object> subb = ExecEventMap.MakeMap(new object[][]{new object[] {"subb", typeof(string)}});
     
             epService.EPAdministrator.Configuration.AddEventType("RootEvent", root);
             epService.EPAdministrator.Configuration.AddEventType("Sub1Event", sub1, new string[]{"RootEvent"});

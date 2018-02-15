@@ -50,10 +50,10 @@ namespace com.espertech.esper.regression.events.bean
         private void TryAssertionIterable(EPServiceProvider epService, Type typeClass, Object @event) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select otherEventsIterable[0] as c0, OtherEventsMap('key') as c1, otherEventsList[0] as c2 from " + typeClass.Name);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(@event);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0.id,c1.id,c2.id".Split(','), new Object[]{"id1", "id2", "id3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0.id,c1.id,c2.id".Split(','), new object[]{"id1", "id2", "id3"});
     
             stmt.Dispose();
         }

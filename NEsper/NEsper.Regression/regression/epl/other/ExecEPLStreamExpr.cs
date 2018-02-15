@@ -19,9 +19,6 @@ using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNotNull;
 
 using NUnit.Framework;
 
@@ -49,7 +46,7 @@ namespace com.espertech.esper.regression.epl.other
                     " from SupportChainTop as top";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionChainedParam(epService, listener, stmt, subexpr);
     
@@ -58,7 +55,7 @@ namespace com.espertech.esper.regression.epl.other
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
             Assert.AreEqual(epl, model.ToEPL());
             stmt = epService.EPAdministrator.Create(model);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionChainedParam(epService, listener, stmt, subexpr);
     
@@ -67,7 +64,7 @@ namespace com.espertech.esper.regression.epl.other
             stmt = epService.EPAdministrator.CreateEPL("select Inside.MyString as val," +
                     "inside.insideTwo.MyOtherString as val2 " +
                     "from SupportBeanStaticOuter");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanStaticOuter());
             EventBean result = listener.AssertOneGetNewAndReset();
@@ -79,7 +76,7 @@ namespace com.espertech.esper.regression.epl.other
     
         private void TryAssertionChainedParam(EPServiceProvider epService, SupportUpdateListener listener, EPStatement stmt, string subexpr) {
     
-            var rows = new Object[][]{
+            var rows = new object[][]{
                     new object[] {subexpr, typeof(SupportChainChildTwo)}
             };
             for (int i = 0; i < rows.Length; i++) {
@@ -106,7 +103,7 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(epl);
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("ACME", 0, 0L, null));
             Assert.IsFalse(listenerOne.IsInvoked);
@@ -124,11 +121,11 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(textOne);
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
     
             var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
             epService.EPRuntime.SendEvent(eventA);
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), new string[]{"symbol", "theString"}, new Object[]{"ACME", null});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), new string[]{"symbol", "theString"}, new object[]{"ACME", null});
     
             stmtOne.Dispose();
         }
@@ -141,19 +138,19 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(textOne);
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
     
             var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
             epService.EPRuntime.SendEvent(eventA);
             EventBean theEvent = listenerOne.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(theEvent, new string[]{"symbol", "simpleprop"}, new Object[]{"ACME", null});
+            EPAssertionUtil.AssertProps(theEvent, new string[]{"symbol", "simpleprop"}, new object[]{"ACME", null});
             Assert.IsNull(theEvent.Get("def"));
     
             SupportBeanComplexProps eventComplexProps = SupportBeanComplexProps.MakeDefaultBean();
             eventComplexProps.SimpleProperty = "ACME";
             epService.EPRuntime.SendEvent(eventComplexProps);
             theEvent = listenerOne.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(theEvent, new string[]{"symbol", "simpleprop"}, new Object[]{"ACME", "ACME"});
+            EPAssertionUtil.AssertProps(theEvent, new string[]{"symbol", "simpleprop"}, new object[]{"ACME", "ACME"});
             Assert.IsNotNull(theEvent.Get("def"));
     
             stmtOne.Dispose();
@@ -165,7 +162,7 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(textOne);
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
     
             EventType type = stmtOne.EventType;
             Assert.AreEqual(3, type.PropertyNames.Length);
@@ -175,7 +172,7 @@ namespace com.espertech.esper.regression.epl.other
     
             var eventA = new SupportMarketDataBean("ACME", 4, 99L, null);
             epService.EPRuntime.SendEvent(eventA);
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), new string[]{"volume", "symbol", "pvf"}, new Object[]{99L, "ACME", 4d * 99L * 2});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), new string[]{"volume", "symbol", "pvf"}, new object[]{99L, "ACME", 4d * 99L * 2});
     
             stmtOne.Dispose();
         }
@@ -186,7 +183,7 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(textOne);
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             EventType type = stmtOne.EventType;
             Assert.AreEqual(2, type.PropertyNames.Length);
@@ -195,7 +192,7 @@ namespace com.espertech.esper.regression.epl.other
     
             var eventA = new SupportMarketDataBean("ACME", 4, 2L, null);
             epService.EPRuntime.SendEvent(eventA);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), new string[]{"s0.Volume", "s0.GetPriceTimesVolume(3)"}, new Object[]{2L, 4d * 2L * 3d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), new string[]{"s0.Volume", "s0.GetPriceTimesVolume(3)"}, new object[]{2L, 4d * 2L * 3d});
     
             // try instance method that accepts EventBean
             epService.EPAdministrator.Configuration.AddEventType("MyTestEvent", typeof(MyTestEvent));
@@ -203,10 +200,10 @@ namespace com.espertech.esper.regression.epl.other
                     "s0.GetValueAsInt(s0, 'id') as c0," +
                     "s0.GetValueAsInt(*, 'id') as c1" +
                     " from MyTestEvent as s0");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new MyTestEvent(10));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0,c1".Split(','), new Object[]{10, 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0,c1".Split(','), new object[]{10, 10});
     
             stmtOne.Dispose();
         }
@@ -222,7 +219,7 @@ namespace com.espertech.esper.regression.epl.other
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtOne.Text);
             Assert.AreEqual(textOne, model.ToEPL());
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
     
             EventType type = stmtOne.EventType;
             Assert.AreEqual(2, type.PropertyNames.Length);
@@ -234,7 +231,7 @@ namespace com.espertech.esper.regression.epl.other
     
             var eventB = new SupportBean();
             epService.EPRuntime.SendEvent(eventB);
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), new string[]{"s0stream", "s1stream"}, new Object[]{eventA, eventB});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), new string[]{"s0stream", "s1stream"}, new object[]{eventA, eventB});
     
             stmtOne.Dispose();
     
@@ -245,7 +242,7 @@ namespace com.espertech.esper.regression.epl.other
     
             // Attach listener to feed
             stmtOne = epService.EPAdministrator.CreateEPL(textOne);
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
     
             type = stmtOne.EventType;
             Assert.AreEqual(2, type.PropertyNames.Length);
@@ -254,7 +251,7 @@ namespace com.espertech.esper.regression.epl.other
     
             epService.EPRuntime.SendEvent(eventA);
             epService.EPRuntime.SendEvent(eventB);
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), new string[]{"s0", "s1"}, new Object[]{eventA, eventB});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), new string[]{"s0", "s1"}, new object[]{eventA, eventB});
     
             stmtOne.Dispose();
         }
@@ -267,14 +264,14 @@ namespace com.espertech.esper.regression.epl.other
             // Attach listener to feed
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(textOne);
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
     
             var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
             epService.EPRuntime.SendEvent(eventA);
     
             var eventB = new SupportBean("ACME", 1);
             epService.EPRuntime.SendEvent(eventB);
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), new string[]{"e1", "e2"}, new Object[]{eventA, eventB});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), new string[]{"e1", "e2"}, new object[]{eventA, eventB});
     
             stmtOne.Dispose();
         }

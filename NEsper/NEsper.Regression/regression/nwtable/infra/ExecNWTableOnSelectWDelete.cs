@@ -49,29 +49,29 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "from MyInfra as win where s0.p00=win.theString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(eplSelectDelete);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             if (namedWindow) {
-                EPAssertionUtil.AssertPropsPerRow(stmtWin.GetEnumerator(), fieldsWin, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
+                EPAssertionUtil.AssertPropsPerRow(stmtWin.GetEnumerator(), fieldsWin, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
             } else {
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtWin.GetEnumerator(), fieldsWin, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtWin.GetEnumerator(), fieldsWin, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
             }
     
             // select and delete bean E1
             epService.EPRuntime.SendEvent(new SupportBean_S0(100, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsSelect, new Object[]{1});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtWin.GetEnumerator(), fieldsWin, new Object[][]{new object[] {"E2", 2}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsSelect, new object[]{1});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtWin.GetEnumerator(), fieldsWin, new object[][]{new object[] {"E2", 2}});
     
             // add some E2 events
             epService.EPRuntime.SendEvent(new SupportBean("E2", 3));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 4));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtWin.GetEnumerator(), fieldsWin, new Object[][]{new object[] {"E2", 2}, new object[] {"E2", 3}, new object[] {"E2", 4}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtWin.GetEnumerator(), fieldsWin, new object[][]{new object[] {"E2", 2}, new object[] {"E2", 3}, new object[] {"E2", 4}});
     
             // select and delete beans E2
             epService.EPRuntime.SendEvent(new SupportBean_S0(101, "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsSelect, new Object[]{2 + 3 + 4});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsSelect, new object[]{2 + 3 + 4});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtWin.GetEnumerator(), fieldsWin, new Object[0][]);
     
             // test SODA

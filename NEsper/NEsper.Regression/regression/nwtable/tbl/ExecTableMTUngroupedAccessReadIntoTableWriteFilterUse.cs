@@ -45,10 +45,10 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL(eplInto);
     
             var listenerZero = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from SupportBean_S0(1 = vartotal.total)").AddListener(listenerZero);
+            epService.EPAdministrator.CreateEPL("select * from SupportBean_S0(1 = vartotal.total)").Events += listenerZero.Update;
     
             var listenerOne = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from SupportBean_S0(0 = vartotal.total)").AddListener(listenerOne);
+            epService.EPAdministrator.CreateEPL("select * from SupportBean_S0(0 = vartotal.total)").Events += listenerOne.Update;
     
             var writeRunnable = new WriteRunnable(epService);
             var readRunnable = new ReadRunnable(epService, listenerZero, listenerOne);

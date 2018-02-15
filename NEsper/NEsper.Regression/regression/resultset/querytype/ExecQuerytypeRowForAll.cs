@@ -17,14 +17,13 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.resultset.querytype
 {
     public class ExecQuerytypeRowForAll : RegressionExecution {
-        private static readonly string JOIN_KEY = "KEY";
+        private const string JOIN_KEY = "KEY";
     
         public override void Run(EPServiceProvider epService) {
             RunAssertionSumOneView(epService);
@@ -44,7 +43,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             SendTimerEvent(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssert(epService, stmt, listener);
     
@@ -60,7 +59,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             SendTimerEvent(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanString(JOIN_KEY));
     
@@ -72,38 +71,38 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void TryAssert(EPServiceProvider epService, EPStatement stmt, SupportUpdateListener listener) {
             // assert select result type
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("mySum"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"mySum"}, new Object[][]{new object[] {null}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"mySum"}, new object[][]{new object[] {null}});
     
             SendTimerEvent(epService, 0);
             SendEvent(epService, 10);
             Assert.AreEqual(10L, listener.GetAndResetLastNewData()[0].Get("mySum"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"mySum"}, new Object[][]{new object[] {10L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"mySum"}, new object[][]{new object[] {10L}});
     
             SendTimerEvent(epService, 5000);
             SendEvent(epService, 15);
             Assert.AreEqual(25L, listener.GetAndResetLastNewData()[0].Get("mySum"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"mySum"}, new Object[][]{new object[] {25L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"mySum"}, new object[][]{new object[] {25L}});
     
             SendTimerEvent(epService, 8000);
             SendEvent(epService, -5);
             Assert.AreEqual(20L, listener.GetAndResetLastNewData()[0].Get("mySum"));
             Assert.IsNull(listener.LastOldData);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"mySum"}, new Object[][]{new object[] {20L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"mySum"}, new object[][]{new object[] {20L}});
     
             SendTimerEvent(epService, 10000);
             Assert.AreEqual(20L, listener.LastOldData[0].Get("mySum"));
             Assert.AreEqual(10L, listener.GetAndResetLastNewData()[0].Get("mySum"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"mySum"}, new Object[][]{new object[] {10L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"mySum"}, new object[][]{new object[] {10L}});
     
             SendTimerEvent(epService, 15000);
             Assert.AreEqual(10L, listener.LastOldData[0].Get("mySum"));
             Assert.AreEqual(-5L, listener.GetAndResetLastNewData()[0].Get("mySum"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"mySum"}, new Object[][]{new object[] {-5L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"mySum"}, new object[][]{new object[] {-5L}});
     
             SendTimerEvent(epService, 18000);
             Assert.AreEqual(-5L, listener.LastOldData[0].Get("mySum"));
             Assert.IsNull(listener.GetAndResetLastNewData()[0].Get("mySum"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"mySum"}, new Object[][]{new object[] {null}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"mySum"}, new object[][]{new object[] {null}});
         }
     
         private void RunAssertionAvgPerSym(EPServiceProvider epService) {
@@ -111,7 +110,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "select irstream avg(price) as avgp, sym from " + typeof(SupportPriceEvent).FullName + "#Groupwin(sym)#length(2)"
             );
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportPriceEvent(1, "A"));
             EventBean theEvent = listener.AssertOneGetNewAndReset();
@@ -149,14 +148,14 @@ namespace com.espertech.esper.regression.resultset.querytype
                     + "#Groupwin(symbol)#length(2)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendEvent(epService, "A", 1);
             Assert.IsTrue(listener.GetAndClearIsInvoked());
             Assert.AreEqual(1.0, listener.LastNewData[0].Get("price"));
             Assert.IsTrue(listener.LastNewData[0].Underlying is SupportMarketDataBean);
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionSelectExprStdGroupBy(EPServiceProvider epService) {
@@ -164,13 +163,13 @@ namespace com.espertech.esper.regression.resultset.querytype
                     + "#Groupwin(symbol)#length(2)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendEvent(epService, "A", 1);
             Assert.IsTrue(listener.GetAndClearIsInvoked());
             Assert.AreEqual(1.0, listener.LastNewData[0].Get("price"));
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionSelectAvgExprStdGroupBy(EPServiceProvider epService) {
@@ -178,7 +177,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     + "#Groupwin(symbol)#length(2)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendEvent(epService, "A", 1);
             Assert.IsTrue(listener.GetAndClearIsInvoked());
@@ -187,7 +186,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             Assert.IsTrue(listener.GetAndClearIsInvoked());
             Assert.AreEqual(2.0, listener.LastNewData[0].Get("aprice"));
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionSelectAvgStdGroupByUni(EPServiceProvider epService) {
@@ -195,7 +194,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     + "#Groupwin(symbol)#length(2)#Uni(price)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendEvent(epService, "A", 1);
             Assert.IsTrue(listener.GetAndClearIsInvoked());
@@ -215,7 +214,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             Assert.AreEqual(1, listener.LastNewData.Length);
             Assert.AreEqual(15.0, listener.LastNewData[0].Get("aprice"));
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionSelectAvgExprGroupBy(EPServiceProvider epService) {
@@ -223,7 +222,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     + "#length(2) group by symbol";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendEvent(epService, "A", 1);
             Assert.IsTrue(listener.GetAndClearIsInvoked());
@@ -249,7 +248,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             Assert.AreEqual(15.0, listener.LastNewData[0].Get("aprice")); //A
             Assert.AreEqual(null, listener.LastNewData[1].Get("aprice")); //B
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private Object SendEvent(EPServiceProvider epService, string symbol, double price) {

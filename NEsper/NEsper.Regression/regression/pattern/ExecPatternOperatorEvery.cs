@@ -89,7 +89,7 @@ namespace com.espertech.esper.regression.pattern
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL(expression);
             Assert.IsFalse(statement.StatementContext.IsStatelessSelect);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendTimer(epService, 2000);
             epService.EPRuntime.SendEvent(new SupportBean());

@@ -47,7 +47,7 @@ namespace com.espertech.esper.regression.epl.other
                     "Prevwindow(s0) @eventbean as c2 " +
                     "from MyEvent#length(2) as s0";
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL(eplInsert);
-            stmtInsert.AddListener(listenerInsert);
+            stmtInsert.Events += listenerInsert.Update;
     
             foreach (string prop in "c0,c1,c2".Split(',')) {
                 AssertFragment(prop, stmtInsert.EventType, "MyEvent", prop.Equals("c1") || prop.Equals("c2"));
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regression.epl.other
                     "c1.LastOf().col1 as f3, " +
                     "c1 as f4, " +
                     "c1.LastOf().col1 as f5 " +
-                    "from DStream").AddListener(listenerProps);
+                    "from DStream").Events += listenerProps.Update;
     
             object eventOne = SendEvent(epService, rep, "E1");
             Assert.IsTrue(((Map) listenerInsert.AssertOneGetNewAndReset().Underlying).Get("c0") is EventBean);
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPAdministrator.CreateEPL("select " +
                     "c0 as f0, " +
                     "c0.LastOf().col1 as f1 " +
-                    "from DStream").AddListener(listener);
+                    "from DStream").Events += listener.Update;
     
             var eventOne = new object[]{"E1", null};
             epService.EPRuntime.SendEvent(eventOne, "MyEvent");

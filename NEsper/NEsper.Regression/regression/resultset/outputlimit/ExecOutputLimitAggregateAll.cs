@@ -26,8 +26,8 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     public class ExecOutputLimitAggregateAll : RegressionExecution
     {
         private static readonly string EVENT_NAME = typeof(SupportMarketDataBean).Name;
-        private static readonly string JOIN_KEY = "KEY";
-        private static readonly string CATEGORY = "Aggregated and Un-grouped";
+        private const string JOIN_KEY = "KEY";
+        private const string CATEGORY = "Aggregated and Un-grouped";
     
         public override void Configure(Configuration configuration) {
             configuration.AddEventType("MarketData", typeof(SupportMarketDataBean));
@@ -288,22 +288,22 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
-            expected.AddResultInsert(200, 1, new Object[][]{new object[] {"IBM", 25d}});
-            expected.AddResultInsert(800, 1, new Object[][]{new object[] {"MSFT", 34d}});
-            expected.AddResultInsert(1500, 1, new Object[][]{new object[] {"IBM", 58d}});
-            expected.AddResultInsert(1500, 2, new Object[][]{new object[] {"YAH", 59d}});
-            expected.AddResultInsert(2100, 1, new Object[][]{new object[] {"IBM", 85d}});
-            expected.AddResultInsert(3500, 1, new Object[][]{new object[] {"YAH", 87d}});
-            expected.AddResultInsert(4300, 1, new Object[][]{new object[] {"IBM", 109d}});
-            expected.AddResultInsert(4900, 1, new Object[][]{new object[] {"YAH", 112d}});
-            expected.AddResultRemove(5700, 0, new Object[][]{new object[] {"IBM", 87d}});
-            expected.AddResultInsert(5900, 1, new Object[][]{new object[] {"YAH", 88d}});
-            expected.AddResultRemove(6300, 0, new Object[][]{new object[] {"MSFT", 79d}});
-            expected.AddResultRemove(7000, 0, new Object[][]{new object[] {"IBM", 54d}, new object[] {"YAH", 54d}});
+            expected.AddResultInsert(200, 1, new object[][]{new object[] {"IBM", 25d}});
+            expected.AddResultInsert(800, 1, new object[][]{new object[] {"MSFT", 34d}});
+            expected.AddResultInsert(1500, 1, new object[][]{new object[] {"IBM", 58d}});
+            expected.AddResultInsert(1500, 2, new object[][]{new object[] {"YAH", 59d}});
+            expected.AddResultInsert(2100, 1, new object[][]{new object[] {"IBM", 85d}});
+            expected.AddResultInsert(3500, 1, new object[][]{new object[] {"YAH", 87d}});
+            expected.AddResultInsert(4300, 1, new object[][]{new object[] {"IBM", 109d}});
+            expected.AddResultInsert(4900, 1, new object[][]{new object[] {"YAH", 112d}});
+            expected.AddResultRemove(5700, 0, new object[][]{new object[] {"IBM", 87d}});
+            expected.AddResultInsert(5900, 1, new object[][]{new object[] {"YAH", 88d}});
+            expected.AddResultRemove(6300, 0, new object[][]{new object[] {"MSFT", 79d}});
+            expected.AddResultRemove(7000, 0, new object[][]{new object[] {"IBM", 54d}, new object[] {"YAH", 54d}});
     
             var execution = new ResultAssertExecution(epService, stmt, listener, expected);
             execution.Execute(false);
@@ -313,12 +313,12 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
-            expected.AddResultInsert(4300, 1, new Object[][]{new object[] {"IBM", 109d}});
-            expected.AddResultInsert(4900, 1, new Object[][]{new object[] {"YAH", 112d}});
+            expected.AddResultInsert(4300, 1, new object[][]{new object[] {"IBM", 109d}});
+            expected.AddResultInsert(4900, 1, new object[][]{new object[] {"YAH", 112d}});
     
             var execution = new ResultAssertExecution(epService, stmt, listener, expected);
             execution.Execute(false);
@@ -328,17 +328,17 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
-            expected.AddResultInsert(1200, 0, new Object[][]{new object[] {"MSFT", 34d}});
-            expected.AddResultInsert(2200, 0, new Object[][]{new object[] {"IBM", 85d}});
+            expected.AddResultInsert(1200, 0, new object[][]{new object[] {"MSFT", 34d}});
+            expected.AddResultInsert(2200, 0, new object[][]{new object[] {"IBM", 85d}});
             expected.AddResultInsRem(3200, 0, null, null);
-            expected.AddResultInsert(4200, 0, new Object[][]{new object[] {"YAH", 87d}});
-            expected.AddResultInsert(5200, 0, new Object[][]{new object[] {"YAH", 112d}});
-            expected.AddResultInsRem(6200, 0, new Object[][]{new object[] {"YAH", 88d}}, new Object[][] {new object[] {"IBM", 87d}});
-            expected.AddResultRemove(7200, 0, new Object[][]{new object[] {"YAH", 54d}});
+            expected.AddResultInsert(4200, 0, new object[][]{new object[] {"YAH", 87d}});
+            expected.AddResultInsert(5200, 0, new object[][]{new object[] {"YAH", 112d}});
+            expected.AddResultInsRem(6200, 0, new object[][]{new object[] {"YAH", 88d}}, new object[][] {new object[] {"IBM", 87d}});
+            expected.AddResultRemove(7200, 0, new object[][]{new object[] {"YAH", 54d}});
     
             var execution = new ResultAssertExecution(epService, stmt, listener, expected);
             execution.Execute(false);
@@ -348,7 +348,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
@@ -356,7 +356,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             expected.AddResultInsRem(2200, 0, null, null);
             expected.AddResultInsRem(3200, 0, null, null);
             expected.AddResultInsRem(4200, 0, null, null);
-            expected.AddResultInsert(5200, 0, new Object[][]{new object[] {"YAH", 112d}});
+            expected.AddResultInsert(5200, 0, new object[][]{new object[] {"YAH", 112d}});
             expected.AddResultInsRem(6200, 0, null, null);
             expected.AddResultInsRem(7200, 0, null, null);
     
@@ -368,7 +368,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
@@ -376,7 +376,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             expected.AddResultInsRem(2200, 0, null, null);
             expected.AddResultInsRem(3200, 0, null, null);
             expected.AddResultInsRem(4200, 0, null, null);
-            expected.AddResultInsRem(5200, 0, new Object[][]{new object[] {"IBM", 109d}, new object[] {"YAH", 112d}}, null);
+            expected.AddResultInsRem(5200, 0, new object[][]{new object[] {"IBM", 109d}, new object[] {"YAH", 112d}}, null);
             expected.AddResultInsRem(6200, 0, null, null);
             expected.AddResultInsRem(7200, 0, null, null);
     
@@ -388,17 +388,17 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
-            expected.AddResultInsert(1200, 0, new Object[][]{new object[] {"IBM", 25d}, new object[] {"MSFT", 34d}});
-            expected.AddResultInsert(2200, 0, new Object[][]{new object[] {"IBM", 58d}, new object[] {"YAH", 59d}, new object[] {"IBM", 85d}});
+            expected.AddResultInsert(1200, 0, new object[][]{new object[] {"IBM", 25d}, new object[] {"MSFT", 34d}});
+            expected.AddResultInsert(2200, 0, new object[][]{new object[] {"IBM", 58d}, new object[] {"YAH", 59d}, new object[] {"IBM", 85d}});
             expected.AddResultInsRem(3200, 0, null, null);
-            expected.AddResultInsert(4200, 0, new Object[][]{new object[] {"YAH", 87d}});
-            expected.AddResultInsert(5200, 0, new Object[][]{new object[] {"IBM", 109d}, new object[] {"YAH", 112d}});
-            expected.AddResultInsRem(6200, 0, new Object[][]{new object[] {"YAH", 88d}}, new Object[][] {new object[] {"IBM", 87d}});
-            expected.AddResultRemove(7200, 0, new Object[][]{new object[] {"MSFT", 79d}, new object[] {"IBM", 54d}, new object[] {"YAH", 54d}});
+            expected.AddResultInsert(4200, 0, new object[][]{new object[] {"YAH", 87d}});
+            expected.AddResultInsert(5200, 0, new object[][]{new object[] {"IBM", 109d}, new object[] {"YAH", 112d}});
+            expected.AddResultInsRem(6200, 0, new object[][]{new object[] {"YAH", 88d}}, new object[][] {new object[] {"IBM", 87d}});
+            expected.AddResultRemove(7200, 0, new object[][]{new object[] {"MSFT", 79d}, new object[] {"IBM", 54d}, new object[] {"YAH", 54d}});
     
             var execution = new ResultAssertExecution(epService, stmt, listener, expected);
             execution.Execute(false);
@@ -408,15 +408,15 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
-            expected.AddResultInsert(200, 1, new Object[][]{new object[] {"IBM", 25d}});
-            expected.AddResultInsert(1500, 1, new Object[][]{new object[] {"IBM", 58d}});
-            expected.AddResultInsert(3500, 1, new Object[][]{new object[] {"YAH", 87d}});
-            expected.AddResultInsert(4300, 1, new Object[][]{new object[] {"IBM", 109d}});
-            expected.AddResultInsert(5900, 1, new Object[][]{new object[] {"YAH", 88d}});
+            expected.AddResultInsert(200, 1, new object[][]{new object[] {"IBM", 25d}});
+            expected.AddResultInsert(1500, 1, new object[][]{new object[] {"IBM", 58d}});
+            expected.AddResultInsert(3500, 1, new object[][]{new object[] {"YAH", 87d}});
+            expected.AddResultInsert(4300, 1, new object[][]{new object[] {"IBM", 109d}});
+            expected.AddResultInsert(5900, 1, new object[][]{new object[] {"YAH", 88d}});
     
             var execution = new ResultAssertExecution(epService, stmt, listener, expected, ResultAssertExecutionTestSelector.TEST_ONLY_AS_PROVIDED);
             execution.Execute(false);
@@ -426,16 +426,16 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
-            expected.AddResultInsert(200, 1, new Object[][]{new object[] {"IBM", 25d}});
-            expected.AddResultInsert(1500, 1, new Object[][]{new object[] {"IBM", 58d}});
-            expected.AddResultInsert(3500, 1, new Object[][]{new object[] {"YAH", 87d}});
-            expected.AddResultInsert(4300, 1, new Object[][]{new object[] {"IBM", 109d}});
-            expected.AddResultRemove(5700, 0, new Object[][]{new object[] {"IBM", 87d}});
-            expected.AddResultRemove(6300, 0, new Object[][]{new object[] {"MSFT", 79d}});
+            expected.AddResultInsert(200, 1, new object[][]{new object[] {"IBM", 25d}});
+            expected.AddResultInsert(1500, 1, new object[][]{new object[] {"IBM", 58d}});
+            expected.AddResultInsert(3500, 1, new object[][]{new object[] {"YAH", 87d}});
+            expected.AddResultInsert(4300, 1, new object[][]{new object[] {"IBM", 109d}});
+            expected.AddResultRemove(5700, 0, new object[][]{new object[] {"IBM", 87d}});
+            expected.AddResultRemove(6300, 0, new object[][]{new object[] {"MSFT", 79d}});
     
             var execution = new ResultAssertExecution(epService, stmt, listener, expected, ResultAssertExecutionTestSelector.TEST_ONLY_AS_PROVIDED);
             execution.Execute(false);
@@ -445,17 +445,17 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
-            expected.AddResultInsert(1200, 0, new Object[][]{new object[] {"IBM", 34d}, new object[] {"MSFT", 34d}});
-            expected.AddResultInsert(2200, 0, new Object[][]{new object[] {"IBM", 85d}, new object[] {"MSFT", 85d}, new object[] {"IBM", 85d}, new object[] {"YAH", 85d}, new object[] {"IBM", 85d}});
-            expected.AddResultInsert(3200, 0, new Object[][]{new object[] {"IBM", 85d}, new object[] {"MSFT", 85d}, new object[] {"IBM", 85d}, new object[] {"YAH", 85d}, new object[] {"IBM", 85d}});
-            expected.AddResultInsert(4200, 0, new Object[][]{new object[] {"IBM", 87d}, new object[] {"MSFT", 87d}, new object[] {"IBM", 87d}, new object[] {"YAH", 87d}, new object[] {"IBM", 87d}, new object[] {"YAH", 87d}});
-            expected.AddResultInsert(5200, 0, new Object[][]{new object[] {"IBM", 112d}, new object[] {"MSFT", 112d}, new object[] {"IBM", 112d}, new object[] {"YAH", 112d}, new object[] {"IBM", 112d}, new object[] {"YAH", 112d}, new object[] {"IBM", 112d}, new object[] {"YAH", 112d}});
-            expected.AddResultInsert(6200, 0, new Object[][]{new object[] {"MSFT", 88d}, new object[] {"IBM", 88d}, new object[] {"YAH", 88d}, new object[] {"IBM", 88d}, new object[] {"YAH", 88d}, new object[] {"IBM", 88d}, new object[] {"YAH", 88d}, new object[] {"YAH", 88d}});
-            expected.AddResultInsert(7200, 0, new Object[][]{new object[] {"IBM", 54d}, new object[] {"YAH", 54d}, new object[] {"IBM", 54d}, new object[] {"YAH", 54d}, new object[] {"YAH", 54d}});
+            expected.AddResultInsert(1200, 0, new object[][]{new object[] {"IBM", 34d}, new object[] {"MSFT", 34d}});
+            expected.AddResultInsert(2200, 0, new object[][]{new object[] {"IBM", 85d}, new object[] {"MSFT", 85d}, new object[] {"IBM", 85d}, new object[] {"YAH", 85d}, new object[] {"IBM", 85d}});
+            expected.AddResultInsert(3200, 0, new object[][]{new object[] {"IBM", 85d}, new object[] {"MSFT", 85d}, new object[] {"IBM", 85d}, new object[] {"YAH", 85d}, new object[] {"IBM", 85d}});
+            expected.AddResultInsert(4200, 0, new object[][]{new object[] {"IBM", 87d}, new object[] {"MSFT", 87d}, new object[] {"IBM", 87d}, new object[] {"YAH", 87d}, new object[] {"IBM", 87d}, new object[] {"YAH", 87d}});
+            expected.AddResultInsert(5200, 0, new object[][]{new object[] {"IBM", 112d}, new object[] {"MSFT", 112d}, new object[] {"IBM", 112d}, new object[] {"YAH", 112d}, new object[] {"IBM", 112d}, new object[] {"YAH", 112d}, new object[] {"IBM", 112d}, new object[] {"YAH", 112d}});
+            expected.AddResultInsert(6200, 0, new object[][]{new object[] {"MSFT", 88d}, new object[] {"IBM", 88d}, new object[] {"YAH", 88d}, new object[] {"IBM", 88d}, new object[] {"YAH", 88d}, new object[] {"IBM", 88d}, new object[] {"YAH", 88d}, new object[] {"YAH", 88d}});
+            expected.AddResultInsert(7200, 0, new object[][]{new object[] {"IBM", 54d}, new object[] {"YAH", 54d}, new object[] {"IBM", 54d}, new object[] {"YAH", 54d}, new object[] {"YAH", 54d}});
     
             var execution = new ResultAssertExecution(epService, stmt, listener, expected);
             execution.Execute(false);
@@ -470,7 +470,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                     "output every 1 seconds";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionHaving(epService, listener);
         }
@@ -485,7 +485,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                     "output every 1 seconds";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("SYM1", -1));
     
@@ -499,7 +499,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             SendTimer(epService, 1000);
             string[] fields = "symbol,avgPrice".Split(',');
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"SYM1", 10.5});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"SYM1", 10.5});
     
             SendEvent(epService, "SYM1", 13d);
             SendEvent(epService, "SYM1", 10d);
@@ -509,7 +509,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             Assert.AreEqual(3, listener.LastNewData.Length);
             Assert.IsNull(listener.LastOldData);
             EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields,
-                    new Object[][]{new object[] {"SYM1", 43 / 4.0}, new object[] {"SYM1", 53.0 / 5.0}, new object[] {"SYM1", 62 / 6.0}});
+                    new object[][]{new object[] {"SYM1", 43 / 4.0}, new object[] {"SYM1", 53.0 / 5.0}, new object[] {"SYM1", 62 / 6.0}});
         }
     
         private void RunAssertionMaxTimeWindow(EPServiceProvider epService) {
@@ -520,7 +520,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                     "output every 1 seconds";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "SYM1", 1d);
             SendEvent(epService, "SYM1", 2d);
@@ -544,7 +544,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(selectStmt);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             SendEvent(epService, "ABC", 20);
     
             SendTimer(epService, 500);
@@ -554,7 +554,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             SendTimer(epService, 1000);
             var fields = new string[]{"symbol", "sumprice"};
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"ABC", 50d}, new object[] {"IBM", 50d}, new object[] {"MSFT", 50d}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"ABC", 50d}, new object[] {"IBM", 50d}, new object[] {"MSFT", 50d}});
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
     
@@ -563,12 +563,12 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendEvent(epService, "s4", 30);
     
             SendTimer(epService, 10000);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"ABC", 98d}, new object[] {"IBM", 98d}, new object[] {"MSFT", 98d}, new object[] {"YAH", 98d}, new object[] {"s4", 98d}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"ABC", 98d}, new object[] {"IBM", 98d}, new object[] {"MSFT", 98d}, new object[] {"YAH", 98d}, new object[] {"s4", 98d}});
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
     
             SendTimer(epService, 11000);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"YAH", 48d}, new object[] {"s4", 48d}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"YAH", 48d}, new object[] {"s4", 48d}});
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
     
@@ -595,7 +595,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(selectStmt);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("ABC", 1));
             epService.EPRuntime.SendEvent(new SupportBean("IBM", 2));
@@ -612,7 +612,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             SendTimer(epService, 1000);
             var fields = new string[]{"symbol", "sumprice"};
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"ABC", 50d}, new object[] {"IBM", 50d}, new object[] {"MSFT", 50d}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"ABC", 50d}, new object[] {"IBM", 50d}, new object[] {"MSFT", 50d}});
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
     
@@ -621,13 +621,13 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendEvent(epService, "s4", 30);
     
             SendTimer(epService, 10000);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"ABC", 98d}, new object[] {"IBM", 98d}, new object[] {"MSFT", 98d}, new object[] {"YAH", 98d}, new object[] {"s4", 98d}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"ABC", 98d}, new object[] {"IBM", 98d}, new object[] {"MSFT", 98d}, new object[] {"YAH", 98d}, new object[] {"s4", 98d}});
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
     
             SendTimer(epService, 10500);
             SendTimer(epService, 11000);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"YAH", 48d}, new object[] {"s4", 48d}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"YAH", 48d}, new object[] {"s4", 48d}});
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
     
@@ -656,7 +656,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                     "output every 1 seconds";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("JOIN_KEY", -1));
     
             SendEvent(epService, "JOIN_KEY", 1d);
@@ -750,7 +750,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             string statementText = "select symbol, sum(volume) from " + EVENT_NAME + "#length(5) output first every 3 seconds";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             var updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener);
+            statement.Events += updateListener.Update;
             updateListener.Reset();
     
             // Send the first event of the batch; should be output
@@ -793,7 +793,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimeEventRelative(epService, 3000, currentTime);
             Assert.IsFalse(updateListener.GetAndClearIsInvoked());
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionCount(EPServiceProvider epService) {
@@ -801,7 +801,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             string statementText = "select symbol, sum(volume) from " + EVENT_NAME + "#length(5) output first every 3 events";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             var updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener);
+            statement.Events += updateListener.Update;
             updateListener.Reset();
     
             // Send the first event of the batch, should be output
@@ -827,7 +827,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendEventLong(epService, 50L);
             Assert.IsFalse(updateListener.GetAndClearIsInvoked());
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void SendEventLong(EPServiceProvider epService, long volume) {
@@ -837,7 +837,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private SupportUpdateListener CreateStmtAndListenerNoJoin(EPServiceProvider epService, string epl) {
             var updateListener = new SupportUpdateListener();
             EPStatement view = epService.EPAdministrator.CreateEPL(epl);
-            view.AddListener(updateListener);
+            view.Events += updateListener.Update;
     
             return updateListener;
         }
@@ -898,7 +898,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         }
     
         private void SendTimeEventRelative(EPServiceProvider epService, int timeIncrement, AtomicLong currentTime) {
-            currentTime.AddAndGet(timeIncrement);
+            currentTime.IncrementAndGet(timeIncrement);
             var theEvent = new CurrentTimeEvent(currentTime.Get());
             epService.EPRuntime.SendEvent(theEvent);
         }
@@ -906,7 +906,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private SupportUpdateListener CreateStmtAndListenerJoin(EPServiceProvider epService, string epl) {
             var updateListener = new SupportUpdateListener();
             EPStatement view = epService.EPAdministrator.CreateEPL(epl);
-            view.AddListener(updateListener);
+            view.Events += updateListener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanString(JOIN_KEY));
     

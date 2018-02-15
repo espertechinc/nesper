@@ -17,7 +17,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.supportregression.multithread;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.multithread
@@ -49,7 +49,7 @@ namespace com.espertech.esper.regression.multithread
             var events = new IList<object>[numThreads];
             for (int threadNum = 0; threadNum < numThreads; threadNum++)
             {
-                events[threadNum] = new List<Object>();
+                events[threadNum] = new List<object>();
                 for (int eventNum = 0; eventNum < numRepeats; eventNum++)
                 {
                     // range: 1 to 1000
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regression.multithread
             }
 
             var threadPool = Executors.NewFixedThreadPool(numThreads);
-            var futures = new Future<object>[numThreads];
+            var futures = new Future<bool>[numThreads];
             long startTime = DateTimeHelper.CurrentTimeMillis;
 
             for (int i = 0; i < numThreads; i++)

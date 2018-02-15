@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -45,10 +44,10 @@ namespace com.espertech.esper.regression.resultset.querytype
     
                 statements[i] = epService.EPAdministrator.CreateEPL(text);
                 listeners[i] = new SupportUpdateListener();
-                statements[i].AddListener(listeners[i]);
+                statements[i].Events += listeners[i].Update;
             }
     
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             int count = 0;
             for (int i = 0; i < 10000; i++) {
                 count++;
@@ -65,7 +64,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                 var bean = new SupportMarketDataIDBean("IBM", Convert.ToString(i % 5), 1);
                 epService.EPRuntime.SendEvent(bean);
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             long delta = end - start;
             Assert.IsTrue(delta < 2000, "Delta=" + delta);
             //Log.Info("total=" + count + " delta=" + delta + " per sec:" + 10000.0 / (delta / 1000.0));

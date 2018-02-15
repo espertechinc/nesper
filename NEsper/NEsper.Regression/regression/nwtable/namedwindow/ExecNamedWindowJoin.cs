@@ -67,7 +67,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                             "window(win.*).ToMap(k=>k.theString,v=>v.intPrimitive) as c2 " +
                             "from S0 as s0 unidirectional, MyWindowWUJ as win");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var beans = new SupportBean[3];
             for (int i = 0; i < beans.Length; i++) {
@@ -77,22 +77,22 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPRuntime.SendEvent(beans[0]);
             epService.EPRuntime.SendEvent(beans[1]);
             epService.EPRuntime.SendEvent(new SupportBean_S0(10));
-            AssertReceived(listener, beans, new int[]{0, 1}, new int[]{0, 1}, "E0,E1".Split(','), new Object[]{0, 1});
+            AssertReceived(listener, beans, new int[]{0, 1}, new int[]{0, 1}, "E0,E1".Split(','), new object[]{0, 1});
     
             // add bean
             epService.EPRuntime.SendEvent(beans[2]);
             epService.EPRuntime.SendEvent(new SupportBean_S0(10));
-            AssertReceived(listener, beans, new int[]{0, 1, 2}, new int[]{0, 1}, "E0,E1,E2".Split(','), new Object[]{0, 1, 2});
+            AssertReceived(listener, beans, new int[]{0, 1, 2}, new int[]{0, 1}, "E0,E1,E2".Split(','), new object[]{0, 1, 2});
     
             // delete bean
             epService.EPRuntime.SendEvent(new SupportBean_S1(11, "E1"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(12));
-            AssertReceived(listener, beans, new int[]{0, 2}, new int[]{0}, "E0,E2".Split(','), new Object[]{0, 2});
+            AssertReceived(listener, beans, new int[]{0, 2}, new int[]{0}, "E0,E2".Split(','), new object[]{0, 2});
     
             // delete another bean
             epService.EPRuntime.SendEvent(new SupportBean_S1(13, "E0"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(14));
-            AssertReceived(listener, beans, new int[]{2}, new int[0], "E2".Split(','), new Object[]{2});
+            AssertReceived(listener, beans, new int[]{2}, new int[0], "E2".Split(','), new object[]{2});
     
             // delete last bean
             epService.EPRuntime.SendEvent(new SupportBean_S1(15, "E2"));
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPAdministrator.DestroyAllStatements();
         }
     
-        private void AssertReceived(SupportUpdateListener listenerStmtOne, SupportBean[] beans, int[] indexesAll, int[] indexesWhere, string[] mapKeys, Object[] mapValues) {
+        private void AssertReceived(SupportUpdateListener listenerStmtOne, SupportBean[] beans, int[] indexesAll, int[] indexesWhere, string[] mapKeys, object[] mapValues) {
             EventBean received = listenerStmtOne.AssertOneGetNewAndReset();
             EPAssertionUtil.AssertEqualsExactOrder(SupportBean.GetBeansPerIndex(beans, indexesAll), received.Get("c0").UnwrapIntoArray<object>());
             EPAssertionUtil.AssertEqualsExactOrder(SupportBean.GetBeansPerIndex(beans, indexesWhere), received.Get("c1").UnwrapIntoList<object>());
@@ -118,14 +118,14 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPAdministrator.Configuration.AddEventType("SSB1", typeof(SupportSimpleBeanOne));
             epService.EPAdministrator.Configuration.AddEventType("SSB2", typeof(SupportSimpleBeanTwo));
     
-            var preloadedEventsOne = new Object[]{new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
+            var preloadedEventsOne = new object[]{new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
             var listener = new SupportUpdateListener();
             var eventSendAssertion = new IndexAssertionEventSend(() => {
                 string[] fields = "ssb2.s2,ssb1.s1,ssb1.i1".Split(',');
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanTwo("E2", 50, 21, 22));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", "E2", 20});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", "E2", 20});
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanTwo("E1", 60, 11, 12));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E1", 10});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E1", 10});
             });
     
             // no index, since this is "Unique(s1)" we don't need one
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                     });
         }
     
-        private void AssertIndexChoice(EPServiceProvider epService, SupportUpdateListener listener, string[] indexes, Object[] preloadedEvents, string datawindow,
+        private void AssertIndexChoice(EPServiceProvider epService, SupportUpdateListener listener, string[] indexes, object[] preloadedEvents, string datawindow,
                                        params IndexAssertion[] assertions) {
             epService.EPAdministrator.CreateEPL("create window MyWindow." + datawindow + " as SSB1");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SSB1");
@@ -199,7 +199,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                 EPStatement stmt;
                 try {
                     stmt = epService.EPAdministrator.CreateEPL(epl);
-                    stmt.AddListener(listener);
+                    stmt.Events += listener.Update;
                 } catch (EPStatementException ex) {
                     if (assertion.EventSendAssertion == null) {
                         // no assertion, expected
@@ -244,17 +244,17 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                     "from PortfolioWin unidirectional inner join ProductWin on PortfolioWin.product=ProductWin.product";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendPortfolio(epService, eventRepresentationEnum, "Portfolio", "productB");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), new string[]{"portfolio", "ProductWin.product", "size"}, new Object[]{"Portfolio", "productB", 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), new string[]{"portfolio", "ProductWin.product", "size"}, new object[]{"Portfolio", "productB", 2});
     
             SendPortfolio(epService, eventRepresentationEnum, "Portfolio", "productC");
             listener.Reset();
     
             SendProduct(epService, eventRepresentationEnum, "productC", 3);
             SendPortfolio(epService, eventRepresentationEnum, "Portfolio", "productC");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), new string[]{"portfolio", "ProductWin.product", "size"}, new Object[]{"Portfolio", "productC", 3});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), new string[]{"portfolio", "ProductWin.product", "size"}, new object[]{"Portfolio", "productC", 3});
     
             epService.EPAdministrator.DestroyAllStatements();
             foreach (string name in "Product,Portfolio,ProductWin,PortfolioWin".Split(',')) {
@@ -264,7 +264,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void SendProduct(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum, string product, int size) {
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(new Object[]{product, size}, "Product");
+                epService.EPRuntime.SendEvent(new object[]{product, size}, "Product");
             } else if (eventRepresentationEnum.IsMapEvent()) {
                 var theEvent = new LinkedHashMap<string, Object>();
                 theEvent.Put("product", product);
@@ -282,7 +282,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void SendPortfolio(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum, string portfolio, string product) {
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(new Object[]{portfolio, product}, "Portfolio");
+                epService.EPRuntime.SendEvent(new object[]{portfolio, product}, "Portfolio");
             } else if (eventRepresentationEnum.IsMapEvent()) {
                 var theEvent = new LinkedHashMap<string, Object>();
                 theEvent.Put("portfolio", portfolio);
@@ -344,7 +344,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                     "order by s1.location, sku";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTextTwo);
     
-            var expected = new Object[][]{
+            var expected = new object[][]{
                 new object[] {"0", "166583", 124.0, 1L, 1L, 0L},
                 new object[] {"0", "169254", 124.0, 1L, 1L, 0L},
                 new object[] {"1", "166583", 124.0, 1L, 1L, 0L},
@@ -407,7 +407,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             // get iterator results
             received = EPAssertionUtil.EnumeratorToArray(stmtSelect.GetEnumerator());
             EPAssertionUtil.AssertPropsPerRow(received, "theString,intPrimitive,cntBool,symbol".Split(','),
-                    new Object[][]{
+                    new object[][]{
                         new object[] {null, null, 0L, "c3"},
                         new object[] {"c0", 0, 2L, "c0"},
                         new object[] {"c0", 1, 2L, "c0"},
@@ -438,7 +438,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowJNS#keepall as select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportBean_A).Name + " delete from MyWindowJNS where id = a";
@@ -455,7 +455,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                     "MyWindowJNS as s1 where s1.a = symbol";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listener = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listener);
+            stmtSelectOne.Events += listener.Update;
             EPAssertionUtil.AssertEqualsAnyOrder(stmtSelectOne.EventType.PropertyNames, new string[]{"symbol", "a", "b"});
             Assert.AreEqual(typeof(string), stmtSelectOne.EventType.GetPropertyType("symbol"));
             Assert.AreEqual(typeof(string), stmtSelectOne.EventType.GetPropertyType("a"));
@@ -465,10 +465,10 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             Assert.IsFalse(listener.IsInvoked);
     
             SendSupportBean(epService, "S1", 1);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S1", "S1", 1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S1", "S1", 1});
     
             SendSupportBean_A(epService, "S1"); // deletes from window
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new Object[]{"S1", "S1", 1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new object[]{"S1", "S1", 1});
     
             SendMarketBean(epService, "S1");
             Assert.IsFalse(listener.IsInvoked);
@@ -477,7 +477,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             Assert.IsFalse(listener.IsInvoked);
     
             SendMarketBean(epService, "S2");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S2", "S2", 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S2", "S2", 2});
     
             SendSupportBean(epService, "S3", 3);
             SendSupportBean(epService, "S3", 4);
@@ -502,13 +502,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreateOne = "create window MyWindowOne#keepall as select theString as a1, intPrimitive as b1 from " + typeof(SupportBean).FullName;
             EPStatement stmtCreateOne = epService.EPAdministrator.CreateEPL(stmtTextCreateOne);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreateOne.AddListener(listenerWindow);
+            stmtCreateOne.Events += listenerWindow.Update;
     
             // create window
             string stmtTextCreateTwo = "create window MyWindowTwo#keepall as select theString as a2, intPrimitive as b2 from " + typeof(SupportBean).FullName;
             EPStatement stmtCreateTwo = epService.EPAdministrator.CreateEPL(stmtTextCreateTwo);
             var listenerWindowTwo = new SupportUpdateListener();
-            stmtCreateTwo.AddListener(listenerWindowTwo);
+            stmtCreateTwo.Events += listenerWindowTwo.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).Name + "(volume=1) delete from MyWindowOne where symbol = a1";
@@ -530,22 +530,22 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                     "MyWindowTwo as s1 where s0.a1 = s1.a2";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listener = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listener);
+            stmtSelectOne.Events += listener.Update;
     
             SendSupportBean(epService, true, "S0", 1);
             Assert.IsFalse(listener.IsInvoked);
     
             SendSupportBean(epService, false, "S0", 2);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S0", 1, "S0", 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S0", 1, "S0", 2});
     
             SendSupportBean(epService, false, "S1", 3);
             Assert.IsFalse(listener.IsInvoked);
     
             SendSupportBean(epService, true, "S1", 4);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S1", 4, "S1", 3});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S1", 4, "S1", 3});
     
             SendSupportBean(epService, true, "S1", 5);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S1", 5, "S1", 3});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S1", 5, "S1", 3});
     
             SendSupportBean(epService, false, "S1", 6);
             Assert.AreEqual(2, listener.LastNewData.Length);
@@ -553,17 +553,17 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             // delete and insert back in
             SendMarketBean(epService, "S0", 0);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new Object[]{"S0", 1, "S0", 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new object[]{"S0", 1, "S0", 2});
     
             SendSupportBean(epService, false, "S0", 7);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S0", 1, "S0", 7});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S0", 1, "S0", 7});
     
             // delete and insert back in
             SendMarketBean(epService, "S0", 1);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new Object[]{"S0", 1, "S0", 7});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new object[]{"S0", 1, "S0", 7});
     
             SendSupportBean(epService, true, "S0", 8);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S0", 8, "S0", 7});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S0", 8, "S0", 7});
         }
     
         private void RunAssertionJoinBetweenSameNamed(EPServiceProvider epService) {
@@ -573,7 +573,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreateOne = "create window MyWindowJSN#keepall as select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
             EPStatement stmtCreateOne = epService.EPAdministrator.CreateEPL(stmtTextCreateOne);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreateOne.AddListener(listenerWindow);
+            stmtCreateOne.Events += listenerWindow.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).Name + " delete from MyWindowJSN where symbol = a";
@@ -589,16 +589,16 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                     "MyWindowJSN as s1 where s0.a = s1.a";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             SendSupportBean(epService, "E1", 1);
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1, "E1", 1});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1, "E1", 1});
     
             SendSupportBean(epService, "E2", 2);
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 2, "E2", 2});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"E2", 2, "E2", 2});
     
             SendMarketBean(epService, "E1", 1);
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetOldAndReset(), fields, new Object[]{"E1", 1, "E1", 1});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetOldAndReset(), fields, new object[]{"E1", 1, "E1", 1});
     
             SendMarketBean(epService, "E0", 0);
             Assert.IsFalse(listenerStmtOne.IsInvoked);
@@ -611,13 +611,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreateOne = "create window MyWindowJSIOne#keepall as select theString as a1, intPrimitive as b1 from " + typeof(SupportBean).FullName;
             EPStatement stmtCreateOne = epService.EPAdministrator.CreateEPL(stmtTextCreateOne);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreateOne.AddListener(listenerWindow);
+            stmtCreateOne.Events += listenerWindow.Update;
     
             // create window
             string stmtTextCreateTwo = "create window MyWindowJSITwo#keepall as select theString as a2, intPrimitive as b2 from " + typeof(SupportBean).FullName;
             EPStatement stmtCreateTwo = epService.EPAdministrator.CreateEPL(stmtTextCreateTwo);
             var listenerWindowTwo = new SupportUpdateListener();
-            stmtCreateTwo.AddListener(listenerWindowTwo);
+            stmtCreateTwo.Events += listenerWindowTwo.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).Name + "(volume=1) delete from MyWindowJSIOne where symbol = a1";
@@ -639,22 +639,22 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                     "MyWindowJSITwo as s1 where s0.a1 = s1.a2";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             SendSupportBean(epService, true, "S0", 1);
             Assert.IsFalse(listenerStmtOne.IsInvoked);
     
             SendSupportBean(epService, false, "S0", 2);
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"S0", 1, "S0", 2});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"S0", 1, "S0", 2});
     
             SendSupportBean(epService, false, "S1", 3);
             Assert.IsFalse(listenerStmtOne.IsInvoked);
     
             SendSupportBean(epService, true, "S1", 4);
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"S1", 4, "S1", 3});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"S1", 4, "S1", 3});
     
             SendSupportBean(epService, true, "S1", 5);
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"S1", 5, "S1", 3});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"S1", 5, "S1", 3});
     
             SendSupportBean(epService, false, "S1", 6);
             Assert.AreEqual(2, listenerStmtOne.LastNewData.Length);
@@ -662,17 +662,17 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             // delete and insert back in
             SendMarketBean(epService, "S0", 0);
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetOldAndReset(), fields, new Object[]{"S0", 1, "S0", 2});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetOldAndReset(), fields, new object[]{"S0", 1, "S0", 2});
     
             SendSupportBean(epService, false, "S0", 7);
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"S0", 1, "S0", 7});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"S0", 1, "S0", 7});
     
             // delete and insert back in
             SendMarketBean(epService, "S0", 1);
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetOldAndReset(), fields, new Object[]{"S0", 1, "S0", 7});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetOldAndReset(), fields, new object[]{"S0", 1, "S0", 7});
     
             SendSupportBean(epService, true, "S0", 8);
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"S0", 8, "S0", 7});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"S0", 8, "S0", 7});
         }
     
         private void RunAssertionUnidirectional(EPServiceProvider epService) {
@@ -683,7 +683,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select w.* from MyWindowU w unidirectional, SupportBean_A#lastevent s where s.id = w.theString");
             var listenerStmtOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerStmtOne);
+            stmtOne.Events += listenerStmtOne.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.IsFalse(listenerStmtOne.IsInvoked);

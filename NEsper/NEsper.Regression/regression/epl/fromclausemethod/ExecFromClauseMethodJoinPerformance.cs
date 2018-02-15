@@ -7,18 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -30,7 +25,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             configuration.AddEventType(typeof(SupportBeanInt));
     
             var configMethod = new ConfigurationMethodRef();
-            configMethod.LRUCache = 10;
+            configMethod.SetLRUCache(10);
             configuration.AddMethodRef(typeof(SupportJoinMethods).Name, configMethod);
         }
     
@@ -52,23 +47,23 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "id,valh0,valh1".Split(',');
             var random = new Random();
     
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             for (int i = 1; i < 5000; i++) {
-                int num = random.NextInt(98) + 1;
+                int num = random.Next(98) + 1;
                 SendBeanInt(epService, "E1", num);
     
-                var result = new Object[][]{new object[] {"E1", "H0" + num, "H1" + num}};
+                var result = new object[][]{new object[] {"E1", "H0" + num, "H1" + num}};
                 EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             long delta = end - start;
             stmt.Dispose();
-            Assert.IsTrue("Delta to large, at " + delta + " msec", delta < 1000);
+            Assert.IsTrue(delta < 1000, "Delta to large, at " + delta + " msec");
         }
     
         private void RunAssertion1Stream2HistOuterJoinPerformance(EPServiceProvider epService) {
@@ -85,23 +80,23 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "id,valh0,valh1".Split(',');
             var random = new Random();
     
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             for (int i = 1; i < 5000; i++) {
-                int num = random.NextInt(98) + 1;
+                int num = random.Next(98) + 1;
                 SendBeanInt(epService, "E1", num);
     
-                var result = new Object[][]{new object[] {"E1", "H0" + num, "H1" + num}};
+                var result = new object[][]{new object[] {"E1", "H0" + num, "H1" + num}};
                 EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             long delta = end - start;
             stmt.Dispose();
-            Assert.IsTrue("Delta to large, at " + delta + " msec", delta < 1000);
+            Assert.IsTrue(delta < 1000, "Delta to large, at " + delta + " msec");
         }
     
         private void RunAssertion2Stream1HistTwoSidedEntryIdenticalIndex(EPServiceProvider epService) {
@@ -115,18 +110,18 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "s0id,s1id,valh0".Split(',');
             var random = new Random();
     
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             for (int i = 1; i < 1000; i++) {
-                int num = random.NextInt(98) + 1;
+                int num = random.Next(98) + 1;
                 SendBeanInt(epService, "E1", num);
                 SendBeanInt(epService, "F1", num);
     
-                var result = new Object[][]{new object[] {"E1", "F1", "H0" + num}};
+                var result = new object[][]{new object[] {"E1", "F1", "H0" + num}};
                 EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
     
                 // send reset events to avoid duplicate matches
@@ -134,9 +129,9 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                 SendBeanInt(epService, "F1", 0);
                 listener.Reset();
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             long delta = end - start;
-            Assert.IsTrue("Delta to large, at " + delta + " msec", delta < 1000);
+            Assert.IsTrue(delta < 1000, "Delta to large, at " + delta + " msec");
             stmt.Dispose();
         }
     
@@ -151,18 +146,18 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "s0id,s1id,valh0,indexh0".Split(',');
             var random = new Random();
     
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             for (int i = 1; i < 1000; i++) {
-                int num = random.NextInt(98) + 1;
+                int num = random.Next(98) + 1;
                 SendBeanInt(epService, "E1", num);
                 SendBeanInt(epService, "H0" + num, num);
     
-                var result = new Object[][]{new object[] {"E1", "H0" + num, "H0" + num, num}};
+                var result = new object[][]{new object[] {"E1", "H0" + num, "H0" + num, num}};
                 EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
     
                 // send reset events to avoid duplicate matches
@@ -170,10 +165,10 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                 SendBeanInt(epService, "F1", 0);
                 listener.Reset();
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             long delta = end - start;
             stmt.Dispose();
-            Assert.IsTrue("Delta to large, at " + delta + " msec", delta < 1000);
+            Assert.IsTrue(delta < 1000, "Delta to large, at " + delta + " msec");
         }
     
         private void SendBeanInt(EPServiceProvider epService, string id, int p00, int p01, int p02, int p03) {

@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util.support;
 
-// using static org.junit.Assert.assertSame;
 
 using NUnit.Framework;
 
@@ -46,9 +45,9 @@ namespace com.espertech.esper.regression.events.xml
             string stmtText = "select type?,dyn[1]?,nested.nes2?,Map('a')? from MyEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{
+            EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
                     new EventPropertyDescriptor("type?", typeof(XmlNode), null, false, false, false, false, false),
                     new EventPropertyDescriptor("dyn[1]?", typeof(XmlNode), null, false, false, false, false, false),
                     new EventPropertyDescriptor("nested.nes2?", typeof(XmlNode), null, false, false, false, false, false),

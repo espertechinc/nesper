@@ -35,32 +35,21 @@ namespace com.espertech.esper.supportregression.bean
             this.category = category;
         }
     
-        public SupportSpatialEventRectangle(string id, double x, double y, double width, double height) {
-            This(id, x, y, width, height, null);
+        public SupportSpatialEventRectangle(string id, double x, double y, double width, double height)
+            : this(id, x, y, width, height, null)
+        {
         }
-    
-        public string GetId() {
-            return id;
-        }
-    
-        public double? GetX() {
-            return x;
-        }
-    
-        public double GetY() {
-            return y;
-        }
-    
-        public double GetWidth() {
-            return width;
-        }
-    
-        public double GetHeight() {
-            return height;
-        }
-    
-        public string GetCategory() {
-            return category;
-        }
+
+        public string Id => id;
+
+        public double X => x.Value;
+
+        public double Y => y.Value;
+
+        public double Width => width.Value;
+
+        public double Height => height.Value;
+
+        public string Category => category;
     }
 } // end of namespace

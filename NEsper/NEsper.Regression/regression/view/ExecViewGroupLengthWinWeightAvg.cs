@@ -16,7 +16,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -35,13 +34,13 @@ namespace com.espertech.esper.regression.view
                 string stmtString = "select * from Sensor#Groupwin(type)#length(10000000)#Weighted_avg(measurement, confidence)";
                 //string stmtString = "SELECT * FROM Sensor#Groupwin(type)#length(1000)#Weighted_avg('measurement','confidence')";
                 EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtString);
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
             } else {
                 // 0.53 sec for 100k
                 for (int i = 0; i < 10; i++) {
                     string stmtString = "SELECT * FROM Sensor(type='A" + i + "')#length(1000000)#Weighted_avg(measurement,confidence)";
                     EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtString);
-                    stmt.AddListener(listener);
+                    stmt.Events += listener.Update;
                 }
             }
     

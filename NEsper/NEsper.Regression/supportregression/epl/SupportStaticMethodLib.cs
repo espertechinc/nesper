@@ -29,7 +29,7 @@ namespace com.espertech.esper.supportregression.epl
 
     public class SupportStaticMethodLib
     {
-        private static readonly IList<Object[]> invocations = new List<Object[]>();
+        private static readonly IList<object[]> invocations = new List<object[]>();
         private static readonly IList<EPLMethodInvocationContext> methodInvocationContexts = new List<EPLMethodInvocationContext>();
 
         public static IList<object[]> Invocations
@@ -261,7 +261,7 @@ namespace com.espertech.esper.supportregression.epl
             return rows;
         }
 
-        public static Object[][] FetchOAArrayMR(String theString, int id)
+        public static object[][] FetchOAArrayMR(String theString, int id)
         {
             if (id < 0)
             {
@@ -363,9 +363,9 @@ namespace com.espertech.esper.supportregression.epl
             return result;
         }
 
-        public static Object[] ConvertEventObjectArray(Object[] values)
+        public static object[] ConvertEventObjectArray(object[] values)
         {
-            return new Object[] { values[0], "|" + values[1] + "|" };
+            return new object[] { values[0], "|" + values[1] + "|" };
         }
 
         public static GenericRecord ConvertEventAvro(GenericRecord row)
@@ -615,13 +615,13 @@ namespace com.espertech.esper.supportregression.epl
             return sum;
         }
 
-        public static bool AlwaysTrue(Object[] input)
+        public static bool AlwaysTrue(object[] input)
         {
             invocations.Add(input);
             return true;
         }
 
-        public static double ArraySumObject(Object[] array)
+        public static double ArraySumObject(object[] array)
         {
             double sum = 0;
             for (var i = 0; i < array.Length; i++)
@@ -645,7 +645,7 @@ namespace com.espertech.esper.supportregression.epl
             return new SupportBeanNumeric(intOne, intTwo);
         }
 
-        public static Object[] FetchObjectArrayEventBean(String theString, int id)
+        public static object[] FetchObjectArrayEventBean(String theString, int id)
         {
             if (id < 0)
             {
@@ -866,7 +866,7 @@ namespace com.espertech.esper.supportregression.epl
             return values;
         }
 
-        public static ICollection<Object[]> FetchOACollectionMR(String theString, int id)
+        public static ICollection<object[]> FetchOACollectionMR(String theString, int id)
         {
             if (id < 0)
             {
@@ -878,7 +878,7 @@ namespace com.espertech.esper.supportregression.epl
                 return Collections.GetEmptyList<object[]>();
             }
 
-            var rows = new List<Object[]>(id);
+            var rows = new List<object[]>(id);
             for (var i = 0; i < id; i++)
             {
                 var values = new Object[2];
@@ -901,7 +901,7 @@ namespace com.espertech.esper.supportregression.epl
             return FetchOACollectionMRMetadata();
         }
 
-        public static IEnumerable<Object[]> FetchOAIterableMR(String theString, int id)
+        public static IEnumerable<object[]> FetchOAIterableMR(String theString, int id)
         {
             if (id < 0)
             {
@@ -910,7 +910,7 @@ namespace com.espertech.esper.supportregression.epl
             return FetchOACollectionMR(theString, id);
         }
 
-        public static IEnumerator<Object[]> FetchOAIteratorMR(String theString, int id)
+        public static IEnumerator<object[]> FetchOAIteratorMR(String theString, int id)
         {
             if (id < 0)
             {

@@ -20,7 +20,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.type;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -62,7 +61,7 @@ namespace com.espertech.esper.regression.epl.join
                     "SupportBean#keepall";
             EPStatement stmtLO = epService.EPAdministrator.CreateEPL(stmtTextLO);
             var listener = new SupportUpdateListener();
-            stmtLO.AddListener(listener);
+            stmtLO.Events += listener.Update;
     
             TryAssertionPatternUniOuterJoinNoOn(epService, listener, 0);
     
@@ -71,7 +70,7 @@ namespace com.espertech.esper.regression.epl.join
             Assert.AreEqual(stmtTextLO, model.ToEPL());
             stmtLO = epService.EPAdministrator.Create(model);
             Assert.AreEqual(stmtTextLO, stmtLO.Text);
-            stmtLO.AddListener(listener);
+            stmtLO.Events += listener.Update;
     
             TryAssertionPatternUniOuterJoinNoOn(epService, listener, 100000);
     
@@ -85,19 +84,19 @@ namespace com.espertech.esper.regression.epl.join
                     "inner join " +
                     "SupportBean#keepall";
             EPStatement stmtIJ = epService.EPAdministrator.CreateEPL(stmtTextIJ);
-            stmtIJ.AddListener(listener);
+            stmtIJ.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "S0_1"));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 100));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "S0_2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsIJ, new Object[]{100, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsIJ, new object[]{100, 1L});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 200));
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(3, "S0_3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsIJ, new Object[]{300, 2L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsIJ, new object[]{300, 2L});
             stmtIJ.Dispose();
     
             // test 2-stream inner join with group-by
@@ -115,17 +114,17 @@ namespace com.espertech.esper.regression.epl.join
                     "SupportBean#keepall";
     
             EPStatement stmt3IJ = epService.EPAdministrator.CreateEPL(stmtText3IJ);
-            stmt3IJ.AddListener(listener);
+            stmt3IJ.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "S0_1"));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 50));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(10, "S1_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields3IJ, new Object[]{50, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields3IJ, new object[]{50, 1L});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 51));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields3IJ, new Object[]{101, 2L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields3IJ, new object[]{101, 2L});
     
             stmt3IJ.Dispose();
     
@@ -141,25 +140,25 @@ namespace com.espertech.esper.regression.epl.join
                     "SupportBean#keepall";
     
             EPStatement stmt3FOJ = epService.EPAdministrator.CreateEPL(stmtText3FOJ);
-            stmt3FOJ.AddListener(listener);
+            stmt3FOJ.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "S0_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields3FOJ, new Object[]{"S0_1", null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields3FOJ, new object[]{"S0_1", null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean("E10", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields3FOJ, new Object[]{null, null, "E10"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields3FOJ, new object[]{null, null, "E10"});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "S0_2"));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields3FOJ, new Object[][]{new object[] {"S0_2", null, null}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields3FOJ, new object[][]{new object[] {"S0_2", null, null}});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(1, "S1_0"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetAndResetLastNewData(), fields3FOJ, new Object[][]{new object[] {"S0_1", "S1_0", "E10"}, new object[] {"S0_2", "S1_0", "E10"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetAndResetLastNewData(), fields3FOJ, new object[][]{new object[] {"S0_1", "S1_0", "E10"}, new object[] {"S0_2", "S1_0", "E10"}});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "S0_3"));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields3FOJ, new Object[][]{new object[] {"S0_3", "S1_0", "E10"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields3FOJ, new object[][]{new object[] {"S0_3", "S1_0", "E10"}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E11", 0));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetAndResetLastNewData(), fields3FOJ, new Object[][]{new object[] {"S0_1", "S1_0", "E11"}, new object[] {"S0_2", "S1_0", "E11"}, new object[] {"S0_3", "S1_0", "E11"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetAndResetLastNewData(), fields3FOJ, new object[][]{new object[] {"S0_1", "S1_0", "E11"}, new object[] {"S0_2", "S1_0", "E11"}, new object[] {"S0_3", "S1_0", "E11"}});
             Assert.AreEqual(6, EPAssertionUtil.EnumeratorCount(stmt3FOJ.GetEnumerator()));
     
             stmt3FOJ.Dispose();
@@ -177,7 +176,7 @@ namespace com.espertech.esper.regression.epl.join
                     "where s0.p00 = s1.p10";
     
             EPStatement stmt3FOJW = epService.EPAdministrator.CreateEPL(stmtText3FOJW);
-            stmt3FOJW.AddListener(listener);
+            stmt3FOJW.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "X1"));
             Assert.IsFalse(listener.IsInvoked);
@@ -186,7 +185,7 @@ namespace com.espertech.esper.regression.epl.join
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "Y1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields3FOJW, new Object[]{"Y1", "Y1", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields3FOJW, new object[]{"Y1", "Y1", null});
     
             stmt3FOJW.Dispose();
         }
@@ -196,17 +195,17 @@ namespace com.espertech.esper.regression.epl.join
             epService.EPAdministrator.CreateEPL("create objectarray schema E2 (id string, value2 int)");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select count(*) as c0, sum(E1.value) as c1, E1.id as c2 " +
                     "from E1 unidirectional inner join E2#keepall on E1.id = E2.id group by E1.grp");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             string[] fields = "c0,c1,c2".Split(',');
     
-            epService.EPRuntime.SendEvent(new Object[]{"A", 100}, "E2");
+            epService.EPRuntime.SendEvent(new object[]{"A", 100}, "E2");
             Assert.IsFalse(listener.IsInvoked);
     
-            epService.EPRuntime.SendEvent(new Object[]{"A", "X", 10}, "E1");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1L, 10, "A"});
+            epService.EPRuntime.SendEvent(new object[]{"A", "X", 10}, "E1");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1L, 10, "A"});
     
-            epService.EPRuntime.SendEvent(new Object[]{"A", "Y", 20}, "E1");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1L, 20, "A"});
+            epService.EPRuntime.SendEvent(new object[]{"A", "Y", 20}, "E1");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1L, 20, "A"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -214,23 +213,23 @@ namespace com.espertech.esper.regression.epl.join
         private void TryAssertionPatternUniOuterJoinNoOn(EPServiceProvider epService, SupportUpdateListener listener, long startTime) {
             string[] fields = "c0,c1".Split(',');
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(startTime + 2000));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, 1L});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(startTime + 3000));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{10, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10, 1L});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 11));
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(startTime + 4000));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{21, 2L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{21, 2L});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 12));
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(startTime + 5000));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{33, 3L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{33, 3L});
         }
     
         private void RunAssertion2TableJoinGrouped(EPServiceProvider epService) {
@@ -241,7 +240,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryUnsupportedIterator(stmt);
     
             // send event, expect result
@@ -253,20 +252,20 @@ namespace com.espertech.esper.regression.epl.join
             Assert.IsFalse(listener.IsInvoked);
     
             SendEventMD(epService, "E1", 2L);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{"E1", 1L});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{"E1", 0L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{"E1", 1L});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{"E1", 0L});
             listener.Reset();
     
             SendEvent(epService, "E1", 20);
             Assert.IsFalse(listener.IsInvoked);
     
             SendEventMD(epService, "E1", 3L);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{"E1", 2L});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{"E1", 0L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{"E1", 2L});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{"E1", 0L});
             listener.Reset();
     
             try {
-                stmt.SafeGetEnumerator();
+                stmt.GetSafeEnumerator();
                 Assert.Fail();
             } catch (UnsupportedOperationException ex) {
                 Assert.AreEqual("Iteration over a unidirectional join is not supported", ex.Message);
@@ -275,8 +274,8 @@ namespace com.espertech.esper.regression.epl.join
     
             SendEvent(epService, "E2", 40);
             SendEventMD(epService, "E2", 4L);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{"E2", 1L});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{"E2", 0L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{"E2", 1L});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{"E2", 0L});
             listener.Reset();
     
             stmt.Dispose();
@@ -290,7 +289,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryUnsupportedIterator(stmt);
     
             // send event, expect result
@@ -302,22 +301,22 @@ namespace com.espertech.esper.regression.epl.join
             Assert.IsFalse(listener.IsInvoked);
     
             SendEventMD(epService, "E1", 2L);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{1L});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{0L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{1L});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{0L});
             listener.Reset();
     
             SendEvent(epService, "E1", 20);
             Assert.IsFalse(listener.IsInvoked);
     
             SendEventMD(epService, "E1", 3L);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{2L});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{0L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{2L});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{0L});
             listener.Reset();
     
             SendEvent(epService, "E2", 40);
             SendEventMD(epService, "E2", 4L);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{1L});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{0L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{1L});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{0L});
     
             stmt.Dispose();
         }
@@ -362,7 +361,7 @@ namespace com.espertech.esper.regression.epl.join
                     "where a.theString = b.theString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "A", 1);
             SendEvent(epService, "A", 2);
@@ -389,7 +388,7 @@ namespace com.espertech.esper.regression.epl.join
                     "where a.theString = b.theString output every 2 minutes";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "A", 1);
             SendEvent(epService, "A", 2);
@@ -407,25 +406,25 @@ namespace com.espertech.esper.regression.epl.join
     
         private void Try3TableOuterJoin(EPServiceProvider epService, EPStatement statement) {
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             string[] fields = "s0.id,s1.id,s2.id".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1, null, null});
             epService.EPRuntime.SendEvent(new SupportBean_S1(2, "E1"));
             epService.EPRuntime.SendEvent(new SupportBean_S2(3, "E1"));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(20, "E2"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{10, 20, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10, 20, null});
             epService.EPRuntime.SendEvent(new SupportBean_S2(30, "E2"));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean_S2(300, "E3"));
             Assert.IsFalse(listener.IsInvoked);
             epService.EPRuntime.SendEvent(new SupportBean_S0(100, "E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{100, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{100, null, null});
             epService.EPRuntime.SendEvent(new SupportBean_S1(200, "E3"));
             Assert.IsFalse(listener.IsInvoked);
     
@@ -433,7 +432,7 @@ namespace com.espertech.esper.regression.epl.join
             epService.EPRuntime.SendEvent(new SupportBean_S1(21, "E4"));
             Assert.IsFalse(listener.IsInvoked);
             epService.EPRuntime.SendEvent(new SupportBean_S0(11, "E4"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{11, 21, 31});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{11, 21, 31});
     
             epService.EPRuntime.SendEvent(new SupportBean_S2(32, "E4"));
             epService.EPRuntime.SendEvent(new SupportBean_S1(22, "E4"));
@@ -494,7 +493,7 @@ namespace com.espertech.esper.regression.epl.join
     
         private void Try3TableJoin(EPServiceProvider epService, EPStatement statement) {
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
             epService.EPRuntime.SendEvent(new SupportBean_S1(2, "E1"));
@@ -517,7 +516,7 @@ namespace com.espertech.esper.regression.epl.join
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(11, "E4"));
             string[] fields = "s0.id,s1.id,s2.id".Split(',');
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{11, 21, 31});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{11, 21, 31});
     
             epService.EPRuntime.SendEvent(new SupportBean_S2(32, "E4"));
             epService.EPRuntime.SendEvent(new SupportBean_S1(22, "E4"));
@@ -554,7 +553,7 @@ namespace com.espertech.esper.regression.epl.join
         private void RunAssertion2TableFullOuterJoinOM(EPServiceProvider epService) {
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.Create("symbol", "volume", "theString", "intPrimitive");
-            model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarketDataBean.Name).Unidirectional(true)));
+            model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarketDataBean).FullName).Unidirectional(true));
             model.FromClause.Add(FilterStream.Create(typeof(SupportBean).FullName).AddView("keepall"));
             model.FromClause.Add(OuterJoinQualifier.Create("theString", OuterJoinType.FULL, "symbol"));
     
@@ -619,19 +618,19 @@ namespace com.espertech.esper.regression.epl.join
     
         private void TryFullOuterPassive2Stream(EPServiceProvider epService, EPStatement stmt) {
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryUnsupportedIterator(stmt);
     
             // send event, expect result
             SendEventMD(epService, "E1", 1L);
             string[] fields = "symbol,volume,theString,intPrimitive".Split(',');
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1L, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L, null, null});
     
             SendEvent(epService, "E1", 10);
             Assert.IsFalse(listener.IsInvoked);
     
             SendEventMD(epService, "E1", 2L);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 2L, "E1", 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 2L, "E1", 10});
     
             SendEvent(epService, "E1", 20);
             Assert.IsFalse(listener.IsInvoked);
@@ -640,7 +639,7 @@ namespace com.espertech.esper.regression.epl.join
         private void TryJoinPassive2Stream(EPServiceProvider epService, string stmtText) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryUnsupportedIterator(stmt);
     
             // send event, expect result
@@ -652,7 +651,7 @@ namespace com.espertech.esper.regression.epl.join
             Assert.IsFalse(listener.IsInvoked);
     
             SendEventMD(epService, "E1", 2L);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 2L, "E1", 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 2L, "E1", 10});
     
             SendEvent(epService, "E1", 20);
             Assert.IsFalse(listener.IsInvoked);

@@ -56,7 +56,7 @@ namespace com.espertech.esper.supportregression.util
         /// </summary>
         /// <param name="data">is the data to assertEqualsExactOrder against</param>
         /// <param name="expectedValues">is the expected values</param>
-        public static bool CompareRefExactOrder(Object[] data, Object[] expectedValues)
+        public static bool CompareRefExactOrder(object[] data, object[] expectedValues)
         {
             if ((expectedValues == null) && (data == null))
             {

@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.context;
 using com.espertech.esper.client.deploy;
@@ -17,8 +17,6 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -30,7 +28,7 @@ namespace com.espertech.esper.regression.context
             configuration.AddEventType<SupportBean>();
             configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
             configuration.AddEventType("SupportBean_S1", typeof(SupportBean_S1));
-            configuration.EngineDefaults.Logging.EnableExecutionDebug = true;
+            configuration.EngineDefaults.Logging.IsEnableExecutionDebug = true;
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -77,17 +75,17 @@ namespace com.espertech.esper.regression.context
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("context SegmentedByString " +
                     "on SupportBean_S0 select mywin.* from MyInfra as mywin");
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("G2", 2));
             epService.EPRuntime.SendEvent(new SupportBean("G1", 3));
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "G1"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerSelect.GetAndResetLastNewData(), fieldsNW, new Object[][]{new object[] {"G1", 1}, new object[] {"G1", 3}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerSelect.GetAndResetLastNewData(), fieldsNW, new object[][]{new object[] {"G1", 1}, new object[] {"G1", 3}});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "G2"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerSelect.GetAndResetLastNewData(), fieldsNW, new Object[][]{new object[] {"G2", 2}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerSelect.GetAndResetLastNewData(), fieldsNW, new object[][]{new object[] {"G2", 2}});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfra", false);
@@ -117,7 +115,7 @@ namespace com.espertech.esper.regression.context
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
     
             EPOnDemandQueryResult result = epService.EPRuntime.ExecuteQuery("select * from MyInfra where intPrimitive = 1", new ContextPartitionSelector[]{new EPContextPartitionAdminImpl.CPSelectorById(1)});
-            EPAssertionUtil.AssertPropsPerRow(result.Array, "theString,intPrimitive".Split(','), new Object[][]{new object[] {"E1", 1}});
+            EPAssertionUtil.AssertPropsPerRow(result.Array, "theString,intPrimitive".Split(','), new object[][]{new object[] {"E1", 1}});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(3, "A"));
     
@@ -139,14 +137,14 @@ namespace com.espertech.esper.regression.context
             epService.EPAdministrator.CreateEPL(eplInsert);
     
             var listenerSelect = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("@Name('selectit') context SegmentedByString select irstream * from MyInfra").AddListener(listenerSelect);
+            epService.EPAdministrator.CreateEPL("@Name('selectit') context SegmentedByString select irstream * from MyInfra").Events += listenerSelect.Update;
     
             // Delete testing
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL("@Name('on-delete') context SegmentedByString on SupportBean_S0 delete from MyInfra");
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 1));
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsNW, new Object[]{"G1", 1});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsNW, new object[]{"G1", 1});
             } else {
                 Assert.IsFalse(listenerSelect.IsInvoked);
             }
@@ -157,27 +155,27 @@ namespace com.espertech.esper.regression.context
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "G1"));
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetOldAndReset(), fieldsNW, new Object[]{"G1", 1});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetOldAndReset(), fieldsNW, new object[]{"G1", 1});
             }
     
             epService.EPRuntime.SendEvent(new SupportBean("G2", 20));
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsNW, new Object[]{"G2", 20});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsNW, new object[]{"G2", 20});
             }
     
             epService.EPRuntime.SendEvent(new SupportBean("G3", 3));
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsNW, new Object[]{"G3", 3});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsNW, new object[]{"G3", 3});
             }
     
             epService.EPRuntime.SendEvent(new SupportBean("G2", 21));
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsNW, new Object[]{"G2", 21});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsNW, new object[]{"G2", 21});
             }
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "G2"));
             if (namedWindow) {
-                EPAssertionUtil.AssertPropsPerRow(listenerSelect.LastOldData, fieldsNW, new Object[][]{new object[] {"G2", 20}, new object[] {"G2", 21}});
+                EPAssertionUtil.AssertPropsPerRow(listenerSelect.LastOldData, fieldsNW, new object[][]{new object[] {"G2", 20}, new object[] {"G2", 21}});
             }
             listenerSelect.Reset();
     
@@ -188,7 +186,7 @@ namespace com.espertech.esper.regression.context
     
             epService.EPRuntime.SendEvent(new SupportBean("G4", 4));
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsNW, new Object[]{"G4", 4});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsNW, new object[]{"G4", 4});
             }
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "G0"));
@@ -198,20 +196,20 @@ namespace com.espertech.esper.regression.context
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "G4"));
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerSelect.LastNewData[0], fieldsNW, new Object[]{"G4", 5});
-                EPAssertionUtil.AssertProps(listenerSelect.LastOldData[0], fieldsNW, new Object[]{"G4", 4});
+                EPAssertionUtil.AssertProps(listenerSelect.LastNewData[0], fieldsNW, new object[]{"G4", 5});
+                EPAssertionUtil.AssertProps(listenerSelect.LastOldData[0], fieldsNW, new object[]{"G4", 4});
                 listenerSelect.Reset();
             }
     
             epService.EPRuntime.SendEvent(new SupportBean("G5", 5));
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsNW, new Object[]{"G5", 5});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsNW, new object[]{"G5", 5});
             }
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "G5"));
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerSelect.LastNewData[0], fieldsNW, new Object[]{"G5", 6});
-                EPAssertionUtil.AssertProps(listenerSelect.LastOldData[0], fieldsNW, new Object[]{"G5", 5});
+                EPAssertionUtil.AssertProps(listenerSelect.LastNewData[0], fieldsNW, new object[]{"G5", 6});
+                EPAssertionUtil.AssertProps(listenerSelect.LastOldData[0], fieldsNW, new object[]{"G5", 5});
                 listenerSelect.Reset();
             }
     
@@ -231,19 +229,19 @@ namespace com.espertech.esper.regression.context
             EPStatement stmt = epService.EPAdministrator.CreateEPL("@Audit context SegmentedByString " +
                     "select *, (select max(intPrimitive) from MyInfra) as mymax from SupportBean_S0");
             var listenerSelect = new SupportUpdateListener();
-            stmt.AddListener(listenerSelect);
+            stmt.Events += listenerSelect.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E2"));
-            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), "mymax".Split(','), new Object[]{20});
+            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), "mymax".Split(','), new object[]{20});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E1"));
-            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), "mymax".Split(','), new Object[]{10});
+            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), "mymax".Split(','), new object[]{10});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E3"));
-            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), "mymax".Split(','), new Object[]{null});
+            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), "mymax".Split(','), new object[]{null});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfra", false);
@@ -254,28 +252,28 @@ namespace com.espertech.esper.regression.context
     
             EPStatement stmtNamedWindow = epService.EPAdministrator.CreateEPL("@Name('named window') context SegmentedByString create window MyWindow#lastevent as SupportBean");
             var listenerNamedWindow = new SupportUpdateListener();
-            stmtNamedWindow.AddListener(listenerNamedWindow);
+            stmtNamedWindow.Events += listenerNamedWindow.Update;
             epService.EPAdministrator.CreateEPL("@Name('insert') insert into MyWindow select * from SupportBean");
     
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("@Name('select') select * from MyWindow");
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
     
             var fields = new string[]{"theString", "intPrimitive"};
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
-            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fields, new Object[]{"G1", 10});
-            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new Object[]{"G1", 10});
+            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fields, new object[]{"G1", 10});
+            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[]{"G1", 10});
     
             epService.EPRuntime.SendEvent(new SupportBean("G2", 20));
-            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fields, new Object[]{"G2", 20});
-            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new Object[]{"G2", 20});
+            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fields, new object[]{"G2", 20});
+            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[]{"G2", 20});
     
             stmtSelect.Dispose();
     
             // Out-of-context consumer not initialized
             EPStatement stmtSelectCount = epService.EPAdministrator.CreateEPL("@Name('select') select count(*) as cnt from MyWindow");
-            stmtSelectCount.AddListener(listenerSelect);
-            EPAssertionUtil.AssertProps(stmtSelectCount.First(), "cnt".Split(','), new Object[]{0L});
+            stmtSelectCount.Events += listenerSelect.Update;
+            EPAssertionUtil.AssertProps(stmtSelectCount.First(), "cnt".Split(','), new object[]{0L});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -285,38 +283,38 @@ namespace com.espertech.esper.regression.context
     
             EPStatement stmtNamedWindow = epService.EPAdministrator.CreateEPL("@Name('named window') context SegmentedByString create window MyWindow#keepall as SupportBean");
             var listenerNamedWindow = new SupportUpdateListener();
-            stmtNamedWindow.AddListener(listenerNamedWindow);
+            stmtNamedWindow.Events += listenerNamedWindow.Update;
             epService.EPAdministrator.CreateEPL("@Name('insert') insert into MyWindow select * from SupportBean");
     
             var fieldsNW = new string[]{"theString", "intPrimitive"};
             var fieldsCnt = new string[]{"theString", "cnt"};
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("@Name('select') context SegmentedByString select theString, count(*) as cnt from MyWindow group by theString");
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
-            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fieldsNW, new Object[]{"G1", 10});
-            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsCnt, new Object[]{"G1", 1L});
+            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fieldsNW, new object[]{"G1", 10});
+            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsCnt, new object[]{"G1", 1L});
     
             epService.EPRuntime.SendEvent(new SupportBean("G2", 20));
-            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fieldsNW, new Object[]{"G2", 20});
-            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsCnt, new Object[]{"G2", 1L});
+            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fieldsNW, new object[]{"G2", 20});
+            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsCnt, new object[]{"G2", 1L});
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 11));
-            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fieldsNW, new Object[]{"G1", 11});
-            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsCnt, new Object[]{"G1", 2L});
+            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fieldsNW, new object[]{"G1", 11});
+            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsCnt, new object[]{"G1", 2L});
     
             epService.EPRuntime.SendEvent(new SupportBean("G2", 21));
-            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fieldsNW, new Object[]{"G2", 21});
-            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsCnt, new Object[]{"G2", 2L});
+            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fieldsNW, new object[]{"G2", 21});
+            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fieldsCnt, new object[]{"G2", 2L});
     
             stmtSelect.Dispose();
     
             // In-context consumer not initialized
             EPStatement stmtSelectCount = epService.EPAdministrator.CreateEPL("@Name('select') context SegmentedByString select count(*) as cnt from MyWindow");
-            stmtSelectCount.AddListener(listenerSelect);
+            stmtSelectCount.Events += listenerSelect.Update;
             try {
-                // EPAssertionUtil.AssertProps(stmtSelectCount.First(), "cnt".Split(','), new Object[] {0L});
+                // EPAssertionUtil.AssertProps(stmtSelectCount.First(), "cnt".Split(','), new object[] {0L});
                 stmtSelectCount.GetEnumerator();
             } catch (UnsupportedOperationException ex) {
                 Assert.AreEqual("Iterator not supported on statements that have a context attached", ex.Message);
@@ -330,7 +328,7 @@ namespace com.espertech.esper.regression.context
     
             EPStatement stmtNamedWindow = epService.EPAdministrator.CreateEPL("@Name('named window') context SegmentedByString create window MyWindow#keepall as SupportBean");
             var listenerNamedWindow = new SupportUpdateListener();
-            stmtNamedWindow.AddListener(listenerNamedWindow);
+            stmtNamedWindow.Events += listenerNamedWindow.Update;
             epService.EPAdministrator.CreateEPL("@Name('insert') insert into MyWindow select * from SupportBean");
     
             var fieldsNW = new string[]{"theString", "intPrimitive"};
@@ -340,28 +338,28 @@ namespace com.espertech.esper.regression.context
                     "when matched then " +
                     "  update set intPrimitive = (select id from SupportBean_S1#lastevent)");
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 1));
-            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fieldsNW, new Object[]{"G1", 1});
+            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fieldsNW, new object[]{"G1", 1});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(99, "G1"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "G1"));
-            EPAssertionUtil.AssertProps(listenerNamedWindow.LastNewData[0], fieldsNW, new Object[]{"G1", 99});
-            EPAssertionUtil.AssertProps(listenerNamedWindow.LastOldData[0], fieldsNW, new Object[]{"G1", 1});
+            EPAssertionUtil.AssertProps(listenerNamedWindow.LastNewData[0], fieldsNW, new object[]{"G1", 99});
+            EPAssertionUtil.AssertProps(listenerNamedWindow.LastOldData[0], fieldsNW, new object[]{"G1", 1});
             listenerNamedWindow.Reset();
     
             epService.EPRuntime.SendEvent(new SupportBean("G2", 2));
-            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fieldsNW, new Object[]{"G2", 2});
+            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fieldsNW, new object[]{"G2", 2});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(98, "Gx"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "G2"));
-            EPAssertionUtil.AssertProps(listenerNamedWindow.LastNewData[0], fieldsNW, new Object[]{"G2", 2});
-            EPAssertionUtil.AssertProps(listenerNamedWindow.LastOldData[0], fieldsNW, new Object[]{"G2", 2});
+            EPAssertionUtil.AssertProps(listenerNamedWindow.LastNewData[0], fieldsNW, new object[]{"G2", 2});
+            EPAssertionUtil.AssertProps(listenerNamedWindow.LastOldData[0], fieldsNW, new object[]{"G2", 2});
             listenerNamedWindow.Reset();
     
             epService.EPRuntime.SendEvent(new SupportBean("G3", 3));
-            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fieldsNW, new Object[]{"G3", 3});
+            EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fieldsNW, new object[]{"G3", 3});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "Gx"));
             Assert.IsFalse(listenerNamedWindow.IsInvoked);

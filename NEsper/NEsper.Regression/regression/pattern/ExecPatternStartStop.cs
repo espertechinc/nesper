@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -18,8 +18,6 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -37,7 +35,7 @@ namespace com.espertech.esper.regression.pattern
                     " or b=" + typeof(SupportBeanComplexProps).Name + ")]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener);
+            statement.Events += updateListener.Update;
     
             for (int i = 0; i < 100; i++) {
                 SendAndAssert(epService, updateListener);
@@ -51,7 +49,7 @@ namespace com.espertech.esper.regression.pattern
                 statement.Start();
             }
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionStartStop(EPServiceProvider epService) {
@@ -61,14 +59,14 @@ namespace com.espertech.esper.regression.pattern
     
             // Pattern started when created
             Assert.IsFalse(patternStmt.HasFirst());
-            SafeIterator<EventBean> safe = patternStmt.SafeGetEnumerator();
-            Assert.IsFalse(safe.HasNext());
-            safe.Close();
+            var safe = patternStmt.GetSafeEnumerator();
+            Assert.IsFalse(safe.MoveNext());
+            safe.Dispose();
     
             // Stop pattern
             patternStmt.Stop();
             SendEvent(epService);
-            Assert.IsNull(patternStmt.GetEnumerator());
+            //Assert.IsNull(patternStmt.GetEnumerator());
     
             // Start pattern
             patternStmt.Start();
@@ -77,13 +75,14 @@ namespace com.espertech.esper.regression.pattern
             // Send event
             SupportBean theEvent = SendEvent(epService);
             Assert.AreSame(theEvent, patternStmt.First().Get("tag"));
-            safe = patternStmt.SafeGetEnumerator();
-            Assert.AreSame(theEvent, safe.Next().Get("tag"));
-            safe.Close();
+            safe = patternStmt.GetSafeEnumerator();
+            Assert.IsTrue(safe.MoveNext());
+            Assert.AreSame(theEvent, safe.Current.Get("tag"));
+            safe.Dispose();
     
             // Stop pattern
             patternStmt.Stop();
-            Assert.IsNull(patternStmt.GetEnumerator());
+            //Assert.IsNull(patternStmt.GetEnumerator());
     
             // Start again, iterator is zero
             patternStmt.Start();
@@ -92,10 +91,10 @@ namespace com.espertech.esper.regression.pattern
             // assert statement-eventtype reference info
             EPServiceProviderSPI spi = (EPServiceProviderSPI) epService;
             Assert.IsTrue(spi.StatementEventTypeRef.IsInUse(typeof(SupportBean).FullName));
-            ISet<string> stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportBean).FullName);
+            var stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportBean).FullName);
             Assert.IsTrue(stmtNames.Contains("MyPattern"));
     
-            patternStmt.Destroy();
+            patternStmt.Dispose();
     
             Assert.IsFalse(spi.StatementEventTypeRef.IsInUse(typeof(SupportBean).FullName));
             stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportBean).FullName);
@@ -111,7 +110,7 @@ namespace com.espertech.esper.regression.pattern
             // Pattern started when created
     
             // Add listener
-            patternStmt.AddListener(listener);
+            patternStmt.Events += listener.Update;
             Assert.IsNull(listener.LastNewData);
             Assert.IsFalse(patternStmt.HasFirst());
     
@@ -121,13 +120,13 @@ namespace com.espertech.esper.regression.pattern
             Assert.AreSame(theEvent, patternStmt.First().Get("tag"));
     
             // Remove listener
-            patternStmt.RemoveListener(listener);
+            patternStmt.Events -= listener.Update;
             theEvent = SendEvent(epService);
             Assert.AreSame(theEvent, patternStmt.First().Get("tag"));
             Assert.IsNull(listener.LastNewData);
     
             // Add listener back
-            patternStmt.AddListener(listener);
+            patternStmt.Events += listener.Update;
             theEvent = SendEvent(epService);
             Assert.AreSame(theEvent, patternStmt.First().Get("tag"));
             Assert.AreEqual(theEvent, listener.GetAndResetLastNewData()[0].Get("tag"));

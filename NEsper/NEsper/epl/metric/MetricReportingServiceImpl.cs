@@ -29,7 +29,7 @@ namespace com.espertech.esper.epl.metric
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly MetricsReportingConfig _specification;
+        private readonly ConfigurationMetricsReporting _specification;
         private readonly String _engineUri;
 
         private volatile MetricExecutionContext _executionContext;
@@ -48,7 +48,7 @@ namespace com.espertech.esper.epl.metric
         /// <summary>Ctor. </summary>
         /// <param name="specification">configuration</param>
         /// <param name="engineUri">engine URI</param>
-        public MetricReportingServiceImpl(MetricsReportingConfig specification, String engineUri)
+        public MetricReportingServiceImpl(ConfigurationMetricsReporting specification, String engineUri)
         {
             _specification = specification;
             _engineUri = engineUri;

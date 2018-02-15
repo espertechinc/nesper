@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             string expression = "select * from MarketData#lastevent output at (*/VFREQ, VMIN:VMAX, *, *, *)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryAssertionCrontab(epService, 1, stmt, listener);
         }
     
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             string expression = "select * from MarketData#lastevent output at (*/15, 8:17, *, *, *)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryAssertionCrontab(epService, 1, stmt, listener);
         }
     
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             Assert.AreEqual(expression, epl);
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryAssertionCrontab(epService, 1, stmt, listener);
         }
     
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             Assert.AreEqual(expression, model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryAssertionCrontab(epService, 1, stmt, listener);
         }
     
@@ -117,14 +117,14 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimeEvent(epService, days, 17, 15, 0, 0);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"S1"}, new object[] {"S2"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"S1"}, new object[] {"S2"}});
     
             SendTimeEvent(epService, days, 17, 18, 0, 0);
             SendEvent(epService, "S3", 0);
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimeEvent(epService, days, 17, 30, 0, 0);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"S3"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"S3"}});
     
             SendTimeEvent(epService, days, 17, 35, 0, 0);
             SendTimeEvent(epService, days, 17, 45, 0, 0);
@@ -145,7 +145,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimeEvent(epService, days + 1, 8, 0, 0, 0);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"S4"}, new object[] {"S5"}, new object[] {"S6"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"S4"}, new object[] {"S5"}, new object[] {"S6"}});
     
             statement.Dispose();
             listener.Reset();
@@ -188,9 +188,9 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             var listenerOne = new SupportUpdateListener();
             var listenerTwo = new SupportUpdateListener();
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select * from MarketData output last when myvar=100");
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select * from MarketData output last when myvar=100");
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("ABC", "E1", 100));
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("ABC", "E2", 100));
     
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                     "@Audit @Name('out') select * from SupportBean#lastevent output snapshot when (count_insert > 1 and varOutputTriggered = false) then set varOutputTriggered = true;";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(eplToDeploy);
-            epService.EPAdministrator.GetStatement("out").AddListener(listener);
+            epService.EPAdministrator.GetStatement("out").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.IsFalse(listener.IsInvoked);
@@ -239,14 +239,14 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             epService.EPAdministrator.CreateEPL("create variable int var_cnt_total = 3");
             string expressionTotal = "select theString from SupportBean#length(2) output when count_insert_total = var_cnt_total or count_remove_total > 2";
             EPStatement stmtTotal = epService.EPAdministrator.CreateEPL(expressionTotal);
-            stmtTotal.AddListener(listener);
+            stmtTotal.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "theString".Split(','), new Object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "theString".Split(','), new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
     
             epService.EPRuntime.SetVariableValue("var_cnt_total", -1);
     
@@ -254,7 +254,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             Assert.IsFalse(listener.GetAndClearIsInvoked());
     
             epService.EPRuntime.SendEvent(new SupportBean("E5", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "theString".Split(','), new Object[][]{new object[] {"E4"}, new object[] {"E5"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "theString".Split(','), new object[][]{new object[] {"E4"}, new object[] {"E5"}});
             epService.EPAdministrator.DestroyAllStatements();
         }
     
@@ -267,10 +267,10 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             // now scheduled for output
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.AreEqual(0, epService.EPRuntime.GetVariableValue("myvar"));
-            Assert.IsFalse(subscriber.IsInvoked());
+            Assert.IsFalse(subscriber.IsInvoked);
     
             SendTimeEvent(epService, days, 8, 0, 1, 0);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"S1"}, subscriber.GetAndResetLastNewData());
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"S1"}, subscriber.GetAndResetLastNewData());
             Assert.AreEqual(0, epService.EPRuntime.GetVariableValue("myvar"));
             Assert.AreEqual(1, epService.EPRuntime.GetVariableValue("count_insert_var"));
     
@@ -282,16 +282,16 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             Assert.AreEqual(0, epService.EPRuntime.GetVariableValue("myvar"));
             Assert.AreEqual(2, epService.EPRuntime.GetVariableValue("count_insert_var"));
     
-            Assert.IsFalse(subscriber.IsInvoked());
+            Assert.IsFalse(subscriber.IsInvoked);
             SendTimeEvent(epService, days, 8, 0, 4, 0);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"S2", "S3"}, subscriber.GetAndResetLastNewData());
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"S2", "S3"}, subscriber.GetAndResetLastNewData());
             Assert.AreEqual(0, epService.EPRuntime.GetVariableValue("myvar"));
     
             SendTimeEvent(epService, days, 8, 0, 5, 0);
-            Assert.IsFalse(subscriber.IsInvoked());
+            Assert.IsFalse(subscriber.IsInvoked);
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.AreEqual(0, epService.EPRuntime.GetVariableValue("myvar"));
-            Assert.IsFalse(subscriber.IsInvoked());
+            Assert.IsFalse(subscriber.IsInvoked);
     
             stmt.Dispose();
         }
@@ -315,7 +315,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             SendEvent(epService, "S2", 0);
             SendTimeEvent(epService, 1, 8, 0, 1, 0);
-            Assert.IsFalse(subscriber.IsInvoked());
+            Assert.IsFalse(subscriber.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("F1", 0));
             Assert.AreEqual(0, epService.EPRuntime.GetVariableValue("myint"));
@@ -323,14 +323,14 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             SendTimeEvent(epService, 1, 8, 0, 2, 0);
             SendEvent(epService, "S3", 0);
-            Assert.IsFalse(subscriber.IsInvoked());
+            Assert.IsFalse(subscriber.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("F2", 1));
             Assert.AreEqual(1, epService.EPRuntime.GetVariableValue("myint"));
             Assert.AreEqual("F2", epService.EPRuntime.GetVariableValue("mystring"));
     
             SendEvent(epService, "S4", 0);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"S1", "S2", "S3", "S4"}, subscriber.GetAndResetLastNewData());
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"S1", "S2", "S3", "S4"}, subscriber.GetAndResetLastNewData());
     
             stmt.Dispose();
         }
@@ -343,20 +343,20 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             SendEvent(epService, "S1", 0);
             SendEvent(epService, "S2", 0);
-            Assert.IsFalse(subscriber.IsInvoked());
+            Assert.IsFalse(subscriber.IsInvoked);
     
             SendEvent(epService, "S3", 0);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"S1", "S2", "S3"}, subscriber.GetAndResetLastNewData());
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"S1", "S2", "S3"}, subscriber.GetAndResetLastNewData());
     
             SendEvent(epService, "S4", 0);
             SendEvent(epService, "S5", 0);
-            Assert.IsFalse(subscriber.IsInvoked());
+            Assert.IsFalse(subscriber.IsInvoked);
     
             SendEvent(epService, "S6", 0);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"S4", "S5", "S6"}, subscriber.GetAndResetLastNewData());
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"S4", "S5", "S6"}, subscriber.GetAndResetLastNewData());
     
             SendEvent(epService, "S7", 0);
-            Assert.IsFalse(subscriber.IsInvoked());
+            Assert.IsFalse(subscriber.IsInvoked);
     
             stmt.Dispose();
         }
@@ -370,19 +370,19 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendEvent(epService, "S1", 0);
             SendEvent(epService, "S2", 0);
             SendEvent(epService, "S3", 0);
-            Assert.IsFalse(subscriber.IsInvoked());
+            Assert.IsFalse(subscriber.IsInvoked);
     
             SendEvent(epService, "S4", 0);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"S1", "S2", "S3", "S4"}, subscriber.GetAndResetLastNewData());
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"S1", "S2", "S3", "S4"}, subscriber.GetAndResetLastNewData());
     
             SendEvent(epService, "S5", 0);
-            Assert.IsFalse(subscriber.IsInvoked());
+            Assert.IsFalse(subscriber.IsInvoked);
     
             SendEvent(epService, "S6", 0);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"S5", "S6"}, subscriber.GetAndResetLastNewData());
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"S5", "S6"}, subscriber.GetAndResetLastNewData());
     
             SendEvent(epService, "S7", 0);
-            Assert.IsFalse(subscriber.IsInvoked());
+            Assert.IsFalse(subscriber.IsInvoked);
     
             stmt.Dispose();
         }
@@ -400,21 +400,21 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendEvent(epService, "S2", 0);
     
             SendTimeEvent(epService, 1, 8, 0, 2, 0);
-            Assert.IsFalse(subscriber.IsInvoked());
+            Assert.IsFalse(subscriber.IsInvoked);
     
             SendEvent(epService, "S3", 0);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"S1", "S2", "S3"}, subscriber.GetAndResetLastNewData());
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"S1", "S2", "S3"}, subscriber.GetAndResetLastNewData());
     
             SendTimeEvent(epService, 1, 8, 0, 3, 0);
             SendEvent(epService, "S4", 0);
     
             SendTimeEvent(epService, 1, 8, 0, 3, 500);
             SendEvent(epService, "S5", 0);
-            Assert.IsFalse(subscriber.IsInvoked());
+            Assert.IsFalse(subscriber.IsInvoked);
     
             SendTimeEvent(epService, 1, 8, 0, 4, 0);
             SendEvent(epService, "S6", 0);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"S4", "S5", "S6"}, subscriber.GetAndResetLastNewData());
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"S4", "S5", "S6"}, subscriber.GetAndResetLastNewData());
     
             stmt.Dispose();
         }
@@ -425,10 +425,8 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         }
     
         private void SendTimeEvent(EPServiceProvider epService, int day, int hour, int minute, int second, int millis) {
-            Calendar calendar = GregorianCalendar.Instance;
-            calendar.Set(2008, 1, day, hour, minute, second);
-            calendar.Set(Calendar.MILLISECOND, millis);
-            epService.EPRuntime.SendEvent(new CurrentTimeEvent(calendar.TimeInMillis));
+            var dateTime = new DateTime(2008, 1, day, hour, minute, second, millis, DateTimeKind.Local);
+            epService.EPRuntime.SendEvent(new CurrentTimeEvent(dateTime));
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {

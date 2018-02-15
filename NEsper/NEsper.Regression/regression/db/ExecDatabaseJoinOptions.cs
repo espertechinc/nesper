@@ -56,7 +56,7 @@ namespace com.espertech.esper.regression.db
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mydouble"));
     

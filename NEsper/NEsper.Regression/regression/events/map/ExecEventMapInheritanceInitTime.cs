@@ -17,7 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -25,11 +24,11 @@ namespace com.espertech.esper.regression.events.map
 {
     public class ExecEventMapInheritanceInitTime : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            IDictionary<string, Object> root = ExecEventMap.MakeMap(new Object[][]{new object[] {"base", typeof(string)}});
-            IDictionary<string, Object> sub1 = ExecEventMap.MakeMap(new Object[][]{new object[] {"sub1", typeof(string)}});
-            IDictionary<string, Object> sub2 = ExecEventMap.MakeMap(new Object[][]{new object[] {"sub2", typeof(string)}});
-            Properties suba = ExecEventMap.MakeProperties(new Object[][]{new object[] {"suba", typeof(string)}});
-            IDictionary<string, Object> subb = ExecEventMap.MakeMap(new Object[][]{new object[] {"subb", typeof(string)}});
+            IDictionary<string, Object> root = ExecEventMap.MakeMap(new object[][]{new object[] {"base", typeof(string)}});
+            IDictionary<string, Object> sub1 = ExecEventMap.MakeMap(new object[][]{new object[] {"sub1", typeof(string)}});
+            IDictionary<string, Object> sub2 = ExecEventMap.MakeMap(new object[][]{new object[] {"sub2", typeof(string)}});
+            Properties suba = ExecEventMap.MakeProperties(new object[][]{new object[] {"suba", typeof(string)}});
+            IDictionary<string, Object> subb = ExecEventMap.MakeMap(new object[][]{new object[] {"subb", typeof(string)}});
             configuration.AddEventType("RootEvent", root);
             configuration.AddEventType("Sub1Event", sub1);
             configuration.AddEventType("Sub2Event", sub2);
@@ -45,7 +44,7 @@ namespace com.espertech.esper.regression.events.map
     
         public override void Run(EPServiceProvider epService) {
     
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{
+            EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
                     new EventPropertyDescriptor("base", typeof(string), null, false, false, false, false, false),
                     new EventPropertyDescriptor("sub1", typeof(string), null, false, false, false, false, false),
                     new EventPropertyDescriptor("suba", typeof(string), null, false, false, false, false, false),
@@ -66,24 +65,24 @@ namespace com.espertech.esper.regression.events.map
             for (int i = 0; i < statements.Length; i++) {
                 EPStatement statement = epService.EPAdministrator.CreateEPL(statements[i]);
                 listeners[i] = new SupportUpdateListener();
-                statement.AddListener(listeners[i]);
+                statement.Events += listeners[i].Update;
             }
             string[] fields = "vbase,v1,v2,va,vb".Split(',');
     
             epService.EPRuntime.SendEvent(ExecEventMap.MakeMap("base=a,sub1=b,sub2=x,suba=c,subb=y"), "SubAEvent");
-            EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, new Object[]{"a", "b", "x", "c", "y"});
+            EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, new object[]{"a", "b", "x", "c", "y"});
             Assert.IsFalse(listeners[2].IsInvoked || listeners[4].IsInvoked);
-            EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNewAndReset(), fields, new Object[]{"a", "b", "x", "c", "y"});
-            EPAssertionUtil.AssertProps(listeners[3].AssertOneGetNewAndReset(), fields, new Object[]{"a", "b", "x", "c", "y"});
+            EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNewAndReset(), fields, new object[]{"a", "b", "x", "c", "y"});
+            EPAssertionUtil.AssertProps(listeners[3].AssertOneGetNewAndReset(), fields, new object[]{"a", "b", "x", "c", "y"});
     
             epService.EPRuntime.SendEvent(ExecEventMap.MakeMap("base=f1,sub1=f2,sub2=f3,suba=f4,subb=f5"), "SubAEvent");
-            EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, new Object[]{"f1", "f2", "f3", "f4", "f5"});
+            EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, new object[]{"f1", "f2", "f3", "f4", "f5"});
             Assert.IsFalse(listeners[2].IsInvoked || listeners[4].IsInvoked);
-            EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNewAndReset(), fields, new Object[]{"f1", "f2", "f3", "f4", "f5"});
-            EPAssertionUtil.AssertProps(listeners[3].AssertOneGetNewAndReset(), fields, new Object[]{"f1", "f2", "f3", "f4", "f5"});
+            EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNewAndReset(), fields, new object[]{"f1", "f2", "f3", "f4", "f5"});
+            EPAssertionUtil.AssertProps(listeners[3].AssertOneGetNewAndReset(), fields, new object[]{"f1", "f2", "f3", "f4", "f5"});
     
             epService.EPRuntime.SendEvent(ExecEventMap.MakeMap("base=XBASE,sub1=X1,sub2=X2,subb=XY"), "SubBEvent");
-            var values = new Object[]{"XBASE", "X1", "X2", null, "XY"};
+            var values = new object[]{"XBASE", "X1", "X2", null, "XY"};
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, values);
             Assert.IsFalse(listeners[3].IsInvoked);
             EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNewAndReset(), fields, values);
@@ -91,19 +90,19 @@ namespace com.espertech.esper.regression.events.map
             EPAssertionUtil.AssertProps(listeners[4].AssertOneGetNewAndReset(), fields, values);
     
             epService.EPRuntime.SendEvent(ExecEventMap.MakeMap("base=YBASE,sub1=Y1"), "Sub1Event");
-            values = new Object[]{"YBASE", "Y1", null, null, null};
+            values = new object[]{"YBASE", "Y1", null, null, null};
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, values);
             Assert.IsFalse(listeners[2].IsInvoked || listeners[3].IsInvoked || listeners[4].IsInvoked);
             EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNewAndReset(), fields, values);
     
             epService.EPRuntime.SendEvent(ExecEventMap.MakeMap("base=YBASE,sub2=Y2"), "Sub2Event");
-            values = new Object[]{"YBASE", null, "Y2", null, null};
+            values = new object[]{"YBASE", null, "Y2", null, null};
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, values);
             Assert.IsFalse(listeners[1].IsInvoked || listeners[3].IsInvoked || listeners[4].IsInvoked);
             EPAssertionUtil.AssertProps(listeners[2].AssertOneGetNewAndReset(), fields, values);
     
             epService.EPRuntime.SendEvent(ExecEventMap.MakeMap("base=ZBASE"), "RootEvent");
-            values = new Object[]{"ZBASE", null, null, null, null};
+            values = new object[]{"ZBASE", null, null, null, null};
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, values);
             Assert.IsFalse(listeners[1].IsInvoked || listeners[2].IsInvoked || listeners[3].IsInvoked || listeners[4].IsInvoked);
     

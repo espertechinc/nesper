@@ -13,7 +13,6 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -46,7 +45,7 @@ namespace com.espertech.esper.regression.epl.subselect
                     "having sum(intPrimitive) > (select maxAmount from MyInfra as mw where sb.theString = mw.key)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             string[] fields = "c0,c1".Split(',');
     
             // set some amounts
@@ -61,7 +60,7 @@ namespace com.espertech.esper.regression.epl.subselect
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("G2", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"G2", 21});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"G2", 21});
     
             epService.EPRuntime.SendEvent(new SupportBean("G2", 18));
             epService.EPRuntime.SendEvent(new SupportBean("G1", 4));
@@ -69,10 +68,10 @@ namespace com.espertech.esper.regression.epl.subselect
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("G3", 29));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"G3", 31});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"G3", 31});
     
             epService.EPRuntime.SendEvent(new SupportBean("G3", 4));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"G3", 33});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"G3", 33});
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 6));
             epService.EPRuntime.SendEvent(new SupportBean("G2", 2));
@@ -80,10 +79,10 @@ namespace com.espertech.esper.regression.epl.subselect
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 99));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"G1", 105});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"G1", 105});
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"G1", 100});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"G1", 100});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfra", false);

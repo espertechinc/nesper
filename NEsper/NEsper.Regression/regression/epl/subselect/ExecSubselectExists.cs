@@ -13,8 +13,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -43,7 +41,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtText = "select Exists (select * from S1#length(1000)) as value from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             RunTestExistsInSelect(epService, listener);
     
@@ -67,7 +65,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             RunTestExistsInSelect(epService, listener);
     
@@ -82,7 +80,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             RunTestExistsInSelect(epService, listener);
     
@@ -103,7 +101,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
             Assert.IsFalse(listener.IsInvoked);
@@ -124,7 +122,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
             Assert.IsFalse(listener.IsInvoked);
@@ -154,7 +152,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
             Assert.IsFalse(listener.IsInvoked);
@@ -197,7 +195,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
             Assert.AreEqual(2, listener.AssertOneGetNewAndReset().Get("id"));
@@ -221,7 +219,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
             Assert.AreEqual(2, listener.AssertOneGetNewAndReset().Get("id"));
@@ -242,7 +240,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
             Assert.AreEqual(2, listener.AssertOneGetNewAndReset().Get("id"));

@@ -74,7 +74,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             var listener = new SupportUpdateListener();
             var eplRead = "select MyApproxNS.bytefreq.CountMinSketchFrequency(data) as freq from MyByteArrayEventRead";
             var stmtRead = epService.EPAdministrator.CreateEPL(eplRead);
-            stmtRead.AddListener(listener);
+            stmtRead.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new MyByteArrayEventCount(new byte[]{1, 2, 3}));
             epService.EPRuntime.SendEvent(new MyByteArrayEventRead(new byte[]{0, 2, 3}));
@@ -95,9 +95,9 @@ namespace com.espertech.esper.regression.nwtable.tbl
             var deploymentResult = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
     
             var listenerFreq = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("frequency").AddListener(listenerFreq);
+            epService.EPAdministrator.GetStatement("frequency").Events += listenerFreq.Update;
             var listenerTopk = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("topk").AddListener(listenerTopk);
+            epService.EPAdministrator.GetStatement("topk").Events += listenerTopk.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             AssertOutput(epService, listenerFreq, "E1=1", listenerTopk, "E1=1");
@@ -120,7 +120,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             // test join
             var eplJoin = "select Wordapprox.CountMinSketchFrequency(s2.p20) as c0 from MyApproxFT, SupportBean_S2 s2 unidirectional";
             var stmtJoin = epService.EPAdministrator.CreateEPL(eplJoin);
-            stmtJoin.AddListener(listenerFreq);
+            stmtJoin.Events += listenerFreq.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S2(0, "E3"));
             Assert.AreEqual(1L, listenerFreq.AssertOneGetNewAndReset().Get("c0"));
             stmtJoin.Dispose();
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             // test subquery
             var eplSubquery = "select (select Wordapprox.CountMinSketchFrequency(s2.p20) from MyApproxFT) as c0 from SupportBean_S2 s2";
             var stmtSubquery = epService.EPAdministrator.CreateEPL(eplSubquery);
-            stmtSubquery.AddListener(listenerFreq);
+            stmtSubquery.Events += listenerFreq.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S2(0, "E3"));
             Assert.AreEqual(1L, listenerFreq.AssertOneGetNewAndReset().Get("c0"));
             stmtSubquery.Dispose();

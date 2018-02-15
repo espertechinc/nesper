@@ -304,11 +304,11 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(1, annotations.Length);
     
             var array = (MyAnnotationValueArrayAttribute) annotations.First();
-            Assert.IsTrue(CompatExtensions.DeepEquals(ToObjectArray(array.Value), new Object[]{1L, 2L, 3L}));
-            Assert.IsTrue(CompatExtensions.DeepEquals(ToObjectArray(array.IntArray), new Object[]{4, 5}));
-            Assert.IsTrue(CompatExtensions.DeepEquals(ToObjectArray(array.DoubleArray), new Object[]{}));
-            Assert.IsTrue(CompatExtensions.DeepEquals(ToObjectArray(array.StringArray), new Object[]{"X"}));
-            Assert.IsTrue(CompatExtensions.DeepEquals(ToObjectArray(array.StringArrayDef), new Object[]{"XYZ"}));
+            Assert.IsTrue(CompatExtensions.DeepEquals(ToObjectArray(array.Value), new object[]{1L, 2L, 3L}));
+            Assert.IsTrue(CompatExtensions.DeepEquals(ToObjectArray(array.IntArray), new object[]{4, 5}));
+            Assert.IsTrue(CompatExtensions.DeepEquals(ToObjectArray(array.DoubleArray), new object[]{}));
+            Assert.IsTrue(CompatExtensions.DeepEquals(ToObjectArray(array.StringArray), new object[]{"X"}));
+            Assert.IsTrue(CompatExtensions.DeepEquals(ToObjectArray(array.StringArrayDef), new object[]{"XYZ"}));
     
             // statement model
             model = epService.EPAdministrator.CompileEPL(stmtText);
@@ -369,7 +369,7 @@ namespace com.espertech.esper.regression.client
     
             var nested = (MyAnnotationNestedAttribute) annotations.First();
             Assert.IsNotNull(nested.NestableSimple);
-            Assert.IsTrue(CompatExtensions.DeepEquals(ToObjectArray(nested.NestableValues.Arr), new Object[]{2, 1}));
+            Assert.IsTrue(CompatExtensions.DeepEquals(ToObjectArray(nested.NestableValues.Arr), new object[]{2, 1}));
             Assert.AreEqual(999, nested.NestableValues.Val);
             Assert.AreEqual("CDF", nested.NestableNestable.Value);
     
@@ -386,7 +386,7 @@ namespace com.espertech.esper.regression.client
             return annotations.OrderBy(o => o.GetType().Name).ToArray();
         }
     
-        private Object[] ToObjectArray<T>(T[] value) {
+        private object[] ToObjectArray<T>(T[] value) {
             if (value is Array array)
             {
                 var result = new Object[array.Length];

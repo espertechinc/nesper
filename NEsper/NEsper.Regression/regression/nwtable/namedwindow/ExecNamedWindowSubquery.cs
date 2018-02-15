@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -57,7 +55,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from MyWindow where (select count(*) from MyWindow) > 0");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 1));
             Assert.IsTrue(listener.IsInvoked);

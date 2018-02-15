@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -47,7 +46,7 @@ namespace com.espertech.esper.regression.view
             var fields = new string[]{"theString"};
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#Expr_batch(newest_event.intPrimitive != oldest_event.intPrimitive, false)");
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
@@ -55,11 +54,11 @@ namespace com.espertech.esper.regression.view
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 2));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields,
-                    new Object[][]{new object[] {"E1"}, new object[] {"E2"}}, null);
+                    new object[][]{new object[] {"E1"}, new object[] {"E2"}}, null);
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 3));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields,
-                    new Object[][]{new object[] {"E3"}}, new Object[][] {new object[] {"E1"}, new object[] {"E2"}});
+                    new object[][]{new object[] {"E3"}}, new object[][] {new object[] {"E1"}, new object[] {"E2"}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E5", 3));
             epService.EPRuntime.SendEvent(new SupportBean("E6", 3));
@@ -67,12 +66,12 @@ namespace com.espertech.esper.regression.view
     
             epService.EPRuntime.SendEvent(new SupportBean("E7", 2));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields,
-                    new Object[][]{new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}}, new Object[][] {new object[] {"E3"}});
+                    new object[][]{new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}}, new object[][] {new object[] {"E3"}});
             stmtOne.Dispose();
     
             // try with include-trigger-event
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#Expr_batch(newest_event.intPrimitive != oldest_event.intPrimitive, true)");
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
@@ -80,7 +79,7 @@ namespace com.espertech.esper.regression.view
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 2));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields,
-                    new Object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}}, null);
+                    new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}}, null);
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 3));
             epService.EPRuntime.SendEvent(new SupportBean("E5", 3));
@@ -89,7 +88,7 @@ namespace com.espertech.esper.regression.view
     
             epService.EPRuntime.SendEvent(new SupportBean("E7", 2));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields,
-                    new Object[][]{new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}, new object[] {"E7"}}, new Object[][] {new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
+                    new object[][]{new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}, new object[] {"E7"}}, new object[][] {new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
     
             stmtTwo.Dispose();
         }
@@ -98,30 +97,30 @@ namespace com.espertech.esper.regression.view
             var fields = new string[]{"theString"};
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#Expr_batch(current_count >= 3, true)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
             epService.EPRuntime.SendEvent(new SupportBean("E5", 5));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E6", 6));
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}});
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastOldData(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastOldData(), fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E7", 7));
             epService.EPRuntime.SendEvent(new SupportBean("E8", 8));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E9", 9));
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"E7"}, new object[] {"E8"}, new object[] {"E9"}});
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastOldData(), fields, new Object[][]{new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"E7"}, new object[] {"E8"}, new object[] {"E9"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastOldData(), fields, new object[][]{new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}});
     
             stmt.Dispose();
         }
@@ -132,7 +131,7 @@ namespace com.espertech.esper.regression.view
             var fields = new string[]{"theString"};
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#Expr_batch(newest_timestamp - oldest_timestamp > 2000)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -145,7 +144,7 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E5", 5));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}, new object[] {"E4"}, new object[] {"E5"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}, new object[] {"E4"}, new object[] {"E5"}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E6", 6));
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(5100));
@@ -154,8 +153,8 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E8", 8));
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"E6"}, new object[] {"E7"}, new object[] {"E8"}});
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastOldData(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}, new object[] {"E4"}, new object[] {"E5"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"E6"}, new object[] {"E7"}, new object[] {"E8"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastOldData(), fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}, new object[] {"E4"}, new object[] {"E5"}});
     
             stmt.Dispose();
         }
@@ -167,7 +166,7 @@ namespace com.espertech.esper.regression.view
             var fields = new string[]{"theString"};
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#Expr_batch(POST)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -175,13 +174,13 @@ namespace com.espertech.esper.regression.view
     
             epService.EPRuntime.SetVariableValue("POST", true);
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1001));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E1"}}, null);
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E1"}}, null);
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E2"}}, new Object[][] {new object[] {"E1"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E2"}}, new object[][] {new object[] {"E1"}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E3"}}, new Object[][] {new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E3"}}, new object[][] {new object[] {"E2"}});
     
             epService.EPRuntime.SetVariableValue("POST", false);
             epService.EPRuntime.SendEvent(new SupportBean("E4", 1));
@@ -191,10 +190,10 @@ namespace com.espertech.esper.regression.view
     
             epService.EPRuntime.SetVariableValue("POST", true);
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(2001));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E4"}, new object[] {"E5"}}, new Object[][] {new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E4"}, new object[] {"E5"}}, new object[][] {new object[] {"E3"}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E6", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E6"}}, new Object[][] {new object[] {"E4"}, new object[] {"E5"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E6"}}, new object[][] {new object[] {"E4"}, new object[] {"E5"}});
     
             stmt.Stop();
         }
@@ -206,7 +205,7 @@ namespace com.espertech.esper.regression.view
             var fields = new string[]{"theString"};
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#Expr_batch(newest_timestamp - oldest_timestamp > SIZE)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
@@ -216,7 +215,7 @@ namespace com.espertech.esper.regression.view
     
             epService.EPRuntime.SetVariableValue("SIZE", 500);
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1901));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E2"}}, null);
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}}, null);
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 0));
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(2300));
@@ -225,7 +224,7 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E5", 0));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E3"}, new object[] {"E4"}, new object[] {"E5"}}, new Object[][] {new object[] {"E1"}, new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E3"}, new object[] {"E4"}, new object[] {"E5"}}, new object[][] {new object[] {"E1"}, new object[] {"E2"}});
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(3100));
             epService.EPRuntime.SendEvent(new SupportBean("E6", 0));
@@ -238,7 +237,7 @@ namespace com.espertech.esper.regression.view
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(4100));
             epService.EPRuntime.SendEvent(new SupportBean("E8", 0));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E6"}, new object[] {"E7"}, new object[] {"E8"}}, new Object[][] {new object[] {"E3"}, new object[] {"E4"}, new object[] {"E5"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E6"}, new object[] {"E7"}, new object[] {"E8"}}, new object[][] {new object[] {"E3"}, new object[] {"E4"}, new object[] {"E5"}});
     
             stmt.Dispose();
         }
@@ -278,24 +277,24 @@ namespace com.espertech.esper.regression.view
             var fields = new string[]{"theString"};
             EPStatement stmt = epService.EPAdministrator.CreateEPL("create window NW#Expr_batch(current_count > 3) as SupportBean");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPAdministrator.CreateEPL("insert into NW select * from SupportBean");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
     
             epService.EPAdministrator.CreateEPL("on SupportBean_A delete from NW where theString = id");
             epService.EPRuntime.SendEvent(new SupportBean_A("E2"));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1"}, new object[] {"E3"}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E5", 5));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E3"}, new object[] {"E4"}, new object[] {"E5"}}, null);
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E1"}, new object[] {"E3"}, new object[] {"E4"}, new object[] {"E5"}}, null);
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -304,14 +303,14 @@ namespace com.espertech.esper.regression.view
             var fields = new string[]{"val0"};
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select Prev(1, theString) as val0 from SupportBean#Expr_batch(current_count > 2)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {null}, new object[] {"E1"}, new object[] {"E2"}}, null);
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {null}, new object[] {"E1"}, new object[] {"E2"}}, null);
     
             stmt.Dispose();
         }
@@ -320,19 +319,19 @@ namespace com.espertech.esper.regression.view
             var fields = new string[]{"val0"};
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString as val0 from SupportBean#Expr_batch(intPrimitive > 0)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E1"}}, null);
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E1"}}, null);
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E2"}}, new Object[][] {new object[] {"E1"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E2"}}, new object[][] {new object[] {"E1"}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", -1));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 2));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E3"}, new object[] {"E4"}}, new Object[][] {new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E3"}, new object[] {"E4"}}, new object[][] {new object[] {"E2"}});
     
             stmt.Dispose();
         }
@@ -343,29 +342,29 @@ namespace com.espertech.esper.regression.view
             // Test un-grouped
             EPStatement stmtUngrouped = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#Expr_batch(sum(intPrimitive) > 100)");
             var listener = new SupportUpdateListener();
-            stmtUngrouped.AddListener(listener);
+            stmtUngrouped.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 90));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 10));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}}, null);
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}}, null);
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 101));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E4"}}, new Object[][] {new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E4"}}, new object[][] {new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E5", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E6", 99));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E7", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E5"}, new object[] {"E6"}, new object[] {"E7"}}, new Object[][] {new object[] {"E4"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E5"}, new object[] {"E6"}, new object[] {"E7"}}, new object[][] {new object[] {"E4"}});
             stmtUngrouped.Dispose();
     
             // Test grouped
             EPStatement stmtGrouped = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#Groupwin(intPrimitive)#Expr_batch(sum(longPrimitive) > 100)");
-            stmtGrouped.AddListener(listener);
+            stmtGrouped.Events += listener.Update;
     
             SendEvent(epService, "E1", 1, 10);
             SendEvent(epService, "E2", 2, 10);
@@ -375,29 +374,29 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
     
             SendEvent(epService, "E6", 2, 1);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E2"}, new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}}, null);
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E2"}, new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}}, null);
     
             SendEvent(epService, "E7", 2, 50);
             Assert.IsFalse(listener.IsInvoked);
     
             SendEvent(epService, "E8", 1, 2);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E3"}, new object[] {"E8"}}, null);
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E1"}, new object[] {"E3"}, new object[] {"E8"}}, null);
     
             SendEvent(epService, "E9", 2, 50);
             SendEvent(epService, "E10", 1, 101);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E10"}}, new Object[][] {new object[] {"E1"}, new object[] {"E3"}, new object[] {"E8"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E10"}}, new object[][] {new object[] {"E1"}, new object[] {"E3"}, new object[] {"E8"}});
     
             SendEvent(epService, "E11", 2, 1);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E7"}, new object[] {"E9"}, new object[] {"E11"}}, new Object[][] {new object[] {"E2"}, new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E7"}, new object[] {"E9"}, new object[] {"E11"}}, new object[][] {new object[] {"E2"}, new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}});
     
             SendEvent(epService, "E12", 1, 102);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E12"}}, new Object[][] {new object[] {"E10"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E12"}}, new object[][] {new object[] {"E10"}});
             stmtGrouped.Dispose();
     
             // Test on-delete
             epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
             EPStatement stmt = epService.EPAdministrator.CreateEPL("create window NW#Expr_batch(sum(intPrimitive) >= 10) as SupportBean");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPAdministrator.CreateEPL("insert into NW select * from SupportBean");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -409,7 +408,7 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E3"}, new object[] {"E4"}}, null);
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E1"}, new object[] {"E3"}, new object[] {"E4"}}, null);
     
             epService.EPAdministrator.DestroyAllStatements();
         }

@@ -50,16 +50,16 @@ namespace com.espertech.esper.regression.pattern
             string expression = "select * from pattern [every-Distinct(a.intPrimitive, 1 sec) a=SupportBean(theString like 'A%')]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new Object[]{"A1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"A1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A2", 1));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("A3", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new Object[]{"A3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"A3"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A4", 1));
             epService.EPRuntime.SendEvent(new SupportBean("A5", 2));
@@ -68,9 +68,9 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
     
             epService.EPRuntime.SendEvent(new SupportBean("A4", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new Object[]{"A4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"A4"});
             epService.EPRuntime.SendEvent(new SupportBean("A5", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new Object[]{"A5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"A5"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A6", 1));
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1999));
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(2000));
             epService.EPRuntime.SendEvent(new SupportBean("A7", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new Object[]{"A7"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"A7"});
     
             statement.Dispose();
         }
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regression.pattern
         private void RunEveryDistinctOverFilter(EPServiceProvider epService, string expression) {
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("a.theString"));
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regression.pattern
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regression.pattern
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
@@ -201,7 +201,7 @@ namespace com.espertech.esper.regression.pattern
             SendTimer(0, epService);
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("a.theString"));
@@ -235,7 +235,7 @@ namespace com.espertech.esper.regression.pattern
             SendTimer(0, epService);
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("a.theString"));
@@ -297,12 +297,12 @@ namespace com.espertech.esper.regression.pattern
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
             Assert.IsFalse(listener.IsInvoked);
             epService.EPRuntime.SendEvent(new SupportBean("B1", 10));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{"A1", "B1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A1", "B1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A2", 1));
             epService.EPRuntime.SendEvent(new SupportBean("B2", 10));
@@ -310,11 +310,11 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new SupportBean("A3", 2));
             epService.EPRuntime.SendEvent(new SupportBean("B3", 10));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{"A3", "B3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A3", "B3"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A4", 1));
             epService.EPRuntime.SendEvent(new SupportBean("B4", 20));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{"A4", "B4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A4", "B4"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A5", 2));
             epService.EPRuntime.SendEvent(new SupportBean("B5", 10));
@@ -322,7 +322,7 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new SupportBean("A6", 2));
             epService.EPRuntime.SendEvent(new SupportBean("B6", 20));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{"A6", "B6"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A6", "B6"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A7", 2));
             epService.EPRuntime.SendEvent(new SupportBean("B7", 20));
@@ -343,13 +343,13 @@ namespace com.espertech.esper.regression.pattern
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{"A1", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A1", null});
     
             epService.EPRuntime.SendEvent(new SupportBean("B1", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{null, "B1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{null, "B1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("B2", 1));
             epService.EPRuntime.SendEvent(new SupportBean("A2", 2));
@@ -358,10 +358,10 @@ namespace com.espertech.esper.regression.pattern
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("B4", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{null, "B4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{null, "B4"});
     
             epService.EPRuntime.SendEvent(new SupportBean("B5", 4));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{null, "B5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{null, "B5"});
     
             epService.EPRuntime.SendEvent(new SupportBean("B6", 3));
             epService.EPRuntime.SendEvent(new SupportBean("A4", 3));
@@ -383,22 +383,22 @@ namespace com.espertech.esper.regression.pattern
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new Object[]{"A1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"A1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A2", 1));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("A3", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new Object[]{"A3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"A3"});
     
             epService.EPRuntime.SendEvent(new SupportBean("B1", 1));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("A4", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new Object[]{"A4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"A4"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A5", 1));
             Assert.IsFalse(listener.IsInvoked);
@@ -417,12 +417,12 @@ namespace com.espertech.esper.regression.pattern
         private void RunEveryDistinctOverFollowedBy(EPServiceProvider epService, string expression) {
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
             Assert.IsFalse(listener.IsInvoked);
             epService.EPRuntime.SendEvent(new SupportBean("B1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{"A1", "B1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A1", "B1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A2", 1));
             epService.EPRuntime.SendEvent(new SupportBean("B2", 1));
@@ -434,7 +434,7 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new SupportBean("A4", 2));
             epService.EPRuntime.SendEvent(new SupportBean("B4", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{"A4", "B4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A4", "B4"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A5", 3));
             epService.EPRuntime.SendEvent(new SupportBean("B5", 0));
@@ -454,13 +454,13 @@ namespace com.espertech.esper.regression.pattern
         private void RunEveryDistinctWithinFollowedBy(EPServiceProvider epService, string expression) {
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("B1", 0));
             Assert.IsFalse(listener.IsInvoked);
             epService.EPRuntime.SendEvent(new SupportBean("B2", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{"A1", "B2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A1", "B2"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A2", 2));
             epService.EPRuntime.SendEvent(new SupportBean("A3", 3));
@@ -468,13 +468,13 @@ namespace com.espertech.esper.regression.pattern
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("B3", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{"A3", "B3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A3", "B3"});
     
             epService.EPRuntime.SendEvent(new SupportBean("B4", 1));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("B5", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{"A2", "B5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A2", "B5"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A5", 2));
             epService.EPRuntime.SendEvent(new SupportBean("B6", 2));
@@ -482,7 +482,7 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new SupportBean("A6", 4));
             epService.EPRuntime.SendEvent(new SupportBean("B7", 4));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{"A6", "B7"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A6", "B7"});
     
             statement.Dispose();
         }
@@ -498,30 +498,30 @@ namespace com.espertech.esper.regression.pattern
         private void RunFollowedByWithDistinct(EPServiceProvider epService, string expression) {
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("B1", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{"A1", "B1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A1", "B1"});
             epService.EPRuntime.SendEvent(new SupportBean("B2", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{"A1", "B2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A1", "B2"});
             epService.EPRuntime.SendEvent(new SupportBean("B3", 0));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("A2", 1));
             epService.EPRuntime.SendEvent(new SupportBean("B4", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{"A1", "B4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A1", "B4"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A3", 2));
             epService.EPRuntime.SendEvent(new SupportBean("B5", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new Object[]{"A3", "B5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A3", "B5"});
             epService.EPRuntime.SendEvent(new SupportBean("B6", 1));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("B7", 3));
             EventBean[] events = listener.GetAndResetLastNewData();
             EPAssertionUtil.AssertPropsPerRowAnyOrder(events, "a.theString,b.theString".Split(','),
-                    new Object[][]{new object[] {"A1", "B7"}, new object[] {"A3", "B7"}});
+                    new object[][]{new object[] {"A1", "B7"}, new object[] {"A3", "B7"}});
     
             statement.Dispose();
         }
@@ -542,10 +542,10 @@ namespace com.espertech.esper.regression.pattern
             var listener = new SupportUpdateListener();
     
             SendCurrentTime(epService, "2002-02-01T09:00:00.000");
-            epService.EPAdministrator.CreateEPL("select * from pattern [every-Distinct(theString, 1 month) a=SupportBean]").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from pattern [every-Distinct(theString, 1 month) a=SupportBean]").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
             SendCurrentTimeWithMinus(epService, "2002-03-01T09:00:00.000", 1);
@@ -555,7 +555,7 @@ namespace com.espertech.esper.regression.pattern
             SendCurrentTime(epService, "2002-03-01T09:00:00.000");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 4));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 4});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 4});
     
             epService.EPAdministrator.DestroyAllStatements();
         }

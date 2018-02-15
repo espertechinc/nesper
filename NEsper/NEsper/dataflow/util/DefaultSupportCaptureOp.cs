@@ -84,11 +84,11 @@ namespace com.espertech.esper.dataflow.util
             }
         }
 
-        public Object[] GetCurrent()
-        {
-            using (_iLock.Acquire())
-            {
-                return _current.UnwrapIntoArray<object>();
+        public object[] Current {
+            get {
+                using (_iLock.Acquire()) {
+                    return _current.UnwrapIntoArray<object>();
+                }
             }
         }
 
@@ -114,7 +114,7 @@ namespace com.espertech.esper.dataflow.util
 
         public object[] GetValueOrDefault()
         {
-            return !IsDone() ? null : GetCurrent();
+            return !IsDone() ? null : Current;
         }
 
         public Object[] GetValue(TimeSpan timeOut)
@@ -124,7 +124,7 @@ namespace com.espertech.esper.dataflow.util
             {
                 throw new TimeoutException("latch timed out");
             }
-            return GetCurrent();
+            return Current;
         }
 
         public object[] GetValue(int units, TimeUnit timeUnit)

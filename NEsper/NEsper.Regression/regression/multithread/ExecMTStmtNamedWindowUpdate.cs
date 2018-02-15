@@ -16,7 +16,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.supportregression.multithread;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.multithread

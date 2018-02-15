@@ -74,8 +74,8 @@ namespace com.espertech.esper.supportregression.multithread
         private void FindEvent(SupportMTUpdateListener listener, int loop, object theEvent)
         {
             var message = "Failed in loop " + loop + " threads " + Thread.CurrentThread;
-            Assert.IsTrue(listener.IsInvoked(), message);
-            var eventBeans = listener.GetNewDataListCopy();
+            Assert.IsTrue(listener.IsInvoked, message);
+            var eventBeans = listener.NewDataListCopy;
             var found = false;
             foreach (var events in eventBeans)
             {

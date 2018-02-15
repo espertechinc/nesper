@@ -16,15 +16,14 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.resultset.querytype
 {
     public class ExecQuerytypeRowPerEventDistinct : RegressionExecution {
-        private static readonly string SYMBOL_DELL = "DELL";
-        private static readonly string SYMBOL_IBM = "IBM";
+        private const string SYMBOL_DELL = "DELL";
+        private const string SYMBOL_IBM = "IBM";
     
         public override void Run(EPServiceProvider epService) {
             // Every event generates a new row, this time we sum the price by symbol and output volume
@@ -33,7 +32,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));

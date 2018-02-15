@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.multithread
                 listeners[i] = new SupportUpdateListener();
                 EPStatement stmt = engine.EPAdministrator.CreateEPL("context MyContext select fieldOne, count(*) as cnt from MyEvent " +
                         "group by fieldOne output last when terminated");
-                stmt.AddListener(listeners[i]);
+                stmt.Events += listeners[i].Update;
             }
     
             int eventCount = 100000; // keep this divisible by 1000

@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
@@ -19,7 +20,10 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
+
 using NUnit.Framework;
+
+using static com.espertech.esper.supportregression.util.IndexBackingTableInfo;
 
 namespace com.espertech.esper.regression.nwtable.infra {
     using Map = IDictionary<string, object>;
@@ -90,7 +94,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
                                  "] select mywin.* from MyInfraPC as mywin where a = coalesce(ea.id, eb.id)";
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
 
             // create insert into
             var stmtTextInsertOne = "insert into MyInfraPC select theString as a, intPrimitive as b from " +
@@ -107,7 +111,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             SendSupportBean_A(epService, "X1");
             Assert.IsFalse(listenerSelect.IsInvoked);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                stmtCreate.GetEnumerator(), fields, new object[][] {{"E1", 1}, {"E2", 2}, {"E3", 3}});
+                stmtCreate.GetEnumerator(), fields, new object[][] {new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 3}});
             if (namedWindow) {
                 EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, null);
             }
@@ -115,23 +119,23 @@ namespace com.espertech.esper.regression.nwtable.infra {
             SendSupportBean_B(epService, "E2");
             EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[] {"E2", 2});
             if (namedWindow) {
-                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {{"E2", 2}});
+                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {new object[] {"E2", 2}});
             }
 
             SendSupportBean_A(epService, "E1");
             EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[] {"E1", 1});
             if (namedWindow) {
-                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {{"E1", 1}});
+                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {new object[] {"E1", 1}});
             }
 
             SendSupportBean_B(epService, "E3");
             EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[] {"E3", 3});
             if (namedWindow) {
-                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {{"E3", 3}});
+                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {new object[] {"E3", 3}});
             }
 
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                stmtCreate.GetEnumerator(), fields, new object[][] {{"E1", 1}, {"E2", 2}, {"E3", 3}});
+                stmtCreate.GetEnumerator(), fields, new object[][] {new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 3}});
 
             stmtCreate.Dispose();
             stmtSelect.Dispose();
@@ -154,7 +158,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
                                  " select mywin.* from MyInfraSCD as mywin where id = a";
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
 
             // create insert into
             var stmtTextInsertOne = "insert into MyInfraSCD select theString as a, intPrimitive as b from " +
@@ -175,7 +179,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             SendSupportBean_A(epService, "X1");
             Assert.IsFalse(listenerSelect.IsInvoked);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                stmtCreate.GetEnumerator(), fields, new object[][] {{"E1", 1}, {"E2", 2}, {"E3", 3}});
+                stmtCreate.GetEnumerator(), fields, new object[][] {new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 3}});
             if (namedWindow) {
                 EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, null);
             }
@@ -183,20 +187,20 @@ namespace com.espertech.esper.regression.nwtable.infra {
             SendSupportBean_A(epService, "E2");
             EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[] {"E2", 2});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                stmtCreate.GetEnumerator(), fields, new object[][] {{"E1", 1}, {"E2", 2}, {"E3", 3}});
+                stmtCreate.GetEnumerator(), fields, new object[][] {new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 3}});
             if (namedWindow) {
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    stmtSelect.GetEnumerator(), fields, new object[][] {{"E2", 2}});
+                    stmtSelect.GetEnumerator(), fields, new object[][] {new object[] {"E2", 2}});
             }
 
             SendSupportBean_A(epService, "E1");
             EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[] {"E1", 1});
             if (namedWindow) {
-                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {{"E1", 1}});
+                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {new object[] {"E1", 1}});
             }
 
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                stmtCreate.GetEnumerator(), fields, new object[][] {{"E1", 1}, {"E2", 2}, {"E3", 3}});
+                stmtCreate.GetEnumerator(), fields, new object[][] {new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 3}});
 
             // delete event
             SendSupportBean_B(epService, "E1");
@@ -205,7 +209,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             SendSupportBean_A(epService, "E1");
             Assert.IsFalse(listenerSelect.IsInvoked);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                stmtCreate.GetEnumerator(), fields, new object[][] {{"E2", 2}, {"E3", 3}});
+                stmtCreate.GetEnumerator(), fields, new object[][] {new object[] {"E2", 2}, new object[] {"E3", 3}});
             if (namedWindow) {
                 EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, null);
             }
@@ -213,7 +217,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             SendSupportBean_A(epService, "E2");
             EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[] {"E2", 2});
             if (namedWindow) {
-                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {{"E2", 2}});
+                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {new object[] {"E2", 2}});
             }
 
             stmtSelect.Dispose();
@@ -239,13 +243,13 @@ namespace com.espertech.esper.regression.nwtable.infra {
                                  " select a, sum(b) as sumb from MyInfraSAG group by a order by a desc";
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
 
             // create select stmt
             var stmtTextSelectTwo = "on " + typeof(SupportBean_A).FullName +
                                     " select a, sum(b) as sumb from MyInfraSAG group by a having sum(b) > 5 order by a desc";
             var stmtSelectTwo = epService.EPAdministrator.CreateEPL(stmtTextSelectTwo);
-            stmtSelectTwo.AddListener(listenerSelectTwo);
+            stmtSelectTwo.Events += listenerSelectTwo.Update;
 
             // create insert into
             var stmtTextInsertOne = "insert into MyInfraSAG select theString as a, intPrimitive as b from " +
@@ -267,10 +271,10 @@ namespace com.espertech.esper.regression.nwtable.infra {
             // fire trigger
             SendSupportBean_A(epService, "A1");
             EPAssertionUtil.AssertPropsPerRow(
-                listenerSelect.LastNewData, fields, new object[][] {{"E2", 2}, {"E1", 6}});
+                listenerSelect.LastNewData, fields, new object[][] {new object[] {"E2", 2}, new object[] {"E1", 6}});
             Assert.IsNull(listenerSelect.LastOldData);
             listenerSelect.Reset();
-            EPAssertionUtil.AssertPropsPerRow(listenerSelectTwo.LastNewData, fields, new object[][] {{"E1", 6}});
+            EPAssertionUtil.AssertPropsPerRow(listenerSelectTwo.LastNewData, fields, new object[][] {new object[] {"E1", 6}});
             Assert.IsNull(listenerSelect.LastOldData);
             listenerSelect.Reset();
 
@@ -282,7 +286,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
 
             SendSupportBean_A(epService, "A2");
             EPAssertionUtil.AssertPropsPerRow(
-                listenerSelect.LastNewData, fields, new object[][] {{"E4", -1}, {"E2", 12}, {"E1", 106}});
+                listenerSelect.LastNewData, fields, new object[][] {new object[] {"E4", -1}, new object[] {"E2", 12}, new object[] {"E1", 106}});
 
             // create delete stmt, delete E2
             var stmtTextDelete = "on " + typeof(SupportBean_B).FullName + " delete from MyInfraSAG where id = a";
@@ -291,10 +295,10 @@ namespace com.espertech.esper.regression.nwtable.infra {
 
             SendSupportBean_A(epService, "A3");
             EPAssertionUtil.AssertPropsPerRow(
-                listenerSelect.LastNewData, fields, new object[][] {{"E4", -1}, {"E1", 106}});
+                listenerSelect.LastNewData, fields, new object[][] {new object[] {"E4", -1}, new object[] {"E1", 106}});
             Assert.IsNull(listenerSelect.LastOldData);
             listenerSelect.Reset();
-            EPAssertionUtil.AssertPropsPerRow(listenerSelectTwo.LastNewData, fields, new object[][] {{"E1", 106}});
+            EPAssertionUtil.AssertPropsPerRow(listenerSelectTwo.LastNewData, fields, new object[][] {new object[] {"E1", 106}});
             Assert.IsNull(listenerSelectTwo.LastOldData);
             listenerSelectTwo.Reset();
 
@@ -325,7 +329,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
                                  " select sum(b) as sumb from MyInfraSAC where a = id";
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
 
             // create insert into
             var stmtTextInsertOne = "insert into MyInfraSAC select theString as a, intPrimitive as b from " +
@@ -342,21 +346,21 @@ namespace com.espertech.esper.regression.nwtable.infra {
             SendSupportBean_A(epService, "A1");
             EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[] {null});
             if (namedWindow) {
-                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {{null}});
+                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {new object[] {null}});
             }
 
             // fire trigger
             SendSupportBean_A(epService, "E2");
             EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[] {2});
             if (namedWindow) {
-                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {{2}});
+                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {new object[] {2}});
             }
 
             SendSupportBean(epService, "E2", 10);
             SendSupportBean_A(epService, "E2");
             EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[] {12});
             if (namedWindow) {
-                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {{12}});
+                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {new object[] {12}});
             }
 
             var resultType = stmtSelect.EventType;
@@ -383,7 +387,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             var stmtTextSelect = "on " + typeof(SupportBean_A).FullName + " select sum(b) as sumb from MyInfraSA";
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
 
             // create insert into
             var stmtTextInsertOne = "insert into MyInfraSA select theString as a, intPrimitive as b from " +
@@ -400,7 +404,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             SendSupportBean_A(epService, "A1");
             EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[] {6});
             if (namedWindow) {
-                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {{6}});
+                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {new object[] {6}});
             }
 
             // create delete stmt
@@ -416,14 +420,14 @@ namespace com.espertech.esper.regression.nwtable.infra {
                 4
             });
             if (namedWindow) {
-                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {{4}});
+                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {new object[] {4}});
             }
 
             SendSupportBean(epService, "E4", 10);
             SendSupportBean_A(epService, "A3");
             EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[] {14});
             if (namedWindow) {
-                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {{14}});
+                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {new object[] {14}});
             }
 
             var resultType = stmtSelect.EventType;
@@ -451,7 +455,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
                                  " as trigger select trigger.id as triggerid, win.a as wina, b from MyInfraSA as win order by wina";
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
 
             // create insert into
             var stmtTextInsertOne = "insert into MyInfraSA select theString as a, intPrimitive as b from " +
@@ -470,7 +474,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             EPAssertionUtil.AssertProps(listenerSelect.LastNewData[1], fields, new object[] {"A1", "E2", 2});
             if (namedWindow) {
                 EPAssertionUtil.AssertPropsPerRow(
-                    stmtSelect.GetEnumerator(), fields, new object[][] {{"A1", "E1", 1}, {"A1", "E2", 2}});
+                    stmtSelect.GetEnumerator(), fields, new object[][] {new object[] {"A1", "E1", 1}, new object[] {"A1", "E2", 2}});
             }
 
             // try limit clause
@@ -478,13 +482,13 @@ namespace com.espertech.esper.regression.nwtable.infra {
             stmtTextSelect = "on " + typeof(SupportBean_A).FullName +
                              " as trigger select trigger.id as triggerid, win.a as wina, b from MyInfraSA as win order by wina limit 1";
             stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
 
             SendSupportBean_A(epService, "A1");
             Assert.AreEqual(1, listenerSelect.LastNewData.Length);
             EPAssertionUtil.AssertProps(listenerSelect.LastNewData[0], fields, new object[] {"A1", "E1", 1});
             if (namedWindow) {
-                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {{"A1", "E1", 1}});
+                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] {new object[] {"A1", "E1", 1}});
             }
 
             stmtCreate.Dispose();
@@ -509,7 +513,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
                                  " select mywin.*, id from MyInfraSC as mywin where MyInfraSC.b < 3 order by a asc";
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
             Assert.AreEqual(StatementType.ON_SELECT, ((EPStatementSPI) stmtSelect).StatementMetadata.StatementType);
 
             // create insert into
@@ -529,10 +533,10 @@ namespace com.espertech.esper.regression.nwtable.infra {
             EPAssertionUtil.AssertProps(listenerSelect.LastNewData[0], fieldsCreate, new object[] {"E1", 1});
             EPAssertionUtil.AssertProps(listenerSelect.LastNewData[1], fieldsCreate, new object[] {"E2", 2});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                stmtCreate.GetEnumerator(), fieldsCreate, new object[][] {{"E1", 1}, {"E2", 2}, {"E3", 3}});
+                stmtCreate.GetEnumerator(), fieldsCreate, new object[][] {new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 3}});
             if (namedWindow) {
                 EPAssertionUtil.AssertPropsPerRow(
-                    stmtSelect.GetEnumerator(), fieldsOnSelect, new object[][] {{"E1", 1, "A1"}, {"E2", 2, "A1"}});
+                    stmtSelect.GetEnumerator(), fieldsOnSelect, new object[][] {new object[] {"E1", 1, "A1"}, new object[] {"E2", 2, "A1"}});
             }
             else {
                 Assert.IsFalse(stmtSelect.HasFirst());
@@ -545,10 +549,10 @@ namespace com.espertech.esper.regression.nwtable.infra {
             EPAssertionUtil.AssertProps(listenerSelect.LastNewData[1], fieldsOnSelect, new object[] {"E2", 2, "A2"});
             EPAssertionUtil.AssertProps(listenerSelect.LastNewData[2], fieldsOnSelect, new object[] {"E4", 0, "A2"});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                stmtCreate.GetEnumerator(), fieldsCreate, new object[][] {{"E1", 1}, {"E2", 2}, {"E3", 3}, {"E4", 0}});
+                stmtCreate.GetEnumerator(), fieldsCreate, new object[][] {new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 3}, new object[] {"E4", 0}});
             if (namedWindow) {
                 EPAssertionUtil.AssertPropsPerRow(
-                    stmtSelect.GetEnumerator(), fieldsCreate, new object[][] {{"E1", 1}, {"E2", 2}, {"E4", 0}});
+                    stmtSelect.GetEnumerator(), fieldsCreate, new object[][] {new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E4", 0}});
             }
 
             stmtSelect.Dispose();
@@ -597,7 +601,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
                 "on pattern [ every timer:Interval(10 sec)] select theString from MyInfraPTS having count(theString) > 0";
             var stmt = epService.EPAdministrator.CreateEPL(stmtTextOnSelect);
             var listenerSelect = new SupportUpdateListener();
-            stmt.AddListener(listenerSelect);
+            stmt.Events += listenerSelect.Update;
 
             var stmtTextInsertOne = namedWindow
                 ? "insert into MyInfraPTS select * from " + typeof(SupportBean).FullName
@@ -633,7 +637,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             var select = (EPStatementSPI) epService.EPAdministrator.CreateEPL(stmtTextSelect);
             Assert.IsFalse(select.StatementContext.IsStatelessSelect);
             var listenerSelect = new SupportUpdateListener();
-            select.AddListener(listenerSelect);
+            select.Events += listenerSelect.Update;
 
             // send 3 event
             SendSupportBean(epService, "E1", 16);
@@ -669,7 +673,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
                 "window(win.*).ToMap(k=>k.theString,v=>v.intPrimitive) as c2 " +
                 "from MyInfraWA as win");
             var listenerSelect = new SupportUpdateListener();
-            stmt.AddListener(listenerSelect);
+            stmt.Events += listenerSelect.Update;
 
             var beans = new SupportBean[3];
             for (var i = 0; i < beans.Length; i++) {
@@ -952,7 +956,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
                 // assert index and access
                 SupportQueryPlanIndexHook.AssertOnExprTableAndReset(
                     assertion.ExpectedIndexName, assertion.IndexBackingClass);
-                consumeStmt.AddListener(listenerSelect);
+                consumeStmt.Events += listenerSelect.Update;
                 assertion.EventSendAssertion.Invoke();
                 consumeStmt.Dispose();
             }

@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -29,7 +28,7 @@ namespace com.espertech.esper.regression.multithread
     /// </summary>
     public class ExecMTStmtMgmt : RegressionExecution {
         private static readonly string EVENT_NAME = typeof(SupportMarketDataBean).Name;
-        private static readonly Object[][] STMT = new Object[][]{
+        private static readonly object[][] STMT = new object[][]{
                 // true for EPL, false for Pattern; Statement text
                 new object[] {true, "select * from " + EVENT_NAME + " where symbol = 'IBM'"},
                 new object[] {true, "select * from " + EVENT_NAME + " (symbol = 'IBM')"},
@@ -56,21 +55,21 @@ namespace com.espertech.esper.regression.multithread
     
         private void RunAssertionPatterns(EPServiceProvider epService) {
             int numThreads = 3;
-            Object[][] statements;
+            object[][] statements;
     
-            statements = new Object[][]{STMT[10]};
+            statements = new object[][]{STMT[10]};
             TryStatementCreateSendAndStop(epService, numThreads, statements, 10);
             epService.EPAdministrator.DestroyAllStatements();
     
-            statements = new Object[][]{STMT[10], STMT[11]};
+            statements = new object[][]{STMT[10], STMT[11]};
             TryStatementCreateSendAndStop(epService, numThreads, statements, 10);
             epService.EPAdministrator.DestroyAllStatements();
     
-            statements = new Object[][]{STMT[10], STMT[11], STMT[12]};
+            statements = new object[][]{STMT[10], STMT[11], STMT[12]};
             TryStatementCreateSendAndStop(epService, numThreads, statements, 10);
             epService.EPAdministrator.DestroyAllStatements();
     
-            statements = new Object[][]{STMT[10], STMT[11], STMT[12], STMT[13]};
+            statements = new object[][]{STMT[10], STMT[11], STMT[12], STMT[13]};
             TryStatementCreateSendAndStop(epService, numThreads, statements, 10);
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -78,17 +77,17 @@ namespace com.espertech.esper.regression.multithread
         private void RunAssertionEachStatementAlone(EPServiceProvider epService) {
             int numThreads = 4;
             for (int i = 0; i < STMT.Length; i++) {
-                var statements = new Object[][]{STMT[i]};
+                var statements = new object[][]{STMT[i]};
                 TryStatementCreateSendAndStop(epService, numThreads, statements, 10);
             }
         }
     
         private void RunAssertionStatementsMixed(EPServiceProvider epService) {
             int numThreads = 2;
-            var statements = new Object[][]{STMT[1], STMT[4], STMT[6], STMT[7], STMT[8]};
+            var statements = new object[][]{STMT[1], STMT[4], STMT[6], STMT[7], STMT[8]};
             TryStatementCreateSendAndStop(epService, numThreads, statements, 10);
     
-            statements = new Object[][]{STMT[1], STMT[7], STMT[8], STMT[11], STMT[12]};
+            statements = new object[][]{STMT[1], STMT[7], STMT[8], STMT[11], STMT[12]};
             TryStatementCreateSendAndStop(epService, numThreads, statements, 10);
         }
     
@@ -97,7 +96,7 @@ namespace com.espertech.esper.regression.multithread
             TryStatementCreateSendAndStop(epService, numThreads, STMT, 10);
         }
     
-        private void TryStatementCreateSendAndStop(EPServiceProvider epService, int numThreads, Object[][] statements, int numRepeats) {
+        private void TryStatementCreateSendAndStop(EPServiceProvider epService, int numThreads, object[][] statements, int numRepeats) {
             var threadPool = Executors.NewFixedThreadPool(numThreads);
             var future = new Future<bool>[numThreads];
             for (int i = 0; i < numThreads; i++) {
@@ -110,11 +109,11 @@ namespace com.espertech.esper.regression.multithread
     
             var statementDigest = new StringBuilder();
             for (int i = 0; i < statements.Length; i++) {
-                statementDigest.Append(Arrays.ToString(statements[i]));
+                statementDigest.Append(CompatExtensions.Render(statements[i]));
             }
     
             for (int i = 0; i < numThreads; i++) {
-                Assert.IsTrue("Failed in " + statementDigest.ToString(), (bool?) future[i].Get());
+                Assert.IsTrue(future[i].GetValueOrDefault(), "Failed in " + statementDigest);
             }
         }
     }

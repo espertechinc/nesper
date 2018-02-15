@@ -18,15 +18,13 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.db
 {
     public class ExecDatabase2StreamOuterJoin : RegressionExecution {
-        private static readonly string ALL_FIELDS = "mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal";
+        private const string ALL_FIELDS = "mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal";
     
         public override void Configure(Configuration configuration) {
             var configDB = new ConfigurationDBRef();
@@ -102,7 +100,7 @@ namespace com.espertech.esper.regression.db
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             EPAssertionUtil.AssertPropsPerRowAnyOrder(statement.GetEnumerator(), fields, null);
     
             // Result as the SQL query returns 1 row and therefore the on-clause filters it out, but because of left out still getting a row
@@ -110,20 +108,20 @@ namespace com.espertech.esper.regression.db
             EventBean received = listener.AssertOneGetNewAndReset();
             Assert.AreEqual(1, received.Get("MyInt"));
             AssertReceived(received, null, null, null, null, null, null, null, null, null);
-            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new Object[][]{new object[] {1, null}});
+            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new object[][]{new object[] {1, null}});
     
             // Result as the SQL query returns 0 rows
             SendEvent(epService, -1, "xxx");
             received = listener.AssertOneGetNewAndReset();
             Assert.AreEqual(-1, received.Get("MyInt"));
             AssertReceived(received, null, null, null, null, null, null, null, null, null);
-            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new Object[][]{new object[] {-1, null}});
+            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new object[][]{new object[] {-1, null}});
     
             SendEvent(epService, 2, "B");
             received = listener.AssertOneGetNewAndReset();
             Assert.AreEqual(2, received.Get("MyInt"));
             AssertReceived(received, 2L, 20, "B", "Y", false, 100.0m, 200.0m, 2.2d, 2.3d);
-            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new Object[][]{new object[] {2, 20}});
+            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new object[][]{new object[] {2, 20}});
     
             statement.Dispose();
         }
@@ -136,7 +134,7 @@ namespace com.espertech.esper.regression.db
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             EPAssertionUtil.AssertPropsPerRowAnyOrder(statement.GetEnumerator(), fields, null);
     
             // No result as the SQL query returns 1 row and therefore the on-clause filters it out
@@ -144,20 +142,20 @@ namespace com.espertech.esper.regression.db
             EventBean received = listener.AssertOneGetNewAndReset();
             Assert.AreEqual(1, received.Get("MyInt"));
             AssertReceived(received, null, null, null, null, null, null, null, null, null);
-            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new Object[][]{new object[] {1, null}});
+            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new object[][]{new object[] {1, null}});
     
             // Result as the SQL query returns 0 rows
             SendEvent(epService, -1, "xxx");
             received = listener.AssertOneGetNewAndReset();
             Assert.AreEqual(-1, received.Get("MyInt"));
             AssertReceived(received, null, null, null, null, null, null, null, null, null);
-            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new Object[][]{new object[] {-1, null}});
+            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new object[][]{new object[] {-1, null}});
     
             SendEvent(epService, 2, "B");
             received = listener.AssertOneGetNewAndReset();
             Assert.AreEqual(2, received.Get("MyInt"));
             AssertReceived(received, 2L, 20, "B", "Y", false, 100.0m, 200.0m, 2.2d, 2.3d);
-            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new Object[][]{new object[] {2, 20}});
+            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new object[][]{new object[] {2, 20}});
     
             statement.Dispose();
         }
@@ -172,7 +170,7 @@ namespace com.espertech.esper.regression.db
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             EPAssertionUtil.AssertPropsPerRowAnyOrder(statement.GetEnumerator(), fields, null);
     
             // No result as the SQL query returns 1 row and therefore the on-clause filters it out
@@ -184,7 +182,7 @@ namespace com.espertech.esper.regression.db
             EventBean received = listener.AssertOneGetNewAndReset();
             Assert.AreEqual(-1, received.Get("MyInt"));
             Assert.AreEqual("A", received.Get("MyVarChar"));
-            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new Object[][]{new object[] {-1, "A"}});
+            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new object[][]{new object[] {-1, "A"}});
     
             statement.Dispose();
         }
@@ -192,7 +190,7 @@ namespace com.espertech.esper.regression.db
         private void TryOuterJoinNoResult(EPServiceProvider epService, string statementText) {
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendEvent(epService, 2);
             EventBean received = listener.AssertOneGetNewAndReset();
@@ -208,7 +206,7 @@ namespace com.espertech.esper.regression.db
         private void TryOuterJoinResult(EPServiceProvider epService, string statementText) {
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendEvent(epService, 1);
             EventBean received = listener.AssertOneGetNewAndReset();

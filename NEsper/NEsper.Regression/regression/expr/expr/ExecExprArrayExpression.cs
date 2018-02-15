@@ -17,21 +17,22 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
+using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
 
 // using static org.apache.avro.SchemaBuilder.*;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertSame;
 
 using NUnit.Framework;
+
+using static NEsper.Avro.Extensions.TypeBuilder;
 
 namespace com.espertech.esper.regression.expr.expr
 {
     public class ExecExprArrayExpression : RegressionExecution {
         // for use in testing a static method accepting array parameters
-        private static int?[] callbackInts;
-        private static string[] callbackStrings;
-        private static object[] callbackObjects;
+        private static int?[] _callbackInts;
+        private static string[] _callbackStrings;
+        private static object[] _callbackObjects;
     
         public override void Run(EPServiceProvider epService) {
             RunAssertionArrayMapResult(epService);
@@ -47,7 +48,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var bean = SupportBeanComplexProps.MakeDefaultBean();
             epService.EPRuntime.SendEvent(bean);
@@ -82,7 +83,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var bean = new SupportBean("a", 10);
             bean.LongPrimitive = 999;
@@ -108,9 +109,9 @@ namespace com.espertech.esper.regression.expr.expr
             EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("dynCalcArrNulls"), new object[]{null, null, "aa"});
     
             // assert function parameters
-            EPAssertionUtil.AssertEqualsExactOrder(callbackInts, new int?[]{1});
-            EPAssertionUtil.AssertEqualsExactOrder(callbackStrings, new string[]{"a"});
-            EPAssertionUtil.AssertEqualsExactOrder(callbackObjects, new object[]{1, "d", null, true});
+            EPAssertionUtil.AssertEqualsExactOrder(_callbackInts, new int?[]{1});
+            EPAssertionUtil.AssertEqualsExactOrder(_callbackStrings, new string[]{"a"});
+            EPAssertionUtil.AssertEqualsExactOrder(_callbackObjects, new object[]{1, "d", null, true});
     
             stmt.Dispose();
         }
@@ -118,9 +119,9 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionArrayAvroResult(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
-            Schema intArraySchema = Array().Items(Builder().IntType());
-            Schema mixedArraySchema = Array().Items(UnionOf().IntType().And().StringType().And().DoubleType().EndUnion());
-            Schema nullArraySchema = Array().Items(Builder().NullType());
+            Schema intArraySchema = SchemaBuilder.Array(IntType());
+            Schema mixedArraySchema = SchemaBuilder.Array(Union(IntType(), StringType(), DoubleType()));
+            Schema nullArraySchema = SchemaBuilder.Array(NullType());
     
             var stmtText =
                     "@AvroSchemaField(name='emptyArray', schema='" + intArraySchema.ToString() + "')" +
@@ -142,7 +143,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean());
     
             var theEvent = listener.AssertOneGetNewAndReset();
@@ -182,7 +183,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             var stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var bean = new SupportBean("a", 10);
             epService.EPRuntime.SendEvent(bean);
@@ -207,7 +208,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             var stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var bean = new SupportBean("a", 10);
             epService.EPRuntime.SendEvent(bean);
@@ -223,9 +224,9 @@ namespace com.espertech.esper.regression.expr.expr
     
         // for testing EPL static method call
         public static string[] DoIt(string[] strings, int?[] ints, object[] objects) {
-            callbackInts = ints;
-            callbackStrings = strings;
-            callbackObjects = objects;
+            _callbackInts = ints;
+            _callbackStrings = strings;
+            _callbackObjects = objects;
             return new string[]{"a", "b"};
         }
     

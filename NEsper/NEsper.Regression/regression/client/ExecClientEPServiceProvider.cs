@@ -19,9 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNotNull;
 
 using NUnit.Framework;
 
@@ -37,11 +34,8 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionObtainEngineWideRWLock(EPServiceProvider epService) {
-            epService.EngineInstanceWideLock.WriteLock().Lock();
-            try {
+            using(epService.EngineInstanceWideLock.WriteLock.Acquire()) {
                 // some action here
-            } finally {
-                epService.EngineInstanceWideLock.WriteLock().Unlock();
             }
         }
     
@@ -76,23 +70,23 @@ namespace com.espertech.esper.regression.client
             Assert.IsNotNull(EPServiceProviderManager.GetExistingProvider(uriOne));
             Assert.IsNotNull(EPServiceProviderManager.GetExistingProvider(uriTwo));
     
-            engineOne.Destroy();
+            engineOne.Dispose();
             EPAssertionUtil.AssertNotContains(EPServiceProviderManager.ProviderURIs, uriOne);
             EPAssertionUtil.AssertContains(EPServiceProviderManager.ProviderURIs, uriTwo);
             Assert.IsNull(EPServiceProviderManager.GetExistingProvider(uriOne));
     
-            engineTwo.Destroy();
+            engineTwo.Dispose();
             EPAssertionUtil.AssertNotContains(EPServiceProviderManager.ProviderURIs, uriOne, uriTwo);
             Assert.IsNull(EPServiceProviderManager.GetExistingProvider(uriTwo));
     
             try {
-                engineTwo.EPRuntime;
+                Assert.NotNull(engineTwo.EPRuntime);
                 Assert.Fail();
             } catch (EPServiceDestroyedException ex) {
                 // expected
             }
             try {
-                engineTwo.EPAdministrator;
+                Assert.NotNull(engineTwo.EPAdministrator);
                 Assert.Fail();
             } catch (EPServiceDestroyedException ex) {
                 // expected
@@ -104,25 +98,29 @@ namespace com.espertech.esper.regression.client
             var listener = new SupportServiceStateListener();
             Configuration configuration = SupportConfigFactory.GetConfiguration();
             EPServiceProvider epService = EPServiceProviderManager.GetProvider(this.GetType().Name + "__listenerstatechange", configuration);
-            epService.AddServiceStateListener(listener);
+            epService.ServiceInitialized += listener.OnEPServiceInitialized;
+            epService.ServiceDestroyRequested += listener.OnEPServiceDestroyRequested;
             epService.Dispose();
             Assert.AreSame(epService, listener.AssertOneGetAndResetDestroyedEvents());
     
             epService.Initialize();
             Assert.AreSame(epService, listener.AssertOneGetAndResetInitializedEvents());
-    
-            epService.RemoveAllServiceStateListeners();
+
+            epService.RemoveAllServiceStateEventHandlers();
             epService.Initialize();
             Assert.IsTrue(listener.InitializedEvents.IsEmpty());
-    
-            epService.AddServiceStateListener(listener);
+
+            epService.ServiceInitialized += listener.OnEPServiceInitialized;
+            epService.ServiceDestroyRequested += listener.OnEPServiceDestroyRequested;
             var listenerTwo = new SupportServiceStateListener();
-            epService.AddServiceStateListener(listenerTwo);
+            epService.ServiceInitialized += listenerTwo.OnEPServiceInitialized;
+            epService.ServiceDestroyRequested += listenerTwo.OnEPServiceDestroyRequested;
             epService.Initialize();
             Assert.AreSame(epService, listener.AssertOneGetAndResetInitializedEvents());
             Assert.AreSame(epService, listenerTwo.AssertOneGetAndResetInitializedEvents());
-    
-            epService.RemoveServiceStateListener(listener);
+
+            epService.ServiceInitialized -= listener.OnEPServiceInitialized;
+            epService.ServiceDestroyRequested -= listener.OnEPServiceDestroyRequested;
             epService.Initialize();
             Assert.AreSame(epService, listenerTwo.AssertOneGetAndResetInitializedEvents());
             Assert.IsTrue(listener.InitializedEvents.IsEmpty());
@@ -135,10 +133,11 @@ namespace com.espertech.esper.regression.client
             EPServiceProviderSPI spi = (EPServiceProviderSPI) stateChangeEngine;
     
             var observer = new SupportStmtLifecycleObserver();
-            spi.StatementLifecycleSvc.AddObserver(observer);
+            spi.StatementLifecycleSvc.LifecycleEvent += observer.Observe;
             var listener = new SupportStatementStateListener();
-            stateChangeEngine.AddStatementStateListener(listener);
-    
+            stateChangeEngine.StatementCreate += listener.OnStatementCreate;
+            stateChangeEngine.StatementStateChange += listener.OnStatementStateChange;
+
             EPStatement stmt = stateChangeEngine.EPAdministrator.CreateEPL("select * from " + typeof(SupportBean).FullName);
             Assert.AreEqual("CREATE;STATECHANGE;", observer.EventsAsString);
             Assert.AreEqual(stmt, listener.AssertOneGetAndResetCreatedEvents());
@@ -163,7 +162,7 @@ namespace com.espertech.esper.regression.client
             stmt.Dispose();
             Assert.AreEqual(stmt, listener.AssertOneGetAndResetStateChangeEvents());
     
-            stateChangeEngine.Destroy();
+            stateChangeEngine.Dispose();
         }
     
     }

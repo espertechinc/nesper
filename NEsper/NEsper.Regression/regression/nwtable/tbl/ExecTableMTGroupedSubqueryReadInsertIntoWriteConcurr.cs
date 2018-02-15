@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string eplSubselect = "select (select count(*) from MyTable) as c0 from SupportBean_S0";
             EPStatement stmtSubselect = epService.EPAdministrator.CreateEPL(eplSubselect);
             var listener = new SupportUpdateListener();
-            stmtSubselect.AddListener(listener);
+            stmtSubselect.Events += listener.Update;
     
             var writeRunnable = new WriteRunnable(epService);
             var readRunnable = new ReadRunnable(epService, listener);

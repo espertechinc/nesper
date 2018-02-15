@@ -16,19 +16,12 @@ using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
+using static com.espertech.esper.supportregression.util.IndexBackingTableInfo;
 
 namespace com.espertech.esper.regression.epl.other
 {
-    public class ExecEPLPlanInKeywordQuery : IndexBackingTableInfo,
-        IRegressionExecution
+    public class ExecEPLPlanInKeywordQuery : RegressionExecution
     {
-        public bool ExcludeWhenInstrumented()
-        {
-            return false;
-        }
-
         public void Configure(Configuration configuration)
         {
             configuration.EngineDefaults.Logging.IsEnableQueryPlan = true;
@@ -59,7 +52,7 @@ namespace com.espertech.esper.regression.epl.other
                       "where p00 not in (p10, p11)";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
             Assert.AreEqual("null", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
@@ -75,7 +68,7 @@ namespace com.espertech.esper.regression.epl.other
                       "where p00 in (p10, p11) and p01 in (p12, p13)";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
             Assert.AreEqual("[p10][p11]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
@@ -90,7 +83,7 @@ namespace com.espertech.esper.regression.epl.other
             var eplNamedWindow = INDEX_CALLBACK_HOOK + "on S0 as s0 select * from S1Window as s1 " +
                                  "where p00 in (p10, p11) and p01 in (p12, p13)";
             var stmtNamedWindow = epService.EPAdministrator.CreateEPL(eplNamedWindow);
-            stmtNamedWindow.AddListener(listener);
+            stmtNamedWindow.Events += listener.Update;
 
             var onExprNamedWindow = SupportQueryPlanIndexHook.AssertOnExprAndReset();
             Assert.AreEqual(
@@ -110,7 +103,7 @@ namespace com.espertech.esper.regression.epl.other
             var eplTable = INDEX_CALLBACK_HOOK + "on S0 as s0 select * from S1Table as s1 " +
                            "where p00 in (p10, p11) and p01 in (p12, p13)";
             var stmtTable = epService.EPAdministrator.CreateEPL(eplTable);
-            stmtTable.AddListener(listener);
+            stmtTable.Events += listener.Update;
 
             var onExprTable = SupportQueryPlanIndexHook.AssertOnExprAndReset();
             Assert.AreEqual(
@@ -130,7 +123,7 @@ namespace com.espertech.esper.regression.epl.other
                       "from S0 as s0";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var subquery = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
             Assert.AreEqual(typeof(SubordInKeywordMultiTableLookupStrategyFactory).Name, subquery.TableLookupStrategy);
@@ -209,7 +202,7 @@ namespace com.espertech.esper.regression.epl.other
                       "where p00 in (p10, p11) and p01 in (p12, p13)";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[0].Items;
             Assert.AreEqual("[p00]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
@@ -224,7 +217,7 @@ namespace com.espertech.esper.regression.epl.other
             var eplNamedWindow = INDEX_CALLBACK_HOOK + "on S1 as s1 select * from S0Window as s0 " +
                                  "where p00 in (p10, p11) and p01 in (p12, p13)";
             var stmtNamedWindow = epService.EPAdministrator.CreateEPL(eplNamedWindow);
-            stmtNamedWindow.AddListener(listener);
+            stmtNamedWindow.Events += listener.Update;
 
             var onExprNamedWindow = SupportQueryPlanIndexHook.AssertOnExprAndReset();
             Assert.AreEqual(
@@ -242,7 +235,7 @@ namespace com.espertech.esper.regression.epl.other
             var eplTable = INDEX_CALLBACK_HOOK + "on S1 as s1 select * from S0Table as s0 " +
                            "where p00 in (p10, p11) and p01 in (p12, p13)";
             var stmtTable = epService.EPAdministrator.CreateEPL(eplTable);
-            stmtTable.AddListener(listener);
+            stmtTable.Events += listener.Update;
 
             var onExprTable = SupportQueryPlanIndexHook.AssertOnExprAndReset();
             Assert.AreEqual(
@@ -263,7 +256,7 @@ namespace com.espertech.esper.regression.epl.other
                       " from S1 as s1";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var subquery = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
             Assert.AreEqual(typeof(SubordInKeywordSingleTableLookupStrategyFactory).Name, subquery.TableLookupStrategy);
@@ -470,7 +463,7 @@ namespace com.espertech.esper.regression.epl.other
             var fields = "s0.id,s1.id".Split(',');
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
             Assert.AreEqual("[p10]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
@@ -498,7 +491,7 @@ namespace com.espertech.esper.regression.epl.other
             var fields = "s0.id,s1.id".Split(',');
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
             Assert.AreEqual("[p10][p11]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));

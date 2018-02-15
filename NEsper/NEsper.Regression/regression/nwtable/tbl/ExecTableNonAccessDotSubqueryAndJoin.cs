@@ -67,33 +67,33 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "from SupportBean unidirectional, MyTable as mt";
             EPStatement stmtSelect = SupportModelHelper.CreateByCompileOrParse(epService, soda, eplSelect);
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
     
-            var expectedType = new Object[][]{
-                    new object[] {"c0_1", typeof(string)}, {"c0_2", typeof(string)},
-                    new object[] {"c1_1", typeof(int?)}, {"c1_2", typeof(int?)},
-                    new object[] {"c2_1", typeof(SupportBean[])}, {"c2_2", typeof(SupportBean[])},
-                    new object[] {"c2_3", typeof(SupportBean)}, {"c2_4", typeof(SupportBean)},
-                    new object[] {"c2_5", typeof(SupportBean)}, {"c2_6", typeof(SupportBean)},
-                    new object[] {"c3_1", typeof(int?)}, {"c3_2", typeof(int?)},
+            var expectedType = new object[][]{
+                    new object[] {"c0_1", typeof(string)}, new object[] {"c0_2", typeof(string)},
+                    new object[] {"c1_1", typeof(int?)}, new object[] {"c1_2", typeof(int?)},
+                    new object[] {"c2_1", typeof(SupportBean[])}, new object[] {"c2_2", typeof(SupportBean[])},
+                    new object[] {"c2_3", typeof(SupportBean)}, new object[] {"c2_4", typeof(SupportBean)},
+                    new object[] {"c2_5", typeof(SupportBean)}, new object[] {"c2_6", typeof(SupportBean)},
+                    new object[] {"c3_1", typeof(int?)}, new object[] {"c3_2", typeof(int?)},
                     new object[] {"c4_1", typeof(SupportBean[])}
             };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedType, stmtSelect.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
             MakeSendSupportBean(epService, null, -1);
             EventBean @event = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(@event, "c0_1,c0_2,c1_1,c1_2".Split(','), new Object[]{"x", "x", 41, 41});
-            EPAssertionUtil.AssertProps(@event, "c2_1,c2_2".Split(','), new Object[]{sentSB, sentSB});
-            EPAssertionUtil.AssertProps(@event, "c2_3,c2_4".Split(','), new Object[]{sentSB[0], sentSB[1]});
-            EPAssertionUtil.AssertProps(@event, "c2_5,c2_6".Split(','), new Object[]{sentSB[0], sentSB[0]});
-            EPAssertionUtil.AssertProps(@event, "c3_1,c3_2".Split(','), new Object[]{2, 2});
-            EPAssertionUtil.AssertProps(@event, "c4_1".Split(','), new Object[]{sentSB});
+            EPAssertionUtil.AssertProps(@event, "c0_1,c0_2,c1_1,c1_2".Split(','), new object[]{"x", "x", 41, 41});
+            EPAssertionUtil.AssertProps(@event, "c2_1,c2_2".Split(','), new object[]{sentSB, sentSB});
+            EPAssertionUtil.AssertProps(@event, "c2_3,c2_4".Split(','), new object[]{sentSB[0], sentSB[1]});
+            EPAssertionUtil.AssertProps(@event, "c2_5,c2_6".Split(','), new object[]{sentSB[0], sentSB[0]});
+            EPAssertionUtil.AssertProps(@event, "c3_1,c3_2".Split(','), new object[]{2, 2});
+            EPAssertionUtil.AssertProps(@event, "c4_1".Split(','), new object[]{sentSB});
     
             // unnamed column
             string eplSelectUnnamed = "select Col2.sorted().FirstOf(), mt.col2.sorted().FirstOf()" +
                     " from SupportBean unidirectional, MyTable mt";
             EPStatement stmtSelectUnnamed = epService.EPAdministrator.CreateEPL(eplSelectUnnamed);
-            var expectedTypeUnnamed = new Object[][]{new object[] {"col2.sorted().FirstOf()", typeof(SupportBean)},
+            var expectedTypeUnnamed = new object[][]{new object[] {"col2.sorted().FirstOf()", typeof(SupportBean)},
                     new object[] {"mt.col2.sorted().FirstOf()", typeof(SupportBean)}};
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedTypeUnnamed, stmtSelectUnnamed.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     

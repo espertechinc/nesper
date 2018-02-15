@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.rowrecog
                     ")";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(eplOne);
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
     
             string eplTwo = "@Name('S2') select * from SupportBean(theString = 'B')#length(2) " +
                     "match_recognize (" +
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regression.rowrecog
                     ")";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(eplTwo);
             var listenerTwo = new SupportUpdateListener();
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
     
             epService.EPRuntime.SendEvent(ExecRowRecogMaxStatesEngineWide3Instance.MakeBean("A", 100, 1));
             epService.EPRuntime.SendEvent(ExecRowRecogMaxStatesEngineWide3Instance.MakeBean("A", 200, 1));
@@ -82,11 +82,11 @@ namespace com.espertech.esper.regression.rowrecog
     
             // terminate B
             epService.EPRuntime.SendEvent(ExecRowRecogMaxStatesEngineWide3Instance.MakeBean("B", 400, 2));
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), fields, new Object[]{400});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), fields, new object[]{400});
     
             // terminate one of A
             epService.EPRuntime.SendEvent(ExecRowRecogMaxStatesEngineWide3Instance.MakeBean("A", 100, 2));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{100});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{100});
     
             // fill up A
             epService.EPRuntime.SendEvent(ExecRowRecogMaxStatesEngineWide3Instance.MakeBean("A", 300, 1));

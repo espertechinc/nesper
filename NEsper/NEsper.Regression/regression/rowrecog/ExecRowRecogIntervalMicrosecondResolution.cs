@@ -19,8 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertFalse;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -31,7 +29,7 @@ namespace com.espertech.esper.regression.rowrecog
         public override void Run(EPServiceProvider defaultService) {
             IDictionary<TimeUnit, EPServiceProvider> epServices = SupportEngineFactory.SetupEnginesByTimeUnit();
     
-            foreach (EPServiceProvider epService in epServices.Values()) {
+            foreach (EPServiceProvider epService in epServices.Values) {
                 epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             }
     
@@ -52,7 +50,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = isolated.EPAdministrator.CreateEPL(text, "s0", null);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             isolated.EPRuntime.SendEvent(new SupportBean("E1", 1));
     
@@ -62,7 +60,7 @@ namespace com.espertech.esper.regression.rowrecog
             isolated.EPRuntime.SendEvent(new CurrentTimeEvent(flipTime));
             Assert.IsTrue(listener.IsInvokedAndReset());
     
-            isolated.Destroy();
+            isolated.Dispose();
         }
     }
 } // end of namespace

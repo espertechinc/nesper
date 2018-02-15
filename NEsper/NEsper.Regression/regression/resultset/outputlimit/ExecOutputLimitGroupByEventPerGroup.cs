@@ -18,10 +18,10 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 {
     public class ExecOutputLimitGroupByEventPerGroup : RegressionExecution
     {
-        private static readonly string SYMBOL_DELL = "DELL";
-        private static readonly string SYMBOL_IBM = "IBM";
+        private const string SYMBOL_DELL = "DELL";
+        private const string SYMBOL_IBM = "IBM";
 
-        private static readonly string CATEGORY = "Fully-Aggregated and Grouped";
+        private const string CATEGORY = "Fully-Aggregated and Grouped";
 
         public override void Configure(Configuration configuration)
         {
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                 "select theString, intPrimitive as intp from SupportBean group by theString output last every 1 seconds order by theString asc";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("E3", 31));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -141,7 +141,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                 "on MarketData md delete from MyWindow mw where mw.intPrimitive = md.price");
             var stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean_A("E1"));
             epService.EPRuntime.SendEvent(new SupportBean_A("E2"));
@@ -211,7 +211,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             var stmt = epService.EPAdministrator.CreateEPL(
                 "select theString, sum(intPrimitive) as value from MyWindow group by theString output first at (*/2, *, *, *, *)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendBeanEvent(epService, "E1", 10);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"E1", 10});
@@ -253,7 +253,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             var stmt = epService.EPAdministrator.CreateEPL(
                 "select theString, sum(intPrimitive) as value from MyWindow group by theString output first when varoutone then set varoutone = false");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendBeanEvent(epService, "E1", 10);
             SendBeanEvent(epService, "E1", 11);
@@ -286,7 +286,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             var stmt = epService.EPAdministrator.CreateEPL(
                 "select theString, sum(intPrimitive) as value from MyWindow group by theString output first every 3 events");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendBeanEvent(epService, "E1", 10);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"E1", 10});
@@ -317,7 +317,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             stmt.Dispose();
             stmt = epService.EPAdministrator.CreateEPL(
                 "select theString, sum(intPrimitive) as value from MyWindow group by theString output first every myvar events");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendBeanEvent(epService, "E3", 10);
             EPAssertionUtil.AssertPropsPerRow(
@@ -351,7 +351,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             var stmt = epService.EPAdministrator.CreateEPL(
                 "select * from SupportBean group by theString output last every 3 events order by theString asc");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("IBM", 10));
             epService.EPRuntime.SendEvent(new SupportBean("ATT", 11));
@@ -369,7 +369,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             // All means each event
             stmt = epService.EPAdministrator.CreateEPL(
                 "select * from SupportBean group by theString output all every 3 events");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("IBM", 10));
             epService.EPRuntime.SendEvent(new SupportBean("ATT", 11));
@@ -636,7 +636,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var fields = new[] {"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
@@ -664,7 +664,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var fields = new[] {"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
@@ -682,7 +682,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var fields = new[] {"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
@@ -713,7 +713,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var fields = new[] {"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
@@ -734,7 +734,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var fields = new[] {"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
@@ -755,7 +755,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var fields = new[] {"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
@@ -786,7 +786,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var fields = new[] {"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
@@ -821,7 +821,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var fields = new[] {"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
@@ -842,7 +842,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var fields = new[] {"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
@@ -869,7 +869,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var fields = new[] {"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
@@ -901,7 +901,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                       "group by symbol output every 1 seconds";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("JOIN_KEY", -1));
 
             SendMDEvent(epService, "JOIN_KEY", 1d);
@@ -929,7 +929,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             var stmt = epService.EPAdministrator.CreateEPL(selectStmt);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             SendMDEvent(epService, "ABC", 20);
 
             SendTimer(epService, 500);
@@ -980,7 +980,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             var stmt = epService.EPAdministrator.CreateEPL(selectStmt);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             foreach (var theString in "ABC,IBM,MSFT".Split(','))
             {
@@ -1037,7 +1037,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                                   "#length(5) group by symbol output all every 5 events";
             var statement = epService.EPAdministrator.CreateEPL(statementString);
             var updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener);
+            statement.Events += updateListener.Update;
 
             // send some events and check that only the most recent
             // ones are kept
@@ -1077,7 +1077,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                                   "#length(5) group by symbol output every 5 events";
             var statement = epService.EPAdministrator.CreateEPL(statementString);
             var updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener);
+            statement.Events += updateListener.Update;
 
             // send some events and check that only the most recent
             // ones are kept
@@ -1124,7 +1124,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                       "group by symbol output every 1 seconds";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendMDEvent(epService, "SYM1", 1d);
             SendMDEvent(epService, "SYM1", 2d);
@@ -1164,7 +1164,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryAssertionLast(epService, stmt, listener);
             stmt.Dispose();
         }
@@ -1180,7 +1180,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             TryAssertionSingle(epService, stmt, listener);
 
@@ -1200,7 +1200,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
@@ -1230,7 +1230,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             TryAssertionAll(epService, stmt, listener);
 
@@ -1258,7 +1258,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
@@ -1290,7 +1290,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));

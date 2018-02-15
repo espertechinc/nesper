@@ -36,13 +36,13 @@ namespace com.espertech.esper.regression.client
             var numLoop = 100000;
             epService.EPAdministrator.CreateEPL("select theString, intPrimitive from SupportBean(intPrimitive > 10)");
 
-            var start = DateTimeHelper.CurrentTimeMillis;
+            var start = PerformanceObserver.MilliTime;
             for (var i = 0; i < numLoop; i++)
             {
                 epService.EPRuntime.SendEvent(new SupportBean("E1", 1000 + i));
             }
 
-            var end = DateTimeHelper.CurrentTimeMillis;
+            var end = PerformanceObserver.MilliTime;
 
             Assert.IsTrue(end - start < 1000, "delta=" + (end - start));
             epService.EPAdministrator.DestroyAllStatements();
@@ -65,13 +65,13 @@ namespace com.espertech.esper.regression.client
                 });
             stmt.Events += listener;
 
-            var start = DateTimeHelper.CurrentTimeMillis;
+            var start = PerformanceObserver.MilliTime;
             for (var i = 0; i < numLoop; i++)
             {
                 epService.EPRuntime.SendEvent(new SupportBean("E1", 1000 + i));
             }
 
-            var end = DateTimeHelper.CurrentTimeMillis;
+            var end = PerformanceObserver.MilliTime;
 
             Assert.AreEqual(numLoop, results.Count);
             for (var i = 0; i < numLoop; i++)

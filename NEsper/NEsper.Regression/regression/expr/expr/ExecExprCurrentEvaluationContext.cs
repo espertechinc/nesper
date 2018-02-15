@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -41,7 +40,7 @@ namespace com.espertech.esper.regression.expr.expr
                     "Current_evaluation_context().EngineURI as c2 from SupportBean";
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl, "my_user_object");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             Assert.AreEqual(typeof(EPLExpressionEvaluationContext), stmt.EventType.GetPropertyType("Current_evaluation_context()"));
     

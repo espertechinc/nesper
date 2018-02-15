@@ -17,8 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.filter;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.fail;
 
 using NUnit.Framework;
 
@@ -45,10 +43,10 @@ namespace com.espertech.esper.supportregression.util
     
         public static FilterValueSetParam[] GetFilterMulti(EPStatementSPI statementSPI) {
             FilterServiceSPI filterServiceSPI = (FilterServiceSPI) statementSPI.StatementContext.FilterService;
-            FilterSet set = filterServiceSPI.Take(Collections.Singleton(statementSPI.StatementId));
+            FilterSet set = filterServiceSPI.Take(Collections.SingletonSet(statementSPI.StatementId));
             Assert.AreEqual(1, set.Filters.Count);
             FilterValueSet valueSet = set.Filters[0].FilterValueSet;
-            return ValueSet.Parameters[0];
+            return valueSet.Parameters[0];
         }
     
         public static EPStatement AssertFilterMulti(EPServiceProvider epService, string epl, string eventTypeName, SupportFilterItem[][] expected) {
@@ -62,13 +60,13 @@ namespace com.espertech.esper.supportregression.util
     
         public static void AssertFilterMulti(EPStatementSPI statementSPI, string eventTypeName, SupportFilterItem[][] expected) {
             FilterServiceSPI filterServiceSPI = (FilterServiceSPI) statementSPI.StatementContext.FilterService;
-            FilterSet set = filterServiceSPI.Take(Collections.Singleton(statementSPI.StatementId));
+            FilterSet set = filterServiceSPI.Take(Collections.SingletonSet(statementSPI.StatementId));
     
             FilterSetEntry filterSetEntry = null;
             foreach (FilterSetEntry entry in set.Filters) {
                 if (entry.FilterValueSet.EventType.Name.Equals(eventTypeName)) {
                     if (filterSetEntry != null) {
-                        Fail("Multiple filters for type " + eventTypeName);
+                        Assert.Fail("Multiple filters for type " + eventTypeName);
                     }
                     filterSetEntry = entry;
                 }
@@ -77,18 +75,21 @@ namespace com.espertech.esper.supportregression.util
             FilterValueSet valueSet = filterSetEntry.FilterValueSet;
             FilterValueSetParam[][] @params = valueSet.Parameters;
     
-            var comparator = new Comparison<SupportFilterItem>(
+            var comparator = new Func<SupportFilterItem, SupportFilterItem, int>(
                 (o1, o2) => {
-                    if (o1.Name.Equals(o2.Name)) {
-                        if (o1.Op.Ordinal() > o1.Op.Ordinal()) {
+                    var o1name = o1.Name;
+                    var o2name = o2.Name;
+
+                    if (o1name == o2name) {
+                        if (o1.Op > o1.Op) {
                             return 1;
                         }
-                        if (o1.Op.Ordinal() < o1.Op.Ordinal()) {
+                        if (o1.Op < o1.Op) {
                             return -1;
                         }
                         return 0;
                     }
-                    return o1.Name.CompareTo(o2.Name);
+                    return o1name.CompareTo(o2name);
                 });
     
             var found = new SupportFilterItem[@params.Length][];
@@ -98,11 +99,11 @@ namespace com.espertech.esper.supportregression.util
                     found[i][j] = new SupportFilterItem(@params[i][j].Lookupable.Expression.ToString(),
                         @params[i][j].FilterOperator);
                 }
-                Arrays.Sort(found[i], comparator);
+                Collections.SortInPlace(found[i], comparator);
             }
     
             for (int i = 0; i < expected.Length; i++) {
-                Arrays.Sort(expected[i], comparator);
+                Collections.SortInPlace(expected[i], comparator);
             }
     
             EPAssertionUtil.AssertEqualsAnyOrder(expected, found);

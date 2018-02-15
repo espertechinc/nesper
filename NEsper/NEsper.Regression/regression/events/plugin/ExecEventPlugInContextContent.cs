@@ -17,8 +17,6 @@ using com.espertech.esper.plugin;
 using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.assertNotNull;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 

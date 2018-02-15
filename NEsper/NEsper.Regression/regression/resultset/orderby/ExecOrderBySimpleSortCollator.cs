@@ -58,13 +58,13 @@ namespace com.espertech.esper.regression.resultset.orderby
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtText);
             epService.EPRuntime.SendEvent(new SupportBean(frenchForSin, 1));
             epService.EPRuntime.SendEvent(new SupportBean(frenchForFruit, 1));
-            EPAssertionUtil.AssertPropsPerRow(stmtOne.GetEnumerator(), "theString".Split(','), new Object[][]{new object[] {sortedFrench[0]}, new object[] {sortedFrench[1]}});
+            EPAssertionUtil.AssertPropsPerRow(stmtOne.GetEnumerator(), "theString".Split(','), new object[][]{new object[] {sortedFrench[0]}, new object[] {sortedFrench[1]}});
     
             // test sort view
             var listener = new SupportUpdateListener();
             stmtText = "select irstream theString from SupportBean#Sort(2, theString asc)";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtText);
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean(frenchForSin, 1));
             epService.EPRuntime.SendEvent(new SupportBean(frenchForFruit, 1));

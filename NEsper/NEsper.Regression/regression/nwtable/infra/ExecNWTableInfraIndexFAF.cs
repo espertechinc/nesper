@@ -18,27 +18,21 @@ using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertTrue;
-
 using NUnit.Framework;
+
+using static com.espertech.esper.supportregression.util.IndexBackingTableInfo;
 
 namespace com.espertech.esper.regression.nwtable.infra
 {
-    public class ExecNWTableInfraIndexFAF : IndexBackingTableInfo
-        , IRegressionExecution
+    public class ExecNWTableInfraIndexFAF : RegressionExecution
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public bool ExcludeWhenInstrumented()
-        {
-            return false;
-        }
-
-        public void Configure(Configuration configuration) {
+        public override void Configure(Configuration configuration) {
             configuration.EngineDefaults.Logging.IsEnableQueryPlan = true;
         }
     
-        public void Run(EPServiceProvider epService) {
+        public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType("SSB1", typeof(SupportSimpleBeanOne));
             epService.EPAdministrator.Configuration.AddEventType("SSB2", typeof(SupportSimpleBeanTwo));
     
@@ -51,7 +45,7 @@ namespace com.espertech.esper.regression.nwtable.infra
     
         private void RunAssertionSelectIndexChoiceJoin(EPServiceProvider epService, bool namedWindow) {
     
-            var preloadedEventsOne = new Object[]{
+            var preloadedEventsOne = new object[]{
                     new SupportSimpleBeanOne("E1", 10, 1, 2),
                     new SupportSimpleBeanOne("E2", 11, 3, 4),
                     new SupportSimpleBeanTwo("E1", 20, 1, 2),
@@ -60,7 +54,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             var fafAssertion = new IndexAssertionFAF((result) => {
                 string[] fields = "w1.s1,w2.s2,w1.i1,w2.i2".Split(',');
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(result.Array, fields,
-                        new Object[][]{new object[] {"E1", "E1", 10, 20}, new object[] {"E2", "E2", 11, 21}});
+                        new object[][]{new object[] {"E1", "E1", 10, 20}, new object[] {"E2", "E2", 11, 21}});
             });
     
             var assertionsSingleProp = new IndexAssertion[]{
@@ -107,7 +101,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             }
         }
     
-        private void AssertIndexChoiceJoin(EPServiceProvider epService, bool namedWindow, string[] indexes, Object[] preloadedEvents, string datawindowOne, string datawindowTwo,
+        private void AssertIndexChoiceJoin(EPServiceProvider epService, bool namedWindow, string[] indexes, object[] preloadedEvents, string datawindowOne, string datawindowTwo,
                                            params IndexAssertion[] assertions) {
             if (namedWindow) {
                 epService.EPAdministrator.CreateEPL("create window W1." + datawindowOne + " as SSB1");
@@ -157,11 +151,11 @@ namespace com.espertech.esper.regression.nwtable.infra
         }
     
         private void RunAssertionSelectIndexChoice(EPServiceProvider epService, bool namedWindow) {
-            var preloadedEventsOne = new Object[]{new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
+            var preloadedEventsOne = new object[]{new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
             var fafAssertion = new IndexAssertionFAF(result =>
                 {
                     string[] fields = "s1,i1".Split(',');
-                    EPAssertionUtil.AssertPropsPerRow(result.Array, fields, new Object[][]{new object[] {"E2", 20}});
+                    EPAssertionUtil.AssertPropsPerRow(result.Array, fields, new object[][]{new object[] {"E2", 20}});
                 });
     
             // single index one field (plus declared unique)
@@ -225,7 +219,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             EPServiceProvider epService,
             bool namedWindow,
             string[] indexes,
-            Object[] preloadedEvents,
+            object[] preloadedEvents,
             string datawindow,
             IndexAssertion[] assertions)
         {

@@ -6,21 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.named;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -45,7 +38,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "create table MyInfra(a string primary key, b int primary key)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsertOne = "insert into MyInfra select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
@@ -56,15 +49,15 @@ namespace com.espertech.esper.regression.nwtable.infra
             string stmtTextSelect = "select a, b from MyInfra as s1";
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
     
             // send 1 event
             SendSupportBean(epService, "E1", 1);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
             }
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}});
     
             // stop inserter
             stmtInsert.Stop();
@@ -78,11 +71,11 @@ namespace com.espertech.esper.regression.nwtable.infra
             // consumer receives the next event
             SendSupportBean(epService, "E3", 3);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E3", 3});
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new Object[]{"E3", 3});
-                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E3", 3}});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E3", 3});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[]{"E3", 3});
+                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E3", 3}});
             }
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E3", 3}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E3", 3}});
     
             // destroy inserter
             stmtInsert.Dispose();
@@ -100,7 +93,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "create table MyInfra(a string primary key, b int primary key)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsertOne = "insert into MyInfra select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
@@ -111,43 +104,43 @@ namespace com.espertech.esper.regression.nwtable.infra
             string stmtTextSelect = "select a, b from MyInfra as s1";
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
     
             // send 1 event
             SendSupportBean(epService, "E1", 1);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
             }
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}});
     
             // stop consumer
             stmtSelect.Stop();
             SendSupportBean(epService, "E2", 2);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 2});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E2", 2});
             }
             Assert.IsFalse(listenerSelect.IsInvoked);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
     
             // start consumer: the consumer has the last event even though he missed it
             stmtSelect.Start();
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtSelect.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtSelect.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
     
             // consumer receives the next event
             SendSupportBean(epService, "E3", 3);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E3", 3});
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new Object[]{"E3", 3});
-                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 3}});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E3", 3});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[]{"E3", 3});
+                EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 3}});
             }
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 3}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 3}});
     
             // destroy consumer
             stmtSelect.Dispose();
             SendSupportBean(epService, "E4", 4);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E4", 4});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E4", 4});
             }
             Assert.IsFalse(listenerSelect.IsInvoked);
     
@@ -169,9 +162,9 @@ namespace com.espertech.esper.regression.nwtable.infra
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             Assert.AreEqual(namedWindow ? StatementType.CREATE_WINDOW : StatementType.CREATE_TABLE, ((EPStatementSPI) stmtCreate).StatementMetadata.StatementType);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
             if (namedWindow) {
-                theEvent = observer.FirstAndReset;
+                theEvent = observer.GetFirstAndReset();
                 Assert.AreEqual(NamedWindowLifecycleEvent.LifecycleEventType.CREATE, theEvent.EventType);
                 Assert.AreEqual("MyInfra", theEvent.Name);
             }
@@ -179,14 +172,14 @@ namespace com.espertech.esper.regression.nwtable.infra
             // stop and start, no consumers or deleters
             stmtCreate.Stop();
             if (namedWindow) {
-                theEvent = observer.FirstAndReset;
+                theEvent = observer.GetFirstAndReset();
                 Assert.AreEqual(NamedWindowLifecycleEvent.LifecycleEventType.DESTROY, theEvent.EventType);
                 Assert.AreEqual("MyInfra", theEvent.Name);
             }
     
             stmtCreate.Start();
             if (namedWindow) {
-                Assert.AreEqual(NamedWindowLifecycleEvent.LifecycleEventType.CREATE, observer.FirstAndReset.EventType);
+                Assert.AreEqual(NamedWindowLifecycleEvent.LifecycleEventType.CREATE, observer.GetFirstAndReset().EventType);
             }
     
             // create delete stmt
@@ -202,33 +195,33 @@ namespace com.espertech.esper.regression.nwtable.infra
             string stmtTextSelect = "select irstream a, b from MyInfra as s1";
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
     
             // send 1 event
             SendSupportBean(epService, "E1", 1);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
             } else {
                 Assert.IsFalse(listenerWindow.IsInvoked);
                 Assert.IsFalse(listenerSelect.IsInvoked);
             }
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}});
     
             // Delete all events, 1 row expected
             SendSupportBean_A(epService, "A2");
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetOldAndReset(), fields, new Object[]{"E1", 1});
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetOldAndReset(), fields, new Object[]{"E1", 1});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetOldAndReset(), fields, new object[]{"E1", 1});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetOldAndReset(), fields, new object[]{"E1", 1});
             }
             EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, null);
     
             SendSupportBean(epService, "E2", 2);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 2});
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 2});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E2", 2});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[]{"E2", 2});
             }
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E2", 2}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E2", 2}});
     
             // Stop the deleting statement
             stmtDelete.Stop();
@@ -240,17 +233,17 @@ namespace com.espertech.esper.regression.nwtable.infra
     
             SendSupportBean_A(epService, "A3");
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetOldAndReset(), fields, new Object[]{"E2", 2});
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetOldAndReset(), fields, new Object[]{"E2", 2});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetOldAndReset(), fields, new object[]{"E2", 2});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetOldAndReset(), fields, new object[]{"E2", 2});
             }
             EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, null);
     
             SendSupportBean(epService, "E3", 3);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E3", 3});
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new Object[]{"E3", 3});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E3", 3});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[]{"E3", 3});
             }
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E3", 3}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E3", 3}});
     
             stmtDelete.Dispose();
             SendSupportBean_A(epService, "A3");

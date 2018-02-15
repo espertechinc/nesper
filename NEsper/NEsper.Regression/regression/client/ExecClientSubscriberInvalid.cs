@@ -12,8 +12,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.fail;
 
 using NUnit.Framework;
 

@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 

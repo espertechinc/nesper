@@ -19,8 +19,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util.support;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.fail;
 
 using NUnit.Framework;
 
@@ -89,13 +87,13 @@ namespace com.espertech.esper.regression.epl.insertinto
                     "}\n" +
                     "insert into OuterType select ComputeNested(sb) as n0 from SupportBean as sb");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("out").AddListener(listener);
+            epService.EPAdministrator.GetStatement("out").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"b", 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"b", 2});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"a", 1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"a", 1});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -106,11 +104,11 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPAdministrator.CreateEPL("create schema TriggerEvent()");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("insert into PurchaseOrder select '001' as orderId, new {name= 'i1', price=10} as items from TriggerEvent");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(Collections.EmptyMap(), "TriggerEvent");
+            epService.EPRuntime.SendEvent(Collections.EmptyDataMap, "TriggerEvent");
             EventBean @event = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(@event, "orderId,items[0].name,items[0].price".Split(','), new Object[]{"001", "i1", 10d});
+            EPAssertionUtil.AssertProps(@event, "orderId,items[0].name,items[0].price".Split(','), new object[]{"001", "i1", 10d});
             EventBean[] underlying = (EventBean[]) @event.Get("items");
             Assert.AreEqual(1, underlying.Length);
             Assert.AreEqual("i1", underlying[0].Get("name"));
@@ -150,9 +148,9 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPAdministrator.CreateEPL("create schema BEvent (e AEvent)");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("insert into BEvent select (select e from MyEventWindow) as e from SupportBean(theString = 'B')");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(Collections.SingletonMap("symbol", "GE"), "AEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("symbol", "GE"), "AEvent");
             epService.EPRuntime.SendEvent(new SupportBean("A", 1));
             epService.EPRuntime.SendEvent(new SupportBean("B", 2));
             EventBean result = listener.AssertOneGetNewAndReset();
@@ -173,20 +171,20 @@ namespace com.espertech.esper.regression.epl.insertinto
                     (filter ? " where id >= 100" : "") + ") as ez " +
                     "from SupportBean");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "x1", "y1"));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            Object[] expected = filter ? new Object[]{null, null} : new Object[]{"x1", "y1"};
+            object[] expected = filter ? new object[]{null, null} : new object[]{"x1", "y1"};
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, expected);
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(100, "x2", "y2"));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"x2", "y2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"x2", "y2"});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "x3", "y3"));
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
-            expected = filter ? new Object[]{null, null} : new Object[]{"x3", "y3"};
+            expected = filter ? new object[]{null, null} : new object[]{"x3", "y3"};
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, expected);
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -208,17 +206,17 @@ namespace com.espertech.esper.regression.epl.insertinto
                     "Thequery() as ez " +
                     "from SupportBean");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "x1", "y1"));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             EventBean @event = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(@event, fields, new Object[]{"E1", "x1", "y1", null, null});
+            EPAssertionUtil.AssertProps(@event, fields, new object[]{"E1", "x1", "y1", null, null});
             SupportEventTypeAssertionUtil.AssertConsistency(@event);
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "x2", "y2"));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", "x1", "y1", "x2", "y2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", "x1", "y1", "x2", "y2"});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("EventZero", true);
@@ -234,7 +232,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                     "(select p00 as e0_0, p01 as e0_1 from SupportBean_S0#keepall where id between 10 and 20) as ez " +
                     "from SupportBean");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "x1", "y1"));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -243,7 +241,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "x2"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(20, "x3"));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertPropsPerRow((EventBean[]) listener.AssertOneGetNewAndReset().Get("ez"), fields, new Object[][]{new object[] {"x2"}, new object[] {"x3"}});
+            EPAssertionUtil.AssertPropsPerRow((EventBean[]) listener.AssertOneGetNewAndReset().Get("ez"), fields, new object[][]{new object[] {"x2"}, new object[] {"x3"}});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("EventZero", true);
@@ -259,17 +257,17 @@ namespace com.espertech.esper.regression.epl.insertinto
                     (filter ? "where 1=1" : "") + ") as sbarr " +
                     "from SupportBean");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "x1"));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             EventBean[] inner = (EventBean[]) listener.AssertOneGetNewAndReset().Get("sbarr");
-            EPAssertionUtil.AssertPropsPerRow(inner, fields, new Object[][]{new object[] {"x1"}});
+            EPAssertionUtil.AssertPropsPerRow(inner, fields, new object[][]{new object[] {"x1"}});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "x2", "y2"));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             inner = (EventBean[]) listener.AssertOneGetNewAndReset().Get("sbarr");
-            EPAssertionUtil.AssertPropsPerRow(inner, fields, new Object[][]{new object[] {"x1"}, new object[] {"x2"}});
+            EPAssertionUtil.AssertPropsPerRow(inner, fields, new object[][]{new object[] {"x1"}, new object[] {"x2"}});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("EventOne", true);
@@ -284,11 +282,11 @@ namespace com.espertech.esper.regression.epl.insertinto
                     (filter ? "where id >= 100" : "") + ") as sb " +
                     "from SupportBean");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "x1"));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            Object[] expected = filter ? new Object[]{null} : new Object[]{"x1"};
+            object[] expected = filter ? new object[]{null} : new object[]{"x1"};
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, expected);
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(100, "x2"));

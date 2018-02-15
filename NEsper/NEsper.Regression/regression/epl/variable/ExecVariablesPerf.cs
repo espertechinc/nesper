@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -37,28 +36,28 @@ namespace com.espertech.esper.regression.epl.variable
             // test join
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean_S0 s0 unidirectional, MyWindow sb where theString = MYCONST");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             for (int i = 0; i < 10000; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean_S0(i, "E" + i));
                 EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sb.intPrimitive".Split(','), new object[]{"E331", -331});
             }
             long delta = DateTimeHelper.CurrentTimeMillis - start;
-            Assert.IsTrue("delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "delta=" + delta);
             stmt.Dispose();
     
             // test subquery
             EPStatement stmtSubquery = epService.EPAdministrator.CreateEPL("select * from SupportBean_S0 where Exists (select * from MyWindow where theString = MYCONST)");
-            stmtSubquery.AddListener(listener);
+            stmtSubquery.Events += listener.Update;
     
-            start = DateTimeHelper.CurrentTimeMillis;
+            start = PerformanceObserver.MilliTime;
             for (int i = 0; i < 10000; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean_S0(i, "E" + i));
                 Assert.IsTrue(listener.GetAndClearIsInvoked());
             }
             delta = DateTimeHelper.CurrentTimeMillis - start;
-            Assert.IsTrue("delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "delta=" + delta);
         }
     }
 } // end of namespace

@@ -18,15 +18,13 @@ using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.client
 {
     public class ExecClientConfigurationTransients : RegressionExecution {
-        private static readonly string SERVICE_NAME = "TEST_SERVICE_NAME";
+        private const string SERVICE_NAME = "TEST_SERVICE_NAME";
         private static readonly int SECRET_VALUE = 12345;
     
         public override void Configure(Configuration configuration) {

@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -121,7 +119,7 @@ namespace com.espertech.esper.regression.epl.join
                     " where symbol=theString";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(updateListener);
+            stmt.Events += updateListener.Update;
             return updateListener;
         }
     

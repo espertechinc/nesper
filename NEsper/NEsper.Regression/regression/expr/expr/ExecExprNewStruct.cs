@@ -50,13 +50,13 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryAssertionDefault(epService, stmt, listener);
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
             Assert.AreEqual(epl, model.ToEPL());
             stmt = epService.EPAdministrator.Create(model);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryAssertionDefault(epService, stmt, listener);
     
             // test to-expression string
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regression.expr.expr
                     " when \"B\" then new{theString,intPrimitive = 10,col2=theString||\"B\" } " +
                     "end from SupportBean as sb";
             stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual("case theString when \"A\" then new{theString=\"Q\",intPrimitive,col2=theString||\"A\"} when \"B\" then new{theString,intPrimitive=10,col2=theString||\"B\"} end", stmt.EventType.PropertyNames[0]);
             stmt.Dispose();
         }
@@ -83,13 +83,13 @@ namespace com.espertech.esper.regression.expr.expr
     
             string[] fieldsInner = "theString,intPrimitive,col2".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new Object[]{null, null, null});
+            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new object[]{null, null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 2));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new Object[]{"Q", 2, "AA"});
+            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new object[]{"Q", 2, "AA"});
     
             epService.EPRuntime.SendEvent(new SupportBean("B", 3));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new Object[]{"B", 10, "BB"});
+            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new object[]{"B", 10, "BB"});
     
             stmt.Dispose();
         }
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regression.expr.expr
         private void TryAssertion(EPServiceProvider epService, string epl) {
             var listener = new SupportUpdateListener();
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(Map), stmt.EventType.GetPropertyType("val0"));
             FragmentEventType fragType = stmt.EventType.GetFragmentType("val0");
             Assert.IsFalse(fragType.IsIndexed);
@@ -127,16 +127,16 @@ namespace com.espertech.esper.regression.expr.expr
     
             string[] fieldsInner = "col1,col2".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new Object[]{"Z", 30});
+            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new object[]{"Z", 30});
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 2));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new Object[]{"X", 10});
+            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new object[]{"X", 10});
     
             epService.EPRuntime.SendEvent(new SupportBean("B", 3));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new Object[]{"Y", 20});
+            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new object[]{"Y", 20});
     
             epService.EPRuntime.SendEvent(new SupportBean("C", 4));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new Object[]{null, null});
+            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new object[]{null, null});
     
             stmt.Dispose();
         }
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             Assert.AreEqual(rep.IsAvroEvent() ? typeof(GenericRecord) : typeof(Map), stmt.EventType.GetPropertyType("val0"));
             FragmentEventType fragType = stmt.EventType.GetFragmentType("val0");
@@ -183,7 +183,7 @@ namespace com.espertech.esper.regression.expr.expr
                 Assert.AreEqual("xE1x", inner.Get("theString"));
                 Assert.AreEqual(-3, inner.Get("intPrimitive"));
             } else {
-                EPAssertionUtil.AssertPropsMap((Map) @event.Get("val0"), fieldsInner, new Object[]{"xE1x", -3});
+                EPAssertionUtil.AssertPropsMap((Map) @event.Get("val0"), fieldsInner, new object[]{"xE1x", -3});
             }
     
             stmt.Dispose();

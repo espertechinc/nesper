@@ -766,7 +766,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             // test consumption
             var stmt = epService.EPAdministrator.CreateEPL("select rstream * from MyInfra");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.ExecuteQuery("delete from MyInfra");
             var fields = new[] {"theString", "intPrimitive"};
             if (isNamedWindow)
@@ -896,7 +896,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             // test consumption
             var stmt = epService.EPAdministrator.CreateEPL("select irstream * from MyInfra");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.ExecuteQuery("update MyInfra set intPrimitive=1000 where theString = 'E0'");
             if (isNamedWindow)
             {

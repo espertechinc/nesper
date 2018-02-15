@@ -18,9 +18,8 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
+
 using static NEsper.Avro.Core.AvroConstant;
-// using static org.apache.avro.SchemaBuilder.record;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -35,7 +34,7 @@ namespace com.espertech.esper.regression.events.avro
         private void RunNestedMap(EPServiceProvider epService)
         {
             var innerSchema = SchemaBuilder.Record(
-                "InnerSchema", TypeBuilder.Field("mymap", TypeBuilder.Map(TypeBuilder.String())));
+                "InnerSchema", TypeBuilder.Field("mymap", TypeBuilder.Map(TypeBuilder.StringType())));
             var recordSchema = SchemaBuilder.Record(
                 "InnerSchema", TypeBuilder.Field("i", innerSchema));
             var avro = new ConfigurationEventTypeAvro(recordSchema);
@@ -43,7 +42,7 @@ namespace com.espertech.esper.regression.events.avro
     
             var stmt = epService.EPAdministrator.CreateEPL("select I.Mymap('x') as c0 from MyNestedMap");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var inner = new GenericRecord(innerSchema);
             inner.Put("mymap", Collections.SingletonMap("x", "y"));
@@ -57,7 +56,7 @@ namespace com.espertech.esper.regression.events.avro
             epService.EPAdministrator.CreateEPL("create avro schema MyEvent()");
             var stmt = epService.EPAdministrator.CreateEPL("select * from MyEvent");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var schema = ((AvroEventType) stmt.EventType).SchemaAvro;
             epService.EPRuntime.SendEventAvro(new GenericRecord(schema), "MyEvent");
@@ -66,7 +65,7 @@ namespace com.espertech.esper.regression.events.avro
             Assert.AreEqual(null, @event.Get("a?.b"));
     
             var innerSchema = SchemaBuilder.Record("InnerSchema",
-                    TypeBuilder.Field("b", TypeBuilder.String(
+                    TypeBuilder.Field("b", TypeBuilder.StringType(
                         TypeBuilder.Property(PROP_STRING_KEY, PROP_STRING_VALUE))));
             var inner = new GenericRecord(innerSchema);
             inner.Put("b", "X");

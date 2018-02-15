@@ -17,8 +17,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -42,20 +40,20 @@ namespace com.espertech.esper.regression.resultset.aggregate
             string epl = "select count(*,black) as cb, count(*,not black) as cnb, count(*) as c, count(*,black)/count(*) as pct from BlackWhiteEvent#length(3)";
             EPStatementSPI stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.IsFalse(stmt.StatementContext.IsStatelessSelect);
     
             epService.EPRuntime.SendEvent(new BlackWhiteEvent(true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1L, 0L, 1L, 1d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1L, 0L, 1L, 1d});
     
             epService.EPRuntime.SendEvent(new BlackWhiteEvent(false));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1L, 1L, 2L, 0.5d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1L, 1L, 2L, 0.5d});
     
             epService.EPRuntime.SendEvent(new BlackWhiteEvent(false));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1L, 2L, 3L, 1 / 3d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1L, 2L, 3L, 1 / 3d});
     
             epService.EPRuntime.SendEvent(new BlackWhiteEvent(false));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{0L, 3L, 3L, 0d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{0L, 3L, 3L, 0d});
     
             SupportModelHelper.CompileCreate(epService, epl);
             SupportModelHelper.CompileCreate(epService, "select count(distinct black,not black), count(black,black) from BlackWhiteEvent");
@@ -70,28 +68,28 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "count(distinct intBoxed, boolPrimitive) as c2 " +
                     "from SupportBean#length(3)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeBean(100, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1L, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1L, 1L});
     
             epService.EPRuntime.SendEvent(MakeBean(100, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{2L, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{2L, 1L});
     
             epService.EPRuntime.SendEvent(MakeBean(101, false));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{2L, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{2L, 1L});
     
             epService.EPRuntime.SendEvent(MakeBean(102, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{2L, 2L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{2L, 2L});
     
             epService.EPRuntime.SendEvent(MakeBean(103, false));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1L, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1L, 1L});
     
             epService.EPRuntime.SendEvent(MakeBean(104, false));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1L, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1L, 1L});
     
             epService.EPRuntime.SendEvent(MakeBean(105, false));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{0L, 0L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{0L, 0L});
     
             stmt.Dispose();
         }
@@ -111,22 +109,22 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "fminever(intBoxed, boolPrimitive) as cfminever " +
                     "from SupportBean#length(3)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeBean(100, false));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, null, null, null, null, null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, null, null, null, null, null, null, null});
     
             epService.EPRuntime.SendEvent(MakeBean(10, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{0.0d, 10.0, 10, 10.0, 10, null, 10, 10, 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{0.0d, 10.0, 10, 10.0, 10, null, 10, 10, 10});
     
             epService.EPRuntime.SendEvent(MakeBean(11, false));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{0.0d, 10.0, 10, 10.0, 10, null, 10, 10, 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{0.0d, 10.0, 10, 10.0, 10, null, 10, 10, 10});
     
             epService.EPRuntime.SendEvent(MakeBean(20, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{5.0d, 15.0, 20, 15.0, 10, 7.0710678118654755, 30, 20, 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{5.0d, 15.0, 20, 15.0, 10, 7.0710678118654755, 30, 20, 10});
     
             epService.EPRuntime.SendEvent(MakeBean(30, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{5.0d, 25.0, 30, 25.0, 20, 7.0710678118654755, 50, 30, 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{5.0d, 25.0, 30, 25.0, 20, 7.0710678118654755, 50, 30, 10});
     
             // Test all remaining types of "sum"
             stmt.Dispose();
@@ -137,19 +135,19 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "sum(longPrimitive, boolPrimitive) as c3, " +
                     "sum(shortPrimitive, boolPrimitive) as c4 " +
                     "from SupportBean#length(2)");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeBean(2f, 3d, 4L, (short) 5, false));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, null, null});
     
             epService.EPRuntime.SendEvent(MakeBean(3f, 4d, 5L, (short) 6, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{3f, 4d, 5L, 6});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{3f, 4d, 5L, 6});
     
             epService.EPRuntime.SendEvent(MakeBean(4f, 5d, 6L, (short) 7, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{7f, 9d, 11L, 13});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{7f, 9d, 11L, 13});
     
             epService.EPRuntime.SendEvent(MakeBean(1f, 1d, 1L, (short) 1, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{5f, 6d, 7L, 8});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{5f, 6d, 7L, 8});
     
             // Test min/max-ever
             stmt.Dispose();
@@ -158,26 +156,26 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "fmax(intBoxed, boolPrimitive) as c1," +
                     "fmin(intBoxed, boolPrimitive) as c2 " +
                     "from SupportBean");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.IsFalse(stmt.StatementContext.IsStatelessSelect);
     
             epService.EPRuntime.SendEvent(MakeBean(10, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{10, 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10, 10});
     
             epService.EPRuntime.SendEvent(MakeBean(20, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{20, 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{20, 10});
     
             epService.EPRuntime.SendEvent(MakeBean(8, false));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{20, 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{20, 10});
     
             epService.EPRuntime.SendEvent(MakeBean(7, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{20, 7});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{20, 7});
     
             epService.EPRuntime.SendEvent(MakeBean(30, false));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{20, 7});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{20, 7});
     
             epService.EPRuntime.SendEvent(MakeBean(40, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{40, 7});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{40, 7});
     
             // test big decimal big integer
             stmt.Dispose();
@@ -187,19 +185,19 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "sum(bigdec, bigint < 100) as c2, " +
                     "sum(bigint, bigint < 100) as c3 " +
                     "from SupportBeanNumeric#length(2)");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(new SupportBeanNumeric(new BigInteger("10"), new BigDecimal(20)));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{new BigDecimal(20), new BigDecimal(20), new BigInteger("10")});
+            epService.EPRuntime.SendEvent(new SupportBeanNumeric(new BigInteger(10), new decimal(20)));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{new decimal(20), new decimal(20), new BigInteger(10)});
     
-            epService.EPRuntime.SendEvent(new SupportBeanNumeric(new BigInteger("101"), new BigDecimal(101)));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{new BigDecimal(20), new BigDecimal(20), new BigInteger("10")});
+            epService.EPRuntime.SendEvent(new SupportBeanNumeric(new BigInteger(101), new decimal(101)));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{new decimal(20), new decimal(20), new BigInteger(10)});
     
-            epService.EPRuntime.SendEvent(new SupportBeanNumeric(new BigInteger("20"), new BigDecimal(40)));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{new BigDecimal(40), new BigDecimal(40), new BigInteger("20")});
+            epService.EPRuntime.SendEvent(new SupportBeanNumeric(new BigInteger(20), new decimal(40)));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{new decimal(40), new decimal(40), new BigInteger(20)});
     
-            epService.EPRuntime.SendEvent(new SupportBeanNumeric(new BigInteger("30"), new BigDecimal(50)));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{new BigDecimal(45), new BigDecimal(90), new BigInteger("50")});
+            epService.EPRuntime.SendEvent(new SupportBeanNumeric(new BigInteger(30), new decimal(50)));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{new decimal(45), new decimal(90), new BigInteger(50)});
     
             stmt.Dispose();
             string epl = "select " +
@@ -212,7 +210,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "sum(distinct intBoxed,boolPrimitive) as csum " +
                     "from SupportBean#length(3)";
             stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionDistinct(epService, listener);
     
@@ -221,7 +219,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
             Assert.AreEqual(epl, model.ToEPL());
             stmt = (EPStatementSPI) epService.EPAdministrator.Create(model);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(epl, stmt.Text);
     
             TryAssertionDistinct(epService, listener);
@@ -233,19 +231,19 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             string[] fields = "cavedev,cavg,cmax,cmedian,cmin,cstddev,csum".Split(',');
             epService.EPRuntime.SendEvent(MakeBean(100, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{0d, 100d, 100, 100d, 100, null, 100});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{0d, 100d, 100, 100d, 100, null, 100});
     
             epService.EPRuntime.SendEvent(MakeBean(100, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{0d, 100d, 100, 100d, 100, null, 100});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{0d, 100d, 100, 100d, 100, null, 100});
     
             epService.EPRuntime.SendEvent(MakeBean(200, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{50d, 150d, 200, 150d, 100, 70.71067811865476, 300});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{50d, 150d, 200, 150d, 100, 70.71067811865476, 300});
     
             epService.EPRuntime.SendEvent(MakeBean(200, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{50d, 150d, 200, 150d, 100, 70.71067811865476, 300});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{50d, 150d, 200, 150d, 100, 70.71067811865476, 300});
     
             epService.EPRuntime.SendEvent(MakeBean(200, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{0d, 200d, 200, 200d, 200, null, 200});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{0d, 200d, 200, 200d, 200, null, 200});
         }
     
         private void RunAssertionFirstLastEver(EPServiceProvider epService) {
@@ -262,19 +260,19 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "from SupportBean#length(3)";
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeBean(100, false));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, null, 0L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, 0L});
     
             epService.EPRuntime.SendEvent(MakeBean(100, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{100, 100, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{100, 100, 1L});
     
             epService.EPRuntime.SendEvent(MakeBean(200, true));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{100, 200, 2L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{100, 200, 2L});
     
             epService.EPRuntime.SendEvent(MakeBean(201, false));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{100, 200, 2L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{100, 200, 2L});
     
             stmt.Dispose();
         }

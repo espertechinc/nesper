@@ -111,20 +111,17 @@ namespace com.espertech.esper.supportregression.util
             Reset();
             return lastNew;
         }
-    
-        public EventBean[] GetLastOldData()
-        {
-            return _lastOldData;
+
+        public EventBean[] LastOldData {
+            get { return _lastOldData; }
         }
-    
-        public IList<EventBean[]> GetNewDataList()
-        {
-            return _newDataList;
+
+        public IList<EventBean[]> NewDataList {
+            get { return _newDataList; }
         }
-    
-        public IList<EventBean[]> GetOldDataList()
-        {
-            return _oldDataList;
+
+        public IList<EventBean[]> OldDataList {
+            get { return _oldDataList; }
         }
 
         public bool IsInvoked
@@ -180,13 +177,13 @@ namespace com.espertech.esper.supportregression.util
             return array;
         }
     
-        public void AssertUnderlyingAndReset(Object[] expectedUnderlyingNew, Object[] expectedUnderlyingOld)
+        public void AssertUnderlyingAndReset(object[] expectedUnderlyingNew, object[] expectedUnderlyingOld)
         {
-            Assert.AreEqual(1, GetNewDataList().Count);
-            Assert.AreEqual(1, GetOldDataList().Count);
+            Assert.AreEqual(1, NewDataList.Count);
+            Assert.AreEqual(1, OldDataList.Count);
     
             EventBean[] newEvents = GetLastNewData();
-            EventBean[] oldEvents = GetLastOldData();
+            EventBean[] oldEvents = LastOldData;
     
             if (expectedUnderlyingNew != null)
             {
@@ -217,13 +214,13 @@ namespace com.espertech.esper.supportregression.util
             Reset();
         }
     
-        public void AssertFieldEqualsAndReset(String fieldName, Object[] expectedNew, Object[] expectedOld)
+        public void AssertFieldEqualsAndReset(String fieldName, object[] expectedNew, object[] expectedOld)
         {
-            Assert.AreEqual(1, GetNewDataList().Count);
-            Assert.AreEqual(1, GetOldDataList().Count);
+            Assert.AreEqual(1, NewDataList.Count);
+            Assert.AreEqual(1, OldDataList.Count);
     
             EventBean[] newEvents = GetLastNewData();
-            EventBean[] oldEvents = GetLastOldData();
+            EventBean[] oldEvents = LastOldData;
     
             if (expectedNew != null)
             {

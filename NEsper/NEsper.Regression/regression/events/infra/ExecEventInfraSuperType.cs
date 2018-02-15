@@ -69,7 +69,7 @@ namespace com.espertech.esper.regression.events.infra
             {
                 statements[i] = epService.EPAdministrator.CreateEPL("select * from " + typePrefix + "_" + typeNames[i]);
                 listeners[i] = new SupportUpdateListener();
-                statements[i].AddListener(listeners[i]);
+                statements[i].Events += listeners[i].Update;
             }
 
             sender.Invoke(epService, root, typePrefix + "_" + typeNames[0]);

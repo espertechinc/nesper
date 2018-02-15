@@ -17,7 +17,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -40,17 +39,17 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             // test FAF filter
             EventBean[] events = epService.EPRuntime.ExecuteQuery("select col0 from MyTable(pkey='E1')").Array;
-            EPAssertionUtil.AssertPropsPerRow(events, fields, new Object[][]{new object[] {1}});
+            EPAssertionUtil.AssertPropsPerRow(events, fields, new object[][]{new object[] {1}});
     
             // test iterate
             EPStatement stmtIterate = epService.EPAdministrator.CreateEPL("select col0 from MyTable(pkey='E2')");
-            EPAssertionUtil.AssertPropsPerRow(stmtIterate.GetEnumerator(), fields, new Object[][]{new object[] {2}});
+            EPAssertionUtil.AssertPropsPerRow(stmtIterate.GetEnumerator(), fields, new object[][]{new object[] {2}});
             stmtIterate.Dispose();
     
             // test subquery
             EPStatement stmtSubquery = epService.EPAdministrator.CreateEPL("select (select col0 from MyTable(pkey='E3')) as col0 from SupportBean_S0");
             var listener = new SupportUpdateListener();
-            stmtSubquery.AddListener(listener);
+            stmtSubquery.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
             Assert.AreEqual(3, listener.AssertOneGetNewAndReset().Get("col0"));
             stmtSubquery.Dispose();

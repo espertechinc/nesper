@@ -106,7 +106,7 @@ namespace com.espertech.esper.regression.pattern
             string pattern = "every a=" + type + "(indexed[0]=3)";
     
             EPStatement stmt = epService.EPAdministrator.CreatePattern(pattern);
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             var theEvent = new SupportBeanComplexProps(new int[]{3, 4});
             epService.EPRuntime.SendEvent(theEvent);
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regression.pattern
     
         private void RunIndexedValueProp(EPServiceProvider epService, EPStatement stmt) {
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             var eventOne = new SupportBeanComplexProps(new int[]{3});
             epService.EPRuntime.SendEvent(eventOne);

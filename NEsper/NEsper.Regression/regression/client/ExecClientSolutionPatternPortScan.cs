@@ -18,14 +18,14 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.client
 {
     public class ExecClientSolutionPatternPortScan : RegressionExecution {
-    
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public override void Run(EPServiceProvider epService) {
             RunAssertionPortScan_PrimarySuccess(epService);
             RunAssertionPortScan_KeepAlerting(epService);
@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.client
             SetCurrentTime(epService, "8:00:00");
             SupportUpdateListener listener = DeployPortScan(epService);
             SendEventMultiple(epService, 20, "A", "B");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "type,cnt".Split(','), new Object[]{"DETECTED", 20L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "type,cnt".Split(','), new object[]{"DETECTED", 20L});
             UndeployRemoveAll(epService);
         }
     
@@ -46,7 +46,7 @@ namespace com.espertech.esper.regression.client
             SetCurrentTime(epService, "8:00:00");
             SupportUpdateListener listener = DeployPortScan(epService);
             SendEventMultiple(epService, 20, "A", "B");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "type,cnt".Split(','), new Object[]{"DETECTED", 20L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "type,cnt".Split(','), new object[]{"DETECTED", 20L});
     
             SetCurrentTime(epService, "8:00:29");
             SendEventMultiple(epService, 20, "A", "B");
@@ -56,7 +56,7 @@ namespace com.espertech.esper.regression.client
             Assert.IsFalse(listener.IsInvoked);
     
             SetCurrentTime(epService, "8:01:00");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "type,cnt".Split(','), new Object[]{"UPDATE", 20L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "type,cnt".Split(','), new object[]{"UPDATE", 20L});
     
             UndeployRemoveAll(epService);
         }
@@ -66,10 +66,10 @@ namespace com.espertech.esper.regression.client
             SetCurrentTime(epService, "8:00:00");
             SupportUpdateListener listener = DeployPortScan(epService);
             SendEventMultiple(epService, 20, "A", "B");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "type,cnt".Split(','), new Object[]{"DETECTED", 20L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "type,cnt".Split(','), new object[]{"DETECTED", 20L});
     
             SetCurrentTime(epService, "8:01:00");
-            EPAssertionUtil.AssertProps(listener.GetAndResetLastNewData()[0], "type,cnt".Split(','), new Object[]{"DONE", 0L});
+            EPAssertionUtil.AssertProps(listener.GetAndResetLastNewData()[0], "type,cnt".Split(','), new object[]{"DONE", 0L});
     
             UndeployRemoveAll(epService);
         }
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void SendEvent(EPServiceProvider epService, string src, string dst, int port, string marker) {
-            epService.EPRuntime.SendEvent(new Object[]{src, dst, port, marker}, "PortScanEvent");
+            epService.EPRuntime.SendEvent(new object[]{src, dst, port, marker}, "PortScanEvent");
         }
     
         private void SetCurrentTime(EPServiceProvider epService, string time) {
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regression.client
                             "@Name('output') select * from OutputAlerts;\n";
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("output").AddListener(listener);
+            epService.EPAdministrator.GetStatement("output").Events += listener.Update;
             return listener;
         }
     

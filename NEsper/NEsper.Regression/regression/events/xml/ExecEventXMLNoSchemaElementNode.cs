@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.events.xml
             string stmt = "select event.type as type, event.uid as uid from MyEvent";
             EPStatement joinView = epService.EPAdministrator.CreateEPL(stmt);
             var updateListener = new SupportUpdateListener();
-            joinView.AddListener(updateListener);
+            joinView.Events += updateListener.Update;
     
             string xml = "<batch-event>" +
                     "<event type=\"a-f-G\" uid=\"terminal.55\" time=\"2007-04-19T13:05:20.22Z\" version=\"2.0\"/>" +

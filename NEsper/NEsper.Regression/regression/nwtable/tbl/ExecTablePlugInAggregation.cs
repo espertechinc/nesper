@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             epService.EPAdministrator.CreateEPL("create table varaggPIN (csv CsvWords())");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select varaggPIN.csv as c0 from SupportBean_S0").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select varaggPIN.csv as c0 from SupportBean_S0").Events += listener.Update;
             epService.EPAdministrator.CreateEPL("into table varaggPIN select CsvWords(theString) as csv from SupportBean#length(3)");
     
             SendWordAssert(epService, listener, "the", "the");
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("create table varaggRCM (wordCount ReferenceCountedMap(string))");
             epService.EPAdministrator.CreateEPL("into table varaggRCM select ReferenceCountedMap(theString) as wordCount from SupportBean#length(3)");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select VaraggRCM.wordCount.ReferenceCountLookup(p00) as c0 from SupportBean_S0").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select VaraggRCM.wordCount.ReferenceCountLookup(p00) as c0 from SupportBean_S0").Events += listener.Update;
     
             string words = "the,house,is,green";
             SendWordAssert(epService, listener, "the", words, new int?[]{1, null, null, null});

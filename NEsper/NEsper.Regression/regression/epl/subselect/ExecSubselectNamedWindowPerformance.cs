@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -74,29 +73,29 @@ namespace com.espertech.esper.regression.epl.subselect
             string eplSingle = "select (select intPrimitive from MyWindow where theString = 'E9734') as val from SupportBeanRange sbr";
             EPStatement stmtSingle = epService.EPAdministrator.CreateEPL(eplSingle);
             var listener = new SupportUpdateListener();
-            stmtSingle.AddListener(listener);
+            stmtSingle.Events += listener.Update;
     
             long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 1000; i++) {
                 epService.EPRuntime.SendEvent(new SupportBeanRange("R", "", -1, -1));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{9734});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{9734});
             }
             long delta = DateTimeHelper.CurrentTimeMillis - startTime;
-            Assert.IsTrue("delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "delta=" + delta);
             stmtSingle.Dispose();
     
             // two-field compare
             string eplTwoHash = "select (select intPrimitive from MyWindow where theString = 'E9736' and intPrimitive = 9736) as val from SupportBeanRange sbr";
             EPStatement stmtTwoHash = epService.EPAdministrator.CreateEPL(eplTwoHash);
-            stmtTwoHash.AddListener(listener);
+            stmtTwoHash.Events += listener.Update;
     
             startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 1000; i++) {
                 epService.EPRuntime.SendEvent(new SupportBeanRange("R", "", -1, -1));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{9736});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{9736});
             }
             delta = DateTimeHelper.CurrentTimeMillis - startTime;
-            Assert.IsTrue("delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "delta=" + delta);
             stmtTwoHash.Dispose();
     
             // range compare single
@@ -105,29 +104,29 @@ namespace com.espertech.esper.regression.epl.subselect
             }
             string eplSingleBTree = "select (select intPrimitive from MyWindow where intPrimitive between 9735 and 9735) as val from SupportBeanRange sbr";
             EPStatement stmtSingleBtree = epService.EPAdministrator.CreateEPL(eplSingleBTree);
-            stmtSingleBtree.AddListener(listener);
+            stmtSingleBtree.Events += listener.Update;
     
             startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 1000; i++) {
                 epService.EPRuntime.SendEvent(new SupportBeanRange("R", "", -1, -1));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{9735});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{9735});
             }
             delta = DateTimeHelper.CurrentTimeMillis - startTime;
-            Assert.IsTrue("delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "delta=" + delta);
             stmtSingleBtree.Dispose();
     
             // range compare composite
             string eplComposite = "select (select intPrimitive from MyWindow where theString = 'E9738' and intPrimitive between 9738 and 9738) as val from SupportBeanRange sbr";
             EPStatement stmtComposite = epService.EPAdministrator.CreateEPL(eplComposite);
-            stmtComposite.AddListener(listener);
+            stmtComposite.Events += listener.Update;
     
             startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 1000; i++) {
                 epService.EPRuntime.SendEvent(new SupportBeanRange("R", "", -1, -1));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{9738});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{9738});
             }
             delta = DateTimeHelper.CurrentTimeMillis - startTime;
-            Assert.IsTrue("delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "delta=" + delta);
             stmtComposite.Dispose();
     
             // destroy all
@@ -165,15 +164,15 @@ namespace com.espertech.esper.regression.epl.subselect
             string queryEpl = "select (select min(intPrimitive) as mini, max(intPrimitive) as maxi from MyWindow where theString = sbr.key and intPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(queryEpl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 1000; i++) {
                 epService.EPRuntime.SendEvent(new SupportBeanRange("R1", "A", 300, 312));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{300, 312});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{300, 312});
             }
             long delta = DateTimeHelper.CurrentTimeMillis - startTime;
-            Assert.IsTrue("delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "delta=" + delta);
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -208,15 +207,15 @@ namespace com.espertech.esper.regression.epl.subselect
             string queryEpl = "select (select min(intPrimitive) as mini, max(intPrimitive) as maxi from MyWindow where intPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(queryEpl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 1000; i++) {
                 epService.EPRuntime.SendEvent(new SupportBeanRange("R1", "K", 300, 312));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{300, 312});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{300, 312});
             }
             long delta = DateTimeHelper.CurrentTimeMillis - startTime;
-            Assert.IsTrue("delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "delta=" + delta);
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -240,18 +239,18 @@ namespace com.espertech.esper.regression.epl.subselect
                     "where theString = sbr.key and intPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(queryEpl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 500; i++) {
                 epService.EPRuntime.SendEvent(new SupportBeanRange("R1", "A", 299, 313));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{299, 313});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{299, 313});
     
                 epService.EPRuntime.SendEvent(new SupportBeanRange("R2", "B", 7500, 7510));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{7500, 7510});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{7500, 7510});
             }
             long delta = DateTimeHelper.CurrentTimeMillis - startTime;
-            Assert.IsTrue("delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "delta=" + delta);
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -296,14 +295,14 @@ namespace com.espertech.esper.regression.epl.subselect
             }
             EPStatement consumeStmt = epService.EPAdministrator.CreateEPL(consumeEpl);
             var listener = new SupportUpdateListener();
-            consumeStmt.AddListener(listener);
+            consumeStmt.Events += listener.Update;
     
             string[] fields = "e0,val".Split(',');
     
             // test once
             epService.EPRuntime.SendEvent(new SupportBean("WX", 10));
             SendEvent(epService, "E1", 10, "WX");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "WX"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "WX"});
     
             // preload
             for (int i = 0; i < 10000; i++) {
@@ -313,11 +312,11 @@ namespace com.espertech.esper.regression.epl.subselect
             long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 5000; i++) {
                 SendEvent(epService, "E" + i, i, "W" + i);
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E" + i, "W" + i});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E" + i, "W" + i});
             }
             long endTime = DateTimeHelper.CurrentTimeMillis;
             long delta = endTime - startTime;
-            Assert.IsTrue("delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "delta=" + delta);
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -327,8 +326,8 @@ namespace com.espertech.esper.regression.epl.subselect
             theEvent.Put("e0", e0);
             theEvent.Put("e1", e1);
             theEvent.Put("e2", e2);
-            if (EventRepresentationChoice.GetEngineDefault(epService).IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(theEvent.Values().ToArray(), "EventSchema");
+            if (EventRepresentationChoiceExtensions.GetEngineDefault(epService).IsObjectArrayEvent()) {
+                epService.EPRuntime.SendEvent(theEvent.Values.ToArray(), "EventSchema");
             } else {
                 epService.EPRuntime.SendEvent(theEvent, "EventSchema");
             }

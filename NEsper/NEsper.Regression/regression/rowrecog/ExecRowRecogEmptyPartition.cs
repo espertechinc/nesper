@@ -40,36 +40,36 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportRecogBean("A", 1));
             epService.EPRuntime.SendEvent(new SupportRecogBean("B", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1});
     
             epService.EPRuntime.SendEvent(new SupportRecogBean("B", 2));
             epService.EPRuntime.SendEvent(new SupportRecogBean("A", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{2});
     
             epService.EPRuntime.SendEvent(new SupportRecogBean("B", 3));
             epService.EPRuntime.SendEvent(new SupportRecogBean("A", 4));
             epService.EPRuntime.SendEvent(new SupportRecogBean("A", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{3});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{3});
     
             epService.EPRuntime.SendEvent(new SupportRecogBean("B", 4));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{4});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{4});
     
             epService.EPRuntime.SendEvent(new SupportRecogBean("A", 6));
             epService.EPRuntime.SendEvent(new SupportRecogBean("B", 7));
             epService.EPRuntime.SendEvent(new SupportRecogBean("B", 8));
             epService.EPRuntime.SendEvent(new SupportRecogBean("A", 7));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{7});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{7});
     
             /// <summary>Comment-in for testing partition removal.</summary>
             for (int i = 0; i < 10000; i++) {
                 epService.EPRuntime.SendEvent(new SupportRecogBean("A", i));
                 //Log.Info(i);
                 //epService.EPRuntime.SendEvent(new SupportRecogBean("B", i));
-                //EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {i});
+                //EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {i});
             }
         }
     }

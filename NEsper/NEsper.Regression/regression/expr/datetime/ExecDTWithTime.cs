@@ -16,8 +16,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
 
-using NUnit.Framework;
-
 namespace com.espertech.esper.regression.expr.datetime
 {
     public class ExecDTWithTime : RegressionExecution {
@@ -34,22 +32,21 @@ namespace com.espertech.esper.regression.expr.datetime
             string startTime = "2002-05-30T09:00:00.000";
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(startTime)));
     
-            string[] fields = "val0,val1,val2,val3,val4,val5".Split(',');
+            string[] fields = "val0,val1,val2".Split(',');
             string eplFragment = "select " +
                     "current_timestamp.WithTime(varhour, varmin, varsec, varmsec) as val0," +
                     "utildate.WithTime(varhour, varmin, varsec, varmsec) as val1," +
-                    "longdate.WithTime(varhour, varmin, varsec, varmsec) as val2," +
-                    "caldate.WithTime(varhour, varmin, varsec, varmsec) as val3," +
-                    "localdate.WithTime(varhour, varmin, varsec, varmsec) as val4," +
-                    "zoneddate.WithTime(varhour, varmin, varsec, varmsec) as val5" +
+                    "longdate.WithTime(varhour, varmin, varsec, varmsec) as val2" +
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(long), typeof(Date), typeof(long), typeof(Calendar), typeof(LocalDateTime), typeof(ZonedDateTime)});
+            stmtFragment.Events += listener.Update;
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
+                typeof(long?), typeof(DateTimeOffset?), typeof(long?)
+            });
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null});
     
             string expectedTime = "2002-05-30T09:00:00.000";
             epService.EPRuntime.SetVariableValue("varhour", null); // variable is null

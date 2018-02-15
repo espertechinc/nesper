@@ -42,20 +42,20 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "from SupportBean_ST0_Container";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val0".Split(','), new Type[]{typeof(bool?)});
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make3Value("I1,E1,0", "I2,E2,0"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false});
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make3Value("I3,I3,0", "X4,X4,0"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true});
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make3Value("I3,I3,0", "X4,Y4,0"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false});
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make3Value("I3,I3,0", "Y4,X4,0"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false});
     
             stmtFragment.Dispose();
         }
@@ -68,50 +68,50 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "from SupportCollection";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val0".Split(','), new Type[]{typeof(bool?)});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2,E3", "E1,E2,E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E3", "E1,E2,E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E3", "E1,E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2,E3", "E1,E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2,null,E3", "E1,E2,null,E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2,E3", "E1,E2,null"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2,null", "E1,E2,E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1", ""));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("", "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1", "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("", ""));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString(null, ""));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("", null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString(null, null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null});
     
             stmtFragment.Dispose();
         }

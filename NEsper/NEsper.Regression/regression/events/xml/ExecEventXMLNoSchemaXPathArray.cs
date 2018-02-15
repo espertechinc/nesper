@@ -8,7 +8,7 @@
 
 using System;
 using System.Xml;
-
+using System.Xml.XPath;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -38,18 +38,18 @@ namespace com.espertech.esper.regression.events.xml
     
             var desc = new ConfigurationEventTypeXMLDOM();
             desc.RootElementName = "Event";
-            desc.AddXPathProperty("A", "//Field[@Name='A']/@Value", XPathConstants.NODESET, "string[]");
+            desc.AddXPathProperty("A", "//Field[@Name='A']/@Value", XPathResultType.NodeSet, "string[]");
             epService.EPAdministrator.Configuration.AddEventType("Event", desc);
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from Event");
             var updateListener = new SupportUpdateListener();
-            stmt.AddListener(updateListener);
+            stmt.Events += updateListener.Update;
     
             XmlDocument doc = SupportXML.GetDocument(xml);
             epService.EPRuntime.SendEvent(doc);
     
             EventBean theEvent = updateListener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(theEvent, "A".Split(','), new Object[]{new Object[]{"987654321", "9876543210"}});
+            EPAssertionUtil.AssertProps(theEvent, "A".Split(','), new object[]{new object[]{"987654321", "9876543210"}});
         }
     }
 } // end of namespace

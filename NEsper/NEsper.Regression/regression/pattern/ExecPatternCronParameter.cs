@@ -255,7 +255,7 @@ namespace com.espertech.esper.regression.pattern
             EPServiceProviderIsolated isolated = epService.GetEPServiceIsolated("i1");
             SendTime(isolated, startTime);
             var listener = new SupportUpdateListener();
-            isolated.EPAdministrator.CreateEPL(epl, "S0", null).AddListener(listener);
+            isolated.EPAdministrator.CreateEPL(epl, "S0", null).Events += listener.Update;
             RunSequence(isolated, times, listener);
             epService.EPAdministrator.DestroyAllStatements();
             isolated.Dispose();

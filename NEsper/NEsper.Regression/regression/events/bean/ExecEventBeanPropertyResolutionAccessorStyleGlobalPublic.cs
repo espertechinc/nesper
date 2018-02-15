@@ -13,11 +13,9 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.supportregession.bean;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -32,7 +30,7 @@ namespace com.espertech.esper.regression.events.bean
         public override void Run(EPServiceProvider epService) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select fieldLegacyVal from SupportLegacyBean");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var theEvent = new SupportLegacyBean("E1");
             theEvent.fieldLegacyVal = "val1";

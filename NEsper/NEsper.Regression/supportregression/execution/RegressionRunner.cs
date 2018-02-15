@@ -33,7 +33,7 @@ namespace com.espertech.esper.supportregression.execution
     
             if (!execution.ExcludeWhenInstrumented()) {
                 if (InstrumentationHelper.ENABLED) {
-                    InstrumentationHelper.StartTest(epService, execution.Class, execution.Class.Name);
+                    InstrumentationHelper.StartTest(epService, execution.GetType(), execution.GetType().Name);
                 }
             }
     

@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]
             {
                 typeof(DateTimeOffset?), typeof(long?)
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]
             {
                 typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?)
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]
             {
                 typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?)
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]
             {
                 typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?)
@@ -166,16 +166,16 @@ namespace com.espertech.esper.regression.expr.datetime
             fields = "val0".Split(',');
             eplFragment = "select Utildate.RoundHalf('min') as val0 from SupportDateTime";
             stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make("2002-05-30T15:30:29.999"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{SupportDateTime.GetValueCoerced("2002-05-30T15:30:00.000", "util")});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{SupportDateTime.GetValueCoerced("2002-05-30T15:30:00.000", "util")});
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make("2002-05-30T15:30:30.000"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{SupportDateTime.GetValueCoerced("2002-05-30T15:31:00.000", "util")});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{SupportDateTime.GetValueCoerced("2002-05-30T15:31:00.000", "util")});
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make("2002-05-30T15:30:30.001"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{SupportDateTime.GetValueCoerced("2002-05-30T15:31:00.000", "util")});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{SupportDateTime.GetValueCoerced("2002-05-30T15:31:00.000", "util")});
     
             stmtFragment.Dispose();
         }

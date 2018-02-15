@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -53,7 +52,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             Assert.AreEqual(typeof(int?), result.EventType.GetPropertyType("gid"));
     
             var fields = new string[]{"name", "place", "sum(count)", "Grouping(name)", "Grouping(place)", "gid"};
-            EPAssertionUtil.AssertPropsPerRow(result.Array, fields, new Object[][]{
+            EPAssertionUtil.AssertPropsPerRow(result.Array, fields, new object[][]{
                     new object[] {"skoda", "france", 10000, 0, 0, 0},
                     new object[] {"skoda", "germany", 5000, 0, 0, 0},
                     new object[] {"bmw", "france", 100, 0, 0, 0},
@@ -77,12 +76,12 @@ namespace com.espertech.esper.regression.resultset.querytype
             string epl = "select name, place, sum(count), Grouping(name), Grouping(place), Grouping_id(name,place) as gid " +
                     "from CarEvent group by grouping Sets((name, place), name, place, ())";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
             TryAssertionDocSampleCarEvent(epService, listener);
             epService.EPAdministrator.DestroyAllStatements();
     
             // try audit
-            epService.EPAdministrator.CreateEPL("@Audit " + epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL("@Audit " + epl).Events += listener.Update;
             TryAssertionDocSampleCarEvent(epService, listener);
             epService.EPAdministrator.DestroyAllStatements();
     
@@ -91,7 +90,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             Assert.AreEqual(epl, model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
             Assert.AreEqual(epl, stmt.Text);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryAssertionDocSampleCarEvent(epService, listener);
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -100,14 +99,14 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void TryAssertionDocSampleCarEvent(EPServiceProvider epService, SupportUpdateListener listener) {
             var fields = new string[]{"name", "place", "sum(count)", "Grouping(name)", "Grouping(place)", "gid"};
             epService.EPRuntime.SendEvent(new CarEvent("skoda", "france", 100));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{
                     new object[] {"skoda", "france", 100, 0, 0, 0},
                     new object[] {"skoda", null, 100, 0, 1, 1},
                     new object[] {null, "france", 100, 1, 0, 2},
                     new object[] {null, null, 100, 1, 1, 3}});
     
             epService.EPRuntime.SendEvent(new CarEvent("skoda", "germany", 75));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{
                     new object[] {"skoda", "germany", 75, 0, 0, 0},
                     new object[] {"skoda", null, 175, 0, 1, 1},
                     new object[] {null, "germany", 75, 1, 0, 2},
@@ -129,12 +128,12 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "  )" +
                     "from CarEvent ce group by grouping Sets((name, place),name, place,())";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new CarInfoEvent("a", "b", "c01"));
     
             epService.EPRuntime.SendEvent(new CarEvent("skoda", "france", 10000));
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[][]{
+            EPAssertionUtil.AssertEqualsExactOrder(new object[][]{
                     new object[] {"skoda", "france", 10000, 0, 0, 0, "c01", "|skoda|"},
                     new object[] {"skoda", null, 10000, 0, 1, 1, "c01", "|skoda|"},
                     new object[] {null, "france", 10000, 1, 0, 2, "c01", "|skoda|"},
@@ -144,16 +143,16 @@ namespace com.espertech.esper.regression.resultset.querytype
             // test "prev" and "prior"
             string[] fields = "c0,c1,c2,c3".Split(',');
             string eplTwo = "select Prev(1, name) as c0, Prior(1, name) as c1, name as c2, sum(count) as c3 from CarEvent#keepall ce group by Rollup(name)";
-            epService.EPAdministrator.CreateEPL(eplTwo).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(eplTwo).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new CarEvent("skoda", "france", 10));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{
-                    new object[] {null, null, "skoda", 10}, {null, null, null, 10}
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{
+                    new object[] {null, null, "skoda", 10}, new object[]{null, null, null, 10}
             });
     
             epService.EPRuntime.SendEvent(new CarEvent("vw", "france", 15));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{
-                    new object[] {"skoda", "skoda", "vw", 15}, {"skoda", "skoda", null, 25}
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{
+                    new object[] {"skoda", "skoda", "vw", 15}, new object[]{"skoda", "skoda", null, 25}
             });
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -183,7 +182,7 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         public class GroupingSupportFunc {
-            private static List<Object[]> parameters = new List<>();
+            private static readonly IList<object[]> parameters = new List<object[]>();
     
             public static void Myfunc(string name,
                                       string place,
@@ -193,16 +192,14 @@ namespace com.espertech.esper.regression.resultset.querytype
                                       int? grpId,
                                       string refId,
                                       string namePlusDelim) {
-                parameters.Add(new Object[]{name, place, cnt, grpName, grpPlace, grpId, refId, namePlusDelim});
+                parameters.Add(new object[]{name, place, cnt, grpName, grpPlace, grpId, refId, namePlusDelim});
             }
-    
-            public static List<Object[]> GetParameters() {
-                return parameters;
-            }
-    
-            static Object[][] AssertGetAndClear(int numRows) {
+
+            public static IList<object[]> Parameters => parameters;
+
+            public static object[][] AssertGetAndClear(int numRows) {
                 Assert.AreEqual(numRows, parameters.Count);
-                Object[][] result = parameters.ToArray(new Object[numRows][]);
+                object[][] result = parameters.ToArray();
                 parameters.Clear();
                 return result;
             }
@@ -212,24 +209,18 @@ namespace com.espertech.esper.regression.resultset.querytype
             private readonly string name;
             private readonly string place;
             private readonly string refId;
-    
-            private CarInfoEvent(string name, string place, string refId) {
+
+            public CarInfoEvent(string name, string place, string refId) {
                 this.name = name;
                 this.place = place;
                 this.refId = refId;
             }
-    
-            public string GetName() {
-                return name;
-            }
-    
-            public string GetPlace() {
-                return place;
-            }
-    
-            public string GetRefId() {
-                return refId;
-            }
+
+            public string Name => name;
+
+            public string Place => place;
+
+            public string RefId => refId;
         }
     
         public class CarEvent {
@@ -237,23 +228,17 @@ namespace com.espertech.esper.regression.resultset.querytype
             private readonly string place;
             private readonly int count;
     
-            private CarEvent(string name, string place, int count) {
+            public CarEvent(string name, string place, int count) {
                 this.name = name;
                 this.place = place;
                 this.count = count;
             }
-    
-            public string GetName() {
-                return name;
-            }
-    
-            public string GetPlace() {
-                return place;
-            }
-    
-            public int GetCount() {
-                return count;
-            }
+
+            public string Name => name;
+
+            public string Place => place;
+
+            public int Count => count;
         }
     }
 } // end of namespace

@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -71,7 +70,7 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertion(epService, listener, stmt);
     
@@ -79,7 +78,7 @@ namespace com.espertech.esper.regression.epl.subselect
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
             Assert.AreEqual(stmtText, model.ToEPL());
             stmt = epService.EPAdministrator.Create(model);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(stmtText, stmt.Text);
     
             TryAssertion(epService, listener, stmt);
@@ -92,30 +91,30 @@ namespace com.espertech.esper.regression.epl.subselect
             FragmentEventType fragmentType = stmt.EventType.GetFragmentType("subrow");
             Assert.IsFalse(fragmentType.IsIndexed);
             Assert.IsFalse(fragmentType.IsNative);
-            var rows = new Object[][]{
+            var rows = new object[][]{
                     new object[] {"v1", typeof(string)},
                     new object[] {"v2", typeof(int)},
             };
             for (int i = 0; i < rows.Length; i++) {
                 string message = "Failed assertion for " + rows[i][0];
                 EventPropertyDescriptor prop = fragmentType.FragmentType.PropertyDescriptors[i];
-                Assert.AreEqual(message, rows[i][0], prop.PropertyName);
-                Assert.AreEqual(message, rows[i][1], prop.PropertyType);
+                Assert.AreEqual(rows[i][0], prop.PropertyName, message);
+                Assert.AreEqual(rows[i][1], prop.PropertyType, message);
             }
     
             string[] fields = "subrow.v1,subrow.v2".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
             EventBean theEvent = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(theEvent, fields, new Object[]{null, null});
+            EPAssertionUtil.AssertProps(theEvent, fields, new object[]{null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 10});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
             epService.EPRuntime.SendEvent(new SupportBean_S0(3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 20});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", 20});
         }
     
         private void RunAssertionCorrelatedAggregation(EPServiceProvider epService) {
@@ -130,24 +129,24 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            var rows = new Object[][]{
+            var rows = new object[][]{
                     new object[] {"p00", typeof(string), false},
                     new object[] {"subrow", typeof(Map), true}
             };
             for (int i = 0; i < rows.Length; i++) {
                 string message = "Failed assertion for " + rows[i][0];
                 EventPropertyDescriptor prop = stmt.EventType.PropertyDescriptors[i];
-                Assert.AreEqual(message, rows[i][0], prop.PropertyName);
-                Assert.AreEqual(message, rows[i][1], prop.PropertyType);
-                Assert.AreEqual(message, rows[i][2], prop.IsFragment);
+                Assert.AreEqual(rows[i][0], prop.PropertyName, message);
+                Assert.AreEqual(rows[i][1], prop.PropertyType, message);
+                Assert.AreEqual(rows[i][2], prop.IsFragment, message);
             }
     
             FragmentEventType fragmentType = stmt.EventType.GetFragmentType("subrow");
             Assert.IsFalse(fragmentType.IsIndexed);
             Assert.IsFalse(fragmentType.IsNative);
-            rows = new Object[][]{
+            rows = new object[][]{
                     new object[] {"v1", typeof(int?)},
                     new object[] {"v2", typeof(int?)},
                     new object[] {"v3", typeof(int[])},
@@ -156,15 +155,15 @@ namespace com.espertech.esper.regression.epl.subselect
             for (int i = 0; i < rows.Length; i++) {
                 string message = "Failed assertion for " + rows[i][0];
                 EventPropertyDescriptor prop = fragmentType.FragmentType.PropertyDescriptors[i];
-                Assert.AreEqual(message, rows[i][0], prop.PropertyName);
-                Assert.AreEqual(message, rows[i][1], prop.PropertyType);
+                Assert.AreEqual(rows[i][0], prop.PropertyName, message);
+                Assert.AreEqual(rows[i][1], prop.PropertyType, message);
             }
     
             string[] fields = "p00,subrow.v1,subrow.v2".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "T1"));
             EventBean row = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(row, fields, new Object[]{"T1", null, null});
+            EPAssertionUtil.AssertProps(row, fields, new object[]{"T1", null, null});
             Assert.IsNull(row.Get("subrow.v3"));
             Assert.IsNull(row.Get("subrow.v4"));
     
@@ -172,17 +171,17 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPRuntime.SendEvent(sb1);
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "T1"));
             row = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(row, fields, new Object[]{"T1", 10, 11});
+            EPAssertionUtil.AssertProps(row, fields, new object[]{"T1", 10, 11});
             EPAssertionUtil.AssertEqualsAnyOrder((int[]) row.Get("subrow.v3"), new int[]{10});
-            EPAssertionUtil.AssertEqualsAnyOrder((Object[]) row.Get("subrow.v4"), new Object[]{sb1});
+            EPAssertionUtil.AssertEqualsAnyOrder((object[]) row.Get("subrow.v4"), new object[]{sb1});
     
             var sb2 = new SupportBean("T1", 20);
             epService.EPRuntime.SendEvent(sb2);
             epService.EPRuntime.SendEvent(new SupportBean_S0(3, "T1"));
             row = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(row, fields, new Object[]{"T1", 30, 32});
+            EPAssertionUtil.AssertProps(row, fields, new object[]{"T1", 30, 32});
             EPAssertionUtil.AssertEqualsAnyOrder((int[]) row.Get("subrow.v3"), new int[]{10, 20});
-            EPAssertionUtil.AssertEqualsAnyOrder((Object[]) row.Get("subrow.v4"), new Object[]{sb1, sb2});
+            EPAssertionUtil.AssertEqualsAnyOrder((object[]) row.Get("subrow.v4"), new object[]{sb1, sb2});
     
             stmt.Dispose();
         }

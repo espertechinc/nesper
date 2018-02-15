@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -18,14 +18,12 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.client
 {
-    public class ExecClientStatementAwareListener : RegressionExecution {
+    public class ExecClientStatementAwareEvents : RegressionExecution {
         public override void Configure(Configuration configuration) {
             configuration.AddEventType("Bean", typeof(SupportBean).FullName);
         }
@@ -42,7 +40,7 @@ namespace com.espertech.esper.regression.client
             string stmtText = "select * from Bean";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportStmtAwareUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
             Assert.IsTrue(listener.IsInvoked);
@@ -51,22 +49,24 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(1, listener.SvcProviderList.Count);
             Assert.AreEqual(epService, listener.SvcProviderList[0]);
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
+#if NOT_VALID
             string stmtText = "select * from Bean";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             try {
-                statement.AddListener((StatementAwareUpdateListener) null);
+                statement.Events += (StatementAwareUpdateListener) null;
                 Assert.Fail();
             } catch (ArgumentException ex) {
                 // expected
             }
     
-            statement.Destroy();
+            statement.Dispose();
+#endif
         }
-    
+
         private void RunAssertionBothListeners(EPServiceProvider epService) {
             string stmtText = "select * from Bean";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
@@ -75,9 +75,9 @@ namespace com.espertech.esper.regression.client
             var updateListeners = new SupportUpdateListener[awareListeners.Length];
             for (int i = 0; i < awareListeners.Length; i++) {
                 awareListeners[i] = new SupportStmtAwareUpdateListener();
-                statement.AddListener(awareListeners[i]);
+                statement.Events += awareListeners[i].Update;
                 updateListeners[i] = new SupportUpdateListener();
-                statement.AddListener(updateListeners[i]);
+                statement.Events += updateListeners[i].Update;
             }
     
             var theEvent = new SupportBean();
@@ -87,7 +87,7 @@ namespace com.espertech.esper.regression.client
                 Assert.AreSame(theEvent, awareListeners[i].AssertOneGetNewAndReset().Underlying);
             }
     
-            statement.RemoveListener(awareListeners[1]);
+            statement.Events -= awareListeners[1].Update;
             theEvent = new SupportBean();
             epService.EPRuntime.SendEvent(theEvent);
             for (int i = 0; i < awareListeners.Length; i++) {
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regression.client
                 }
             }
     
-            statement.RemoveListener(updateListeners[1]);
+            statement.Events -= updateListeners[1].Update;
             theEvent = new SupportBean();
             epService.EPRuntime.SendEvent(theEvent);
             for (int i = 0; i < awareListeners.Length; i++) {
@@ -113,8 +113,8 @@ namespace com.espertech.esper.regression.client
                 }
             }
     
-            statement.AddListener(updateListeners[1]);
-            statement.AddListener(awareListeners[1]);
+            statement.Events += updateListeners[1].Update;
+            statement.Events += awareListeners[1].Update;
             theEvent = new SupportBean();
             epService.EPRuntime.SendEvent(theEvent);
             for (int i = 0; i < awareListeners.Length; i++) {
@@ -136,8 +136,8 @@ namespace com.espertech.esper.regression.client
             EPStatement statementTwo = epService.EPAdministrator.CreateEPL("select * from Bean(theString='B' or theString='C')");
     
             var awareListener = new SupportStmtAwareUpdateListener();
-            statementOne.AddListener(awareListener);
-            statementTwo.AddListener(awareListener);
+            statementOne.Events += awareListener.Update;
+            statementTwo.Events += awareListener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("B", 1));
             Assert.AreEqual("B", awareListener.AssertOneGetNewAndReset().Get("theString"));
@@ -149,8 +149,8 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(2, awareListener.NewDataList.Count);
             Assert.AreEqual("C", awareListener.NewDataList[0][0].Get("theString"));
             Assert.AreEqual("C", awareListener.NewDataList[1][0].Get("theString"));
-            EPStatement[] stmts = awareListener.StatementList.ToArray(new EPStatement[0]);
-            EPAssertionUtil.AssertEqualsAnyOrder(stmts, new Object[]{statementOne, statementTwo});
+            EPStatement[] stmts = awareListener.StatementList.ToArray();
+            EPAssertionUtil.AssertEqualsAnyOrder(stmts, new object[]{statementOne, statementTwo});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -161,16 +161,16 @@ namespace com.espertech.esper.regression.client
     
             var awareListeners = new MyStmtAwareUpdateListener[2];
             var updateListeners = new MyUpdateListener[awareListeners.Length];
-            var invoked = new List<>();
+            var invoked = new List<object>();
             for (int i = 0; i < awareListeners.Length; i++) {
                 awareListeners[i] = new MyStmtAwareUpdateListener(invoked);
                 updateListeners[i] = new MyUpdateListener(invoked);
             }
     
-            statement.AddListener(awareListeners[0]);
-            statement.AddListener(updateListeners[1]);
-            statement.AddListener(updateListeners[0]);
-            statement.AddListener(awareListeners[1]);
+            statement.Events += awareListeners[0].Update;
+            statement.Events += updateListeners[1].Update;
+            statement.Events += updateListeners[0].Update;
+            statement.Events += awareListeners[1].Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
     
@@ -178,63 +178,37 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(updateListeners[0], invoked[1]);
             Assert.AreEqual(awareListeners[0], invoked[2]);
             Assert.AreEqual(awareListeners[1], invoked[3]);
-    
-            try {
-                IEnumerator<UpdateListener> itOne = statement.UpdateListeners;
-                itOne.Next();
-                itOne.Remove();
-                Assert.Fail();
-            } catch (UnsupportedOperationException ex) {
-                // expected
-            }
-    
-            try {
-                IEnumerator<StatementAwareUpdateListener> itOne = statement.StatementAwareListeners;
-                itOne.Next();
-                itOne.Remove();
-                Assert.Fail();
-            } catch (UnsupportedOperationException ex) {
-                // expected
-            }
-    
-            IEnumerator<UpdateListener> itOne = statement.UpdateListeners;
-            Assert.AreEqual(updateListeners[1], itOne.Next());
-            Assert.AreEqual(updateListeners[0], itOne.Next());
-            Assert.IsFalse(itOne.HasNext());
-    
-            IEnumerator<StatementAwareUpdateListener> itTwo = statement.StatementAwareListeners;
-            Assert.AreEqual(awareListeners[0], itTwo.Next());
-            Assert.AreEqual(awareListeners[1], itTwo.Next());
-            Assert.IsFalse(itTwo.HasNext());
-    
+
             statement.RemoveAllEventHandlers();
-            Assert.IsFalse(statement.StatementAwareListeners.HasNext());
-            Assert.IsFalse(statement.UpdateListeners.HasNext());
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
-        public class MyUpdateListener : UpdateListener {
-            private List<Object> invoked;
+        public class MyUpdateListener
+        {
+            private readonly IList<object> _invoked;
     
-            MyUpdateListener(List<Object> invoked) {
-                this.invoked = invoked;
+            public MyUpdateListener(IList<object> invoked) {
+                this._invoked = invoked;
             }
-    
-            public void Update(EventBean[] newEvents, EventBean[] oldEvents) {
-                invoked.Add(this);
+
+            public void Update(object sender, UpdateEventArgs e)
+            {
+                _invoked.Add(this);
             }
         }
     
-        public class MyStmtAwareUpdateListener : StatementAwareUpdateListener {
-            private List<Object> invoked;
-    
-            MyStmtAwareUpdateListener(List<Object> invoked) {
-                this.invoked = invoked;
+        public class MyStmtAwareUpdateListener
+        {
+            private readonly IList<object> _invoked;
+
+            public MyStmtAwareUpdateListener(IList<object> invoked) {
+                this._invoked = invoked;
             }
-    
-            public void Update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement statement, EPServiceProvider svcProvider) {
-                invoked.Add(this);
+
+            public void Update(object sender, UpdateEventArgs e)
+            {
+                _invoked.Add(this);
             }
         }
     }

@@ -46,10 +46,10 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "pkey".Split(','), new Object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "pkey".Split(','), new object[][]{new object[] {"E1"}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 0));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "pkey".Split(','), new Object[][]{new object[] {"E1"}, new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "pkey".Split(','), new object[][]{new object[] {"E1"}, new object[] {"E2"}});
             epService.EPRuntime.SendEvent(new SupportBean("E2", 0));
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -62,7 +62,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "then insert into MyTableNWM select sb.theString as pkey");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "pkey".Split(','), new Object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "pkey".Split(','), new object[][]{new object[] {"E1"}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -80,26 +80,26 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL(eplSplit);
     
             var otherStreamListener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from OtherStream").AddListener(otherStreamListener);
+            epService.EPAdministrator.CreateEPL("select * from OtherStream").Events += otherStreamListener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            AssertSplitStream(stmtCreateOne, stmtCreateTwo, new Object[][]{new object[] {"E1", 1}}, new Object[0][]);
+            AssertSplitStream(stmtCreateOne, stmtCreateTwo, new object[][]{new object[] {"E1", 1}}, new Object[0][]);
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", -2));
-            AssertSplitStream(stmtCreateOne, stmtCreateTwo, new Object[][]{new object[] {"E1", 1}}, new Object[][] {new object[] {"E2", -2}});
+            AssertSplitStream(stmtCreateOne, stmtCreateTwo, new object[][]{new object[] {"E1", 1}}, new object[][] {new object[] {"E2", -2}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", -3));
-            AssertSplitStream(stmtCreateOne, stmtCreateTwo, new Object[][]{new object[] {"E1", 1}}, new Object[][] {new object[] {"E2", -2}, new object[] {"E3", -3}});
+            AssertSplitStream(stmtCreateOne, stmtCreateTwo, new object[][]{new object[] {"E1", 1}}, new object[][] {new object[] {"E2", -2}, new object[] {"E3", -3}});
             Assert.IsFalse(otherStreamListener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 0));
-            AssertSplitStream(stmtCreateOne, stmtCreateTwo, new Object[][]{new object[] {"E1", 1}}, new Object[][] {new object[] {"E2", -2}, new object[] {"E3", -3}});
-            EPAssertionUtil.AssertProps(otherStreamListener.AssertOneGetNewAndReset(), "pkey,col".Split(','), new Object[]{"E4", 0});
+            AssertSplitStream(stmtCreateOne, stmtCreateTwo, new object[][]{new object[] {"E1", 1}}, new object[][] {new object[] {"E2", -2}, new object[] {"E3", -3}});
+            EPAssertionUtil.AssertProps(otherStreamListener.AssertOneGetNewAndReset(), "pkey,col".Split(','), new object[]{"E4", 0});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
-        private void AssertSplitStream(EPStatement stmtCreateOne, EPStatement stmtCreateTwo, Object[][] tableOneRows, Object[][] tableTwoRows) {
+        private void AssertSplitStream(EPStatement stmtCreateOne, EPStatement stmtCreateTwo, object[][] tableOneRows, object[][] tableTwoRows) {
             string[] fields = "pkey,col".Split(',');
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreateOne.GetEnumerator(), fields, tableOneRows);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreateTwo.GetEnumerator(), fields, tableTwoRows);
@@ -114,14 +114,14 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean_S1(1));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 10}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 10}});
     
             epService.EPRuntime.ExecuteQuery("delete from MyTableIIF");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
             epService.EPRuntime.SendEvent(new SupportBean_S1(2));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 10}, new object[] {"E2", 20}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 10}, new object[] {"E2", 20}});
         }
     
         private void RunAssertionInsertInto(EPServiceProvider epService) {
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[0][]);
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1"}});
     
             try {
                 epService.EPRuntime.SendEvent(new SupportBean("E2", 0));
@@ -161,24 +161,24 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("on SupportBean_S2 merge MyTableIIK where p20 = pkey when not matched then insert into MyTableIIK select p20 as pkey");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", null}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", null}});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "E1"));
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 10}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 10}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 0));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 10}, new object[] {"E2", null}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 10}, new object[] {"E2", null}});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(20, "E2"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(11, "E1"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 21}, new object[] {"E2", 20}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 21}, new object[] {"E2", 20}});
     
             // assert on-insert and on-merge
             epService.EPRuntime.SendEvent(new SupportBean_S1(0, "E3"));
             epService.EPRuntime.SendEvent(new SupportBean_S2(0, "E4"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(3, "E3"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(4, "E4"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 21}, new object[] {"E2", 20}, new object[] {"E3", 3}, new object[] {"E4", 4}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 21}, new object[] {"E2", 20}, new object[] {"E3", 3}, new object[] {"E4", 4}});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("table_MyTableIIK__internal", false);
@@ -212,14 +212,14 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 map.Put("p1", "b");
                 epService.EPRuntime.SendEvent(map, "MySchema");
             } else if (rep.Value.IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(new Object[]{"a", "b"}, "MySchema");
+                epService.EPRuntime.SendEvent(new object[]{"a", "b"}, "MySchema");
             } else if (rep.Value.IsAvroEvent()) {
                 var theEvent = new GenericRecord(SupportAvroUtil.GetAvroSchema(epService, "MySchema").AsRecordSchema());
                 theEvent.Put("p0", "a");
                 theEvent.Put("p1", "b");
                 epService.EPRuntime.SendEventAvro(theEvent, "MySchema");
             }
-            EPAssertionUtil.AssertProps(stmtTheTable.First(), "p0,p1".Split(','), new Object[]{"a", "b"});
+            EPAssertionUtil.AssertProps(stmtTheTable.First(), "p0,p1".Split(','), new object[]{"a", "b"});
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MySchema", false);
     

@@ -21,8 +21,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -54,7 +52,7 @@ namespace com.espertech.esper.regression.expr.expr
             string epl = "SELECT Prior(1, average) as value FROM SupportBean()#Time(5 minutes)#Uni(intPrimitive)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("value"));
@@ -90,7 +88,7 @@ namespace com.espertech.esper.regression.expr.expr
             string text = "select Prior(" + priorIndex + ", s0) as result from S0#length(2) as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var e1 = new SupportBean_S0(3);
             epService.EPRuntime.SendEvent(e1);
@@ -111,7 +109,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("priorSymbol"));
@@ -196,7 +194,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("priorSymbol"));
@@ -256,7 +254,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("priorSymbol"));
@@ -310,7 +308,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("priorSymbol"));
@@ -339,7 +337,7 @@ namespace com.espertech.esper.regression.expr.expr
                     " where Prior(1, price) = 100";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendMarketEvent(epService, "IBM", 75);
             Assert.IsFalse(listener.IsInvoked);
@@ -364,7 +362,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var random = new Random();
             // 200000 is a better number for a memory test, however for short unit tests this is 2000
@@ -373,7 +371,7 @@ namespace com.espertech.esper.regression.expr.expr
                     //Log.Info(i);
                 }
     
-                SendMarketEvent(epService, Convert.ToString(random.NextInt()), 4);
+                SendMarketEvent(epService, Convert.ToString(random.Next()), 4);
     
                 if (i % 1000 == 0) {
                     listener.Reset();
@@ -394,7 +392,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatementSPI stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.IsFalse(stmt.StatementContext.IsStatelessSelect);
     
             var random = new Random();
@@ -404,7 +402,7 @@ namespace com.espertech.esper.regression.expr.expr
                     //Log.Info(i);
                 }
     
-                SendMarketEvent(epService, Convert.ToString(random.NextInt()), 4);
+                SendMarketEvent(epService, Convert.ToString(random.Next()), 4);
     
                 if (i % 1000 == 0) {
                     listener.Reset();
@@ -429,7 +427,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var random = new Random();
             // 200000 is a better number for a memory test, however for short unit tests this is 2000
@@ -438,7 +436,7 @@ namespace com.espertech.esper.regression.expr.expr
                     //Log.Info(i);
                 }
     
-                SendMarketEvent(epService, Convert.ToString(random.NextInt()), 4);
+                SendMarketEvent(epService, Convert.ToString(random.Next()), 4);
     
                 if (i % 1000 == 0) {
                     listener.Reset();
@@ -462,7 +460,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("prior0Symbol"));
@@ -513,7 +511,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendMarketEvent(epService, "A", 1);
             SendMarketEvent(epService, "B", 130);
@@ -560,7 +558,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("priorSymbol"));
@@ -598,7 +596,7 @@ namespace com.espertech.esper.regression.expr.expr
         private void TryPriorSortWindow(EPServiceProvider epService, string epl) {
             EPStatement statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendMarketEvent(epService, "COX", 30);
             AssertNewEvents(listener, "COX", "COX", 30d, null, null, null, null, null, null);

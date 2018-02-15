@@ -17,7 +17,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -52,7 +51,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertion(epService, listener);
         }
@@ -73,7 +72,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertion(epService, listener);
         }
@@ -94,7 +93,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertion(epService, listener);
         }
@@ -115,13 +114,13 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertion(epService, listener);
         }
     
         private void TryAssertion(EPServiceProvider epService, SupportUpdateListener listener) {
-            Object[] s0Events, s1Events, s2Events, s3Events;
+            object[] s0Events, s1Events, s2Events, s3Events;
     
             // Test s0 and s1=1, s2=1, s3=1
             //
@@ -140,7 +139,7 @@ namespace com.espertech.esper.regression.epl.join
             s0Events = SupportBean_S0.MakeS0("A", new string[]{"A-s0-1"});
             SendEvent(epService, s0Events);
             EPAssertionUtil.AssertSameAnyOrder(
-                    new Object[][]{new object[] {s0Events[0], s1Events[0], s2Events[0], s3Events[0]}}, GetAndResetNewEvents(listener));
+                    new object[][]{new object[] {s0Events[0], s1Events[0], s2Events[0], s3Events[0]}}, GetAndResetNewEvents(listener));
     
             // Test s0 and s1=1, s2=0, s3=0
             //
@@ -151,7 +150,7 @@ namespace com.espertech.esper.regression.epl.join
             s0Events = SupportBean_S0.MakeS0("B", new string[]{"B-s0-1"});
             SendEvent(epService, s0Events);
             EPAssertionUtil.AssertSameAnyOrder(
-                    new Object[][]{new object[] {s0Events[0], s1Events[0], null, null}}, GetAndResetNewEvents(listener));
+                    new object[][]{new object[] {s0Events[0], s1Events[0], null, null}}, GetAndResetNewEvents(listener));
     
             // Test s0 and s1=1, s2=1, s3=0
             //
@@ -166,7 +165,7 @@ namespace com.espertech.esper.regression.epl.join
             s0Events = SupportBean_S0.MakeS0("C", new string[]{"C-s0-1"});
             SendEvent(epService, s0Events);
             EPAssertionUtil.AssertSameAnyOrder(
-                    new Object[][]{new object[] {s0Events[0], s1Events[0], s2Events[0], null}}, GetAndResetNewEvents(listener));
+                    new object[][]{new object[] {s0Events[0], s1Events[0], s2Events[0], null}}, GetAndResetNewEvents(listener));
     
             // Test s0 and s1=2, s2=0, s3=0
             //
@@ -180,7 +179,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s0Events = SupportBean_S0.MakeS0("D", new string[]{"D-s0-1"});
             SendEvent(epService, s0Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0], null},
                     new object[] {s0Events[0], s1Events[1], s2Events[0], null}}, GetAndResetNewEvents(listener));
     
@@ -196,7 +195,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s0Events = SupportBean_S0.MakeS0("E", new string[]{"E-s0-1"});
             SendEvent(epService, s0Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0], null},
                     new object[] {s0Events[0], s1Events[1], s2Events[0], null},
                     new object[] {s0Events[0], s1Events[0], s2Events[1], null},
@@ -218,7 +217,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s0Events = SupportBean_S0.MakeS0("F", new string[]{"F-s0-1"});
             SendEvent(epService, s0Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0], s3Events[0]},
                     new object[] {s0Events[0], s1Events[1], s2Events[0], s3Events[0]},
                     new object[] {s0Events[0], s1Events[0], s2Events[1], s3Events[0]},
@@ -240,7 +239,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s0Events = SupportBean_S0.MakeS0("G", new string[]{"G-s0-1"});
             SendEvent(epService, s0Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0], s3Events[0]},
                     new object[] {s0Events[0], s1Events[1], s2Events[0], s3Events[0]},
                     new object[] {s0Events[0], s1Events[0], s2Events[1], s3Events[0]},
@@ -266,7 +265,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s0Events = SupportBean_S0.MakeS0("H", new string[]{"H-s0-1"});
             SendEvent(epService, s0Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0], s3Events[0]},
                     new object[] {s0Events[0], s1Events[0], s2Events[0], s3Events[1]},
                     new object[] {s0Events[0], s1Events[0], s2Events[0], s3Events[2]}}, GetAndResetNewEvents(listener));
@@ -314,7 +313,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s3Events = SupportBean_S3.MakeS3("M", new string[]{"M-s3-1"});
             SendEvent(epService, s3Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0], s3Events[0]}}, GetAndResetNewEvents(listener));
     
             // Test s3 and s0=1, s1=2, s2=1
@@ -330,7 +329,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s3Events = SupportBean_S3.MakeS3("N", new string[]{"N-s3-1"});
             SendEvent(epService, s3Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0], s3Events[0]},
                     new object[] {s0Events[0], s1Events[1], s2Events[0], s3Events[0]}}, GetAndResetNewEvents(listener));
     
@@ -347,7 +346,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s3Events = SupportBean_S3.MakeS3("O", new string[]{"O-s3-1"});
             SendEvent(epService, s3Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0], s3Events[0]},
                     new object[] {s0Events[0], s1Events[1], s2Events[0], s3Events[0]},
                     new object[] {s0Events[0], s1Events[0], s2Events[1], s3Events[0]},
@@ -368,7 +367,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s3Events = SupportBean_S3.MakeS3("P", new string[]{"P-s3-1"});
             SendEvent(epService, s3Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0], s3Events[0]},
                     new object[] {s0Events[0], s1Events[1], s2Events[0], s3Events[0]},
                     new object[] {s0Events[0], s1Events[0], s2Events[1], s3Events[0]},
@@ -401,7 +400,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s1Events = SupportBean_S1.MakeS1("R", new string[]{"R-s1-1"});
             SendEvent(epService, s1Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0], null},
                     new object[] {s0Events[1], s1Events[0], s2Events[0], null}}, GetAndResetNewEvents(listener));
     
@@ -418,7 +417,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s1Events = SupportBean_S1.MakeS1("S", new string[]{"S-s1-1"});
             SendEvent(epService, s1Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0], s3Events[0]},
                     new object[] {s0Events[1], s1Events[0], s2Events[0], s3Events[0]},
                     new object[] {s0Events[0], s1Events[0], s2Events[0], s3Events[1]},
@@ -458,7 +457,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s2Events = SupportBean_S2.MakeS2("V", new string[]{"V-s2-1"});
             SendEvent(epService, s2Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0], s3Events[0]}}, GetAndResetNewEvents(listener));
     
             // Test s2 and s0=2, s1=2, s3=0
@@ -471,7 +470,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s2Events = SupportBean_S2.MakeS2("W", new string[]{"W-s2-1"});
             SendEvent(epService, s2Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0], null},
                     new object[] {s0Events[0], s1Events[1], s2Events[0], null},
                     new object[] {s0Events[1], s1Events[0], s2Events[0], null},
@@ -490,7 +489,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s2Events = SupportBean_S2.MakeS2("X", new string[]{"X-s2-1"});
             SendEvent(epService, s2Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0], s3Events[0]},
                     new object[] {s0Events[0], s1Events[1], s2Events[0], s3Events[0]},
                     new object[] {s0Events[1], s1Events[0], s2Events[0], s3Events[0]},
@@ -503,18 +502,18 @@ namespace com.espertech.esper.regression.epl.join
             epService.EPAdministrator.DestroyAllStatements();
         }
     
-        private void SendEventsAndReset(EPServiceProvider epService, SupportUpdateListener listener, Object[] events) {
+        private void SendEventsAndReset(EPServiceProvider epService, SupportUpdateListener listener, object[] events) {
             SendEvent(epService, events);
             listener.Reset();
         }
     
-        private void SendEvent(EPServiceProvider epService, Object[] events) {
+        private void SendEvent(EPServiceProvider epService, object[] events) {
             for (int i = 0; i < events.Length; i++) {
                 epService.EPRuntime.SendEvent(events[i]);
             }
         }
     
-        private Object[][] GetAndResetNewEvents(SupportUpdateListener listener) {
+        private object[][] GetAndResetNewEvents(SupportUpdateListener listener) {
             EventBean[] newEvents = listener.LastNewData;
             listener.Reset();
             return ArrayHandlingUtil.GetUnderlyingEvents(newEvents, new string[]{"s0", "s1", "s2", "s3"});

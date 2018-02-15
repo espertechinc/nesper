@@ -16,16 +16,14 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.resultset.querytype
 {
     public class ExecQuerytypeGroupByEventPerGroupHaving : RegressionExecution {
-        private static readonly string SYMBOL_DELL = "DELL";
-        private static readonly string SYMBOL_IBM = "IBM";
+        private const string SYMBOL_DELL = "DELL";
+        private const string SYMBOL_IBM = "IBM";
     
         public override void Run(EPServiceProvider epService) {
             RunAssertionHavingCount(epService);
@@ -38,7 +36,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             string text = "select * from SupportBean(intPrimitive = 3)#length(10) as e1 group by theString having count(*) > 2";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 3));
             epService.EPRuntime.SendEvent(new SupportBean("A1", 3));
@@ -60,7 +58,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
@@ -80,7 +78,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertion(epService, listener);
     

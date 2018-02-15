@@ -14,8 +14,8 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
+using com.espertech.esper.supportregression.multithread;
 using NUnit.Framework;
-// using static org.junit.Assert.assertTrue;
 
 namespace com.espertech.esper.regression.multithread
 {
@@ -50,8 +50,7 @@ namespace com.espertech.esper.regression.multithread
         {
             var threadPool = Executors.NewFixedThreadPool(numThreads);
             var future = new Future<bool>[numThreads];
-            for (var i = 0; i < numThreads; i++)
-            {
+            for (var i = 0; i < numThreads; i++) {
                 var callable = new StmtUpdateSendCallable(i, epService, numRepeats);
                 future[i] = threadPool.Submit(callable);
             }

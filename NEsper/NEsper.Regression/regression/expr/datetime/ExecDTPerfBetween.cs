@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -47,7 +45,7 @@ namespace com.espertech.esper.regression.expr.datetime
             string epl = "select a.key as c0 from SupportDateTime unidirectional, AWindow as a where Longdate.Between(longdateStart, longdateEnd, false, true)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // query
             long startTime = DateTimeHelper.CurrentTimeMillis;
@@ -57,7 +55,7 @@ namespace com.espertech.esper.regression.expr.datetime
             }
             long endTime = DateTimeHelper.CurrentTimeMillis;
             long delta = endTime - startTime;
-            Assert.IsTrue("Delta=" + delta / 1000d, delta < 500);
+            Assert.IsTrue(delta < 500, "Delta=" + delta / 1000d);
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make("2002-05-30T10:00:00.050"));
             Assert.AreEqual("ALater", listener.AssertOneGetNewAndReset().Get("c0"));

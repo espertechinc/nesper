@@ -17,6 +17,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.filter;
 using com.espertech.esper.supportregression.bean;
+using com.espertech.esper.supportregression.context;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util;
@@ -76,7 +77,7 @@ namespace com.espertech.esper.regression.context
     
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("outOne").AddListener(listener);
+            epService.EPAdministrator.GetStatement("outOne").Events += listener.Update;
     
             MakeSendScoreEvent(epService, "ScoreCycle", eventRepresentationEnum, "Pete", "K1", "P1", 100);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"Pete", "K1", 100L});
@@ -115,11 +116,11 @@ namespace com.espertech.esper.regression.context
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), stmt.GetSafeEnumerator(), fields, new[] {new object[] {5, "E1", 6}, new object[] {15, "E2", 10}, new object[] {9, "E3", 201}});
     
             // test iterator targeted hash
-            var selector = new SupportSelectorByHashCode(Collections.SingletonList(15));
+            var selector = new SupportSelectorByHashCode(Collections.SingletonSet(15));
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(selector), stmt.GetSafeEnumerator(selector), fields, new[] {new object[] {15, "E2", 10}});
             selector = new SupportSelectorByHashCode(Collections.Set(1, 9, 5));
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(selector), stmt.GetSafeEnumerator(selector), fields, new[] {new object[] {5, "E1", 6}, new object[] {9, "E3", 201}});
-            Assert.IsFalse(stmt.GetEnumerator(new SupportSelectorByHashCode(Collections.SingletonList(99))).MoveNext());
+            Assert.IsFalse(stmt.GetEnumerator(new SupportSelectorByHashCode(Collections.SingletonSet(99))).MoveNext());
             Assert.IsFalse(stmt.GetEnumerator(new SupportSelectorByHashCode(Collections.GetEmptySet<int>())).MoveNext());
             Assert.IsFalse(stmt.GetEnumerator(new SupportSelectorByHashCode(null)).MoveNext());
     
@@ -186,7 +187,7 @@ namespace com.espertech.esper.regression.context
             string eplStmt = "context " + ctx + " " + "select context.name as c0, intPrimitive as c1 from SupportBean#lastevent";
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplStmt);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             string[] fields = "c0,c1".Split(',');
     
@@ -227,7 +228,7 @@ namespace com.espertech.esper.regression.context
                     "from SupportBean#length(3)";
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplStmt);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeBean("E1", 100, 20L));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{100, 20L, null, null, null});
@@ -258,7 +259,7 @@ namespace com.espertech.esper.regression.context
                     "select context.name as c0, intPrimitive as c1, id as c2 from SupportBean#keepall as t1, SupportBean_S0#keepall as t2 where t1.theString = t2.p00";
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplStmt);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             string[] fields = "c0,c1,c2".Split(',');
     
@@ -288,7 +289,7 @@ namespace com.espertech.esper.regression.context
             // Comment-in to see CRC32 code.
             for (int i = 0; i < 10; i++) {
                 string key = "E" + i;
-                long code = SupportHashCodeFuncGranularCRC32.ComputeCRC32(key) % 4;
+                long code = SupportHashCodeFuncGranularCRC32.ComputeCrc32(key) % 4;
                 int hashCode = i.GetHashCode() % 4;
                 //Log.Info(key + " code " + code + " hashCode " + hashCode);
             }
@@ -306,11 +307,11 @@ namespace com.espertech.esper.regression.context
                     "select context.name as c0, theString as c1, sum(intPrimitive) as c2 from SupportBean#keepall group by theString";
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplStmt);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             Assert.AreEqual(4, filterSPI.FilterCountApprox);
             AgentInstanceAssertionUtil.AssertInstanceCounts(statement.StatementContext, 4, 0, 0, 0);
     
-            TryAssertionHash(epService, listener, ctx, statement, new SupportHashCodeFuncGranularCRC32(4));
+            TryAssertionHash(epService, listener, ctx, statement, new SupportHashCodeFuncGranularCRC32(4).CodeFor);
             Assert.AreEqual(0, filterSPI.FilterCountApprox);
     
             // test same with SODA
@@ -320,8 +321,8 @@ namespace com.espertech.esper.regression.context
             Assert.AreEqual(eplCtx, stmtCtx.Text);
     
             statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplStmt);
-            statement.AddListener(listener);
-            TryAssertionHash(epService, listener, ctx, statement, new SupportHashCodeFuncGranularCRC32(4));
+            statement.Events += listener.Update;
+            TryAssertionHash(epService, listener, ctx, statement, new SupportHashCodeFuncGranularCRC32(4).CodeFor);
     
             // test with Java-hashCode string hash
             epService.EPAdministrator.CreateEPL("@Name('context') create context " + ctx + " " +
@@ -331,7 +332,7 @@ namespace com.espertech.esper.regression.context
     
             statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context " + ctx + " " +
                     "select context.name as c0, theString as c1, sum(intPrimitive) as c2 from SupportBean#keepall group by theString");
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             Assert.AreEqual(6, filterSPI.FilterCountApprox);
             AgentInstanceAssertionUtil.AssertInstanceCounts(statement.StatementContext, 6, 0, 0, 0);
     
@@ -345,7 +346,7 @@ namespace com.espertech.esper.regression.context
     
             statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context " + ctx + " " +
                     "select context.name as c0, theString as c1, sum(intPrimitive) as c2 from SupportBean#keepall group by theString");
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             Assert.AreEqual(1, filterSPI.FilterCountApprox);
             AgentInstanceAssertionUtil.AssertInstanceCounts(statement.StatementContext, 0, 0, 0, 0);
     
@@ -432,7 +433,7 @@ namespace com.espertech.esper.regression.context
                     + this.GetType().Name + ".MySecondFunc(*, theString) as c4 from SupportBean";
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplStmt);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             string[] fields = "c1,c2,c3, c4".Split(',');
     

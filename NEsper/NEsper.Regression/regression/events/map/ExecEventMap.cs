@@ -113,7 +113,7 @@ namespace com.espertech.esper.regression.events.map
             Assert.IsNotNull(epService.EPAdministrator.Configuration.GetEventType("MyMap"));
     
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select lev0name.lev1name.sb.theString as val from MyMap").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select lev0name.lev1name.sb.theString as val from MyMap").Events += listener.Update;
     
             EventAdapterService eventAdapterService = ((EPServiceProviderSPI) epService).EventAdapterService;
             var lev2data = new Dictionary<string, object>();
@@ -243,7 +243,7 @@ namespace com.espertech.esper.regression.events.map
                     "from myMapEvent#length(5)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(_map, "myMapEvent");
             Assert.AreEqual("nestedValue", listener.LastNewData[0].Get("nested"));
@@ -256,7 +256,7 @@ namespace com.espertech.esper.regression.events.map
             string statementText = "select myInt as intVal, myString as stringVal from myMapEvent#length(5)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             // send IDictionary<string, Object> event
             epService.EPRuntime.SendEvent(_map, "myMapEvent");

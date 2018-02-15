@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -32,7 +31,7 @@ namespace com.espertech.esper.regression.epl.join
                     "Math.Signum(stream2.slope) as s2\n" +
                     "from\n" +
                     "SupportBean#length_batch(3)#Linest(intPrimitive, longPrimitive) as stream1,\n" +
-                    "SupportBean#length_batch(2)#Linest(intPrimitive, longPrimitive) as stream2").AddListener(listener);
+                    "SupportBean#length_batch(2)#Linest(intPrimitive, longPrimitive) as stream2").Events += listener.Update;
             epService.EPRuntime.SendEvent(MakeEvent("E3", 1, 100));
             epService.EPRuntime.SendEvent(MakeEvent("E4", 1, 100));
             Assert.IsFalse(listener.IsInvoked);

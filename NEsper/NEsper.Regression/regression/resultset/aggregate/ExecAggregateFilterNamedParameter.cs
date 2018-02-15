@@ -88,7 +88,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             var epl = "select ConcatAccessAgg(theString, filter:theString like 'A%') as c0 from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendEventAssert(epService, listener, "X1", 0, fields, new object[] {""});
             SendEventAssert(epService, listener, "A1", 0, fields, new object[] {"A1"});
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             var epl = "select ConcatMethodAgg(theString, filter:theString like 'A%') as c0 from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendEventAssert(epService, listener, "X1", 0, fields, new object[] {""});
             SendEventAssert(epService, listener, "A1", 0, fields, new object[] {"A1"});
@@ -126,7 +126,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
 
             var deploymentResult = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("stmt").AddListener(listener);
+            epService.EPAdministrator.GetStatement("stmt").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S1(0));
 
             SendEvent(epService, "hello", 0);
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                       "from SupportBean#length(3)";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendEventWLong(epService, "X1", 1000, 10);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {null, null});
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             var epl = "select rate(1, filter:theString like 'A%') as c0 from SupportBean";
             var stmt = isolated.EPAdministrator.CreateEPL(epl, "stmt1", null);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendEventAssert(isolated, listener, "X1", 0, fields, new object[] {null});
             SendEventAssert(isolated, listener, "A1", 1, fields, new object[] {null});
@@ -214,7 +214,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendEventAssert(epService, listener, "X1", 0, fields, new object[] {null});
             SendEventAssert(epService, listener, "X2", 0, fields, new object[] {null});
@@ -237,7 +237,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendEventAssert(epService, listener, "E1", 2, fields, new object[] {false, false});
             SendEventAssert(epService, listener, "E2", 1, fields, new object[] {false, false});
@@ -256,7 +256,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
 
             stmt.Dispose();
@@ -312,7 +312,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                 "@Name('stmt') select MyTable.totalA as ta, MyTable.totalB as tb, MyTable.winA as wa, MyTable.winB as wb, MyTable.sortedA as sa, MyTable.sortedB as sb from SupportBean_S0";
             var deploymentResult = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("stmt").AddListener(listener);
+            epService.EPAdministrator.GetStatement("stmt").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S1(0));
 
             SendEvent(epService, "X1", 1);
@@ -347,7 +347,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendEventAssert(epService, listener, "B1", 1, fields, new object[] {null, null, null, null});
             SendEventAssert(epService, listener, "A2", 2, fields, new object[] {2, null, 2, null});
@@ -374,7 +374,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S1(0));
 
             var b1 = SendEvent(epService, "B1", 1);
@@ -432,7 +432,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var b1 = SendEvent(epService, "B1", 1, 10);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {null, new[] {b1}});
@@ -464,7 +464,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S1(0));
 
             SendEventAssert(epService, listener, "B1", 1, fields, new object[] {null, null, null, null});
@@ -490,7 +490,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S1(0));
 
             SendEventAssert(epService, listener, "X1", 1, fields, new object[] {null, null, null, null, null, null});
@@ -524,7 +524,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S1(0));
 
             SendEventAssert(epService, listener, "X0", 0, fields, new object[] {null, null, null, null, 0L});
@@ -547,7 +547,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var x1 = SendEvent(epService, "X1", 1);
             EPAssertionUtil.AssertProps(
@@ -575,7 +575,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendEventAssert(epService, listener, "X1", 1, fields, new object[] {null, 1, null});
             SendEventAssert(epService, listener, "B2", 20, fields, new object[] {null, 1 + 20, 20});
@@ -606,7 +606,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendEventAssertSQLFuncs(
                 epService, listener, "E1", 0, 50, null, null, 0L, null, null, null, null, null, null, null, null, null,
@@ -633,7 +633,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                       " from SupportBean#length(3)";
             var stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendEventAssert(epService, listener, "E1", 3, fields, new object[] {null, null});
             SendEventAssert(epService, listener, "E2", 2, fields, new object[] {null, "E2"});

@@ -18,8 +18,6 @@ using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNotNull;
 
 using NUnit.Framework;
 
@@ -31,9 +29,9 @@ namespace com.espertech.esper.regression.events.xml
         public override void Configure(Configuration configuration) {
             var eventTypeMeta = new ConfigurationEventTypeXMLDOM();
             eventTypeMeta.RootElementName = "order";
-            InputStream schemaStream = typeof(ExecEventXMLSchemaWithRestriction).ClassLoader.GetResourceAsStream(CLASSLOADER_SCHEMA_WITH_RESTRICTION_URI);
+            var schemaStream = ResourceManager.GetResourceAsStream(CLASSLOADER_SCHEMA_WITH_RESTRICTION_URI);
             Assert.IsNotNull(schemaStream);
-            string schemaText = FileUtil.LinesToText(FileUtil.ReadFile(schemaStream));
+            var schemaText = schemaStream.ConsumeStream();
             eventTypeMeta.SchemaText = schemaText;
             configuration.AddEventType("OrderEvent", eventTypeMeta);
         }
@@ -43,7 +41,7 @@ namespace com.espertech.esper.regression.events.xml
     
             string text = "select order_amount from OrderEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
-            stmt.AddListener(updateListener);
+            stmt.Events += updateListener.Update;
     
             SupportXML.SendEvent(epService.EPRuntime,
                     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -51,7 +49,7 @@ namespace com.espertech.esper.regression.events.xml
                             "<order_amount>202.1</order_amount>" +
                             "</order>");
             EventBean theEvent = updateListener.LastNewData[0];
-            Assert.AreEqual(typeof(double?), theEvent.Get("order_amount").Class);
+            Assert.AreEqual(typeof(double?), theEvent.Get("order_amount").GetType());
             Assert.AreEqual(202.1d, theEvent.Get("order_amount"));
             updateListener.Reset();
         }

@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.events.xml
             var listener = new SupportUpdateListener();
             string stmtText = "select b.c as type, element1 from AEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             XmlDocument doc = GetDocument("<a><b><c>text</c></b></a>");
             EventSender sender = epService.EPRuntime.GetEventSender("AEvent");
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regression.events.xml
             var typeMeta = new ConfigurationEventTypeXMLDOM();
             typeMeta.RootElementName = "a";
             typeMeta.AddXPathProperty("element2", "//c", XPathResultType.String);
-            typeMeta.EventSenderValidatesRoot = false;
+            typeMeta.IsEventSenderValidatesRoot = false;
             epService.EPAdministrator.Configuration.AddEventType("BEvent", typeMeta);
     
             stmtText = "select element2 from BEvent#lastevent";

@@ -12,14 +12,11 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 using com.espertech.esper.supportregression.util;
-
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -33,7 +30,7 @@ namespace com.espertech.esper.regression.multithread
             EPStatement stmtWindow = epService.EPAdministrator.CreateEPL(
                     "create window MyWindow#keepall as select theString, longPrimitive from " + typeof(SupportBean).FullName);
             var listenerWindow = new SupportMTUpdateListener();
-            stmtWindow.AddListener(listenerWindow);
+            stmtWindow.Events += listenerWindow.Update;
     
             epService.EPAdministrator.CreateEPL(
                     "insert into MyWindow(theString, longPrimitive) " +
@@ -45,14 +42,14 @@ namespace com.espertech.esper.regression.multithread
     
             EPStatement stmtConsumer = epService.EPAdministrator.CreateEPL("select irstream theString, longPrimitive from MyWindow");
             var listenerConsumer = new SupportMTUpdateListener();
-            stmtConsumer.AddListener(listenerConsumer);
+            stmtConsumer.Events += listenerConsumer.Update;
     
             TrySend(epService, listenerWindow, listenerConsumer, 4, 1000);
         }
     
         private void TrySend(EPServiceProvider epService, SupportMTUpdateListener listenerWindow, SupportMTUpdateListener listenerConsumer, int numThreads, int numRepeats) {
             var threadPool = Executors.NewFixedThreadPool(numThreads);
-            var future = new Future<bool>[numThreads];
+            var future = new Future<IList<string>>[numThreads];
             for (int i = 0; i < numThreads; i++) {
                 var callable = new StmtNamedWindowDeleteCallable(Convert.ToString(i), epService, numRepeats);
                 future[i] = threadPool.Submit(callable);
@@ -64,9 +61,9 @@ namespace com.espertech.esper.regression.multithread
             // compute list of expected
             var expectedIdsList = new List<string>();
             for (int i = 0; i < numThreads; i++) {
-                expectedIdsList.AddAll((List<string>) future[i].Get());
+                expectedIdsList.AddAll(future[i].GetValueOrDefault());
             }
-            string[] expectedIds = expectedIdsList.ToArray(new string[0]);
+            string[] expectedIds = expectedIdsList.ToArray();
     
             Assert.AreEqual(2 * numThreads * numRepeats, listenerWindow.NewDataList.Count);  // old and new each
             Assert.AreEqual(2 * numThreads * numRepeats, listenerConsumer.NewDataList.Count);  // old and new each
@@ -79,9 +76,9 @@ namespace com.espertech.esper.regression.multithread
             }
             Assert.AreEqual(receivedIds.Length, expectedIds.Length);
     
-            Arrays.Sort(receivedIds);
-            Arrays.Sort(expectedIds);
-            Arrays.DeepEquals(expectedIds, receivedIds);
+            Array.Sort(receivedIds);
+            Array.Sort(expectedIds);
+            CompatExtensions.DeepEquals(expectedIds, receivedIds);
         }
     }
 } // end of namespace

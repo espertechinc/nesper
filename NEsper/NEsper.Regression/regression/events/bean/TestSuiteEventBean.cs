@@ -111,8 +111,8 @@ namespace com.espertech.esper.regression.events.bean
             configuration.AddEventType("MyInvalidEvent", properties);
     
             try {
-                EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(configuration);
-                epService.Initialize();
+                EPServiceProvider epServiceInner = EPServiceProviderManager.GetDefaultProvider(configuration);
+                epServiceInner.Initialize();
                 Assert.Fail();
             } catch (ConfigurationException ex) {
                 // expected

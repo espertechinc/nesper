@@ -15,7 +15,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -36,14 +35,14 @@ namespace com.espertech.esper.regression.expr.filter
                 epService.EPAdministrator.CreateEPL(text);
             }
     
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             for (int i = 0; i < 10000; i++) {
                 var bean = new SupportMarketDataIDBean("NOMATCH", "", 1);
                 epService.EPRuntime.SendEvent(bean);
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             long delta = end - start;
-            Assert.IsTrue("Delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "Delta=" + delta);
         }
     }
 } // end of namespace

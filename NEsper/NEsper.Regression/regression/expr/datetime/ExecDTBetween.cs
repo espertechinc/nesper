@@ -54,26 +54,26 @@ namespace com.espertech.esper.regression.expr.datetime
                     "from SupportTimeStartEndA";
             EPStatement stmtCurrentTs = epService.EPAdministrator.CreateEPL(eplCurrentTS);
             var listener = new SupportUpdateListener();
-            stmtCurrentTs.AddListener(listener);
+            stmtCurrentTs.Events += listener.Update;
             LambdaAssertionUtil.AssertTypesAllSame(stmtCurrentTs.EventType, fieldsCurrentTs, typeof(bool?));
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new Object[]{true, false, false, false, false, false, false, false, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[]{true, false, false, false, false, false, false, false, false});
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new Object[]{true, true, true, true, true, true, true, true, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[]{true, true, true, true, true, true, true, true, true});
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 100));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new Object[]{true, true, true, true, true, true, true, true, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[]{true, true, true, true, true, true, true, true, true});
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T09:00:00.000", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new Object[]{false, true, true, true, true, true, true, true, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[]{false, true, true, true, true, true, true, true, true});
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T09:00:00.000", 100));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new Object[]{false, true, true, true, true, true, true, true, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[]{false, true, true, true, true, true, true, true, true});
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T09:00:00.001", 100));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new Object[]{false, false, false, false, false, false, false, false, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[]{false, false, false, false, false, false, false, false, false});
             stmtCurrentTs.Dispose();
     
             // test calendar field and constants
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     "longdateStart.Between(DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\")) as val5 " +
                     "from SupportTimeStartEndA";
             EPStatement stmtConstants = epService.EPAdministrator.CreateEPL(eplConstants);
-            stmtConstants.AddListener(listener);
+            stmtConstants.Events += listener.Update;
             LambdaAssertionUtil.AssertTypesAllSame(stmtConstants.EventType, fieldsConstants, typeof(bool?));
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 0));
@@ -140,20 +140,20 @@ namespace com.espertech.esper.regression.expr.datetime
                     "from SupportTimeStartEndA";
             EPStatement stmtCurrentTs = epService.EPAdministrator.CreateEPL(eplCurrentTS);
             var listener = new SupportUpdateListener();
-            stmtCurrentTs.AddListener(listener);
+            stmtCurrentTs.Events += listener.Update;
             LambdaAssertionUtil.AssertTypesAllSame(stmtCurrentTs.EventType, fieldsCurrentTs, typeof(bool?));
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 0));
             EPAssertionUtil.AssertPropsAllValuesSame(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, false);
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new Object[]{true, false, true, false, true, false, true, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[]{true, false, true, false, true, false, true, false});
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 2));
             EPAssertionUtil.AssertPropsAllValuesSame(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, true);
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T09:00:00.000", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new Object[]{true, true, false, false, true, true, false, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[]{true, true, false, false, true, true, false, false});
     
             stmtCurrentTs.Dispose();
     
@@ -167,26 +167,26 @@ namespace com.espertech.esper.regression.expr.datetime
                     "longdateStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), false, false) as val3 " +
                     "from SupportTimeStartEndA";
             EPStatement stmtConstants = epService.EPAdministrator.CreateEPL(eplConstants);
-            stmtConstants.AddListener(listener);
+            stmtConstants.Events += listener.Update;
             LambdaAssertionUtil.AssertTypesAllSame(stmtConstants.EventType, fieldsConstants, typeof(bool?));
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsConstants, new Object[]{false, false, false, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsConstants, new object[]{false, false, false, false});
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E2", "2002-05-30T09:00:00.000", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsConstants, new Object[]{true, true, false, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsConstants, new object[]{true, true, false, false});
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E2", "2002-05-30T09:00:05.000", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsConstants, new Object[]{true, true, true, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsConstants, new object[]{true, true, true, true});
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E2", "2002-05-30T09:00:59.999", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsConstants, new Object[]{true, true, true, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsConstants, new object[]{true, true, true, true});
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E2", "2002-05-30T09:01:00.000", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsConstants, new Object[]{true, false, true, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsConstants, new object[]{true, false, true, false});
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E2", "2002-05-30T09:01:00.001", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsConstants, new Object[]{false, false, false, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsConstants, new object[]{false, false, false, false});
     
             stmtConstants.Dispose();
         }

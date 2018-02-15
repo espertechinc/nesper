@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -45,51 +44,51 @@ namespace com.espertech.esper.regression.view
             string epl = "select irstream * from SupportBeanTimestamp#Timetolive(timestamp)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "E1", 1000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1"}});
     
             SendEvent(epService, "E2", 500);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2"});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E2"}, new object[] {"E1"}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2"});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E2"}, new object[] {"E1"}});
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(499));
             Assert.IsFalse(listener.GetAndClearIsInvoked());
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(500));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new Object[]{"E2"});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new object[]{"E2"});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1"}});
     
             SendEvent(epService, "E3", 200);
-            EPAssertionUtil.AssertProps(listener.AssertPairGetIRAndReset(), fields, new Object[]{"E3"}, new Object[]{"E3"});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertProps(listener.AssertPairGetIRAndReset(), fields, new object[]{"E3"}, new object[]{"E3"});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1"}});
     
             SendEvent(epService, "E4", 1200);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E4"});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E4"}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E4"});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1"}, new object[] {"E4"}});
     
             SendEvent(epService, "E5", 1000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E5"});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E4"}, new object[] {"E5"}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E5"});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1"}, new object[] {"E4"}, new object[] {"E5"}});
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(999));
             Assert.IsFalse(listener.GetAndClearIsInvoked());
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetAndResetDataListsFlattened(), fields, null, new Object[][]{new object[] {"E1"}, new object[] {"E5"}});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E4"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetAndResetDataListsFlattened(), fields, null, new object[][]{new object[] {"E1"}, new object[] {"E5"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E4"}});
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1199));
             Assert.IsFalse(listener.GetAndClearIsInvoked());
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1200));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new Object[]{"E4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new object[]{"E4"});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
     
             SendEvent(epService, "E6", 1200);
-            EPAssertionUtil.AssertProps(listener.AssertPairGetIRAndReset(), fields, new Object[]{"E6"}, new Object[]{"E6"});
+            EPAssertionUtil.AssertProps(listener.AssertPairGetIRAndReset(), fields, new object[]{"E6"}, new object[]{"E6"});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -100,14 +99,14 @@ namespace com.espertech.esper.regression.view
             SendCurrentTime(epService, "2002-02-01T09:00:00.000");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select rstream * from SupportBeanTimestamp#Time_order(timestamp, 1 month)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "E1", DateTimeParser.ParseDefaultMSec("2002-02-01T09:00:00.000"));
             SendCurrentTimeWithMinus(epService, "2002-03-01T09:00:00.000", 1);
             Assert.IsFalse(listener.IsInvoked);
     
             SendCurrentTime(epService, "2002-03-01T09:00:00.000");
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "id".Split(','), new Object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "id".Split(','), new object[][]{new object[] {"E1"}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -121,7 +120,7 @@ namespace com.espertech.esper.regression.view
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(
                     "select * from OrderedStream");
             var listener = new SupportUpdateListener();
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
     
             // 1st event at 21 sec
             SendTimer(epService, 21000);
@@ -217,7 +216,7 @@ namespace com.espertech.esper.regression.view
                     "select irstream * from " + typeof(SupportBeanTimestamp).FullName +
                             "#Time_order(timestamp, 10 sec)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, null);
     
             SendTimer(epService, 21000);
@@ -227,30 +226,30 @@ namespace com.espertech.esper.regression.view
             // 1st event at 21 sec
             SendEvent(epService, "E1", 21000);
             Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("id"));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E1"}});
     
             // 2nd event at 22 sec
             SendTimer(epService, 22000);
             SendEvent(epService, "E2", 22000);
             Assert.AreEqual("E2", listener.AssertOneGetNewAndReset().Get("id"));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E1"}, new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E1"}, new object[] {"E2"}});
     
             // 3nd event at 28 sec
             SendTimer(epService, 28000);
             SendEvent(epService, "E3", 28000);
             Assert.AreEqual("E3", listener.AssertOneGetNewAndReset().Get("id"));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
     
             // 4th event at 30 sec, however is 27 sec (old 3 sec)
             SendTimer(epService, 30000);
             SendEvent(epService, "E4", 27000);
             Assert.AreEqual("E4", listener.AssertOneGetNewAndReset().Get("id"));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E4"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E4"}, new object[] {"E3"}});
     
             // 5th event at 30 sec, however is 22 sec (old 8 sec)
             SendEvent(epService, "E5", 22000);
             Assert.AreEqual("E5", listener.AssertOneGetNewAndReset().Get("id"));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E5"}, new object[] {"E4"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E5"}, new object[] {"E4"}, new object[] {"E3"}});
     
             // flush one
             SendTimer(epService, 30999);
@@ -261,7 +260,7 @@ namespace com.espertech.esper.regression.view
             Assert.AreEqual(1, listener.LastOldData.Length);
             Assert.AreEqual("E1", listener.LastOldData[0].Get("id"));
             listener.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E2"}, new object[] {"E5"}, new object[] {"E4"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E2"}, new object[] {"E5"}, new object[] {"E4"}, new object[] {"E3"}});
     
             // 6th event at 31 sec, however is 21 sec (old 10 sec)
             SendEvent(epService, "E6", 21000);
@@ -271,12 +270,12 @@ namespace com.espertech.esper.regression.view
             Assert.AreEqual(1, listener.LastOldData.Length);
             Assert.AreEqual("E6", listener.LastOldData[0].Get("id"));
             listener.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E2"}, new object[] {"E5"}, new object[] {"E4"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E2"}, new object[] {"E5"}, new object[] {"E4"}, new object[] {"E3"}});
     
             // 7th event at 31 sec, however is 21.3 sec (old 9.7 sec)
             SendEvent(epService, "E7", 21300);
             Assert.AreEqual("E7", listener.AssertOneGetNewAndReset().Get("id"));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E7"}, new object[] {"E2"}, new object[] {"E5"}, new object[] {"E4"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E7"}, new object[] {"E2"}, new object[] {"E5"}, new object[] {"E4"}, new object[] {"E3"}});
     
             // flush one
             SendTimer(epService, 31299);
@@ -287,7 +286,7 @@ namespace com.espertech.esper.regression.view
             Assert.AreEqual(1, listener.LastOldData.Length);
             Assert.AreEqual("E7", listener.LastOldData[0].Get("id"));
             listener.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E2"}, new object[] {"E5"}, new object[] {"E4"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E2"}, new object[] {"E5"}, new object[] {"E4"}, new object[] {"E3"}});
     
             // flush two
             SendTimer(epService, 31999);
@@ -299,7 +298,7 @@ namespace com.espertech.esper.regression.view
             Assert.AreEqual("E2", listener.LastOldData[0].Get("id"));
             Assert.AreEqual("E5", listener.LastOldData[1].Get("id"));
             listener.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E4"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E4"}, new object[] {"E3"}});
     
             // flush one
             SendTimer(epService, 36999);
@@ -310,7 +309,7 @@ namespace com.espertech.esper.regression.view
             Assert.AreEqual(1, listener.LastOldData.Length);
             Assert.AreEqual("E4", listener.LastOldData[0].Get("id"));
             listener.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E3"}});
     
             // rather old event
             SendEvent(epService, "E8", 21000);
@@ -320,12 +319,12 @@ namespace com.espertech.esper.regression.view
             Assert.AreEqual(1, listener.LastOldData.Length);
             Assert.AreEqual("E8", listener.LastOldData[0].Get("id"));
             listener.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E3"}});
     
             // 9-second old event for posting at 38 sec
             SendEvent(epService, "E9", 28000);
             Assert.AreEqual("E9", listener.AssertOneGetNewAndReset().Get("id"));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E3"}, new object[] {"E9"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E3"}, new object[] {"E9"}});
     
             // flush two
             SendTimer(epService, 37999);
@@ -342,7 +341,7 @@ namespace com.espertech.esper.regression.view
             // new event
             SendEvent(epService, "E10", 38000);
             Assert.AreEqual("E10", listener.AssertOneGetNewAndReset().Get("id"));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E10"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E10"}});
     
             // flush last
             SendTimer(epService, 47999);
@@ -358,7 +357,7 @@ namespace com.espertech.esper.regression.view
             // last, in the future
             SendEvent(epService, "E11", 70000);
             Assert.AreEqual("E11", listener.AssertOneGetNewAndReset().Get("id"));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E11"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E11"}});
     
             SendTimer(epService, 80000);
             Assert.IsNull(listener.LastNewData);
@@ -381,7 +380,7 @@ namespace com.espertech.esper.regression.view
                     "select irstream * from " + typeof(SupportBeanTimestamp).FullName +
                             "#Groupwin(groupId)#Time_order(timestamp, 10 sec)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // 1st event is old
             SendEvent(epService, "E1", "G1", 10000);
@@ -396,15 +395,15 @@ namespace com.espertech.esper.regression.view
             // 2nd just fits
             SendEvent(epService, "E2", "G2", 10001);
             Assert.AreEqual("E2", listener.AssertOneGetNewAndReset().Get("id"));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E2"}});
     
             SendEvent(epService, "E3", "G3", 20000);
             Assert.AreEqual("E3", listener.AssertOneGetNewAndReset().Get("id"));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E2"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E2"}, new object[] {"E3"}});
     
             SendEvent(epService, "E4", "G2", 20000);
             Assert.AreEqual("E4", listener.AssertOneGetNewAndReset().Get("id"));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E2"}, new object[] {"E4"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E2"}, new object[] {"E4"}, new object[] {"E3"}});
     
             SendTimer(epService, 20001);
             Assert.IsNull(listener.LastNewData);
@@ -412,12 +411,12 @@ namespace com.espertech.esper.regression.view
             Assert.AreEqual(1, listener.LastOldData.Length);
             Assert.AreEqual("E2", listener.LastOldData[0].Get("id"));
             listener.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E4"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E4"}, new object[] {"E3"}});
     
             SendTimer(epService, 22000);
             SendEvent(epService, "E5", "G2", 19000);
             Assert.AreEqual("E5", listener.AssertOneGetNewAndReset().Get("id"));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E5"}, new object[] {"E4"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E5"}, new object[] {"E4"}, new object[] {"E3"}});
     
             SendTimer(epService, 29000);
             Assert.IsNull(listener.LastNewData);
@@ -425,13 +424,13 @@ namespace com.espertech.esper.regression.view
             Assert.AreEqual(1, listener.LastOldData.Length);
             Assert.AreEqual("E5", listener.LastOldData[0].Get("id"));
             listener.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E4"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E4"}, new object[] {"E3"}});
     
             SendTimer(epService, 30000);
             Assert.IsNull(listener.LastNewData);
             Assert.AreEqual(1, listener.OldDataList.Count);
             Assert.AreEqual(2, listener.LastOldData.Length);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.LastOldData, "id".Split(','), new Object[][]{new object[] {"E4"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.LastOldData, "id".Split(','), new object[][]{new object[] {"E4"}, new object[] {"E3"}});
             listener.Reset();
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, null);
     
@@ -467,12 +466,12 @@ namespace com.espertech.esper.regression.view
                             "#Time_order(timestamp, 10 sec)");
             var fields = new string[]{"id", "prevIdZero", "prevIdOne", "priorIdOne", "prevTailIdZero", "prevTailIdOne", "prevCountId"};
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendTimer(epService, 20000);
             SendEvent(epService, "E1", 25000);
             Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("id"));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new Object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, new object[][]{new object[] {"E1"}});
     
             SendEvent(epService, "E2", 21000);
             EventBean theEvent = listener.AssertOneGetNewAndReset();
@@ -483,9 +482,9 @@ namespace com.espertech.esper.regression.view
             Assert.AreEqual("E1", theEvent.Get("prevTailIdZero"));
             Assert.AreEqual("E2", theEvent.Get("prevTailIdOne"));
             Assert.AreEqual(2L, theEvent.Get("prevCountId"));
-            EPAssertionUtil.AssertEqualsExactOrder((Object[]) theEvent.Get("prevWindowId"), new Object[]{"E2", "E1"});
+            EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("prevWindowId"), new object[]{"E2", "E1"});
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                    new Object[][]{new object[] {"E2", "E2", "E1", "E1", "E1", "E2", 2L}, new object[] {"E1", "E2", "E1", null, "E1", "E2", 2L}});
+                    new object[][]{new object[] {"E2", "E2", "E1", "E1", "E1", "E2", 2L}, new object[] {"E1", "E2", "E1", null, "E1", "E2", 2L}});
     
             SendEvent(epService, "E3", 22000);
             theEvent = listener.AssertOneGetNewAndReset();
@@ -496,9 +495,9 @@ namespace com.espertech.esper.regression.view
             Assert.AreEqual("E1", theEvent.Get("prevTailIdZero"));
             Assert.AreEqual("E3", theEvent.Get("prevTailIdOne"));
             Assert.AreEqual(3L, theEvent.Get("prevCountId"));
-            EPAssertionUtil.AssertEqualsExactOrder((Object[]) theEvent.Get("prevWindowId"), new Object[]{"E2", "E3", "E1"});
+            EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("prevWindowId"), new object[]{"E2", "E3", "E1"});
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                    new Object[][]{new object[] {"E2", "E2", "E3", "E1", "E1", "E3", 3L}, new object[] {"E3", "E2", "E3", "E2", "E1", "E3", 3L}, new object[] {"E1", "E2", "E3", null, "E1", "E3", 3L}});
+                    new object[][]{new object[] {"E2", "E2", "E3", "E1", "E1", "E3", 3L}, new object[] {"E3", "E2", "E3", "E2", "E1", "E3", 3L}, new object[] {"E1", "E2", "E3", null, "E1", "E3", 3L}});
     
             SendTimer(epService, 31000);
             Assert.IsNull(listener.LastNewData);
@@ -515,7 +514,7 @@ namespace com.espertech.esper.regression.view
             Assert.AreEqual(null, theEvent.Get("prevWindowId"));
             listener.Reset();
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                    new Object[][]{new object[] {"E3", "E3", "E1", "E2", "E1", "E3", 2L}, new object[] {"E1", "E3", "E1", null, "E1", "E3", 2L}});
+                    new object[][]{new object[] {"E3", "E3", "E1", "E2", "E1", "E3", 2L}, new object[] {"E1", "E3", "E1", null, "E1", "E3", 2L}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }

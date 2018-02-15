@@ -17,7 +17,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.assertTrue;
 
 using NUnit.Framework;
 
@@ -26,8 +25,8 @@ namespace com.espertech.esper.regression.epl.other
     public class ExecEPLStaticFunctionsNoUDFCache : RegressionExecution {
         public override void Configure(Configuration configuration) {
             configuration.AddImport(typeof(SupportStaticMethodLib).FullName);
-            configuration.AddPlugInSingleRowFunction("sleepme", typeof(SupportStaticMethodLib).FullName, "sleep", ConfigurationPlugInSingleRowFunction.ValueCache.ENABLED);
-            configuration.EngineDefaults.Expression.UdfCache = false;
+            configuration.AddPlugInSingleRowFunction("sleepme", typeof(SupportStaticMethodLib).FullName, "sleep", ValueCacheEnum.ENABLED);
+            configuration.EngineDefaults.Expression.IsUdfCache = false;
             configuration.AddEventType("Temperature", typeof(SupportTemperatureBean));
         }
     
@@ -35,7 +34,7 @@ namespace com.espertech.esper.regression.epl.other
             string text = "select SupportStaticMethodLib.Sleep(100) as val from Temperature as temp";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             long startTime = DateTimeHelper.CurrentTimeMillis;
             epService.EPRuntime.SendEvent(new SupportTemperatureBean("a"));
@@ -44,7 +43,7 @@ namespace com.espertech.esper.regression.epl.other
             long endTime = DateTimeHelper.CurrentTimeMillis;
             long delta = endTime - startTime;
     
-            Assert.IsTrue("Failed perf test, delta=" + delta, delta > 120);
+            Assert.IsTrue(delta > 120, "Failed perf test, delta=" + delta);
             stmt.Dispose();
     
             // test plug-in single-row function
@@ -53,7 +52,7 @@ namespace com.espertech.esper.regression.epl.other
                     " from Temperature as temp";
             EPStatement stmtSingleRow = epService.EPAdministrator.CreateEPL(textSingleRow);
             var listenerSingleRow = new SupportUpdateListener();
-            stmtSingleRow.AddListener(listenerSingleRow);
+            stmtSingleRow.Events += listenerSingleRow.Update;
     
             startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 1000; i++) {
@@ -61,7 +60,7 @@ namespace com.espertech.esper.regression.epl.other
             }
             delta = DateTimeHelper.CurrentTimeMillis - startTime;
     
-            Assert.IsTrue("Failed perf test, delta=" + delta, delta < 1000);
+            Assert.IsTrue(delta < 1000, "Failed perf test, delta=" + delta);
             stmtSingleRow.Dispose();
         }
     }

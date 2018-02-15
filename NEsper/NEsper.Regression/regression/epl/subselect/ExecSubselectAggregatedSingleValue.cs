@@ -17,8 +17,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -82,7 +80,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string epl = "select (select theString from SupportBean#keepall group by theString having sum(intPrimitive) = s0.id) as c0 from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendSB(epService, "E1", 100);
             SendSB(epService, "E2", 5);
@@ -102,7 +100,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string epl = "select (select last(theString) from SupportBean#keepall having sum(intPrimitive) = s0.id) as c0 from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendSB(epService, "E1", 100);
             SendEventS0Assert(epService, listener, 1, null);
@@ -122,7 +120,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string epl = "select (select sum(total) from MyTableWith2Keys group by k1 having sum(total) > 100) as c0 from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEventS1(epService, 50, "G1", "S1");
             SendEventS1(epService, 50, "G1", "S2");
@@ -143,7 +141,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string epl = "select (select sum(total) from MyTable having sum(total) > 100) as c0 from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEventS0Assert(listener, epService, null);
     
@@ -163,7 +161,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string epl = "select (select sum(intPrimitive) from SupportBean#keepall where s0.id = intPrimitive group by theString having sum(intPrimitive) > 10) as c0 from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEventS0Assert(epService, listener, 10, null);
     
@@ -186,7 +184,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string epl = "select (select sum(intPrimitive) from SupportBean#keepall group by theString having sum(intPrimitive) > 10) as c0 from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEventS0Assert(listener, epService, null);
     
@@ -207,7 +205,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string epl = "select (select sum(intPrimitive) from SupportBean#keepall where theString = s0.p00 having sum(intPrimitive) > 10) as c0 from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEventS0Assert(epService, listener, "G1", null);
     
@@ -228,7 +226,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtText = "select (select sum(id) from S1(id < 0)#length(3)) as value from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             RunAssertionSumFilter(epService, listener);
     
@@ -239,7 +237,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtText = "select (select sum(id) from S1#length(3) where id < 0) as value from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             RunAssertionSumFilter(epService, listener);
     
@@ -258,14 +256,14 @@ namespace com.espertech.esper.regression.epl.subselect
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(11, "T1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"T1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"T1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("T1", 11));
             epService.EPRuntime.SendEvent(new SupportBean_S0(21, "T1"));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(22, "T1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"T1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"T1"});
         }
     
         private void RunAssertionSumFilter(EPServiceProvider epService, SupportUpdateListener listener) {
@@ -301,19 +299,19 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtText = "select p00 as c0, (select sum(intPrimitive) from SupportBean) as c1 from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             string[] fields = "c0,c1".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", null});
     
             epService.EPRuntime.SendEvent(new SupportBean("", 10));
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", 10});
     
             epService.EPRuntime.SendEvent(new SupportBean("", 20));
             epService.EPRuntime.SendEvent(new SupportBean_S0(3, "E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3", 30});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3", 30});
     
             stmt.Dispose();
         }
@@ -326,15 +324,15 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendEventS0Assert(epService, listener, fields, new Object[]{null, false});
+            SendEventS0Assert(epService, listener, fields, new object[]{null, false});
             SendSB(epService, "E1", 10);
-            SendEventS0Assert(epService, listener, fields, new Object[]{null, false});
+            SendEventS0Assert(epService, listener, fields, new object[]{null, false});
             SendSB(epService, "E1", 91);
-            SendEventS0Assert(epService, listener, fields, new Object[]{101, true});
+            SendEventS0Assert(epService, listener, fields, new object[]{101, true});
             SendSB(epService, "E1", 2);
-            SendEventS0Assert(epService, listener, fields, new Object[]{103, true});
+            SendEventS0Assert(epService, listener, fields, new object[]{103, true});
     
             stmt.Dispose();
         }
@@ -345,27 +343,27 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             string[] fields = "p00,sump00".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "T1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"T1", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"T1", null});
     
             epService.EPRuntime.SendEvent(new SupportBean("T1", 10));
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "T1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"T1", 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"T1", 10});
     
             epService.EPRuntime.SendEvent(new SupportBean("T1", 11));
             epService.EPRuntime.SendEvent(new SupportBean_S0(3, "T1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"T1", 21});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"T1", 21});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(4, "T2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"T2", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"T2", null});
     
             epService.EPRuntime.SendEvent(new SupportBean("T2", -2));
             epService.EPRuntime.SendEvent(new SupportBean("T2", -7));
             epService.EPRuntime.SendEvent(new SupportBean_S0(5, "T2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"T2", -9});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"T2", -9});
             stmt.Dispose();
     
             // test distinct
@@ -377,19 +375,19 @@ namespace com.espertech.esper.regression.epl.subselect
                     "(select count(distinct sb.intPrimitive, true) from SupportBean()#keepall as sb where bean.theString = sb.theString) as c3 " +
                     "from SupportBean as bean";
             stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1L, 1L, 1L, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L, 1L, 1L, 1L});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 1L, 1L, 1L, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", 1L, 1L, 1L, 1L});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 2L, 2L, 2L, 2L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", 2L, 2L, 2L, 2L});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 3L, 2L, 3L, 2L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", 3L, 2L, 3L, 2L});
     
             stmt.Dispose();
         }
@@ -399,14 +397,14 @@ namespace com.espertech.esper.regression.epl.subselect
                     "(select sum(intPrimitive) from SupportBean#keepall where theString = s0.p00)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             RunAssertionCorrAggWhereGreater(epService, listener);
             stmt.Dispose();
     
             stmtText = "select p00 from S0 as s0 where id > " +
                     "(select sum(intPrimitive) from SupportBean#keepall where theString||'X' = s0.p00||'X')";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             RunAssertionCorrAggWhereGreater(epService, listener);
             stmt.Dispose();
         }
@@ -416,7 +414,7 @@ namespace com.espertech.esper.regression.epl.subselect
                     "where price > (select max(price) from MarketData(symbol='GOOG')#lastevent) ";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEventMD(epService, "GOOG", 1);
             Assert.IsFalse(listener.IsInvoked);
@@ -434,7 +432,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtText = "select (select s0.id + max(s1.id) from S1#length(3) as s1) as value from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEventS0(epService, 1);
             Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("value"));
@@ -454,7 +452,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtText = "select (select max(id) from S1#length(3)) as value from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEventS0(epService, 1);
             Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("value"));
@@ -486,7 +484,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtText = "select (select avg(id) + max(id) from S1#length(3)) as value from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEventS0(epService, 1);
             Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("value"));
@@ -552,7 +550,7 @@ namespace com.espertech.esper.regression.epl.subselect
             Assert.AreEqual(expected, listener.AssertOneGetNewAndReset().Get("c0"));
         }
     
-        private void SendEventS0Assert(EPServiceProvider epService, SupportUpdateListener listener, string[] fields, Object[] expected) {
+        private void SendEventS0Assert(EPServiceProvider epService, SupportUpdateListener listener, string[] fields, object[] expected) {
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, expected);
         }

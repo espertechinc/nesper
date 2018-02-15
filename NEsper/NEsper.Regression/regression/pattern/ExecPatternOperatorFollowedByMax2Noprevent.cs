@@ -46,7 +46,7 @@ namespace com.espertech.esper.regression.pattern
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
     
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             epService.EPRuntime.SendEvent(new SupportBean_A("A2"));
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.pattern
     
             var fields = new string[]{"a", "b"};
             epService.EPRuntime.SendEvent(new SupportBean_B("B1"));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"A1", "B1"}, new object[] {"A2", "B1"}, new object[] {"A3", "B1"}, new object[] {"A4", "B1"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"A1", "B1"}, new object[] {"A2", "B1"}, new object[] {"A3", "B1"}, new object[] {"A4", "B1"}});
     
             // set new max
             epService.EPAdministrator.Configuration.PatternMaxSubexpressions = 1L;

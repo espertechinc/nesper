@@ -23,11 +23,11 @@ namespace com.espertech.esper.regression.events.objectarray
         public override void Run(EPServiceProvider epService) {
     
             ConfigurationOperations configOps = epService.EPAdministrator.Configuration;
-            configOps.AddEventType("RootEvent", new string[]{"base"}, new Object[]{typeof(string)});
-            configOps.AddEventType("Sub1Event", new string[]{"sub1"}, new Object[]{typeof(string)}, new ConfigurationEventTypeObjectArray(Collections.Singleton("RootEvent")));
-            configOps.AddEventType("Sub2Event", new string[]{"sub2"}, new Object[]{typeof(string)}, new ConfigurationEventTypeObjectArray(Collections.Singleton("RootEvent")));
-            configOps.AddEventType("SubAEvent", new string[]{"suba"}, new Object[]{typeof(string)}, new ConfigurationEventTypeObjectArray(Collections.Singleton("Sub1Event")));
-            configOps.AddEventType("SubBEvent", new string[]{"subb"}, new Object[]{typeof(string)}, new ConfigurationEventTypeObjectArray(Collections.Singleton("SubAEvent")));
+            configOps.AddEventType("RootEvent", new string[]{"base"}, new object[]{typeof(string)});
+            configOps.AddEventType("Sub1Event", new string[]{"sub1"}, new object[]{typeof(string)}, new ConfigurationEventTypeObjectArray(Collections.SingletonSet("RootEvent")));
+            configOps.AddEventType("Sub2Event", new string[]{"sub2"}, new object[]{typeof(string)}, new ConfigurationEventTypeObjectArray(Collections.SingletonSet("RootEvent")));
+            configOps.AddEventType("SubAEvent", new string[]{"suba"}, new object[]{typeof(string)}, new ConfigurationEventTypeObjectArray(Collections.SingletonSet("Sub1Event")));
+            configOps.AddEventType("SubBEvent", new string[]{"subb"}, new object[]{typeof(string)}, new ConfigurationEventTypeObjectArray(Collections.SingletonSet("SubAEvent")));
     
             ExecEventObjectArrayInheritanceConfigInit.RunObjectArrInheritanceAssertion(epService);
         }

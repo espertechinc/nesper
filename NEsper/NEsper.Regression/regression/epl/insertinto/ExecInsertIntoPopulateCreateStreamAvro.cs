@@ -21,10 +21,10 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
 using NEsper.Avro.Core;
+using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
 
-// using static org.apache.avro.SchemaBuilder.*;
-// using static org.junit.Assert.*;
+using static NEsper.Avro.Extensions.TypeBuilder;
 
 using NUnit.Framework;
 
@@ -48,27 +48,28 @@ namespace com.espertech.esper.regression.epl.insertinto
                     GetType().FullName + ".MakeMapStringString() as myMap " +
                     "from SupportBean";
     
-            Schema schema = Record("name").Fields()
-                    .RequiredLong("myLong")
-                    .Name("myLongArray").Type(Array().Items(Builder().LongType())).NoDefault()
-                    .Name("myByteArray").Type("bytes").NoDefault()
-                    .Name("myMap").Type(Map().Values().StringBuilder().Prop(AvroConstant.PROP_JAVA_STRING_KEY, AvroConstant.PROP_JAVA_STRING_VALUE).EndString()).NoDefault()
-                    .EndRecord();
+            var schema = SchemaBuilder.Record(
+                "name",
+                RequiredLong("myLong"),
+                Field("myLongArray", Array(LongType())),
+                Field("myByteArray", BytesType()),
+                Field("myMap", Map(StringType(Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE))))
+            );
             epService.EPAdministrator.Configuration.AddEventTypeAvro("AvroExistingType", new ConfigurationEventTypeAvro(schema));
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
             EventBean @event = listener.AssertOneGetNewAndReset();
             SupportAvroUtil.AvroToJson(@event);
             Assert.AreEqual(1L, @event.Get("myLong"));
-            EPAssertionUtil.AssertEqualsExactOrder(new long[]{1L, 2L}, ((Collection<>) @event.Get("myLongArray")).ToArray());
-            Assert.IsTrue(Collections.AreEqual(new byte[]{1, 2, 3}, ((ByteBuffer) @event.Get("myByteArray")).Array()));
+            EPAssertionUtil.AssertEqualsExactOrder(new long[] {1L, 2L}, @event.Get("myLongArray").UnwrapIntoArray<long>());
+            Assert.IsTrue(Collections.AreEqual(new byte[]{1, 2, 3}, @event.Get("myByteArray").UnwrapIntoArray<byte>()));
             Assert.AreEqual("{k1=v1}", ((Map) @event.Get("myMap")).ToString());
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionNewSchema(EPServiceProvider epService) {
@@ -81,27 +82,28 @@ namespace com.espertech.esper.regression.epl.insertinto
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
             EventBean @event = listener.AssertOneGetNewAndReset();
             string json = SupportAvroUtil.AvroToJson(@event);
             Assert.AreEqual(1, @event.Get("myInt"));
-            EPAssertionUtil.AssertEqualsExactOrder(new long[]{1L, 2L}, ((Collection) @event.Get("myLongArray")).ToArray());
-            Assert.IsTrue(Collections.AreEqual(new byte[]{1, 2, 3}, ((ByteBuffer) @event.Get("myByteArray")).Array()));
+            EPAssertionUtil.AssertEqualsExactOrder(new long[] {1L, 2L}, @event.Get("myLongArray").UnwrapIntoArray<long>());
+            Assert.IsTrue(Collections.AreEqual(new byte[]{1, 2, 3}, @event.Get("myByteArray").UnwrapIntoArray<byte>()));
             Assert.AreEqual("{k1=v1}", ((Map) @event.Get("myMap")).ToString());
     
-            Schema designSchema = Record("name").Fields()
-                    .RequiredInt("myInt")
-                    .Name("myLongArray").Type(Array().Items(UnionOf().NullType().And().LongType().EndUnion())).NoDefault()
-                    .Name("myByteArray").Type("bytes").NoDefault()
-                    .Name("myMap").Type(Map().Values().StringBuilder().Prop(AvroConstant.PROP_JAVA_STRING_KEY, AvroConstant.PROP_JAVA_STRING_VALUE).EndString()).NoDefault()
-                    .EndRecord();
+            var designSchema = SchemaBuilder.Record(
+                "name",
+                RequiredInt("myInt"),
+                Field("myLongArray", Array(Union(NullType(), LongType()))),
+                Field("myByteArray", BytesType()),
+                Field("myMap", Map(StringType(Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE))))
+            );
             Schema assembledSchema = ((AvroEventType) @event.EventType).SchemaAvro;
             string compareMsg = SupportAvroUtil.CompareSchemas(designSchema, assembledSchema);
             Assert.IsNull(compareMsg, compareMsg);
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         public static byte[] MakeByteArray() {

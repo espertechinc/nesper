@@ -52,9 +52,9 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            var data = new Object[][]{
+            var data = new object[][]{
                     new object[] {"E1", 8},   // 0
                     new object[] {"E2", 8},
                     new object[] {"E3", 8},       // A
@@ -130,7 +130,7 @@ namespace com.espertech.esper.regression.rowrecog
             };
     
             int rowCount = 0;
-            foreach (Object[] row in data) {
+            foreach (object[] row in data) {
                 var theEvent = new SupportBean((string) row[0], (int) row[1]);
                 epService.EPRuntime.SendEvent(theEvent);
     
@@ -142,10 +142,10 @@ namespace com.espertech.esper.regression.rowrecog
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(text);
             Assert.AreEqual(text, model.ToEPL());
             stmt = epService.EPAdministrator.Create(model);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(text, stmt.Text);
     
-            foreach (Object[] row in data) {
+            foreach (object[] row in data) {
                 var theEvent = new SupportBean((string) row[0], (int) row[1]);
                 epService.EPRuntime.SendEvent(theEvent);
     
@@ -191,9 +191,9 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(query);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            var data = new Object[][]{
+            var data = new object[][]{
                     new object[] {"E1", 100, null},
                     new object[] {"E2", 98, null},
                     new object[] {"E3", 75, null},
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regression.rowrecog
             };
     
             int rowCount = 0;
-            foreach (Object[] row in data) {
+            foreach (object[] row in data) {
                 rowCount++;
                 var theEvent = new SupportRecogBean((string) row[0], (int) row[1]);
                 epService.EPRuntime.SendEvent(theEvent);
@@ -228,7 +228,7 @@ namespace com.espertech.esper.regression.rowrecog
             stmt.Dispose();
         }
     
-        private static void Compare(Object[] row, int rowCount, Object theEvent, SupportUpdateListener listener) {
+        private static void Compare(object[] row, int rowCount, Object theEvent, SupportUpdateListener listener) {
             if (row.Length < 3 || row[2] == null) {
                 if (listener.IsInvoked) {
                     EventBean[] matchesInner = listener.LastNewData;

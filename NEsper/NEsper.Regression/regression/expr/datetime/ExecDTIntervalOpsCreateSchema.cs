@@ -70,7 +70,7 @@ namespace com.espertech.esper.regression.expr.datetime
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select A.Get('month') as val0 from SupportBean a");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var theEvent = new SupportBean();
             theEvent.LongPrimitive = DateTimeParser.ParseDefaultMSec(startA);
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regression.expr.datetime
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select A.Includes(b) as val0 from TypeA#lastevent as a, TypeB#lastevent as b");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             MakeSendEvent(epService, "TypeA", eventRepresentationEnum, startA, endA);
             MakeSendEvent(epService, "TypeB", eventRepresentationEnum, startB, endB);
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regression.expr.datetime
     
         private void MakeSendEvent(EPServiceProvider epService, string typeName, EventRepresentationChoice eventRepresentationEnum, Object startTs, Object endTs) {
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(new Object[]{startTs, endTs}, typeName);
+                epService.EPRuntime.SendEvent(new object[]{startTs, endTs}, typeName);
             } else if (eventRepresentationEnum.IsMapEvent()) {
                 var theEvent = new LinkedHashMap<string, object>();
                 theEvent.Put("startts", startTs);

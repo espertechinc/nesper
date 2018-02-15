@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -30,8 +29,8 @@ namespace com.espertech.esper.regression.multithread
         public override void Configure(Configuration configuration) {
             configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
             configuration.AddEventType("SupportBean_S1", typeof(SupportBean_S1));
-            configuration.EngineDefaults.Execution.Prioritized = true;
-            configuration.EngineDefaults.Threading.InsertIntoDispatchPreserveOrder = false;
+            configuration.EngineDefaults.Execution.IsPrioritized = true;
+            configuration.EngineDefaults.Threading.IsInsertIntoDispatchPreserveOrder = false;
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -48,14 +47,14 @@ namespace com.espertech.esper.regression.multithread
     
         private void TrySend(EPServiceProvider epService, EPStatement stmtWindow, int numThreads, int numRepeats) {
             var threadPool = Executors.NewFixedThreadPool(numThreads);
-            var future = new Future<bool>[numThreads];
+            var future = new Future<object>[numThreads];
             for (int i = 0; i < numThreads; i++) {
                 var callable = new StmtNamedWindowPriorityCallable(i, epService, numRepeats);
                 future[i] = threadPool.Submit(callable);
             }
     
             for (int i = 0; i < numThreads; i++) {
-                future[i].Get();
+                future[i].GetValueOrDefault();
             }
     
             threadPool.Shutdown();

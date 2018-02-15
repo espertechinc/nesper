@@ -69,7 +69,7 @@ namespace com.espertech.esper.regression.pattern
             testCaseList.AddTest(testCase);
     
             testCase = new EventExpressionCase("(a=A or b=B) until d=D(id='D3')");
-            testCase.Add("D3", new Object[][]{
+            testCase.Add("D3", new object[][]{
                 new object[] {"a[0]", events.GetEvent("A1")},
                 new object[] {"a[1]", events.GetEvent("A2")},
                 new object[] {"b[0]", events.GetEvent("B1")},
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regression.pattern
             testCaseList.AddTest(testCase);
     
             testCase = new EventExpressionCase("(a=A or b=B) until (g=G or d=D)");
-            testCase.Add("D1", new Object[][]{
+            testCase.Add("D1", new object[][]{
                 new object[] {"a[0]", events.GetEvent("A1")},
                 new object[] {"a[1]", events.GetEvent("A2")},
                 new object[] {"b[0]", events.GetEvent("B1")},
@@ -246,14 +246,14 @@ namespace com.espertech.esper.regression.pattern
             testCaseList.AddTest(testCase);
     
             testCase = new EventExpressionCase("every [2] a=A");
-            testCase.Add("A2", new Object[][]{
+            testCase.Add("A2", new object[][]{
                 new object[] {"a[0]", events.GetEvent("A1")},
                 new object[] {"a[1]", events.GetEvent("A2")},
             });
             testCaseList.AddTest(testCase);
     
             testCase = new EventExpressionCase("every [2] a=A until d=D");  // every has precedence; ESPER-339
-            testCase.Add("D1", new Object[][]{
+            testCase.Add("D1", new object[][]{
                 new object[] {"a[0]", events.GetEvent("A1")},
                 new object[] {"a[1]", events.GetEvent("A2")},
                 new object[] {"d", events.GetEvent("D1")},
@@ -269,7 +269,7 @@ namespace com.espertech.esper.regression.pattern
             testCaseList.AddTest(testCase);
     
             testCase = new EventExpressionCase("(a=A until b=B) until g=G");
-            testCase.Add("G1", new Object[][]{new object[] {"a[0]", events.GetEvent("A1")}, new object[] {"b[0]", events.GetEvent("B1")},
+            testCase.Add("G1", new object[][]{new object[] {"a[0]", events.GetEvent("A1")}, new object[] {"b[0]", events.GetEvent("B1")},
                 new object[] {"a[1]", events.GetEvent("A2")}, new object[] {"b[1]", events.GetEvent("B2")},
                 new object[] {"b[2]", events.GetEvent("B3")},
                 new object[] {"g", events.GetEvent("G1")}
@@ -287,7 +287,7 @@ namespace com.espertech.esper.regression.pattern
             string stmt = "select a, b, a[0] as a0, a[0].id as a0Id, a[1] as a1, a[1].id as a1Id, a[2] as a2, a[2].id as a2Id from pattern [a=A until b=B]";
             var listener = new SupportUpdateListener();
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmt);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             var eventA1 = new SupportBean_A("A1");
             epService.EPRuntime.SendEvent(eventA1);
@@ -300,7 +300,7 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(eventB1);
     
             EventBean theEvent = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertEqualsExactOrder((Object[]) theEvent.Get("a"), new Object[]{eventA1, eventA2});
+            EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("a"), new object[]{eventA1, eventA2});
             Assert.AreSame(eventA1, theEvent.Get("a0"));
             Assert.AreSame(eventA2, theEvent.Get("a1"));
             Assert.IsNull(theEvent.Get("a2"));
@@ -312,7 +312,7 @@ namespace com.espertech.esper.regression.pattern
             // try wildcard
             stmt = "select * from pattern [a=A until b=B]";
             statement = epService.EPAdministrator.CreateEPL(stmt);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(eventA1);
             epService.EPRuntime.SendEvent(eventA2);
@@ -320,7 +320,7 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(eventB1);
     
             theEvent = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertEqualsExactOrder((Object[]) theEvent.Get("a"), new Object[]{eventA1, eventA2});
+            EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("a"), new object[]{eventA1, eventA2});
             Assert.AreSame(eventA1, theEvent.Get("a[0]"));
             Assert.AreSame(eventA2, theEvent.Get("a[1]"));
             Assert.IsNull(theEvent.Get("a[2]"));
@@ -341,7 +341,7 @@ namespace com.espertech.esper.regression.pattern
             stmt = "select * from pattern [a=A until b=B -> c=C(id = ('C' || a[0].id || a[1].id || b.id))]";
             listener = new SupportUpdateListener();
             statement = epService.EPAdministrator.CreateEPL(stmt);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             var eventA1 = new SupportBean_A("A1");
             epService.EPRuntime.SendEvent(eventA1);
@@ -369,7 +369,7 @@ namespace com.espertech.esper.regression.pattern
             stmt = "select * from pattern [a=A until b=B -> c=SupportBean(theString = a[1].id)]";
             listener = new SupportUpdateListener();
             statement = epService.EPAdministrator.CreateEPL(stmt);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             epService.EPRuntime.SendEvent(new SupportBean_A("A2"));
@@ -387,7 +387,7 @@ namespace com.espertech.esper.regression.pattern
             stmt = "select * from pattern [a=A until b=B -> c=SupportBean(theString In(a[2].id))]";
             listener = new SupportUpdateListener();
             statement = epService.EPAdministrator.CreateEPL(stmt);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             epService.EPRuntime.SendEvent(new SupportBean_A("A2"));
@@ -406,7 +406,7 @@ namespace com.espertech.esper.regression.pattern
             stmt = "select * from pattern [a=A until b=B -> c=SupportBean(theString!=a[0].id and theString!=a[1].id and theString!=a[2].id)]";
             listener = new SupportUpdateListener();
             statement = epService.EPAdministrator.CreateEPL(stmt);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             epService.EPRuntime.SendEvent(new SupportBean_A("A2"));
@@ -427,7 +427,7 @@ namespace com.espertech.esper.regression.pattern
             stmt = "select * from pattern [a=SupportBean(theString like 'A%') until b=SupportBean(theString like 'B%') -> c=SupportBean(intPrimitive between a[0].intPrimitive and a[1].intPrimitive)]";
             listener = new SupportUpdateListener();
             statement = epService.EPAdministrator.CreateEPL(stmt);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 5));
             epService.EPRuntime.SendEvent(new SupportBean("A2", 8));
@@ -449,7 +449,7 @@ namespace com.espertech.esper.regression.pattern
             string stmt = "select * from pattern [every [2] (a=A() -> b=B(id=a.id))]";
             var listener = new SupportUpdateListener();
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmt);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             epService.EPRuntime.SendEvent(new SupportBean_B("A1"));
@@ -485,7 +485,7 @@ namespace com.espertech.esper.regression.pattern
             string epl = "select * from pattern [ every [2] A=SupportBean(theString='1') " +
                     "-> [2] B=SupportBean(theString='2' and intPrimitive=A[0].intPrimitive)" +
                     "-> [2] C=SupportBean(theString='3' and intPrimitive=A[0].intPrimitive)]";
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("1", 20));
@@ -502,7 +502,7 @@ namespace com.espertech.esper.regression.pattern
             string stmt = "select SupportStaticMethodLib.ArrayLength(a) as length, java.lang.reflect.Array.GetLength(a) as l2 from pattern [[1:] a=A until B]";
             var listener = new SupportUpdateListener();
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmt);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             epService.EPRuntime.SendEvent(new SupportBean_A("A2"));
@@ -557,13 +557,13 @@ namespace com.espertech.esper.regression.pattern
             ValidateStmt(epService, stmtThree, 5, true, 2);
     
             // test followed-by - bounded
-            epService.EPAdministrator.CreateEPL("@Name('S1') select * from pattern [s0=SupportBean_S0 -> [s0.id] b=SupportBean]").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("@Name('S1') select * from pattern [s0=SupportBean_S0 -> [s0.id] b=SupportBean]").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "b[0].theString,b[1].theString".Split(','), new Object[]{"E1", "E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "b[0].theString,b[1].theString".Split(','), new object[]{"E1", "E2"});
     
             // test substitution parameter
             string epl = "select * from pattern[[?] SupportBean]";
@@ -575,7 +575,7 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             string eplExact1 = "select * from pattern [a=A -> [1] every (timer:Interval(10) and not B)]";
             EPStatement stmtExact1 = epService.EPAdministrator.CreateEPL(eplExact1);
-            stmtExact1.AddListener(listener);
+            stmtExact1.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(5000));
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
@@ -587,7 +587,7 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(15999));
             Assert.IsFalse(listener.IsInvoked);
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(16000));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.id".Split(','), new Object[]{"A1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.id".Split(','), new object[]{"A1"});
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(999999));
             Assert.IsFalse(listener.IsInvoked);
@@ -596,7 +596,7 @@ namespace com.espertech.esper.regression.pattern
             // test until
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000000));
             string eplUntilOne = "select * from pattern [a=A -> b=B until ([1] every (timer:Interval(10) and not C))]";
-            epService.EPAdministrator.CreateEPL(eplUntilOne).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(eplUntilOne).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1005000));
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
@@ -612,7 +612,7 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1024998));
             Assert.IsFalse(listener.IsInvoked);
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1024999));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.id,b[0].id,b[1].id".Split(','), new Object[]{"A1", "B1", "B2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.id,b[0].id,b[1].id".Split(','), new object[]{"A1", "B1", "B2"});
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1999999));
             Assert.IsFalse(listener.IsInvoked);
@@ -626,11 +626,11 @@ namespace com.espertech.esper.regression.pattern
             string epl = "select * from pattern [every [2] (e = SupportBean(theString='A') and not SupportBean(theString='B'))]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 1));
             epService.EPRuntime.SendEvent(new SupportBean("A", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1, 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1, 2});
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 3));
             epService.EPRuntime.SendEvent(new SupportBean("B", 4));
@@ -638,13 +638,13 @@ namespace com.espertech.esper.regression.pattern
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 6));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{5, 6});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{5, 6});
         }
     
         private void ValidateStmt(EPServiceProvider epService, string stmtText, int numEventsA, bool match, int? matchCount) {
             var listener = new SupportUpdateListener();
             EPStatement stmt = epService.EPAdministrator.CreatePattern(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             for (int i = 0; i < numEventsA; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean("A", i));

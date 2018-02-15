@@ -17,8 +17,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util.support;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertSame;
 
 using NUnit.Framework;
 
@@ -54,7 +52,7 @@ namespace com.espertech.esper.regression.expr.expr
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select " +
                     "new MyClassObjectCtor(sb) as c0 " +
-                    "from SupportBean as sb").AddListener(listener);
+                    "from SupportBean as sb").Events += listener.Update;
     
             var sb = new SupportBean();
             epService.EPRuntime.SendEvent(sb);
@@ -73,16 +71,16 @@ namespace com.espertech.esper.regression.expr.expr
                     "from SupportBean";
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
-            var expectedAggType = new Object[][]{new object[] {"c0", typeof(SupportBean)}, new object[] {"new SupportBean(\"B\",intPrimitive+10)", typeof(SupportBean)}};
+            stmt.Events += listener.Update;
+            var expectedAggType = new object[][]{new object[] {"c0", typeof(SupportBean)}, new object[] {"new SupportBean(\"B\",intPrimitive+10)", typeof(SupportBean)}};
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedAggType, stmt.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
             string[] fields = "theString,intPrimitive".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             EventBean @event = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertPropsPono(@event.Get("c0"), fields, new Object[]{"A", 10});
-            EPAssertionUtil.AssertPropsPono(((Map) @event.Underlying).Get("new SupportBean(\"B\",intPrimitive+10)"), fields, new Object[]{"B", 20});
-            EPAssertionUtil.AssertPropsPono(@event.Get("c2"), fields, new Object[]{null, 0});
+            EPAssertionUtil.AssertPropsPono(@event.Get("c0"), fields, new object[]{"A", 10});
+            EPAssertionUtil.AssertPropsPono(((Map) @event.Underlying).Get("new SupportBean(\"B\",intPrimitive+10)"), fields, new object[]{"B", 20});
+            EPAssertionUtil.AssertPropsPono(@event.Get("c2"), fields, new object[]{null, 0});
             Assert.AreEqual("ABC", @event.Get("c3"));
     
             epService.EPAdministrator.DestroyAllStatements();

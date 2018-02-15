@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -51,10 +50,10 @@ namespace com.espertech.esper.regression.multithread
             for (int i = 0; i < numEvents; i++) {
                 EPStatement stmt = epService.EPAdministrator.CreatePattern(pattern);
                 listener[i] = new SupportMTUpdateListener();
-                stmt.AddListener(listener[i]);
+                stmt.Events += listener[i].Update;
     
                 lock (sendLock) {
-                    sendLock.NotifyAll();
+                    Monitor.PulseAll(sendLock);
                 }
             }
     
@@ -62,7 +61,7 @@ namespace com.espertech.esper.regression.multithread
                 callable.SetShutdown(true);
             }
             lock (sendLock) {
-                sendLock.NotifyAll();
+                Monitor.PulseAll(sendLock);
             }
     
             threadPool.Shutdown();

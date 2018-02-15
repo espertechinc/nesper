@@ -17,8 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNull;
 
 using NUnit.Framework;
 
@@ -47,7 +45,7 @@ namespace com.espertech.esper.regression.events.map
             statementText = "select val1 as a from MyStream";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             IDictionary<string, Object> testdata = GetTestData();
             epService.EPRuntime.SendEvent(testdata, "NestedMap");
@@ -55,7 +53,7 @@ namespace com.espertech.esper.regression.events.map
             // test all properties exist
             string[] fields = "a".Split(',');
             EventBean received = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(received, fields, new Object[]{ExecEventMap.GetNestedKeyMap(testdata, "map", "mapOne")});
+            EPAssertionUtil.AssertProps(received, fields, new object[]{ExecEventMap.GetNestedKeyMap(testdata, "map", "mapOne")});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -89,7 +87,7 @@ namespace com.espertech.esper.regression.events.map
                     " from NestedMap#length(5)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             IDictionary<string, Object> testdata = GetTestData();
             epService.EPRuntime.SendEvent(testdata, "NestedMap");
@@ -97,18 +95,18 @@ namespace com.espertech.esper.regression.events.map
             // test all properties exist
             EventBean received = listener.AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(received, "simple,@object,nodefmap,map".Split(','),
-                    new Object[]{"abc", new SupportBean_A("A1"), testdata.Get("nodefmap"), testdata.Get("map")});
+                    new object[]{"abc", new SupportBean_A("A1"), testdata.Get("nodefmap"), testdata.Get("map")});
             EPAssertionUtil.AssertProps(received, "a1,a2,a3,a4".Split(','),
-                    new Object[]{"A1", "val1", null, null});
+                    new object[]{"A1", "val1", null, null});
             EPAssertionUtil.AssertProps(received, "b1,b2,b3,b4".Split(','),
-                    new Object[]{ExecEventMap.GetNestedKeyMap(testdata, "map", "objectOne"), 10, "val2", 300});
-            EPAssertionUtil.AssertProps(received, "c1,c2".Split(','), new Object[]{2, "nestedValue"});
+                    new object[]{ExecEventMap.GetNestedKeyMap(testdata, "map", "objectOne"), 10, "val2", 300});
+            EPAssertionUtil.AssertProps(received, "c1,c2".Split(','), new object[]{2, "nestedValue"});
             EPAssertionUtil.AssertProps(received, "d1,d2,d3".Split(','),
-                    new Object[]{300, ExecEventMap.GetNestedKeyMap(testdata, "map", "mapOne", "objectTwo"), ExecEventMap.GetNestedKeyMap(testdata, "map", "mapOne", "nodefmapTwo")});
+                    new object[]{300, ExecEventMap.GetNestedKeyMap(testdata, "map", "mapOne", "objectTwo"), ExecEventMap.GetNestedKeyMap(testdata, "map", "mapOne", "nodefmapTwo")});
             EPAssertionUtil.AssertProps(received, "e1,e2,e3".Split(','),
-                    new Object[]{ExecEventMap.GetNestedKeyMap(testdata, "map", "mapOne", "mapTwo"), 4000L, new SupportBean_B("B1")});
+                    new object[]{ExecEventMap.GetNestedKeyMap(testdata, "map", "mapOne", "mapTwo"), 4000L, new SupportBean_B("B1")});
             EPAssertionUtil.AssertProps(received, "f1,f2".Split(','),
-                    new Object[]{"1ma0", "B1"});
+                    new object[]{"1ma0", "B1"});
     
             // test partial properties exist
             testdata = GetTestDataThree();
@@ -116,18 +114,18 @@ namespace com.espertech.esper.regression.events.map
     
             received = listener.AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(received, "simple,@object,nodefmap,map".Split(','),
-                    new Object[]{"abc", new SupportBean_A("A1"), testdata.Get("nodefmap"), testdata.Get("map")});
+                    new object[]{"abc", new SupportBean_A("A1"), testdata.Get("nodefmap"), testdata.Get("map")});
             EPAssertionUtil.AssertProps(received, "a1,a2,a3,a4".Split(','),
-                    new Object[]{"A1", "val1", null, null});
+                    new object[]{"A1", "val1", null, null});
             EPAssertionUtil.AssertProps(received, "b1,b2,b3,b4".Split(','),
-                    new Object[]{ExecEventMap.GetNestedKeyMap(testdata, "map", "objectOne"), null, null, null});
-            EPAssertionUtil.AssertProps(received, "c1,c2".Split(','), new Object[]{null, null});
+                    new object[]{ExecEventMap.GetNestedKeyMap(testdata, "map", "objectOne"), null, null, null});
+            EPAssertionUtil.AssertProps(received, "c1,c2".Split(','), new object[]{null, null});
             EPAssertionUtil.AssertProps(received, "d1,d2,d3".Split(','),
-                    new Object[]{null, ExecEventMap.GetNestedKeyMap(testdata, "map", "mapOne", "objectTwo"), ExecEventMap.GetNestedKeyMap(testdata, "map", "mapOne", "nodefmapTwo")});
+                    new object[]{null, ExecEventMap.GetNestedKeyMap(testdata, "map", "mapOne", "objectTwo"), ExecEventMap.GetNestedKeyMap(testdata, "map", "mapOne", "nodefmapTwo")});
             EPAssertionUtil.AssertProps(received, "e1,e2,e3".Split(','),
-                    new Object[]{ExecEventMap.GetNestedKeyMap(testdata, "map", "mapOne", "mapTwo"), 4000L, null});
+                    new object[]{ExecEventMap.GetNestedKeyMap(testdata, "map", "mapOne", "mapTwo"), 4000L, null});
             EPAssertionUtil.AssertProps(received, "f1,f2".Split(','),
-                    new Object[]{"1ma0", null});
+                    new object[]{"1ma0", null});
         }
     
         private void RunAssertionIsExists(EPServiceProvider epService) {
@@ -142,7 +140,7 @@ namespace com.espertech.esper.regression.events.map
                     " from NestedMap#length(5)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             IDictionary<string, Object> testdata = GetTestData();
             epService.EPRuntime.SendEvent(testdata, "NestedMap");
@@ -151,7 +149,7 @@ namespace com.espertech.esper.regression.events.map
             string[] fields = "a,b,c,d,e,f,g".Split(',');
             EventBean received = listener.AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(received, fields,
-                    new Object[]{true, false, true, true, true, true, true});
+                    new object[]{true, false, true, true, true, true, true});
     
             // test partial properties exist
             testdata = GetTestDataThree();
@@ -159,30 +157,30 @@ namespace com.espertech.esper.regression.events.map
     
             received = listener.AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(received, fields,
-                    new Object[]{true, false, false, true, true, true, false});
+                    new object[]{true, false, false, true, true, true, false});
         }
     
         private IDictionary<string, Object> GetTestDef() {
-            IDictionary<string, Object> levelThree = ExecEventMap.MakeMap(new Object[][]{
+            IDictionary<string, Object> levelThree = ExecEventMap.MakeMap(new object[][]{
                     new object[] {"simpleThree", typeof(long)},
                     new object[] {"objectThree", typeof(SupportBean_B)},
             });
     
-            IDictionary<string, Object> levelTwo = ExecEventMap.MakeMap(new Object[][]{
+            IDictionary<string, Object> levelTwo = ExecEventMap.MakeMap(new object[][]{
                     new object[] {"simpleTwo", typeof(int?)},
                     new object[] {"objectTwo", typeof(SupportBeanCombinedProps)},
                     new object[] {"nodefmapTwo", typeof(Map)},
                     new object[] {"mapTwo", levelThree},
             });
     
-            IDictionary<string, Object> levelOne = ExecEventMap.MakeMap(new Object[][]{
+            IDictionary<string, Object> levelOne = ExecEventMap.MakeMap(new object[][]{
                     new object[] {"simpleOne", typeof(int?)},
                     new object[] {"objectOne", typeof(SupportBeanComplexProps)},
                     new object[] {"nodefmapOne", typeof(Map)},
                     new object[] {"mapOne", levelTwo}
             });
     
-            IDictionary<string, Object> levelZero = ExecEventMap.MakeMap(new Object[][]{
+            IDictionary<string, Object> levelZero = ExecEventMap.MakeMap(new object[][]{
                     new object[] {"simple", typeof(string)},
                     new object[] {"object", typeof(SupportBean_A)},
                     new object[] {"nodefmap", typeof(Map)},
@@ -193,29 +191,29 @@ namespace com.espertech.esper.regression.events.map
         }
     
         private IDictionary<string, Object> GetTestData() {
-            IDictionary<string, Object> levelThree = ExecEventMap.MakeMap(new Object[][]{
+            IDictionary<string, Object> levelThree = ExecEventMap.MakeMap(new object[][]{
                     new object[] {"simpleThree", 4000L},
                     new object[] {"objectThree", new SupportBean_B("B1")},
             });
     
-            IDictionary<string, Object> levelTwo = ExecEventMap.MakeMap(new Object[][]{
+            IDictionary<string, Object> levelTwo = ExecEventMap.MakeMap(new object[][]{
                     new object[] {"simpleTwo", 300},
                     new object[] {"objectTwo", SupportBeanCombinedProps.MakeDefaultBean()},
-                    new object[] {"nodefmapTwo", ExecEventMap.MakeMap(new Object[][]{new object[] {"key3", "val3"}})},
+                    new object[] {"nodefmapTwo", ExecEventMap.MakeMap(new object[][]{new object[] {"key3", "val3"}})},
                     new object[] {"mapTwo", levelThree},
             });
     
-            IDictionary<string, Object> levelOne = ExecEventMap.MakeMap(new Object[][]{
+            IDictionary<string, Object> levelOne = ExecEventMap.MakeMap(new object[][]{
                     new object[] {"simpleOne", 10},
                     new object[] {"objectOne", SupportBeanComplexProps.MakeDefaultBean()},
-                    new object[] {"nodefmapOne", ExecEventMap.MakeMap(new Object[][]{new object[] {"key2", "val2"}})},
+                    new object[] {"nodefmapOne", ExecEventMap.MakeMap(new object[][]{new object[] {"key2", "val2"}})},
                     new object[] {"mapOne", levelTwo}
             });
     
-            IDictionary<string, Object> levelZero = ExecEventMap.MakeMap(new Object[][]{
+            IDictionary<string, Object> levelZero = ExecEventMap.MakeMap(new object[][]{
                     new object[] {"simple", "abc"},
                     new object[] {"object", new SupportBean_A("A1")},
-                    new object[] {"nodefmap", ExecEventMap.MakeMap(new Object[][]{new object[] {"key1", "val1"}})},
+                    new object[] {"nodefmap", ExecEventMap.MakeMap(new object[][]{new object[] {"key1", "val1"}})},
                     new object[] {"map", levelOne}
             });
     
@@ -223,26 +221,26 @@ namespace com.espertech.esper.regression.events.map
         }
     
         private IDictionary<string, Object> GetTestDataThree() {
-            IDictionary<string, Object> levelThree = ExecEventMap.MakeMap(new Object[][]{
+            IDictionary<string, Object> levelThree = ExecEventMap.MakeMap(new object[][]{
                     new object[] {"simpleThree", 4000L},
             });
     
-            IDictionary<string, Object> levelTwo = ExecEventMap.MakeMap(new Object[][]{
+            IDictionary<string, Object> levelTwo = ExecEventMap.MakeMap(new object[][]{
                     new object[] {"objectTwo", SupportBeanCombinedProps.MakeDefaultBean()},
-                    new object[] {"nodefmapTwo", ExecEventMap.MakeMap(new Object[][]{new object[] {"key3", "val3"}})},
+                    new object[] {"nodefmapTwo", ExecEventMap.MakeMap(new object[][]{new object[] {"key3", "val3"}})},
                     new object[] {"mapTwo", levelThree},
             });
     
-            IDictionary<string, Object> levelOne = ExecEventMap.MakeMap(new Object[][]{
+            IDictionary<string, Object> levelOne = ExecEventMap.MakeMap(new object[][]{
                     new object[] {"simpleOne", null},
                     new object[] {"objectOne", null},
                     new object[] {"mapOne", levelTwo}
             });
     
-            IDictionary<string, Object> levelZero = ExecEventMap.MakeMap(new Object[][]{
+            IDictionary<string, Object> levelZero = ExecEventMap.MakeMap(new object[][]{
                     new object[] {"simple", "abc"},
                     new object[] {"object", new SupportBean_A("A1")},
-                    new object[] {"nodefmap", ExecEventMap.MakeMap(new Object[][]{new object[] {"key1", "val1"}})},
+                    new object[] {"nodefmap", ExecEventMap.MakeMap(new object[][]{new object[] {"key1", "val1"}})},
                     new object[] {"map", levelOne}
             });
     

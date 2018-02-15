@@ -50,7 +50,7 @@ namespace com.espertech.esper.supportregression.multithread
                     _engine.EPRuntime.SendEvent(new SupportBean(threadKey, -1));
     
                     // assert trigger event received
-                    IList<EventBean[]> events = listener.GetNewDataListCopy();
+                    IList<EventBean[]> events = listener.NewDataListCopy;
                     bool found = false;
                     foreach (EventBean[] arr in events) {
                         foreach (EventBean item in arr) {

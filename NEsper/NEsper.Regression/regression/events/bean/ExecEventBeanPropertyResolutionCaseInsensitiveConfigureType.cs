@@ -22,7 +22,7 @@ namespace com.espertech.esper.regression.events.bean
     public class ExecEventBeanPropertyResolutionCaseInsensitiveConfigureType : RegressionExecution {
         public override void Configure(Configuration configuration) {
             var legacyDef = new ConfigurationEventTypeLegacy();
-            legacyDef.PropertyResolutionStyle = Configuration.PropertyResolutionStyle.CASE_INSENSITIVE;
+            legacyDef.PropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
             configuration.AddEventType("Bean", typeof(SupportBean).FullName, legacyDef);
         }
     

@@ -17,7 +17,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util.support;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -45,9 +44,9 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             epService.EPAdministrator.CreateEPL("create index MyIdx on MyTable(pkey0)");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("@Name('select') on SupportBean_S0 select sum(thesum) as c0 from MyTable where pkey0=p00").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("@Name('select') on SupportBean_S0 select sum(thesum) as c0 from MyTable where pkey0=p00").Events += listener.Update;
     
-            AssertSum(epService, listener, "E1,E2,E3", new long[]{6L, 8L, null});
+            AssertSum(epService, listener, "E1,E2,E3", new long?[]{6L, 8L, null});
     
             MakeSendSupportBean(epService, "E3", 30, 77L);
             MakeSendSupportBean(epService, "E2", 21, 2L);
@@ -62,7 +61,18 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPRuntime.SendEvent(new SupportBean_S1(20, "E2"));   // deletes {"E2", 20, 3L}
             AssertSum(epService, listener, "E1,E2,E3", new long[]{2L, 7L, 77L});
         }
-    
+
+        private void AssertSum(EPServiceProvider epService, SupportUpdateListener listener, string listOfP00, long?[] sums)
+        {
+            string[] p00s = listOfP00.Split(',');
+            Assert.AreEqual(p00s.Length, sums.Length);
+            for (int i = 0; i < p00s.Length; i++)
+            {
+                epService.EPRuntime.SendEvent(new SupportBean_S0(0, p00s[i]));
+                Assert.AreEqual(sums[i], listener.AssertOneGetNewAndReset().Get("c0"));
+            }
+        }
+
         private void AssertSum(EPServiceProvider epService, SupportUpdateListener listener, string listOfP00, long[] sums) {
             string[] p00s = listOfP00.Split(',');
             Assert.AreEqual(p00s.Length, sums.Length);
@@ -80,15 +90,15 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("create table varagg as (key string primary key, thesum sum(int))");
             epService.EPAdministrator.CreateEPL("into table varagg select sum(intPrimitive) as thesum from SupportBean group by theString");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select varagg[p00].thesum as value from SupportBean_S0").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select varagg[p00].thesum as value from SupportBean_S0").Events += listener.Update;
             EPStatement stmtDeleteFiltered = epService.EPAdministrator.CreateEPL("on SupportBean_S1(id = 1) delete from varagg where key = p10");
             EPStatement stmtDeleteAll = epService.EPAdministrator.CreateEPL("on SupportBean_S1(id = 2) delete from varagg");
     
-            var expectedType = new Object[][]{new object[] {"key", typeof(string)}, new object[] {"thesum", typeof(int?)}};
+            var expectedType = new object[][]{new object[] {"key", typeof(string)}, new object[] {"thesum", typeof(int?)}};
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedType, stmtDeleteAll.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
-            stmtDeleteFiltered.AddListener(listenerDeleteFiltered);
-            stmtDeleteAll.AddListener(listenerDeleteAll);
+            stmtDeleteFiltered.Events += listenerDeleteFiltered.Update;
+            stmtDeleteAll.Events += listenerDeleteAll.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
             AssertValues(epService, listener, "G1,G2", new int?[]{10, null});
@@ -98,11 +108,11 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(1, "G1"));
             AssertValues(epService, listener, "G1,G2", new int?[]{null, 20});
-            EPAssertionUtil.AssertProps(listenerDeleteFiltered.AssertOneGetNewAndReset(), fields, new Object[]{"G1", 10});
+            EPAssertionUtil.AssertProps(listenerDeleteFiltered.AssertOneGetNewAndReset(), fields, new object[]{"G1", 10});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(2, null));
             AssertValues(epService, listener, "G1,G2", new int?[]{null, null});
-            EPAssertionUtil.AssertProps(listenerDeleteAll.AssertOneGetNewAndReset(), fields, new Object[]{"G2", 20});
+            EPAssertionUtil.AssertProps(listenerDeleteAll.AssertOneGetNewAndReset(), fields, new object[]{"G2", 20});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -113,7 +123,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             for (int i = 0; i < keyarr.Length; i++) {
                 engine.EPRuntime.SendEvent(new SupportBean_S0(0, keyarr[i]));
                 EventBean @event = listener.AssertOneGetNewAndReset();
-                Assert.AreEqual("Failed for key '" + keyarr[i] + "'", values[i], @event.Get("value"));
+                Assert.AreEqual(values[i], @event.Get("value"), "Failed for key '" + keyarr[i] + "'");
             }
         }
     

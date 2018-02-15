@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.resultset.orderby
                     "order by sum(price), symbol";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementString);
             TryAssertionNoHaving(epService, statement);
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionHavingNoJoin(EPServiceProvider epService) {
@@ -53,7 +53,7 @@ namespace com.espertech.esper.regression.resultset.orderby
                     "order by sum(price), symbol";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementString);
             TryAssertionHaving(epService, statement);
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionNoHavingJoin(EPServiceProvider epService) {
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
             TryAssertionNoHaving(epService, statement);
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionHavingJoin(EPServiceProvider epService) {
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
             TryAssertionHaving(epService, statement);
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionHavingJoinAlias(EPServiceProvider epService) {
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
             TryAssertionHaving(epService, statement);
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionLast(EPServiceProvider epService) {
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regression.resultset.orderby
                     "order by sum(price), symbol";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementString);
             TryAssertionLast(epService, statement);
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionLastJoin(EPServiceProvider epService) {
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
             TryAssertionLast(epService, statement);
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionIteratorGroupByEventPerGroup(EPServiceProvider epService) {
@@ -175,20 +175,20 @@ namespace com.espertech.esper.regression.resultset.orderby
             SendEvent(epService, "CAT", 15);
             SendEvent(epService, "IBM", 100);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(statement.GetEnumerator(), fields,
-                    new Object[][]{
+                    new object[][]{
                             new object[] {"CAT", 65d},
                             new object[] {"IBM", 149d},
                     });
     
             SendEvent(epService, "KGB", 75);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(statement.GetEnumerator(), fields,
-                    new Object[][]{
+                    new object[][]{
                             new object[] {"CAT", 65d},
                             new object[] {"IBM", 149d},
                             new object[] {"KGB", 75d},
                     });
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void SendEvent(EPServiceProvider epService, string symbol, double price) {
@@ -199,7 +199,7 @@ namespace com.espertech.esper.regression.resultset.orderby
         private void TryAssertionLast(EPServiceProvider epService, EPStatement statement) {
             string[] fields = "symbol,mysum".Split(',');
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendEvent(epService, "IBM", 3);
             SendEvent(epService, "IBM", 4);
@@ -209,9 +209,9 @@ namespace com.espertech.esper.regression.resultset.orderby
             SendEvent(epService, "CAT", 6);
     
             EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields,
-                    new Object[][]{new object[] {"CMU", 3.0}, new object[] {"IBM", 7.0}, new object[] {"CAT", 11.0}});
+                    new object[][]{new object[] {"CMU", 3.0}, new object[] {"IBM", 7.0}, new object[] {"CAT", 11.0}});
             EPAssertionUtil.AssertPropsPerRow(listener.LastOldData, fields,
-                    new Object[][]{new object[] {"CAT", null}, new object[] {"CMU", null}, new object[] {"IBM", null}});
+                    new object[][]{new object[] {"CAT", null}, new object[] {"CMU", null}, new object[] {"IBM", null}});
     
             SendEvent(epService, "IBM", 3);
             SendEvent(epService, "IBM", 4);
@@ -221,16 +221,16 @@ namespace com.espertech.esper.regression.resultset.orderby
             SendEvent(epService, "DOG", 1);
     
             EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields,
-                    new Object[][]{new object[] {"DOG", 1.0}, new object[] {"CMU", 13.0}, new object[] {"IBM", 14.0}});
+                    new object[][]{new object[] {"DOG", 1.0}, new object[] {"CMU", 13.0}, new object[] {"IBM", 14.0}});
             EPAssertionUtil.AssertPropsPerRow(listener.LastOldData, fields,
-                    new Object[][]{new object[] {"DOG", null}, new object[] {"CMU", 3.0}, new object[] {"IBM", 7.0}});
+                    new object[][]{new object[] {"DOG", null}, new object[] {"CMU", 3.0}, new object[] {"IBM", 7.0}});
         }
     
         private void TryAssertionNoHaving(EPServiceProvider epService, EPStatement statement) {
             string[] fields = "symbol,mysum".Split(',');
     
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             SendEvent(epService, "IBM", 3);
             SendEvent(epService, "IBM", 4);
             SendEvent(epService, "CMU", 1);
@@ -238,9 +238,9 @@ namespace com.espertech.esper.regression.resultset.orderby
             SendEvent(epService, "CAT", 5);
             SendEvent(epService, "CAT", 6);
             EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields,
-                    new Object[][]{new object[] {"CMU", 1.0}, new object[] {"CMU", 3.0}, new object[] {"IBM", 3.0}, new object[] {"CAT", 5.0}, new object[] {"IBM", 7.0}, new object[] {"CAT", 11.0}});
+                    new object[][]{new object[] {"CMU", 1.0}, new object[] {"CMU", 3.0}, new object[] {"IBM", 3.0}, new object[] {"CAT", 5.0}, new object[] {"IBM", 7.0}, new object[] {"CAT", 11.0}});
             EPAssertionUtil.AssertPropsPerRow(listener.LastOldData, fields,
-                    new Object[][]{new object[] {"CAT", null}, new object[] {"CMU", null}, new object[] {"IBM", null}, new object[] {"CMU", 1.0}, new object[] {"IBM", 3.0}, new object[] {"CAT", 5.0}});
+                    new object[][]{new object[] {"CAT", null}, new object[] {"CMU", null}, new object[] {"IBM", null}, new object[] {"CMU", 1.0}, new object[] {"IBM", 3.0}, new object[] {"CAT", 5.0}});
             listener.Reset();
     
             SendEvent(epService, "IBM", 3);
@@ -250,15 +250,15 @@ namespace com.espertech.esper.regression.resultset.orderby
             SendEvent(epService, "DOG", 0);
             SendEvent(epService, "DOG", 1);
             EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields,
-                    new Object[][]{new object[] {"DOG", 0.0}, new object[] {"DOG", 1.0}, new object[] {"CMU", 8.0}, new object[] {"IBM", 10.0}, new object[] {"CMU", 13.0}, new object[] {"IBM", 14.0}});
+                    new object[][]{new object[] {"DOG", 0.0}, new object[] {"DOG", 1.0}, new object[] {"CMU", 8.0}, new object[] {"IBM", 10.0}, new object[] {"CMU", 13.0}, new object[] {"IBM", 14.0}});
             EPAssertionUtil.AssertPropsPerRow(listener.LastOldData, fields,
-                    new Object[][]{new object[] {"DOG", null}, new object[] {"DOG", 0.0}, new object[] {"CMU", 3.0}, new object[] {"IBM", 7.0}, new object[] {"CMU", 8.0}, new object[] {"IBM", 10.0}});
+                    new object[][]{new object[] {"DOG", null}, new object[] {"DOG", 0.0}, new object[] {"CMU", 3.0}, new object[] {"IBM", 7.0}, new object[] {"CMU", 8.0}, new object[] {"IBM", 10.0}});
         }
     
         private void TryAssertionHaving(EPServiceProvider epService, EPStatement statement) {
             string[] fields = "symbol,mysum".Split(',');
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             SendEvent(epService, "IBM", 3);
             SendEvent(epService, "IBM", 4);
             SendEvent(epService, "CMU", 1);
@@ -267,9 +267,9 @@ namespace com.espertech.esper.regression.resultset.orderby
             SendEvent(epService, "CAT", 6);
     
             EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields,
-                    new Object[][]{new object[] {"CMU", 1.0}, new object[] {"CMU", 3.0}, new object[] {"IBM", 3.0}, new object[] {"CAT", 5.0}, new object[] {"IBM", 7.0}, new object[] {"CAT", 11.0}});
+                    new object[][]{new object[] {"CMU", 1.0}, new object[] {"CMU", 3.0}, new object[] {"IBM", 3.0}, new object[] {"CAT", 5.0}, new object[] {"IBM", 7.0}, new object[] {"CAT", 11.0}});
             EPAssertionUtil.AssertPropsPerRow(listener.LastOldData, fields,
-                    new Object[][]{new object[] {"CMU", 1.0}, new object[] {"IBM", 3.0}, new object[] {"CAT", 5.0}});
+                    new object[][]{new object[] {"CMU", 1.0}, new object[] {"IBM", 3.0}, new object[] {"CAT", 5.0}});
             listener.Reset();
     
             SendEvent(epService, "IBM", 3);
@@ -279,9 +279,9 @@ namespace com.espertech.esper.regression.resultset.orderby
             SendEvent(epService, "DOG", 0);
             SendEvent(epService, "DOG", 1);
             EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields,
-                    new Object[][]{new object[] {"DOG", 1.0}, new object[] {"CMU", 8.0}, new object[] {"IBM", 10.0}, new object[] {"CMU", 13.0}, new object[] {"IBM", 14.0}});
+                    new object[][]{new object[] {"DOG", 1.0}, new object[] {"CMU", 8.0}, new object[] {"IBM", 10.0}, new object[] {"CMU", 13.0}, new object[] {"IBM", 14.0}});
             EPAssertionUtil.AssertPropsPerRow(listener.LastOldData, fields,
-                    new Object[][]{new object[] {"CMU", 3.0}, new object[] {"IBM", 7.0}, new object[] {"CMU", 8.0}, new object[] {"IBM", 10.0}});
+                    new object[][]{new object[] {"CMU", 3.0}, new object[] {"IBM", 7.0}, new object[] {"CMU", 8.0}, new object[] {"IBM", 10.0}});
         }
     }
 } // end of namespace

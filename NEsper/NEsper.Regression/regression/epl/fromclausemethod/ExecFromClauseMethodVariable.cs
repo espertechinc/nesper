@@ -69,7 +69,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                     "select field1, field2 from method:MyMethodHandlerOA.OAData"
             }) {
                 EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-                EPAssertionUtil.AssertProps(stmt.First(), "field1,field2".Split(','), new Object[]{"a", "b"});
+                EPAssertionUtil.AssertProps(stmt.First(), "field1,field2".Split(','), new object[]{"a", "b"});
             }
         }
     
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("context MyContext " +
                     "select id as c0 from SupportBean(intPrimitive=context.c_s0.id) as sb, " +
-                    "method:var.FetchABean(intPrimitive) as h0").AddListener(listener);
+                    "method:var.FetchABean(intPrimitive) as h0").Events += listener.Update;
             epService.EPAdministrator.CreateEPL("context MyContext on SupportBean_S2(id = context.c_s0.id) set var.postfix=p20");
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                     "method:MyConstantServiceVariable.FetchABean(intPrimitive) as h0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEventAssert(epService, listener, "E1", 10, "_10_");
             SendEventAssert(epService, listener, "E2", 20, "_20_");
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                     "method:MyNonConstantServiceVariable.FetchABean(intPrimitive) as h0";
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEventAssert(epService, listener, "E1", 10, "_10_postfix");
     
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         private void SendEventAssert(EPServiceProvider epService, SupportUpdateListener listener, string theString, int intPrimitive, string expected) {
             string[] fields = "c0".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean(theString, intPrimitive));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{expected});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{expected});
         }
 
         private class MyConstantServiceVariable
@@ -251,7 +251,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
 
             public object[][] OAData
             {
-                get { return new Object[][] {new object[] {_field1, _field2}}; }
+                get { return new object[][] {new object[] {_field1, _field2}}; }
             }
         }
     }

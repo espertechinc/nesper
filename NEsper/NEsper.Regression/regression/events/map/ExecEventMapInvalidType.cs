@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertTrue;
-// using static org.junit.Assert.fail;
 
 using NUnit.Framework;
 
@@ -25,10 +23,10 @@ namespace com.espertech.esper.regression.events.map
 {
     public class ExecEventMapInvalidType : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
-            IDictionary<string, Object> invalid = ExecEventMap.MakeMap(new Object[][]{new object[] {new SupportBean(), null}});
+            IDictionary<string, Object> invalid = ExecEventMap.MakeMap(new object[][]{new object[] {new SupportBean(), null}});
             TryInvalid(epService, invalid, typeof(SupportBean).FullName + " cannot be cast to java.lang.string");
     
-            invalid = ExecEventMap.MakeMap(new Object[][]{new object[] {"abc", new SupportBean()}});
+            invalid = ExecEventMap.MakeMap(new object[][]{new object[] {"abc", new SupportBean()}});
             TryInvalid(epService, invalid, "Nestable type configuration encountered an unexpected property type of 'SupportBean' for property 'abc', expected java.lang.Type or java.util.Map or the name of a previously-declared Map or ObjectArray type");
         }
     
@@ -38,7 +36,7 @@ namespace com.espertech.esper.regression.events.map
                 Assert.Fail();
             } catch (Exception ex) {
                 // Comment-me-in: Log.Error(ex.Message, ex);
-                Assert.IsTrue("expected '" + message + "' but received '" + ex.Message, ex.Message.Contains(message));
+                Assert.IsTrue(ex.Message.Contains(message), "expected '" + message + "' but received '" + ex.Message);
             }
         }
     

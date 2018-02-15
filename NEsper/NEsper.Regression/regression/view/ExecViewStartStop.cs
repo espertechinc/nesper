@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNull;
 
 using NUnit.Framework;
 
@@ -34,7 +32,7 @@ namespace com.espertech.esper.regression.view
             string epl = "select * from " + typeof(SupportBean).FullName + "#length(3)";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             // send a couple of events
             SendEvent(epService, 1);
@@ -45,7 +43,7 @@ namespace com.espertech.esper.regression.view
             // create same statement again
             var testListenerTwo = new SupportUpdateListener();
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(epl);
-            stmtTwo.AddListener(testListenerTwo);
+            stmtTwo.Events += testListenerTwo.Update;
     
             // Send event, no old data should be received
             SendEvent(epService, 5);
@@ -83,7 +81,7 @@ namespace com.espertech.esper.regression.view
             sizeStmt.Start();
             Assert.AreEqual(0L, sizeStmt.First().Get("size"));
     
-            sizeStmt.Destroy();
+            sizeStmt.Dispose();
         }
     
         private void RunAssertionAddRemoveListener(EPServiceProvider epService) {
@@ -94,7 +92,7 @@ namespace com.espertech.esper.regression.view
             // View is started when created
     
             // Add listener send event
-            sizeStmt.AddListener(listener);
+            sizeStmt.Events += listener.Update;
             Assert.IsNull(listener.LastNewData);
             Assert.AreEqual(0L, sizeStmt.First().Get("size"));
             SendEvent(epService);
@@ -108,8 +106,8 @@ namespace com.espertech.esper.regression.view
             Assert.IsNull(listener.LastNewData);
     
             // Start again
-            sizeStmt.RemoveListener(listener);
-            sizeStmt.AddListener(listener);
+            sizeStmt.Events -= listener.Update;
+            sizeStmt.Events += listener.Update;
             sizeStmt.Start();
     
             SendEvent(epService);
@@ -123,16 +121,16 @@ namespace com.espertech.esper.regression.view
             Assert.AreEqual(1L, listener.GetAndResetLastNewData()[0].Get("size"));
     
             // Remove listener, send event
-            sizeStmt.RemoveListener(listener);
+            sizeStmt.Events -= listener.Update;
             SendEvent(epService);
             Assert.IsNull(listener.LastNewData);
     
             // Add listener back, send event
-            sizeStmt.AddListener(listener);
+            sizeStmt.Events += listener.Update;
             SendEvent(epService);
             Assert.AreEqual(3L, listener.GetAndResetLastNewData()[0].Get("size"));
     
-            sizeStmt.Destroy();
+            sizeStmt.Dispose();
         }
     
         private void SendEvent(EPServiceProvider epService) {

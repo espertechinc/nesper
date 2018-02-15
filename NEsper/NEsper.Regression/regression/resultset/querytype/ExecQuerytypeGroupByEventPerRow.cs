@@ -16,15 +16,14 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.resultset.querytype
 {
     public class ExecQuerytypeGroupByEventPerRow : RegressionExecution {
-        private static readonly string SYMBOL_DELL = "DELL";
-        private static readonly string SYMBOL_IBM = "IBM";
+        private const string SYMBOL_DELL = "DELL";
+        private const string SYMBOL_IBM = "IBM";
     
         public override void Run(EPServiceProvider epService) {
             RunAssertionCriteriaByDotMethod(epService);
@@ -41,12 +40,12 @@ namespace com.espertech.esper.regression.resultset.querytype
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             string epl = "select Sb.LongPrimitive as c0, sum(intPrimitive) as c1 from SupportBean#length_batch(2) as sb group by Sb.TheString";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             MakeSendSupportBean(epService, "E1", 10, 100L);
             MakeSendSupportBean(epService, "E1", 20, 200L);
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "c0,c1".Split(','),
-                    new Object[][]{new object[] {100L, 30}, new object[] {200L, 30}});
+                    new object[][]{new object[] {100L, 30}, new object[] {200L, 30}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -58,10 +57,10 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 10}, new object[] {"E2", 20}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1", 10}, new object[] {"E2", 20}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 11));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 21}, new object[] {"E2", 20}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1", 21}, new object[] {"E2", 20}});
     
             stmt.Dispose();
         }
@@ -69,7 +68,7 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionUnaggregatedHaving(EPServiceProvider epService) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select theString from SupportBean group by theString having intPrimitive > 5");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 3));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 5));
@@ -91,16 +90,16 @@ namespace com.espertech.esper.regression.resultset.querytype
             string epl = "select *, min(intPrimitive) as minval from SupportBean#length(2) group by theString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"G1", 10, 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"G1", 10, 10});
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 9));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"G1", 9, 9});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"G1", 9, 9});
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 11));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"G1", 11, 9});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"G1", 11, 9});
     
             stmt.Dispose();
         }
@@ -114,44 +113,44 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, SYMBOL_DELL, 1000, 10);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1000L, "DELL", 10.0, 1L});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1000L, "DELL", 10.0, 1L}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1000L, "DELL", 10.0, 1L});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {1000L, "DELL", 10.0, 1L}});
     
             SendEvent(epService, SYMBOL_DELL, 900, 11);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{900L, "DELL", 11.0, 1L});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1000L, "DELL", 10.0, 1L}, new object[] {900L, "DELL", 11.0, 1L}});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{900L, "DELL", 11.0, 1L});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {1000L, "DELL", 10.0, 1L}, new object[] {900L, "DELL", 11.0, 1L}});
             listener.Reset();
     
             SendEvent(epService, SYMBOL_DELL, 1500, 10);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{1500L, "DELL", 10.0, 2L});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1000L, "DELL", 10.0, 2L}, new object[] {900L, "DELL", 11.0, 1L}, new object[] {1500L, "DELL", 10.0, 2L}});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{1500L, "DELL", 10.0, 2L});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {1000L, "DELL", 10.0, 2L}, new object[] {900L, "DELL", 11.0, 1L}, new object[] {1500L, "DELL", 10.0, 2L}});
             listener.Reset();
     
             SendEvent(epService, SYMBOL_IBM, 500, 5);
             Assert.AreEqual(1, listener.NewDataList.Count);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{500L, "IBM", 5.0, 1L});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1000L, "DELL", 10.0, 2L}, new object[] {900L, "DELL", 11.0, 1L}, new object[] {1500L, "DELL", 10.0, 2L}, new object[] {500L, "IBM", 5.0, 1L}});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{500L, "IBM", 5.0, 1L});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {1000L, "DELL", 10.0, 2L}, new object[] {900L, "DELL", 11.0, 1L}, new object[] {1500L, "DELL", 10.0, 2L}, new object[] {500L, "IBM", 5.0, 1L}});
             listener.Reset();
     
             SendEvent(epService, SYMBOL_IBM, 600, 5);
             Assert.AreEqual(1, listener.LastNewData.Length);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{600L, "IBM", 5.0, 2L});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1000L, "DELL", 10.0, 2L}, new object[] {900L, "DELL", 11.0, 1L}, new object[] {1500L, "DELL", 10.0, 2L}, new object[] {500L, "IBM", 5.0, 2L}, new object[] {600L, "IBM", 5.0, 2L}});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{600L, "IBM", 5.0, 2L});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {1000L, "DELL", 10.0, 2L}, new object[] {900L, "DELL", 11.0, 1L}, new object[] {1500L, "DELL", 10.0, 2L}, new object[] {500L, "IBM", 5.0, 2L}, new object[] {600L, "IBM", 5.0, 2L}});
             listener.Reset();
     
             SendEvent(epService, SYMBOL_IBM, 500, 5);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{500L, "IBM", 5.0, 3L});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{1000L, "DELL", 10.0, 1L});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {900L, "DELL", 11.0, 1L}, new object[] {1500L, "DELL", 10.0, 1L}, new object[] {500L, "IBM", 5.0, 3L}, new object[] {600L, "IBM", 5.0, 3L}, new object[] {500L, "IBM", 5.0, 3L}});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{500L, "IBM", 5.0, 3L});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{1000L, "DELL", 10.0, 1L});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {900L, "DELL", 11.0, 1L}, new object[] {1500L, "DELL", 10.0, 1L}, new object[] {500L, "IBM", 5.0, 3L}, new object[] {600L, "IBM", 5.0, 3L}, new object[] {500L, "IBM", 5.0, 3L}});
             listener.Reset();
     
             SendEvent(epService, SYMBOL_IBM, 600, 5);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{600L, "IBM", 5.0, 4L});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{900L, "DELL", 11.0, 0L});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1500L, "DELL", 10.0, 1L}, new object[] {500L, "IBM", 5.0, 4L}, new object[] {600L, "IBM", 5.0, 4L}, new object[] {500L, "IBM", 5.0, 4L}, new object[] {600L, "IBM", 5.0, 4L}});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{600L, "IBM", 5.0, 4L});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{900L, "DELL", 11.0, 0L});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {1500L, "DELL", 10.0, 1L}, new object[] {500L, "IBM", 5.0, 4L}, new object[] {600L, "IBM", 5.0, 4L}, new object[] {500L, "IBM", 5.0, 4L}, new object[] {600L, "IBM", 5.0, 4L}});
             listener.Reset();
     
             stmt.Dispose();
@@ -166,7 +165,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionSum(epService, listener, stmt);
     
@@ -184,7 +183,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
@@ -199,7 +198,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             string eventType = typeof(SupportMarketDataBean).Name;
             string stmt = " select symbol as symbol, avg(price) as average, sum(volume) as sumation from " + eventType + "#length(3000)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmt);
-            statement.AddListener(listenerOne);
+            statement.Events += listenerOne.Update;
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("IBM", 10D, 20000L, null));
             EventBean eventBean = listenerOne.LastNewData[0];
@@ -212,12 +211,12 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "from " + eventType + "#length(3000)";
             statement = epService.EPAdministrator.CreateEPL(stmt);
             var listenerTwo = new SupportUpdateListener();
-            statement.AddListener(listenerTwo);
+            statement.Events += listenerTwo.Update;
     
             stmt = " select * from StockAverages";
             statement = epService.EPAdministrator.CreateEPL(stmt);
             var listenerThree = new SupportUpdateListener();
-            statement.AddListener(listenerThree);
+            statement.Events += listenerThree.Update;
     
             // send event
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("IBM", 20D, 40000L, null));
@@ -245,32 +244,32 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             SendEvent(epService, SYMBOL_DELL, 10000, 51);
             AssertEvents(listener, SYMBOL_DELL, 10000, 51);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{
                 new object[] {"DELL", 10000L, 51d}});
     
             SendEvent(epService, SYMBOL_DELL, 20000, 52);
             AssertEvents(listener, SYMBOL_DELL, 20000, 103);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{
                 new object[] {"DELL", 10000L, 103d},
                 new object[] {"DELL", 20000L, 103d}});
     
             SendEvent(epService, SYMBOL_IBM, 30000, 70);
             AssertEvents(listener, SYMBOL_IBM, 30000, 70);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{
                 new object[] {"DELL", 10000L, 103d},
                 new object[] {"DELL", 20000L, 103d},
                 new object[] {"IBM", 30000L, 70d}});
     
             SendEvent(epService, SYMBOL_IBM, 10000, 20);
             AssertEvents(listener, SYMBOL_DELL, 10000, 52, SYMBOL_IBM, 10000, 90);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{
                 new object[] {"DELL", 20000L, 52d},
                 new object[] {"IBM", 30000L, 90d},
                 new object[] {"IBM", 10000L, 90d}});
     
             SendEvent(epService, SYMBOL_DELL, 40000, 45);
             AssertEvents(listener, SYMBOL_DELL, 20000, 45, SYMBOL_DELL, 40000, 45);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{
                 new object[] {"IBM", 10000L, 90d},
                 new object[] {"IBM", 30000L, 90d},
                 new object[] {"DELL", 40000L, 45d}});

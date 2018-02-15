@@ -15,7 +15,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -67,7 +66,7 @@ namespace com.espertech.esper.regression.epl.join
                     "where intPrimitive between rangeStart and rangeEnd";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // Repeat
             Log.Info("Querying");
@@ -107,7 +106,7 @@ namespace com.espertech.esper.regression.epl.join
             string epl = "select * from SBR a, SB b where a.rangeStart < b.intPrimitive";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // Repeat
             Log.Info("Querying");
@@ -150,7 +149,7 @@ namespace com.espertech.esper.regression.epl.join
             string epl = "select * from SBR sbr, SB sb where sbr.key = sb.theString and sb.intPrimitive between sbr.rangeStart and sbr.rangeEnd";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // repeat
             Log.Info("Querying");
@@ -200,7 +199,7 @@ namespace com.espertech.esper.regression.epl.join
             string epl = "select * from SupportBeanRange#lastevent sbr, SB sb where sbr.key = sb.theString and sb.intPrimitive not in [sbr.rangeStart:sbr.rangeEnd]";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // repeat
             Log.Info("Querying");
@@ -245,7 +244,7 @@ namespace com.espertech.esper.regression.epl.join
                     "where a.intPrimitive <= r.rangeEnd and a.intPrimitive >= r.rangeStart";
             var rangeCallback = new ProxyAssertionCallback() {
                 ProcGetEvent = (iteration) => new SupportBeanRange("E", iteration + 50000, iteration + 50100),
-                ProcGetExpectedValue = (iteration) => new Object[]{50000 + iteration, 50100 + iteration}
+                ProcGetExpectedValue = (iteration) => new object[]{50000 + iteration, 50100 + iteration}
             };
 
             TryAssertion(epService, rangeEplOne, 100, rangeCallback);
@@ -262,7 +261,7 @@ namespace com.espertech.esper.regression.epl.join
                     "where a.intPrimitive >= r.rangeStart and a.intPrimitive <= 99200";
             var geCallback = new ProxyAssertionCallback() {
                 ProcGetEvent = (iteration) => new SupportBeanRange("E", iteration + 99000, null),
-                ProcGetExpectedValue = (iteration) => new Object[]{99000 + iteration, 99200}
+                ProcGetExpectedValue = (iteration) => new object[]{99000 + iteration, 99200}
             };
             TryAssertion(epService, geEplOne, 100, geCallback);
             TryAssertion(epService, geEplTwo, 100, geCallback);
@@ -278,7 +277,7 @@ namespace com.espertech.esper.regression.epl.join
                     "where a.intPrimitive > r.rangeStart and a.intPrimitive <= 99200";
             var gtCallback = new ProxyAssertionCallback() {
                 ProcGetEvent = (iteration) => new SupportBeanRange("E", iteration + 99000, null),
-                ProcGetExpectedValue = (iteration) => new Object[]{99001 + iteration, 99200}
+                ProcGetExpectedValue = (iteration) => new object[]{99001 + iteration, 99200}
             };
             TryAssertion(epService, gtEplOne, 100, gtCallback);
             TryAssertion(epService, gtEplTwo, 100, gtCallback);
@@ -292,7 +291,7 @@ namespace com.espertech.esper.regression.epl.join
                     "where a.intPrimitive < r.rangeStart and a.intPrimitive > 100";
             var ltCallback = new ProxyAssertionCallback() {
                 ProcGetEvent = (iteration) => new SupportBeanRange("E", iteration + 500, null),
-                ProcGetExpectedValue = (iteration) => new Object[]{101, 499 + iteration}
+                ProcGetExpectedValue = (iteration) => new object[]{101, 499 + iteration}
             };
             TryAssertion(epService, ltEplOne, 100, ltCallback);
             TryAssertion(epService, ltEplTwo, 100, ltCallback);
@@ -304,7 +303,7 @@ namespace com.espertech.esper.regression.epl.join
                     "where a.intPrimitive <= r.rangeStart and a.intPrimitive > 100";
             var leCallback = new ProxyAssertionCallback() {
                 ProcGetEvent = (iteration) => new SupportBeanRange("E", iteration + 500, null),
-                ProcGetExpectedValue = (iteration) => new Object[]{101, 500 + iteration}
+                ProcGetExpectedValue = (iteration) => new object[]{101, 500 + iteration}
             };
             TryAssertion(epService, leEplOne, 100, leCallback);
             TryAssertion(epService, leEplTwo, 100, leCallback);
@@ -316,7 +315,7 @@ namespace com.espertech.esper.regression.epl.join
                     "where a.intPrimitive in (r.rangeStart:r.rangeEnd)";
             var openCallback = new ProxyAssertionCallback() {
                 ProcGetEvent = (iteration) => new SupportBeanRange("E", iteration + 3, iteration + 7),
-                ProcGetExpectedValue = (iteration) => new Object[]{iteration + 4, iteration + 6}
+                ProcGetExpectedValue = (iteration) => new object[]{iteration + 4, iteration + 6}
             };
             TryAssertion(epService, openEplOne, 100, openCallback);
             TryAssertion(epService, openEplTwo, 100, openCallback);
@@ -328,7 +327,7 @@ namespace com.espertech.esper.regression.epl.join
                     "where a.intPrimitive in [r.rangeStart:r.rangeEnd)";
             var halfOpenCallback = new ProxyAssertionCallback() {
                 ProcGetEvent = (iteration) => new SupportBeanRange("E", iteration + 3, iteration + 7),
-                ProcGetExpectedValue = (iteration) => new Object[]{iteration + 3, iteration + 6}
+                ProcGetExpectedValue = (iteration) => new object[]{iteration + 3, iteration + 6}
             };
             TryAssertion(epService, hopenEplOne, 100, halfOpenCallback);
             TryAssertion(epService, hopenEplTwo, 100, halfOpenCallback);
@@ -340,7 +339,7 @@ namespace com.espertech.esper.regression.epl.join
                     "where a.intPrimitive in (r.rangeStart:r.rangeEnd]";
             var halfClosedCallback = new ProxyAssertionCallback() {
                 ProcGetEvent = (iteration) => new SupportBeanRange("E", iteration + 3, iteration + 7),
-                ProcGetExpectedValue = (iteration) => new Object[]{iteration + 4, iteration + 7}
+                ProcGetExpectedValue = (iteration) => new object[]{iteration + 4, iteration + 7}
             };
             TryAssertion(epService, hclosedEplOne, 100, halfClosedCallback);
             TryAssertion(epService, hclosedEplTwo, 100, halfClosedCallback);
@@ -352,7 +351,7 @@ namespace com.espertech.esper.regression.epl.join
                     "where a.intPrimitive not between r.rangeStart and r.rangeEnd";
             var invertedClosedCallback = new ProxyAssertionCallback() {
                 ProcGetEvent = (iteration) => new SupportBeanRange("E", 20, 99990),
-                ProcGetExpectedValue = (iteration) => new Object[]{0, 99999}
+                ProcGetExpectedValue = (iteration) => new object[]{0, 99999}
             };
             TryAssertion(epService, invertedClosedEPLOne, 100, invertedClosedCallback);
             TryAssertion(epService, invertedClosedEPLTwo, 100, invertedClosedCallback);
@@ -368,7 +367,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // Send range query events
             Log.Info("Querying");
@@ -391,7 +390,7 @@ namespace com.espertech.esper.regression.epl.join
         public interface AssertionCallback
         {
             Object GetEvent(int iteration);
-            Object[] GetExpectedValue(int iteration);
+            object[] GetExpectedValue(int iteration);
         }
 
         public class ProxyAssertionCallback : AssertionCallback

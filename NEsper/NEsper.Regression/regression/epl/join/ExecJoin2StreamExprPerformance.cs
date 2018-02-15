@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -86,7 +85,7 @@ namespace com.espertech.esper.regression.epl.join
             string[] fields = "val".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // preload
             for (int i = 0; i < 10000; i++) {
@@ -96,10 +95,10 @@ namespace com.espertech.esper.regression.epl.join
             long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 1000; i++) {
                 epService.EPRuntime.SendEvent(theEvent);
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{expected});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{expected});
             }
             long delta = DateTimeHelper.CurrentTimeMillis - startTime;
-            Assert.IsTrue("delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "delta=" + delta);
             Log.Info("delta=" + delta);
     
             epService.EPAdministrator.DestroyAllStatements();

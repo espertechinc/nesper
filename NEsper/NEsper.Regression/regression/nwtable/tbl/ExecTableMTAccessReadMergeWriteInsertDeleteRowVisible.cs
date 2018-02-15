@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertNull;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -61,7 +59,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                             "MyTable.p3 as c3, MyTable.p4 as c4, MyTable.p5 as c5 from SupportBean_S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(eplSelect);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string eplMerge = "on SupportBean merge MyTable " +
                     "when not matched then insert select 'K1' as key, 1 as p0, 1 as p1, 1 as p2, 1 as p3, 1 as p4, 1 as p5 " +
@@ -163,7 +161,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
                 try {
                     string[] fields = "c0,c1,c2,c3,c4,c5".Split(',');
-                    var expected = new Object[]{1, 1, 1, 1, 1, 1};
+                    var expected = new object[]{1, 1, 1, 1, 1, 1};
                     while (!shutdown) {
                         epService.EPRuntime.SendEvent(new SupportBean_S0(0));
                         EventBean @event = listener.AssertOneGetNewAndReset();

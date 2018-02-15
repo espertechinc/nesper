@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -56,7 +55,7 @@ namespace com.espertech.esper.regression.multithread
     
             TrySend(engine, 4, 10, stmt);
     
-            engine.Destroy();
+            engine.Dispose();
         }
     
         private void RunAssertionIteratorMultiStmtViewShare() {
@@ -73,7 +72,7 @@ namespace com.espertech.esper.regression.multithread
     
             TrySend(engine, 4, 10, stmt);
     
-            engine.Destroy();
+            engine.Dispose();
         }
     
         private void TrySend(EPServiceProvider epService, int numThreads, int numRepeats, EPStatement[] stmt) {
@@ -88,7 +87,7 @@ namespace com.espertech.esper.regression.multithread
             threadPool.AwaitTermination(5, TimeUnit.SECONDS);
     
             for (int i = 0; i < numThreads; i++) {
-                Assert.IsTrue((bool?) future[i].Get());
+                Assert.IsTrue(future[i].GetValueOrDefault());
             }
         }
     }

@@ -15,14 +15,14 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.nwtable.namedwindow
 {
     public class ExecNamedWIndowFAFQueryJoinPerformance : RegressionExecution {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public override void Configure(Configuration configuration) {
             configuration.EngineDefaults.Logging.IsEnableQueryPlan = false;
             configuration.AddEventType("SSB1", typeof(SupportSimpleBeanOne));
@@ -41,16 +41,16 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanTwo("A" + i, 0, 0, 0));
             }
     
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             for (int i = 0; i < 100; i++) {
                 EPOnDemandQueryResult result = epService.EPRuntime.ExecuteQuery("select * from W1 as w1, W2 as w2 " +
                         "where w1.s1 = w2.s2");
                 Assert.AreEqual(1000, result.Array.Length);
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             long delta = end - start;
             Log.Info("Delta=" + delta);
-            Assert.IsTrue("Delta=" + delta, delta < 1000);
+            Assert.IsTrue(delta < 1000, "Delta=" + delta);
         }
     }
 } // end of namespace

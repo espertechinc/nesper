@@ -14,8 +14,6 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -62,7 +60,7 @@ namespace com.espertech.esper.regression.view
                     "select * from " + typeof(SupportMarketDataBean).FullName +
                             "#unique(symbol)#Sort(3, price desc)");
             var testListener = new SupportUpdateListener();
-            top3Prices.AddListener(testListener);
+            top3Prices.Events += testListener.Update;
     
             var beans = new object[10];
     
@@ -113,7 +111,7 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtString);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             EPRuntime runtime = epService.EPRuntime;
     
@@ -139,7 +137,7 @@ namespace com.espertech.esper.regression.view
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#unique(intBoxed)");
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             var beanOne = new SupportBean("E1", 1);
             epService.EPRuntime.SendEvent(beanOne);
@@ -147,7 +145,7 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#unique(intBoxed)");
             var testListenerTwo = new SupportUpdateListener();
-            stmtTwo.AddListener(testListenerTwo);
+            stmtTwo.Events += testListenerTwo.Update;
             stmt.Start(); // no effect
     
             var beanTwo = new SupportBean("E2", 2);
@@ -170,7 +168,7 @@ namespace com.espertech.esper.regression.view
         }
 
 #if false
-        private Object[] ToObjectArray(IEnumerator<EventBean> it) {
+        private object[] ToObjectArray(IEnumerator<EventBean> it) {
             var result = new LinkedList<object>();
             for (; it.HasNext(); ) {
                 EventBean theEvent = it.Next();

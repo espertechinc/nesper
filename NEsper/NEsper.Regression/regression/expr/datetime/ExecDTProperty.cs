@@ -55,13 +55,13 @@ namespace com.espertech.esper.regression.expr.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             foreach (string field in fields) {
                 Assert.AreEqual(typeof(int?), stmtFragment.EventType.GetPropertyType(field));
             }
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{
                     1, 4, 30, 5, 150, 1, 9, 3, 2, 22, 2002, 9, 9, 9, 9, 9
             });
     

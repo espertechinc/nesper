@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lrreport;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -46,15 +45,15 @@ namespace com.espertech.esper.regression.expr.enummethod
             string eplFragment = "select Contained.Where(x => x.p00 = contained.min(y => y.p00)) as val from Bean";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
     
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             epService.EPRuntime.SendEvent(theEvent);
             long delta = DateTimeHelper.CurrentTimeMillis - start;
-            Assert.IsTrue("delta=" + delta, delta < 100);
+            Assert.IsTrue(delta < 100, "delta=" + delta);
     
             ICollection<SupportBean_ST0> result = (ICollection<SupportBean_ST0>) listener.AssertOneGetNewAndReset().Get("val");
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{minEvent}, result.ToArray());
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{minEvent}, result.ToArray());
         }
     }
 } // end of namespace

@@ -17,13 +17,13 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.epl.other
 {
+    using Map = IDictionary<string, object>;
+
     public class ExecEPLDistinctWildcardJoinPattern : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
@@ -49,9 +49,9 @@ namespace com.espertech.esper.regression.epl.other
             SendEvent(epService, "E3", 2, 10L);
             SendEvent(epService, "Query", 0, 10L);
     
-            Assert.IsTrue(subscriber.IsInvoked);
+            Assert.IsTrue(subscriber.IsInvoked());
             Assert.AreEqual(1, subscriber.InsertStreamList.Count);
-            Object[][] inserted = subscriber.InsertStreamList[0];
+            object[][] inserted = subscriber.InsertStreamList[0];
             Assert.AreEqual(2, inserted.Length);
             Assert.AreEqual("Query", ((SupportBean) inserted[0][0]).TheString);
             Assert.AreEqual("Query", ((SupportBean) inserted[1][0]).TheString);

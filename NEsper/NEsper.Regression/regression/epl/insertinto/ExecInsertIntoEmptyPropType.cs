@@ -18,8 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -85,7 +83,7 @@ namespace com.espertech.esper.regression.epl.insertinto
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from MyBeanWithoutProps");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
             Assert.IsTrue(listener.AssertOneGetNewAndReset().Underlying is MyBeanWithoutProps);
@@ -99,12 +97,12 @@ namespace com.espertech.esper.regression.epl.insertinto
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from EmptyMapSchema");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
             EventBean @event = listener.AssertOneGetNewAndReset();
-            Assert.IsTrue(((Map) @event.Underlying).IsEmpty());
-            Assert.AreEqual(0, @event.EventType.PropertyDescriptors.Length);
+            Assert.IsTrue(((IDictionary<string, object>) @event.Underlying).IsEmpty());
+            Assert.AreEqual(0, @event.EventType.PropertyDescriptors.Count);
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -116,15 +114,15 @@ namespace com.espertech.esper.regression.epl.insertinto
             var supportSubscriber = new SupportSubscriber();
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from EmptyOASchema");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             stmt.Subscriber = supportSubscriber;
     
             epService.EPRuntime.SendEvent(new SupportBean());
-            Assert.AreEqual(0, ((Object[]) listener.AssertOneGetNewAndReset().Underlying).Length);
+            Assert.AreEqual(0, ((object[]) listener.AssertOneGetNewAndReset().Underlying).Length);
     
-            Object[] lastNewSubscriberData = supportSubscriber.LastNewData;
+            object[] lastNewSubscriberData = supportSubscriber.LastNewData;
             Assert.AreEqual(1, lastNewSubscriberData.Length);
-            Assert.AreEqual(0, ((Object[]) lastNewSubscriberData[0]).Length);
+            Assert.AreEqual(0, ((object[]) lastNewSubscriberData[0]).Length);
             epService.EPAdministrator.DestroyAllStatements();
         }
     

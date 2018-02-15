@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -19,19 +19,17 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.view;
 
-// using static org.junit.Assert.assertFalse;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.view
 {
     public class ExecViewTimeBatchMean : RegressionExecution {
-        private static readonly string SYMBOL = "CSCO.O";
+        private const string SYMBOL = "CSCO.O";
     
         public override void Configure(Configuration configuration) {
             configuration.AddEventType<SupportBean>();
-            configuration.EngineDefaults.Threading.InternalTimerEnabled = true;
+            configuration.EngineDefaults.Threading.IsInternalTimerEnabled = true;
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -42,7 +40,7 @@ namespace com.espertech.esper.regression.view
                     "select * from " + typeof(SupportMarketDataBean).FullName +
                             "(symbol='" + SYMBOL + "')#Time_batch(2)#Uni(volume)");
             var listener = new SupportUpdateListener();
-            timeBatchMean.AddListener(listener);
+            timeBatchMean.Events += listener.Update;
     
             listener.Reset();
             CheckMeanIterator(timeBatchMean, Double.NaN);
@@ -119,8 +117,9 @@ namespace com.espertech.esper.regression.view
     
         private void CheckMeanIterator(EPStatement timeBatchMean, double meanExpected) {
             IEnumerator<EventBean> iterator = timeBatchMean.GetEnumerator();
-            CheckValue(iterator.Next(), meanExpected);
-            Assert.IsTrue(!iterator.HasNext());
+            Assert.IsTrue(iterator.MoveNext());
+            CheckValue(iterator.Current, meanExpected);
+            Assert.IsFalse(iterator.MoveNext());
         }
     
         private void CheckValue(EventBean values, double avgE) {
@@ -129,13 +128,13 @@ namespace com.espertech.esper.regression.view
         }
     
         private double GetDoubleValue(ViewFieldEnum field, EventBean theEvent) {
-            return (double?) theEvent.Get(field.Name);
+            return theEvent.Get(field.GetName()).AsDouble();
         }
     
         private void Sleep(int msec) {
             try {
                 Thread.Sleep(msec);
-            } catch (InterruptedException e) {
+            } catch (ThreadInterruptedException e) {
             }
         }
     }

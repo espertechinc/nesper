@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -69,9 +68,9 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPRuntime.SendEvent(new SupportBean("E3", 1));
             SendTimer(epService, 1000);
             Assert.AreEqual(3, subscriber.InsertStreamList.Count);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"E1", 1}, subscriber.InsertStreamList[0][0]);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"E2", 2}, subscriber.InsertStreamList[1][0]);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"E3", 1}, subscriber.InsertStreamList[2][0]);
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"E1", 1}, subscriber.InsertStreamList[0][0]);
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"E2", 2}, subscriber.InsertStreamList[1][0]);
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"E3", 1}, subscriber.InsertStreamList[2][0]);
     
             stmt.Dispose();
             subscriber.Reset();
@@ -84,12 +83,12 @@ namespace com.espertech.esper.regression.epl.other
             SendTimer(epService, 2000);
             Assert.AreEqual(2, subscriber.InsertStreamList.Count);
             Assert.AreEqual(2, subscriber.RemoveStreamList.Count);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"E1", 1}, subscriber.InsertStreamList[0][0]);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"E3", 1}, subscriber.InsertStreamList[0][1]);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"E2", 2}, subscriber.InsertStreamList[1][0]);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"E1", 1}, subscriber.RemoveStreamList[0][0]);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"E3", 1}, subscriber.RemoveStreamList[0][1]);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"E2", 2}, subscriber.RemoveStreamList[1][0]);
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"E1", 1}, subscriber.InsertStreamList[0][0]);
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"E3", 1}, subscriber.InsertStreamList[0][1]);
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"E2", 2}, subscriber.InsertStreamList[1][0]);
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"E1", 1}, subscriber.RemoveStreamList[0][0]);
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"E3", 1}, subscriber.RemoveStreamList[0][1]);
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"E2", 2}, subscriber.RemoveStreamList[1][0]);
     
             stmt.Dispose();
         }
@@ -98,22 +97,22 @@ namespace com.espertech.esper.regression.epl.other
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#Time_batch(1) for discrete_delivery");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             epService.EPRuntime.SendEvent(new SupportBean("E3", 1));
             SendTimer(epService, 1000);
             Assert.AreEqual(3, listener.NewDataList.Count);
-            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[0], "theString,intPrimitive".Split(','), new Object[][]{new object[] {"E1", 1}});
-            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[1], "theString,intPrimitive".Split(','), new Object[][]{new object[] {"E2", 2}});
-            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[2], "theString,intPrimitive".Split(','), new Object[][]{new object[] {"E3", 1}});
+            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[0], "theString,intPrimitive".Split(','), new object[][]{new object[] {"E1", 1}});
+            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[1], "theString,intPrimitive".Split(','), new object[][]{new object[] {"E2", 2}});
+            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[2], "theString,intPrimitive".Split(','), new object[][]{new object[] {"E3", 1}});
             listener.Reset();
     
             // test no-event delivery
             epService.EPAdministrator.Configuration.AddEventType("ObjectEvent", typeof(Object));
             string epl = "SELECT *  FROM ObjectEvent OUTPUT ALL EVERY 1 seconds for discrete_delivery";
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
             epService.EPRuntime.SendEvent(new Object());
             SendTimer(epService, 2000);
             Assert.IsTrue(listener.GetAndClearIsInvoked());
@@ -127,7 +126,7 @@ namespace com.espertech.esper.regression.epl.other
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#Time_batch(1) for grouped_delivery (intPrimitive)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
@@ -135,14 +134,14 @@ namespace com.espertech.esper.regression.epl.other
             SendTimer(epService, 1000);
             Assert.AreEqual(2, listener.NewDataList.Count);
             Assert.AreEqual(2, listener.NewDataList[0].Length);
-            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[0], "theString,intPrimitive".Split(','), new Object[][]{new object[] {"E1", 1}, new object[] {"E3", 1}});
+            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[0], "theString,intPrimitive".Split(','), new object[][]{new object[] {"E1", 1}, new object[] {"E3", 1}});
             Assert.AreEqual(1, listener.NewDataList[1].Length);
-            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[1], "theString,intPrimitive".Split(','), new Object[][]{new object[] {"E2", 2}});
+            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[1], "theString,intPrimitive".Split(','), new object[][]{new object[] {"E2", 2}});
     
             // test sorted
             stmt.Dispose();
             stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#Time_batch(1) order by intPrimitive desc for grouped_delivery (intPrimitive)");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             listener.Reset();
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -151,15 +150,15 @@ namespace com.espertech.esper.regression.epl.other
             SendTimer(epService, 2000);
             Assert.AreEqual(2, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.NewDataList[0].Length);
-            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[0], "theString,intPrimitive".Split(','), new Object[][]{new object[] {"E2", 2}});
+            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[0], "theString,intPrimitive".Split(','), new object[][]{new object[] {"E2", 2}});
             Assert.AreEqual(2, listener.NewDataList[1].Length);
-            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[1], "theString,intPrimitive".Split(','), new Object[][]{new object[] {"E1", 1}, new object[] {"E3", 1}});
+            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[1], "theString,intPrimitive".Split(','), new object[][]{new object[] {"E1", 1}, new object[] {"E3", 1}});
     
             // test multiple criteria
             stmt.Dispose();
             string stmtText = "select theString, doubleBoxed, enumValue from SupportBean#Time_batch(1) order by theString, doubleBoxed, enumValue for Grouped_delivery(doubleBoxed, enumValue)";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             listener.Reset();
     
             SendEvent(epService, "E1", 10d, SupportEnum.ENUM_VALUE_2); // A (1)
@@ -174,13 +173,13 @@ namespace com.espertech.esper.regression.epl.other
             Assert.AreEqual(4, listener.NewDataList.Count);
             string[] fields = "theString,doubleBoxed,enumValue".Split(',');
             EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[0], fields,
-                    new Object[][]{new object[] {"E1", 10d, SupportEnum.ENUM_VALUE_2}, new object[] {"E4", 10d, SupportEnum.ENUM_VALUE_2}});
+                    new object[][]{new object[] {"E1", 10d, SupportEnum.ENUM_VALUE_2}, new object[] {"E4", 10d, SupportEnum.ENUM_VALUE_2}});
             EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[1], fields,
-                    new Object[][]{new object[] {"E2", 11d, SupportEnum.ENUM_VALUE_1}, new object[] {"E7", 11d, SupportEnum.ENUM_VALUE_1}});
+                    new object[][]{new object[] {"E2", 11d, SupportEnum.ENUM_VALUE_1}, new object[] {"E7", 11d, SupportEnum.ENUM_VALUE_1}});
             EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[2], fields,
-                    new Object[][]{new object[] {"E3", 9d, SupportEnum.ENUM_VALUE_2}});
+                    new object[][]{new object[] {"E3", 9d, SupportEnum.ENUM_VALUE_2}});
             EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[3], fields,
-                    new Object[][]{new object[] {"E5", 10d, SupportEnum.ENUM_VALUE_1}, new object[] {"E6", 10d, SupportEnum.ENUM_VALUE_1}, new object[] {"E8", 10d, SupportEnum.ENUM_VALUE_1}});
+                    new object[][]{new object[] {"E5", 10d, SupportEnum.ENUM_VALUE_1}, new object[] {"E6", 10d, SupportEnum.ENUM_VALUE_1}, new object[] {"E8", 10d, SupportEnum.ENUM_VALUE_1}});
     
             // test SODA
             stmt.Dispose();
@@ -188,7 +187,7 @@ namespace com.espertech.esper.regression.epl.other
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
             Assert.AreEqual(stmtText, model.ToEPL());
             stmt = epService.EPAdministrator.Create(model);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "E1", 10d, SupportEnum.ENUM_VALUE_2); // A (1)
             SendEvent(epService, "E2", 11d, SupportEnum.ENUM_VALUE_1); // B (2)
@@ -196,9 +195,9 @@ namespace com.espertech.esper.regression.epl.other
             SendTimer(epService, 4000);
             Assert.AreEqual(2, listener.NewDataList.Count);
             EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[0], fields,
-                    new Object[][]{new object[] {"E1", 10d, SupportEnum.ENUM_VALUE_2}});
+                    new object[][]{new object[] {"E1", 10d, SupportEnum.ENUM_VALUE_2}});
             EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[1], fields,
-                    new Object[][]{new object[] {"E2", 11d, SupportEnum.ENUM_VALUE_1}, new object[] {"E3", 11d, SupportEnum.ENUM_VALUE_1}});
+                    new object[][]{new object[] {"E2", 11d, SupportEnum.ENUM_VALUE_1}, new object[] {"E3", 11d, SupportEnum.ENUM_VALUE_1}});
     
             stmt.Dispose();
         }

@@ -98,7 +98,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                     (orderBy == null ? "" : orderBy);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             for (int i = 0; i < 5; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean("E" + i, i));
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             AssertResourcesOutputRate(stmt, expected);
     
-            SendTime(epService, currentTime.AddAndGet(1000));
+            SendTime(epService, currentTime.IncrementAndGet(1000));
     
             AssertResourcesOutputRate(stmt, 0);
             stmt.Dispose();

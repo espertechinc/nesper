@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -53,7 +52,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatementSPI stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.IsFalse(stmt.StatementContext.IsStatelessSelect);
     
             RunTestInSelect(epService, listener);
@@ -76,7 +75,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             RunTestInSelect(epService, listener);
     
@@ -91,7 +90,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             RunTestInSelect(epService, listener);
     
@@ -122,7 +121,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
             Assert.AreEqual(false, listener.AssertOneGetNewAndReset().Get("value"));
@@ -149,7 +148,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
             Assert.AreEqual(false, listener.AssertOneGetNewAndReset().Get("value"));
@@ -174,7 +173,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var s1 = new SupportBean_S1(100);
             var arrayBean = new SupportBeanArrayCollMap(s1);
@@ -196,7 +195,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "a"));
             Assert.IsFalse(listener.IsInvoked);
@@ -225,7 +224,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendBean(epService, "A", 0, 0L);
             SendBean(epService, "A", null, null);
@@ -260,7 +259,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendBean(epService, "B", 1, 1L);
     
@@ -288,7 +287,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendBean(epService, "B", 1, 1L);
     
@@ -314,7 +313,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
             Assert.AreEqual(true, listener.AssertOneGetNewAndReset().Get("value"));
@@ -343,7 +342,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendBean(epService, "A", 0, 0L);
             Assert.AreEqual(0L, listener.AssertOneGetNewAndReset().Get("longBoxed"));

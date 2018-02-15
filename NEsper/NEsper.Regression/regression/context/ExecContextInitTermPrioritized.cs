@@ -46,7 +46,7 @@ namespace com.espertech.esper.regression.context
                             "\n @Name('out') context RuleActivityTime select * from EventsWindow";
     
             DeploymentResult result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
-            epService.EPAdministrator.GetStatement("out").AddListener(new SupportUpdateListener());
+            epService.EPAdministrator.GetStatement("out").Events += new SupportUpdateListener().Update;
     
             epService.EPRuntime.SendEvent(new ExecContextInitTerm.Event("A1"));
     
@@ -63,13 +63,13 @@ namespace com.espertech.esper.regression.context
             epService.EPAdministrator.CreateEPL("@Priority(1) create context C1 start @now end SupportBean");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("@Priority(0) context C1 select * from SupportBean");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2"});
         }
     
         private void SendTimeEvent(EPServiceProvider epService, string time) {

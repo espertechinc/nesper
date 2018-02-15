@@ -14,11 +14,10 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNull;
 
 using NUnit.Framework;
 
@@ -36,7 +35,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement joinView = epService.EPAdministrator.CreateEPL(joinStatement);
             var updateListener = new SupportUpdateListener();
-            joinView.AddListener(updateListener);
+            joinView.Events += updateListener.Update;
     
             EventType result = joinView.EventType;
             Assert.AreEqual(typeof(double?), result.GetPropertyType("s0.doubleBoxed"));
@@ -53,7 +52,8 @@ namespace com.espertech.esper.regression.epl.join
             Assert.AreEqual(3d, newEvents[0].Get("div"));
     
             IEnumerator<EventBean> iterator = joinView.GetEnumerator();
-            EventBean theEvent = iterator.Next();
+            Assert.IsTrue(iterator.MoveNext());
+            EventBean theEvent = iterator.Current;
             Assert.AreEqual(1d, theEvent.Get("s0.doubleBoxed"));
             Assert.AreEqual(3d, theEvent.Get("div"));
         }

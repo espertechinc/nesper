@@ -16,8 +16,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -41,7 +39,7 @@ namespace com.espertech.esper.regression.events.bean
             var listener = new SupportUpdateListener();
 
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select `seconds`, `order` from SomeKeywords");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var theEvent = new SupportBeanReservedKeyword(1, 2);
             epService.EPRuntime.SendEvent(theEvent);
@@ -51,7 +49,7 @@ namespace com.espertech.esper.regression.events.bean
 
             stmt.Dispose();
             stmt = epService.EPAdministrator.CreateEPL("select * from `Order`");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(theEvent);
             eventBean = listener.AssertOneGetNewAndReset();
@@ -60,7 +58,7 @@ namespace com.espertech.esper.regression.events.bean
 
             stmt.Dispose();
             stmt = epService.EPAdministrator.CreateEPL("select timestamp.`hour` as val from SomeKeywords");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var bean = new SupportBeanReservedKeyword(1, 2);
             bean.Timestamp = new SupportBeanReservedKeyword.Inner();
@@ -79,7 +77,7 @@ namespace com.espertech.esper.regression.events.bean
             epService.EPAdministrator.Configuration.AddEventType("MyType", defType);
             epService.EPAdministrator.CreateEPL(
                     "select `candidate book` as c0, `XML Message Type` as c1, `select` as c2, `children's books`[0] as c3, `my <> map`('xx') as c4 from MyType")
-                .AddListener(listener);
+                .Events += listener.Update;
 
             var defValues = new Dictionary<string, Object>();
             defValues.Put("candidate book", "Enders Game");
@@ -90,7 +88,7 @@ namespace com.espertech.esper.regression.events.bean
             epService.EPRuntime.SendEvent(defValues, "MyType");
             EPAssertionUtil.AssertProps(
                 listener.AssertOneGetNewAndReset(), "c0,c1,c2,c3,c4".Split(','),
-                new Object[] {"Enders Game", "book", 100, 50, "abc"});
+                new object[] {"Enders Game", "book", 100, 50, "abc"});
 
             try
             {
@@ -128,7 +126,7 @@ namespace com.espertech.esper.regression.events.bean
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(
                 "select theString as `order`, theString as `price.for.goods` from SupportBean");
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
             Assert.AreEqual(typeof(string), stmtTwo.EventType.GetPropertyType("order"));
             Assert.AreEqual("price.for.goods", stmtTwo.EventType.PropertyDescriptors[1].PropertyName);
 
@@ -153,7 +151,7 @@ namespace com.espertech.esper.regression.events.bean
             EPStatement stmt =
                 epService.EPAdministrator.CreateEPL("select * from " + typeof(SupportBeanWriteOnly).FullName);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var theEvent = new SupportBeanWriteOnly();
             epService.EPRuntime.SendEvent(theEvent);
@@ -171,7 +169,7 @@ namespace com.espertech.esper.regression.events.bean
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                 "select MYPROPERTY, myproperty, myProperty from " + typeof(SupportBeanDupProperty).FullName);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBeanDupProperty("lowercamel", "uppercamel", "upper", "lower"));
             EventBean result = listener.AssertOneGetNewAndReset();

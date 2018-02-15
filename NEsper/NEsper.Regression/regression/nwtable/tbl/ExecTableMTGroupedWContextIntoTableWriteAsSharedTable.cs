@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNull;
 
 using NUnit.Framework;
 
@@ -83,7 +81,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             // each group should total up to "numLoops*numThreads"
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(eplAssert).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(eplAssert).Events += listener.Update;
             int? expected = numLoops * numThreads;
             for (int i = 0; i < numGroups; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean_S0(0, "G" + i));

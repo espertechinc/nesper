@@ -44,25 +44,25 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "countever(*) as counteverall from MyWindow";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E1", 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E1", 1L});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E2", 2L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E2", 2L});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 30));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E3", 3L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E3", 3L});
     
             epService.EPRuntime.SendEvent(new SupportBean_A("E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E3", 3L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E3", 3L});
     
             epService.EPRuntime.SendEvent(new SupportBean_A("E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E3", 3L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E3", 3L});
     
             epService.EPRuntime.SendEvent(new SupportBean_A("E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E3", 3L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E3", 3L});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -81,16 +81,16 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "from SupportBean#length(2)";
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             MakeSendBean(epService, "E1", 10, 100, true);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 10, "E1", 10, 1L, 1L, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 10, "E1", 10, 1L, 1L, 1L});
     
             MakeSendBean(epService, "E2", 11, null, true);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 10, "E2", 11, 2L, 1L, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 10, "E2", 11, 2L, 1L, 1L});
     
             MakeSendBean(epService, "E3", 12, 120, false);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 10, "E3", 12, 3L, 2L, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 10, "E3", 12, 3L, 2L, 1L});
     
             stmt.Dispose();
         }

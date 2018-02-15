@@ -89,7 +89,7 @@ namespace com.espertech.esper.regression.multithread {
             t2.Join();
             t3.Join();
 
-            var delivered = listener.GetNewDataList();
+            var delivered = listener.NewDataList;
 
             // count deliveries of multiple rows
             var countMultiDeliveries = 0;

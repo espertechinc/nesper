@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -56,12 +55,12 @@ namespace com.espertech.esper.regression.db
             EPStatementSPI stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(stmtText);
             Assert.IsFalse(stmt.StatementContext.IsStatelessSelect);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"myint"}, null);
     
             SendSupportBeanEvent(epService, 5);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"myint"}, new Object[][]{new object[] {30}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"myint"}, new object[][]{new object[] {30}});
     
             stmt.Dispose();
             Assert.IsFalse(listener.IsInvoked);
@@ -69,7 +68,7 @@ namespace com.espertech.esper.regression.db
             // Test multi-parameter and multi-row
             stmtText = "select myint from sql:MyDB ['select myint from mytesttable where mytesttable.mybigint between ${queryvar_int-2} and ${queryvar_int+2}'] order by myint";
             stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(stmtText);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"myint"}, new Object[][]{new object[] {30}, new object[] {40}, new object[] {50}, new object[] {60}, new object[] {70}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"myint"}, new object[][]{new object[] {30}, new object[] {40}, new object[] {50}, new object[] {60}, new object[] {70}});
             stmt.Dispose();
     
             // Test substitution parameters
@@ -96,12 +95,12 @@ namespace com.espertech.esper.regression.db
             string stmtText = "select myint from sql:MyDB ['select myint from mytesttable where ${queryvar_int} = mytesttable.mybigint']";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"myint"}, null);
     
             SendSupportBeanEvent(epService, 5);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"myint"}, new Object[][]{new object[] {50}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"myint"}, new object[][]{new object[] {50}});
     
             stmt.Dispose();
             Assert.IsFalse(listener.IsInvoked);
@@ -109,22 +108,22 @@ namespace com.espertech.esper.regression.db
             // Test bool and multirow
             stmtText = "select * from sql:MyDB ['select mybigint, mybool from mytesttable where ${queryvar_bool} = mytesttable.mybool and myint between ${lower} and ${upper} order by mybigint']";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"mybigint", "mybool"};
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
     
             SendSupportBeanEvent(epService, true, 10, 40);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1L, true}, new object[] {4L, true}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {1L, true}, new object[] {4L, true}});
     
             SendSupportBeanEvent(epService, false, 30, 80);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {3L, false}, new object[] {5L, false}, new object[] {6L, false}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {3L, false}, new object[] {5L, false}, new object[] {6L, false}});
     
             SendSupportBeanEvent(epService, true, 20, 30);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
     
             SendSupportBeanEvent(epService, true, 20, 60);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {4L, true}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {4L, true}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }

@@ -80,8 +80,8 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
         [Test]
         public void TestExecNamedWindowOnUpdateWMultiDispatch() {
             RegressionRunner.Run(new ExecNamedWindowOnUpdateWMultiDispatch(true, null, null));
-            RegressionRunner.Run(new ExecNamedWindowOnUpdateWMultiDispatch(false, true, ConfigurationEngineDefaults.Threading.Locking.SPIN));
-            RegressionRunner.Run(new ExecNamedWindowOnUpdateWMultiDispatch(false, true, ConfigurationEngineDefaults.Threading.Locking.SUSPEND));
+            RegressionRunner.Run(new ExecNamedWindowOnUpdateWMultiDispatch(false, true, ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN));
+            RegressionRunner.Run(new ExecNamedWindowOnUpdateWMultiDispatch(false, true, ConfigurationEngineDefaults.ThreadingConfig.Locking.SUSPEND));
             RegressionRunner.Run(new ExecNamedWindowOnUpdateWMultiDispatch(false, false, null));
         }
     

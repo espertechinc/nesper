@@ -70,11 +70,11 @@ namespace com.espertech.esper.regression.expr.expr
                     " from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
             var @event = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(@event, "c0,c1".Split(','), new Object[]
+            EPAssertionUtil.AssertProps(@event, "c0,c1".Split(','), new object[]
             {
                 sdt.Utildate, sdt.Localdate
             });
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regression.expr.expr
                       " from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
             var @event = listener.AssertOneGetNewAndReset();
@@ -122,11 +122,11 @@ namespace com.espertech.esper.regression.expr.expr
             var epl = "select cast('20030201',dto,dateformat:\"yyyyMMdd\") as c0 from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var expectedDate = DateTimeOffset.ParseExact("20030201", "yyyyMMdd", null, DateTimeStyles.None);
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0".Split(','), new Object[] { expectedDate });
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0".Split(','), new object[] { expectedDate });
 
             stmt.Dispose();
         }
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regression.expr.expr
                       " from SupportBean_StringAlphabetic";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             RunAssertionDynamicDateFormat(epService, listener, "20100502", "yyyyMMdd");
             RunAssertionDynamicDateFormat(epService, listener, "20100502101112", "yyyyMMddhhmmss");
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regression.expr.expr
                 theLong = expectedDtx.TimeInMillis;
             }
 
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0,c1,c2,c3".Split(','), new Object[] {
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0,c1,c2,c3".Split(','), new object[] {
                 expectedDate,
                 expectedDto,
                 expectedDtx,
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regression.expr.expr
                       "from MyType";
             var stmt = SupportModelHelper.CreateByCompileOrParse(epService, false, epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var values = new Dictionary<string, object>();
             values.Put("yyyymmdd", "20100510");
@@ -259,7 +259,7 @@ namespace com.espertech.esper.regression.expr.expr
             var dateYYMMddDto = new DateTimeOffset(dateYYMMdd, TimeZoneInfo.Local.GetUtcOffset(dateYYMMdd));
             var dateYYMMddDtx = DateTimeEx.GetInstance(TimeZoneInfo.Local, dateYYMMdd);
 
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0,c1,c2,c3,c4,c5,c6,c8".Split(','), new Object[] {
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0,c1,c2,c3,c4,c5,c6,c8".Split(','), new object[] {
                 dateYYMMdd,
                 dateYYMMdd,
                 dateYYMMddDto,
@@ -288,7 +288,7 @@ namespace com.espertech.esper.regression.expr.expr
 
             var stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var values = new Dictionary<string, object>();
             values.Put("yyyymmdd", "20100510");
@@ -301,7 +301,7 @@ namespace com.espertech.esper.regression.expr.expr
 
             EPAssertionUtil.AssertProps(
                 listener.AssertOneGetNewAndReset(), "c0,c1,c2,c3,c4,c5,c6,c7,c8".Split(','),
-                new Object[]
+                new object[]
                 {
                     dateYYMMdd,
                     dateYYMMdd,
@@ -329,7 +329,7 @@ namespace com.espertech.esper.regression.expr.expr
 
             var selectTestCase = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            selectTestCase.AddListener(listener);
+            selectTestCase.Events += listener.Update;
     
             Assert.AreEqual(typeof(string), selectTestCase.EventType.GetPropertyType("t0"));
             Assert.AreEqual(typeof(int?), selectTestCase.EventType.GetPropertyType("t1"));
@@ -345,20 +345,20 @@ namespace com.espertech.esper.regression.expr.expr
             bean.IntBoxed = 3;
             epService.EPRuntime.SendEvent(bean);
             var theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new Object[]{"abc", 3, 9.5f, "abc", 100, 100L, 100, 9L});
+            AssertResults(theEvent, new object[]{"abc", 3, 9.5f, "abc", 100, 100L, 100, 9L});
     
             bean = new SupportBean(null, 100);
             bean.FloatBoxed = null;
             bean.IntBoxed = null;
             epService.EPRuntime.SendEvent(bean);
             theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new Object[]{null, null, null, null, 100, 100L, 100, null});
+            AssertResults(theEvent, new object[]{null, null, null, null, 100, 100L, 100, null});
             bean = new SupportBean(null, 100);
             bean.FloatBoxed = null;
             bean.IntBoxed = null;
             epService.EPRuntime.SendEvent(bean);
             theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new Object[]{null, null, null, null, 100, 100L, 100, null});
+            AssertResults(theEvent, new object[]{null, null, null, null, 100, 100L, 100, null});
     
             // test cast with chained and null
             selectTestCase.Dispose();
@@ -366,10 +366,10 @@ namespace com.espertech.esper.regression.expr.expr
                     "cast(null, " + typeof(SupportBean).FullName + ") as t1" +
                     " from " + typeof(SupportBeanObject).FullName;
             selectTestCase = epService.EPAdministrator.CreateEPL(stmtText);
-            selectTestCase.AddListener(listener);
+            selectTestCase.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanObject(new SupportBean("E1", 1)));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "t0,t1".Split(','), new Object[]{"E1", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "t0,t1".Split(','), new object[]{"E1", null});
             Assert.AreEqual(typeof(SupportBean), selectTestCase.EventType.GetPropertyType("t1"));
     
             selectTestCase.Dispose();
@@ -379,12 +379,12 @@ namespace com.espertech.esper.regression.expr.expr
             var stmtText = "select cast(theString, int) as t0 from " + typeof(SupportBean).FullName;
             var selectTestCase = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            selectTestCase.AddListener(listener);
+            selectTestCase.Events += listener.Update;
     
             Assert.AreEqual(typeof(int?), selectTestCase.EventType.GetPropertyType("t0"));
     
             epService.EPRuntime.SendEvent(new SupportBean("12", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "t0".Split(','), new Object[]{12});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "t0".Split(','), new object[]{12});
     
             selectTestCase.Dispose();
         }
@@ -401,7 +401,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             var selectTestCase = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            selectTestCase.AddListener(listener);
+            selectTestCase.Events += listener.Update;
     
             Assert.AreEqual(typeof(double?), selectTestCase.EventType.GetPropertyType("t0"));
     
@@ -435,7 +435,7 @@ namespace com.espertech.esper.regression.expr.expr
             var selectTestCase = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
             Assert.AreEqual(stmtText, model.ToEPL());
-            selectTestCase.AddListener(listener);
+            selectTestCase.Events += listener.Update;
     
             Assert.AreEqual(typeof(string), selectTestCase.EventType.GetPropertyType("t0"));
     
@@ -473,7 +473,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             var selectTestCase = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            selectTestCase.AddListener(listener);
+            selectTestCase.Events += listener.Update;
     
             Assert.AreEqual(typeof(SupportMarkerInterface), selectTestCase.EventType.GetPropertyType("t0"));
             Assert.AreEqual(typeof(ISupportA), selectTestCase.EventType.GetPropertyType("t1"));
@@ -487,27 +487,27 @@ namespace com.espertech.esper.regression.expr.expr
             object bean = new SupportBeanDynRoot("abc");
             epService.EPRuntime.SendEvent(new SupportBeanDynRoot(bean));
             var theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new Object[]{bean, null, null, null, null, null, null, null});
+            AssertResults(theEvent, new object[]{bean, null, null, null, null, null, null, null});
     
             bean = new ISupportDImpl("", "", "");
             epService.EPRuntime.SendEvent(new SupportBeanDynRoot(bean));
             theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new Object[]{null, null, null, null, null, bean, null, null});
+            AssertResults(theEvent, new object[]{null, null, null, null, null, bean, null, null});
     
             bean = new ISupportBCImpl("", "", "");
             epService.EPRuntime.SendEvent(new SupportBeanDynRoot(bean));
             theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new Object[]{null, null, bean, null, bean, null, null, null});
+            AssertResults(theEvent, new object[]{null, null, bean, null, bean, null, null, null});
     
             bean = new ISupportAImplSuperGImplPlus();
             epService.EPRuntime.SendEvent(new SupportBeanDynRoot(bean));
             theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new Object[]{null, bean, bean, null, bean, null, bean, bean});
+            AssertResults(theEvent, new object[]{null, bean, bean, null, bean, null, bean, bean});
     
             bean = new ISupportBaseABImpl("");
             epService.EPRuntime.SendEvent(new SupportBeanDynRoot(bean));
             theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new Object[]{null, null, bean, bean, null, null, null, null});
+            AssertResults(theEvent, new object[]{null, null, bean, bean, null, null, null, null});
     
             selectTestCase.Dispose();
         }
@@ -520,7 +520,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             var selectTestCase = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            selectTestCase.AddListener(listener);
+            selectTestCase.Events += listener.Update;
     
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("t0"));
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("t1"));
@@ -531,26 +531,26 @@ namespace com.espertech.esper.regression.expr.expr
             bean.BoolBoxed = true;
             epService.EPRuntime.SendEvent(bean);
             var theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new Object[]{true, true, "true"});
+            AssertResults(theEvent, new object[]{true, true, "true"});
     
             bean = new SupportBean(null, 100);
             bean.BoolPrimitive = false;
             bean.BoolBoxed = false;
             epService.EPRuntime.SendEvent(bean);
             theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new Object[]{false, false, "false"});
+            AssertResults(theEvent, new object[]{false, false, "false"});
     
             bean = new SupportBean(null, 100);
             bean.BoolPrimitive = true;
             bean.BoolBoxed = null;
             epService.EPRuntime.SendEvent(bean);
             theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new Object[]{true, null, null});
+            AssertResults(theEvent, new object[]{true, null, null});
     
             selectTestCase.Dispose();
         }
     
-        private void AssertResults(EventBean theEvent, Object[] result) {
+        private void AssertResults(EventBean theEvent, object[] result) {
             for (var i = 0; i < result.Length; i++) {
                 Assert.AreEqual(result[i], theEvent.Get("t" + i), "failed for index " + i);
             }

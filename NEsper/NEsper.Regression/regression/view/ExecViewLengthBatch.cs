@@ -17,8 +17,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertFalse;
-// using static org.junit.Assert.fail;
 
 using NUnit.Framework;
 
@@ -26,7 +24,7 @@ namespace com.espertech.esper.regression.view
 {
     public class ExecViewLengthBatch : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.ViewResources.AllowMultipleExpiryPolicies = true;
+            configuration.EngineDefaults.ViewResources.IsAllowMultipleExpiryPolicies = true;
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -46,7 +44,7 @@ namespace com.espertech.esper.regression.view
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select irstream * from " + typeof(SupportBean).FullName + "#length_batch(2)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(events[0], epService);
             Assert.IsFalse(listener.IsInvoked);
@@ -79,7 +77,7 @@ namespace com.espertech.esper.regression.view
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select irstream * from " + typeof(SupportBean).FullName + "#length_batch(1)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(events[0], epService);
             EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(), new SupportBean[]{events[0]}, null);
@@ -100,7 +98,7 @@ namespace com.espertech.esper.regression.view
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select irstream * from " + typeof(SupportBean).FullName + "#length_batch(3)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(events[0], epService);
             Assert.IsFalse(listener.IsInvoked);
@@ -137,7 +135,7 @@ namespace com.espertech.esper.regression.view
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select irstream * from " + typeof(SupportBean).FullName + "#length_batch(3)#length_batch(2)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(events[0], epService);
             Assert.IsFalse(listener.IsInvoked);

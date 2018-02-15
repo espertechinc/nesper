@@ -20,7 +20,6 @@ using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -177,7 +176,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "  sum(longPrimitive, group_by:theString) as c1 from MyWindow;\n";
             DeploymentResult result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("out").AddListener(listener);
+            epService.EPAdministrator.GetStatement("out").Events += listener.Update;
     
             MakeSendEvent(epService, "E1", 10, 101);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), cols, new object[]{"E1", 10, 101L, 101L});
@@ -220,7 +219,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "  from MyWindow group by theString, intPrimitive;\n";
             DeploymentResult result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("out").AddListener(listener);
+            epService.EPAdministrator.GetStatement("out").Events += listener.Update;
     
             MakeSendEvent(epService, "E1", 10, 101);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), cols, new object[]{"E1", 10, 101L, 101L});
@@ -266,7 +265,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     " group by theString, intPrimitive" +
                     " output snapshot every 10 seconds";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             MakeSendEvent(epService, "E1", 10, 100);
             MakeSendEvent(epService, "E1", 20, 202);
@@ -304,7 +303,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     " output snapshot every 10 seconds" +
                     " order by theString, intPrimitive";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             SupportBean b1 = MakeSendEvent(epService, "E1", 10, 100);
             SupportBean b2 = MakeSendEvent(epService, "E1", 20, 202);
@@ -339,7 +338,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     " group by theString, intPrimitive" +
                     " output snapshot every 10 seconds";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             MakeSendEvent(epService, "E1", 10, 100);
             MakeSendEvent(epService, "E1", 20, 202);
@@ -370,7 +369,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     " group by theString" +
                     " output snapshot every 10 seconds";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             SendEventMany(epService, "A", "B", "C", "B", "B", "C");
             SendTime(epService, 10000);
@@ -403,7 +402,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     " output snapshot when terminated;";
             DeploymentResult deployed = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("out").AddListener(listener);
+            epService.EPAdministrator.GetStatement("out").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
             MakeSendEvent(epService, "E1", 10, 100);
@@ -430,7 +429,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "sum(longPrimitive,group_by:(theString,intPrimitive)) as c4" +
                     " from SupportBean";
             var listener = new SupportUpdateListener();
-            SupportModelHelper.CreateByCompileOrParse(epService, soda, epl).AddListener(listener);
+            SupportModelHelper.CreateByCompileOrParse(epService, soda, epl).Events += listener.Update;
     
             MakeSendEvent(epService, "E1", 1, 10);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), cols, new object[]{10L, 10L, 10L, 10L, 10L});
@@ -471,7 +470,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     " Nth(intPrimitive, 1, group_by:()) as c13" +
                     " from SupportBean as sb";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             MakeSendEvent(epService, "E1", 10);
             AssertScalarColl(listener.LastNewData[0], new[]{10}, new[]{10});
@@ -525,7 +524,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     " lastever(sb, group_by:()) as lastever1" +
                     " from SupportBean#length(3) as sb";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             SupportBean b1 = MakeSendEvent(epService, "E1", 10);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), cols, new object[]{b1, b1, b1, b1, new object[]{b1}, new object[]{b1},
@@ -570,7 +569,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     " from SupportBean#keepall";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10, 10, 10,
@@ -596,7 +595,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             epService.EPAdministrator.CreateEPL("create objectarray schema MyEventOne (d1 string, d2 string, val int)");
             string epl = "select sum(val, group_by: d1) as c0, sum(val, group_by: d2) as c1 from MyEventOne";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
             string[] cols = "c0,c1".Split(',');
     
             epService.EPRuntime.SendEvent(new object[]{"E1", "E1", 10}, "MyEventOne");
@@ -621,7 +620,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             epService.EPAdministrator.CreateEPL("create objectarray schema MyEventTwo (g1 string, d1 string, d2 string, val int)");
             string epl = "select sum(val) as c0, sum(val, group_by: d1) as c1, sum(val, group_by: d2) as c2 from MyEventTwo group by g1";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
             string[] cols = "c0,c1,c2".Split(',');
     
             epService.EPRuntime.SendEvent(new object[]{"E1", "E1", "E1", 10}, "MyEventTwo");
@@ -665,7 +664,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
         private void TryAssertionUngroupedHaving(EPServiceProvider epService) {
             string epl = "select * from SupportBean having sum(intPrimitive, group_by:theString) > 100";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             MakeSendEvent(epService, "E1", 95);
             MakeSendEvent(epService, "E2", 10);
@@ -687,7 +686,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     ";";
             DeploymentResult deployed = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("out").AddListener(listener);
+            epService.EPAdministrator.GetStatement("out").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
             MakeSendEvent(epService, "E1", 10);
@@ -715,7 +714,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     " from MyWindow group by theString;";
             DeploymentResult deployed = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("out").AddListener(listener);
+            epService.EPAdministrator.GetStatement("out").Events += listener.Update;
     
             MakeSendEvent(epService, "E1", 10);
             MakeSendEvent(epService, "E2", 20);
@@ -741,7 +740,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
         private void TryAssertionUngroupedUnidirectionalJoin(EPServiceProvider epService) {
             string epl = "select theString, sum(intPrimitive, group_by:theString) as c0 from SupportBean#keepall, SupportBean_S0 unidirectional";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             MakeSendEvent(epService, "E1", 10);
             MakeSendEvent(epService, "E2", 20);
@@ -772,7 +771,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                             " from SupportBean#keepall " +
                             (grouped ? "group by theString, intPrimitive" : "");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             SupportBean b1 = MakeSendEvent(epService, "E1", 10);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0,c1,c2,c3,c4,c5".Split(','),

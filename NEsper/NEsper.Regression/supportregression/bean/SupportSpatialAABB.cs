@@ -19,48 +19,37 @@ namespace com.espertech.esper.supportregression.bean
 {
     [Serializable]
     public class SupportSpatialAABB  {
-        private string id;
-        private double x;
-        private double y;
-        private double width;
-        private double height;
-        private string category;
+        private readonly string _id;
+        private readonly double _x;
+        private readonly double _y;
+        private readonly double _width;
+        private readonly double _height;
+        private readonly string _category;
     
         public SupportSpatialAABB(string id, double x, double y, double width, double height, string category) {
-            this.id = id;
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-            this.category = category;
+            this._id = id;
+            this._x = x;
+            this._y = y;
+            this._width = width;
+            this._height = height;
+            this._category = category;
         }
     
-        public SupportSpatialAABB(string id, double x, double y, double width, double height) {
-            This(id, x, y, width, height, null);
+        public SupportSpatialAABB(string id, double x, double y, double width, double height)
+            : this(id, x, y, width, height, null)
+        {
         }
-    
-        public string GetId() {
-            return id;
-        }
-    
-        public double GetX() {
-            return x;
-        }
-    
-        public double GetY() {
-            return y;
-        }
-    
-        public double GetWidth() {
-            return width;
-        }
-    
-        public double GetHeight() {
-            return height;
-        }
-    
-        public string GetCategory() {
-            return category;
-        }
+
+        public string Id => _id;
+
+        public double X => _x;
+
+        public double Y => _y;
+
+        public double Width => _width;
+
+        public double Height => _height;
+
+        public string Category => _category;
     }
 } // end of namespace

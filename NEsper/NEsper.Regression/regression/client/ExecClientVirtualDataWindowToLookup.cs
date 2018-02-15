@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.client
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select (select sum(intPrimitive) from MyVDW vdw where vdw.theString = s0.p00) from SupportBean_S0 s0");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             VirtualDataWindowLookupContextSPI spiContext = (VirtualDataWindowLookupContextSPI) window.LastRequestedIndex;
     
             // CM side

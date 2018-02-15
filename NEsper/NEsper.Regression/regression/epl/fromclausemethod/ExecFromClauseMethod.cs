@@ -99,9 +99,9 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             string epl = "select col1, col2 from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".OverloadedMethodForJoin(" + @params + ")";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "col1,col2".Split(','), new Object[]{expectedFirst, expectedSecond});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "col1,col2".Split(','), new object[]{expectedFirst, expectedSecond});
             stmt.Dispose();
         }
     
@@ -115,14 +115,14 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             string[] fields = "maxcol1".Split(',');
             EPStatementSPI stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.IsFalse(stmt.StatementContext.IsStatelessSelect);
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {9}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {9}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {9}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {9}});
     
             stmt.Dispose();
         }
@@ -141,11 +141,11 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendSupportBeanEvent(epService, 2, 4);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {2, 4, 2, 4}});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {2, 4, 2, 4}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {2, 4, 2, 4}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {2, 4, 2, 4}});
     
             stmt.Dispose();
         }
@@ -189,7 +189,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                     "left outer join " +
                     "method:" + className + ".FetchResult23(0) as s1 on s0.value = s1.value";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1, null}, new object[] {2, 2}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {1, null}, new object[] {2, 2}});
             stmt.Dispose();
     
             stmtText = "select s0.value as valueOne, s1.value as valueTwo from " +
@@ -197,7 +197,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                     "right outer join " +
                     "method:" + className + ".FetchResult12(0) as s0 on s0.value = s1.value";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1, null}, new object[] {2, 2}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {1, null}, new object[] {2, 2}});
             stmt.Dispose();
     
             stmtText = "select s0.value as valueOne, s1.value as valueTwo from " +
@@ -205,7 +205,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                     "full outer join " +
                     "method:" + className + ".FetchResult12(0) as s0 on s0.value = s1.value";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1, null}, new object[] {2, 2}, new object[] {null, 3}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {1, null}, new object[] {2, 2}, new object[] {null, 3}});
             stmt.Dispose();
     
             stmtText = "select s0.value as valueOne, s1.value as valueTwo from " +
@@ -213,14 +213,14 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                     "full outer join " +
                     "method:" + className + ".FetchResult23(0) as s1 on s0.value = s1.value";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1, null}, new object[] {2, 2}, new object[] {null, 3}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {1, null}, new object[] {2, 2}, new object[] {null, 3}});
             stmt.Dispose();
         }
     
         private void AssertJoinHistoricalSubordinateOuter(EPServiceProvider epService, string expression) {
             string[] fields = "valueOne,valueTwo".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1, null}, new object[] {2, 2}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {1, null}, new object[] {2, 2}});
             stmt.Dispose();
         }
     
@@ -272,16 +272,16 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         private void AssertJoinHistoricalOnlyIndependent(EPServiceProvider epService, string expression) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "valueOne,valueTwo".Split(',');
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
     
             SendSupportBeanEvent(epService, 5, 5);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {5, "5"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {5, "5"}});
     
             SendSupportBeanEvent(epService, 1, 2);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1, "1"}, new object[] {1, "2"}, new object[] {2, "1"}, new object[] {2, "2"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {1, "1"}, new object[] {1, "2"}, new object[] {2, "1"}, new object[] {2, "2"}});
     
             SendSupportBeanEvent(epService, 0, -1);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
@@ -294,22 +294,22 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         private void AssertJoinHistoricalOnlyDependent(EPServiceProvider epService, string expression) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "value,result".Split(',');
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
     
             SendSupportBeanEvent(epService, 5, 5);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {5, "|5|"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {5, "|5|"}});
     
             SendSupportBeanEvent(epService, 1, 2);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1, "|1|"}, new object[] {2, "|2|"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {1, "|1|"}, new object[] {2, "|2|"}});
     
             SendSupportBeanEvent(epService, 0, -1);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
     
             SendSupportBeanEvent(epService, 4, 6);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {4, "|4|"}, new object[] {5, "|5|"}, new object[] {6, "|6|"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {4, "|4|"}, new object[] {5, "|5|"}, new object[] {6, "|6|"}});
     
             stmt.Dispose();
             SendSupportBeanEvent(epService, 0, -1);
@@ -327,18 +327,18 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             string stmtText = "select value from method:" + className + ".FetchBetween(lower, upper)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"value"}, null);
     
             SendSupportBeanEvent(epService, 5, 10);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"value"}, new Object[][]{new object[] {5}, new object[] {6}, new object[] {7}, new object[] {8}, new object[] {9}, new object[] {10}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"value"}, new object[][]{new object[] {5}, new object[] {6}, new object[] {7}, new object[] {8}, new object[] {9}, new object[] {10}});
     
             SendSupportBeanEvent(epService, 10, 5);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"value"}, null);
     
             SendSupportBeanEvent(epService, 4, 4);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"value"}, new Object[][]{new object[] {4}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"value"}, new object[][]{new object[] {4}});
     
             Assert.IsFalse(listener.IsInvoked);
             epService.EPAdministrator.DestroyAllStatements();
@@ -351,7 +351,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             string[] fields = "theString,intPrimitive,mapstring,mapint".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, null);
     
             SendBeanEvent(epService, "E1", 0);
@@ -363,18 +363,18 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, null);
     
             SendBeanEvent(epService, "E3", 1);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3", 1, "|E3_0|", 100});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E3", 1, "|E3_0|", 100}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3", 1, "|E3_0|", 100});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E3", 1, "|E3_0|", 100}});
     
             SendBeanEvent(epService, "E4", 2);
             EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields,
-                    new Object[][]{new object[] {"E4", 2, "|E4_0|", 100}, new object[] {"E4", 2, "|E4_1|", 101}});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E3", 1, "|E3_0|", 100}, new object[] {"E4", 2, "|E4_0|", 100}, new object[] {"E4", 2, "|E4_1|", 101}});
+                    new object[][]{new object[] {"E4", 2, "|E4_0|", 100}, new object[] {"E4", 2, "|E4_1|", 101}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E3", 1, "|E3_0|", 100}, new object[] {"E4", 2, "|E4_0|", 100}, new object[] {"E4", 2, "|E4_1|", 101}});
     
             SendBeanEvent(epService, "E5", 3);
             EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields,
-                    new Object[][]{new object[] {"E5", 3, "|E5_0|", 100}, new object[] {"E5", 3, "|E5_1|", 101}, new object[] {"E5", 3, "|E5_2|", 102}});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E3", 1, "|E3_0|", 100},
+                    new object[][]{new object[] {"E5", 3, "|E5_0|", 100}, new object[] {"E5", 3, "|E5_1|", 101}, new object[] {"E5", 3, "|E5_2|", 102}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E3", 1, "|E3_0|", 100},
                 new object[] {"E4", 2, "|E4_0|", 100},
                 new object[] {"E4", 2, "|E4_1|", 101},
                 new object[] {"E5", 3, "|E5_0|", 100},
@@ -410,17 +410,17 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                     "method:" + typeof(SupportStaticMethodLib).FullName + "." + method;
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             var fields = new string[]{"theString", "intPrimitive", "mapstring", "mapint"};
     
             SendBeanEvent(epService, "E1", 1);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1, "|E1|", 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1, "|E1|", 2});
     
             SendBeanEvent(epService, "E2", 3);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 3, "|E2|", 4});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", 3, "|E2|", 4});
     
             SendBeanEvent(epService, "E3", 0);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3", 0, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3", 0, null, null});
     
             SendBeanEvent(epService, "E4", -1);
             Assert.IsFalse(listener.IsInvoked);
@@ -459,14 +459,14 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
     
         private void TryArrayNoArg(EPServiceProvider epService, EPStatement stmt) {
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             var fields = new string[]{"id", "theString"};
     
             SendBeanEvent(epService, "E1");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"1", "E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"1", "E1"});
     
             SendBeanEvent(epService, "E2");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"1", "E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"1", "E2"});
     
             stmt.Dispose();
         }
@@ -504,7 +504,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
     
         private void TryArrayWithArg(EPServiceProvider epService, EPStatement stmt) {
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             var fields = new string[]{"id", "theString"};
     
             SendBeanEvent(epService, "E1", -1);
@@ -514,26 +514,26 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             Assert.IsFalse(listener.IsInvoked);
     
             SendBeanEvent(epService, "E3", 1);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A", "E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A", "E3"});
     
             SendBeanEvent(epService, "E4", 2);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"A", "E4"}, new object[] {"B", "E4"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"A", "E4"}, new object[] {"B", "E4"}});
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
     
             SendBeanEvent(epService, "E5", 3);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"A", "E5"}, new object[] {"B", "E5"}, new object[] {"C", "E5"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"A", "E5"}, new object[] {"B", "E5"}, new object[] {"C", "E5"}});
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
     
             SendBeanEvent(epService, "E6", 1);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"A", "E6"}});
-            EPAssertionUtil.AssertPropsPerRow(listener.LastOldData, fields, new Object[][]{new object[] {"A", "E3"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"A", "E6"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastOldData, fields, new object[][]{new object[] {"A", "E3"}});
             listener.Reset();
     
             SendBeanEvent(epService, "E7", 1);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"A", "E7"}});
-            EPAssertionUtil.AssertPropsPerRow(listener.LastOldData, fields, new Object[][]{new object[] {"A", "E4"}, new object[] {"B", "E4"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"A", "E7"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastOldData, fields, new object[][]{new object[] {"A", "E4"}, new object[] {"B", "E4"}});
             listener.Reset();
     
             stmt.Dispose();
@@ -546,14 +546,14 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(joinStatement);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             var fields = new string[]{"id", "theString"};
     
             SendBeanEvent(epService, "E1");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"2", "E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"2", "E1"});
     
             SendBeanEvent(epService, "E2");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"2", "E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"2", "E2"});
         }
     
         private void RunAssertionObjectWithArg(EPServiceProvider epService) {
@@ -563,17 +563,17 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(joinStatement);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             var fields = new string[]{"id", "theString"};
     
             SendBeanEvent(epService, "E1");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"|E1|", "E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"|E1|", "E1"});
     
             SendBeanEvent(epService, null);
             Assert.IsFalse(listener.IsInvoked);
     
             SendBeanEvent(epService, "E2");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"|E2|", "E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"|E2|", "E2"});
         }
     
         private void RunAssertionInvocationTargetEx(EPServiceProvider epService) {
@@ -648,10 +648,10 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         private void TryAssertionUDFAndScriptReturningEvents(EPServiceProvider epService, string methodName) {
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("select id from SupportBean, method:" + methodName);
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "id".Split(','), new Object[][]{new object[] {"id1"}, new object[] {"id3"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "id".Split(','), new object[][]{new object[] {"id1"}, new object[] {"id3"}});
     
             stmtSelect.Dispose();
         }
@@ -660,10 +660,10 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             string epl = "select p0 from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + "." + methodName + "(theString) @Type(MyItemEvent)";
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("a,b", 0));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "p0".Split(','), new Object[][]{new object[] {"a"}, new object[] {"b"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "p0".Split(','), new object[][]{new object[] {"a"}, new object[] {"b"}});
     
             stmt.Dispose();
         }

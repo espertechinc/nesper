@@ -17,7 +17,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -52,7 +51,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "create table MyInfraUCS(a string primary key, b long)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsertOne = "insert into MyInfraUCS select theString as a, longPrimitive as b from " + typeof(SupportBean).FullName;
@@ -62,29 +61,29 @@ namespace com.espertech.esper.regression.nwtable.infra
             string stmtTextSelectOne = "select irstream (select sum(b) from MyInfraUCS) as value, symbol from " + typeof(SupportMarketDataBean).FullName;
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             SendMarketBean(epService, "M1");
             var fieldsStmt = new string[]{"value", "symbol"};
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new Object[]{null, "M1"});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new object[]{null, "M1"});
     
             SendSupportBean(epService, "S1", 5L, -1L);
             SendMarketBean(epService, "M2");
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new Object[]{5L, "M2"});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new object[]{5L, "M2"});
     
             SendSupportBean(epService, "S2", 10L, -1L);
             SendMarketBean(epService, "M3");
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new Object[]{15L, "M3"});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new object[]{15L, "M3"});
     
             // create 2nd consumer
             EPStatement stmtSelectTwo = epService.EPAdministrator.CreateEPL(stmtTextSelectOne); // same stmt
             var listenerStmtTwo = new SupportUpdateListener();
-            stmtSelectTwo.AddListener(listenerStmtTwo);
+            stmtSelectTwo.Events += listenerStmtTwo.Update;
     
             SendSupportBean(epService, "S3", 8L, -1L);
             SendMarketBean(epService, "M4");
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new Object[]{23L, "M4"});
-            EPAssertionUtil.AssertProps(listenerStmtTwo.AssertOneGetNewAndReset(), fieldsStmt, new Object[]{23L, "M4"});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new object[]{23L, "M4"});
+            EPAssertionUtil.AssertProps(listenerStmtTwo.AssertOneGetNewAndReset(), fieldsStmt, new object[]{23L, "M4"});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfraUCS", false);
@@ -120,13 +119,13 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "create table MyInfra(key string primary key, value int primary key)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // delete
             string stmtTextDelete = "on " + typeof(SupportBean).FullName + " delete from MyInfra where key = theString";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             // create insert into
             string stmtTextInsertOne = "insert into MyInfra select theString as key, intBoxed as value from " + typeof(SupportBean).FullName + " as s0";
@@ -134,25 +133,25 @@ namespace com.espertech.esper.regression.nwtable.infra
     
             SendSupportBean(epService, "E1", 1);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
             }
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}});
     
             SendSupportBean(epService, "E2", 2);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 2});
-                EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E2", 2});
+                EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
             } else {
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
             }
     
             SendSupportBean(epService, "E1", 3);
             if (namedWindow) {
                 Assert.AreEqual(2, listenerWindow.NewDataList.Count);
-                EPAssertionUtil.AssertProps(listenerWindow.OldDataList[0][0], fields, new Object[]{"E1", 1});
-                EPAssertionUtil.AssertProps(listenerWindow.NewDataList[1][0], fields, new Object[]{"E1", 3});
+                EPAssertionUtil.AssertProps(listenerWindow.OldDataList[0][0], fields, new object[]{"E1", 1});
+                EPAssertionUtil.AssertProps(listenerWindow.NewDataList[1][0], fields, new object[]{"E1", 3});
             }
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E2", 2}, new object[] {"E1", 3}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E2", 2}, new object[] {"E1", 3}});
     
             listenerWindow.Reset();
             epService.EPAdministrator.DestroyAllStatements();
@@ -168,7 +167,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "create table MyInfraSSS (key string primary key, value int)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into (not does insert if key already Exists)
             string stmtTextInsertOne = "insert into MyInfraSSS select theString as key, intBoxed as value from " + typeof(SupportBean).FullName + " as s0" +
@@ -177,48 +176,48 @@ namespace com.espertech.esper.regression.nwtable.infra
     
             SendSupportBean(epService, "E1", 1);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
             } else {
                 Assert.IsFalse(listenerWindow.IsInvoked);
             }
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}});
     
             SendSupportBean(epService, "E2", 2);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 2});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E2", 2});
             }
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
     
             SendSupportBean(epService, "E1", 3);
             Assert.IsFalse(listenerWindow.IsInvoked);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
     
             SendSupportBean(epService, "E3", 4);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E3", 4});
-                EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 4}});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E3", 4});
+                EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 4}});
             } else {
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 4}});
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 4}});
             }
     
             // Add delete
             string stmtTextDelete = "on " + typeof(SupportBean_A).Name + " delete from MyInfraSSS where key = id";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             // delete E2
             epService.EPRuntime.SendEvent(new SupportBean_A("E2"));
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetOldAndReset(), fields, new Object[]{"E2", 2});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetOldAndReset(), fields, new object[]{"E2", 2});
             }
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E3", 4}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E3", 4}});
     
             SendSupportBean(epService, "E2", 5);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 5});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E2", 5});
             }
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E3", 4}, new object[] {"E2", 5}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E3", 4}, new object[] {"E2", 5}});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfraSSS", false);

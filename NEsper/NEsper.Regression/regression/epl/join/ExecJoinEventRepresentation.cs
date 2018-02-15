@@ -84,7 +84,7 @@ namespace com.espertech.esper.regression.epl.join
                 var schema = SchemaBuilder.Record(
                     "name",
                     TypeBuilder.Field(
-                        "id", TypeBuilder.String(
+                        "id", TypeBuilder.StringType(
                             TypeBuilder.Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE))),
                     TypeBuilder.RequiredInt("p00"));
                 epService.EPAdministrator.Configuration.AddEventTypeAvro(
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regression.epl.join
 
             var stmt = epService.EPAdministrator.CreateEPL(rep.GetAnnotationText() + epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendRepEvent(epService, rep, "S0", "a", 1);
             Assert.IsFalse(listener.IsInvoked);
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regression.epl.join
 
             var stmt = epService.EPAdministrator.CreateEPL(joinStatement);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             for (var i = 0; i < 100; i++)
             {
@@ -150,7 +150,7 @@ namespace com.espertech.esper.regression.epl.join
 
             var stmt = epService.EPAdministrator.CreateEPL(joinStatement);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             for (var i = 0; i < 100; i++)
             {

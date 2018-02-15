@@ -19,15 +19,14 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.view;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.view
 {
     public class ExecViewLengthWindowStats : RegressionExecution {
-        private static readonly string SYMBOL = "CSCO.O";
-        private static readonly string FEED = "feed1";
+        private const string SYMBOL = "CSCO.O";
+        private const string FEED = "feed1";
     
         public override void Run(EPServiceProvider epService) {
             RunAssertionIterator(epService);
@@ -38,31 +37,35 @@ namespace com.espertech.esper.regression.view
             string epl = "select symbol, price from " + typeof(SupportMarketDataBean).FullName + "#length(2)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendEvent(epService, "ABC", 20);
             SendEvent(epService, "DEF", 100);
     
             // check iterator results
             IEnumerator<EventBean> events = statement.GetEnumerator();
-            EventBean theEvent = events.Next();
+            Assert.IsTrue(events.MoveNext());
+            EventBean theEvent = events.Current;
             Assert.AreEqual("ABC", theEvent.Get("symbol"));
             Assert.AreEqual(20d, theEvent.Get("price"));
-    
-            theEvent = events.Next();
+
+            Assert.IsTrue(events.MoveNext());
+            theEvent = events.Current;
             Assert.AreEqual("DEF", theEvent.Get("symbol"));
             Assert.AreEqual(100d, theEvent.Get("price"));
-            Assert.IsFalse(events.HasNext());
+            Assert.IsFalse(events.MoveNext());
     
             SendEvent(epService, "EFG", 50);
     
             // check iterator results
             events = statement.GetEnumerator();
-            theEvent = events.Next();
+            Assert.IsTrue(events.MoveNext());
+            theEvent = events.Current;
             Assert.AreEqual("DEF", theEvent.Get("symbol"));
             Assert.AreEqual(100d, theEvent.Get("price"));
-    
-            theEvent = events.Next();
+
+            Assert.IsTrue(events.MoveNext());
+            theEvent = events.Current;
             Assert.AreEqual("EFG", theEvent.Get("symbol"));
             Assert.AreEqual(50d, theEvent.Get("price"));
         }
@@ -72,7 +75,7 @@ namespace com.espertech.esper.regression.view
                     "(symbol='" + SYMBOL + "')#length(3)#Uni(price, symbol, feed)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             listener.Reset();
     
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("average"));
@@ -105,13 +108,13 @@ namespace com.espertech.esper.regression.view
             SendEvent(epService, SYMBOL, 100.9);
             CheckOld(listener, false, 3, 301.8, 100.6, 0.081649658, 0.1, 0.01);
             CheckNew(statement, 3, 302.2, 100.733333333, 0.124721913, 0.152752523, 0.023333333, listener);
-            statement.Destroy();
+            statement.Dispose();
     
             // Test copying all properties
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             string eplWildcard = "select * from SupportBean#length(3)#Uni(intPrimitive, *)";
             statement = epService.EPAdministrator.CreateEPL(eplWildcard);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             EventBean theEvent = listener.AssertOneGetNewAndReset();
@@ -127,8 +130,9 @@ namespace com.espertech.esper.regression.view
     
         private void CheckNew(EPStatement statement, long countE, double sumE, double avgE, double stdevpaE, double stdevE, double varianceE, SupportUpdateListener listener) {
             IEnumerator<EventBean> iterator = statement.GetEnumerator();
-            CheckValues(iterator.Next(), false, false, countE, sumE, avgE, stdevpaE, stdevE, varianceE);
-            Assert.IsFalse(iterator.HasNext());
+            Assert.IsTrue(iterator.MoveNext());
+            CheckValues(iterator.Current, false, false, countE, sumE, avgE, stdevpaE, stdevE, varianceE);
+            Assert.IsFalse(iterator.MoveNext());
     
             Assert.IsTrue(listener.LastNewData.Length == 1);
             EventBean childViewValues = listener.LastNewData[0];
@@ -167,11 +171,11 @@ namespace com.espertech.esper.regression.view
         }
     
         private double GetDoubleValue(ViewFieldEnum field, EventBean values) {
-            return (double?) values.Get(field.Name);
+            return values.Get(field.GetName()).AsDouble();
         }
     
         private long GetLongValue(ViewFieldEnum field, EventBean values) {
-            return (long) values.Get(field.Name);
+            return (long) values.Get(field.GetName()).AsLong();
         }
     }
 } // end of namespace

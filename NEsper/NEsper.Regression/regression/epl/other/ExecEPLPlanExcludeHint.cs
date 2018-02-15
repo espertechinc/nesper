@@ -16,23 +16,19 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
+using static com.espertech.esper.supportregression.util.IndexBackingTableInfo;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.epl.other
 {
-    public class ExecEPLPlanExcludeHint : IndexBackingTableInfo
-        , IRegressionExecution
+    public class ExecEPLPlanExcludeHint : RegressionExecution
     {
-        public bool ExcludeWhenInstrumented() {
-            return false;
-        }
-
-        public void Configure(Configuration configuration) {
+        public override void Configure(Configuration configuration) {
             configuration.EngineDefaults.Logging.IsEnableQueryPlan = true;
         }
     
-        public void Run(EPServiceProvider epService) {
+        public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType("S0", typeof(SupportBean_S0));
             epService.EPAdministrator.Configuration.AddEventType("S1", typeof(SupportBean_S1));
     

@@ -17,7 +17,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -99,7 +98,7 @@ namespace com.espertech.esper.regression.client
             moduleD = GetModule("B", "A", "C");
             moduleE = GetModule("C");
             var options = new DeploymentOrderOptions();
-            options.CheckUses = false;
+            options.IsCheckUses = false;
             order = epService.EPAdministrator.DeploymentAdmin.GetDeploymentOrder(Collections.List(new Module[]{moduleA, moduleB, moduleC, moduleD, moduleE}), options);
             AssertOrder(new Module[]{moduleC, moduleE, moduleD, moduleA, moduleB}, order);
             Assert.IsFalse(epService.EPAdministrator.DeploymentAdmin.IsDeployed("C"));
@@ -145,7 +144,7 @@ namespace com.espertech.esper.regression.client
     
             // turn off circular check
             var options = new DeploymentOrderOptions();
-            options.CheckCircularDependency = false;
+            options.IsCheckCircularDependency = false;
             order = epService.EPAdministrator.DeploymentAdmin.GetDeploymentOrder(Collections.List(new Module[]{moduleC, moduleB}), options);
             AssertOrder(new Module[]{moduleB, moduleC}, order);
         }
@@ -172,7 +171,7 @@ namespace com.espertech.esper.regression.client
     
             // turn off uses-checks
             var options = new DeploymentOrderOptions();
-            options.CheckUses = false;
+            options.IsCheckUses = false;
             epService.EPAdministrator.DeploymentAdmin.GetDeploymentOrder(Collections.List(modules), options);
         }
     

@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.events.xml
             var stmt = "select request.symbol as symbol_a, symbol as symbol_b from StockQuote";
             var joinView = epService.EPAdministrator.CreateEPL(stmt);
             var listener = new SupportUpdateListener();
-            joinView.AddListener(listener);
+            joinView.Events += listener.Update;
     
             var xml = "<m0:getQuote xmlns:m0=\"http://services.samples/xsd\"><m0:request><m0:symbol>IBM</m0:symbol></m0:request></m0:getQuote>";
             var doc = new XmlDocument();

@@ -19,8 +19,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -46,7 +44,7 @@ namespace com.espertech.esper.regression.multithread
     
             EPStatement stmtConsolidated = epService.EPAdministrator.CreateEPL("select key, mycount from XStream");
             var listener = new SupportMTUpdateListener();
-            stmtConsolidated.AddListener(listener);
+            stmtConsolidated.Events += listener.Update;
     
             TrySend(epService, listener, 10, 5000);
             TrySend(epService, listener, 4, 10000);
@@ -64,7 +62,7 @@ namespace com.espertech.esper.regression.multithread
             threadPool.AwaitTermination(10, TimeUnit.SECONDS);
     
             for (int i = 0; i < numThreads; i++) {
-                Assert.IsTrue((bool?) future[i].Get());
+                Assert.IsTrue(future[i].GetValueOrDefault());
             }
     
             // Assert results
@@ -85,7 +83,7 @@ namespace com.espertech.esper.regression.multithread
             }
     
             Assert.AreEqual(numRepeats, results.Count);
-            foreach (ISet<string> value in results.Values()) {
+            foreach (ISet<string> value in results.Values) {
                 Assert.AreEqual(2 * numThreads, value.Count);
                 for (int i = 0; i < numThreads; i++) {
                     Assert.IsTrue(value.Contains("E1_" + i));

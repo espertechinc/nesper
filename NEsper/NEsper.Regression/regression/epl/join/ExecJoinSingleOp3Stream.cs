@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -46,7 +45,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             RunJoinUniquePerId(epService, listener);
     
@@ -61,10 +60,10 @@ namespace com.espertech.esper.regression.epl.join
                     FilterStream.Create(EVENT_B, "streamB").AddView(View.Create("length", Expressions.Constant(3))),
                     FilterStream.Create(EVENT_C, "streamC").AddView(View.Create("length", Expressions.Constant(3))));
             model.FromClause = fromClause;
-            model.SetWhereClause(Expressions.And(
+            model.WhereClause = Expressions.And(
                     Expressions.EqProperty("streamA.id", "streamB.id"),
                     Expressions.EqProperty("streamB.id", "streamC.id"),
-                    Expressions.EqProperty("streamA.id", "streamC.id")));
+                    Expressions.EqProperty("streamA.id", "streamC.id"));
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
     
             string epl = "select * from " +
@@ -77,7 +76,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var updateListener = new SupportUpdateListener();
-            stmt.AddListener(updateListener);
+            stmt.Events += updateListener.Update;
             Assert.AreEqual(epl, model.ToEPL());
     
             RunJoinUniquePerId(epService, updateListener);
@@ -98,12 +97,12 @@ namespace com.espertech.esper.regression.epl.join
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
             EPStatement srmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            srmt.AddListener(listener);
+            srmt.Events += listener.Update;
             Assert.AreEqual(epl, model.ToEPL());
     
             RunJoinUniquePerId(epService, listener);
     
-            srmt.Destroy();
+            srmt.Dispose();
         }
     
         private void RunJoinUniquePerId(EPServiceProvider epService, SupportUpdateListener listener) {
@@ -124,14 +123,14 @@ namespace com.espertech.esper.regression.epl.join
             AssertEventsReceived(listener, eventsA[0], eventsB[0], eventsC[0]);
     
             // Test sending a B event
-            SendEvent(epService, new Object[]{eventsA[1], eventsB[2], eventsC[3]});
+            SendEvent(epService, new object[]{eventsA[1], eventsB[2], eventsC[3]});
             SendEvent(epService, eventsC[1]);
             Assert.IsNull(listener.LastNewData);
             SendEvent(epService, eventsB[1]);
             AssertEventsReceived(listener, eventsA[1], eventsB[1], eventsC[1]);
     
             // Test sending a C event
-            SendEvent(epService, new Object[]{eventsA[4], eventsA[5], eventsB[4], eventsB[3]});
+            SendEvent(epService, new object[]{eventsA[4], eventsA[5], eventsB[4], eventsB[3]});
             Assert.IsNull(listener.LastNewData);
             SendEvent(epService, eventsC[4]);
             AssertEventsReceived(listener, eventsA[4], eventsB[4], eventsC[4]);
@@ -150,7 +149,7 @@ namespace com.espertech.esper.regression.epl.join
             epService.EPRuntime.SendEvent(theEvent);
         }
     
-        private void SendEvent(EPServiceProvider epService, Object[] events) {
+        private void SendEvent(EPServiceProvider epService, object[] events) {
             for (int i = 0; i < events.Length; i++) {
                 epService.EPRuntime.SendEvent(events[i]);
             }

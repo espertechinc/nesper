@@ -39,8 +39,8 @@ namespace com.espertech.esper.regression.expr.enummethod
             string epl = "select Contained.Reverse() as val from Bean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val".Split(','), new Type[]{typeof(Collection)});
+            stmt.Events += listener.Update;
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val".Split(','), new Type[]{typeof(ICollection<object>)});
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E3,1"));
             LambdaAssertionUtil.AssertST0Id(listener, "val", "E3,E2,E1");
@@ -73,8 +73,8 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "from SupportCollection";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(Collection), typeof(Collection)});
+            stmtFragment.Events += listener.Update;
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(ICollection<object>), typeof(ICollection<object>)});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E2,E1,E5,E4"));
             LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val0", "E4", "E5", "E1", "E2");

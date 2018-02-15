@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -42,7 +41,7 @@ namespace com.espertech.esper.regression.epl.other
             string epl = "select default.SupportBean.theString as val1, SupportBean.intPrimitive as val2 from SupportBean";
             EPStatement stmt = engine.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             SendEvent(engine, "E1", 10);
             EventBean received = testListener.GetAndResetLastNewData()[0];
@@ -57,7 +56,7 @@ namespace com.espertech.esper.regression.epl.other
             string epl = "select theString from default.SupportBean";
             EPStatement stmt = engine.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             SendEvent(engine, "E1", 10);
             EventBean received = testListener.GetAndResetLastNewData()[0];

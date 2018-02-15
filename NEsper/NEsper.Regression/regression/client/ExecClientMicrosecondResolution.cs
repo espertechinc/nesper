@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.fail;
 
 using NUnit.Framework;
 
@@ -28,7 +27,7 @@ namespace com.espertech.esper.regression.client
     
         public override void Run(EPServiceProvider defaultEPService) {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.EngineDefaults.Threading.InternalTimerEnabled = true;
+            config.EngineDefaults.Threading.IsInternalTimerEnabled = true;
             config.EngineDefaults.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
     
             try {
@@ -38,11 +37,11 @@ namespace com.espertech.esper.regression.client
                 SupportMessageAssertUtil.AssertMessage(ex, "Internal timer requires millisecond time resolution");
             }
     
-            config.EngineDefaults.Threading.InternalTimerEnabled = false;
+            config.EngineDefaults.Threading.IsInternalTimerEnabled = false;
             EPServiceProvider epService = EPServiceProviderManager.GetProvider(this.GetType().Name, config);
     
             try {
-                epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_INTERNAL));
+                epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_INTERNAL));
                 Assert.Fail();
             } catch (EPException ex) {
                 SupportMessageAssertUtil.AssertMessage(ex, "Internal timer requires millisecond time resolution");

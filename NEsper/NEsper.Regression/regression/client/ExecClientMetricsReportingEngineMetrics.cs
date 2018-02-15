@@ -33,7 +33,7 @@ namespace com.espertech.esper.regression.client
             string text = "select * from " + typeof(EngineMetric).FullName;
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
     
@@ -44,7 +44,7 @@ namespace com.espertech.esper.regression.client
     
             SendTimer(epService, 11000);
             EventBean theEvent = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(theEvent, engineFields, new Object[]{"default", 11000L, 1L, 1L, 1L});
+            EPAssertionUtil.AssertProps(theEvent, engineFields, new object[]{"default", 11000L, 1L, 1L, 1L});
     
             epService.EPRuntime.SendEvent(new SupportBean());
             epService.EPRuntime.SendEvent(new SupportBean());
@@ -52,13 +52,13 @@ namespace com.espertech.esper.regression.client
             SendTimer(epService, 20000);
             SendTimer(epService, 21000);
             theEvent = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(theEvent, engineFields, new Object[]{"default", 21000L, 4L, 3L, 0L});
+            EPAssertionUtil.AssertProps(theEvent, engineFields, new object[]{"default", 21000L, 4L, 3L, 0L});
 
 #if false
             // Try MBean
             ThreadMXBean mbean = ManagementFactory.ThreadMXBean;
             if (!mbean.IsThreadCpuTimeEnabled) {
-                Fail("ThreadMXBean CPU time reporting is not enabled");
+                Assert.Fail("ThreadMXBean CPU time reporting is not enabled");
             }
     
             long msecMultiplier = 1000 * 1000;

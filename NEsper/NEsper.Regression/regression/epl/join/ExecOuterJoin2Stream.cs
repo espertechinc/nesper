@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.type;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -99,14 +98,14 @@ namespace com.espertech.esper.regression.epl.join
             string[] fields = "sbstr,sbint,sbrk,sbrs,sbre".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("K1", 10));
             epService.EPRuntime.SendEvent(new SupportBeanRange("R1", "K1", 20, 30));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("K1", 30));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"K1", 30, "K1", 20, 30}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"K1", 30, "K1", 20, 30}});
     
             epService.EPRuntime.SendEvent(new SupportBean("K1", 40));
             epService.EPRuntime.SendEvent(new SupportBean("K1", 31));
@@ -114,24 +113,24 @@ namespace com.espertech.esper.regression.epl.join
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBeanRange("R2", "K1", 39, 41));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"K1", 40, "K1", 39, 41}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"K1", 40, "K1", 39, 41}});
     
             epService.EPRuntime.SendEvent(new SupportBeanRange("R2", "K1", 38, 40));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"K1", 40, "K1", 38, 40}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"K1", 40, "K1", 38, 40}});
     
             epService.EPRuntime.SendEvent(new SupportBeanRange("R2", "K1", 40, 42));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"K1", 40, "K1", 40, 42}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"K1", 40, "K1", 40, 42}});
     
             epService.EPRuntime.SendEvent(new SupportBeanRange("R2", "K1", 41, 42));
             epService.EPRuntime.SendEvent(new SupportBeanRange("R2", "K1", 38, 39));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("K1", 41));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{
                 new object[]{"K1", 41, "K1", 39, 41}, new object[]{"K1", 41, "K1", 40, 42}, new object[]{"K1", 41, "K1", 41, 42}});
     
             epService.EPRuntime.SendEvent(new SupportBeanRange("R2", "K1", 35, 42));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]
             {
                 new object[]{"K1", 40, "K1", 35, 42}, new object[]{"K1", 41, "K1", 35, 42}
             });
@@ -150,7 +149,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEventMD(epService, "c0", 200L);
             SendEventMD(epService, "c3", 400L);
@@ -182,7 +181,7 @@ namespace com.espertech.esper.regression.epl.join
             */
     
             EPAssertionUtil.AssertPropsPerRow(events, "theString,intPrimitive,symbol,volume".Split(','),
-                    new Object[][]{
+                    new object[][]{
                             new object[] {null, null, "c3", 400L},
                             new object[] {"c0", 0, "c0", 200L},
                             new object[] {"c0", 1, "c0", 200L},
@@ -206,27 +205,27 @@ namespace com.espertech.esper.regression.epl.join
             SendEvent(EVENTS_S0[0], epService);
             CompareEvent(listener.AssertOneGetNewAndReset(), 100, "0", null, null);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {100, "0", null, null}});
+                    new object[][]{new object[] {100, "0", null, null}});
     
             // Send S1[1]
             SendEvent(EVENTS_S1[1], epService);
             CompareEvent(listener.AssertOneGetNewAndReset(), null, null, 201, "1");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {100, "0", null, null},
+                    new object[][]{new object[] {100, "0", null, null},
                             new object[] {null, null, 201, "1"}});
     
             // Send S1[2] and S0[2]
             SendEvent(EVENTS_S1[2], epService);
             CompareEvent(listener.AssertOneGetNewAndReset(), null, null, 202, "2");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {100, "0", null, null},
+                    new object[][]{new object[] {100, "0", null, null},
                             new object[] {null, null, 201, "1"},
                             new object[] {null, null, 202, "2"}});
     
             SendEvent(EVENTS_S0[2], epService);
             CompareEvent(listener.AssertOneGetNewAndReset(), 102, "2", 202, "2");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {100, "0", null, null},
+                    new object[][]{new object[] {100, "0", null, null},
                             new object[] {null, null, 201, "1"},
                             new object[] {102, "2", 202, "2"}});
     
@@ -234,14 +233,14 @@ namespace com.espertech.esper.regression.epl.join
             SendEvent(EVENTS_S0[3], epService);
             CompareEvent(listener.AssertOneGetNewAndReset(), 103, "3", null, null);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {100, "0", null, null},
+                    new object[][]{new object[] {100, "0", null, null},
                             new object[] {null, null, 201, "1"},
                             new object[] {102, "2", 202, "2"},
                             new object[] {103, "3", null, null}});
             SendEvent(EVENTS_S1[3], epService);
             CompareEvent(listener.AssertOneGetNewAndReset(), 103, "3", 203, "3");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {100, "0", null, null},
+                    new object[][]{new object[] {100, "0", null, null},
                             new object[] {null, null, 201, "1"},
                             new object[] {102, "2", 202, "2"},
                             new object[] {103, "3", 203, "3"}});
@@ -254,7 +253,7 @@ namespace com.espertech.esper.regression.epl.join
             CompareEvent(newEvent, 104, "4", null, null);
             listener.Reset();
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {null, null, 201, "1"},
+                    new object[][]{new object[] {null, null, 201, "1"},
                             new object[] {102, "2", 202, "2"},
                             new object[] {103, "3", 203, "3"},
                             new object[] {104, "4", null, null}});
@@ -263,7 +262,7 @@ namespace com.espertech.esper.regression.epl.join
             SendEvent(EVENTS_S1[4], epService);
             CompareEvent(listener.AssertOneGetNewAndReset(), 104, "4", 204, "4");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {null, null, 201, "1"},
+                    new object[][]{new object[] {null, null, 201, "1"},
                             new object[] {102, "2", 202, "2"},
                             new object[] {103, "3", 203, "3"},
                             new object[] {104, "4", 204, "4"}});
@@ -272,7 +271,7 @@ namespace com.espertech.esper.regression.epl.join
             SendEvent(EVENTS_S1[5], epService);
             CompareEvent(listener.AssertOneGetNewAndReset(), null, null, 205, "5");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {null, null, 201, "1"},
+                    new object[][]{new object[] {null, null, 201, "1"},
                             new object[] {102, "2", 202, "2"},
                             new object[] {103, "3", 203, "3"},
                             new object[] {104, "4", 204, "4"},
@@ -285,7 +284,7 @@ namespace com.espertech.esper.regression.epl.join
             CompareEvent(oldEvent, null, null, 201, "1");
             CompareEvent(newEvent, null, null, 205, "5");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {102, "2", 202, "2"},
+                    new object[][]{new object[] {102, "2", 202, "2"},
                             new object[] {103, "3", 203, "3"},
                             new object[] {104, "4", 204, "4"},
                             new object[] {null, null, 205, "5"},
@@ -308,7 +307,7 @@ namespace com.espertech.esper.regression.epl.join
             Assert.AreEqual(stmtText, model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             AssertMultiColumnLeft(epService, listener);
     
@@ -327,7 +326,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             AssertMultiColumnLeft(epService, listener);
     
@@ -337,10 +336,10 @@ namespace com.espertech.esper.regression.epl.join
         private void AssertMultiColumnLeft(EPServiceProvider epService, SupportUpdateListener listener) {
             string[] fields = "s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "A_1", "B_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1, "A_1", "B_1", null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1, "A_1", "B_1", null, null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(2, "A_1", "B_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1, "A_1", "B_1", 2, "A_1", "B_1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1, "A_1", "B_1", 2, "A_1", "B_1"});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(3, "A_2", "B_1"));
             Assert.IsFalse(listener.IsInvoked);
@@ -359,19 +358,19 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "A_1", "B_1"));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(2, "A_1", "B_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1, "A_1", "B_1", 2, "A_1", "B_1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1, "A_1", "B_1", 2, "A_1", "B_1"});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(3, "A_2", "B_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, null, null, 3, "A_2", "B_1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, null, 3, "A_2", "B_1"});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(4, "A_1", "B_2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, null, null, 4, "A_1", "B_2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, null, 4, "A_1", "B_2"});
     
             stmt.Dispose();
         }
@@ -386,10 +385,10 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "S1_1", 10, 20d);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, "S1_1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, "S1_1"});
     
             SendEvent(epService, "S0_2", 11, 22d);
             Assert.IsFalse(listener.IsInvoked);
@@ -401,13 +400,13 @@ namespace com.espertech.esper.regression.epl.join
             Assert.IsFalse(listener.IsInvoked);
     
             SendEvent(epService, "S1_2", 11, 22d);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, "S1_2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, "S1_2"});
     
             SendEvent(epService, "S1_3", 22, 11d);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S0_2", "S1_3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S0_2", "S1_3"});
     
             SendEvent(epService, "S0_5", 22, 11d);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S0_5", "S1_2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S0_5", "S1_2"});
     
             stmt.Dispose();
         }
@@ -427,21 +426,21 @@ namespace com.espertech.esper.regression.epl.join
             EventBean theEvent = listener.AssertOneGetNewAndReset();
             CompareEvent(theEvent, null, null, 202, "2");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {null, null, 202, "2"}});
+                    new object[][]{new object[] {null, null, 202, "2"}});
     
             // Send S0[2] events, joined event expected
             SendEvent(EVENTS_S0[2], epService);
             theEvent = listener.AssertOneGetNewAndReset();
             CompareEvent(theEvent, 102, "2", 202, "2");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {102, "2", 202, "2"}});
+                    new object[][]{new object[] {102, "2", 202, "2"}});
     
             // Send S1[3]
             SendEvent(EVENTS_S1[3], epService);
             theEvent = listener.AssertOneGetNewAndReset();
             CompareEvent(theEvent, null, null, 203, "3");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {102, "2", 202, "2"},
+                    new object[][]{new object[] {102, "2", 202, "2"},
                             new object[] {null, null, 203, "3"}});
     
             // Send some more S0 events
@@ -449,14 +448,14 @@ namespace com.espertech.esper.regression.epl.join
             theEvent = listener.AssertOneGetNewAndReset();
             CompareEvent(theEvent, 103, "3", 203, "3");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {102, "2", 202, "2"},
+                    new object[][]{new object[] {102, "2", 202, "2"},
                             new object[] {103, "3", 203, "3"}});
     
             // Send some more S0 events
             SendEvent(EVENTS_S0[4], epService);
             Assert.IsFalse(listener.IsInvoked);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {102, "2", 202, "2"},
+                    new object[][]{new object[] {102, "2", 202, "2"},
                             new object[] {103, "3", 203, "3"}});
     
             // Push S0[2] out of the window
@@ -464,7 +463,7 @@ namespace com.espertech.esper.regression.epl.join
             theEvent = listener.AssertOneGetOldAndReset();
             CompareEvent(theEvent, 102, "2", 202, "2");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {null, null, 202, "2"},
+                    new object[][]{new object[] {null, null, 202, "2"},
                             new object[] {103, "3", 203, "3"}});
     
             // Some more S1 events
@@ -475,7 +474,7 @@ namespace com.espertech.esper.regression.epl.join
             SendEvent(EVENTS_S1[8], epService);
             CompareEvent(listener.AssertOneGetNewAndReset(), null, null, 208, "8");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {null, null, 202, "2"},
+                    new object[][]{new object[] {null, null, 202, "2"},
                             new object[] {103, "3", 203, "3"},
                             new object[] {null, null, 206, "6"},
                             new object[] {null, null, 207, "7"},
@@ -488,7 +487,7 @@ namespace com.espertech.esper.regression.epl.join
             CompareEvent(oldEvent, null, null, 202, "2");
             CompareEvent(newEvent, null, null, 209, "9");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {103, "3", 203, "3"},
+                    new object[][]{new object[] {103, "3", 203, "3"},
                             new object[] {null, null, 206, "6"},
                             new object[] {null, null, 207, "7"},
                             new object[] {null, null, 208, "8"},
@@ -513,14 +512,14 @@ namespace com.espertech.esper.regression.epl.join
             EventBean theEvent = listener.AssertOneGetNewAndReset();
             CompareEvent(theEvent, 102, "2", null, null);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {102, "2", null, null}});
+                    new object[][]{new object[] {102, "2", null, null}});
     
             // Send S1 event matching S0, expect event back
             SendEvent(EVENTS_S1[2], epService);
             theEvent = listener.AssertOneGetNewAndReset();
             CompareEvent(theEvent, 102, "2", 202, "2");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {102, "2", 202, "2"}});
+                    new object[][]{new object[] {102, "2", 202, "2"}});
     
             // Send some more unmatched events
             SendEvent(EVENTS_S1[4], epService);
@@ -528,14 +527,14 @@ namespace com.espertech.esper.regression.epl.join
             SendEvent(EVENTS_S1[6], epService);
             Assert.IsNull(listener.LastNewData);    // No events expected
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {102, "2", 202, "2"}});
+                    new object[][]{new object[] {102, "2", 202, "2"}});
     
             // Send event, expect a join result
             SendEvent(EVENTS_S0[5], epService);
             theEvent = listener.AssertOneGetNewAndReset();
             CompareEvent(theEvent, 105, "5", 205, "5");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {102, "2", 202, "2"},
+                    new object[][]{new object[] {102, "2", 202, "2"},
                             new object[] {105, "5", 205, "5"}});
     
             // Let S1[2] go out of the window (lenght 5), expected old join event
@@ -544,7 +543,7 @@ namespace com.espertech.esper.regression.epl.join
             theEvent = listener.AssertOneGetOldAndReset();
             CompareEvent(theEvent, 102, "2", 202, "2");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {102, "2", null, null},
+                    new object[][]{new object[] {102, "2", null, null},
                             new object[] {105, "5", 205, "5"}});
     
             // S0[9] should generate an outer join event
@@ -552,7 +551,7 @@ namespace com.espertech.esper.regression.epl.join
             theEvent = listener.AssertOneGetNewAndReset();
             CompareEvent(theEvent, 109, "9", null, null);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {102, "2", null, null},
+                    new object[][]{new object[] {102, "2", null, null},
                             new object[] {109, "9", null, null},
                             new object[] {105, "5", 205, "5"}});
     
@@ -563,7 +562,7 @@ namespace com.espertech.esper.regression.epl.join
             CompareEvent(oldEvent, 102, "2", null, null);     // S1[2] has left the window already
             CompareEvent(newEvent, 110, "10", null, null);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), FIELDS,
-                    new Object[][]{new object[] {110, "10", null, null},
+                    new object[][]{new object[] {110, "10", null, null},
                             new object[] {109, "9", null, null},
                             new object[] {105, "5", 205, "5"}});
         }
@@ -614,7 +613,7 @@ namespace com.espertech.esper.regression.epl.join
                     " on s0.p00 = s1.p10";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(joinStatement);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             return stmt;
         }
     

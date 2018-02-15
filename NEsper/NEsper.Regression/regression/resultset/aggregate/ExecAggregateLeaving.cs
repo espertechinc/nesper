@@ -15,7 +15,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -31,14 +30,14 @@ namespace com.espertech.esper.regression.resultset.aggregate
             string epl = "select leaving() as val from SupportBean#length(3)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             RunAssertion(epService, listener);
     
             stmt.Dispose();
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
             stmt = epService.EPAdministrator.Create(model);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(epl, model.ToEPL());
     
             RunAssertion(epService, listener);
@@ -51,16 +50,16 @@ namespace com.espertech.esper.regression.resultset.aggregate
             string[] fields = "val".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false});
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true});
         }
     }
 } // end of namespace

@@ -18,8 +18,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNull;
 
 using NUnit.Framework;
 
@@ -48,7 +46,7 @@ namespace com.espertech.esper.regression.multithread
             epService.EPAdministrator.CreateEPL("create context SegmentedByString as partition by theString from SupportBean");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context SegmentedByString select theString, count(*) - 1 as cnt from SupportBean output snapshot when myvar = true");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // preload - since concurrently sending same-category events an event can be dropped
             for (int i = 0; i < choices.Length; i++) {

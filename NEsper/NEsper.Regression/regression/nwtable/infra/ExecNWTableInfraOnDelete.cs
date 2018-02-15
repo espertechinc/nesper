@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -50,13 +48,13 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "@Name('CreateInfra') create table MyInfra (a string primary key, b int)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerInfra = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerInfra);
+            stmtCreate.Events += listenerInfra.Update;
     
             // create delete stmt
             string stmtTextDelete = "@Name('OnDelete') on " + typeof(SupportBean_A).Name + " delete from MyInfra";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerDelete);
+            stmtDelete.Events += listenerDelete.Update;
             EPAssertionUtil.AssertEqualsAnyOrder(stmtDelete.EventType.PropertyNames, new string[]{"a", "b"});
     
             // create insert into
@@ -68,7 +66,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             string stmtTextSelect = "@Name('Select') select irstream MyInfra.a as a, b from MyInfra as s1";
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
     
             // Delete all events, no result expected
             SendSupportBean_A(epService, "A1");
@@ -80,46 +78,46 @@ namespace com.espertech.esper.regression.nwtable.infra
             // send 1 event
             SendSupportBean(epService, "E1", 1);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerInfra.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
+                EPAssertionUtil.AssertProps(listenerInfra.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
             } else {
                 Assert.IsFalse(listenerInfra.IsInvoked);
                 Assert.IsFalse(listenerSelect.IsInvoked);
             }
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}});
             EPAssertionUtil.AssertPropsPerRow(stmtDelete.GetEnumerator(), fields, null);
             Assert.AreEqual(1, GetCount(epService, "MyInfra"));
     
             // Delete all events, 1 row expected
             SendSupportBean_A(epService, "A2");
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerInfra.AssertOneGetOldAndReset(), fields, new Object[]{"E1", 1});
-                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetOldAndReset(), fields, new Object[]{"E1", 1});
-                EPAssertionUtil.AssertPropsPerRow(stmtDelete.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}});
+                EPAssertionUtil.AssertProps(listenerInfra.AssertOneGetOldAndReset(), fields, new object[]{"E1", 1});
+                EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetOldAndReset(), fields, new object[]{"E1", 1});
+                EPAssertionUtil.AssertPropsPerRow(stmtDelete.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}});
             }
             EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, null);
-            EPAssertionUtil.AssertProps(listenerDelete.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
+            EPAssertionUtil.AssertProps(listenerDelete.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
             Assert.AreEqual(0, GetCount(epService, "MyInfra"));
     
             // send 2 events
             SendSupportBean(epService, "E2", 2);
             SendSupportBean(epService, "E3", 3);
             listenerInfra.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E2", 2}, new object[] {"E3", 3}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E2", 2}, new object[] {"E3", 3}});
             Assert.IsFalse(listenerDelete.IsInvoked);
             Assert.AreEqual(2, GetCount(epService, "MyInfra"));
     
             // Delete all events, 2 rows expected
             SendSupportBean_A(epService, "A2");
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerInfra.LastOldData[0], fields, new Object[]{"E2", 2});
-                EPAssertionUtil.AssertProps(listenerInfra.LastOldData[1], fields, new Object[]{"E3", 3});
-                EPAssertionUtil.AssertPropsPerRow(stmtDelete.GetEnumerator(), fields, new Object[][]{new object[] {"E2", 2}, new object[] {"E3", 3}});
+                EPAssertionUtil.AssertProps(listenerInfra.LastOldData[0], fields, new object[]{"E2", 2});
+                EPAssertionUtil.AssertProps(listenerInfra.LastOldData[1], fields, new object[]{"E3", 3});
+                EPAssertionUtil.AssertPropsPerRow(stmtDelete.GetEnumerator(), fields, new object[][]{new object[] {"E2", 2}, new object[] {"E3", 3}});
             }
             EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, null);
             Assert.AreEqual(2, listenerDelete.LastNewData.Length);
-            EPAssertionUtil.AssertProps(listenerDelete.LastNewData[0], fields, new Object[]{"E2", 2});
-            EPAssertionUtil.AssertProps(listenerDelete.LastNewData[1], fields, new Object[]{"E3", 3});
+            EPAssertionUtil.AssertProps(listenerDelete.LastNewData[0], fields, new object[]{"E2", 2});
+            EPAssertionUtil.AssertProps(listenerDelete.LastNewData[1], fields, new object[]{"E3", 3});
             Assert.AreEqual(0, GetCount(epService, "MyInfra"));
     
             listenerInfra.Reset();
@@ -136,13 +134,13 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "create table MyInfra(a string primary key, b int)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerInfra = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerInfra);
+            stmtCreate.Events += listenerInfra.Update;
     
             // create delete stmt
             string stmtTextDelete = "on pattern [every ea=" + typeof(SupportBean_A).Name + " or every eb=" + typeof(SupportBean_B).Name + "] " + " delete from MyInfra";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerDelete);
+            stmtDelete.Events += listenerDelete.Update;
     
             // create insert into
             string stmtTextInsertOne = "insert into MyInfra select theString as a, intPrimitive as b from SupportBean";
@@ -152,38 +150,38 @@ namespace com.espertech.esper.regression.nwtable.infra
             var fields = new string[]{"a", "b"};
             SendSupportBean(epService, "E1", 1);
             if (isNamedWindow) {
-                EPAssertionUtil.AssertProps(listenerInfra.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
+                EPAssertionUtil.AssertProps(listenerInfra.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
                 EPAssertionUtil.AssertPropsPerRow(stmtDelete.GetEnumerator(), fields, null);
             }
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}});
             Assert.AreEqual(1, GetCount(epService, "MyInfra"));
     
             // Delete all events using A, 1 row expected
             SendSupportBean_A(epService, "A1");
             if (isNamedWindow) {
-                EPAssertionUtil.AssertProps(listenerInfra.AssertOneGetOldAndReset(), fields, new Object[]{"E1", 1});
-                EPAssertionUtil.AssertPropsPerRow(stmtDelete.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}});
+                EPAssertionUtil.AssertProps(listenerInfra.AssertOneGetOldAndReset(), fields, new object[]{"E1", 1});
+                EPAssertionUtil.AssertPropsPerRow(stmtDelete.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}});
             }
             EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, null);
-            EPAssertionUtil.AssertProps(listenerDelete.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
+            EPAssertionUtil.AssertProps(listenerDelete.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
             Assert.AreEqual(0, GetCount(epService, "MyInfra"));
     
             // send 1 event
             SendSupportBean(epService, "E2", 2);
             if (isNamedWindow) {
-                EPAssertionUtil.AssertProps(listenerInfra.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 2});
+                EPAssertionUtil.AssertProps(listenerInfra.AssertOneGetNewAndReset(), fields, new object[]{"E2", 2});
             }
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E2", 2}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E2", 2}});
             Assert.AreEqual(1, GetCount(epService, "MyInfra"));
     
             // Delete all events using B, 1 row expected
             SendSupportBean_B(epService, "B1");
             if (isNamedWindow) {
-                EPAssertionUtil.AssertProps(listenerInfra.AssertOneGetOldAndReset(), fields, new Object[]{"E2", 2});
-                EPAssertionUtil.AssertPropsPerRow(stmtDelete.GetEnumerator(), fields, new Object[][]{new object[] {"E2", 2}});
+                EPAssertionUtil.AssertProps(listenerInfra.AssertOneGetOldAndReset(), fields, new object[]{"E2", 2});
+                EPAssertionUtil.AssertPropsPerRow(stmtDelete.GetEnumerator(), fields, new object[][]{new object[] {"E2", 2}});
             }
             EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, null);
-            EPAssertionUtil.AssertProps(listenerDelete.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 2});
+            EPAssertionUtil.AssertProps(listenerDelete.AssertOneGetNewAndReset(), fields, new object[]{"E2", 2});
             Assert.AreEqual(0, GetCount(epService, "MyInfra"));
     
             stmtDelete.Dispose();
@@ -200,7 +198,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "create table MyInfra (a string primary key, b int)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerInfra = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerInfra);
+            stmtCreate.Events += listenerInfra.Update;
     
             // create delete stmt
             string stmtTextDelete = "on SupportBean_A delete from MyInfra where 'X' || a || 'X' = id";
@@ -221,30 +219,30 @@ namespace com.espertech.esper.regression.nwtable.infra
             Assert.AreEqual(3, GetCount(epService, "MyInfra"));
             listenerInfra.Reset();
             var fields = new string[]{"a", "b"};
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 3}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {"E3", 3}});
     
             // delete E2
             SendSupportBean_A(epService, "XE2X");
             if (isNamedWindow) {
                 Assert.AreEqual(1, listenerInfra.LastOldData.Length);
-                EPAssertionUtil.AssertProps(listenerInfra.LastOldData[0], fields, new Object[]{"E2", 2});
+                EPAssertionUtil.AssertProps(listenerInfra.LastOldData[0], fields, new object[]{"E2", 2});
             }
             listenerInfra.Reset();
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E3", 3}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E3", 3}});
             Assert.AreEqual(2, GetCount(epService, "MyInfra"));
     
             SendSupportBean(epService, "E7", 7);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E3", 3}, new object[] {"E7", 7}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E3", 3}, new object[] {"E7", 7}});
             Assert.AreEqual(3, GetCount(epService, "MyInfra"));
     
             // delete all under 5
             SendSupportBean_B(epService, "B1");
             if (isNamedWindow) {
                 Assert.AreEqual(2, listenerInfra.LastOldData.Length);
-                EPAssertionUtil.AssertProps(listenerInfra.LastOldData[0], fields, new Object[]{"E1", 1});
-                EPAssertionUtil.AssertProps(listenerInfra.LastOldData[1], fields, new Object[]{"E3", 3});
+                EPAssertionUtil.AssertProps(listenerInfra.LastOldData[0], fields, new object[]{"E1", 1});
+                EPAssertionUtil.AssertProps(listenerInfra.LastOldData[1], fields, new object[]{"E3", 3});
             }
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E7", 7}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E7", 7}});
             Assert.AreEqual(1, GetCount(epService, "MyInfra"));
     
             epService.EPAdministrator.DestroyAllStatements();

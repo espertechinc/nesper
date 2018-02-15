@@ -19,7 +19,6 @@ using com.espertech.esper.events.util;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -82,12 +81,12 @@ namespace com.espertech.esper.regression.events.render
                     "</supportBean>";
             Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
     
-            result = epService.EPRuntime.EventRenderer.RenderXML("supportBean", statement.First(), new XMLRenderingOptions().DefaultAsAttribute = true);
+            result = epService.EPRuntime.EventRenderer.RenderXML("supportBean", statement.First(), new XMLRenderingOptions() { IsDefaultAsAttribute = true });
             // Log.Info(result);
             expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <supportBean boolPrimitive=\"false\" bytePrimitive=\"0\" charPrimitive=\"x\" doublePrimitive=\"0.0\" enumValue=\"ENUM_VALUE_2\" floatPrimitive=\"0.0\" intBoxed=\"992\" intPrimitive=\"1\" longPrimitive=\"0\" shortPrimitive=\"0\" theString=\"a\\u000ac\"> <this boolPrimitive=\"false\" bytePrimitive=\"0\" charPrimitive=\"x\" doublePrimitive=\"0.0\" enumValue=\"ENUM_VALUE_2\" floatPrimitive=\"0.0\" intBoxed=\"992\" intPrimitive=\"1\" longPrimitive=\"0\" shortPrimitive=\"0\" theString=\"a\\u000ac\"/> </supportBean>";
             Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionMapAndNestedArray(EPServiceProvider epService) {
@@ -149,7 +148,7 @@ namespace com.espertech.esper.regression.events.render
                     "</outerMap>";
             Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
     
-            result = epService.EPRuntime.EventRenderer.RenderXML("outerMap xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"", statement.First(), new XMLRenderingOptions().DefaultAsAttribute = true);
+            result = epService.EPRuntime.EventRenderer.RenderXML("outerMap xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"", statement.First(), new XMLRenderingOptions() { IsDefaultAsAttribute = true });
             // Log.Info(result);
             expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                     "<outerMap xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
@@ -168,7 +167,7 @@ namespace com.espertech.esper.regression.events.render
                     "</outerMap>";
             Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionSQLDate(EPServiceProvider epService) {
@@ -178,9 +177,9 @@ namespace com.espertech.esper.regression.events.render
             epService.EPRuntime.SendEvent(new SupportBean());
     
             EventBean theEvent = statement.First();
-            Assert.AreEqual(java.sql.Date.ValueOf("2010-01-31"), theEvent.Get("mySqlDate"));
+            Assert.AreEqual(DateTime.Parse("2010-01-31"), theEvent.Get("mySqlDate"));
             EventPropertyGetter getter = statement.EventType.GetGetter("mySqlDate");
-            Assert.AreEqual(java.sql.Date.ValueOf("2010-01-31"), getter.Get(theEvent));
+            Assert.AreEqual(DateTime.Parse("2010-01-31"), getter.Get(theEvent));
     
             string result = epService.EPRuntime.EventRenderer.RenderXML("testsqldate", theEvent);
     
@@ -188,7 +187,7 @@ namespace com.espertech.esper.regression.events.render
             string expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <testsqldate> <mySqlDate>2010-01-31</mySqlDate> </testsqldate>";
             Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionEnquote() {
@@ -198,7 +197,7 @@ namespace com.espertech.esper.regression.events.render
                     new string[] {"&", "&amp;"},
                     new string[] {"<", "&lt;"},
                     new string[] {">", "&gt;"},
-                    new string[] {Character.ToString((char) 0), "\\u0000"},
+                    new string[] {"\0", "\\u0000"},
             };
     
             for (int i = 0; i < testdata.Length; i++) {

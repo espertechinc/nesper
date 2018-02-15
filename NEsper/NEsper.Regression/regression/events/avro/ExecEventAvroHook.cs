@@ -26,8 +26,6 @@ using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
 
 // using static org.apache.avro.SchemaBuilder.*;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -59,7 +57,7 @@ namespace com.espertech.esper.regression.events.avro
         /// Writeable-property tests: when a simple writable property needs to be converted
         /// </summary>
         private void RunAssertionSimpleWriteablePropertyCoerce(EPServiceProvider epService) {
-            Schema schema = SchemaBuilder.Record("MyEventSchema", TypeBuilder.Field("isodate", TypeBuilder.String(
+            Schema schema = SchemaBuilder.Record("MyEventSchema", TypeBuilder.Field("isodate", TypeBuilder.StringType(
                 TypeBuilder.Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_ARRAY_VALUE))));
             epService.EPAdministrator.Configuration.AddEventTypeAvro("MyEvent", new ConfigurationEventTypeAvro(schema));
     
@@ -70,7 +68,7 @@ namespace com.espertech.esper.regression.events.avro
             // with hook
             EPStatement stmt = epService.EPAdministrator.CreateEPL("insert into MyEvent(isodate) select ldt from MyEventWithLocalDateTime");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             DateTimeEx now = DateTimeEx.NowLocal();
             epService.EPRuntime.SendEvent(new MyEventWithDateTimeEx(now));
@@ -85,7 +83,7 @@ namespace com.espertech.esper.regression.events.avro
             string epl = EventRepresentationChoice.AVRO.GetAnnotationText() + "insert into MyEventOut select " + GetType().FullName + ".MakeLocalDateTime() as isodate from SupportBean as e1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             Schema schema = SupportAvroUtil.GetAvroSchema(stmt.EventType);
             Assert.AreEqual("{\"type\":\"record\",\"name\":\"MyEventOut\",\"fields\":[{\"name\":\"isodate\",\"type\":\"string\"}]}", schema.ToString());
@@ -110,7 +108,7 @@ namespace com.espertech.esper.regression.events.avro
             string epl = "insert into MyEventPopulate(sb) select " + GetType().FullName + ".MakeSupportBean() from SupportBean_S0 as e1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(10));
             EventBean @event = listener.AssertOneGetNewAndReset();
@@ -123,7 +121,7 @@ namespace com.espertech.esper.regression.events.avro
                 TypeBuilder.Field("intPrimitive", "int"));
             var schema = SchemaBuilder.Record("MyEventSchema",
                 TypeBuilder.Field((string)"sb", TypeBuilder.Union(
-                    TypeBuilder.Null(), MySupportBeanWidener.supportBeanSchema)));
+                    TypeBuilder.NullType(), MySupportBeanWidener.supportBeanSchema)));
             epService.EPAdministrator.Configuration.AddEventTypeAvro("MyEventWSchema", new ConfigurationEventTypeAvro(schema));
     
             epService.EPAdministrator.CreateEPL("@Name('NamedWindow') create window MyWindow#keepall as MyEventWSchema");

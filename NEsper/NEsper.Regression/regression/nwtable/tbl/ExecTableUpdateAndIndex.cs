@@ -17,8 +17,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.fail;
 
 using NUnit.Framework;
 
@@ -54,7 +52,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             } catch (EPException ex) {
                 SupportMessageAssertUtil.AssertMessage(ex, "Error executing statement: Unique index violation, index 'primary-MyTableEUIV' is a unique index and key 'MultiKeyUntyped[E1, 0]' already Exists [");
                 // assert events are unchanged - no update actually performed
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "pkey0,pkey1".Split(','), new Object[][]{new object[] {"E1", 10}, new object[] {"E1", 20}});
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "pkey0,pkey1".Split(','), new object[][]{new object[] {"E1", 10}, new object[] {"E1", 20}});
             }
     
             // try on-update unique index violation
@@ -63,9 +61,9 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 epService.EPRuntime.SendEvent(new SupportBean_S1(0));
                 Assert.Fail();
             } catch (EPException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex.Cause, "Unexpected exception in statement 'on-update': Unique index violation, index 'primary-MyTableEUIV' is a unique index and key 'MultiKeyUntyped[E1, 0]' already Exists");
+                SupportMessageAssertUtil.AssertMessage(ex.InnerException, "Unexpected exception in statement 'on-update': Unique index violation, index 'primary-MyTableEUIV' is a unique index and key 'MultiKeyUntyped[E1, 0]' already Exists");
                 // assert events are unchanged - no update actually performed
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "pkey0,pkey1".Split(','), new Object[][]{new object[] {"E1", 10}, new object[] {"E1", 20}});
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "pkey0,pkey1".Split(','), new object[][]{new object[] {"E1", 10}, new object[] {"E1", 20}});
             }
     
             // disallow on-merge unique key updates
@@ -73,7 +71,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 epService.EPAdministrator.CreateEPL("@Name('on-merge') on SupportBean_S1 merge MyTableEUIV when matched then update set pkey1 = 0");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex.Cause, "Validation failed in when-matched (clause 1): On-merge statements may not update unique keys of tables");
+                SupportMessageAssertUtil.AssertMessage(ex.InnerException, "Validation failed in when-matched (clause 1): On-merge statements may not update unique keys of tables");
             }
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -99,7 +97,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             } catch (EPStatementException ex) {
                 SupportMessageAssertUtil.AssertMessage(ex, "Error starting statement: Failed to validate statement 'on-merge' as a recipient of the proposed index: On-merge statements may not update unique keys of tables [");
             }
-            onMerge.Destroy();
+            onMerge.Dispose();
     
             // on-update Exists before creating a unique index
             EPStatement stmtUpdate = epService.EPAdministrator.CreateEPL("@Name('on-update') on SupportBean_S1 update MyTableLUIV set pkey1 = 0");
@@ -108,9 +106,9 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 epService.EPRuntime.SendEvent(new SupportBean_S1(0));
                 Assert.Fail();
             } catch (EPException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex.Cause, "Unexpected exception in statement 'on-update': Unique index violation, index 'MyUniqueSecondary' is a unique index and key '0' already Exists");
+                SupportMessageAssertUtil.AssertMessage(ex.InnerException, "Unexpected exception in statement 'on-update': Unique index violation, index 'MyUniqueSecondary' is a unique index and key '0' already Exists");
                 // assert events are unchanged - no update actually performed
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "pkey0,pkey1".Split(','), new Object[][]{new object[] {"E1", 10}, new object[] {"E2", 20}});
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "pkey0,pkey1".Split(','), new object[][]{new object[] {"E1", 10}, new object[] {"E2", 20}});
             }
     
             // unregister
@@ -128,15 +126,15 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             epService.EPRuntime.ExecuteQuery("update MyTableFAFU set col0 = 1 where pkey0='E1'");
             epService.EPRuntime.ExecuteQuery("update MyTableFAFU set col0 = 2 where pkey0='E2'");
-            AssertFAFOneRowResult(epService, "select pkey0 from MyTableFAFU where col0=1", "pkey0", new Object[]{"E1"});
+            AssertFAFOneRowResult(epService, "select pkey0 from MyTableFAFU where col0=1", "pkey0", new object[]{"E1"});
     
             epService.EPRuntime.ExecuteQuery("update MyTableFAFU set col1 = 100 where pkey0='E1'");
-            AssertFAFOneRowResult(epService, "select pkey0 from MyTableFAFU where col1=100", "pkey0", new Object[]{"E1"});
+            AssertFAFOneRowResult(epService, "select pkey0 from MyTableFAFU where col1=100", "pkey0", new object[]{"E1"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
-        private void AssertFAFOneRowResult(EPServiceProvider epService, string epl, string fields, Object[] objects) {
+        private void AssertFAFOneRowResult(EPServiceProvider epService, string epl, string fields, object[] objects) {
             EPOnDemandQueryResult result = epService.EPRuntime.ExecuteQuery(epl);
             Assert.AreEqual(1, result.Array.Length);
             EPAssertionUtil.AssertProps(result.Array[0], fields.Split(','), objects);

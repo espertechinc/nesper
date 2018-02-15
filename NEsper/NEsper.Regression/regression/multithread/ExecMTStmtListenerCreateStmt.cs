@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -45,7 +44,7 @@ namespace com.espertech.esper.regression.multithread
             threadPool.AwaitTermination(10, TimeUnit.SECONDS);
     
             for (int i = 0; i < numThreads; i++) {
-                Assert.IsTrue((bool?) future[i].Get());
+                Assert.IsTrue(future[i].GetValueOrDefault());
             }
         }
     }

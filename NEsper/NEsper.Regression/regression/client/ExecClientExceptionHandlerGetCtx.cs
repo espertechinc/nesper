@@ -18,8 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.assertNotNull;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -42,7 +40,7 @@ namespace com.espertech.esper.regression.client
             string epl = "@Name('ABCName') select Myinvalidagg() from SupportBean";
             epService.EPAdministrator.CreateEPL(epl);
     
-            List<ExceptionHandlerFactoryContext> contexts = SupportExceptionHandlerFactory.FactoryContexts;
+            IList<ExceptionHandlerFactoryContext> contexts = SupportExceptionHandlerFactory.FactoryContexts;
             Assert.AreEqual(2, contexts.Count);
             Assert.AreEqual(epService.URI, contexts[0].EngineURI);
             Assert.AreEqual(epService.URI, contexts[1].EngineURI);
@@ -57,7 +55,7 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(epService.URI, ehc.EngineURI);
             Assert.AreEqual(epl, ehc.Epl);
             Assert.AreEqual("ABCName", ehc.StatementName);
-            Assert.AreEqual("Sample exception", ehc.Throwable.Message);
+            Assert.AreEqual("Sample exception", ehc.Exception.Message);
             Assert.IsNotNull(ehc.CurrentEvent);
         }
     }

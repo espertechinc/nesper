@@ -19,7 +19,6 @@ using com.espertech.esper.regression.events.map;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -42,7 +41,7 @@ namespace com.espertech.esper.regression.events.objectarray
     
             var stmt = epService.EPAdministrator.CreateEPL("select bean, theString, Map('key'), bean.theString from MyOAType");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(object[]), stmt.EventType.UnderlyingType);
     
             var bean = new SupportBean("E1", 1);

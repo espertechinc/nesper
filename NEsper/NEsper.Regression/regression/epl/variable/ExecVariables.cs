@@ -120,7 +120,7 @@ namespace com.espertech.esper.regression.epl.variable
             epService.EPAdministrator.CreateEPL("select " +
                     "myService.DoSomething() as c0, " +
                     "myRuntimeInitService.DoSomething() as c1 " +
-                    "from SupportBean").AddListener(listener);
+                    "from SupportBean").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0,c1".Split(','), new object[]{"hello", "hello"});
     
@@ -241,7 +241,7 @@ namespace com.espertech.esper.regression.epl.variable
         private void TryAssertionArrayVar(EPServiceProvider epService, string varName) {
             var stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean(theString in (" + varName + "))");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             SendBeanAssert(epService, listener, "E1", true);
             SendBeanAssert(epService, listener, "E2", true);
             SendBeanAssert(epService, listener, "E3", false);
@@ -377,7 +377,7 @@ namespace com.espertech.esper.regression.epl.variable
             var stmtTextSet = "on " + typeof(SupportBean_S0).FullName + " as s0str set var1SS = (select p10 from S1#lastevent), var2SS = (select p11||s0str.p01 from S1#lastevent)";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
-            stmtSet.AddListener(listenerSet);
+            stmtSet.Events += listenerSet.Update;
             var fieldsVar = new[]{"var1SS", "var2SS"};
             EPAssertionUtil.AssertPropsPerRow(stmtSet.GetEnumerator(), fieldsVar, new[] {new object[] {"a", "b"}});
     
@@ -398,7 +398,7 @@ namespace com.espertech.esper.regression.epl.variable
             var stmtTextSet = "on " + typeof(SupportBean_S0).Name + " set var1IFB = p00, var2IFB = p01";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
-            stmtSet.AddListener(listenerSet);
+            stmtSet.Events += listenerSet.Update;
             var fieldsVar = new[]{"var1IFB", "var2IFB"};
             EPAssertionUtil.AssertPropsPerRow(stmtSet.GetEnumerator(), fieldsVar, new[] {new object[] {null, null}});
     
@@ -406,7 +406,7 @@ namespace com.espertech.esper.regression.epl.variable
             var fieldsSelect = new[]{"theString", "intPrimitive"};
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
     
             SendSupportBean(epService, null, 1);
             Assert.IsFalse(listener.IsInvoked);
@@ -444,7 +444,7 @@ namespace com.espertech.esper.regression.epl.variable
             var stmtTextSet = "on " + typeof(SupportBean_S0).Name + " set var1IF = p00";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
-            stmtSet.AddListener(listenerSet);
+            stmtSet.Events += listenerSet.Update;
             var fieldsVar = new[]{"var1IF"};
             EPAssertionUtil.AssertPropsPerRow(stmtSet.GetEnumerator(), fieldsVar, new[] {new object[] {null}});
     
@@ -452,7 +452,7 @@ namespace com.espertech.esper.regression.epl.variable
             var fieldsSelect = new[]{"theString", "intPrimitive"};
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
     
             SendSupportBean(epService, null, 1);
             Assert.IsFalse(listener.IsInvoked);
@@ -486,7 +486,7 @@ namespace com.espertech.esper.regression.epl.variable
             var stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1OND = intPrimitive, var2OND = var1OND + 1, var3OND = var1OND + var2OND";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
-            stmtSet.AddListener(listenerSet);
+            stmtSet.Events += listenerSet.Update;
             var fieldsVar = new[]{"var1OND", "var2OND", "var3OND"};
             EPAssertionUtil.AssertPropsPerRow(stmtSet.GetEnumerator(), fieldsVar, new[] {new object[] {12, 2, null}});
     
@@ -513,7 +513,7 @@ namespace com.espertech.esper.regression.epl.variable
             var stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1OD = intPrimitive, var2OD = var2OD, var1OD = intBoxed, var3OD = var3OD + 1";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
-            stmtSet.AddListener(listenerSet);
+            stmtSet.Events += listenerSet.Update;
             var fieldsVar = new[]{"var1OD", "var2OD", "var3OD"};
             EPAssertionUtil.AssertPropsPerRow(stmtSet.GetEnumerator(), fieldsVar, new[] {new object[] {0, 1, 2}});
     
@@ -548,7 +548,7 @@ namespace com.espertech.esper.regression.epl.variable
             var stmtText = "select var1OM, var2OM, id from " + typeof(SupportBean_A).FullName;
             Assert.AreEqual(stmtText, model.ToEPL());
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
     
             var fieldsSelect = new[]{"var1OM", "var2OM", "id"};
             SendSupportBean_A(epService, "E1");
@@ -560,7 +560,7 @@ namespace com.espertech.esper.regression.epl.variable
             var stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1OM=intPrimitive, var2OM=intBoxed";
             var stmtSet = epService.EPAdministrator.Create(model);
             var listenerSet = new SupportUpdateListener();
-            stmtSet.AddListener(listenerSet);
+            stmtSet.Events += listenerSet.Update;
             Assert.AreEqual(stmtTextSet, model.ToEPL());
     
             var typeSet = stmtSet.EventType;
@@ -591,7 +591,7 @@ namespace com.espertech.esper.regression.epl.variable
             var stmtSelect = epService.EPAdministrator.Create(model);
             Assert.AreEqual(stmtText, model.ToEPL());
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
     
             var fieldsSelect = new[]{"var1C", "var2C", "id"};
             SendSupportBean_A(epService, "E1");
@@ -601,7 +601,7 @@ namespace com.espertech.esper.regression.epl.variable
             model = epService.EPAdministrator.CompileEPL(stmtTextSet);
             var stmtSet = epService.EPAdministrator.Create(model);
             var listenerSet = new SupportUpdateListener();
-            stmtSet.AddListener(listenerSet);
+            stmtSet.Events += listenerSet.Update;
             Assert.AreEqual(stmtTextSet, model.ToEPL());
     
             var typeSet = stmtSet.EventType;
@@ -640,7 +640,7 @@ namespace com.espertech.esper.regression.epl.variable
             var stmtText = "select var1RTC, theString from " + typeof(SupportBean).FullName + "(theString like 'E%')";
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
     
             var fieldsSelect = new[]{"var1RTC", "theString"};
             SendSupportBean(epService, "E1", 1);
@@ -652,7 +652,7 @@ namespace com.espertech.esper.regression.epl.variable
             var stmtTextSet = "on " + typeof(SupportBean).FullName + "(theString like 'S%') set var1RTC = intPrimitive";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
-            stmtSet.AddListener(listenerSet);
+            stmtSet.Events += listenerSet.Update;
     
             var typeSet = stmtSet.EventType;
             Assert.AreEqual(typeof(int?), typeSet.GetPropertyType("var1RTC"));
@@ -693,7 +693,7 @@ namespace com.espertech.esper.regression.epl.variable
             var stmtTextSet = "on " + typeof(SupportBean).FullName + "(theString like 'S%' or theString like 'B%') set var1ROM = intPrimitive, var2ROM = intBoxed";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
-            stmtSet.AddListener(listenerSet);
+            stmtSet.Events += listenerSet.Update;
             var fieldsVar = new[]{"var1ROM", "var2ROM"};
             EPAssertionUtil.AssertPropsPerRow(stmtSet.GetEnumerator(), fieldsVar, new[] {new object[] {null, 1}});
     
@@ -714,7 +714,7 @@ namespace com.espertech.esper.regression.epl.variable
             var stmtText = "select var1ROM, var2ROM, theString from " + typeof(SupportBean).FullName + "(theString like 'E%' or theString like 'B%')";
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
             var fieldsSelect = new[]{"var1ROM", "var2ROM", "theString"};
             EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fieldsSelect, null);
     
@@ -740,7 +740,7 @@ namespace com.espertech.esper.regression.epl.variable
             var stmtTextSet = "on " + typeof(SupportBean).FullName + "(theString like 'S%') set papi_1 = 'end', papi_2 = false, papi_3 = null";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
-            stmtSet.AddListener(listenerSet);
+            stmtSet.Events += listenerSet.Update;
             var fieldsVar = new[]{"papi_1", "papi_2", "papi_3"};
             EPAssertionUtil.AssertPropsPerRow(stmtSet.GetEnumerator(), fieldsVar, new[] {new object[] {"begin", true, "value"}});
     
@@ -767,7 +767,7 @@ namespace com.espertech.esper.regression.epl.variable
             var stmtTextSet = "on " + typeof(SupportBean).FullName + " set p_1 = theString, p_2 = boolBoxed, p_3 = intBoxed, p_4 = intBoxed";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
-            stmtSet.AddListener(listenerSet);
+            stmtSet.Events += listenerSet.Update;
             var fieldsVar = new[]{"p_1", "p_2", "p_3", "p_4"};
             EPAssertionUtil.AssertPropsPerRow(stmtSet.GetEnumerator(), fieldsVar, new[] {new object[] {null, true, 10L, 11.1d}});
     
@@ -803,14 +803,14 @@ namespace com.espertech.esper.regression.epl.variable
             var stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1COE = intPrimitive, var2COE = intPrimitive, var3COE=intBoxed";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
-            stmtSet.AddListener(listenerSet);
+            stmtSet.Events += listenerSet.Update;
             var fieldsVar = new[]{"var1COE", "var2COE", "var3COE"};
             EPAssertionUtil.AssertPropsPerRow(stmtSet.GetEnumerator(), fieldsVar, new[] {new object[] {null, null, null}});
     
             var stmtText = "select irstream var1COE, var2COE, var3COE, id from " + typeof(SupportBean_A).Name + "#length(2)";
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
             var fieldsSelect = new[]{"var1COE", "var2COE", "var3COE", "id"};
             EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fieldsSelect, null);
     
@@ -1003,7 +1003,7 @@ namespace com.espertech.esper.regression.epl.variable
     
             var stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("select theString as c0,intPrimitive as c1 from SupportBean(" + @operator + ")");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // initiate
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "S01"));

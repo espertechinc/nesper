@@ -23,17 +23,15 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.view
 {
     public class ExecViewGroupWin : RegressionExecution {
-        private static readonly string SYMBOL_CISCO = "CSCO.O";
-        private static readonly string SYMBOL_IBM = "IBM.N";
-        private static readonly string SYMBOL_GE = "GE.N";
+        private const string SYMBOL_CISCO = "CSCO.O";
+        private const string SYMBOL_IBM = "IBM.N";
+        private const string SYMBOL_GE = "GE.N";
     
         public override void Run(EPServiceProvider epService) {
             RunAssertionObjectArrayEvent(epService);
@@ -52,21 +50,21 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionObjectArrayEvent(EPServiceProvider epService) {
             string[] fields = "p1,sp2".Split(',');
-            epService.EPAdministrator.Configuration.AddEventType("MyOAEvent", new string[]{"p1", "p2"}, new Object[]{typeof(string), typeof(int)});
+            epService.EPAdministrator.Configuration.AddEventType("MyOAEvent", new string[]{"p1", "p2"}, new object[]{typeof(string), typeof(int)});
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select p1,sum(p2) as sp2 from MyOAEvent#Groupwin(p1)#length(2)").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select p1,sum(p2) as sp2 from MyOAEvent#Groupwin(p1)#length(2)").Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(new Object[]{"A", 10}, "MyOAEvent");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A", 10});
+            epService.EPRuntime.SendEvent(new object[]{"A", 10}, "MyOAEvent");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A", 10});
     
-            epService.EPRuntime.SendEvent(new Object[]{"B", 11}, "MyOAEvent");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"B", 21});
+            epService.EPRuntime.SendEvent(new object[]{"B", 11}, "MyOAEvent");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"B", 21});
     
-            epService.EPRuntime.SendEvent(new Object[]{"A", 12}, "MyOAEvent");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A", 33});
+            epService.EPRuntime.SendEvent(new object[]{"A", 12}, "MyOAEvent");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A", 33});
     
-            epService.EPRuntime.SendEvent(new Object[]{"A", 13}, "MyOAEvent");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A", 36});
+            epService.EPRuntime.SendEvent(new object[]{"A", 13}, "MyOAEvent");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A", 36});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -157,21 +155,21 @@ namespace com.espertech.esper.regression.view
     
             EPStatement priceLast3Stats = epAdmin.CreateEPL(filter + "#Groupwin(symbol)#length(3)#Uni(price) order by symbol asc");
             var priceLast3StatsListener = new SupportUpdateListener();
-            priceLast3Stats.AddListener(priceLast3StatsListener);
+            priceLast3Stats.Events += priceLast3StatsListener.Update;
     
             EPStatement volumeLast3Stats = epAdmin.CreateEPL(filter + "#Groupwin(symbol)#length(3)#Uni(volume) order by symbol asc");
             var volumeLast3StatsListener = new SupportUpdateListener();
-            volumeLast3Stats.AddListener(volumeLast3StatsListener);
+            volumeLast3Stats.Events += volumeLast3StatsListener.Update;
     
             EPStatement priceAllStats = epAdmin.CreateEPL(filter + "#Groupwin(symbol)#Uni(price) order by symbol asc");
             var priceAllStatsListener = new SupportUpdateListener();
-            priceAllStats.AddListener(priceAllStatsListener);
+            priceAllStats.Events += priceAllStatsListener.Update;
     
             EPStatement volumeAllStats = epAdmin.CreateEPL(filter + "#Groupwin(symbol)#Uni(volume) order by symbol asc");
             var volumeAllStatsListener = new SupportUpdateListener();
-            volumeAllStats.AddListener(volumeAllStatsListener);
+            volumeAllStats.Events += volumeAllStatsListener.Update;
     
-            var expectedList = new Vector<>();
+            var expectedList = new List<IDictionary<string, object>>();
             for (int i = 0; i < 3; i++) {
                 expectedList.Add(new Dictionary<string, object>());
             }
@@ -239,7 +237,7 @@ namespace com.espertech.esper.regression.view
             string stmtText = "select symbol, price from " + typeof(SupportMarketDataBean).FullName + "#Groupwin(symbol)#length(2)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "IBM", 100);
     
@@ -250,7 +248,7 @@ namespace com.espertech.esper.regression.view
             epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBeanTimestamp));
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBeanTimestamp#Groupwin(timestamp.DayOfWeek)#length(2)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanTimestamp("E1", DateTimeParser.ParseDefaultMSec("2002-01-01T09:0:00.000")));
             epService.EPRuntime.SendEvent(new SupportBeanTimestamp("E2", DateTimeParser.ParseDefaultMSec("2002-01-08T09:0:00.000")));
@@ -266,25 +264,25 @@ namespace com.espertech.esper.regression.view
             admin.Configuration.AddEventType("Market", typeof(SupportMarketDataBean));
             EPStatement statement = admin.CreateEPL("select * from Market#Groupwin(symbol)#length(1000000)#Correl(price, volume, feed)");
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("correlation"));
     
             var fields = new string[]{"symbol", "correlation", "feed"};
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("ABC", 10.0, 1000L, "f1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"ABC", Double.NaN, "f1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"ABC", Double.NaN, "f1"});
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("DEF", 1.0, 2L, "f2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"DEF", Double.NaN, "f2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"DEF", Double.NaN, "f2"});
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("DEF", 2.0, 4L, "f3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"DEF", 1.0, "f3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"DEF", 1.0, "f3"});
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("ABC", 20.0, 2000L, "f4"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"ABC", 1.0, "f4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"ABC", 1.0, "f4"});
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionLinest(EPServiceProvider epService) {
@@ -293,7 +291,7 @@ namespace com.espertech.esper.regression.view
             admin.Configuration.AddEventType("Market", typeof(SupportMarketDataBean));
             EPStatement statement = admin.CreateEPL("select * from Market#Groupwin(symbol)#length(1000000)#Linest(price, volume, feed)");
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("slope"));
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YIntercept"));
@@ -318,11 +316,11 @@ namespace com.espertech.esper.regression.view
             var fields = new string[]{"symbol", "slope", "YIntercept", "feed"};
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("ABC", 10.0, 50000L, "f1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"ABC", Double.NaN, Double.NaN, "f1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"ABC", Double.NaN, Double.NaN, "f1"});
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("DEF", 1.0, 1L, "f2"));
             EventBean theEvent = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(theEvent, fields, new Object[]{"DEF", Double.NaN, Double.NaN, "f2"});
+            EPAssertionUtil.AssertProps(theEvent, fields, new object[]{"DEF", Double.NaN, Double.NaN, "f2"});
             Assert.AreEqual(1d, theEvent.Get("XAverage"));
             Assert.AreEqual(0d, theEvent.Get("XStandardDeviationPop"));
             Assert.AreEqual(Double.NaN, theEvent.Get("XStandardDeviationSample"));
@@ -343,12 +341,12 @@ namespace com.espertech.esper.regression.view
             // above computed values tested in more detail in RegressionBean test
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("DEF", 2.0, 2L, "f3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"DEF", 1.0, 0.0, "f3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"DEF", 1.0, 0.0, "f3"});
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("ABC", 11.0, 50100L, "f4"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"ABC", 100.0, 49000.0, "f4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"ABC", 100.0, 49000.0, "f4"});
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void SendEvent(EPServiceProvider epService, string symbol, double price) {
@@ -366,7 +364,7 @@ namespace com.espertech.esper.regression.view
             result.Put("symbol", symbol);
             result.Put("average", average);
     
-            var vec = new List<>();
+            var vec = new List<IDictionary<string, object>>();
             vec.Add(result);
     
             return vec;

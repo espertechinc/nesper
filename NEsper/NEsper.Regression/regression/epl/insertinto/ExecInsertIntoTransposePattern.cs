@@ -17,7 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -40,17 +39,17 @@ namespace com.espertech.esper.regression.epl.insertinto
                     " from pattern [every quote=SupportBean(theString='B')] as stream0");
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 10));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"alertId", "this.intPrimitive"}, new Object[][]{new object[] {"1", 10}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"alertId", "this.intPrimitive"}, new object[][]{new object[] {"1", 10}});
     
             epService.EPRuntime.SendEvent(new SupportBean("B", 20));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"alertId", "this.intPrimitive"}, new Object[][]{new object[] {"1", 10}, new object[] {"2", 20}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"alertId", "this.intPrimitive"}, new object[][]{new object[] {"1", 10}, new object[] {"2", 20}});
     
             stmt = epService.EPAdministrator.CreateEPL("create window TwoWindow#Time(1 day) as select theString as alertId, * from SupportBean");
             epService.EPAdministrator.CreateEPL("insert into TwoWindow select '3' as alertId, quote.* " +
                     " from pattern [every quote=SupportBean(theString='C')] as stream0");
     
             epService.EPRuntime.SendEvent(new SupportBean("C", 30));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"alertId", "intPrimitive"}, new Object[][]{new object[] {"3", 30}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"alertId", "intPrimitive"}, new object[][]{new object[] {"3", 30}});
     
             stmt.Dispose();
         }
@@ -65,17 +64,17 @@ namespace com.espertech.esper.regression.epl.insertinto
             string stmtTextTwo = "select a.id, b.id from MyStreamABBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             epService.EPRuntime.SendEvent(new SupportBean_B("B1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.id,b.id".Split(','), new Object[]{"A1", "B1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.id,b.id".Split(','), new object[]{"A1", "B1"});
     
             stmt.Dispose();
         }
     
         private void RunAssertionTransposeMapEventPattern(EPServiceProvider epService) {
-            IDictionary<string, Object> type = MakeMap(new Object[][]{new object[] {"id", typeof(string)}});
+            IDictionary<string, Object> type = MakeMap(new object[][]{new object[] {"id", typeof(string)}});
     
             epService.EPAdministrator.Configuration.AddEventType("AEventMap", type);
             epService.EPAdministrator.Configuration.AddEventType("BEventMap", type);
@@ -83,35 +82,35 @@ namespace com.espertech.esper.regression.epl.insertinto
             string stmtTextOne = "insert into MyStreamABMap select a, b from pattern [a=AEventMap -> b=BEventMap]";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
             var listenerInsertInto = new SupportUpdateListener();
-            stmtOne.AddListener(listenerInsertInto);
-            Assert.AreEqual(typeof(Map), stmtOne.EventType.GetPropertyType("a"));
-            Assert.AreEqual(typeof(Map), stmtOne.EventType.GetPropertyType("b"));
+            stmtOne.Events += listenerInsertInto.Update;
+            Assert.AreEqual(typeof(IDictionary<string, object>), stmtOne.EventType.GetPropertyType("a"));
+            Assert.AreEqual(typeof(IDictionary<string, object>), stmtOne.EventType.GetPropertyType("b"));
     
             string stmtTextTwo = "select a.id, b.id from MyStreamABMap";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listener = new SupportUpdateListener();
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
             Assert.AreEqual(typeof(string), stmtTwo.EventType.GetPropertyType("a.id"));
             Assert.AreEqual(typeof(string), stmtTwo.EventType.GetPropertyType("b.id"));
     
-            IDictionary<string, Object> eventOne = MakeMap(new Object[][]{new object[] {"id", "A1"}});
-            IDictionary<string, Object> eventTwo = MakeMap(new Object[][]{new object[] {"id", "B1"}});
+            IDictionary<string, Object> eventOne = MakeMap(new object[][]{new object[] {"id", "A1"}});
+            IDictionary<string, Object> eventTwo = MakeMap(new object[][]{new object[] {"id", "B1"}});
     
             epService.EPRuntime.SendEvent(eventOne, "AEventMap");
             epService.EPRuntime.SendEvent(eventTwo, "BEventMap");
     
             EventBean theEvent = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(theEvent, "a.id,b.id".Split(','), new Object[]{"A1", "B1"});
+            EPAssertionUtil.AssertProps(theEvent, "a.id,b.id".Split(','), new object[]{"A1", "B1"});
     
             theEvent = listenerInsertInto.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(theEvent, "a,b".Split(','), new Object[]{eventOne, eventTwo});
+            EPAssertionUtil.AssertProps(theEvent, "a,b".Split(','), new object[]{eventOne, eventTwo});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
-        private IDictionary<string, Object> MakeMap(Object[][] entries) {
+        private IDictionary<string, Object> MakeMap(object[][] entries) {
             var result = new Dictionary<string, Object>();
-            foreach (Object[] entry in entries) {
+            foreach (object[] entry in entries) {
                 result.Put((string) entry[0], entry[1]);
             }
             return result;

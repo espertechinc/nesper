@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static junit.framework.TestCase.*;
 
 using NUnit.Framework;
 
@@ -71,7 +70,7 @@ namespace com.espertech.esper.regression.events.variant
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from MyVariantStreamOne");
             var listenerOne = new SupportUpdateListener();
-            stmt.AddListener(listenerOne);
+            stmt.Events += listenerOne.Update;
             EventType typeSelectAll = stmt.EventType;
             AssertEventTypeDefault(typeSelectAll);
             Assert.AreEqual(typeof(Object), stmt.EventType.UnderlyingType);
@@ -91,19 +90,19 @@ namespace com.espertech.esper.regression.events.variant
             stmt.Dispose();
             string fields = "theString,boolBoxed,intPrimitive,longPrimitive,doublePrimitive,enumValue";
             stmt = epService.EPAdministrator.CreateEPL("select " + fields + " from MyVariantStreamOne");
-            stmt.AddListener(listenerOne);
+            stmt.Events += listenerOne.Update;
             AssertEventTypeDefault(stmt.EventType);
     
             // coerces to the higher resolution type, accepts boxed versus not boxed
             epService.EPRuntime.SendEvent(new SupportBeanVariantStream("s1", true, 1, 20, 30, SupportEnum.ENUM_VALUE_1));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields.Split(','), new Object[]{"s1", true, 1, 20L, 30d, SupportEnum.ENUM_VALUE_1});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields.Split(','), new object[]{"s1", true, 1, 20L, 30d, SupportEnum.ENUM_VALUE_1});
     
             var bean = new SupportBean("s2", 99);
             bean.LongPrimitive = 33;
             bean.DoublePrimitive = 50;
             bean.EnumValue = SupportEnum.ENUM_VALUE_3;
             epService.EPRuntime.SendEvent(bean);
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields.Split(','), new Object[]{"s2", null, 99, 33L, 50d, SupportEnum.ENUM_VALUE_3});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields.Split(','), new object[]{"s2", null, 99, 33L, 50d, SupportEnum.ENUM_VALUE_3});
     
             // make sure a property is not known since the property is not found on SupportBeanVariantStream
             try {
@@ -117,7 +116,7 @@ namespace com.espertech.esper.regression.events.variant
             stmt.Dispose();
             fields = "v1,v2,v3";
             stmt = epService.EPAdministrator.CreateEPL("select longBoxed? as v1,charBoxed? as v2,doubleBoxed? as v3 from MyVariantStreamOne");
-            stmt.AddListener(listenerOne);
+            stmt.Events += listenerOne.Update;
             AssertEventTypeDefault(typeSelectAll);  // asserts prior "select *" event type
     
             bean = new SupportBean();
@@ -125,10 +124,10 @@ namespace com.espertech.esper.regression.events.variant
             bean.CharBoxed = 'a';
             bean.DoubleBoxed = Double.NaN;
             epService.EPRuntime.SendEvent(bean);
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields.Split(','), new Object[]{33L, 'a', Double.NaN});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields.Split(','), new object[]{33L, 'a', Double.NaN});
     
             epService.EPRuntime.SendEvent(new SupportBeanVariantStream("s2"));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields.Split(','), new Object[]{null, null, null});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields.Split(','), new object[]{null, null, null});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -146,7 +145,7 @@ namespace com.espertech.esper.regression.events.variant
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from MyVariantStreamTwo");
             var listenerOne = new SupportUpdateListener();
-            stmt.AddListener(listenerOne);
+            stmt.Events += listenerOne.Update;
             EventType eventType = stmt.EventType;
     
             string[] expected = "p0,p1,p2,p3,p4,p5,indexed,mapped,inneritem".Split(',');
@@ -154,17 +153,17 @@ namespace com.espertech.esper.regression.events.variant
             EPAssertionUtil.AssertEqualsAnyOrder(expected, propertyNames);
             Assert.AreEqual(typeof(ISupportBaseAB), eventType.GetPropertyType("p0"));
             Assert.AreEqual(typeof(ISupportAImplSuperG), eventType.GetPropertyType("p1"));
-            Assert.AreEqual(typeof(AbstractList), eventType.GetPropertyType("p2"));
-            Assert.AreEqual(typeof(List), eventType.GetPropertyType("p3"));
-            Assert.AreEqual(typeof(Collection), eventType.GetPropertyType("p4"));
-            Assert.AreEqual(typeof(Collection), eventType.GetPropertyType("p5"));
+            Assert.AreEqual(typeof(object), eventType.GetPropertyType("p2"));
+            Assert.AreEqual(typeof(IList<object>), eventType.GetPropertyType("p3"));
+            Assert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("p4"));
+            Assert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("p5"));
             Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("indexed"));
-            Assert.AreEqual(typeof(Map), eventType.GetPropertyType("mapped"));
+            Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("mapped"));
             Assert.AreEqual(typeof(SupportBeanVariantOne.SupportBeanVariantOneInner), eventType.GetPropertyType("inneritem"));
     
             stmt.Dispose();
             stmt = epService.EPAdministrator.CreateEPL("select p0,p1,p2,p3,p4,p5,indexed[0] as p6,indexArr[1] as p7,MappedKey('a') as p8,inneritem as p9,inneritem.val as p10 from MyVariantStreamTwo");
-            stmt.AddListener(listenerOne);
+            stmt.Events += listenerOne.Update;
             eventType = stmt.EventType;
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("p6"));
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("p7"));
@@ -174,11 +173,11 @@ namespace com.espertech.esper.regression.events.variant
     
             var ev1 = new SupportBeanVariantOne();
             epService.EPRuntime.SendEvent(ev1);
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), "p6,p7,p8,p9,p10".Split(','), new Object[]{1, 2, "val1", ev1.Inneritem, ev1.Inneritem.Val});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), "p6,p7,p8,p9,p10".Split(','), new object[]{1, 2, "val1", ev1.Inneritem, ev1.Inneritem.Val});
     
             var ev2 = new SupportBeanVariantTwo();
             epService.EPRuntime.SendEvent(ev2);
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), "p6,p7,p8,p9,p10".Split(','), new Object[]{10, 20, "val2", ev2.Inneritem, ev2.Inneritem.Val});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), "p6,p7,p8,p9,p10".Split(','), new object[]{10, 20, "val2", ev2.Inneritem, ev2.Inneritem.Val});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -217,7 +216,7 @@ namespace com.espertech.esper.regression.events.variant
             // test named window
             EPStatement stmt = epService.EPAdministrator.CreateEPL("create window MyVariantWindow#unique(theString) as select * from MyVariantStreamThree");
             var listenerOne = new SupportUpdateListener();
-            stmt.AddListener(listenerOne);
+            stmt.Events += listenerOne.Update;
             epService.EPAdministrator.CreateEPL("insert into MyVariantWindow select * from MyVariantStreamThree");
             epService.EPAdministrator.CreateEPL("insert into MyVariantStreamThree select * from SupportBeanVariantStream");
             epService.EPAdministrator.CreateEPL("insert into MyVariantStreamThree select * from SupportBean");
@@ -259,8 +258,8 @@ namespace com.espertech.esper.regression.events.variant
             // test pattern
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from pattern [a=MyVariantStreamFour -> b=MyVariantStreamFour]");
             var listenerOne = new SupportUpdateListener();
-            stmt.AddListener(listenerOne);
-            Object[] events = {new SupportBean("E1", -1), new SupportBeanVariantStream("E2")};
+            stmt.Events += listenerOne.Update;
+            object[] events = {new SupportBean("E1", -1), new SupportBeanVariantStream("E2")};
             epService.EPRuntime.SendEvent(events[0]);
             epService.EPRuntime.SendEvent(events[1]);
             EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), "a,b".Split(','), events);
@@ -268,8 +267,8 @@ namespace com.espertech.esper.regression.events.variant
             // test subquery
             stmt.Dispose();
             stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean_A as a where Exists(select * from MyVariantStreamFour#lastevent as b where b.theString=a.id)");
-            stmt.AddListener(listenerOne);
-            events = new Object[]{new SupportBean("E1", -1), new SupportBeanVariantStream("E2"), new SupportBean_A("E2")};
+            stmt.Events += listenerOne.Update;
+            events = new object[]{new SupportBean("E1", -1), new SupportBeanVariantStream("E2"), new SupportBean_A("E2")};
     
             epService.EPRuntime.SendEvent(events[0]);
             epService.EPRuntime.SendEvent(events[2]);
@@ -299,7 +298,7 @@ namespace com.espertech.esper.regression.events.variant
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from MyVariant");
             var listenerOne = new SupportUpdateListener();
-            stmt.AddListener(listenerOne);
+            stmt.Events += listenerOne.Update;
             epService.EPRuntime.SendEvent(new Dictionary<string, object>(), "MyEvent");
             Assert.IsNotNull(listenerOne.AssertOneGetNewAndReset());
             epService.EPRuntime.SendEvent(new Dictionary<string, object>(), "MySecondEvent");

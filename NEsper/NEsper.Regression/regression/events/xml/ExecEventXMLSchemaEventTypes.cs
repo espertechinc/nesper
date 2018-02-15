@@ -15,19 +15,18 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util.support;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.events.xml
 {
     public class ExecEventXMLSchemaEventTypes : RegressionExecution {
-        private static readonly string CLASSLOADER_SCHEMA_URI = "regression/typeTestSchema.xsd";
+        private const string CLASSLOADER_SCHEMA_URI = "regression/typeTestSchema.xsd";
     
         public override void Configure(Configuration configuration) {
             var eventTypeMeta = new ConfigurationEventTypeXMLDOM();
             eventTypeMeta.RootElementName = "typesEvent";
-            string schemaUri = typeof(ExecEventXMLSchemaInvalid).ClassLoader.GetResource(CLASSLOADER_SCHEMA_URI).ToString();
+            string schemaUri = ResourceManager.ResolveResourceURL(CLASSLOADER_SCHEMA_URI).ToString();
             eventTypeMeta.SchemaResource = schemaUri;
             configuration.AddEventType("TestTypesEvent", eventTypeMeta);
         }
@@ -38,7 +37,7 @@ namespace com.espertech.esper.regression.events.xml
             EventType type = wildStmt.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(type);
     
-            var types = new Object[][]{
+            var types = new object[][]{
                     new object[] {"attrNonPositiveInteger", typeof(int?)},
                     new object[] {"attrNonNegativeInteger", typeof(int?)},
                     new object[] {"attrNegativeInteger", typeof(int?)},

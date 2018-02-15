@@ -18,8 +18,6 @@ using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -29,9 +27,9 @@ namespace com.espertech.esper.regression.client
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.Threading.InternalTimerEnabled = false;
-            configuration.EngineDefaults.Expression.UdfCache = false;
-            configuration.EngineDefaults.Threading.ThreadPoolTimerExec = true;
+            configuration.EngineDefaults.Threading.IsInternalTimerEnabled = false;
+            configuration.EngineDefaults.Expression.IsUdfCache = false;
+            configuration.EngineDefaults.Threading.IsThreadPoolTimerExec = true;
             configuration.EngineDefaults.Threading.ThreadPoolTimerExecNumThreads = 5;
             configuration.AddEventType("MyMap", new Dictionary<string, object>());
             configuration.AddImport(typeof(SupportStaticMethodLib).FullName);
@@ -48,7 +46,7 @@ namespace com.espertech.esper.regression.client
             var listener = new SupportListenerTimerHRes();
             for (int i = 0; i < countStatements; i++) {
                 EPStatement stmt = epService.EPAdministrator.CreateEPL("select SupportStaticMethodLib.Sleep(10) from pattern[every MyMap -> timer:Interval(1)]");
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
             }
     
             Log.Info("Sending trigger event");

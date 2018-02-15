@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertNull;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -67,7 +65,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "when matched then insert into MyOutputStream select *";
             epService.EPAdministrator.CreateEPL(eplMergeSelect);
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from MyOutputStream").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from MyOutputStream").Events += listener.Update;
     
             var writeRunnable = new WriteRunnable(epService);
             var readRunnable = new ReadRunnable(epService, listener);

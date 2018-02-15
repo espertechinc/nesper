@@ -19,8 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -59,7 +57,7 @@ namespace com.espertech.esper.regression.client
             isolatedService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.CurrentTimeMillis + 1000));
             isolatedService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             isolatedService.EPAdministrator.RemoveStatement(stmt);
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
             Assert.IsTrue(listener.IsInvokedAndReset());
@@ -128,13 +126,13 @@ namespace com.espertech.esper.regression.client
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from pattern [every a=SupportBean -> b=SupportBean(theString=a.theString)]");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.IsFalse(listener.GetAndClearIsInvoked());
     
             EPServiceProviderIsolated unit = epService.GetEPServiceIsolated("i1");
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{"i1"}, epService.EPServiceIsolatedNames);
+            EPAssertionUtil.AssertEqualsAnyOrder(new string[]{"i1"}, epService.EPServiceIsolatedNames);
     
             // send fake to wrong place
             unit.EPRuntime.SendEvent(new SupportBean("E1", -1));
@@ -147,7 +145,7 @@ namespace com.espertech.esper.regression.client
     
             // send to 'right' engine
             unit.EPRuntime.SendEvent(new SupportBean("E1", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,a.intPrimitive,b.intPrimitive".Split(','), new Object[]{"E1", 1, 3});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,a.intPrimitive,b.intPrimitive".Split(','), new object[]{"E1", 1, 3});
     
             // send second pair, and a fake to the wrong place
             unit.EPRuntime.SendEvent(new SupportBean("E2", 4));
@@ -161,12 +159,12 @@ namespace com.espertech.esper.regression.client
     
             // send to 'right' engine
             epService.EPRuntime.SendEvent(new SupportBean("E2", 6));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,a.intPrimitive,b.intPrimitive".Split(','), new Object[]{"E2", 4, 6});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,a.intPrimitive,b.intPrimitive".Split(','), new object[]{"E2", 4, 6});
     
             epService.EPAdministrator.DestroyAllStatements();
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{"i1"}, epService.EPServiceIsolatedNames);
+            EPAssertionUtil.AssertEqualsAnyOrder(new string[]{"i1"}, epService.EPServiceIsolatedNames);
             epService.GetEPServiceIsolated("i1").Dispose();
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[0], epService.EPServiceIsolatedNames);
+            EPAssertionUtil.AssertEqualsAnyOrder(new string[0], epService.EPServiceIsolatedNames);
         }
     
         private void RunAssertionDestroy(EPServiceProvider epService) {
@@ -176,12 +174,12 @@ namespace com.espertech.esper.regression.client
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') select * from SupportBean", null, null);
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             EPServiceProviderIsolated unit = epService.GetEPServiceIsolated("i1");
     
             EPStatement stmtTwo = unit.EPAdministrator.CreateEPL("@Name('B') select * from SupportBean", null, null);
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
             unit.EPAdministrator.AddStatement(stmtOne);
     
             unit.EPRuntime.SendEvent(new SupportBean());
@@ -209,7 +207,7 @@ namespace com.espertech.esper.regression.client
             SendTimerUnisolated(epService, 100000);
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from pattern [every a=SupportBean -> timer:Interval(10)]");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendTimerUnisolated(epService, 105000);
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -222,7 +220,7 @@ namespace com.espertech.esper.regression.client
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimerIso(10000, unit);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"E1"});
     
             SendTimerIso(11000, unit);
             unit.EPRuntime.SendEvent(new SupportBean("E2", 1));
@@ -236,7 +234,7 @@ namespace com.espertech.esper.regression.client
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimerUnisolated(epService, 130000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new Object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"E2"});
     
             SendTimerIso(30000, unit);
             Assert.IsFalse(listener.IsInvoked);
@@ -252,11 +250,11 @@ namespace com.espertech.esper.regression.client
     
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL("insert into MyStream select * from SupportBean");
             var listenerInsert = new SupportUpdateListener();
-            stmtInsert.AddListener(listenerInsert);
+            stmtInsert.Events += listenerInsert.Update;
     
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("select * from MyStream");
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
     
             // unit takes "insert"
             EPServiceProviderIsolated unit = epService.GetEPServiceIsolated("i1");
@@ -268,7 +266,7 @@ namespace com.espertech.esper.regression.client
     
             unit.EPRuntime.SendEvent(new SupportBean("E2", 2));
             Assert.IsFalse(listenerSelect.GetAndClearIsInvoked());
-            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), "theString".Split(','), new Object[]{"E2"});
+            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E2"});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
             Assert.IsFalse(listenerSelect.GetAndClearIsInvoked());
@@ -278,16 +276,16 @@ namespace com.espertech.esper.regression.client
             unit.EPAdministrator.RemoveStatement(stmtInsert);
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
-            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), "theString".Split(','), new Object[]{"E4"});
-            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), "theString".Split(','), new Object[]{"E4"});
+            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E4"});
+            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E4"});
     
             unit.EPRuntime.SendEvent(new SupportBean("E5", 5));
             Assert.IsFalse(listenerSelect.GetAndClearIsInvoked());
             Assert.IsFalse(listenerInsert.GetAndClearIsInvoked());
     
             epService.EPRuntime.SendEvent(new SupportBean("E6", 6));
-            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), "theString".Split(','), new Object[]{"E6"});
-            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), "theString".Split(','), new Object[]{"E6"});
+            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E6"});
+            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E6"});
     
             unit.Dispose();
             epService.EPAdministrator.DestroyAllStatements();
@@ -304,7 +302,7 @@ namespace com.espertech.esper.regression.client
             for (int i = 0; i < count; i++) {
                 string epl = "@Name('S" + i + "') select theString, sum(intPrimitive) as sumi from SupportBean(theString='" + i + "')#Time(10)";
                 listeners[i] = new SupportUpdateListener();
-                epService.EPAdministrator.CreateEPL(epl).AddListener(listeners[i]);
+                epService.EPAdministrator.CreateEPL(epl).Events += listeners[i].Update;
             }
     
             var statements = new EPStatement[2];
@@ -320,8 +318,8 @@ namespace com.espertech.esper.regression.client
             }
             Assert.IsFalse(listeners[0].IsInvoked);
             Assert.IsFalse(listeners[2].IsInvoked);
-            EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNewAndReset(), fields, new Object[]{"1", 1});
-            EPAssertionUtil.AssertProps(listeners[3].AssertOneGetNewAndReset(), fields, new Object[]{"3", 3});
+            EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNewAndReset(), fields, new object[]{"1", 1});
+            EPAssertionUtil.AssertProps(listeners[3].AssertOneGetNewAndReset(), fields, new object[]{"3", 3});
     
             // send to isolated
             for (int i = 0; i < count; i++) {
@@ -329,11 +327,11 @@ namespace com.espertech.esper.regression.client
             }
             Assert.IsFalse(listeners[1].IsInvoked);
             Assert.IsFalse(listeners[3].IsInvoked);
-            EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, new Object[]{"0", 0});
-            EPAssertionUtil.AssertProps(listeners[2].AssertOneGetNewAndReset(), fields, new Object[]{"2", 2});
+            EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, new object[]{"0", 0});
+            EPAssertionUtil.AssertProps(listeners[2].AssertOneGetNewAndReset(), fields, new object[]{"2", 2});
     
             unit.EPRuntime.SendEvent(new SupportBean(Convert.ToString(2), 2));
-            EPAssertionUtil.AssertProps(listeners[2].AssertOneGetNewAndReset(), fields, new Object[]{"2", 4});
+            EPAssertionUtil.AssertProps(listeners[2].AssertOneGetNewAndReset(), fields, new object[]{"2", 4});
     
             // return
             unit.EPAdministrator.RemoveStatement(statements);
@@ -342,10 +340,10 @@ namespace com.espertech.esper.regression.client
             for (int i = 0; i < count; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean(Convert.ToString(i), i));
             }
-            EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, new Object[]{"0", 0});
-            EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNewAndReset(), fields, new Object[]{"1", 2});
-            EPAssertionUtil.AssertProps(listeners[2].AssertOneGetNewAndReset(), fields, new Object[]{"2", 6});
-            EPAssertionUtil.AssertProps(listeners[3].AssertOneGetNewAndReset(), fields, new Object[]{"3", 6});
+            EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, new object[]{"0", 0});
+            EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNewAndReset(), fields, new object[]{"1", 2});
+            EPAssertionUtil.AssertProps(listeners[2].AssertOneGetNewAndReset(), fields, new object[]{"2", 6});
+            EPAssertionUtil.AssertProps(listeners[3].AssertOneGetNewAndReset(), fields, new object[]{"3", 6});
     
             // send to isolated
             for (int i = 0; i < count; i++) {
@@ -366,14 +364,14 @@ namespace com.espertech.esper.regression.client
             string epl = "select theString from SupportBean#Time(60)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             EPServiceProviderIsolated unit = epService.GetEPServiceIsolated("i1");
             unit.EPAdministrator.AddStatement(stmt);
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             unit.EPRuntime.SendEvent(new SupportBean("E2", 0));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E2"}});
     
             stmt.Stop();
     
@@ -384,19 +382,19 @@ namespace com.espertech.esper.regression.client
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 0));
             unit.EPRuntime.SendEvent(new SupportBean("E4", 0));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E3"}});
     
             unit.EPAdministrator.AddStatement(stmt);
     
             epService.EPRuntime.SendEvent(new SupportBean("E5", 0));
             unit.EPRuntime.SendEvent(new SupportBean("E6", 0));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E3"}, new object[] {"E6"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E3"}, new object[] {"E6"}});
     
             unit.EPAdministrator.RemoveStatement(stmt);
     
             epService.EPRuntime.SendEvent(new SupportBean("E7", 0));
             unit.EPRuntime.SendEvent(new SupportBean("E8", 0));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E3"}, new object[] {"E6"}, new object[] {"E7"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E3"}, new object[] {"E6"}, new object[] {"E7"}});
     
             stmt.Stop();
     
@@ -415,26 +413,26 @@ namespace com.espertech.esper.regression.client
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL("@Name('delete') on SupportBean_A delete from MyWindow where theString = id");
             EPStatement stmtConsume = epService.EPAdministrator.CreateEPL("@Name('consume') select irstream * from MyWindow");
             var listener = new SupportUpdateListener();
-            stmtConsume.AddListener(listener);
+            stmtConsume.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
     
             EPServiceProviderIsolated unit = epService.GetEPServiceIsolated("i1");
             unit.EPAdministrator.AddStatement(epService.EPAdministrator.GetStatement("create"));
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 0));
             unit.EPRuntime.SendEvent(new SupportBean("E3", 0));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1"}});
             Assert.IsFalse(listener.IsInvoked);
     
             unit.EPAdministrator.AddStatement(stmtInsert);
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 0));
             unit.EPRuntime.SendEvent(new SupportBean("E5", 0));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E5"}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E5"});    // yes receives it
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1"}, new object[] {"E5"}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E5"});    // yes receives it
     
             // Note: Named window is global across isolation units: they are a relation and not a stream.
     
@@ -443,12 +441,12 @@ namespace com.espertech.esper.regression.client
             // Consumers to a named window always receive all changes to a named window (regardless of whether the consuming statement is isolated or not), even if the window itself was isolated.
             //
             epService.EPRuntime.SendEvent(new SupportBean_A("E1"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E5"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E5"}});
     
             unit.EPAdministrator.AddStatement(stmtDelete);
     
             epService.EPRuntime.SendEvent(new SupportBean_A("E5"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E5"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E5"}});
     
             unit.EPRuntime.SendEvent(new SupportBean_A("E5"));
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, null);
@@ -480,24 +478,24 @@ namespace com.espertech.esper.regression.client
             SendTimerIso(9000, unit);
             unit.EPRuntime.SendEvent(new SupportBean("E3", 3));
     
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
             unit.EPAdministrator.RemoveStatement(new EPStatement[]{stmtCreate});
     
             SendTimerUnisolated(epService, 101000);    // equivalent to 10000  (E3 is 1 seconds old)
     
             SendTimerUnisolated(epService, 102000);    // equivalent to 11000  (E3 is 2 seconds old)
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E2"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E2"}, new object[] {"E3"}});
     
             SendTimerUnisolated(epService, 103000);    // equivalent to 12000  (E3 is 3 seconds old)
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E3"}});
     
             SendTimerUnisolated(epService, 109000);    // equivalent to 18000 (E3 is 9 seconds old)
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E3"}});
     
             unit.EPAdministrator.AddStatement(new EPStatement[]{stmtCreate});
     
             SendTimerIso(9999, unit);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E3"}});
     
             SendTimerIso(10000, unit);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, null);
@@ -515,38 +513,38 @@ namespace com.espertech.esper.regression.client
             var fields = new string[]{"ct"};
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select Current_timestamp() as ct from SupportBean");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{5000L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{5000L});
     
             EPServiceProviderIsolated unit = epService.GetEPServiceIsolated("i1");
             SendTimerIso(100000, unit);
             unit.EPAdministrator.AddStatement(new EPStatement[]{stmt});
     
             unit.EPRuntime.SendEvent(new SupportBean());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{100000L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{100000L});
     
             epService.EPAdministrator.DestroyAllStatements();
     
             stmt = epService.EPAdministrator.CreateEPL("select theString as ct from SupportBean where Current_timestamp() >= 10000");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             unit.EPRuntime.SendEvent(new SupportBean());
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimerUnisolated(epService, 10000);
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
     
             unit.EPAdministrator.AddStatement(stmt);
     
             unit.EPRuntime.SendEvent(new SupportBean("E2", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2"});
     
             stmt.Dispose();
             stmt = epService.EPAdministrator.CreateEPL("select theString as ct from SupportBean where Current_timestamp() >= 120000");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             unit.EPAdministrator.AddStatement(new EPStatement[]{stmt});
     
             unit.EPRuntime.SendEvent(new SupportBean("E3", 1));
@@ -555,7 +553,7 @@ namespace com.espertech.esper.regression.client
             SendTimerIso(120000, unit);
     
             unit.EPRuntime.SendEvent(new SupportBean("E4", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E4"});
     
             unit.Dispose();
             epService.EPAdministrator.DestroyAllStatements();
@@ -572,10 +570,10 @@ namespace com.espertech.esper.regression.client
             EPStatement stmtUpd = epService.EPAdministrator.CreateEPL("update istream NewStream set theString = 'X'");
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("select * from NewStream");
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"X"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"X"});
     
             EPServiceProviderIsolated unit = epService.GetEPServiceIsolated("i1");
             unit.EPAdministrator.AddStatement(new EPStatement[]{stmtSelect});
@@ -588,16 +586,16 @@ namespace com.espertech.esper.regression.client
             /// </summary>
             unit.EPAdministrator.AddStatement(new EPStatement[]{stmtInsert});
             unit.EPRuntime.SendEvent(new SupportBean("E1", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"X"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"X"});
     
             unit.EPAdministrator.AddStatement(stmtUpd);
             unit.EPRuntime.SendEvent(new SupportBean("E2", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"X"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"X"});
     
             stmtUpd.Stop();
     
             unit.EPRuntime.SendEvent(new SupportBean("E3", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3"});
     
             unit.Dispose();
             epService.EPAdministrator.DestroyAllStatements();
@@ -613,7 +611,7 @@ namespace com.espertech.esper.regression.client
             string epl = "select irstream theString from SupportBean#Time(10)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendTimerUnisolated(epService, 2000);
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
@@ -626,11 +624,11 @@ namespace com.espertech.esper.regression.client
     
             SendTimerUnisolated(epService, 8000);
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select 'x' as theString from pattern [timer:Interval(10)]");
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
     
             EPServiceProviderIsolated unit = epService.GetEPServiceIsolated("i1");
             unit.EPAdministrator.AddStatement(new EPStatement[]{stmt, stmtTwo});
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{stmt.Name, stmtTwo.Name}, unit.EPAdministrator.StatementNames);
+            EPAssertionUtil.AssertEqualsAnyOrder(new string[]{stmt.Name, stmtTwo.Name}, unit.EPAdministrator.StatementNames);
             Assert.AreEqual("i1", stmt.ServiceIsolated);
             Assert.AreEqual("i1", stmt.ServiceIsolated);
     
@@ -638,31 +636,31 @@ namespace com.espertech.esper.regression.client
             epService.EPRuntime.SendEvent(new SupportBean("E4", 0));
             SendTimerUnisolated(epService, 15000);
             Assert.IsFalse(listener.IsInvoked);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
     
             unit.EPAdministrator.RemoveStatement(new EPStatement[]{stmt, stmtTwo});
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[0], unit.EPAdministrator.StatementNames);
+            EPAssertionUtil.AssertEqualsAnyOrder(new string[0], unit.EPAdministrator.StatementNames);
             Assert.IsNull(stmt.ServiceIsolated);
             Assert.IsNull(stmt.ServiceIsolated);
     
             SendTimerUnisolated(epService, 18999);
             Assert.IsFalse(listener.IsInvoked);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
     
             SendTimerUnisolated(epService, 19000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new Object[]{"E1"});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E2"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new object[]{"E1"});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E2"}, new object[] {"E3"}});
     
             SendTimerUnisolated(epService, 23999);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new Object[]{"E2"});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E3"}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new object[]{"E2"});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E3"}});
     
             SendTimerUnisolated(epService, 24000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new Object[]{"E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new object[]{"E3"});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
     
             SendTimerUnisolated(epService, 25000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"x"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"x"});
     
             unit.Dispose();
             epService.EPAdministrator.DestroyAllStatements();
@@ -680,13 +678,13 @@ namespace com.espertech.esper.regression.client
             var fields = new string[]{"ct"};
             EPStatement stmt = unit.EPAdministrator.CreateEPL("select Current_timestamp() as ct from pattern[every timer:Interval(10)]", null, null);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendTimerIso(10999, unit);
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimerIso(11000, unit);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{11000L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{11000L});
     
             SendTimerIso(15000, unit);
     
@@ -696,7 +694,7 @@ namespace com.espertech.esper.regression.client
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimerUnisolated(epService, 106000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{106000L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{106000L});
     
             unit.Dispose();
             epService.EPAdministrator.DestroyAllStatements();
@@ -722,8 +720,8 @@ namespace com.espertech.esper.regression.client
             isolatedService.EPAdministrator.AddStatement(stmtOne);
     
             IEnumerator<EventBean> iter = stmtTwo.GetEnumerator();
-            while (iter.HasNext()) {
-                EventBean theEvent = iter.Next();
+            while (iter.MoveNext()) {
+                EventBean theEvent = iter.Current;
                 isolatedService.EPRuntime.SendEvent(theEvent.Underlying);
             }
     
@@ -740,7 +738,7 @@ namespace com.espertech.esper.regression.client
             EPServiceProviderIsolated unit = epService.GetEPServiceIsolated("other1");
             EventSender sender = unit.EPRuntime.GetEventSender("SupportBean");
             var listener = new SupportUpdateListener();
-            unit.EPAdministrator.CreateEPL("select * from SupportBean", null, null).AddListener(listener);
+            unit.EPAdministrator.CreateEPL("select * from SupportBean", null, null).Events += listener.Update;
             sender.SendEvent(new SupportBean());
             Assert.IsTrue(listener.IsInvoked);
     

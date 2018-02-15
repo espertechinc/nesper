@@ -204,13 +204,13 @@ namespace com.espertech.esper.supportregression.bean
                 .ToArray();
         }
 
-        public static Object[] GetOAStringAndIntPerIndex(SupportBean[] beans, int[] indexes)
+        public static object[] GetOAStringAndIntPerIndex(SupportBean[] beans, int[] indexes)
         {
             SupportBean[] arr = GetBeansPerIndex(beans, indexes);
             return arr == null ? null : ToOAStringAndInt(arr);
         }
 
-        private static Object[] ToOAStringAndInt(SupportBean[] arr)
+        private static object[] ToOAStringAndInt(SupportBean[] arr)
         {
             return arr
                 .Select(v => new object[] { v.TheString, v.IntPrimitive })

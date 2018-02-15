@@ -45,10 +45,10 @@ namespace com.espertech.esper.regression.epl.subselect
                 string[] fields = "c0,c1".Split(',');
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanTwo("E1", 1, 2, 3));
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanOne("EX", 10, 11, 12));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"EX", "E1"});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"EX", "E1"});
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanTwo("E2", 1, 2, 3));
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanOne("EY", 10, 11, 12));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"EY", null});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"EY", null});
             });
             TryAssertion(epService, listener, false, "s2,i2", "", BACKING_UNINDEXED, assertNoWhere);
     
@@ -59,7 +59,7 @@ namespace com.espertech.esper.regression.epl.subselect
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanTwo("E2", 1, 2, 0));
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanTwo("E3", 1, 3, 9));
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanOne("EX", 1, 3, 9));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"EX", "E3"});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"EX", "E3"});
             });
             TryAssertion(epService, listener, false, "d2,i2", "where ssb2.i2 = ssb1.i1 and ssb2.d2 = ssb1.d1", BACKING_MULTI_UNIQUE, assertSendEvents);
             TryAssertion(epService, listener, false, "d2,i2", "where ssb2.d2 = ssb1.d1 and ssb2.i2 = ssb1.i1", BACKING_MULTI_UNIQUE, assertSendEvents);
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regression.epl.subselect
                 eplUnique = "@Hint('DISABLE_UNIQUE_IMPLICIT_IDX')" + eplUnique;
             }
             EPStatement stmtUnique = epService.EPAdministrator.CreateEPL(eplUnique);
-            stmtUnique.AddListener(listener);
+            stmtUnique.Events += listener.Update;
     
             SupportQueryPlanIndexHook.AssertSubqueryBackingAndReset(0, null, backingTable);
     
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regression.epl.subselect
                     "(select intPrimitive from SupportBean#unique(theString) where theString = s0.p00) as c1 " +
                     "from S0 as s0";
             EPStatement stmtUnique = epService.EPAdministrator.CreateEPL(eplUnique);
-            stmtUnique.AddListener(listener);
+            stmtUnique.Events += listener.Update;
     
             SupportQueryPlanIndexHook.AssertSubqueryBackingAndReset(0, null, BACKING_SINGLE_UNIQUE);
     
@@ -117,10 +117,10 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPRuntime.SendEvent(new SupportBean("E2", 4));
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{10, 4});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10, 4});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(11, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{11, 3});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{11, 3});
     
             stmtUnique.Dispose();
     
@@ -130,7 +130,7 @@ namespace com.espertech.esper.regression.epl.subselect
                     "(select intPrimitive from SupportBean#Firstunique(theString) where theString = s0.p00) as c1 " +
                     "from S0 as s0";
             EPStatement stmtFirstUnique = epService.EPAdministrator.CreateEPL(eplFirstUnique);
-            stmtFirstUnique.AddListener(listener);
+            stmtFirstUnique.Events += listener.Update;
     
             SupportQueryPlanIndexHook.AssertSubqueryBackingAndReset(0, null, BACKING_SINGLE_UNIQUE);
     
@@ -140,10 +140,10 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPRuntime.SendEvent(new SupportBean("E2", 4));
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{10, 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10, 2});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(11, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{11, 1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{11, 1});
     
             stmtFirstUnique.Dispose();
     
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regression.epl.subselect
                     "(select intPrimitive from SupportBean#Time(1)#unique(theString) where theString = s0.p00) as c1 " +
                     "from S0 as s0";
             EPStatement stmtIntersection = epService.EPAdministrator.CreateEPL(eplIntersection);
-            stmtIntersection.AddListener(listener);
+            stmtIntersection.Events += listener.Update;
     
             SupportQueryPlanIndexHook.AssertSubqueryBackingAndReset(0, null, BACKING_SINGLE_UNIQUE);
     
@@ -163,10 +163,10 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPRuntime.SendEvent(new SupportBean("E2", 4));
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{10, 4});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10, 4});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(11, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{11, 3});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{11, 3});
     
             stmtIntersection.Dispose();
     
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regression.epl.subselect
                     "(select longPrimitive from SupportBean#Groupwin(theString)#unique(intPrimitive) where theString = s0.p00 and intPrimitive = s0.id) as c1 " +
                     "from S0 as s0";
             EPStatement stmtGrouped = epService.EPAdministrator.CreateEPL(eplGrouped);
-            stmtGrouped.AddListener(listener);
+            stmtGrouped.Events += listener.Update;
     
             SupportQueryPlanIndexHook.AssertSubqueryBackingAndReset(0, null, BACKING_MULTI_UNIQUE);
     
@@ -185,7 +185,7 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPRuntime.SendEvent(MakeBean("E1", 1, 102));
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1, 102L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1, 102L});
     
             stmtGrouped.Dispose();
         }

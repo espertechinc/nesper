@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "create table MyInfra (c0 int[], c1 int[primitive])";
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, false, eplCreate);
     
-            var expectedType = new Object[][]{new object[] {"c0", typeof(int?[])}, new object[] {"c1", typeof(int[])}};
+            var expectedType = new object[][]{new object[] {"c0", typeof(int?[])}, new object[] {"c1", typeof(int[])}};
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedType, stmt.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
             epService.EPAdministrator.DestroyAllStatements();

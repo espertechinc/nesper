@@ -15,7 +15,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -40,7 +39,7 @@ namespace com.espertech.esper.regression.pattern
             long startTime = DateTimeHelper.CurrentTimeMillis;
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             long delta = DateTimeHelper.CurrentTimeMillis - startTime;
-            Assert.IsTrue("performance: delta=" + delta, delta < 20);
+            Assert.IsTrue(delta < 20, "performance: delta=" + delta);
         }
     }
 } // end of namespace

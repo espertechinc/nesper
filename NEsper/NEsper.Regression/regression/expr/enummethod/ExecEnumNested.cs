@@ -44,7 +44,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             var eplFragment = "select Contained.Where(x => (x.p00 = contained.min(y => y.p00))) as val from Bean";
             var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
     
             var bean = SupportBean_ST0_Container.Make2Value("E1,2", "E2,1", "E3,2");
             epService.EPRuntime.SendEvent(bean);
@@ -57,7 +57,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             var eplFragment = "select Sales.Where(x => x.buyer = persons.MinBy(y => age)) as val from PersonSales";
             var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
     
             var bean = PersonSales.Make();
             epService.EPRuntime.SendEvent(bean);
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             var eplFragment = "select Contained.Where(x => x = (contained.FirstOf(y => y.p00 = x.p00 ))) as val from Bean";
             var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
     
             var bean = SupportBean_ST0_Container.Make2Value("E1,2", "E2,1", "E3,3");
             epService.EPRuntime.SendEvent(bean);
@@ -84,12 +84,12 @@ namespace com.espertech.esper.regression.expr.enummethod
             var listener = new SupportUpdateListener();
     
             // try "in" with "ISet<string> multivalues"
-            epService.EPAdministrator.CreateEPL("select * from ContainerEvent(level1s.AnyOf(x=>x.level2s.AnyOf(y => 'A' in (y.multivalues))))").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from ContainerEvent(level1s.AnyOf(x=>x.level2s.AnyOf(y => 'A' in (y.multivalues))))").Events += listener.Update;
             TryAssertionAnyOf(epService, listener);
             epService.EPAdministrator.DestroyAllStatements();
     
             // try "in" with "string singlevalue"
-            epService.EPAdministrator.CreateEPL("select * from ContainerEvent(level1s.AnyOf(x=>x.level2s.AnyOf(y => y.singlevalue = 'A')))").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from ContainerEvent(level1s.AnyOf(x=>x.level2s.AnyOf(y => y.singlevalue = 'A')))").Events += listener.Update;
             TryAssertionAnyOf(epService, listener);
             epService.EPAdministrator.DestroyAllStatements();
         }

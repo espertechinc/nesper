@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
@@ -17,8 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -45,7 +43,7 @@ namespace com.espertech.esper.regression.epl.join
                     " where MyStaticEvaluator(sb.theString, s0.p00)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var updateListener = new SupportUpdateListener();
-            stmt.AddListener(updateListener);
+            stmt.Events += updateListener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "x"));
             Assert.AreEqual(0, MyStaticEval.CountCalled);
@@ -71,7 +69,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var updateListener = new SupportUpdateListener();
-            stmt.AddListener(updateListener);
+            stmt.Events += updateListener.Update;
     
             // Send events for each stream
             Log.Info(methodName + " Preloading events");
@@ -100,7 +98,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var updateListener = new SupportUpdateListener();
-            stmt.AddListener(updateListener);
+            stmt.Events += updateListener.Update;
     
             // Send events for each stream
             Log.Info(methodName + " Preloading events");
@@ -133,38 +131,34 @@ namespace com.espertech.esper.regression.epl.join
         private Object MakeMarketEvent(string id, long volume) {
             return new SupportMarketDataBean(id, 0, (long) volume, "");
         }
-    
+
         public class MyStaticEval {
             private static int countCalled = 0;
             private static long waitTimeMSec;
-    
-            public static int GetCountCalled() {
-                return countCalled;
+
+            public static int CountCalled {
+                get => countCalled;
+                set => countCalled = value;
             }
-    
-            public static void SetCountCalled(int countCalled) {
-                MyStaticEval.countCalled = countCalled;
+
+            public static long WaitTimeMSec {
+                get => waitTimeMSec;
+                set => waitTimeMSec = value;
             }
-    
-            public static long GetWaitTimeMSec() {
-                return waitTimeMSec;
-            }
-    
-            public static void SetWaitTimeMSec(long waitTimeMSec) {
-                MyStaticEval.waitTimeMSec = waitTimeMSec;
-            }
-    
+
             public static bool MyStaticEvaluator(string a, string b) {
                 try {
-                    Thread.Sleep(waitTimeMSec);
+                    Thread.Sleep((int) waitTimeMSec);
                     countCalled++;
-                } catch (InterruptedException ex) {
+                }
+                catch (ThreadInterruptedException) {
                     return false;
                 }
+
                 return true;
             }
         }
-    
+
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

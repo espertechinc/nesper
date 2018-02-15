@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.epl.join
                 "where a.intPrimitive = b.intPrimitive";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendEvent(epService, "A1", 1);
             SendEvent(epService, "A2", 2);
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regression.epl.join
 
             var stmt = epService.EPAdministrator.CreateEPL(joinStatement);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var setOne = new object[5];
             var setTwo = new object[5];

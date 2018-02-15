@@ -23,7 +23,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.regression.resultset.querytype
 {
     public class ExecQuerytypeHaving : RegressionExecution {
-        private static readonly string SYMBOL_DELL = "DELL";
+        private const string SYMBOL_DELL = "DELL";
     
         public override void Run(EPServiceProvider epService) {
             RunAssertionHavingWildcardSelect(epService);
@@ -46,7 +46,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "having count(*)=2";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 0));
@@ -80,7 +80,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertion(epService, listener, stmt);
     
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertion(epService, listener, stmt);
     
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
     
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             string stmtText = "insert into MyStream select quote.* from SupportBean#length(14) quote having avg(intPrimitive) >= 3\n";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("abc", 2));
             Assert.IsFalse(listener.IsInvoked);
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendPriceEvent(epService, "SYM1", 20);
             Assert.IsFalse(listener.IsInvoked);
@@ -278,7 +278,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "] having sum(myEvent.intPrimitive) = 2";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, 1);
             Assert.IsFalse(listener.IsInvoked);
@@ -295,7 +295,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "] having sum(myEvent.intPrimitive) = 2";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, 1);
             Assert.IsFalse(listener.IsInvoked);

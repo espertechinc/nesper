@@ -51,7 +51,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "select sum(intPrimitive) as total from SupportBean group by theString");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select total as value from SupportBean_S0 as s0, varaggFC as va " +
-                    "where va.key = s0.p00").AddListener(listener);
+                    "where va.key = s0.p00").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 100));
             AssertValues(epService, listener, "G1,G2", new int?[]{100, null});
@@ -69,22 +69,22 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string eplQuery = "select total as value from SupportBean_S0 as s0 unidirectional";
     
             var createIndexEmpty = new string[]{};
-            var preloadedEventsTwo = new Object[]{MakeEvent("G1", 10, 1000L), MakeEvent("G2", 20, 2000L),
+            var preloadedEventsTwo = new object[]{MakeEvent("G1", 10, 1000L), MakeEvent("G2", 20, 2000L),
                     MakeEvent("G3", 30, 3000L), MakeEvent("G4", 40, 4000L)};
             var listener = new SupportUpdateListener();
     
             var eventSendAssertionRangeTwoExpected = new IndexAssertionEventSend(() => {
                 epService.EPRuntime.SendEvent(new SupportBean_S0(-1, null));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetNewDataListFlattened(), "value".Split(','),
-                        new Object[][]{new object[] {2000L}, new object[] {3000L}});
+                        new object[][]{new object[] {2000L}, new object[] {3000L}});
                 listener.Reset();
             });
     
-            var preloadedEventsHash = new Object[]{MakeEvent("G1", 10, 1000L)};
+            var preloadedEventsHash = new object[]{MakeEvent("G1", 10, 1000L)};
             var eventSendAssertionHash = new IndexAssertionEventSend(() => {
                 epService.EPRuntime.SendEvent(new SupportBean_S0(10, "G1"));
                 EPAssertionUtil.AssertPropsPerRow(listener.GetNewDataListFlattened(), "value".Split(','),
-                        new Object[][]{new object[] {1000L}});
+                        new object[][]{new object[] {1000L}});
                 listener.Reset();
             });
     
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             var eventSendAssertionRangeOneExpected = new IndexAssertionEventSend(() => {
                 epService.EPRuntime.SendEvent(new SupportBean_S0(-1, null));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetNewDataListFlattened(), "value".Split(','),
-                        new Object[][]{new object[] {2000L}});
+                        new object[][]{new object[] {2000L}});
                 listener.Reset();
             });
             AssertIndexChoice(epService, listener, eplDeclare, eplPopulate, eplQuery, createIndexRangeOne, preloadedEventsTwo,
@@ -196,14 +196,14 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string eplQuery = "select total as value from SupportBeanRange unidirectional";
     
             var createIndexEmpty = new string[]{};
-            var preloadedEvents = new Object[]{MakeEvent("G1", 10, 1000L), MakeEvent("G2", 20, 2000L),
+            var preloadedEvents = new object[]{MakeEvent("G1", 10, 1000L), MakeEvent("G2", 20, 2000L),
                     MakeEvent("G3", 30, 3000L), MakeEvent("G4", 40, 4000L)};
             var listener = new SupportUpdateListener();
     
             var eventSendAssertion = new IndexAssertionEventSend(() => {
                 epService.EPRuntime.SendEvent(new SupportBeanRange(20L));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetNewDataListFlattened(), "value".Split(','),
-                        new Object[][]{new object[] {2000L}});
+                        new object[][]{new object[] {2000L}});
                 listener.Reset();
             });
 
@@ -226,7 +226,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             // join simple
             EPStatement stmtJoinOne = epService.EPAdministrator.CreateEPL("select sumint from MyTable, SupportBean");
             var listener = new SupportUpdateListener();
-            stmtJoinOne.AddListener(listener);
+            stmtJoinOne.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean());
             Assert.AreEqual(201, listener.AssertOneGetNewAndReset().Get("sumint"));
             stmtJoinOne.Dispose();
@@ -235,22 +235,22 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("create table SecondTable (a string, b int)");
             epService.EPRuntime.ExecuteQuery("insert into SecondTable values ('a1', 10)");
             EPStatement stmtJoinTwo = epService.EPAdministrator.CreateEPL("select a, b from SecondTable, SupportBean");
-            stmtJoinTwo.AddListener(listener);
+            stmtJoinTwo.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a,b".Split(','), new Object[]{"a1", 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a,b".Split(','), new object[]{"a1", 10});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
         private void AssertIndexChoice(EPServiceProvider epService, SupportUpdateListener listener, string eplDeclare, string eplPopulate, string eplQuery,
-                                       string[] indexes, Object[] preloadedEvents,
+                                       string[] indexes, object[] preloadedEvents,
                                        IndexAssertion[] assertions) {
             AssertIndexChoice(epService, listener, eplDeclare, eplPopulate, eplQuery, indexes, preloadedEvents, assertions, false);
             AssertIndexChoice(epService, listener, eplDeclare, eplPopulate, eplQuery, indexes, preloadedEvents, assertions, true);
         }
     
         private void AssertIndexChoice(EPServiceProvider epService, SupportUpdateListener listener, string eplDeclare, string eplPopulate, string eplQuery,
-                                       string[] indexes, Object[] preloadedEvents,
+                                       string[] indexes, object[] preloadedEvents,
                                        IndexAssertion[] assertions, bool multistream) {
     
             epService.EPAdministrator.CreateEPL(eplDeclare);
@@ -276,7 +276,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 EPStatement stmt;
                 try {
                     stmt = epService.EPAdministrator.CreateEPL(epl);
-                    stmt.AddListener(listener);
+                    stmt.Events += listener.Update;
                 } catch (EPStatementException ex) {
                     if (assertion.EventSendAssertion == null) {
                         // no assertion, expected

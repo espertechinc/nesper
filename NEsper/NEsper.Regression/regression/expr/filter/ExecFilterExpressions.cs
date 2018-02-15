@@ -69,9 +69,9 @@ namespace com.espertech.esper.regression.expr.filter
             string eplTwo = "select * from SupportBean(theString != 'x' and theString != 'y' and longBoxed is not null)";
     
             EPStatement stmeOne = epService.EPAdministrator.CreateEPL(eplOne);
-            stmeOne.AddListener(listenerOne);
+            stmeOne.Events += listenerOne.Update;
             EPStatement stmeTwo = epService.EPAdministrator.CreateEPL(eplTwo);
-            stmeTwo.AddListener(listenerTwo);
+            stmeTwo.Events += listenerTwo.Update;
     
             var bean = new SupportBean("E1", 0);
             bean.DoubleBoxed = 1d;
@@ -128,19 +128,19 @@ namespace com.espertech.esper.regression.expr.filter
             epService.EPAdministrator.Configuration.AddEventType(typeof(TestEvent));
             var listener = new SupportUpdateListener();
     
-            epService.EPAdministrator.CreateEPL("@Name('A') select * from TestEvent where 4 < x").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("@Name('A') select * from TestEvent where 4 < x").Events += listener.Update;
             AssertSendReceive(epService, listener, new[]{3, 4, 5}, new[]{false, false, true});
     
             epService.EPAdministrator.GetStatement("A").Dispose();
-            epService.EPAdministrator.CreateEPL("@Name('A') select * from TestEvent where 4 <= x").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("@Name('A') select * from TestEvent where 4 <= x").Events += listener.Update;
             AssertSendReceive(epService, listener, new[]{3, 4, 5}, new[]{false, true, true});
     
             epService.EPAdministrator.GetStatement("A").Dispose();
-            epService.EPAdministrator.CreateEPL("@Name('A') select * from TestEvent where 4 > x").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("@Name('A') select * from TestEvent where 4 > x").Events += listener.Update;
             AssertSendReceive(epService, listener, new[]{3, 4, 5}, new[]{true, false, false});
     
             epService.EPAdministrator.GetStatement("A").Dispose();
-            epService.EPAdministrator.CreateEPL("@Name('A') select * from TestEvent where 4 >= x").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("@Name('A') select * from TestEvent where 4 >= x").Events += listener.Update;
             AssertSendReceive(epService, listener, new[]{3, 4, 5}, new[]{true, true, false});
     
             epService.EPAdministrator.GetStatement("A").Dispose();
@@ -196,7 +196,7 @@ namespace com.espertech.esper.regression.expr.filter
             string epl = prefix + " select * from SupportBean as A0 where A0.intPrimitive = 3";
             EPStatement statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 3));
             Assert.IsTrue(listener.GetAndClearIsInvoked());
@@ -211,7 +211,7 @@ namespace com.espertech.esper.regression.expr.filter
             string stmtOneText = "every event1=SupportEvent(userId like '123%')";
             EPStatement statement = epService.EPAdministrator.CreatePattern(stmtOneText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportTradeEvent(1, null, 1001));
             Assert.IsFalse(listener.IsInvoked);
@@ -227,7 +227,7 @@ namespace com.espertech.esper.regression.expr.filter
             string stmtOneText = "every event1=SupportEvent(userId in ('100','101'),amount>=1000)";
             EPStatement statement = epService.EPAdministrator.CreatePattern(stmtOneText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportTradeEvent(1, "100", 1001));
             Assert.AreEqual(1, listener.AssertOneGetNewAndReset().Get("event1.id"));
@@ -385,10 +385,10 @@ namespace com.espertech.esper.regression.expr.filter
             }
     
             // test equals&where-clause (can be optimized into filter)
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString != 'A'").AddListener(listeners[0]);
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString != 'A' or intPrimitive != 0").AddListener(listeners[1]);
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString = 'A'").AddListener(listeners[2]);
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString = 'A' or intPrimitive != 0").AddListener(listeners[3]);
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString != 'A'").Events += listeners[0].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString != 'A' or intPrimitive != 0").Events += listeners[1].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString = 'A'").Events += listeners[2].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString = 'A' or intPrimitive != 0").Events += listeners[3].Update;
     
             epService.EPRuntime.SendEvent(new SupportBean(null, 0));
             AssertListeners(listeners, new[]{false, false, false, false});
@@ -423,30 +423,30 @@ namespace com.espertech.esper.regression.expr.filter
             stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean(null, 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, null, false, null, null, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, false, null, null, false});
     
             epService.EPRuntime.SendEvent(new SupportBean(null, 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, true, null, null, true, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, true, null, null, true, null});
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, false, false, true, true, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, false, false, true, true, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, true, false, true, true, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true, false, true, true, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("B", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, true, false, false, false, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, true, false, false, false, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("B", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, true, true, false, true, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, true, true, false, true, false});
     
             epService.EPAdministrator.DestroyAllStatements();
     
             // test is-and-isnot&where-clause
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString is null").AddListener(listeners[0]);
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString is null or intPrimitive != 0").AddListener(listeners[1]);
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString is not null").AddListener(listeners[2]);
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString is not null or intPrimitive != 0").AddListener(listeners[3]);
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString is null").Events += listeners[0].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString is null or intPrimitive != 0").Events += listeners[1].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString is not null").Events += listeners[2].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString is not null or intPrimitive != 0").Events += listeners[3].Update;
     
             epService.EPRuntime.SendEvent(new SupportBean(null, 0));
             AssertListeners(listeners, new[]{true, true, false, false});
@@ -470,29 +470,29 @@ namespace com.espertech.esper.regression.expr.filter
                     "theString is not null as val3," +
                     "theString is not null or intPrimitive != 0 as val4, " +
                     "theString is not null and intPrimitive != 0 as val5 " +
-                    "from SupportBean").AddListener(listener);
+                    "from SupportBean").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean(null, 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, true, false, false, false, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, true, false, false, false, false});
     
             epService.EPRuntime.SendEvent(new SupportBean(null, 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, true, true, false, true, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, true, true, false, true, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, false, false, true, true, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, false, false, true, true, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, true, false, true, true, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true, false, true, true, true});
     
             epService.EPAdministrator.DestroyAllStatements();
     
             // filter expression
-            epService.EPAdministrator.CreateEPL("select * from SupportBean(theString is null)").AddListener(listeners[0]);
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString = null").AddListener(listeners[1]);
-            epService.EPAdministrator.CreateEPL("select * from SupportBean(theString = null)").AddListener(listeners[2]);
-            epService.EPAdministrator.CreateEPL("select * from SupportBean(theString is not null)").AddListener(listeners[3]);
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString != null").AddListener(listeners[4]);
-            epService.EPAdministrator.CreateEPL("select * from SupportBean(theString != null)").AddListener(listeners[5]);
+            epService.EPAdministrator.CreateEPL("select * from SupportBean(theString is null)").Events += listeners[0].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString = null").Events += listeners[1].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean(theString = null)").Events += listeners[2].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean(theString is not null)").Events += listeners[3].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString != null").Events += listeners[4].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean(theString != null)").Events += listeners[5].Update;
     
             epService.EPRuntime.SendEvent(new SupportBean(null, 0));
             AssertListeners(listeners, new[]{true, false, false, false, false, false});
@@ -509,10 +509,10 @@ namespace com.espertech.esper.regression.expr.filter
                     "null = null as val1," +
                     "2 != null or 1 = 2 as val2," +
                     "2 != null and 2 = 2 as val3 " +
-                    "from SupportBean").AddListener(listener);
+                    "from SupportBean").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, null, null});
     
             // test SODA
             string epl = "select intBoxed is null, intBoxed is not null, intBoxed=1, intBoxed!=1 from SupportBean";
@@ -985,7 +985,7 @@ namespace com.espertech.esper.regression.expr.filter
             text = "select * from " + typeof(SupportBean).FullName + "(2*intBoxed=doubleBoxed, theString='s')";
             stmt = epService.EPAdministrator.CreateEPL(text);
             var listenerTwo = new SupportUpdateListener();
-            stmt.AddListener(listenerTwo);
+            stmt.Events += listenerTwo.Update;
     
             SendBeanIntDoubleString(epService, 25, 50d, "s");
             Assert.IsTrue(listenerTwo.GetAndClearIsInvoked());
@@ -1163,7 +1163,7 @@ namespace com.espertech.esper.regression.expr.filter
             bean.LongPrimitive = 10;
             epService.EPRuntime.SendEvent(bean);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{11, 6, -1, 2, 30, 8, 5d / 6d, 2d, 15L, 14L});
+                    new object[]{11, 6, -1, 2, 30, 8, 5d / 6d, 2d, 15L, 14L});
     
             stmt.Dispose();
         }

@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.events.map
                                 "from MyLevel2#length(5)";
             var statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
 
             var map = new Dictionary<string, object>();
             map.Put("dynamicTwo", 20L);
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regression.events.map
                                 "from MyLevel2#length(5)";
             var statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
 
             var map = new Dictionary<string, object>();
             map.Put("dynamicTwo", 20L);

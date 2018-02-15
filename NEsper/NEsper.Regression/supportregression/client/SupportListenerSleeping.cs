@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
@@ -19,28 +19,34 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.supportregression.client
 {
-    public class SupportListenerSleeping : UpdateListener {
-        private List<Pair<long, EventBean[]>> newEvents = Collections.SynchronizedList(new List<Pair<long, EventBean[]>>());
+    public class SupportListenerSleeping
+    {
+        private IList<Pair<long, EventBean[]>> newEvents =
+            CompatExtensions.AsSyncList(new List<Pair<long, EventBean[]>>());
     
         private readonly long sleepTime;
     
         public SupportListenerSleeping(long sleepTime) {
             this.sleepTime = sleepTime;
         }
-    
+
+        public void Update(object sender, UpdateEventArgs e) {
+            Update(e.NewEvents, e.OldEvents);
+        }
+
         public void Update(EventBean[] newData, EventBean[] oldEvents) {
             long time = PerformanceObserver.NanoTime;
             newEvents.Add(new Pair<long, EventBean[]>(time, newData));
     
             try {
-                Thread.Sleep(sleepTime);
-            } catch (InterruptedException e) {
+                Thread.Sleep((int) sleepTime);
+            } catch (ThreadInterruptedException e) {
                 throw new EPRuntimeException(e);
             }
         }
-    
-        public List<Pair<long, EventBean[]>> GetNewEvents() {
-            return newEvents;
+
+        public IList<Pair<long, EventBean[]>> NewEvents {
+            get { return newEvents; }
         }
     }
 } // end of namespace

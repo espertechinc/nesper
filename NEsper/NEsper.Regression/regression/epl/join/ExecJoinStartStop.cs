@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -48,7 +47,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(joinStatement, "MyJoin");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, setOne[0]);
             SendEvent(epService, setTwo[0]);
@@ -76,7 +75,7 @@ namespace com.espertech.esper.regression.epl.join
             // assert type-statement reference
             EPServiceProviderSPI spi = (EPServiceProviderSPI) epService;
             Assert.IsTrue(spi.StatementEventTypeRef.IsInUse(typeof(SupportMarketDataBean).Name));
-            ISet<string> stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportMarketDataBean).Name);
+            var stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportMarketDataBean).Name);
             Assert.IsTrue(stmtNames.Contains("MyJoin"));
     
             stmt.Dispose();

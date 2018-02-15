@@ -13,7 +13,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportregression.execution;
 using NUnit.Framework;
-// using static org.junit.Assert.assertNull;
 
 namespace com.espertech.esper.regression.multithread
 {

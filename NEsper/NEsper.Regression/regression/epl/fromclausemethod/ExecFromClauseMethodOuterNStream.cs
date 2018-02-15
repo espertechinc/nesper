@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -140,33 +139,33 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         private void TryAssertionThree(EPServiceProvider epService, string expression) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "id,valh0,valh1".Split(',');
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
     
             SendBeanInt(epService, "E1", 0, 0, 1);
-            var result = new Object[][]{new object[] {"E1", null, null}};
+            var result = new object[][]{new object[] {"E1", null, null}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, result);
     
             SendBeanInt(epService, "E2", 0, 1, 1);
-            result = new Object[][]{new object[] {"E2", null, null}};
+            result = new object[][]{new object[] {"E2", null, null}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, result);
     
             SendBeanInt(epService, "E3", 1, 0, 1);
-            result = new Object[][]{new object[] {"E3", "H01", null}};
+            result = new object[][]{new object[] {"E3", "H01", null}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, result);
     
             SendBeanInt(epService, "E4", 1, 1, 1);
-            result = new Object[][]{new object[] {"E4", "H01", "H11"}};
+            result = new object[][]{new object[] {"E4", "H01", "H11"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, result);
     
             SendBeanInt(epService, "E5", 4, 4, 2);
-            result = new Object[][]{new object[] {"E5", "H02", "H12"}};
+            result = new object[][]{new object[] {"E5", "H02", "H12"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, result);
     
@@ -208,33 +207,33 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         private void TryAssertionFour(EPServiceProvider epService, string expression) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "id,valh0,valh1,valh2".Split(',');
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
     
             SendBeanInt(epService, "E1", 0, 0, 0, 1);
-            var result = new Object[][]{new object[] {"E1", null, null, null}};
+            var result = new object[][]{new object[] {"E1", null, null, null}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, result);
     
             SendBeanInt(epService, "E2", 0, 1, 1, 1);
-            result = new Object[][]{new object[] {"E2", null, null, null}};
+            result = new object[][]{new object[] {"E2", null, null, null}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, result);
     
             SendBeanInt(epService, "E3", 1, 1, 1, 1);
-            result = new Object[][]{new object[] {"E3", "H01", "H11", "H21"}};
+            result = new object[][]{new object[] {"E3", "H01", "H11", "H21"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, result);
     
             SendBeanInt(epService, "E4", 1, 0, 1, 1);
-            result = new Object[][]{new object[] {"E4", "H01", null, null}};
+            result = new object[][]{new object[] {"E4", "H01", null, null}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, result);
     
             SendBeanInt(epService, "E5", 4, 4, 4, 2);
-            result = new Object[][]{new object[] {"E5", "H02", "H12", "H22"}};
+            result = new object[][]{new object[] {"E5", "H02", "H12", "H22"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, result);
     
@@ -262,33 +261,33 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         private void TryAssertionFive(EPServiceProvider epService, string expression) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "id,valh0,valh1,valh2".Split(',');
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
     
             SendBeanInt(epService, "E1", 0, 0, 0, 1);
-            var result = new Object[][]{new object[] {"E1", null, null, null}};
+            var result = new object[][]{new object[] {"E1", null, null, null}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, result);
     
             SendBeanInt(epService, "E2", 0, 1, 1, 1);
-            result = new Object[][]{new object[] {"E2", null, null, null}};
+            result = new object[][]{new object[] {"E2", null, null, null}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, result);
     
             SendBeanInt(epService, "E3", 1, 1, 1, 1);
-            result = new Object[][]{new object[] {"E3", "E3-H01", "E3-H01-H11", "E3-H01-H11-H21"}};
+            result = new object[][]{new object[] {"E3", "E3-H01", "E3-H01-H11", "E3-H01-H11-H21"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, result);
     
             SendBeanInt(epService, "E4", 1, 0, 1, 1);
-            result = new Object[][]{new object[] {"E4", "E4-H01", null, null}};
+            result = new object[][]{new object[] {"E4", "E4-H01", null, null}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, result);
     
             SendBeanInt(epService, "E5", 4, 4, 4, 2);
-            result = new Object[][]{new object[] {"E5", "E5-H02", "E5-H02-H12", "E5-H02-H12-H22"}};
+            result = new object[][]{new object[] {"E5", "E5-H02", "E5-H02-H12", "E5-H02-H12-H22"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, result);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, result);
     
@@ -298,44 +297,44 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         private void TryAssertionOne(EPServiceProvider epService, string expression) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "id,valh0,valh1".Split(',');
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
     
             SendBeanInt(epService, "E1", 0, 0, 0, 0, 1, 1);
-            var resultOne = new Object[][]{new object[] {"E1", null, null}};
+            var resultOne = new object[][]{new object[] {"E1", null, null}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultOne);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, resultOne);
     
             SendBeanInt(epService, "E2", 1, 1, 1, 1, 1, 1);
-            var resultTwo = new Object[][]{new object[] {"E2", "H01_0", "H11_0"}};
+            var resultTwo = new object[][]{new object[] {"E2", "H01_0", "H11_0"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultTwo);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, EPAssertionUtil.ConcatenateArray2Dim(resultOne, resultTwo));
     
             SendBeanInt(epService, "E3", 5, 5, 3, 4, 1, 1);
-            var resultThree = new Object[][]{new object[] {"E3", "H03_0", "H14_0"}};
+            var resultThree = new object[][]{new object[] {"E3", "H03_0", "H14_0"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultThree);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, EPAssertionUtil.ConcatenateArray2Dim(resultOne, resultTwo, resultThree));
     
             SendBeanInt(epService, "E4", 0, 5, 3, 4, 1, 1);
-            var resultFour = new Object[][]{new object[] {"E4", null, "H14_0"}};
+            var resultFour = new object[][]{new object[] {"E4", null, "H14_0"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultFour);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, EPAssertionUtil.ConcatenateArray2Dim(resultOne, resultTwo, resultThree, resultFour));
     
             SendBeanInt(epService, "E5", 2, 0, 2, 1, 1, 1);
-            var resultFive = new Object[][]{new object[] {"E5", "H02_0", null}};
+            var resultFive = new object[][]{new object[] {"E5", "H02_0", null}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultFive);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, EPAssertionUtil.ConcatenateArray2Dim(resultOne, resultTwo, resultThree, resultFour, resultFive));
     
             // set 2 rows for H0
             SendBeanInt(epService, "E6", 2, 2, 2, 2, 2, 1);
-            var resultSix = new Object[][]{new object[] {"E6", "H02_0", "H12_0"}, new object[] {"E6", "H02_1", "H12_0"}};
+            var resultSix = new object[][]{new object[] {"E6", "H02_0", "H12_0"}, new object[] {"E6", "H02_1", "H12_0"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultSix);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, EPAssertionUtil.ConcatenateArray2Dim(resultOne, resultTwo, resultThree, resultFour, resultFive, resultSix));
     
             SendBeanInt(epService, "E7", 10, 10, 4, 5, 1, 2);
-            var resultSeven = new Object[][]{new object[] {"E7", "H04_0", "H15_0"}, new object[] {"E7", "H04_0", "H15_1"}};
+            var resultSeven = new object[][]{new object[] {"E7", "H04_0", "H15_0"}, new object[] {"E7", "H04_0", "H15_1"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultSeven);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, EPAssertionUtil.ConcatenateArray2Dim(resultOne, resultTwo, resultThree, resultFour, resultFive, resultSix, resultSeven));
     
@@ -345,7 +344,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         private void TryAssertionTwo(EPServiceProvider epService, string expression) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "id,valh0,valh1".Split(',');
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
@@ -355,12 +354,12 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
     
             SendBeanInt(epService, "E2", 1, 1, 1, 1, 1, 1);
-            var resultTwo = new Object[][]{new object[] {"E2", "H01_0", "H11_0"}};
+            var resultTwo = new object[][]{new object[] {"E2", "H01_0", "H11_0"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultTwo);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, EPAssertionUtil.ConcatenateArray2Dim(resultTwo));
     
             SendBeanInt(epService, "E3", 5, 5, 3, 4, 1, 1);
-            var resultThree = new Object[][]{new object[] {"E3", "H03_0", "H14_0"}};
+            var resultThree = new object[][]{new object[] {"E3", "H03_0", "H14_0"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultThree);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, EPAssertionUtil.ConcatenateArray2Dim(resultTwo, resultThree));
     
@@ -374,12 +373,12 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
     
             // set 2 rows for H0
             SendBeanInt(epService, "E6", 2, 2, 2, 2, 2, 1);
-            var resultSix = new Object[][]{new object[] {"E6", "H02_0", "H12_0"}, new object[] {"E6", "H02_1", "H12_0"}};
+            var resultSix = new object[][]{new object[] {"E6", "H02_0", "H12_0"}, new object[] {"E6", "H02_1", "H12_0"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultSix);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, EPAssertionUtil.ConcatenateArray2Dim(resultTwo, resultThree, resultSix));
     
             SendBeanInt(epService, "E7", 10, 10, 4, 5, 1, 2);
-            var resultSeven = new Object[][]{new object[] {"E7", "H04_0", "H15_0"}, new object[] {"E7", "H04_0", "H15_1"}};
+            var resultSeven = new object[][]{new object[] {"E7", "H04_0", "H15_0"}, new object[] {"E7", "H04_0", "H15_1"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultSeven);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, EPAssertionUtil.ConcatenateArray2Dim(resultTwo, resultThree, resultSix, resultSeven));
     
@@ -455,7 +454,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         private void TryAssertionSix(EPServiceProvider epService, string expression) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "s0id,s1id,valh0".Split(',');
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
@@ -465,27 +464,27 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
     
             SendBeanInt(epService, "F1", 1, 1);
-            var resultOne = new Object[][]{new object[] {"E1", "F1", "E1H01"}};
+            var resultOne = new object[][]{new object[] {"E1", "F1", "E1H01"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultOne);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, resultOne);
     
             SendBeanInt(epService, "F2", 2, 2);
-            var resultTwo = new Object[][]{new object[] {null, "F2", null}};
+            var resultTwo = new object[][]{new object[] {null, "F2", null}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultTwo);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, EPAssertionUtil.ConcatenateArray2Dim(resultOne, resultTwo));
     
             SendBeanInt(epService, "E2", 2, 2);
-            var resultThree = new Object[][]{new object[] {"E2", "F2", "E2H02"}};
+            var resultThree = new object[][]{new object[] {"E2", "F2", "E2H02"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultThree);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, EPAssertionUtil.ConcatenateArray2Dim(resultOne, resultThree));
     
             SendBeanInt(epService, "F3", 3, 3);
-            var resultFour = new Object[][]{new object[] {null, "F3", null}};
+            var resultFour = new object[][]{new object[] {null, "F3", null}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultFour);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, EPAssertionUtil.ConcatenateArray2Dim(resultOne, resultThree, resultFour));
     
             SendBeanInt(epService, "E3", 0, 3);
-            var resultFive = new Object[][]{new object[] {"E3", "F3", null}};
+            var resultFive = new object[][]{new object[] {"E3", "F3", null}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultFive);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, EPAssertionUtil.ConcatenateArray2Dim(resultOne, resultThree, resultFive));
     
@@ -519,10 +518,10 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         private void TryAssertionSeven(EPServiceProvider epService, string expression) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "s0id,valh0,valh1".Split(',');
-            var resultOne = new Object[][]{new object[] {null, "H01", null}, new object[] {null, "H02", null}, new object[] {null, null, "H11"}, new object[] {null, null, "H12"}};
+            var resultOne = new object[][]{new object[] {null, "H01", null}, new object[] {null, "H02", null}, new object[] {null, null, "H11"}, new object[] {null, null, "H12"}};
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, resultOne);
     
             SendBeanInt(epService, "E1", 0);
@@ -530,21 +529,21 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, resultOne);
     
             SendBeanInt(epService, "E2", 2);
-            var resultTwo = new Object[][]{new object[] {"E2", "H02", "H12"}};
+            var resultTwo = new object[][]{new object[] {"E2", "H02", "H12"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultTwo);
-            var resultIt = new Object[][]{new object[] {null, "H01", null}, new object[] {null, null, "H11"}, new object[] {"E2", "H02", "H12"}};
+            var resultIt = new object[][]{new object[] {null, "H01", null}, new object[] {null, null, "H11"}, new object[] {"E2", "H02", "H12"}};
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, resultIt);
     
             SendBeanInt(epService, "E3", 1);
-            resultTwo = new Object[][]{new object[] {"E3", "H01", "H11"}};
+            resultTwo = new object[][]{new object[] {"E3", "H01", "H11"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultTwo);
-            resultIt = new Object[][]{new object[] {"E3", "H01", "H11"}, new object[] {"E2", "H02", "H12"}};
+            resultIt = new object[][]{new object[] {"E3", "H01", "H11"}, new object[] {"E2", "H02", "H12"}};
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, resultIt);
     
             SendBeanInt(epService, "E4", 1);
-            resultTwo = new Object[][]{new object[] {"E4", "H01", "H11"}};
+            resultTwo = new object[][]{new object[] {"E4", "H01", "H11"}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, resultTwo);
-            resultIt = new Object[][]{new object[] {"E3", "H01", "H11"}, new object[] {"E4", "H01", "H11"}, new object[] {"E2", "H02", "H12"}};
+            resultIt = new object[][]{new object[] {"E3", "H01", "H11"}, new object[] {"E4", "H01", "H11"}, new object[] {"E2", "H02", "H12"}};
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, resultIt);
     
             stmt.Dispose();

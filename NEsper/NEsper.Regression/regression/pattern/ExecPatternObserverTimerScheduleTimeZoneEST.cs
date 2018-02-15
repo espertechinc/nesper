@@ -18,8 +18,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertFalse;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -29,7 +27,7 @@ namespace com.espertech.esper.regression.pattern
         public override void Configure(Configuration configuration) {
             configuration.EngineDefaults.ViewResources.IsShareViews = false;
             configuration.EngineDefaults.Execution.IsAllowIsolatedService = true;
-            configuration.EngineDefaults.Expression.TimeZone = TimeZone.GetTimeZone("GMT-4:00");
+            configuration.EngineDefaults.Expression.TimeZone = TimeZoneHelper.GetTimeZoneInfo("GMT-4:00");
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -38,7 +36,7 @@ namespace com.espertech.esper.regression.pattern
     
             string epl = "select * from pattern[timer:Schedule(date: current_timestamp.WithTime(9, 0, 0, 0))]";
             var listener = new SupportUpdateListener();
-            iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(listener);
+            iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
             SendCurrentTime(iso, "2012-10-01T08:59:59.999GMT-4:00");
             Assert.IsFalse(listener.IsInvokedAndReset());
@@ -50,7 +48,7 @@ namespace com.espertech.esper.regression.pattern
             Assert.IsFalse(listener.IsInvokedAndReset());
     
             epService.EPAdministrator.DestroyAllStatements();
-            iso.Destroy();
+            iso.Dispose();
         }
     
         private void SendCurrentTime(EPServiceProviderIsolated iso, string time) {

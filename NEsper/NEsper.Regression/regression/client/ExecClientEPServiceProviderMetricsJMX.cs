@@ -31,6 +31,7 @@ namespace com.espertech.esper.regression.client
         private static readonly string[] ALL = new string[]{FILTER_NAME, RUNTIME_NAME, SCHEDULE_NAME};
     
         public override void Run(EPServiceProvider defaultEPService) {
+#if NOT_SUPPORTED_IN_DOTNET
             AssertNoEngineJMX();
     
             Configuration configuration = SupportConfigFactory.GetConfiguration();
@@ -49,8 +50,10 @@ namespace com.espertech.esper.regression.client
             epService.Dispose();
     
             AssertNoEngineJMX();
+#endif
         }
-    
+
+#if NOT_SUPPORTED_IN_DOTNET
         private void AssertEngineJMX() {
             foreach (string name in ALL) {
                 AssertJMXVisible(name);
@@ -75,5 +78,6 @@ namespace com.espertech.esper.regression.client
                 // expected
             }
         }
+#endif
     }
 } // end of namespace

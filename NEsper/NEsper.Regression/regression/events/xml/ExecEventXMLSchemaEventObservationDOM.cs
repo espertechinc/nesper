@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Linq;
 using System.Xml;
 
 using com.espertech.esper.client;
@@ -18,8 +19,6 @@ using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util.support;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.fail;
 
 using NUnit.Framework;
 
@@ -44,9 +43,9 @@ namespace com.espertech.esper.regression.events.xml
         public override void Configure(Configuration configuration) {
             var typecfg = new ConfigurationEventTypeXMLDOM();
             typecfg.RootElementName = "Sensor";
-            string schemaUri = typeof(ExecEventXMLSchemaEventObservationDOM).ClassLoader.GetResource(CLASSLOADER_SCHEMA_URI).ToString();
+            string schemaUri = ResourceManager.ResolveResourceURL(CLASSLOADER_SCHEMA_URI).ToString();
             typecfg.SchemaResource = schemaUri;
-            configuration.EngineDefaults.ViewResources.IterableUnbound = true;
+            configuration.EngineDefaults.ViewResources.IsIterableUnbound = true;
             configuration.AddEventType("SensorEvent", typecfg);
         }
     
@@ -74,8 +73,8 @@ namespace com.espertech.esper.regression.events.xml
             SupportEventTypeAssertionUtil.AssertConsistency(stmtExampleThree_0.First());
             SupportEventTypeAssertionUtil.AssertConsistency(stmtExampleThree_1.First());
     
-            EPAssertionUtil.AssertProps(stmtExampleTwo_1.First(), "Observation.Command,Observation.Tag[0].ID".Split(','), new Object[]{"READ_PALLET_TAGS_ONLY", "urn:epc:1:2.24.400"});
-            EPAssertionUtil.AssertProps(stmtExampleThree_1.First(), "sensorId,Command,Tag[0].ID".Split(','), new Object[]{"urn:epc:1:4.16.36", "READ_PALLET_TAGS_ONLY", "urn:epc:1:2.24.400"});
+            EPAssertionUtil.AssertProps(stmtExampleTwo_1.First(), "Observation.Command,Observation.Tag[0].ID".Split(','), new object[]{"READ_PALLET_TAGS_ONLY", "urn:epc:1:2.24.400"});
+            EPAssertionUtil.AssertProps(stmtExampleThree_1.First(), "sensorId,Command,Tag[0].ID".Split(','), new object[]{"urn:epc:1:4.16.36", "READ_PALLET_TAGS_ONLY", "urn:epc:1:2.24.400"});
     
             try {
                 epService.EPAdministrator.CreateEPL("select Observation.Tag.ID from SensorEvent");

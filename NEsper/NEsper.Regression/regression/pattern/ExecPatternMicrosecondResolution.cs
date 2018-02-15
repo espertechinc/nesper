@@ -19,8 +19,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertFalse;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -83,29 +81,28 @@ namespace com.espertech.esper.regression.pattern
     
             var listener = new SupportUpdateListener();
             EPStatement stmt = isolated.EPAdministrator.CreateEPL("select * from pattern[" + patternExpr + "]", "s0", null);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             int count = 0;
             foreach (long flipTime in flipTimes) {
                 isolated.EPRuntime.SendEvent(new CurrentTimeEvent(flipTime - 1));
-                Assert.IsFalse("Failed for flip " + count, listener.GetAndClearIsInvoked());
+                Assert.IsFalse(listener.GetAndClearIsInvoked(), "Failed for flip " + count);
     
                 isolated.EPRuntime.SendEvent(new CurrentTimeEvent(flipTime));
-                Assert.IsTrue("Failed for flip " + count, listener.GetAndClearIsInvoked());
+                Assert.IsTrue(listener.GetAndClearIsInvoked(), "Failed for flip " + count);
                 count++;
             }
     
             isolated.EPRuntime.SendEvent(new CurrentTimeEvent(Int64.MaxValue));
             Assert.IsFalse(listener.GetAndClearIsInvoked());
     
-            isolated.Destroy();
+            isolated.Dispose();
         }
     
         private static long TimePlusMonth(long timeInMillis, int monthToAdd) {
-            Calendar cal = GregorianCalendar.Instance;
-            cal.TimeInMillis = timeInMillis;
-            cal.Add(Calendar.MONTH, monthToAdd);
-            return Cal.TimeInMillis;
+            DateTimeEx cal = DateTimeEx.GetInstance(TimeZoneInfo.Local, timeInMillis);
+            cal.AddMonths(monthToAdd, DateTimeMathStyle.Java);
+            return cal.TimeInMillis;
         }
     }
 } // end of namespace

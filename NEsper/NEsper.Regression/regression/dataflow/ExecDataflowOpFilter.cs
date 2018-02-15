@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.dataflow;
 using com.espertech.esper.compat;
@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.dataflow;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -62,7 +61,7 @@ namespace com.espertech.esper.regression.dataflow
             RunAssertionAllTypes(epService, "MyXMLEvent", DefaultSupportGraphEventUtil.XMLEvents);
             RunAssertionAllTypes(epService, "MyOAEvent", DefaultSupportGraphEventUtil.OAEvents);
             RunAssertionAllTypes(epService, "MyMapEvent", DefaultSupportGraphEventUtil.MapEvents);
-            RunAssertionAllTypes(epService, "MyEvent", DefaultSupportGraphEventUtil.POJOEvents);
+            RunAssertionAllTypes(epService, "MyEvent", DefaultSupportGraphEventUtil.PONOEvents);
     
             // test doc sample
             string epl = "create dataflow MyDataFlow\n" +
@@ -117,7 +116,7 @@ namespace com.espertech.esper.regression.dataflow
             stmtGraph.Dispose();
         }
     
-        private void RunAssertionAllTypes(EPServiceProvider epService, string typeName, Object[] events) {
+        private void RunAssertionAllTypes(EPServiceProvider epService, string typeName, object[] events) {
             string graph = "create dataflow MySelect\n" +
                     "DefaultSupportSourceOp -> instream.with.dot<" + typeName + ">{}\n" +
                     "Filter(instream.with.dot) -> outstream.dot {filter: myString = 'two'}\n" +
@@ -125,10 +124,10 @@ namespace com.espertech.esper.regression.dataflow
             EPStatement stmtGraph = epService.EPAdministrator.CreateEPL(graph);
     
             var source = new DefaultSupportSourceOp(events);
-            var capture = new DefaultSupportCaptureOp<>(2);
+            var capture = new DefaultSupportCaptureOp(2);
             var options = new EPDataFlowInstantiationOptions();
-            options.DataFlowInstanceUserObject = "myuserobject";
-            options.DataFlowInstanceId = "myinstanceid";
+            options.SetDataFlowInstanceUserObject("myuserobject");
+            options.SetDataFlowInstanceId("myinstanceid");
             options.OperatorProvider(new DefaultSupportGraphOpProvider(source, capture));
             EPDataFlowInstance instance = epService.EPRuntime.DataFlowRuntime.Instantiate("MySelect", options);
             Assert.AreEqual("myuserobject", instance.UserObject);
@@ -136,7 +135,7 @@ namespace com.espertech.esper.regression.dataflow
     
             instance.Run();
     
-            Object[] result = capture.GetAndReset()[0].ToArray();
+            object[] result = capture.GetAndReset()[0].ToArray();
             Assert.AreEqual(1, result.Length);
             Assert.AreSame(events[1], result[0]);
     

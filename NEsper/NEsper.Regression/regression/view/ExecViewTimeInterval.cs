@@ -18,8 +18,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -48,12 +46,12 @@ namespace com.espertech.esper.regression.view
             prepared.SetObject(1, 4);
             EPStatement stmtOne = epService.EPAdministrator.Create(prepared);
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
     
             prepared.SetObject(1, 3);
             EPStatement stmtTwo = epService.EPAdministrator.Create(prepared);
             var listenerTwo = new SupportUpdateListener();
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
     
             RunAssertion(epService, listenerOne, listenerTwo);
     
@@ -69,12 +67,12 @@ namespace com.espertech.esper.regression.view
             epService.EPAdministrator.Configuration.AddVariable("TIME_WIN_ONE", typeof(int), 4);
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(text);
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
     
             epService.EPRuntime.SetVariableValue("TIME_WIN_ONE", 3);
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(text);
             var listenerTwo = new SupportUpdateListener();
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
     
             RunAssertion(epService, listenerOne, listenerTwo);
     
@@ -88,12 +86,12 @@ namespace com.espertech.esper.regression.view
             string text = "select rstream theString from SupportBean#Time(4 sec)";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(text);
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
     
             text = "select rstream theString from SupportBean#Time(3000 milliseconds)";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(text);
             var listenerTwo = new SupportUpdateListener();
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
     
             RunAssertion(epService, listenerOne, listenerTwo);
     
@@ -110,13 +108,13 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(text);
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
     
             text = "select rstream theString from SupportBean#Time(TIME_WIN_TWO minutes)";
             epService.EPRuntime.SetVariableValue("TIME_WIN_TWO", 0.05);
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(text);
             var listenerTwo = new SupportUpdateListener();
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
     
             RunAssertion(epService, listenerOne, listenerTwo);
     
@@ -140,7 +138,7 @@ namespace com.espertech.esper.regression.view
                     "select * from " + typeof(SupportBean).FullName +
                             "#Time_batch(10 minutes)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendTimer(epService, 0);
     
@@ -159,7 +157,7 @@ namespace com.espertech.esper.regression.view
                     "select * from " + typeof(SupportBean).FullName +
                             "#Time_batch(10 minutes, 10L)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendTimer(epService, 10);
     
@@ -176,14 +174,14 @@ namespace com.espertech.esper.regression.view
             var testListener = new SupportUpdateListener();
             epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBeanTimestamp));
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select rstream * from SupportBean#Ext_timed(longPrimitive, 1 month)");
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             SendExtTimeEvent(epService, DateTimeParser.ParseDefaultMSec("2002-02-01T09:00:00.000"), "E1");
             SendExtTimeEvent(epService, DateTimeParser.ParseDefaultMSec("2002-03-01T09:00:00.000") - 1, "E2");
             Assert.IsFalse(testListener.IsInvoked);
     
             SendExtTimeEvent(epService, DateTimeParser.ParseDefaultMSec("2002-03-01T09:00:00.000"), "E3");
-            EPAssertionUtil.AssertProps(testListener.AssertOneGetNewAndReset(), "theString".Split(','), new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(testListener.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E1"});
     
             stmt.Dispose();
         }
@@ -192,14 +190,14 @@ namespace com.espertech.esper.regression.view
             var testListener = new SupportUpdateListener();
             epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBeanTimestamp));
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#Ext_timed_batch(longPrimitive, 1 month)");
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             SendExtTimeEvent(epService, DateTimeParser.ParseDefaultMSec("2002-02-01T09:00:00.000"), "E1");
             SendExtTimeEvent(epService, DateTimeParser.ParseDefaultMSec("2002-03-01T09:00:00.000") - 1, "E2");
             Assert.IsFalse(testListener.IsInvoked);
     
             SendExtTimeEvent(epService, DateTimeParser.ParseDefaultMSec("2002-03-01T09:00:00.000"), "E3");
-            EPAssertionUtil.AssertPropsPerRow(testListener.GetAndResetLastNewData(), "theString".Split(','), new Object[][]{new object[] {"E1"}, new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRow(testListener.GetAndResetLastNewData(), "theString".Split(','), new object[][]{new object[] {"E1"}, new object[] {"E2"}});
     
             stmt.Dispose();
         }
@@ -210,7 +208,7 @@ namespace com.espertech.esper.regression.view
                     "select irstream * from " + typeof(SupportBean).FullName +
                             "#Ext_timed(longPrimitive, 10 minutes)");
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             SendExtTimeEvent(epService, 0);
     
@@ -231,7 +229,7 @@ namespace com.espertech.esper.regression.view
                     "select irstream * from " + typeof(SupportBean).FullName +
                             "#Time(" + intervalSpec + ")");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendTimer(epService, 0);
     

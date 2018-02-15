@@ -47,23 +47,23 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "from Bean";
             var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(double?), typeof(double?), typeof(double?), typeof(decimal?)});
     
             epService.EPRuntime.SendEvent(new SupportBean_Container(null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean_Container(Collections.GetEmptyList<SupportBean>()));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, null, null});
     
             var list = new List<SupportBean>();
             list.Add(Make(2, 3d, 4L, 5));
             epService.EPRuntime.SendEvent(new SupportBean_Container(list));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{2d, 3d, 4d, 5.0m});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{2d, 3d, 4d, 5.0m});
     
             list.Add(Make(4, 6d, 8L, 10));
             epService.EPRuntime.SendEvent(new SupportBean_Container(list));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{(2 + 4) / 2d, (3d + 6d) / 2d, (4L + 8L) / 2d, (decimal) ((5 + 10) / 2d)});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{(2 + 4) / 2d, (3d + 6d) / 2d, (4L + 8L) / 2d, (decimal) ((5 + 10) / 2d)});
     
             stmtFragment.Dispose();
         }
@@ -77,17 +77,17 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "from SupportCollection";
             var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(double?), typeof(decimal?)});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeNumeric("1,2,3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{2d, 2m});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{2d, 2m});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeNumeric("1,null,3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{2d, 2m});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{2d, 2m});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeNumeric("4"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{4d, 4m});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{4d, 4m});
             stmtFragment.Dispose();
     
             // test average with lambda
@@ -100,20 +100,20 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "strvals.Average(v => ExtractBigDecimal(v)) as val1 " +
                     "from SupportCollection";
             var stmtLambda = epService.EPAdministrator.CreateEPL(eplLambda);
-            stmtLambda.AddListener(listener);
+            stmtLambda.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtLambda.EventType, fieldsLambda, new Type[]{typeof(double?), typeof(decimal?)});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E2,E1,E5,E4"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsLambda, new Object[]{(2 + 1 + 5 + 4) / 4d, (decimal) ((2 + 1 + 5 + 4) / 4d)});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsLambda, new object[]{(2 + 1 + 5 + 4) / 4d, (decimal) ((2 + 1 + 5 + 4) / 4d)});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsLambda, new Object[]{1d, 1m});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsLambda, new object[]{1d, 1m});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString(null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsLambda, new Object[]{null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsLambda, new object[]{null, null});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString(""));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsLambda, new Object[]{null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsLambda, new object[]{null, null});
     
             stmtLambda.Dispose();
         }

@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -36,7 +34,7 @@ namespace com.espertech.esper.regression.events.bean
                     "from " + typeof(SupportBeanComplexProps).FullName;
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             EventType type = stmt.EventType;
             Assert.AreEqual(typeof(Object), type.GetPropertyType("simpleProperty?"));
@@ -50,16 +48,16 @@ namespace com.espertech.esper.regression.events.bean
             Assert.AreEqual(inner.GetIndexed(1), theEvent.Get("indexed"));
             Assert.AreEqual(inner.GetMapped("keyOne"), theEvent.Get("mapped"));
     
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             for (int i = 0; i < 10000; i++) {
                 epService.EPRuntime.SendEvent(inner);
                 if (i % 1000 == 0) {
                     listener.Reset();
                 }
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             long delta = end - start;
-            Assert.IsTrue("delta=" + delta, delta < 1000);
+            Assert.IsTrue(delta < 1000, "delta=" + delta);
         }
     }
 } // end of namespace

@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -37,7 +35,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmt);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             // preload
             for (int i = 0; i < 10000; i++) {
@@ -53,8 +51,8 @@ namespace com.espertech.esper.regression.epl.join
             long endTime = DateTimeHelper.CurrentTimeMillis;
             long delta = endTime - startTime;
     
-            statement.Destroy();
-            Assert.IsTrue("Failed perf test, delta=" + delta, delta < 1500);
+            statement.Dispose();
+            Assert.IsTrue(delta < 1500, "Failed perf test, delta=" + delta);
         }
     
         private void RunAssertionPerformanceCoercionBack(EPServiceProvider epService) {
@@ -65,7 +63,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmt);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             // preload
             for (int i = 0; i < 10000; i++) {
@@ -81,8 +79,8 @@ namespace com.espertech.esper.regression.epl.join
             long endTime = DateTimeHelper.CurrentTimeMillis;
             long delta = endTime - startTime;
     
-            statement.Destroy();
-            Assert.IsTrue("Failed perf test, delta=" + delta, delta < 1500);
+            statement.Dispose();
+            Assert.IsTrue(delta < 1500, "Failed perf test, delta=" + delta);
         }
     
         private Object MakeSupportEvent(string theString, int intPrimitive, long longBoxed) {

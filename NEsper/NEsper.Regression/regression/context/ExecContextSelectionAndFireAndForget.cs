@@ -17,10 +17,9 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.supportregression.bean;
+using com.espertech.esper.supportregression.context;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -95,8 +94,8 @@ namespace com.espertech.esper.regression.context
             // test no context
             RunQueryAll(epService, "select sum(intPrimitive) as c1 from MyWindow", "c1", new[] {new object[] {51}}, 1);
             RunQueryAll(epService, "select sum(intPrimitive) as c1 from MyWindow where intPrimitive > 15", "c1", new[] {new object[] {41}}, 1);
-            RunQuery(epService, "select sum(intPrimitive) as c1 from MyWindow", "c1", new[] {new object[] {41}}, new ContextPartitionSelector[] {new SupportSelectorPartitioned(Collections.SingletonList(new object[] {"E2"}))});
-            RunQuery(epService, "select sum(intPrimitive) as c1 from MyWindow", "c1", new[] {new object[] {41}}, new ContextPartitionSelector[] {new SupportSelectorById(Collections.SingletonList(1))});
+            RunQuery(epService, "select sum(intPrimitive) as c1 from MyWindow", "c1", new[] {new object[] {41}}, new ContextPartitionSelector[] {new SupportSelectorPartitioned(Collections.SingletonSet(new object[] {"E2"}))});
+            RunQuery(epService, "select sum(intPrimitive) as c1 from MyWindow", "c1", new[] {new object[] {41}}, new ContextPartitionSelector[] {new SupportSelectorById(Collections.SingletonSet(1))});
     
             // test with context props
             RunQueryAll(epService, "context PartitionedByString select context.key1 as c0, intPrimitive as c1 from MyWindow",
@@ -145,10 +144,10 @@ namespace com.espertech.esper.regression.context
     
             RunQueryAll(epService, "select theString as c1, sum(intPrimitive) as c2 from MyWindow group by theString", "c1,c2", new[] {new object[] {"E1", 5}, new object[] {"E2", -2}, new object[] {"E3", 10}}, 1);
             RunQuery(epService, "select theString as c1, sum(intPrimitive) as c2 from MyWindow group by theString", "c1,c2", new[] {new object[] {"E1", 3}, new object[] {"E3", 5}},
-                    new ContextPartitionSelector[]{new SupportSelectorById(Collections.SingletonList(2))});
+                    new ContextPartitionSelector[]{new SupportSelectorById(Collections.SingletonSet(2))});
     
             RunQuery(epService, "context NestedContext select context.ACtx.s0.p00 as c1, context.BCtx.label as c2, theString as c3, sum(intPrimitive) as c4 from MyWindow group by theString", "c1,c2,c3,c4", new[] {new object[] {"S0_1", "grp3", "E1", 3}, new object[] {"S0_1", "grp3", "E3", 5}},
-                    new ContextPartitionSelector[]{new SupportSelectorById(Collections.SingletonList(2))});
+                    new ContextPartitionSelector[]{new SupportSelectorById(Collections.SingletonSet(2))});
     
             // extract path
             if (GetSpi(epService).IsSupportsExtract) {

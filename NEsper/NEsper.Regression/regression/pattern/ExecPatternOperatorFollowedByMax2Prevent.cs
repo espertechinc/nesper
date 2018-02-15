@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.pattern
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
     
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             epService.EPRuntime.SendEvent(new SupportBean_A("A2"));
@@ -54,11 +54,11 @@ namespace com.espertech.esper.regression.pattern
     
             var fields = new string[]{"a", "b"};
             epService.EPRuntime.SendEvent(new SupportBean_B("B1"));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"A1", "B1"}, new object[] {"A2", "B1"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"A1", "B1"}, new object[] {"A2", "B1"}});
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A4"));
             epService.EPRuntime.SendEvent(new SupportBean_B("B2"));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"A4", "B2"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"A4", "B2"}});
             Assert.IsTrue(handler.Contexts.IsEmpty());
     
             for (int i = 5; i < 9; i++) {
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regression.pattern
             }
     
             epService.EPRuntime.SendEvent(new SupportBean_B("B3"));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"A5", "B3"}, new object[] {"A6", "B3"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"A5", "B3"}, new object[] {"A6", "B3"}});
     
             epService.EPRuntime.SendEvent(new SupportBean_B("B4"));
             Assert.IsFalse(listener.IsInvoked);
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(new SupportBean_A("A20"));
             epService.EPRuntime.SendEvent(new SupportBean_A("A21"));
             epService.EPRuntime.SendEvent(new SupportBean_B("B5"));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"A20", "B5"}, new object[] {"A21", "B5"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"A20", "B5"}, new object[] {"A21", "B5"}});
             Assert.IsTrue(handler.Contexts.IsEmpty());
     
             stmt.Dispose();

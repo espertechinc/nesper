@@ -21,12 +21,13 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.enummethod
 {
+    using Map = IDictionary<string, object>;
+
     public class ExecEnumExceptIntersectUnion : RegressionExecution {
     
         public override void Configure(Configuration configuration) {
@@ -51,7 +52,7 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "@Name('Out') select * from Event(meta1.Intersect(meta2).CountOf() > 0);\n";
             DeploymentResult result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("Out").AddListener(listener);
+            epService.EPAdministrator.GetStatement("Out").Events += listener.Update;
     
             SendAndAssert(epService, listener, "a,b", "a,b", true);
             SendAndAssert(epService, listener, "c,d", "a,b", false);
@@ -70,8 +71,8 @@ namespace com.espertech.esper.regression.expr.enummethod
                     " from SupportBean_ST0_Container";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0".Split(','), new Type[]{typeof(Collection)});
+            stmt.Events += listener.Update;
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0".Split(','), new Type[]{typeof(ICollection<object>)});
     
             List<SupportBean_ST0> first = SupportBean_ST0_Container.Make2ValueList("E1,1", "E2,10", "E3,1", "E4,10", "E5,11");
             List<SupportBean_ST0> second = SupportBean_ST0_Container.Make2ValueList("E1,1", "E3,1", "E4,10");
@@ -100,8 +101,8 @@ namespace com.espertech.esper.regression.expr.enummethod
                             "from SupportBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0".Split(','), new Type[]{typeof(Collection)});
+            stmt.Events += listener.Update;
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0".Split(','), new Type[]{typeof(ICollection<object>)});
     
             epService.EPRuntime.SendEvent(new SupportBean_ST0("E1", "A1", 10));    // in both
             epService.EPRuntime.SendEvent(new SupportBean());
@@ -157,8 +158,8 @@ namespace com.espertech.esper.regression.expr.enummethod
                     " from SupportCollection as bean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0".Split(','), new Type[]{typeof(Collection)});
+            stmt.Events += listener.Update;
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0".Split(','), new Type[]{typeof(ICollection<object>)});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2", "E3,E4"));
             LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val0", "E1", "E2");
@@ -167,9 +168,9 @@ namespace com.espertech.esper.regression.expr.enummethod
             listener.Reset();
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString(null, "E3,E4"));
-            LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val0", (Object[]) null);
-            LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val1", (Object[]) null);
-            LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val2", (Object[]) null);
+            LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val0", (object[]) null);
+            LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val1", (object[]) null);
+            LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val2", (object[]) null);
             listener.Reset();
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("", "E3,E4"));
@@ -210,8 +211,8 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "select One(bean).Union(Two(bean)) as val0 from SupportBean_ST0_Container as bean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0".Split(','), new Type[]{typeof(Collection)});
+            stmt.Events += listener.Update;
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0".Split(','), new Type[]{typeof(ICollection<object>)});
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value("E1,1", "E2,10", "E3,1", "E4,10", "E5,11"));
             LambdaAssertionUtil.AssertST0Id(listener, "val0", "E2,E4,E5");
@@ -251,10 +252,10 @@ namespace com.espertech.esper.regression.expr.enummethod
             epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create schema OuterEvent as (bases BaseEvent[], subs SubEvent[])");
             EPStatement stmt = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " select Bases.Union(subs) as val from OuterEvent");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(new Object[]{new Object[][]{new object[] {"b10"}}, new Object[][] {new object[] {"b10", "s10"}}}, "OuterEvent");
+                epService.EPRuntime.SendEvent(new object[]{new object[][]{new object[] {"b10"}}, new object[][] {new object[] {"b10", "s10"}}}, "OuterEvent");
             } else {
                 IDictionary<string, Object> baseEvent = MakeMap("b1", "b10");
                 IDictionary<string, Object> subEvent = MakeMap("s1", "s10");
@@ -262,7 +263,7 @@ namespace com.espertech.esper.regression.expr.enummethod
                 epService.EPRuntime.SendEvent(outerEvent, "OuterEvent");
             }
     
-            Collection result = (Collection) listener.AssertOneGetNewAndReset().Get("val");
+            var result = listener.AssertOneGetNewAndReset().Get("val").Unwrap<object>();
             Assert.AreEqual(2, result.Count);
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -284,7 +285,7 @@ namespace com.espertech.esper.regression.expr.enummethod
         }
     
         private void SendAndAssert(EPServiceProvider epService, SupportUpdateListener listener, string metaOne, string metaTwo, bool expected) {
-            epService.EPRuntime.SendEvent(new Object[]{metaOne.Split(','), metaTwo.Split(',')}, "Event");
+            epService.EPRuntime.SendEvent(new object[]{metaOne.Split(','), metaTwo.Split(',')}, "Event");
             Assert.AreEqual(expected, listener.IsInvokedAndReset());
         }
     }

@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.dataflow;
 using com.espertech.esper.client.scopetest;
@@ -18,7 +18,6 @@ using com.espertech.esper.dataflow.ops;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -30,13 +29,13 @@ namespace com.espertech.esper.regression.dataflow
             epService.EPAdministrator.Configuration.AddImport(typeof(DefaultSupportCaptureOp).Name);
     
             string[] fields = "p0,p1".Split(',');
-            epService.EPAdministrator.Configuration.AddEventType("MyOAEventType", fields, new Object[]{typeof(string), typeof(int)});
+            epService.EPAdministrator.Configuration.AddEventType("MyOAEventType", fields, new object[]{typeof(string), typeof(int)});
     
             epService.EPAdministrator.CreateEPL("create dataflow MyDataFlow " +
                     "Emitter -> outstream<MyOAEventType> {name:'src1'}" +
                     "DefaultSupportCaptureOp(outstream) {}");
     
-            var captureOp = new DefaultSupportCaptureOp<Object>();
+            var captureOp = new DefaultSupportCaptureOp<object>();
             var options = new EPDataFlowInstantiationOptions();
             options.OperatorProvider(new DefaultSupportGraphOpProvider(captureOp));
     
@@ -47,19 +46,18 @@ namespace com.espertech.esper.regression.dataflow
             Emitter emitter = captiveStart.Emitters.Get("src1");
             Assert.AreEqual(EPDataFlowState.RUNNING, instance.State);
     
-            emitter.Submit(new Object[]{"E1", 10});
-            EPAssertionUtil.AssertPropsPerRow(captureOp.Current, fields, new Object[][]{new object[] {"E1", 10}});
+            emitter.Submit(new object[]{"E1", 10});
+            EPAssertionUtil.AssertPropsPerRow(captureOp.Current, fields, new object[][]{new object[] {"E1", 10}});
     
-            emitter.Submit(new Object[]{"E2", 20});
-            EPAssertionUtil.AssertPropsPerRow(captureOp.Current, fields, new Object[][]{new object[] {"E1", 10}, new object[] {"E2", 20}});
+            emitter.Submit(new object[]{"E2", 20});
+            EPAssertionUtil.AssertPropsPerRow(captureOp.Current, fields, new object[][]{new object[] {"E1", 10}, new object[] {"E2", 20}});
     
-            emitter.SubmitSignal(new ProxyEPDataFlowSignalFinalMarker() {
-            });
+            emitter.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
             EPAssertionUtil.AssertPropsPerRow(captureOp.Current, fields, new Object[0][]);
-            EPAssertionUtil.AssertPropsPerRow(captureOp.GetAndReset()[0].ToArray(), fields, new Object[][]{new object[] {"E1", 10}, new object[] {"E2", 20}});
+            EPAssertionUtil.AssertPropsPerRow(captureOp.GetAndReset()[0].ToArray(), fields, new object[][]{new object[] {"E1", 10}, new object[] {"E2", 20}});
     
-            emitter.Submit(new Object[]{"E3", 30});
-            EPAssertionUtil.AssertPropsPerRow(captureOp.Current, fields, new Object[][]{new object[] {"E3", 30}});
+            emitter.Submit(new object[]{"E3", 30});
+            EPAssertionUtil.AssertPropsPerRow(captureOp.Current, fields, new object[][]{new object[] {"E3", 30}});
     
             // stays running until cancelled (no transition to complete)
             Assert.AreEqual(EPDataFlowState.RUNNING, instance.State);

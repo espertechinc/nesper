@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             var eplFragment = "select Contained.GroupBy(c => id) as val from Bean";
             var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val".Split(','), new[] {typeof(Map)});
             var extractorEvents = new EPAssertionUtil.ProxyAssertionCollectionValueString
             {
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             // test scalar
             var eplScalar = "select Strvals.GroupBy(c => ExtractAfterUnderscore(c)) as val from SupportCollection";
             var stmtScalar = epService.EPAdministrator.CreateEPL(eplScalar);
-            stmtScalar.AddListener(listener);
+            stmtScalar.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtScalar.EventType, "val".Split(','), new[] {typeof(Map)});
 
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1_2,E2_1,E3_2"));
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             var eplFragment = "select Contained.GroupBy(k => id, v => p00) as val from Bean";
             var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             var extractor = new EPAssertionUtil.ProxyAssertionCollectionValueString
             {
                 ProcExtractValue = collectionItem =>
@@ -121,7 +121,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             var eplScalar =
                 "select Strvals.GroupBy(k => ExtractAfterUnderscore(k), v => v) as val from SupportCollection";
             var stmtScalar = epService.EPAdministrator.CreateEPL(eplScalar);
-            stmtScalar.AddListener(listener);
+            stmtScalar.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtScalar.EventType, "val".Split(','), new[] {typeof(Map)});
 
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1_2,E2_1,E3_2"));

@@ -37,11 +37,11 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 "intPrimitive = keyTwo when not matched then insert select theString as keyOne, intPrimitive as keyTwo, 1 as p0");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select varagg[p00, id].p0 as value from SupportBean_S0")
-                .AddListener(listener);
+                .Events += listener.Update;
             var stmtUpdate = epService.EPAdministrator.CreateEPL(
                 "on MyUpdateEvent update varagg var p0 = newValue " +
                 "where k1 = keyOne and k2 = keyTwo");
-            stmtUpdate.AddListener(listenerUpdate);
+            stmtUpdate.Events += listenerUpdate.Update;
 
             var expectedType = new[]
             {

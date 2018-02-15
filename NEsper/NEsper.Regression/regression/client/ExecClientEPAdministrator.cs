@@ -25,9 +25,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNotNull;
 
 using NUnit.Framework;
 
@@ -35,7 +32,7 @@ namespace com.espertech.esper.regression.client
 {
     public class ExecClientEPAdministrator : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.Logging.EnableTimerDebug = true;
+            configuration.EngineDefaults.Logging.IsEnableTimerDebug = true;
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -54,8 +51,8 @@ namespace com.espertech.esper.regression.client
             var expected = new string[]{"s1", "s2", "s3--0", "s3", "s3--1"};
             EPStatement[] stmts = CreateStmts(epService, names);
             for (int i = 0; i < stmts.Length; i++) {
-                Assert.AreSame("failed for " + names[i], stmts[i], epService.EPAdministrator.GetStatement(expected[i]));
-                Assert.AreEqual("failed for " + names[i], expected[i], epService.EPAdministrator.GetStatement(expected[i]).Name);
+                Assert.AreSame(stmts[i], epService.EPAdministrator.GetStatement(expected[i]), "failed for " + names[i]);
+                Assert.AreEqual(expected[i], epService.EPAdministrator.GetStatement(expected[i]).Name, "failed for " + names[i]);
             }
     
             // test statement name trim
@@ -71,7 +68,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionStatementArray(EPServiceProvider epService) {
-            Assert.AreEqual(0, epService.EPAdministrator.StatementNames.Length);
+            Assert.AreEqual(0, epService.EPAdministrator.StatementNames.Count);
     
             var names = new string[]{"s1"};
             CreateStmts(epService, names);
@@ -88,7 +85,7 @@ namespace com.espertech.esper.regression.client
             string stmt = "select * from " + typeof(SupportBean).FullName;
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmt, "s1");
             var testListener = new SupportUpdateListener();
-            stmtOne.AddListener(testListener);
+            stmtOne.Events += testListener.Update;
             Assert.AreEqual("s1", stmtOne.Name);
             Assert.AreEqual(stmt, stmtOne.Text);
     
@@ -133,7 +130,7 @@ namespace com.espertech.esper.regression.client
             string stmt = typeof(SupportBean).FullName;
             EPStatement stmtOne = epService.EPAdministrator.CreatePattern(stmt, "s1");
             var testListener = new SupportUpdateListener();
-            stmtOne.AddListener(testListener);
+            stmtOne.Events += testListener.Update;
             Assert.AreEqual("s1", stmtOne.Name);
             Assert.AreEqual(stmt, stmtOne.Text);
     
@@ -176,9 +173,9 @@ namespace com.espertech.esper.regression.client
         private void RunAssertionDestroyAll(EPServiceProvider epService) {
             EPStatement[] stmts = CreateStmts(epService, new string[]{"s1", "s2", "s3"});
             var testListener = new SupportUpdateListener();
-            stmts[0].AddListener(testListener);
-            stmts[1].AddListener(testListener);
-            stmts[2].AddListener(testListener);
+            stmts[0].Events += testListener.Update;
+            stmts[1].Events += testListener.Update;
+            stmts[2].Events += testListener.Update;
             SendEvent(epService);
             Assert.AreEqual(3, testListener.NewDataList.Count);
             testListener.Reset();
@@ -190,9 +187,9 @@ namespace com.espertech.esper.regression.client
         private void RunAssertionStopStartAll(EPServiceProvider epService) {
             EPStatement[] stmts = CreateStmts(epService, new string[]{"s1", "s2", "s3"});
             var testListener = new SupportUpdateListener();
-            stmts[0].AddListener(testListener);
-            stmts[1].AddListener(testListener);
-            stmts[2].AddListener(testListener);
+            stmts[0].Events += testListener.Update;
+            stmts[1].Events += testListener.Update;
+            stmts[2].Events += testListener.Update;
     
             AssertStarted(epService, stmts, testListener);
     
@@ -209,9 +206,9 @@ namespace com.espertech.esper.regression.client
         private void RunAssertionStopStartSome(EPServiceProvider epService) {
             EPStatement[] stmts = CreateStmts(epService, new string[]{"s1", "s2", "s3"});
             var testListener = new SupportUpdateListener();
-            stmts[0].AddListener(testListener);
-            stmts[1].AddListener(testListener);
-            stmts[2].AddListener(testListener);
+            stmts[0].Events += testListener.Update;
+            stmts[1].Events += testListener.Update;
+            stmts[2].Events += testListener.Update;
             AssertStarted(epService, stmts, testListener);
     
             stmts[0].Stop();
@@ -258,11 +255,11 @@ namespace com.espertech.esper.regression.client
             Assert.IsTrue(pattern is EvalFollowedByFactoryNode);
     
             PatternExpr patternExpr = spi.CompilePatternToSODA("every A -> B");
-            Assert.AreEqual(typeof(PatternFollowedByExpr), patternExpr.Class);
+            Assert.AreEqual(typeof(PatternFollowedByExpr), patternExpr.GetType());
     
             EPStatementObjectModel modelPattern = spi.CompilePatternToSODAModel("@Name('test') every A -> B");
             Assert.AreEqual("Name", modelPattern.Annotations[0].Name);
-            Assert.AreEqual(typeof(PatternFollowedByExpr), ((PatternStream) modelPattern.FromClause.Streams[0]).Expression.Class);
+            Assert.AreEqual(typeof(PatternFollowedByExpr), ((PatternStream) modelPattern.FromClause.Streams[0]).Expression.GetType());
     
             AnnotationPart part = spi.CompileAnnotationToSODA("@Somevalue(a='test', b=5)");
             Assert.AreEqual("somevalue", part.Name);

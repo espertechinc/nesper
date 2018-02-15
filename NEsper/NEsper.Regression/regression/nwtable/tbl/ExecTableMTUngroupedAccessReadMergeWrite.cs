@@ -51,7 +51,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             var listener = new SupportUpdateListener();
             string eplQuery = "select varagg.c0 as c0, varagg.c1 as c1, varagg.c2 as c2," +
                     "varagg.c3 as c3, varagg.c4 as c4, varagg.c5 as c5 from SupportBean_S1";
-            epService.EPAdministrator.CreateEPL(eplQuery).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(eplQuery).Events += listener.Update;
     
             var writeThreads = new Thread[numWriteThreads];
             var writeRunnables = new WriteRunnable[numWriteThreads];

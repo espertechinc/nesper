@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.client.dataflow;
 using com.espertech.esper.client.scopetest;
@@ -20,8 +20,6 @@ using com.espertech.esper.events;
 using com.espertech.esper.supportregression.dataflow;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -40,7 +38,7 @@ namespace com.espertech.esper.regression.dataflow
             RunAssertionAllTypes(epService, "MyMapEvent", DefaultSupportGraphEventUtil.MapEventsSendable);
             RunAssertionAllTypes(epService, "MyXMLEvent", DefaultSupportGraphEventUtil.XMLEventsSendable);
             RunAssertionAllTypes(epService, "MyOAEvent", DefaultSupportGraphEventUtil.OAEventsSendable);
-            RunAssertionAllTypes(epService, "MyEvent", DefaultSupportGraphEventUtil.POJOEventsSendable);
+            RunAssertionAllTypes(epService, "MyEvent", DefaultSupportGraphEventUtil.PONOEventsSendable);
     
             // invalid: no output stream
             SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "DF1", "create dataflow DF1 EventBusSource {}",
@@ -82,7 +80,7 @@ namespace com.espertech.esper.regression.dataflow
                     "EventBusSource -> ReceivedStream<" + typeName + "> {} " +
                     "DefaultSupportCaptureOp(ReceivedStream) {}");
     
-            var future = new DefaultSupportCaptureOp<>();
+            var future = new DefaultSupportCaptureOp();
             var options = new EPDataFlowInstantiationOptions()
                     .OperatorProvider(new DefaultSupportGraphOpProvider(future));
     
@@ -103,7 +101,7 @@ namespace com.espertech.esper.regression.dataflow
     
             // assert
             future.WaitForInvocation(200, events.Length);
-            Object[] rows = future.CurrentAndReset;
+            object[] rows = future.GetCurrentAndReset();
             Assert.AreEqual(events.Length, rows.Length);
             for (int i = 0; i < events.Length; i++) {
                 Assert.AreSame(events[i].Underlying, rows[i]);
@@ -130,19 +128,20 @@ namespace com.espertech.esper.regression.dataflow
                     "DefaultSupportCaptureOp(ReceivedStream) {}");
     
             var collector = new MyCollector();
-            var future = new DefaultSupportCaptureOp<>();
+            var future = new DefaultSupportCaptureOp();
             var options = new EPDataFlowInstantiationOptions()
-                    .OperatorProvider(new DefaultSupportGraphOpProvider(future))
-                    .ParameterProvider(new DefaultSupportGraphParamProvider(Collections.SingletonMap("collector", collector)));
+                .OperatorProvider(new DefaultSupportGraphOpProvider(future))
+                .ParameterProvider(new DefaultSupportGraphParamProvider(
+                    Collections.SingletonDataMap("collector", collector)));
     
             EPDataFlowInstance instance = epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlowOne", options);
             instance.Start();
     
-            epService.EPRuntime.SendEvent(new Object[]{"B", 100L}, "MyEventOA");
+            epService.EPRuntime.SendEvent(new object[]{"B", 100L}, "MyEventOA");
             Thread.Sleep(50);
             Assert.IsNull(collector.Last);
     
-            epService.EPRuntime.SendEvent(new Object[]{"A", 101L}, "MyEventOA");
+            epService.EPRuntime.SendEvent(new object[]{"A", 101L}, "MyEventOA");
             future.WaitForInvocation(100, 1);
             Assert.IsNotNull(collector.Last.Emitter);
             Assert.AreEqual("MyEventOA", collector.Last.Event.EventType.Name);
@@ -156,20 +155,20 @@ namespace com.espertech.esper.regression.dataflow
                     "EventBusSource -> ReceivedStream<" + (underlying ? "MyEventOA" : "EventBean<MyEventOA>") + "> {} " +
                     "DefaultSupportCaptureOp(ReceivedStream) {}");
     
-            var future = new DefaultSupportCaptureOp<>(1);
+            var future = new DefaultSupportCaptureOp(1);
             var options = new EPDataFlowInstantiationOptions()
                     .OperatorProvider(new DefaultSupportGraphOpProvider(future));
     
             EPDataFlowInstance instance = epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlowOne", options);
             instance.Start();
     
-            epService.EPRuntime.SendEvent(new Object[]{"abc", 100L}, "MyEventOA");
-            Object[] rows = future.Get(1, TimeUnit.SECONDS);
+            epService.EPRuntime.SendEvent(new object[]{"abc", 100L}, "MyEventOA");
+            object[] rows = future.GetValue(1, TimeUnit.SECONDS);
             Assert.AreEqual(1, rows.Length);
             if (underlying) {
-                EPAssertionUtil.AssertEqualsExactOrder((Object[]) rows[0], new Object[]{"abc", 100L});
+                EPAssertionUtil.AssertEqualsExactOrder((object[]) rows[0], new object[]{"abc", 100L});
             } else {
-                EPAssertionUtil.AssertProps((EventBean) rows[0], "p0,p1".Split(','), new Object[]{"abc", 100L});
+                EPAssertionUtil.AssertProps((EventBean) rows[0], "p0,p1".Split(','), new object[]{"abc", 100L});
             }
     
             instance.Cancel();
@@ -177,16 +176,12 @@ namespace com.espertech.esper.regression.dataflow
         }
     
         public class MyCollector : EPDataFlowEventBeanCollector {
-            private EPDataFlowEventBeanCollectorContext last;
-    
             public void Collect(EPDataFlowEventBeanCollectorContext context) {
-                this.last = context;
+                Last = context;
                 context.Emitter.Submit(context.Event);
             }
-    
-            public EPDataFlowEventBeanCollectorContext GetLast() {
-                return last;
-            }
+
+            public EPDataFlowEventBeanCollectorContext Last { get; private set; }
         }
     
         public class MyDummyCollector : EPDataFlowEventBeanCollector {

@@ -14,11 +14,9 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.events;
-using com.espertech.esper.supportregession.bean;
+using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNotNull;
 
 using NUnit.Framework;
 
@@ -93,7 +91,7 @@ namespace com.espertech.esper.regression.events.bean
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             EventType eventType = statement.EventType;
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("fieldSimple"));

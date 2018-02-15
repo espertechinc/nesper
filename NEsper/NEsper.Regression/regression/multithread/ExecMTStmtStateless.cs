@@ -49,7 +49,7 @@ namespace com.espertech.esper.regression.multithread
                 threads[i] = new Thread(runnables[i].Run);
             }
 
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             foreach (Thread t in threads)
             {
                 t.Start();

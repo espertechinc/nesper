@@ -20,7 +20,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util.support;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -69,7 +68,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string eplSelect = "select varaggIIP[1] as c0, varaggIIP[1].myevents as c1, varaggIIP[1].myevents.last(*) as c2 from SupportBean_S0";
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, eplSelect);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SupportBean e1 = MakeSendBean(epService, "E1", 1, 10L);
             SupportBean e2 = MakeSendBean(epService, "E2", 1, 20L);
@@ -81,8 +80,8 @@ namespace com.espertech.esper.regression.nwtable.tbl
         }
     
         private void AssertIntegerIndexed(EventBean @event, SupportBean[] events) {
-            EPAssertionUtil.AssertEqualsExactOrder(events, (Object[]) @event.Get("c0.myevents"));
-            EPAssertionUtil.AssertEqualsExactOrder(events, (Object[]) @event.Get("c1"));
+            EPAssertionUtil.AssertEqualsExactOrder(events, (object[]) @event.Get("c0.myevents"));
+            EPAssertionUtil.AssertEqualsExactOrder(events, (object[]) @event.Get("c1"));
             Assert.AreSame(events[events.Length - 1], @event.Get("c2"));
         }
     
@@ -90,7 +89,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("create table varaggFB (total count(*))");
             epService.EPAdministrator.CreateEPL("into table varaggFB select count(*) as total from SupportBean_S0");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from SupportBean(varaggFB.total = intPrimitive)").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from SupportBean(varaggFB.total = intPrimitive)").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
     
@@ -120,12 +119,12 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "varaggESC[p00].theEvents.last(*)," +
                     "varaggESC[p00].theEvents.window(*).Take(1) from SupportBean_S0");
     
-            var expectedAggType = new Object[][]{
-                    new object[] {"varaggESC.Keys()", typeof(Object[])},
+            var expectedAggType = new object[][]{
+                    new object[] {"varaggESC.Keys()", typeof(object[])},
                     new object[] {"varaggESC[p00].theEvents", typeof(SupportBean[])},
                     new object[] {"varaggESC[p00]", typeof(Map)},
                     new object[] {"varaggESC[p00].theEvents.last(*)", typeof(SupportBean)},
-                    new object[] {"varaggESC[p00].theEvents.window(*).Take(1)", typeof(Collection)},
+                    new object[] {"varaggESC[p00].theEvents.window(*).Take(1)", typeof(ICollection<object>)},
             };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedAggType, stmtSelect.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
             epService.EPAdministrator.DestroyAllStatements();
@@ -145,37 +144,37 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             EPStatement stmtSelect = SupportModelHelper.CreateByCompileOrParse(epService, soda, "select windowAndTotalTLP2K[id,p00] as val0 from SupportBean_S0");
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
             AssertTopLevelTypeInfo(stmtSelect);
     
-            var e1 = new Object[]{10, "G1", 100};
+            var e1 = new object[]{10, "G1", 100};
             epService.EPRuntime.SendEvent(e1, "MyEventOA");
     
             string[] fieldsInner = "thewindow,thetotal".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "G1"));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new Object[][]{e1}, 100);
+            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new object[][]{e1}, 100);
     
-            var e2 = new Object[]{20, "G2", 200};
+            var e2 = new object[]{20, "G2", 200};
             epService.EPRuntime.SendEvent(e2, "MyEventOA");
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(20, "G2"));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new Object[][]{e2}, 200);
+            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new object[][]{e2}, 200);
     
-            var e3 = new Object[]{20, "G2", 300};
+            var e3 = new object[]{20, "G2", 300};
             epService.EPRuntime.SendEvent(e3, "MyEventOA");
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "G1"));
             EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, null, null);
             epService.EPRuntime.SendEvent(new SupportBean_S0(20, "G2"));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new Object[][]{e2, e3}, 500);
+            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new object[][]{e2, e3}, 500);
     
             // test typable output
             stmtSelect.Dispose();
             EPStatement stmtConvert = epService.EPAdministrator.CreateEPL("insert into OutStream select windowAndTotalTLP2K[20, 'G2'] as val0 from SupportBean_S0");
-            stmtConvert.AddListener(listener);
+            stmtConvert.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0.thewindow,val0.thetotal".Split(','), new Object[]{new Object[][]{e2, e3}, 500});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0.thewindow,val0.thetotal".Split(','), new object[]{new object[][]{e2, e3}, 500});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -190,34 +189,34 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select windowAndTotalTLRUG as val0 from SupportBean_S0");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            var e1 = new Object[]{10};
+            var e1 = new object[]{10};
             epService.EPRuntime.SendEvent(e1, "MyEventOATLRU");
     
             string[] fieldsInner = "thewindow,thetotal".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new Object[][]{e1}, 10);
+            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new object[][]{e1}, 10);
     
-            var e2 = new Object[]{20};
+            var e2 = new object[]{20};
             epService.EPRuntime.SendEvent(e2, "MyEventOATLRU");
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new Object[][]{e1, e2}, 30);
+            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new object[][]{e1, e2}, 30);
     
-            var e3 = new Object[]{30};
+            var e3 = new object[]{30};
             epService.EPRuntime.SendEvent(e3, "MyEventOATLRU");
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new Object[][]{e2, e3}, 50);
+            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new object[][]{e2, e3}, 50);
     
             // test typable output
             stmt.Dispose();
             EPStatement stmtConvert = epService.EPAdministrator.CreateEPL("insert into AggBean select windowAndTotalTLRUG as val0 from SupportBean_S0");
-            stmtConvert.AddListener(listener);
+            stmtConvert.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0.thewindow,val0.thetotal".Split(','), new Object[]{new Object[][]{e2, e3}, 50});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0.thewindow,val0.thetotal".Split(','), new object[]{new object[][]{e2, e3}, 50});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -237,14 +236,14 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("@Name('s0') select GetMyValue(s0) as c0 from SupportBean_S0 as s0");
     
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("s0").AddListener(listener);
+            epService.EPAdministrator.GetStatement("s0").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(1000));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E2"));
     
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0".Split(','), new Object[]{2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0".Split(','), new object[]{2});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -256,13 +255,13 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("@Name('s0') select GetMyValue(s0) as c0 from SupportBean_S0 as s0");
     
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("s0").AddListener(listener);
+            epService.EPAdministrator.GetStatement("s0").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E2"));
     
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0".Split(','), new Object[]{2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0".Split(','), new object[]{2});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -280,15 +279,15 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             string fields = "varaggITFE.sumi,varaggITFE.sumd,varaggITFE.sumf,varaggITFE.suml";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select " + fields + " from SupportBean_S0").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select " + fields + " from SupportBean_S0").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields.Split(','), new Object[]{10, 1000d, 10000f, 100L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields.Split(','), new object[]{10, 1000d, 10000f, 100L});
     
             MakeSendBean(epService, "E1", 11, 101L, 1001d, 10001f);
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields.Split(','), new Object[]{21, 2001d, 20001f, 201L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields.Split(','), new object[]{21, 2001d, 20001f, 201L});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -305,17 +304,17 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             string eplUse = "select varTotalG2K[p00, id].total as c0, varTotalG2K[p00, id].cnt as c1 from SupportBean_S0";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(eplUse).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(eplUse).Events += listener.Update;
     
             MakeSendBean(epService, "E1", 10, 100);
     
             string[] fields = "c0,c1".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{100L, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{100L, 1L});
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null});
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -333,17 +332,17 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string[] fields = "c0,c1".Split(',');
             string eplUse = "select varTotalG3K[p00, id, 100L].total as c0, varTotalG3K[p00, id, 100L].cnt as c1 from SupportBean_S0";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(eplUse).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(eplUse).Events += listener.Update;
     
             MakeSendBean(epService, "E1", 10, 100, 1000);
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1000.0, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1000.0, 1L});
     
             MakeSendBean(epService, "E1", 10, 100, 1001);
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{2001.0, 2L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{2001.0, 2L});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -363,7 +362,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             string eplUse = "select p00 as c0, varTotalG1K[p00].total as c1 from SupportBean_S0";
             var listener = new SupportUpdateListener();
-            SupportModelHelper.CreateByCompileOrParse(epService, soda, eplUse).AddListener(listener);
+            SupportModelHelper.CreateByCompileOrParse(epService, soda, eplUse).Events += listener.Update;
     
             TryAssertionTopLevelSingle(epService, listener);
     
@@ -378,7 +377,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                             "@Name('L') context PartitionedByString select p00 as c0, varTotalUG.total as c1 from SupportBean_S0;\n";
             DeploymentResult result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(eplPart);
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("L").AddListener(listener);
+            epService.EPAdministrator.GetStatement("L").Events += listener.Update;
     
             TryAssertionTopLevelSingle(epService, listener);
     
@@ -398,10 +397,10 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("create table sharedagg (total sum(int))");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("into table sharedagg " +
-                    "select p00 as c0, sum(id) as total from SupportBean_S0").AddListener(listener);
+                    "select p00 as c0, sum(id) as total from SupportBean_S0").Events += listener.Update;
             epService.EPAdministrator.CreateEPL("into table sharedagg " +
-                    "select p10 as c0, sum(id) as total from SupportBean_S1").AddListener(listener);
-            epService.EPAdministrator.CreateEPL("select theString as c0, sharedagg.total as total from SupportBean").AddListener(listener);
+                    "select p10 as c0, sum(id) as total from SupportBean_S1").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select theString as c0, sharedagg.total as total from SupportBean").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "A"));
             AssertMultiStmtContributingTotal(epService, listener, "A", 10);
@@ -417,10 +416,10 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
         private void AssertMultiStmtContributingTotal(EPServiceProvider epService, SupportUpdateListener listener, string c0, int total) {
             string[] fields = "c0,total".Split(',');
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{c0, total});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{c0, total});
     
             epService.EPRuntime.SendEvent(new SupportBean(c0, 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{c0, total});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{c0, total});
         }
     
         private void TryAssertionMultiStmtContributingDifferentAggs(EPServiceProvider epService, bool grouped) {
@@ -439,55 +438,55 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "varaggMSC[theString].s0win as c2, varaggMSC[theString].s1sum as c3, varaggMSC[theString].s1cnt as c4," +
                     "varaggMSC[theString].s1win as c5 from SupportBean";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(grouped ? eplSelectGrouped : eplSelectUngrouped).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(grouped ? eplSelectGrouped : eplSelectUngrouped).Events += listener.Update;
     
             var listenerOne = new SupportUpdateListener();
             string[] fieldsOne = "s0sum,s0cnt,s0win".Split(',');
             string eplBindOne = "into table varaggMSC select sum(id) as s0sum, count(*) as s0cnt, window(*) as s0win from SupportBean_S0#length(2) " +
                     (grouped ? "group by p00" : "");
-            epService.EPAdministrator.CreateEPL(eplBindOne).AddListener(listenerOne);
+            epService.EPAdministrator.CreateEPL(eplBindOne).Events += listenerOne.Update;
     
             var listenerTwo = new SupportUpdateListener();
             string[] fieldsTwo = "s1sum,s1cnt,s1win".Split(',');
             string eplBindTwo = "into table varaggMSC select sum(id) as s1sum, count(*) as s1cnt, window(*) as s1win from SupportBean_S1#length(2) " +
                     (grouped ? "group by p10" : "");
-            epService.EPAdministrator.CreateEPL(eplBindTwo).AddListener(listenerTwo);
+            epService.EPAdministrator.CreateEPL(eplBindTwo).Events += listenerTwo.Update;
     
             // contribute S1
             SupportBean_S1 s1_1 = MakeSendS1(epService, 10, "G1");
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), fieldsTwo, new Object[]{10, 1L, new Object[]{s1_1}});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), fieldsTwo, new object[]{10, 1L, new object[]{s1_1}});
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 0));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsSelect,
-                    new Object[]{null, 0L, null, 10, 1L, new Object[]{s1_1}});
+                    new object[]{null, 0L, null, 10, 1L, new object[]{s1_1}});
     
             // contribute S0
             SupportBean_S0 s0_1 = MakeSendS0(epService, 20, "G1");
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fieldsOne, new Object[]{20, 1L, new Object[]{s0_1}});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fieldsOne, new object[]{20, 1L, new object[]{s0_1}});
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 0));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsSelect,
-                    new Object[]{20, 1L, new Object[]{s0_1}, 10, 1L, new Object[]{s1_1}});
+                    new object[]{20, 1L, new object[]{s0_1}, 10, 1L, new object[]{s1_1}});
     
             // contribute S1 and S0
             SupportBean_S1 s1_2 = MakeSendS1(epService, 11, "G1");
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), fieldsTwo, new Object[]{21, 2L, new Object[]{s1_1, s1_2}});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), fieldsTwo, new object[]{21, 2L, new object[]{s1_1, s1_2}});
             SupportBean_S0 s0_2 = MakeSendS0(epService, 21, "G1");
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fieldsOne, new Object[]{41, 2L, new Object[]{s0_1, s0_2}});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fieldsOne, new object[]{41, 2L, new object[]{s0_1, s0_2}});
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 0));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsSelect,
-                    new Object[]{41, 2L, new Object[]{s0_1, s0_2}, 21, 2L, new Object[]{s1_1, s1_2}});
+                    new object[]{41, 2L, new object[]{s0_1, s0_2}, 21, 2L, new object[]{s1_1, s1_2}});
     
             // contribute S1 and S0 (leave)
             SupportBean_S1 s1_3 = MakeSendS1(epService, 12, "G1");
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), fieldsTwo, new Object[]{23, 2L, new Object[]{s1_2, s1_3}});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), fieldsTwo, new object[]{23, 2L, new object[]{s1_2, s1_3}});
             SupportBean_S0 s0_3 = MakeSendS0(epService, 22, "G1");
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fieldsOne, new Object[]{43, 2L, new Object[]{s0_2, s0_3}});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fieldsOne, new object[]{43, 2L, new object[]{s0_2, s0_3}});
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 0));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsSelect,
-                    new Object[]{43, 2L, new Object[]{s0_2, s0_3}, 23, 2L, new Object[]{s1_2, s1_3}});
+                    new object[]{43, 2L, new object[]{s0_2, s0_3}, 23, 2L, new object[]{s1_2, s1_3}});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("table_varaggMSC__internal", false);
@@ -525,7 +524,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "sorted() as mysort " +
                     "from SupportBean#length(2) " +
                     (ungrouped ? "" : "group by theString ");
-            epService.EPAdministrator.CreateEPL(eplSelect).AddListener(listenerIntoTable);
+            epService.EPAdministrator.CreateEPL(eplSelect).Events += listenerIntoTable.Update;
     
             string[] fieldsSelect = "c0,c1,c2,c3".Split(',');
             string groupKey = ungrouped ? "" : "['E1']";
@@ -534,27 +533,27 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "varaggOOA" + groupKey + ".sumint as c0, " +
                     "varaggOOA" + groupKey + ".sumlong as c1," +
                     "varaggOOA" + groupKey + ".mywindow as c2," +
-                    "varaggOOA" + groupKey + ".mysort as c3 from SupportBean_S0").AddListener(listener);
+                    "varaggOOA" + groupKey + ".mysort as c3 from SupportBean_S0").Events += listener.Update;
     
             SupportBean e1 = MakeSendBean(epService, "E1", 10, 100);
             EPAssertionUtil.AssertProps(listenerIntoTable.AssertOneGetNewAndReset(), fieldsTable,
-                    new Object[]{10, 100L, new Object[]{e1}, new Object[]{e1}});
+                    new object[]{10, 100L, new object[]{e1}, new object[]{e1}});
     
             SupportBean e2 = MakeSendBean(epService, "E1", 5, 50);
             EPAssertionUtil.AssertProps(listenerIntoTable.AssertOneGetNewAndReset(), fieldsTable,
-                    new Object[]{15, 150L, new Object[]{e1, e2}, new Object[]{e2, e1}});
+                    new object[]{15, 150L, new object[]{e1, e2}, new object[]{e2, e1}});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsSelect,
-                    new Object[]{15, 150L, new Object[]{e1, e2}, new Object[]{e2, e1}});
+                    new object[]{15, 150L, new object[]{e1, e2}, new object[]{e2, e1}});
     
             SupportBean e3 = MakeSendBean(epService, "E1", 12, 120);
             EPAssertionUtil.AssertProps(listenerIntoTable.AssertOneGetNewAndReset(), fieldsTable,
-                    new Object[]{17, 170L, new Object[]{e2, e3}, new Object[]{e2, e3}});
+                    new object[]{17, 170L, new object[]{e2, e3}, new object[]{e2, e3}});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsSelect,
-                    new Object[]{17, 170L, new Object[]{e2, e3}, new Object[]{e2, e3}});
+                    new object[]{17, 170L, new object[]{e2, e3}, new object[]{e2, e3}});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("table_varaggOOA__internal", false);
@@ -585,7 +584,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             Assert.AreEqual(100d, resultUpdate.Array[0].Get("doublePrimitive"));
     
             EPOnDemandQueryResult resultInsert = epService.EPRuntime.ExecuteQuery("insert into MyWindow (theString, intPrimitive) values ('A', varaggNWFAF.total)");
-            EPAssertionUtil.AssertProps(resultInsert.Array[0], "theString,intPrimitive".Split(','), new Object[]{"A", 20});
+            EPAssertionUtil.AssertProps(resultInsert.Array[0], "theString,intPrimitive".Split(','), new object[]{"A", 20});
     
             epService.EPAdministrator.DeploymentAdmin.UndeployRemove(deployment.DeploymentId);
         }
@@ -594,7 +593,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("create table subquery_var_agg (key string primary key, total count(*))");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select (select subquery_var_agg[p00].total from SupportBean_S0#lastevent) as c0 " +
-                    "from SupportBean_S1").AddListener(listener);
+                    "from SupportBean_S1").Events += listener.Update;
             epService.EPAdministrator.CreateEPL("into table subquery_var_agg select count(*) as total from SupportBean group by theString");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", -1));
@@ -618,7 +617,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "when matched and the_table[s0.p00].total > 0" +
                     "  then update set value = 1");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select the_table[p10].value as c0 from SupportBean_S1").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select the_table[p10].value as c0 from SupportBean_S1").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", -1));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E1"));
@@ -655,7 +654,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     " from SupportBean_S0";
             EPStatement stmtSelect = SupportModelHelper.CreateByCompileOrParse(epService, soda, eplSelect);
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
             string[] fields = "c0,c1,c2,c3".Split(',');
     
             Assert.AreEqual(typeof(long), stmtSelect.EventType.GetPropertyType("c0"));
@@ -669,16 +668,16 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E1"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{3L, 2L, new SupportBean[]{b1, b2, b3}, 303L});
+                    new object[]{3L, 2L, new SupportBean[]{b1, b2, b3}, 303L});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E2"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{null, null, null, null});
+                    new object[]{null, null, null, null});
     
             SupportBean b4 = MakeSendBean(epService, "E2", 20, 200);
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E2"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{1L, 1L, new SupportBean[]{b4}, 200L});
+                    new object[]{1L, 1L, new SupportBean[]{b4}, 200L});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -696,19 +695,19 @@ namespace com.espertech.esper.regression.nwtable.tbl
             int count = 0;
             foreach (string p00 in "A,B,C,D".Split(',')) {
                 epService.EPRuntime.SendEvent(new SupportBean_S0(0, p00));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{p00, expected[count]});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{p00, expected[count]});
                 count++;
             }
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "A"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A", 21});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A", 21});
         }
     
         private void SendEventsAndAssert(EPServiceProvider epService, SupportUpdateListener listener, string theString, int intPrimitive, string p00, int total) {
             string[] fields = "c0,c1".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean(theString, intPrimitive));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, p00));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{p00, total});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{p00, total});
         }
     
         private SupportBean MakeSendBean(EPServiceProvider epService, string theString, int intPrimitive, long longPrimitive) {
@@ -733,13 +732,13 @@ namespace com.espertech.esper.regression.nwtable.tbl
             FragmentEventType fragType = stmt.EventType.GetFragmentType("val0");
             Assert.IsFalse(fragType.IsIndexed);
             Assert.IsFalse(fragType.IsNative);
-            Assert.AreEqual(typeof(Object[][]), fragType.FragmentType.GetPropertyType("thewindow"));
+            Assert.AreEqual(typeof(object[][]), fragType.FragmentType.GetPropertyType("thewindow"));
             Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("thetotal"));
         }
     
         public class AggSubBean {
             private int thetotal;
-            private Object[][] thewindow;
+            private object[][] thewindow;
     
             public int GetThetotal() {
                 return thetotal;
@@ -749,11 +748,11 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 this.thetotal = thetotal;
             }
     
-            public Object[][] GetThewindow() {
+            public object[][] GetThewindow() {
                 return thewindow;
             }
     
-            public void SetThewindow(Object[][] thewindow) {
+            public void SetThewindow(object[][] thewindow) {
                 this.thewindow = thewindow;
             }
         }

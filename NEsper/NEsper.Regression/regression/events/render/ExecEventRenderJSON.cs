@@ -20,7 +20,6 @@ using com.espertech.esper.events.util;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -154,7 +153,7 @@ namespace com.espertech.esper.regression.events.render
                 new string[]{"\t", "\"\\t\""},
                 new string[]{"\n", "\"\\n\""},
                 new string[]{"\r", "\"\\r\""},
-                new string[]{Character.ToString((char) 0), "\"\\u0000\""},
+                new string[]{"\0", "\"\\u0000\""},
             };
     
             for (int i = 0; i < testdata.Length; i++) {

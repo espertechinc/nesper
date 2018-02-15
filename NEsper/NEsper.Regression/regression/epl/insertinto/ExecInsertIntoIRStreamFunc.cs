@@ -17,7 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -35,22 +34,22 @@ namespace com.espertech.esper.regression.epl.insertinto
             string stmtTextOne = "insert irstream into MyStream " +
                     "select irstream theString as c0, Istream() as c1 " +
                     "from SupportBean#lastevent";
-            epService.EPAdministrator.CreateEPL(stmtTextOne).AddListener(listenerInsert);
+            epService.EPAdministrator.CreateEPL(stmtTextOne).Events += listenerInsert.Update;
     
             string stmtTextTwo = "select * from MyStream";
-            epService.EPAdministrator.CreateEPL(stmtTextTwo).AddListener(listenerSelect);
+            epService.EPAdministrator.CreateEPL(stmtTextTwo).Events += listenerSelect.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
-            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), fields, new Object[]{"E1", true});
-            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new Object[]{"E1", true});
+            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), fields, new object[]{"E1", true});
+            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[]{"E1", true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 0));
-            EPAssertionUtil.AssertProps(listenerInsert.AssertPairGetIRAndReset(), fields, new Object[]{"E2", true}, new Object[]{"E1", false});
-            EPAssertionUtil.AssertPropsPerRow(listenerSelect.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E2", true}, new object[] {"E1", false}}, new Object[0][]);
+            EPAssertionUtil.AssertProps(listenerInsert.AssertPairGetIRAndReset(), fields, new object[]{"E2", true}, new object[]{"E1", false});
+            EPAssertionUtil.AssertPropsPerRow(listenerSelect.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E2", true}, new object[] {"E1", false}}, new Object[0][]);
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 0));
-            EPAssertionUtil.AssertProps(listenerInsert.AssertPairGetIRAndReset(), fields, new Object[]{"E3", true}, new Object[]{"E2", false});
-            EPAssertionUtil.AssertPropsPerRow(listenerSelect.GetAndResetDataListsFlattened(), fields, new Object[][]{new object[] {"E3", true}, new object[] {"E2", false}}, new Object[0][]);
+            EPAssertionUtil.AssertProps(listenerInsert.AssertPairGetIRAndReset(), fields, new object[]{"E3", true}, new object[]{"E2", false});
+            EPAssertionUtil.AssertPropsPerRow(listenerSelect.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E3", true}, new object[] {"E2", false}}, new Object[0][]);
     
             // test SODA
             string eplModel = "select Istream() from SupportBean";
@@ -65,14 +64,14 @@ namespace com.espertech.esper.regression.epl.insertinto
             fields = "c0,c1,c2".Split(',');
             string stmtTextJoin = "select irstream theString as c0, id as c1, Istream() as c2 " +
                     "from SupportBean#lastevent, SupportBean_S0#lastevent";
-            epService.EPAdministrator.CreateEPL(stmtTextJoin).AddListener(listenerSelect);
+            epService.EPAdministrator.CreateEPL(stmtTextJoin).Events += listenerSelect.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             epService.EPRuntime.SendEvent(new SupportBean_S0(10));
-            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 10, true});
+            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[]{"E1", 10, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 0));
-            EPAssertionUtil.AssertProps(listenerSelect.LastOldData[0], fields, new Object[]{"E1", 10, false});
-            EPAssertionUtil.AssertProps(listenerSelect.LastNewData[0], fields, new Object[]{"E2", 10, true});
+            EPAssertionUtil.AssertProps(listenerSelect.LastOldData[0], fields, new object[]{"E1", 10, false});
+            EPAssertionUtil.AssertProps(listenerSelect.LastNewData[0], fields, new object[]{"E2", 10, true});
         }
     }
 } // end of namespace

@@ -19,8 +19,6 @@ using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.dataflow;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -39,7 +37,7 @@ namespace com.espertech.esper.regression.dataflow
             RunAssertionAllTypes(epService, "MyXMLEvent", DefaultSupportGraphEventUtil.XMLEvents);
             RunAssertionAllTypes(epService, "MyOAEvent", DefaultSupportGraphEventUtil.OAEvents);
             RunAssertionAllTypes(epService, "MyMapEvent", DefaultSupportGraphEventUtil.MapEvents);
-            RunAssertionAllTypes(epService, "MyEvent", DefaultSupportGraphEventUtil.POJOEvents);
+            RunAssertionAllTypes(epService, "MyEvent", DefaultSupportGraphEventUtil.PONOEvents);
     
             // invalid: output stream
             SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "DF1", "create dataflow DF1 EventBusSink -> s1 {}",
@@ -65,7 +63,7 @@ namespace com.espertech.esper.regression.dataflow
             epService.EPAdministrator.DestroyAllStatements();
         }
     
-        private void RunAssertionAllTypes(EPServiceProvider epService, string typeName, Object[] events) {
+        private void RunAssertionAllTypes(EPServiceProvider epService, string typeName, object[] events) {
             string graph = "create dataflow MyGraph " +
                     "DefaultSupportSourceOp -> instream<" + typeName + ">{}" +
                     "EventBusSink(instream) {}";
@@ -73,7 +71,7 @@ namespace com.espertech.esper.regression.dataflow
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from " + typeName);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var source = new DefaultSupportSourceOp(events);
             var options = new EPDataFlowInstantiationOptions();
@@ -81,7 +79,7 @@ namespace com.espertech.esper.regression.dataflow
             EPDataFlowInstance instance = epService.EPRuntime.DataFlowRuntime.Instantiate("MyGraph", options);
             instance.Run();
     
-            EPAssertionUtil.AssertPropsPerRow(listener.GetNewDataListFlattened(), "myDouble,myInt,myString".Split(','), new Object[][]{new object[] {1.1d, 1, "one"}, new object[] {2.2d, 2, "two"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetNewDataListFlattened(), "myDouble,myInt,myString".Split(','), new object[][]{new object[] {1.1d, 1, "one"}, new object[] {2.2d, 2, "two"}});
             listener.Reset();
     
             stmtGraph.Dispose();
@@ -92,7 +90,7 @@ namespace com.espertech.esper.regression.dataflow
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from MyEventBeacon");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPAdministrator.CreateEPL("create dataflow MyDataFlowOne " +
                     "" +
@@ -121,9 +119,9 @@ namespace com.espertech.esper.regression.dataflow
             epService.EPAdministrator.CreateEPL("create objectarray schema MyEventTwo(type string, f0 string, f1 int)");
     
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from MyEventOne").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from MyEventOne").Events += listener.Update;
             var listenerTwo = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from MyEventTwo").AddListener(listenerTwo);
+            epService.EPAdministrator.CreateEPL("select * from MyEventTwo").Events += listenerTwo.Update;
     
             epService.EPAdministrator.CreateEPL("create dataflow MyDataFlow " +
                     "MyObjectArrayGraphSource -> OutStream<?> {}" +
@@ -134,8 +132,8 @@ namespace com.espertech.esper.regression.dataflow
                     "}");
     
             var source = new MyObjectArrayGraphSource(Collections.List(
-                    new Object[]{"type1", 100, "abc"},
-                    new Object[]{"type2", "GE", -1}
+                    new object[]{"type1", 100, "abc"},
+                    new object[]{"type2", "GE", -1}
             ).GetEnumerator());
             var options = new EPDataFlowInstantiationOptions()
                     .OperatorProvider(new DefaultSupportGraphOpProvider(source));
@@ -143,8 +141,8 @@ namespace com.espertech.esper.regression.dataflow
     
             listener.WaitForInvocation(3000, 1);
             listenerTwo.WaitForInvocation(3000, 1);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "p0,p1".Split(','), new Object[]{100, "abc"});
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), "f0,f1".Split(','), new Object[]{"GE", -1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "p0,p1".Split(','), new object[]{100, "abc"});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), "f0,f1".Split(','), new object[]{"GE", -1});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -152,7 +150,7 @@ namespace com.espertech.esper.regression.dataflow
         public class MyTransformToEventBus : EPDataFlowEventCollector {
     
             public void Collect(EPDataFlowEventCollectorContext context) {
-                Object[] eventObj = (Object[]) context.Event;
+                object[] eventObj = (object[]) context.Event;
                 if (eventObj[0].Equals("type1")) {
                     context.EventBusCollector.SendEvent(eventObj, "MyEventOne");
                 } else {

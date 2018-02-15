@@ -20,7 +20,6 @@ using com.espertech.esper.supportregression.bean.bookexample;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -50,14 +49,14 @@ namespace com.espertech.esper.regression.epl.contained
             string stmtText = "select reviewId from OrderWindowNWF[books][reviews] bookReviews order by reviewId asc";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventOne());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {1}, new object[] {2}, new object[] {10}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {1}, new object[] {2}, new object[] {10}});
             listener.Reset();
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventFour());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {201}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {201}});
             listener.Reset();
     
             stmt.Dispose();
@@ -74,16 +73,16 @@ namespace com.espertech.esper.regression.epl.contained
             string stmtText = "select *, (select sum(price) from OrderWindowNWS[books]) as totalPrice from SupportBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventOne());
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"E1", 24d + 35d + 27d}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"E1", 24d + 35d + 27d}});
             listener.Reset();
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventFour());
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"E2", 15d + 13d}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"E2", 15d + 13d}});
             listener.Reset();
     
             stmt.Dispose();
@@ -102,7 +101,7 @@ namespace com.espertech.esper.regression.epl.contained
             string stmtText = "on OrderWindowNWOT[books] owb select sbw.* from SupportBeanWindow sbw where theString = title";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventFour());
@@ -110,7 +109,7 @@ namespace com.espertech.esper.regression.epl.contained
     
             epService.EPRuntime.SendEvent(new SupportBean("Foundation 2", 2));
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventFour());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"Foundation 2", 2}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"Foundation 2", 2}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -123,14 +122,14 @@ namespace com.espertech.esper.regression.epl.contained
             EPStatementSPI stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             Assert.IsTrue(stmt.StatementContext.IsStatelessSelect);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventOne());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {1}, new object[] {2}, new object[] {10}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {1}, new object[] {2}, new object[] {10}});
             listener.Reset();
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventFour());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {201}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {201}});
             listener.Reset();
     
             stmt.Dispose();
@@ -144,30 +143,30 @@ namespace com.espertech.esper.regression.epl.contained
             string stmtText = "select reviewId from OrderEvent[books where title = 'Enders Game'][reviews] bookReviews order by reviewId asc";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventOne());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {1}, new object[] {2}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {1}, new object[] {2}});
             listener.Reset();
     
             // try where in different levels
             stmt.Dispose();
             stmtText = "select reviewId from OrderEvent[books where title = 'Enders Game'][reviews where reviewId in (1, 10)] bookReviews order by reviewId asc";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventOne());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {1}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {1}});
             listener.Reset();
     
             // try where in combination
             stmt.Dispose();
             stmtText = "select reviewId from OrderEvent[books as bc][reviews as rw where rw.reviewId in (1, 10) and bc.title = 'Enders Game'] bookReviews order by reviewId asc";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventOne());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {1}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {1}});
             listener.Reset();
             Assert.IsFalse(listener.IsInvoked);
     
@@ -181,7 +180,7 @@ namespace com.espertech.esper.regression.epl.contained
             string stmtText = "select * from OrderEvent[select bookId, orderdetail.orderId as orderId from books][select reviewId from reviews] bookReviews order by reviewId asc";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryAssertionColumnSelect(epService, listener);
             stmt.Dispose();
     
@@ -189,7 +188,7 @@ namespace com.espertech.esper.regression.epl.contained
             stmtText = "select orderFrag.orderdetail.orderId as orderId, bookFrag.bookId as bookId, reviewFrag.reviewId as reviewId " +
                     "from OrderEvent[books as book][select myorder.* as orderFrag, book.* as bookFrag, review.* as reviewFrag from reviews as review] as myorder";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryAssertionColumnSelect(epService, listener);
             stmt.Dispose();
     
@@ -197,7 +196,7 @@ namespace com.espertech.esper.regression.epl.contained
             stmtText = "select orderdetail.orderId as orderId, bookFrag.bookId as bookId, reviewFrag.reviewId as reviewId " +
                     "from OrderEvent[books as book][select myorder.*, book.* as bookFrag, review.* as reviewFrag from reviews as review] as myorder";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryAssertionColumnSelect(epService, listener);
             stmt.Dispose();
     
@@ -205,7 +204,7 @@ namespace com.espertech.esper.regression.epl.contained
             stmtText = "select orderFrag.orderdetail.orderId as orderId, bookId, reviewId " +
                     "from OrderEvent[select * from books][select myorder.* as orderFrag, reviewId from reviews as review] as myorder";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryAssertionColumnSelect(epService, listener);
             stmt.Dispose();
     
@@ -213,7 +212,7 @@ namespace com.espertech.esper.regression.epl.contained
             stmtText = "select orderFrag.orderdetail.orderId as orderId, bookFrag.bookId as bookId, reviewFrag.reviewId as reviewId " +
                     "from OrderEvent[select * from books as bookFrag][select myorder.* as orderFrag, review.* as reviewFrag from reviews as review] as myorder";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryAssertionColumnSelect(epService, listener);
             stmt.Dispose();
     
@@ -223,7 +222,7 @@ namespace com.espertech.esper.regression.epl.contained
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
             Assert.AreEqual(stmtText, model.ToEPL());
             stmt = epService.EPAdministrator.Create(model, stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryAssertionColumnSelect(epService, listener);
             stmt.Dispose();
     
@@ -240,7 +239,7 @@ namespace com.espertech.esper.regression.epl.contained
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from pattern [" +
                     "every r=OrderEvent[books][reviews] -> SupportBean(intPrimitive = r[0].reviewId)]");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventOne());
@@ -265,7 +264,7 @@ namespace com.espertech.esper.regression.epl.contained
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select theString from SupportBean s0 where " +
                     "Exists (select * from OrderEvent[books][reviews]#unique(reviewId) where reviewId = s0.intPrimitive)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventOne());
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventFour());
@@ -291,15 +290,17 @@ namespace com.espertech.esper.regression.epl.contained
                     "from OrderEvent[books as book][select myorder.*, book.* as bookFrag, review.* as reviewFrag from reviews as review] as myorder";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventOne());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{
-                    {"PO200901", "10020", 1}, {"PO200901", "10020", 2}, {"PO200901", "10021", 10}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{
+                new object[] {"PO200901", "10020", 1},
+                new object[] {"PO200901", "10020", 2},
+                new object[] {"PO200901", "10021", 10}});
             listener.Reset();
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventFour());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"PO200904", "10031", 201}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"PO200904", "10031", 201}});
             listener.Reset();
     
             stmt.Dispose();
@@ -340,12 +341,14 @@ namespace com.espertech.esper.regression.epl.contained
             string[] fields = "orderId,bookId,reviewId".Split(',');
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventOne());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{
-                    {"PO200901", "10020", 1}, {"PO200901", "10020", 2}, {"PO200901", "10021", 10}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{
+                new object[] {"PO200901", "10020", 1},
+                new object[] {"PO200901", "10020", 2},
+                new object[] {"PO200901", "10021", 10}});
             listener.Reset();
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventFour());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"PO200904", "10031", 201}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"PO200904", "10031", 201}});
             listener.Reset();
         }
     }

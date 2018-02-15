@@ -47,9 +47,9 @@ namespace com.espertech.esper.regression.events.plugin {
             // type resolved for each by the first event representation picking both up, i.e. the one with "r2" since that is the most specific URI
             var stmt = epService.EPAdministrator.CreateEPL("select * from TestTypeOne");
             var listeners = SupportUpdateListener.MakeListeners(5);
-            stmt.AddListener(listeners[0]);
+            stmt.Events += listeners[0].Update;
             stmt = epService.EPAdministrator.CreateEPL("select * from TestTypeTwo");
-            stmt.AddListener(listeners[1]);
+            stmt.Events += listeners[1].Update;
 
             // static senders
             var sender = epService.EPRuntime.GetEventSender("TestTypeOne");

@@ -9,13 +9,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.rowregex;
@@ -23,7 +22,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -69,14 +67,14 @@ namespace com.espertech.esper.regression.rowrecog
                     "\tB as B.temp >= 102)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(new Object[]{"E1", "1", 99}, "TemperatureSensorEvent");
-            epService.EPRuntime.SendEvent(new Object[]{"E2", "1", 100}, "TemperatureSensorEvent");
-            epService.EPRuntime.SendEvent(new Object[]{"E3", "1", 100}, "TemperatureSensorEvent");
-            epService.EPRuntime.SendEvent(new Object[]{"E4", "1", 101}, "TemperatureSensorEvent");
-            epService.EPRuntime.SendEvent(new Object[]{"E5", "1", 102}, "TemperatureSensorEvent");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3", "E4", "E5"});
+            epService.EPRuntime.SendEvent(new object[]{"E1", "1", 99}, "TemperatureSensorEvent");
+            epService.EPRuntime.SendEvent(new object[]{"E2", "1", 100}, "TemperatureSensorEvent");
+            epService.EPRuntime.SendEvent(new object[]{"E3", "1", 100}, "TemperatureSensorEvent");
+            epService.EPRuntime.SendEvent(new object[]{"E4", "1", 101}, "TemperatureSensorEvent");
+            epService.EPRuntime.SendEvent(new object[]{"E5", "1", 102}, "TemperatureSensorEvent");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3", "E4", "E5"});
     
             stmt.Dispose();
         }
@@ -93,14 +91,14 @@ namespace com.espertech.esper.regression.rowrecog
                     "\tB as B.temp >= 102)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(new Object[]{"E1", "1", 99}, "TemperatureSensorEvent");
-            epService.EPRuntime.SendEvent(new Object[]{"E2", "1", 100}, "TemperatureSensorEvent");
-            epService.EPRuntime.SendEvent(new Object[]{"E3", "1", 100}, "TemperatureSensorEvent");
-            epService.EPRuntime.SendEvent(new Object[]{"E4", "1", 101}, "TemperatureSensorEvent");
-            epService.EPRuntime.SendEvent(new Object[]{"E5", "1", 102}, "TemperatureSensorEvent");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", "E3", "E4", "E5"});
+            epService.EPRuntime.SendEvent(new object[]{"E1", "1", 99}, "TemperatureSensorEvent");
+            epService.EPRuntime.SendEvent(new object[]{"E2", "1", 100}, "TemperatureSensorEvent");
+            epService.EPRuntime.SendEvent(new object[]{"E3", "1", 100}, "TemperatureSensorEvent");
+            epService.EPRuntime.SendEvent(new object[]{"E4", "1", 101}, "TemperatureSensorEvent");
+            epService.EPRuntime.SendEvent(new object[]{"E5", "1", 102}, "TemperatureSensorEvent");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", "E3", "E4", "E5"});
     
             stmt.Dispose();
         }
@@ -116,17 +114,17 @@ namespace com.espertech.esper.regression.rowrecog
                     "\tA as A.temp >= 100)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(new Object[]{"E1", "1", 99}, "TemperatureSensorEvent");
-            epService.EPRuntime.SendEvent(new Object[]{"E2", "1", 100}, "TemperatureSensorEvent");
+            epService.EPRuntime.SendEvent(new object[]{"E1", "1", 99}, "TemperatureSensorEvent");
+            epService.EPRuntime.SendEvent(new object[]{"E2", "1", 100}, "TemperatureSensorEvent");
     
-            epService.EPRuntime.SendEvent(new Object[]{"E3", "1", 100}, "TemperatureSensorEvent");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", "E3"});
+            epService.EPRuntime.SendEvent(new object[]{"E3", "1", 100}, "TemperatureSensorEvent");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", "E3"});
     
-            epService.EPRuntime.SendEvent(new Object[]{"E4", "1", 101}, "TemperatureSensorEvent");
-            epService.EPRuntime.SendEvent(new Object[]{"E5", "1", 102}, "TemperatureSensorEvent");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E4", "E5"});
+            epService.EPRuntime.SendEvent(new object[]{"E4", "1", 101}, "TemperatureSensorEvent");
+            epService.EPRuntime.SendEvent(new object[]{"E5", "1", 102}, "TemperatureSensorEvent");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E4", "E5"});
     
             stmt.Dispose();
         }
@@ -139,21 +137,21 @@ namespace com.espertech.esper.regression.rowrecog
                     ")";
             epService.EPAdministrator.CreateEPL("create variable int myvariable = 0");
     
-            SupportMessageAssertUtil.TryInvalid(epService, template.ReplaceAll("REPLACE", "A{}"),
+            SupportMessageAssertUtil.TryInvalid(epService, template.RegexReplaceAll("REPLACE", "A{}"),
                     "Invalid match-recognize quantifier '{}', expecting an expression");
-            SupportMessageAssertUtil.TryInvalid(epService, template.ReplaceAll("REPLACE", "A{null}"),
+            SupportMessageAssertUtil.TryInvalid(epService, template.RegexReplaceAll("REPLACE", "A{null}"),
                     "Error starting statement: pattern quantifier 'null' must return an integer-type value");
-            SupportMessageAssertUtil.TryInvalid(epService, template.ReplaceAll("REPLACE", "A{myvariable}"),
+            SupportMessageAssertUtil.TryInvalid(epService, template.RegexReplaceAll("REPLACE", "A{myvariable}"),
                     "Error starting statement: pattern quantifier 'myvariable' must return a constant value");
-            SupportMessageAssertUtil.TryInvalid(epService, template.ReplaceAll("REPLACE", "A{Prev(A)}"),
+            SupportMessageAssertUtil.TryInvalid(epService, template.RegexReplaceAll("REPLACE", "A{Prev(A)}"),
                     "Error starting statement: Invalid match-recognize pattern expression 'Prev(A)': Aggregation, sub-select, previous or prior functions are not supported in this context");
     
             string expected = "Error starting statement: Invalid pattern quantifier value -1, expecting a minimum of 1";
-            SupportMessageAssertUtil.TryInvalid(epService, template.ReplaceAll("REPLACE", "A{-1}"), expected);
-            SupportMessageAssertUtil.TryInvalid(epService, template.ReplaceAll("REPLACE", "A{,-1}"), expected);
-            SupportMessageAssertUtil.TryInvalid(epService, template.ReplaceAll("REPLACE", "A{-1,10}"), expected);
-            SupportMessageAssertUtil.TryInvalid(epService, template.ReplaceAll("REPLACE", "A{-1,}"), expected);
-            SupportMessageAssertUtil.TryInvalid(epService, template.ReplaceAll("REPLACE", "A{5,3}"),
+            SupportMessageAssertUtil.TryInvalid(epService, template.RegexReplaceAll("REPLACE", "A{-1}"), expected);
+            SupportMessageAssertUtil.TryInvalid(epService, template.RegexReplaceAll("REPLACE", "A{,-1}"), expected);
+            SupportMessageAssertUtil.TryInvalid(epService, template.RegexReplaceAll("REPLACE", "A{-1,10}"), expected);
+            SupportMessageAssertUtil.TryInvalid(epService, template.RegexReplaceAll("REPLACE", "A{-1,}"), expected);
+            SupportMessageAssertUtil.TryInvalid(epService, template.RegexReplaceAll("REPLACE", "A{5,3}"),
                     "Error starting statement: Invalid pattern quantifier value 5, expecting a minimum of 1 and maximum of 3");
         }
     
@@ -168,7 +166,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent("A1", 1, epService);
             SendEvent("A2", 4, epService);
@@ -178,7 +176,7 @@ namespace com.espertech.esper.regression.rowrecog
             SupportBean b6 = SendEvent("A6", 6, epService);
             SupportBean b7 = SendEvent("A7", 7, epService);
             SupportBean b8 = SendEvent("A9", 8, epService);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a".Split(','), new Object[]{new Object[]{b6, b7, b8}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a".Split(','), new object[]{new object[]{b6, b7, b8}});
         }
     
         private void RunAssertionRepeat(EPServiceProvider epService, bool soda) {
@@ -452,7 +450,7 @@ namespace com.espertech.esper.regression.rowrecog
                     " define " + defines +
                     ")";
             var listener = new SupportUpdateListener();
-            SupportModelHelper.CreateByCompileOrParse(epService, soda, text).AddListener(listener);
+            SupportModelHelper.CreateByCompileOrParse(epService, soda, text).Events += listener.Update;
     
             int sequenceNum = 0;
             foreach (string aSequencesWithMatch in sequencesWithMatch) {
@@ -472,13 +470,13 @@ namespace com.espertech.esper.regression.rowrecog
     
             // send events
             string[] events = sequence.Split(',');
-            var sent = new Dictionary<string, object>();
+            var sent = new Dictionary<string, IList<SupportBean>>();
             foreach (string anEvent in events) {
-                var type = new String(new char[]{anEvent.CharAt(0)});
+                var type = new String(new char[]{ anEvent[0] });
                 SupportBean bean = SendEvent(anEvent, sequenceNum, epService);
-                string propName = type.ToLowerCase(Locale.ENGLISH);
+                string propName = type.ToLowerInvariant();
                 if (!sent.ContainsKey(propName)) {
-                    sent.Put(propName, new List<>());
+                    sent.Put(propName, new List<SupportBean>());
                 }
                 sent.Get(propName).Add(bean);
             }
@@ -486,9 +484,9 @@ namespace com.espertech.esper.regression.rowrecog
             // prepare expected
             var expected = new Object[propertyNames.Length];
             for (int i = 0; i < propertyNames.Length; i++) {
-                List<SupportBean> sentForType = sent.Get(propertyNames[i]);
+                IList<SupportBean> sentForType = sent.Get(propertyNames[i]);
                 if (arrayProp[i]) {
-                    expected[i] = sentForType == null ? null : sentForType.ToArray(new SupportBean[0]);
+                    expected[i] = sentForType == null ? null : sentForType.ToArray();
                 } else {
                     if (match) {
                         Assert.IsTrue(sentForType.Count == 1);
@@ -501,7 +499,7 @@ namespace com.espertech.esper.regression.rowrecog
                 EventBean @event = listener.AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(@event, propertyNames, expected);
             } else {
-                Assert.IsFalse("Failed at " + sequence, listener.IsInvoked);
+                Assert.IsFalse(listener.IsInvoked, "Failed at " + sequence);
             }
         }
     
@@ -509,29 +507,29 @@ namespace com.espertech.esper.regression.rowrecog
             string delimiter = "";
             var buf = new StringWriter();
             foreach (string prop in props) {
-                buf.Append(delimiter);
+                buf.Write(delimiter);
                 delimiter = ", ";
-                buf.Append(prop.ToUpperCase(Locale.ENGLISH));
-                buf.Append(" as ");
-                buf.Append(prop.ToUpperCase(Locale.ENGLISH));
-                buf.Append(".theString like \"");
-                buf.Append(prop.ToUpperCase(Locale.ENGLISH));
-                buf.Append("%\"");
+                buf.Write(prop.ToUpperInvariant());
+                buf.Write(" as ");
+                buf.Write(prop.ToUpperInvariant());
+                buf.Write(".theString like \"");
+                buf.Write(prop.ToUpperInvariant());
+                buf.Write("%\"");
             }
-            return Buf.ToString();
+            return buf.ToString();
         }
     
         private string MakeMeasures(string[] props) {
             string delimiter = "";
             var buf = new StringWriter();
             foreach (string prop in props) {
-                buf.Append(delimiter);
+                buf.Write(delimiter);
                 delimiter = ", ";
-                buf.Append(prop.ToUpperCase(Locale.ENGLISH));
-                buf.Append(" as ");
-                buf.Append(prop);
+                buf.Write(prop.ToUpperInvariant());
+                buf.Write(" as ");
+                buf.Write(prop);
             }
-            return Buf.ToString();
+            return buf.ToString();
         }
     
         private SupportBean SendEvent(string theString, int intPrimitive, EPServiceProvider epService) {

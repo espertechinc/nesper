@@ -18,8 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -30,7 +28,7 @@ namespace com.espertech.esper.regression.events.objectarray
     public class ExecEventObjectArray : RegressionExecution {
         public override void Configure(Configuration configuration) {
             string[] names = {"myInt", "myString", "beanA"};
-            Object[] types = {typeof(int?), typeof(string), typeof(SupportBeanComplexProps)};
+            object[] types = {typeof(int?), typeof(string), typeof(SupportBeanComplexProps)};
             configuration.AddEventType("MyObjectArrayEvent", names, types);
         }
     
@@ -47,32 +45,32 @@ namespace com.espertech.esper.regression.events.objectarray
             epService.EPAdministrator.CreateEPL("create objectarray schema NBALvl1(val string)");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from NBALvl1");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(new Object[]{"somevalue"}, "NBALvl1");
+            epService.EPRuntime.SendEvent(new object[]{"somevalue"}, "NBALvl1");
             EventBean @event = listener.AssertOneGetNewAndReset();
             stmt.Dispose();
     
             // add containing-type via API
-            epService.EPAdministrator.Configuration.AddEventType("NBALvl0", new[]{"lvl1s"}, new Object[] {
+            epService.EPAdministrator.Configuration.AddEventType("NBALvl0", new[]{"lvl1s"}, new object[] {
                 new[]{@event.EventType}
             });
             stmt = epService.EPAdministrator.CreateEPL("select lvl1s[0] as c0 from NBALvl0");
-            stmt.AddListener(listener);
-            epService.EPRuntime.SendEvent(new Object[]{new[]{ @event } }, "NBALvl0");
-            Assert.AreEqual("somevalue", ((Object[]) listener.AssertOneGetNewAndReset().Get("c0"))[0]);
+            stmt.Events += listener.Update;
+            epService.EPRuntime.SendEvent(new object[]{new[]{ @event } }, "NBALvl0");
+            Assert.AreEqual("somevalue", ((object[]) listener.AssertOneGetNewAndReset().Get("c0"))[0]);
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("NBALvl1", true);
             epService.EPAdministrator.Configuration.RemoveEventType("NBALvl0", true);
         }
     
-        internal static Object GetNestedKeyOA(Object[] array, int index, string keyTwo) {
+        internal static Object GetNestedKeyOA(object[] array, int index, string keyTwo) {
             Map map = (Map) array[index];
             return map.Get(keyTwo);
         }
     
-        internal static Object GetNestedKeyOA(Object[] array, int index, string keyTwo, string keyThree) {
+        internal static Object GetNestedKeyOA(object[] array, int index, string keyTwo, string keyThree) {
             Map map = (Map) array[index];
             map = (Map) map.Get(keyTwo);
             return map.Get(keyThree);
@@ -107,7 +105,7 @@ namespace com.espertech.esper.regression.events.objectarray
             EPAssertionUtil.AssertEqualsExactOrder(configOps.GetEventTypeNameUsedBy("MyObjectArrayEvent").ToArray(), new[]{"stmtOne"});
     
             int numTypes = epService.EPAdministrator.Configuration.EventTypes.Count;
-            Assert.AreEqual(typeof(Object[]), epService.EPAdministrator.Configuration.GetEventType("MyObjectArrayEvent").UnderlyingType);
+            Assert.AreEqual(typeof(object[]), epService.EPAdministrator.Configuration.GetEventType("MyObjectArrayEvent").UnderlyingType);
     
             try {
                 configOps.RemoveEventType("MyObjectArrayEvent", false);
@@ -132,7 +130,7 @@ namespace com.espertech.esper.regression.events.objectarray
             }
     
             // add back the type
-            configOps.AddEventType("MyObjectArrayEvent", new[]{"p01"}, new Object[]{typeof(string)});
+            configOps.AddEventType("MyObjectArrayEvent", new[]{"p01"}, new object[]{typeof(string)});
             Assert.IsTrue(configOps.IsEventTypeExists("MyObjectArrayEvent"));
             Assert.IsTrue(configOps.GetEventTypeNameUsedBy("MyObjectArrayEvent").IsEmpty());
             Assert.AreEqual(numTypes, epService.EPAdministrator.Configuration.EventTypes.Count);
@@ -159,7 +157,7 @@ namespace com.espertech.esper.regression.events.objectarray
             Assert.IsTrue(configOps.GetEventTypeNameUsedBy("MyObjectArrayEvent").IsEmpty());
     
             // add back the type
-            configOps.AddEventType("MyObjectArrayEvent", new[]{"newprop"}, new Object[]{typeof(string)});
+            configOps.AddEventType("MyObjectArrayEvent", new[]{"newprop"}, new object[]{typeof(string)});
             Assert.IsTrue(configOps.IsEventTypeExists("MyObjectArrayEvent"));
     
             // compile
@@ -182,9 +180,9 @@ namespace com.espertech.esper.regression.events.objectarray
                     "from MyObjectArrayEvent#length(5)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(new Object[]{3, "some string", SupportBeanComplexProps.MakeDefaultBean()}, "MyObjectArrayEvent");
+            epService.EPRuntime.SendEvent(new object[]{3, "some string", SupportBeanComplexProps.MakeDefaultBean()}, "MyObjectArrayEvent");
             Assert.AreEqual("nestedValue", listener.LastNewData[0].Get("nested"));
             Assert.AreEqual(2, listener.LastNewData[0].Get("indexed"));
             Assert.AreEqual("nestedNestedValue", listener.LastNewData[0].Get("nestednested"));
@@ -195,15 +193,15 @@ namespace com.espertech.esper.regression.events.objectarray
             string statementText = "select myInt + 2 as intVal, 'x' || myString || 'x' as stringVal from MyObjectArrayEvent#length(5)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             // send IDictionary<string, Object> event
-            epService.EPRuntime.SendEvent(new Object[]{3, "some string", SupportBeanComplexProps.MakeDefaultBean()}, "MyObjectArrayEvent");
+            epService.EPRuntime.SendEvent(new object[]{3, "some string", SupportBeanComplexProps.MakeDefaultBean()}, "MyObjectArrayEvent");
             Assert.AreEqual(5, listener.LastNewData[0].Get("intVal"));
             Assert.AreEqual("xsome stringx", listener.LastNewData[0].Get("stringVal"));
     
             // send Map base event
-            epService.EPRuntime.SendEvent(new Object[]{4, "string2", null}, "MyObjectArrayEvent");
+            epService.EPRuntime.SendEvent(new object[]{4, "string2", null}, "MyObjectArrayEvent");
             Assert.AreEqual(6, listener.LastNewData[0].Get("intVal"));
             Assert.AreEqual("xstring2x", listener.LastNewData[0].Get("stringVal"));
     
@@ -213,7 +211,7 @@ namespace com.espertech.esper.regression.events.objectarray
         private void RunAssertionInvalid(EPServiceProvider epService) {
             try {
                 Configuration configuration = SupportConfigFactory.GetConfiguration();
-                configuration.AddEventType("MyInvalidEvent", new[]{"p00"}, new Object[]{typeof(int), typeof(string)});
+                configuration.AddEventType("MyInvalidEvent", new[]{"p00"}, new object[]{typeof(int), typeof(string)});
                 Assert.Fail();
             } catch (ConfigurationException ex) {
                 Assert.AreEqual("Number of property names and property types do not match, found 1 property names and 2 property types", ex.Message);
@@ -226,7 +224,7 @@ namespace com.espertech.esper.regression.events.objectarray
             var invalidOAConfig = new ConfigurationEventTypeObjectArray();
             invalidOAConfig.SuperTypes = new HashSet<string>(Collections.List("A", "B"));
             var invalidOANames = new[]{"p00"};
-            var invalidOATypes = new Object[]{typeof(int)};
+            var invalidOATypes = new object[]{typeof(int)};
             try {
                 Configuration configuration = SupportConfigFactory.GetConfiguration();
                 configuration.AddEventType("MyInvalidEventTwo", invalidOANames, invalidOATypes, invalidOAConfig);

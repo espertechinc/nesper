@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Linq;
 using System.Xml;
 
 using com.espertech.esper.client;
@@ -19,31 +20,30 @@ using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util.support;
 
-// using static org.junit.Assert.assertNull;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.events.xml
 {
     public class ExecEventXMLNoSchemaEventTransposeXPathGetter : RegressionExecution {
-        private static readonly string CLASSLOADER_SCHEMA_URI = "regression/simpleSchema.xsd";
+        private const string CLASSLOADER_SCHEMA_URI = "regression/simpleSchema.xsd";
     
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.ViewResources.IterableUnbound = true;
+            configuration.EngineDefaults.ViewResources.IsIterableUnbound = true;
         }
     
         public override void Run(EPServiceProvider epService) {
             var eventTypeMeta = new ConfigurationEventTypeXMLDOM();
             eventTypeMeta.RootElementName = "simpleEvent";
-            string schemaUri = typeof(ExecEventXMLNoSchemaEventTransposeXPathGetter).ClassLoader.GetResource(CLASSLOADER_SCHEMA_URI).ToString();
+            string schemaUri = ResourceManager.ResolveResourceURL(CLASSLOADER_SCHEMA_URI).ToString();
             eventTypeMeta.SchemaResource = schemaUri;
-            eventTypeMeta.XPathPropertyExpr = true;       // <== note this
+            eventTypeMeta.IsXPathPropertyExpr = true;       // <== note this
             eventTypeMeta.AddNamespacePrefix("ss", "samples:schemas:simpleSchema");
             epService.EPAdministrator.Configuration.AddEventType("TestXMLSchemaType", eventTypeMeta);
     
             // note class not a fragment
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL("insert into MyNestedStream select nested1 from TestXMLSchemaType");
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{
+            EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
                     new EventPropertyDescriptor("nested1", typeof(XmlNode), null, false, false, false, false, false),
             }, stmtInsert.EventType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(stmtInsert.EventType);

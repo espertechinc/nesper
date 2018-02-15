@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -69,43 +69,43 @@ namespace com.espertech.esper.regression.nwtable.infra
             }
             EPStatement consumeStmt = epService.EPAdministrator.CreateEPL(consumeEpl);
             var listener = new SupportUpdateListener();
-            consumeStmt.AddListener(listener);
+            consumeStmt.Events += listener.Update;
     
             SendWindow(epService, "W1", 10L, "c31");
             SendEvent(epService, "E1", 10, "c31");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "W1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "W1"});
     
             SendEvent(epService, "E2", 11, "c32");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", null});
     
             SendWindow(epService, "W2", 11L, "c32");
             SendEvent(epService, "E3", 11, "c32");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3", "W2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3", "W2"});
     
             SendWindow(epService, "W3", 11L, "c31");
             SendWindow(epService, "W4", 10L, "c32");
     
             SendEvent(epService, "E4", 11, "c31");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E4", "W3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E4", "W3"});
     
             SendEvent(epService, "E5", 10, "c31");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E5", "W1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E5", "W1"});
     
             SendEvent(epService, "E6", 10, "c32");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E6", "W4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E6", "W4"});
     
             // test late start
-            consumeStmt.Destroy();
+            consumeStmt.Dispose();
             consumeStmt = epService.EPAdministrator.CreateEPL(consumeEpl);
-            consumeStmt.AddListener(listener);
+            consumeStmt.Events += listener.Update;
     
             SendEvent(epService, "E6", 10, "c32");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E6", "W4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E6", "W4"});
     
             if (stmtIndex != null) {
                 stmtIndex.Dispose();
             }
-            consumeStmt.Destroy();
+            consumeStmt.Dispose();
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfra", false);
@@ -116,8 +116,8 @@ namespace com.espertech.esper.regression.nwtable.infra
             theEvent.Put("col0", col0);
             theEvent.Put("col1", col1);
             theEvent.Put("col2", col2);
-            if (EventRepresentationChoice.GetEngineDefault(epService).IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(theEvent.Values().ToArray(), "WindowSchema");
+            if (EventRepresentationChoiceExtensions.GetEngineDefault(epService).IsObjectArrayEvent()) {
+                epService.EPRuntime.SendEvent(theEvent.Values.ToArray(), "WindowSchema");
             } else {
                 epService.EPRuntime.SendEvent(theEvent, "WindowSchema");
             }
@@ -128,8 +128,8 @@ namespace com.espertech.esper.regression.nwtable.infra
             theEvent.Put("e0", e0);
             theEvent.Put("e1", e1);
             theEvent.Put("e2", e2);
-            if (EventRepresentationChoice.GetEngineDefault(epService).IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(theEvent.Values().ToArray(), "EventSchema");
+            if (EventRepresentationChoiceExtensions.GetEngineDefault(epService).IsObjectArrayEvent()) {
+                epService.EPRuntime.SendEvent(theEvent.Values.ToArray(), "EventSchema");
             } else {
                 epService.EPRuntime.SendEvent(theEvent, "EventSchema");
             }

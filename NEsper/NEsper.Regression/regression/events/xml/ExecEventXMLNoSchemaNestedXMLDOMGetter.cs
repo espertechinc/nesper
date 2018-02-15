@@ -33,7 +33,7 @@ namespace com.espertech.esper.regression.events.xml
             string stmt = "select b.c as type, element1, result1 from AEvent";
             EPStatement joinView = epService.EPAdministrator.CreateEPL(stmt);
             var updateListener = new SupportUpdateListener();
-            joinView.AddListener(updateListener);
+            joinView.Events += updateListener.Update;
     
             SendXMLEvent(epService, "<a><b><c></c></b></a>");
             EventBean theEvent = updateListener.AssertOneGetNewAndReset();

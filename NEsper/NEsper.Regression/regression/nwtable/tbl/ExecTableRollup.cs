@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -40,28 +39,28 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string[] fieldsOut = "theString,total".Split(',');
     
             epService.EPAdministrator.CreateEPL("create table MyTableR1D(pk string primary key, total sum(int))");
-            epService.EPAdministrator.CreateEPL("into table MyTableR1D insert into MyStreamOne select theString, sum(intPrimitive) as total from SupportBean#length(4) group by Rollup(theString)").AddListener(listenerOut);
-            epService.EPAdministrator.CreateEPL("select MyTableR1D[p00].total as c0 from SupportBean_S0").AddListener(listenerQuery);
+            epService.EPAdministrator.CreateEPL("into table MyTableR1D insert into MyStreamOne select theString, sum(intPrimitive) as total from SupportBean#length(4) group by Rollup(theString)").Events += listenerOut.Update;
+            epService.EPAdministrator.CreateEPL("select MyTableR1D[p00].total as c0 from SupportBean_S0").Events += listenerQuery.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
-            AssertValuesListener(epService, listenerQuery, new Object[][]{new object[] {null, 10}, new object[] {"E1", 10}, new object[] {"E2", null}});
-            EPAssertionUtil.AssertPropsPerRow(listenerOut.GetAndResetLastNewData(), fieldsOut, new Object[][]{new object[] {"E1", 10}, new object[] {null, 10}});
+            AssertValuesListener(epService, listenerQuery, new object[][]{new object[] {null, 10}, new object[] {"E1", 10}, new object[] {"E2", null}});
+            EPAssertionUtil.AssertPropsPerRow(listenerOut.GetAndResetLastNewData(), fieldsOut, new object[][]{new object[] {"E1", 10}, new object[] {null, 10}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 200));
-            AssertValuesListener(epService, listenerQuery, new Object[][]{new object[] {null, 210}, new object[] {"E1", 10}, new object[] {"E2", 200}});
-            EPAssertionUtil.AssertPropsPerRow(listenerOut.GetAndResetLastNewData(), fieldsOut, new Object[][]{new object[] {"E2", 200}, new object[] {null, 210}});
+            AssertValuesListener(epService, listenerQuery, new object[][]{new object[] {null, 210}, new object[] {"E1", 10}, new object[] {"E2", 200}});
+            EPAssertionUtil.AssertPropsPerRow(listenerOut.GetAndResetLastNewData(), fieldsOut, new object[][]{new object[] {"E2", 200}, new object[] {null, 210}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 11));
-            AssertValuesListener(epService, listenerQuery, new Object[][]{new object[] {null, 221}, new object[] {"E1", 21}, new object[] {"E2", 200}});
-            EPAssertionUtil.AssertPropsPerRow(listenerOut.GetAndResetLastNewData(), fieldsOut, new Object[][]{new object[] {"E1", 21}, new object[] {null, 221}});
+            AssertValuesListener(epService, listenerQuery, new object[][]{new object[] {null, 221}, new object[] {"E1", 21}, new object[] {"E2", 200}});
+            EPAssertionUtil.AssertPropsPerRow(listenerOut.GetAndResetLastNewData(), fieldsOut, new object[][]{new object[] {"E1", 21}, new object[] {null, 221}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 201));
-            AssertValuesListener(epService, listenerQuery, new Object[][]{new object[] {null, 422}, new object[] {"E1", 21}, new object[] {"E2", 401}});
-            EPAssertionUtil.AssertPropsPerRow(listenerOut.GetAndResetLastNewData(), fieldsOut, new Object[][]{new object[] {"E2", 401}, new object[] {null, 422}});
+            AssertValuesListener(epService, listenerQuery, new object[][]{new object[] {null, 422}, new object[] {"E1", 21}, new object[] {"E2", 401}});
+            EPAssertionUtil.AssertPropsPerRow(listenerOut.GetAndResetLastNewData(), fieldsOut, new object[][]{new object[] {"E2", 401}, new object[] {null, 422}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 12)); // {"E1", 10} leaving window
-            AssertValuesListener(epService, listenerQuery, new Object[][]{new object[] {null, 424}, new object[] {"E1", 23}, new object[] {"E2", 401}});
-            EPAssertionUtil.AssertPropsPerRow(listenerOut.GetAndResetLastNewData(), fieldsOut, new Object[][]{new object[] {"E1", 23}, new object[] {null, 424}});
+            AssertValuesListener(epService, listenerQuery, new object[][]{new object[] {null, 424}, new object[] {"E1", 23}, new object[] {"E2", 401}});
+            EPAssertionUtil.AssertPropsPerRow(listenerOut.GetAndResetLastNewData(), fieldsOut, new object[][]{new object[] {"E1", 23}, new object[] {null, 424}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -72,18 +71,18 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("create table MyTableR2D(k0 int primary key, k1 int primary key, total sum(int))");
             epService.EPAdministrator.CreateEPL("into table MyTableR2D insert into MyStreamTwo select sum(col) as total from MyEventTwo#length(3) group by Rollup(k0,k1)");
     
-            epService.EPRuntime.SendEvent(new Object[]{1, 10, 100}, "MyEventTwo");
-            epService.EPRuntime.SendEvent(new Object[]{2, 10, 200}, "MyEventTwo");
-            epService.EPRuntime.SendEvent(new Object[]{1, 20, 300}, "MyEventTwo");
+            epService.EPRuntime.SendEvent(new object[]{1, 10, 100}, "MyEventTwo");
+            epService.EPRuntime.SendEvent(new object[]{2, 10, 200}, "MyEventTwo");
+            epService.EPRuntime.SendEvent(new object[]{1, 20, 300}, "MyEventTwo");
     
-            AssertValuesIterate(epService, "MyTableR2D", fields, new Object[][]{new object[] {null, null, 600}, new object[] {1, null, 400}, new object[] {2, null, 200},
+            AssertValuesIterate(epService, "MyTableR2D", fields, new object[][]{new object[] {null, null, 600}, new object[] {1, null, 400}, new object[] {2, null, 200},
                     new object[] {1, 10, 100}, 
                     new object[] {2, 10, 200},
                     new object[] {1, 20, 300}});
     
-            epService.EPRuntime.SendEvent(new Object[]{1, 10, 400}, "MyEventTwo"); // expires {1, 10, 100}
+            epService.EPRuntime.SendEvent(new object[]{1, 10, 400}, "MyEventTwo"); // expires {1, 10, 100}
     
-            AssertValuesIterate(epService, "MyTableR2D", fields, new Object[][]{new object[] {null, null, 900}, new object[] {1, null, 700}, new object[] {2, null, 200},
+            AssertValuesIterate(epService, "MyTableR2D", fields, new object[][]{new object[] {null, null, 900}, new object[] {1, null, 700}, new object[] {2, null, 200},
                     new object[] {1, 10, 400},
                     new object[] {2, 10, 200},
                     new object[] {1, 20, 300}});
@@ -97,11 +96,11 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("into table MyTableGS3D insert into MyStreamThree select sum(col) as total from MyEventThree#length(3) group by grouping Sets(k0,k1,k2)");
     
             string[] fields = "k0,k1,k2,total".Split(',');
-            epService.EPRuntime.SendEvent(new Object[]{1, 10, 100, 1000}, "MyEventThree");
-            epService.EPRuntime.SendEvent(new Object[]{2, 10, 200, 2000}, "MyEventThree");
-            epService.EPRuntime.SendEvent(new Object[]{1, 20, 300, 3000}, "MyEventThree");
+            epService.EPRuntime.SendEvent(new object[]{1, 10, 100, 1000}, "MyEventThree");
+            epService.EPRuntime.SendEvent(new object[]{2, 10, 200, 2000}, "MyEventThree");
+            epService.EPRuntime.SendEvent(new object[]{1, 20, 300, 3000}, "MyEventThree");
     
-            AssertValuesIterate(epService, "MyTableGS3D", fields, new Object[][]{
+            AssertValuesIterate(epService, "MyTableGS3D", fields, new object[][]{
                     new object[] {1, null, null, 4000},
                     new object[] {2, null, null, 2000},
                     new object[] {null, 10, null, 3000},
@@ -110,9 +109,9 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     new object[] {null, null, 200, 2000},
                     new object[] {null, null, 300, 3000}});
     
-            epService.EPRuntime.SendEvent(new Object[]{1, 10, 400, 4000}, "MyEventThree"); // expires {1, 10, 100, 1000}
+            epService.EPRuntime.SendEvent(new object[]{1, 10, 400, 4000}, "MyEventThree"); // expires {1, 10, 100, 1000}
     
-            AssertValuesIterate(epService, "MyTableGS3D", fields, new Object[][]{
+            AssertValuesIterate(epService, "MyTableGS3D", fields, new object[][]{
                     new object[] {1, null, null, 7000},
                     new object[] {2, null, null, 2000},
                     new object[] {null, 10, null, 6000},
@@ -125,12 +124,12 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.DestroyAllStatements();
         }
     
-        private void AssertValuesIterate(EPServiceProvider epService, string name, string[] fields, Object[][] objects) {
+        private void AssertValuesIterate(EPServiceProvider epService, string name, string[] fields, object[][] objects) {
             EPOnDemandQueryResult result = epService.EPRuntime.ExecuteQuery("select * from " + name);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(result.Array, fields, objects);
         }
     
-        private void AssertValuesListener(EPServiceProvider epService, SupportUpdateListener listenerQuery, Object[][] objects) {
+        private void AssertValuesListener(EPServiceProvider epService, SupportUpdateListener listenerQuery, object[][] objects) {
             for (int i = 0; i < objects.Length; i++) {
                 string p00 = (string) objects[i][0];
                 int? expected = (int?) objects[i][1];

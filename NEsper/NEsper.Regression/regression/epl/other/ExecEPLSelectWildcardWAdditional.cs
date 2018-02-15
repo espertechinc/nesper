@@ -57,7 +57,7 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement statement = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             AssertSimple(epService, listener);
     
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             AssertSimple(epService, listener);
     
             statement.Dispose();
@@ -88,11 +88,11 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             statement = epService.EPAdministrator.CreateEPL(textTwo);
             var insertListener = new SupportUpdateListener();
-            statement.AddListener(insertListener);
+            statement.Events += insertListener.Update;
             AssertSimple(epService, listener);
             AssertProperties(Collections.EmptyDataMap, insertListener);
     
@@ -109,11 +109,11 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             statement = epService.EPAdministrator.CreateEPL(textTwo);
             var insertListener = new SupportUpdateListener();
-            statement.AddListener(insertListener);
+            statement.Events += insertListener.Update;
     
             AssertNoCommonProperties(epService, listener);
             AssertProperties(Collections.EmptyDataMap, insertListener);
@@ -130,7 +130,7 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             AssertNoCommonProperties(epService, listener);
     
@@ -143,7 +143,7 @@ namespace com.espertech.esper.regression.epl.other
     
             listener.Reset();
             statement = epService.EPAdministrator.CreateEPL(text);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             AssertNoCommonProperties(epService, listener);
     
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             AssertCommonProperties(epService, listener);
     
@@ -172,7 +172,7 @@ namespace com.espertech.esper.regression.epl.other
     
             listener.Reset();
             statement = epService.EPAdministrator.CreateEPL(text);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             AssertCommonProperties(epService, listener);
     
@@ -185,7 +185,7 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             AssertCombinedProps(epService, listener);
             statement.Dispose();
         }
@@ -195,7 +195,7 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             // The map to send into the runtime
             var props = new Dictionary<string, object>();

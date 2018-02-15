@@ -38,17 +38,17 @@ namespace com.espertech.esper.regression.pattern
             DeploymentResult result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
     
             var listenerOut2 = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("Out2").AddListener(listenerOut2);
+            epService.EPAdministrator.GetStatement("Out2").Events += listenerOut2.Update;
     
             var listenerOut3 = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("Out3").AddListener(listenerOut3);
+            epService.EPAdministrator.GetStatement("Out3").Events += listenerOut3.Update;
     
-            epService.EPRuntime.SendEvent(new Object[]{"GE", 10}, "TypeOne");
-            epService.EPRuntime.SendEvent(new Object[]{"GE", 10}, "TypeOne");
+            epService.EPRuntime.SendEvent(new object[]{"GE", 10}, "TypeOne");
+            epService.EPRuntime.SendEvent(new object[]{"GE", 10}, "TypeOne");
             Assert.IsTrue(listenerOut2.IsInvokedAndReset());
     
-            epService.EPRuntime.SendEvent(new Object[]{"GE", 10, 5}, "TypeTwo");
-            epService.EPRuntime.SendEvent(new Object[]{"GE", 10, 5}, "TypeTwo");
+            epService.EPRuntime.SendEvent(new object[]{"GE", 10, 5}, "TypeTwo");
+            epService.EPRuntime.SendEvent(new object[]{"GE", 10, 5}, "TypeTwo");
             Assert.IsTrue(listenerOut3.IsInvokedAndReset());
     
             epService.EPAdministrator.DeploymentAdmin.UndeployRemove(result.DeploymentId);

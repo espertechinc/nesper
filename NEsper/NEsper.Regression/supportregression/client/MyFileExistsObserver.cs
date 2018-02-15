@@ -34,7 +34,7 @@ namespace com.espertech.esper.supportregression.client
 
         public void StartObserve()
         {
-            if (File.exists(_filename))
+            if (File.Exists(_filename))
             {
                 _observerEventEvaluator.ObserverEvaluateTrue(_beginState, true);
             }

@@ -169,7 +169,7 @@ namespace com.espertech.esper.regression.events.infra
 
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             send.Invoke(epService, underlyingComplete);
             var @event = listener.AssertOneGetNewAndReset();
@@ -202,7 +202,7 @@ namespace com.espertech.esper.regression.events.infra
 
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var propertyNames = "n1,n2,n3,n4,n5,n6".Split(',');
             foreach (var propertyName in propertyNames)
@@ -280,10 +280,10 @@ namespace com.espertech.esper.regression.events.infra
             var s3 = SchemaBuilder.Record(AVRO_TYPENAME + "_3", TypeBuilder.OptionalInt("nestedNestedValue"));
             var s2 = SchemaBuilder.Record(
                 AVRO_TYPENAME + "_2", TypeBuilder.OptionalInt("nestedValue"),
-                TypeBuilder.Field("nestedNested", TypeBuilder.Union(TypeBuilder.Int(), s3)));
+                TypeBuilder.Field("nestedNested", TypeBuilder.Union(TypeBuilder.IntType(), s3)));
             var s1 = SchemaBuilder.Record(
                 AVRO_TYPENAME + "_1",
-                TypeBuilder.Field("nested", TypeBuilder.Union(TypeBuilder.Int(), s2)));
+                TypeBuilder.Field("nested", TypeBuilder.Union(TypeBuilder.IntType(), s2)));
 
             return SchemaBuilder.Record(AVRO_TYPENAME, TypeBuilder.Field("item", s1));
         }

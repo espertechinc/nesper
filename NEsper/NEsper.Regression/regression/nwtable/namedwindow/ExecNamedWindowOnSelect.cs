@@ -47,14 +47,14 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelect = "on " + typeof(SupportBean_A).Name + " insert into MyStream select mywin.* from MyWindow as mywin order by theString asc";
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listenerSelect = new SupportUpdateListener();
-            stmtSelect.AddListener(listenerSelect);
+            stmtSelect.Events += listenerSelect.Update;
             Assert.AreEqual(StatementType.ON_INSERT, ((EPStatementSPI) stmtSelect).StatementMetadata.StatementType);
     
             // create consuming statement
             string stmtTextConsumer = "select * from default.MyStream";
             EPStatement stmtConsumer = epService.EPAdministrator.CreateEPL(stmtTextConsumer);
             var listenerConsumer = new SupportUpdateListener();
-            stmtConsumer.AddListener(listenerConsumer);
+            stmtConsumer.Events += listenerConsumer.Update;
     
             // create second inserting statement
             string stmtTextInsertTwo = "insert into MyStream select * from " + typeof(SupportBean).FullName + "(theString like 'I%')";
@@ -64,32 +64,32 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             SendSupportBean(epService, "E1", 1);
             Assert.IsFalse(listenerSelect.IsInvoked);
             Assert.IsFalse(listenerConsumer.IsInvoked);
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}});
     
             // fire trigger
             SendSupportBean_A(epService, "A1");
-            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
-            EPAssertionUtil.AssertProps(listenerConsumer.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
+            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
+            EPAssertionUtil.AssertProps(listenerConsumer.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
     
             // insert via 2nd insert into
             SendSupportBean(epService, "I2", 2);
             Assert.IsFalse(listenerSelect.IsInvoked);
-            EPAssertionUtil.AssertProps(listenerConsumer.AssertOneGetNewAndReset(), fields, new Object[]{"I2", 2});
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}});
+            EPAssertionUtil.AssertProps(listenerConsumer.AssertOneGetNewAndReset(), fields, new object[]{"I2", 2});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}});
     
             // send event
             SendSupportBean(epService, "E3", 3);
             Assert.IsFalse(listenerSelect.IsInvoked);
             Assert.IsFalse(listenerConsumer.IsInvoked);
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E3", 3}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E3", 3}});
     
             // fire trigger
             SendSupportBean_A(epService, "A2");
             Assert.AreEqual(1, listenerSelect.NewDataList.Count);
-            EPAssertionUtil.AssertPropsPerRow(listenerSelect.LastNewData, fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E3", 3}});
+            EPAssertionUtil.AssertPropsPerRow(listenerSelect.LastNewData, fields, new object[][]{new object[] {"E1", 1}, new object[] {"E3", 3}});
             listenerSelect.Reset();
             Assert.AreEqual(2, listenerConsumer.NewDataList.Count);
-            EPAssertionUtil.AssertPropsPerRow(listenerConsumer.GetNewDataListFlattened(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E3", 3}});
+            EPAssertionUtil.AssertPropsPerRow(listenerConsumer.GetNewDataListFlattened(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E3", 3}});
             listenerConsumer.Reset();
     
             // check type

@@ -21,8 +21,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.fail;
 
 using NUnit.Framework;
 
@@ -89,25 +87,25 @@ namespace com.espertech.esper.regression.client
                 statement = epService.EPAdministrator.CreateEPL(text);
             }
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("a", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"a"}, new Object[]{""});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"a"}, new object[]{""});
     
             epService.EPRuntime.SendEvent(new SupportBean("b", 2));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"b"}, new Object[]{""});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"b"}, new object[]{""});
     
             epService.EPRuntime.SendEvent(new SupportBean("c", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"a c"}, new Object[]{"a"});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"a c"}, new object[]{"a"});
     
             epService.EPRuntime.SendEvent(new SupportBean("d", 2));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"b d"}, new Object[]{"b"});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"b d"}, new object[]{"b"});
     
             epService.EPRuntime.SendEvent(new SupportBean("e", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"a c e"}, new Object[]{"a c"});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"a c e"}, new object[]{"a c"});
     
             epService.EPRuntime.SendEvent(new SupportBean("f", 2));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"b d f"}, new Object[]{"b d"});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"b d f"}, new object[]{"b d"});
     
             listener.Reset();
         }
@@ -116,19 +114,19 @@ namespace com.espertech.esper.regression.client
             string text = "select irstream concatstring(theString) as val from " + typeof(SupportBean).FullName + "#length(2)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("a", -1));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"a"}, new Object[]{""});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"a"}, new object[]{""});
     
             epService.EPRuntime.SendEvent(new SupportBean("b", -1));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"a b"}, new Object[]{"a"});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"a b"}, new object[]{"a"});
     
             epService.EPRuntime.SendEvent(new SupportBean("c", -1));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"b c"}, new Object[]{"a b"});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"b c"}, new object[]{"a b"});
     
             epService.EPRuntime.SendEvent(new SupportBean("d", -1));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"c d"}, new Object[]{"b c"});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"c d"}, new object[]{"b c"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -140,13 +138,13 @@ namespace com.espertech.esper.regression.client
             string textTwo = "select concatstring(*) as val from SupportBean";
             EPStatement statementTwo = epService.EPAdministrator.CreateEPL(textTwo);
             var listenerTwo = new SupportUpdateListener();
-            statementTwo.AddListener(listenerTwo);
+            statementTwo.Events += listenerTwo.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("d", -1));
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), "val".Split(','), new Object[]{"SupportBean(d, -1)"});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), "val".Split(','), new object[]{"SupportBean(d, -1)"});
     
             epService.EPRuntime.SendEvent(new SupportBean("e", 2));
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), "val".Split(','), new Object[]{"SupportBean(d, -1) SupportBean(e, 2)"});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), "val".Split(','), new object[]{"SupportBean(d, -1) SupportBean(e, 2)"});
     
             try {
                 epService.EPAdministrator.CreateEPL("select concatstring(*) as val from SupportBean#lastevent, SupportBean unidirectional");
@@ -158,22 +156,22 @@ namespace com.espertech.esper.regression.client
             string text = "select irstream concatstring(distinct theString) as val from SupportBean";
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("a", -1));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"a"}, new Object[]{""});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"a"}, new object[]{""});
     
             epService.EPRuntime.SendEvent(new SupportBean("b", -1));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"a b"}, new Object[]{"a"});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"a b"}, new object[]{"a"});
     
             epService.EPRuntime.SendEvent(new SupportBean("b", -1));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"a b"}, new Object[]{"a b"});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"a b"}, new object[]{"a b"});
     
             epService.EPRuntime.SendEvent(new SupportBean("c", -1));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"a b c"}, new Object[]{"a b"});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"a b c"}, new object[]{"a b"});
     
             epService.EPRuntime.SendEvent(new SupportBean("a", -1));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"a b c"}, new Object[]{"a b c"});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"a b c"}, new object[]{"a b c"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -184,23 +182,23 @@ namespace com.espertech.esper.regression.client
             string text = "select irstream Countback({1,2,intPrimitive}) as val from " + typeof(SupportBean).FullName;
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{-1}, new Object[]{0});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{-1}, new object[]{0});
     
             // test dot-method
             epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_A));
             epService.EPAdministrator.Configuration.AddPlugInAggregationFunctionFactory("myagg", typeof(MyAggFuncFactory).Name);
             string[] fields = "val0,val1".Split(',');
-            epService.EPAdministrator.CreateEPL("select (Myagg(id)).TheString as val0, (Myagg(id)).IntPrimitive as val1 from SupportBean_A").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select (Myagg(id)).TheString as val0, (Myagg(id)).IntPrimitive as val1 from SupportBean_A").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"XX", 1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"XX", 1});
             Assert.AreEqual(1, MyAggFuncFactory.InstanceCount);
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"XX", 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"XX", 2});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -217,26 +215,26 @@ namespace com.espertech.esper.regression.client
             string text = "select irstream Countboundary(1,10,intPrimitive,*) as val from " + typeof(SupportBean).FullName;
             EPStatement statement = SupportModelHelper.CreateByCompileOrParse(epService, soda, text);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             AggregationValidationContext validContext = SupportPluginAggregationMethodThreeFactory.Contexts[0];
             EPAssertionUtil.AssertEqualsExactOrder(new Type[]{typeof(int?), typeof(int?), typeof(int), typeof(SupportBean)}, validContext.ParameterTypes);
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{1, 10, null, null}, validContext.ConstantValues);
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{1, 10, null, null}, validContext.ConstantValues);
             EPAssertionUtil.AssertEqualsExactOrder(new bool[]{true, true, false, false}, validContext.IsConstantValue);
     
             var e1 = new SupportBean("E1", 5);
             epService.EPRuntime.SendEvent(e1);
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{1}, new Object[]{0});
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[]{1, 10, 5, e1}, SupportPluginAggregationMethodThree.LastEnterParameters);
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{1}, new object[]{0});
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{1, 10, 5, e1}, SupportPluginAggregationMethodThree.LastEnterParameters);
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{1}, new Object[]{1});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{1}, new object[]{1});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 11));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{1}, new Object[]{1});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{1}, new object[]{1});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{2}, new Object[]{1});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{2}, new object[]{1});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -245,13 +243,13 @@ namespace com.espertech.esper.regression.client
             string text = "select irstream Countback() as val from " + typeof(SupportBean).FullName;
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{-1}, new Object[]{0});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{-1}, new object[]{0});
     
             epService.EPRuntime.SendEvent(new SupportBean());
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{-2}, new Object[]{-1});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{-2}, new object[]{-1});
     
             statement.Dispose();
         }
@@ -260,17 +258,17 @@ namespace com.espertech.esper.regression.client
             string text = "select irstream concatstring('a') as val from " + typeof(SupportBean).FullName;
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("val"));
     
             epService.EPRuntime.SendEvent(new SupportBean());
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"a"}, new Object[]{""});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"a"}, new object[]{""});
     
             epService.EPRuntime.SendEvent(new SupportBean());
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"a a"}, new Object[]{"a"});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"a a"}, new object[]{"a"});
     
             epService.EPRuntime.SendEvent(new SupportBean());
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new Object[]{"a a a"}, new Object[]{"a a"});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "val", new object[]{"a a a"}, new object[]{"a a"});
     
             statement.Dispose();
         }

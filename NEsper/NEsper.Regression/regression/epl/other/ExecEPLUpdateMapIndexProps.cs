@@ -56,7 +56,7 @@ namespace com.espertech.esper.regression.epl.other
             EPStatement stmtUpdOne =
                 epService.EPAdministrator.CreateEPL("update istream MyStream set Props('abc') = 1, array[2] = 10");
             var listener = new SupportUpdateListener();
-            stmtUpdOne.AddListener(listener);
+            stmtUpdOne.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new MyMapPropEvent());
             EPAssertionUtil.AssertProps(
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regression.epl.other
             EPStatement stmtUpdTwo = epService.EPAdministrator.CreateEPL(
                 "update istream MyInfraType set simple='A', Mymap('abc') = 1, myarray[2] = 10");
             var listener = new SupportUpdateListener();
-            stmtUpdTwo.AddListener(listener);
+            stmtUpdTwo.Events += listener.Update;
 
             if (eventRepresentationEnum.IsObjectArrayEvent())
             {
@@ -169,8 +169,8 @@ namespace com.espertech.esper.regression.epl.other
                 GenericRecord @event = new GenericRecord(
                     SchemaBuilder.Record("name",
                         TypeBuilder.OptionalString("simple"),
-                        TypeBuilder.Field("myarray", TypeBuilder.Array(TypeBuilder.Long())),
-                        TypeBuilder.Field("mymap", TypeBuilder.Map(TypeBuilder.String()))));
+                        TypeBuilder.Field("myarray", TypeBuilder.Array(TypeBuilder.LongType())),
+                        TypeBuilder.Field("mymap", TypeBuilder.Map(TypeBuilder.StringType()))));
                 @event.Put("myarray", Collections.List(0, 0));
                 @event.Put("mymap", null);
                 epService.EPRuntime.SendEventAvro(@event, "MyNWInfraType");

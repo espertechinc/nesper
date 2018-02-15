@@ -18,13 +18,13 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
-using DescriptionAttribute = com.espertech.esper.client.annotation.DescriptionAttribute;
 
 namespace com.espertech.esper.regression.epl.other
 {
+    using DescriptionAttribute = com.espertech.esper.client.annotation.DescriptionAttribute;
+
     public class ExecEPLSelectExpr : RegressionExecution {
         public override void Configure(Configuration configuration) {
             configuration.AddEventType<SupportBean>();
@@ -49,9 +49,9 @@ namespace com.espertech.esper.regression.epl.other
             string epl = "select " + selectColumn + " from SupportBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
             if (!stmt.EventType.PropertyNames[0].Equals(expectedColumn)) {
-                Fail("Expected '" + expectedColumn + "' but was " + stmt.EventType.PropertyNames[0]);
+                Assert.Fail("Expected '" + expectedColumn + "' but was " + stmt.EventType.PropertyNames[0]);
             }
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regression.epl.other
             string epl = "select nested.nestedValue, nested.nestedNested.nestedNestedValue from MyStream";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
             Assert.IsNotNull(testListener.AssertOneGetNewAndReset());
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPAdministrator.Configuration.AddEventType("Keywords", typeof(SupportBeanKeywords));
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select " + fields + " from Keywords");
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
             epService.EPRuntime.SendEvent(new SupportBeanKeywords());
             EPAssertionUtil.AssertEqualsExactOrder(stmt.EventType.PropertyNames, fields.Split(','));
     
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regression.epl.other
             stmt.Dispose();
     
             stmt = epService.EPAdministrator.CreateEPL("select escape as stddev, count(*) as count, last from Keywords");
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
             epService.EPRuntime.SendEvent(new SupportBeanKeywords());
     
             theEvent = testListener.AssertOneGetNewAndReset();
@@ -125,9 +125,9 @@ namespace com.espertech.esper.regression.epl.other
     
             stmt = epService.EPAdministrator.CreateEPL("select 'volume' as field1, \"sleep\" as field2, \"\\u0041\" as unicodeA from SupportBean");
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
             epService.EPRuntime.SendEvent(new SupportBean());
-            EPAssertionUtil.AssertProps(testListener.AssertOneGetNewAndReset(), new string[]{"field1", "field2", "unicodeA"}, new Object[]{"volume", "sleep", "A"});
+            EPAssertionUtil.AssertProps(testListener.AssertOneGetNewAndReset(), new string[]{"field1", "field2", "unicodeA"}, new object[]{"volume", "sleep", "A"});
             stmt.Dispose();
     
             TryStatementMatch(epService, "John's", "select * from SupportBean(theString='John\\'s')");
@@ -140,11 +140,11 @@ namespace com.espertech.esper.regression.epl.other
     
         private void TryEscapeMatch(EPServiceProvider epService, string property, string escaped) {
             string epl = "select * from SupportBean(theString=" + escaped + ")";
-            string text = "trying >" + escaped + "< (" + escaped.Length() + " chars) EPL " + epl;
+            string text = "trying >" + escaped + "< (" + escaped.Length + " chars) EPL " + epl;
             Log.Info("tryEscapeMatch for " + text);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
             epService.EPRuntime.SendEvent(new SupportBean(property, 1));
             Assert.AreEqual(testListener.AssertOneGetNewAndReset().Get("intPrimitive"), 1);
             stmt.Dispose();
@@ -155,7 +155,7 @@ namespace com.espertech.esper.regression.epl.other
             Log.Info("tryEscapeMatch for " + text);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
             epService.EPRuntime.SendEvent(new SupportBean(property, 1));
             Assert.AreEqual(testListener.AssertOneGetNewAndReset().Get("intPrimitive"), 1);
             stmt.Dispose();
@@ -167,10 +167,10 @@ namespace com.espertech.esper.regression.epl.other
                     " where boolBoxed = true";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             EventType type = stmt.EventType;
-            Log.Debug(".testGetEventType properties=" + Arrays.ToString(type.PropertyNames));
+            Log.Debug(".testGetEventType properties=" + CompatExtensions.Render(type.PropertyNames));
             EPAssertionUtil.AssertEqualsAnyOrder(type.PropertyNames, new string[]{"3*intPrimitive", "theString", "result", "aBool"});
             Assert.AreEqual(typeof(string), type.GetPropertyType("theString"));
             Assert.AreEqual(typeof(bool?), type.GetPropertyType("aBool"));
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regression.epl.other
                     " where boolBoxed = true";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             SendEvent(epService, "a", false, 0, 0, 0);
             SendEvent(epService, "b", false, 0, 0, 0);

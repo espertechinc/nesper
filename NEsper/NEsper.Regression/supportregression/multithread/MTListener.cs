@@ -6,37 +6,31 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.supportregression.multithread
 {
-    public class MTListener : UpdateListener {
+    public class MTListener
+    {
         private readonly string _fieldName;
-        private List _values;
+        private readonly IList<object> _values;
     
         public MTListener(string fieldName) {
-            this._fieldName = fieldName;
-            _values = new LinkedList();
+            _fieldName = fieldName;
+            _values = new List<object>();
         }
-    
-        public void Update(EventBean[] newEvents, EventBean[] oldEvents) {
-            var value = newEvents[0].Get(_fieldName);
+
+        public void Update(object sender, UpdateEventArgs e)
+        {
+            var value = e.NewEvents[0].Get(_fieldName);
     
             lock (_values) {
                 _values.Add(value);
             }
         }
-    
-        public List GetValues() {
-            return _values;
-        }
+
+        public IList<object> Values => _values;
     }
 } // end of namespace

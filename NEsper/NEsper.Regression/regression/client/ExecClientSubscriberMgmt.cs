@@ -134,7 +134,7 @@ namespace com.espertech.esper.regression.client
     
             // get statement, attach listener
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // send event
             epService.EPRuntime.SendEvent(new SupportBean("E1", 100));

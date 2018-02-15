@@ -73,7 +73,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult("NoOutputLimit", null, fields);
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult("DefaultOutputLimit", null, fields);
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult("AllOutputLimit", null, fields);
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult("AllOutputLimit", null, fields);
@@ -214,7 +214,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult("AllOutputLimit", null, fields);
@@ -242,7 +242,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"symbol", "sum(price)"};
             var expected = new ResultAssertTestResult("AllOutputLimit", null, fields);
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "from SupportBean#Time(3.5 sec) " + (join ? ", SupportBean_S0#lastevent " : "") +
                     "group by Rollup(theString, intPrimitive) " +
                     "having sum(longPrimitive) > 100 " +
-                    "output first every 1 second").AddListener(listener);
+                    "output first every 1 second").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10L));
@@ -331,7 +331,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 " +
                     "from SupportBean#Time(3.5 sec) " + (join ? ", SupportBean_S0#lastevent " : "") +
                     "group by Rollup(theString, intPrimitive) " +
-                    "output first every 1 second").AddListener(listener);
+                    "output first every 1 second").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10L));
@@ -415,7 +415,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "from SupportBean#Time(3.5 sec) " + (join ? ", SupportBean_S0#lastevent " : "") +
                     "group by Rollup(theString, intPrimitive) " +
                     "output first every 1 second " +
-                    "order by theString, intPrimitive").AddListener(listener);
+                    "order by theString, intPrimitive").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10L));
@@ -496,7 +496,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 " +
                     "from SupportBean#Time(3.5 sec) " + (join ? ", SupportBean_S0#lastevent " : "") +
                     "group by Rollup(theString, intPrimitive) " +
-                    "output every 1 second").AddListener(listener);
+                    "output every 1 second").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10L));
@@ -578,7 +578,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "from SupportBean#Time(3.5 sec) " + (join ? ", SupportBean_S0#lastevent " : "") +
                     "group by Rollup(theString, intPrimitive) " +
                     "output every 1 second " +
-                    "order by theString, intPrimitive").AddListener(listener);
+                    "order by theString, intPrimitive").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10L));
@@ -665,7 +665,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 " +
                     "from SupportBean#Time(3.5 sec) " + (join ? ", SupportBean_S0#lastevent " : "") +
                     "group by Rollup(theString, intPrimitive) " +
-                    "output all every 1 second").AddListener(listener);
+                    "output all every 1 second").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10L));
@@ -719,7 +719,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "from SupportBean#Time(3.5 sec) " + (join ? ", SupportBean_S0#lastevent " : "") +
                     "group by Rollup(theString, intPrimitive) " +
                     "output all every 1 second " +
-                    "order by theString, intPrimitive").AddListener(listener);
+                    "order by theString, intPrimitive").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10L));
@@ -773,7 +773,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 " +
                     "from SupportBean#Time(3.5 sec) " + (join ? ", SupportBean_S0#lastevent " : "") +
                     "group by Rollup(theString, intPrimitive) " +
-                    "output last every 1 second").AddListener(listener);
+                    "output last every 1 second").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10L));
@@ -828,7 +828,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "from SupportBean#Time(3.5 sec) " + (join ? ", SupportBean_S0#lastevent " : "") +
                     "group by Rollup(theString, intPrimitive) " +
                     "output last every 1 second " +
-                    "order by theString, intPrimitive").AddListener(listener);
+                    "order by theString, intPrimitive").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10L));

@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static junit.framework.TestCase.assertEquals;
 
 using NUnit.Framework;
 
@@ -59,7 +58,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("p1"));
     
             RunCaseSyntax1Sum(epService, listener);
@@ -83,7 +82,7 @@ namespace com.espertech.esper.regression.expr.expr
             Assert.AreEqual(caseExpr, model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("p1"));
     
             RunCaseSyntax1Sum(epService, listener);
@@ -101,7 +100,7 @@ namespace com.espertech.esper.regression.expr.expr
             Assert.AreEqual(caseExpr, model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("p1"));
     
             RunCaseSyntax1Sum(epService, listener);
@@ -137,7 +136,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("p1"));
     
             RunCaseSyntax1WithElse(epService, listener);
@@ -161,7 +160,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("p1"));
     
             RunCaseSyntax1WithElse(epService, listener);
@@ -179,7 +178,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("p1"));
     
             RunCaseSyntax1WithElse(epService, listener);
@@ -207,7 +206,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("p1"));
     
             SendMarketDataEvent(epService, "DELL", 10000, 0);
@@ -235,7 +234,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("p1"));
     
             // intPrimitive = longPrimitive
@@ -287,7 +286,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("p1"));
     
             SendSupportBeanEvent(epService, true, new bool?(false), 1, new int?(0), 0L, 0L, '0', 'a', (short) 0, (short) 0, (byte) 0, (byte) 0, 0.0f, (float) 0, 0.0, new double?(0.0), null, SupportEnum.ENUM_VALUE_1);
@@ -373,7 +372,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("p1"));
     
             SendSupportBeanEvent(epService, "x");
@@ -399,7 +398,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("p1"));
     
             SendSupportBeanEvent(epService, "x");
@@ -439,7 +438,7 @@ namespace com.espertech.esper.regression.expr.expr
             Assert.AreEqual(caseExpr, model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("p1"));
     
             RunCaseSyntax2WithNull(epService, listener);
@@ -461,7 +460,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("p1"));
     
             RunCaseSyntax2WithNull(epService, listener);
@@ -479,7 +478,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("p1"));
     
             RunCaseSyntax2WithNull(epService, listener);
@@ -507,7 +506,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("p1"));
     
             SendSupportBeanEvent(epService, null);
@@ -528,7 +527,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("p1"));
     
             SendSupportBeanEvent(epService, 1);
@@ -550,7 +549,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("p1"));
     
             SendSupportBeanEvent(epService, 1);
@@ -576,7 +575,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("p1"));
     
             SendSupportBeanEvent(epService, 1, 10L, 3.0f, 4.0);
@@ -615,7 +614,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("p1"));
     
             SendSupportBeanEvent(epService, "a", SupportEnum.ENUM_VALUE_1);
@@ -643,7 +642,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(SupportEnum), stmt.EventType.GetPropertyType("p1"));
     
             SendSupportBeanEvent(epService, 1);
@@ -668,7 +667,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType(caseSubExpr));
     
             SendSupportBeanEvent(epService, 1);

@@ -19,7 +19,6 @@ using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -34,7 +33,7 @@ namespace com.espertech.esper.regression.dataflow
             // test exception by graph source
             EPStatement stmtGraph = epService.EPAdministrator.CreateEPL("create dataflow MyDataFlow DefaultSupportSourceOp -> outstream<SupportBean> {}");
     
-            var op = new DefaultSupportSourceOp(new Object[]{new EPRuntimeException("My-Exception-Is-Here")});
+            var op = new DefaultSupportSourceOp(new object[]{new EPRuntimeException("My-Exception-Is-Here")});
             var options = new EPDataFlowInstantiationOptions();
             options.OperatorProvider(new DefaultSupportGraphOpProvider(op));
             var handler = new MyExceptionHandler();
@@ -51,7 +50,7 @@ namespace com.espertech.esper.regression.dataflow
             Assert.AreEqual("DefaultSupportSourceOp", context.OperatorName);
             Assert.AreEqual(0, context.OperatorNumber);
             Assert.AreEqual("DefaultSupportSourceOp#0() -> outstream<SupportBean>", context.OperatorPrettyPrint);
-            Assert.AreEqual("Support-graph-source generated exception: My-Exception-Is-Here", context.Throwable.Message);
+            Assert.AreEqual("Support-graph-source generated exception: My-Exception-Is-Here", context.Exception.Message);
             df.Cancel();
             stmtGraph.Dispose();
             MyExceptionHandler.Contexts.Clear();
@@ -61,7 +60,7 @@ namespace com.espertech.esper.regression.dataflow
             epService.EPAdministrator.CreateEPL("create dataflow MyDataFlow DefaultSupportSourceOp -> outstream<SupportBean> {}" +
                     "MyExceptionOp(outstream) {}");
     
-            var opTwo = new DefaultSupportSourceOp(new Object[]{new SupportBean("E1", 1)});
+            var opTwo = new DefaultSupportSourceOp(new object[]{new SupportBean("E1", 1)});
             var optionsTwo = new EPDataFlowInstantiationOptions();
             optionsTwo.OperatorProvider(new DefaultSupportGraphOpProvider(opTwo));
             var handlerTwo = new MyExceptionHandler();
@@ -77,17 +76,17 @@ namespace com.espertech.esper.regression.dataflow
             Assert.AreEqual("MyExceptionOp", contextTwo.OperatorName);
             Assert.AreEqual(1, contextTwo.OperatorNumber);
             Assert.AreEqual("MyExceptionOp#1(outstream)", contextTwo.OperatorPrettyPrint);
-            Assert.AreEqual("Operator-thrown-exception", contextTwo.Throwable.Message);
+            Assert.AreEqual("Operator-thrown-exception", contextTwo.Exception.Message);
         }
     
         public class MyExceptionHandler : EPDataFlowExceptionHandler {
     
             private static List<EPDataFlowExceptionContext> contexts = new List<EPDataFlowExceptionContext>();
-    
-            public static List<EPDataFlowExceptionContext> GetContexts() {
-                return contexts;
+
+            public static List<EPDataFlowExceptionContext> Contexts {
+                get { return contexts; }
             }
-    
+
             public static void SetContexts(List<EPDataFlowExceptionContext> contexts) {
                 MyExceptionHandler.contexts = contexts;
             }

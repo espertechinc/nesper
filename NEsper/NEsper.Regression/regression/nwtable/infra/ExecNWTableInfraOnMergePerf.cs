@@ -18,8 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -59,7 +57,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "when matched then update set nw.c2=sb.intPrimitive";
             stmt = epService.EPAdministrator.CreateEPL(epl);
             var mergeListener = new SupportUpdateListener();
-            stmt.AddListener(mergeListener);
+            stmt.Events += mergeListener.Update;
     
             // prime
             for (int i = 0; i < 100; i++) {
@@ -75,13 +73,13 @@ namespace com.espertech.esper.regression.nwtable.infra
             // verify
             IEnumerator<EventBean> events = stmtNamedWindow.GetEnumerator();
             int count = 0;
-            for (; events.HasNext(); ) {
-                EventBean next = events.Next();
+            for (; events.MoveNext(); ) {
+                EventBean next = events.Current;
                 Assert.AreEqual(1, next.Get("c2"));
                 count++;
             }
             Assert.AreEqual(totalUpdated, count);
-            Assert.IsTrue("Delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "Delta=" + delta);
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyWindow", true);

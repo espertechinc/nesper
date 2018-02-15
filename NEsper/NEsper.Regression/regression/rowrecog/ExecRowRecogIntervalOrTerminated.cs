@@ -12,9 +12,9 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
 using com.espertech.esper.supportregression.execution;
+using com.espertech.esper.supportregression.rowrecog;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -30,7 +30,7 @@ namespace com.espertech.esper.regression.rowrecog
     
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType("TemperatureSensorEvent",
-                    "id,device,temp".Split(','), new Object[]{typeof(string), typeof(int), typeof(double)});
+                    "id,device,temp".Split(','), new object[]{typeof(string), typeof(int), typeof(double)});
     
             RunAssertionDocSample(epService);
     
@@ -72,25 +72,25 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = isolated.EPAdministrator.CreateEPL(text, "stmt1", null);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A1"));
             isolated.EPRuntime.SendEvent(new SupportRecogBean("C1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A1", null, null, null, "C1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A1", null, null, null, "C1"});
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A2"));
             Assert.IsFalse(listener.IsInvoked);
             isolated.EPRuntime.SendEvent(new SupportRecogBean("B1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A2", null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A2", null, null, null, null});
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("B2"));
             Assert.IsFalse(listener.IsInvoked);
             isolated.EPRuntime.SendEvent(new SupportRecogBean("X1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A2", "B1", "B2", null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A2", "B1", "B2", null, null});
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A3"));
             SendTimer(isolated, 10000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A3", null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A3", null, null, null, null});
     
             SendTimer(isolated, int.MaxValue);
             Assert.IsFalse(listener.IsInvoked);
@@ -119,16 +119,16 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = isolated.EPAdministrator.CreateEPL(text, "stmt1", null);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A1"));
             isolated.EPRuntime.SendEvent(new SupportRecogBean("B1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A1", "B1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A1", "B1"});
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A2"));
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A3"));
             isolated.EPRuntime.SendEvent(new SupportRecogBean("B2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A3", "B2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A3", "B2"});
     
             // destroy
             stmt.Dispose();
@@ -152,7 +152,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = isolated.EPAdministrator.CreateEPL(text, "stmt1", null);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendTemperatureEvent(isolated, "E1", 1, 98);
             SendTemperatureEvent(isolated, "E2", 1, 101);
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regression.rowrecog
             Assert.IsFalse(listener.IsInvoked);
     
             SendTemperatureEvent(isolated, "E5", 1, 100);   // falls below
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 2L, "E3", "E4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", 2L, "E3", "E4"});
     
             SendTimer(isolated, int.MaxValue);
             Assert.IsFalse(listener.IsInvoked);
@@ -191,7 +191,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = isolated.EPAdministrator.CreateEPL(text, "stmt1", null);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A1"));
             isolated.EPRuntime.SendEvent(new SupportRecogBean("B1"));
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regression.rowrecog
             Assert.IsFalse(listener.IsInvoked);
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("B2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A1", "B1", "C1", "C2", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A1", "B1", "C1", "C2", null});
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A2"));
             isolated.EPRuntime.SendEvent(new SupportRecogBean("X1"));
@@ -211,7 +211,7 @@ namespace com.espertech.esper.regression.rowrecog
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A3"));
             isolated.EPRuntime.SendEvent(new SupportRecogBean("B4"));
             isolated.EPRuntime.SendEvent(new SupportRecogBean("X3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A3", "B4", null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A3", "B4", null, null, null});
     
             SendTimer(isolated, 20000);
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A4"));
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regression.rowrecog
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimer(isolated, 30000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A4", "B5", "C3", null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A4", "B5", "C3", null, null});
     
             SendTimer(isolated, int.MaxValue);
             Assert.IsFalse(listener.IsInvoked);
@@ -251,19 +251,19 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = isolated.EPAdministrator.CreateEPL(text, "stmt1", null);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A1"));
             isolated.EPRuntime.SendEvent(new SupportRecogBean("X1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A1", null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A1", null, null, null, null});
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A2"));
             isolated.EPRuntime.SendEvent(new SupportRecogBean("C1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A2", null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A2", null, null, null, null});
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("B1"));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
-                    new Object[][]{new object[] {"A2", null, null, "C1", null}});
+                    new object[][]{new object[] {"A2", null, null, "C1", null}});
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("C2"));
             Assert.IsFalse(listener.IsInvoked);
@@ -291,7 +291,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = isolated.EPAdministrator.CreateEPL(text, "stmt1", null);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A1"));
             isolated.EPRuntime.SendEvent(new SupportRecogBean("X1"));
@@ -300,7 +300,7 @@ namespace com.espertech.esper.regression.rowrecog
             isolated.EPRuntime.SendEvent(new SupportRecogBean("B2"));
             Assert.IsFalse(listener.IsInvoked);
             isolated.EPRuntime.SendEvent(new SupportRecogBean("X2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A2", "B2", null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A2", "B2", null, null});
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A3"));
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A4"));
@@ -308,7 +308,7 @@ namespace com.espertech.esper.regression.rowrecog
             isolated.EPRuntime.SendEvent(new SupportRecogBean("B4"));
             Assert.IsFalse(listener.IsInvoked);
             isolated.EPRuntime.SendEvent(new SupportRecogBean("X3", -1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A4", "B3", "B4", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A4", "B3", "B4", null});
     
             // destroy
             stmt.Dispose();
@@ -332,13 +332,13 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = isolated.EPAdministrator.CreateEPL(text, "stmt1", null);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A1"));
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A2"));
             Assert.IsFalse(listener.IsInvoked);
             isolated.EPRuntime.SendEvent(new SupportRecogBean("B1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A1", "A2", null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A1", "A2", null, null, null});
     
             SendTimer(isolated, 2000);
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A3"));
@@ -346,11 +346,11 @@ namespace com.espertech.esper.regression.rowrecog
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A5"));
             Assert.IsFalse(listener.IsInvoked);
             SendTimer(isolated, 12000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A3", "A4", "A5", null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A3", "A4", "A5", null, null});
     
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A6"));
             isolated.EPRuntime.SendEvent(new SupportRecogBean("B2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A3", "A4", "A5", "A6", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A3", "A4", "A5", "A6", null});
             isolated.EPRuntime.SendEvent(new SupportRecogBean("B3"));
             Assert.IsFalse(listener.IsInvoked);
     
@@ -378,7 +378,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = isolated.EPAdministrator.CreateEPL(text, "stmt1", null);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // test output by terminated because of misfit event
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A1"));
@@ -386,10 +386,10 @@ namespace com.espertech.esper.regression.rowrecog
             Assert.IsFalse(listener.IsInvoked);
             isolated.EPRuntime.SendEvent(new SupportRecogBean("X1"));
             if (!allMatches) {
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A1", "B1", null, null});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A1", "B1", null, null});
             } else {
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetAndResetLastNewData(), fields,
-                        new Object[][]{new object[] {"A1", "B1", null, null}, new object[] {"A1", null, null, null}});
+                        new object[][]{new object[] {"A1", "B1", null, null}, new object[] {"A1", null, null, null}});
             }
     
             SendTimer(isolated, 20000);
@@ -403,10 +403,10 @@ namespace com.espertech.esper.regression.rowrecog
     
             SendTimer(isolated, 30000);
             if (!allMatches) {
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A2", "B2", null, null});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A2", "B2", null, null});
             } else {
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetAndResetLastNewData(), fields,
-                        new Object[][]{new object[] {"A2", "B2", null, null}, new object[] {"A2", null, null, null}});
+                        new object[][]{new object[] {"A2", "B2", null, null}, new object[] {"A2", null, null, null}});
             }
     
             // destroy
@@ -435,14 +435,14 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = isolated.EPAdministrator.CreateEPL(text, "stmt1", null);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // test output by terminated because of misfit event
             isolated.EPRuntime.SendEvent(new SupportRecogBean("A1"));
             isolated.EPRuntime.SendEvent(new SupportRecogBean("B1"));
             Assert.IsFalse(listener.IsInvoked);
             isolated.EPRuntime.SendEvent(new SupportRecogBean("X1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A1", "B1", null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A1", "B1", null, null});
     
             SendTimer(isolated, 20000);
             Assert.IsFalse(listener.IsInvoked);
@@ -454,7 +454,7 @@ namespace com.espertech.esper.regression.rowrecog
             SendTimer(isolated, 29999);
     
             SendTimer(isolated, 30000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A2", "B2", null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A2", "B2", null, null});
     
             // destroy
             stmt.Dispose();
@@ -465,7 +465,7 @@ namespace com.espertech.esper.regression.rowrecog
         }
     
         private void SendTemperatureEvent(EPServiceProviderIsolated isolated, string id, int device, double temp) {
-            isolated.EPRuntime.SendEvent(new Object[]{id, device, temp}, "TemperatureSensorEvent");
+            isolated.EPRuntime.SendEvent(new object[]{id, device, temp}, "TemperatureSensorEvent");
         }
     
         private void SendTimer(EPServiceProviderIsolated isolated, long time) {

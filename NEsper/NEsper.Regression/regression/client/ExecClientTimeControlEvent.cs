@@ -37,15 +37,11 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionSendTimeSpan(EPServiceProvider epService) {
-            var format = new SimpleDateFormat("yyyy MM dd HH:mm:ss SSS");
-            Date d = format.Parse("2010 01 01 00:00:00 000");
-            d.Time;
-    
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select Current_timestamp() as ct from pattern[every timer:Interval(1.5 sec)]");
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new CurrentTimeSpanEvent(3500));
             Assert.AreEqual(2, listener.NewDataList.Count);
@@ -95,7 +91,7 @@ namespace com.espertech.esper.regression.client
     
             EPStatement stmtOne = isolated.EPAdministrator.CreateEPL("select Current_timestamp() as ct from pattern[every timer:Interval(1.5 sec)]", null, null);
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             isolated.EPRuntime.SendEvent(new CurrentTimeSpanEvent(3500));
             Assert.AreEqual(2, listener.NewDataList.Count);
@@ -150,27 +146,27 @@ namespace com.espertech.esper.regression.client
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select * from pattern[timer:Interval(2 sec)]");
             Assert.AreEqual(2000L, (long) epService.EPRuntime.NextScheduledTime);
-            AssertSchedules(runtimeSPI.StatementNearestSchedules, new Object[][]{new object[] {stmtOne.Name, 2000L}});
+            AssertSchedules(runtimeSPI.StatementNearestSchedules, new object[][]{new object[] {stmtOne.Name, 2000L}});
     
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("@Name('s2') select * from pattern[timer:Interval(150 msec)]");
             Assert.AreEqual(150L, (long) epService.EPRuntime.NextScheduledTime);
-            AssertSchedules(runtimeSPI.StatementNearestSchedules, new Object[][]{new object[] {"s2", 150L}, new object[] {stmtOne.Name, 2000L}});
+            AssertSchedules(runtimeSPI.StatementNearestSchedules, new object[][]{new object[] {"s2", 150L}, new object[] {stmtOne.Name, 2000L}});
     
             stmtTwo.Dispose();
             Assert.AreEqual(2000L, (long) epService.EPRuntime.NextScheduledTime);
-            AssertSchedules(runtimeSPI.StatementNearestSchedules, new Object[][]{new object[] {stmtOne.Name, 2000L}});
+            AssertSchedules(runtimeSPI.StatementNearestSchedules, new object[][]{new object[] {stmtOne.Name, 2000L}});
     
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL("select * from pattern[timer:Interval(3 sec) and timer:Interval(4 sec)]");
             Assert.AreEqual(2000L, (long) epService.EPRuntime.NextScheduledTime);
-            AssertSchedules(runtimeSPI.StatementNearestSchedules, new Object[][]{new object[] {stmtOne.Name, 2000L}, new object[] {stmtThree.Name, 3000L}});
+            AssertSchedules(runtimeSPI.StatementNearestSchedules, new object[][]{new object[] {stmtOne.Name, 2000L}, new object[] {stmtThree.Name, 3000L}});
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(2500));
             Assert.AreEqual(3000L, (long) epService.EPRuntime.NextScheduledTime);
-            AssertSchedules(runtimeSPI.StatementNearestSchedules, new Object[][]{new object[] {stmtThree.Name, 3000L}});
+            AssertSchedules(runtimeSPI.StatementNearestSchedules, new object[][]{new object[] {stmtThree.Name, 3000L}});
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(3500));
             Assert.AreEqual(4000L, (long) epService.EPRuntime.NextScheduledTime);
-            AssertSchedules(runtimeSPI.StatementNearestSchedules, new Object[][]{new object[] {stmtThree.Name, 4000L}});
+            AssertSchedules(runtimeSPI.StatementNearestSchedules, new object[][]{new object[] {stmtThree.Name, 4000L}});
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(4500));
             Assert.AreEqual(null, epService.EPRuntime.NextScheduledTime);
@@ -186,17 +182,17 @@ namespace com.espertech.esper.regression.client
     
             EPStatement stmtFour = isolated.EPAdministrator.CreateEPL("select * from pattern[timer:Interval(2 sec)]", null, null);
             Assert.AreEqual(2000L, (long) isolatedSPI.NextScheduledTime);
-            AssertSchedules(isolatedSPI.StatementNearestSchedules, new Object[][]{new object[] {stmtFour.Name, 2000L}});
+            AssertSchedules(isolatedSPI.StatementNearestSchedules, new object[][]{new object[] {stmtFour.Name, 2000L}});
     
             isolated.Dispose();
             epService.EPAdministrator.DestroyAllStatements();
         }
     
-        private void AssertSchedules(IDictionary<string, long> schedules, Object[][] expected) {
+        private void AssertSchedules(IDictionary<string, long> schedules, object[][] expected) {
             ScopeTestHelper.AssertEquals(expected.Length, schedules.Count);
     
             var matchNumber = new HashSet<int?>();
-            foreach (Object entryObj in schedules) {
+            foreach (var entryObj in schedules) {
                 var entry = entryObj;
                 bool matchFound = false;
                 for (int i = 0; i < expected.Length; i++) {

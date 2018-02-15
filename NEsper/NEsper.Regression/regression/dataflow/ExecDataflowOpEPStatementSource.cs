@@ -7,21 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
+using System.Threading;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.dataflow;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.dataflow;
 using com.espertech.esper.supportregression.execution;
-
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNull;
 
 using NUnit.Framework;
 
@@ -45,7 +41,7 @@ namespace com.espertech.esper.regression.dataflow
                     "} " +
                     "DefaultSupportCaptureOp(thedata) {}");
     
-            var captureOp = new DefaultSupportCaptureOp<Object>();
+            var captureOp = new DefaultSupportCaptureOp<object>();
             var options = new EPDataFlowInstantiationOptions()
                     .OperatorProvider(new DefaultSupportGraphOpProvider(captureOp));
     
@@ -61,7 +57,7 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             captureOp.WaitForInvocation(100, 1);
-            EPAssertionUtil.AssertProps(captureOp.CurrentAndReset[0], "id".Split(','), new Object[]{"E2"});
+            EPAssertionUtil.AssertProps(captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"E2"});
     
             stmt.Stop();
     
@@ -72,7 +68,7 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
             captureOp.WaitForInvocation(100, 1);
-            EPAssertionUtil.AssertProps(captureOp.CurrentAndReset[0], "id".Split(','), new Object[]{"E4"});
+            EPAssertionUtil.AssertProps(captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"E4"});
     
             stmt.Dispose();
     
@@ -83,7 +79,7 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.SendEvent(new SupportBean("E6", 6));
             captureOp.WaitForInvocation(100, 1);
-            EPAssertionUtil.AssertProps(captureOp.CurrentAndReset[0], "id".Split(','), new Object[]{"XE6X"});
+            EPAssertionUtil.AssertProps(captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"XE6X"});
     
             df.Cancel();
             epService.EPAdministrator.DestroyAllStatements();
@@ -94,7 +90,7 @@ namespace com.espertech.esper.regression.dataflow
     
             RunAssertionStatementNameExists(epService, "MyMapEvent", DefaultSupportGraphEventUtil.MapEvents);
             RunAssertionStatementNameExists(epService, "MyOAEvent", DefaultSupportGraphEventUtil.OAEvents);
-            RunAssertionStatementNameExists(epService, "MyEvent", DefaultSupportGraphEventUtil.POJOEvents);
+            RunAssertionStatementNameExists(epService, "MyEvent", DefaultSupportGraphEventUtil.PONOEvents);
             RunAssertionStatementNameExists(epService, "MyXMLEvent", DefaultSupportGraphEventUtil.XMLEvents);
     
             // test doc samples
@@ -109,7 +105,7 @@ namespace com.espertech.esper.regression.dataflow
                     "  // Consider all statements that match the filter object provided.\n" +
                     "  EPStatementSource -> stream.two<eventbean<?>> {\n" +
                     "    statementFilter : {\n" +
-                    "      class : '" + typeof(MyFilter).Name + "'\n" +
+                    "      class : '" + typeof(MyFilter).FullName + "'\n" +
                     "    }\n" +
                     "  }\n" +
                     "  \n" +
@@ -117,10 +113,10 @@ namespace com.espertech.esper.regression.dataflow
                     "  // With collector that performs transformation.\n" +
                     "  EPStatementSource -> stream.two<SampleSchema> {\n" +
                     "    collector : {\n" +
-                    "      class : '" + typeof(MyCollector).Name + "'\n" +
+                    "      class : '" + typeof(MyCollector).FullName + "'\n" +
                     "    },\n" +
                     "    statementFilter : {\n" +
-                    "      class : '" + typeof(MyFilter).Name + "'\n" +
+                    "      class : '" + typeof(MyFilter).FullName + "'\n" +
                     "    }\n" +
                     "  }";
             epService.EPAdministrator.CreateEPL(epl);
@@ -152,7 +148,7 @@ namespace com.espertech.esper.regression.dataflow
                     "EPStatementSource -> thedata<AllObjects> {} " +
                     "DefaultSupportCaptureOp(thedata) {}");
     
-            var captureOp = new DefaultSupportCaptureOp<Object>();
+            var captureOp = new DefaultSupportCaptureOp<object>();
             var options = new EPDataFlowInstantiationOptions();
             var myFilter = new MyFilter();
             options.ParameterProvider(new DefaultSupportGraphParamProvider(Collections.SingletonDataMap("statementFilter", myFilter)));
@@ -162,17 +158,17 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.SendEvent(new SupportBean_B("B1"));
             captureOp.WaitForInvocation(200, 1);
-            EPAssertionUtil.AssertProps(captureOp.CurrentAndReset[0], "id".Split(','), new Object[]{"B1"});
+            EPAssertionUtil.AssertProps(captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"B1"});
     
             epService.EPAdministrator.CreateEPL("select theString, intPrimitive from SupportBean");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             captureOp.WaitForInvocation(200, 1);
-            EPAssertionUtil.AssertProps(captureOp.CurrentAndReset[0], "theString,intPrimitive".Split(','), new Object[]{"E1", 1});
+            EPAssertionUtil.AssertProps(captureOp.GetCurrentAndReset()[0], "theString,intPrimitive".Split(','), new object[]{"E1", 1});
     
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select id from SupportBean_A");
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             captureOp.WaitForInvocation(200, 1);
-            EPAssertionUtil.AssertProps(captureOp.CurrentAndReset[0], "id".Split(','), new Object[]{"A1"});
+            EPAssertionUtil.AssertProps(captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"A1"});
     
             stmtTwo.Stop();
     
@@ -184,11 +180,11 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A3"));
             captureOp.WaitForInvocation(200, 1);
-            EPAssertionUtil.AssertProps(captureOp.CurrentAndReset[0], "id".Split(','), new Object[]{"A3"});
+            EPAssertionUtil.AssertProps(captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"A3"});
     
             epService.EPRuntime.SendEvent(new SupportBean_B("B2"));
             captureOp.WaitForInvocation(200, 1);
-            EPAssertionUtil.AssertProps(captureOp.CurrentAndReset[0], "id".Split(','), new Object[]{"B2"});
+            EPAssertionUtil.AssertProps(captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"B2"});
     
             df.Cancel();
     
@@ -200,7 +196,7 @@ namespace com.espertech.esper.regression.dataflow
             epService.EPAdministrator.DestroyAllStatements();
         }
     
-        private void RunAssertionStatementNameExists(EPServiceProvider epService, string typeName, Object[] events) {
+        private void RunAssertionStatementNameExists(EPServiceProvider epService, string typeName, object[] events) {
             epService.EPAdministrator.CreateEPL("@Name('MyStatement') select * from " + typeName);
     
             epService.EPAdministrator.CreateEPL("create dataflow MyDataFlowOne " +
@@ -210,7 +206,7 @@ namespace com.espertech.esper.regression.dataflow
                     "} " +
                     "DefaultSupportCaptureOp(thedata) {}");
     
-            var captureOp = new DefaultSupportCaptureOp<Object>(2);
+            var captureOp = new DefaultSupportCaptureOp<object>(2);
             var options = new EPDataFlowInstantiationOptions()
                     .OperatorProvider(new DefaultSupportGraphOpProvider(captureOp));
     
@@ -222,7 +218,7 @@ namespace com.espertech.esper.regression.dataflow
                 sender.SendEvent(@event);
             }
     
-            captureOp.Get(1, TimeUnit.SECONDS);
+            captureOp.GetValue(1, TimeUnit.SECONDS);
             EPAssertionUtil.AssertEqualsExactOrder(events, captureOp.Current);
     
             df.Cancel();

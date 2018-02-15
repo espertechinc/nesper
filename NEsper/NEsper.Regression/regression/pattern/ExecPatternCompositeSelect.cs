@@ -18,7 +18,6 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -42,7 +41,7 @@ namespace com.espertech.esper.regression.pattern
             var listener = new SupportUpdateListener();
             string stmtTxtTwo = "select *, 1 as code from StreamOne";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTxtTwo);
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             epService.EPRuntime.SendEvent(new SupportBean_B("B1"));
@@ -54,7 +53,7 @@ namespace com.espertech.esper.regression.pattern
                 values[count++] = theEvent.Get(name);
             }
     
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{
+            EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
                     new EventPropertyDescriptor("a", typeof(SupportBean_A), null, false, false, false, false, true),
                     new EventPropertyDescriptor("b", typeof(SupportBean_B), null, false, false, false, false, true)
             }, ((EPServiceProviderSPI) epService).EventAdapterService.GetEventTypeByName("StreamOne").PropertyDescriptors);
@@ -66,9 +65,9 @@ namespace com.espertech.esper.regression.pattern
             string stmtTxtOne = "select * from pattern [[2] a=A -> b=B]";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtTxtOne);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{
+            EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
                     new EventPropertyDescriptor("a", typeof(SupportBean_A[]), typeof(SupportBean_A), false, false, true, false, true),
                     new EventPropertyDescriptor("b", typeof(SupportBean_B), null, false, false, false, false, true)
             }, stmt.EventType.PropertyDescriptors);
@@ -78,7 +77,7 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(new SupportBean_B("B1"));
     
             EventBean theEvent = listener.AssertOneGetNewAndReset();
-            Assert.IsTrue(theEvent.Underlying is Map);
+            Assert.IsTrue(theEvent.Underlying is IDictionary<string, object>);
     
             // test fragment B type and event
             FragmentEventType typeFragB = theEvent.EventType.GetFragmentType("b");

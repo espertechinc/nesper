@@ -19,18 +19,18 @@ namespace com.espertech.esper.supportregression.dataflow
     public class MyObjectArrayGraphSource : DataFlowSourceOperator {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
-        private readonly IEnumerator<Object[]> _enumerator;
+        private readonly IEnumerator<object[]> _enumerator;
     
         [DataFlowContext]
         private EPDataFlowEmitter _graphContext;
     
-        public MyObjectArrayGraphSource(IEnumerator<Object[]> enumerator) {
+        public MyObjectArrayGraphSource(IEnumerator<object[]> enumerator) {
             this._enumerator = enumerator;
         }
     
         public void Next() {
             if (_enumerator.MoveNext()) {
-                Object[] next = _enumerator.Current;
+                object[] next = _enumerator.Current;
                 if (Log.IsDebugEnabled)
                 {
                     Log.Debug("submitting row " + next.Render());

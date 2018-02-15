@@ -57,7 +57,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             var listener = new SupportUpdateListener();
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 1));
             epService.EPRuntime.SendEvent(new SupportBean("B", 1));
@@ -71,13 +71,13 @@ namespace com.espertech.esper.regression.rowrecog
             ExecRowRecogMaxStatesEngineWide3Instance.AssertContextEnginePool(epService, stmt, handler.GetAndResetContexts(), 3, ExecRowRecogMaxStatesEngineWide3Instance.GetExpectedCountMap("S1", 4));
     
             epService.EPRuntime.SendEvent(new SupportBean("D", 2));    // D gone
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"D"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"D"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 2));    // A gone
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A"});
     
             epService.EPRuntime.SendEvent(new SupportBean("C", 2));    // C gone
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"C"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"C"});
     
             epService.EPRuntime.SendEvent(new SupportBean("F", 1));
             Assert.IsTrue(handler.Contexts.IsEmpty());

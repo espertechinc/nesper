@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -55,31 +54,31 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from MyWindowOne");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"theString", "intPrimitive"};
     
             SendEvent(epService, "E1", 1);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(nwstmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(nwstmt.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
     
             SendEvent(epService, "E1", 99);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(nwstmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E1", 99}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 99});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(nwstmt.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E1", 99}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 99});
     
             SendEvent(epService, "E2", 2);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(nwstmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E1", 99}, new object[] {"E2", 2}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 2});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(nwstmt.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E1", 99}, new object[] {"E2", 2}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", 2});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(nwstmt.GetEnumerator(), fields, new Object[][]{new object[] {"E2", 2}});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], "theString".Split(','), new Object[]{"E1"});
-            EPAssertionUtil.AssertProps(listener.LastOldData[1], "theString".Split(','), new Object[]{"E1"});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(nwstmt.GetEnumerator(), fields, new object[][]{new object[] {"E2", 2}});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], "theString".Split(','), new object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.LastOldData[1], "theString".Split(','), new object[]{"E1"});
             listener.Reset();
     
             SendEvent(epService, "E1", 3);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(nwstmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 3}, new object[] {"E2", 2}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 3});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(nwstmt.GetEnumerator(), fields, new object[][]{new object[] {"E1", 3}, new object[] {"E2", 2}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 3});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -88,7 +87,7 @@ namespace com.espertech.esper.regression.view
             string epl = "select irstream theString, intPrimitive from SupportBean#Firstlength(3)#Firstunique(theString) retain-union";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionFirstUniqueAndFirstLength(epService, listener, stmt);
     
@@ -97,7 +96,7 @@ namespace com.espertech.esper.regression.view
     
             epl = "select irstream theString, intPrimitive from SupportBean#Firstunique(theString)#Firstlength(3) retain-union";
             stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionFirstUniqueAndFirstLength(epService, listener, stmt);
     
@@ -108,27 +107,27 @@ namespace com.espertech.esper.regression.view
             var fields = new string[]{"theString", "intPrimitive"};
     
             SendEvent(epService, "E1", 1);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
     
             SendEvent(epService, "E1", 2);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E1", 2}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 2});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E1", 2}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 2});
     
             SendEvent(epService, "E2", 1);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E1", 2}, new object[] {"E2", 1}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 1});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E1", 2}, new object[] {"E2", 1}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", 1});
     
             SendEvent(epService, "E2", 3);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E1", 2}, new object[] {"E2", 1}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E1", 2}, new object[] {"E2", 1}});
             Assert.IsFalse(listener.GetAndClearIsInvoked());
     
             SendEvent(epService, "E3", 3);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E1", 2}, new object[] {"E2", 1}, new object[] {"E3", 3}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3", 3});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E1", 2}, new object[] {"E2", 1}, new object[] {"E3", 3}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3", 3});
     
             SendEvent(epService, "E3", 4);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1", 1}, new object[] {"E1", 2}, new object[] {"E2", 1}, new object[] {"E3", 3}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}, new object[] {"E1", 2}, new object[] {"E2", 1}, new object[] {"E3", 3}});
             Assert.IsFalse(listener.GetAndClearIsInvoked());
         }
     
@@ -137,44 +136,44 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#length_batch(3)#unique(intPrimitive) retain-union");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "E1", 1);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
     
             SendEvent(epService, "E2", 2);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2"});
     
             SendEvent(epService, "E3", 3);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3"});
     
             SendEvent(epService, "E4", 4);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3", "E4"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E4"});
     
             SendEvent(epService, "E5", 4);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3", "E4", "E5"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E5"});
     
             SendEvent(epService, "E6", 4);     // remove stream is E1, E2, E3
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3", "E4", "E5", "E6"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E6"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E6"});
     
             SendEvent(epService, "E7", 5);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3", "E4", "E5", "E6", "E7"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E7"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E7"});
     
             SendEvent(epService, "E8", 6);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3", "E5", "E4", "E6", "E7", "E8"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E8"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E8"});
     
             SendEvent(epService, "E9", 7);     // remove stream is E4, E5, E6; E4 and E5 get removed as their
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3", "E6", "E7", "E8", "E9"));
-            EPAssertionUtil.AssertPropsPerRow(listener.LastOldData, fields, new Object[][]{new object[] {"E4"}, new object[] {"E5"}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new Object[]{"E9"});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastOldData, fields, new object[][]{new object[] {"E4"}, new object[] {"E5"}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[]{"E9"});
             listener.Reset();
     
             stmt.Dispose();
@@ -185,19 +184,19 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#unique(intPrimitive)#unique(intBoxed)#Uni(doublePrimitive) retain-union");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "E1", 1, 10, 100d);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr(100d));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{100d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{100d});
     
             SendEvent(epService, "E2", 2, 20, 50d);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr(150d));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{150d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{150d});
     
             SendEvent(epService, "E3", 1, 20, 20d);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr(170d));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{170d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{170d});
     
             stmt.Dispose();
         }
@@ -208,44 +207,44 @@ namespace com.espertech.esper.regression.view
             string text = "select irstream theString from SupportBean#Groupwin(intPrimitive)#length(2)#unique(intBoxed) retain-union";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "E1", 1, 10);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
     
             SendEvent(epService, "E2", 2, 10);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2"});
     
             SendEvent(epService, "E3", 1, 20);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3"});
     
             SendEvent(epService, "E4", 1, 30);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3", "E4"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E4"});
     
             SendEvent(epService, "E5", 2, 10);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3", "E4", "E5"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E5"});
     
             SendEvent(epService, "E6", 1, 20);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E4", "E5", "E6"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new Object[]{"E3"});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new Object[]{"E6"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new object[]{"E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[]{"E6"});
             listener.Reset();
     
             SendEvent(epService, "E7", 1, 10);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E2", "E4", "E5", "E6", "E7"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new Object[]{"E1"});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new Object[]{"E7"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[]{"E7"});
             listener.Reset();
     
             SendEvent(epService, "E8", 2, 10);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E4", "E5", "E6", "E7", "E8"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new Object[]{"E2"});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new Object[]{"E8"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[]{"E8"});
             listener.Reset();
     
             stmt.Dispose();
@@ -255,7 +254,7 @@ namespace com.espertech.esper.regression.view
             string text = "select * from SupportBean_S0 where p00 in (select theString from SupportBean#length(2)#unique(intPrimitive) retain-union)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "E1", 1);
             SendEvent(epService, "E2", 2);
@@ -286,24 +285,24 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#unique(intPrimitive)#unique(intBoxed)#unique(doublePrimitive) retain-union");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "E1", 1, 10, 100d);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
     
             SendEvent(epService, "E2", 2, 10, 200d);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2"});
     
             SendEvent(epService, "E3", 2, 20, 100d);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3"});
     
             SendEvent(epService, "E4", 1, 30, 300d);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E2", "E3", "E4"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new Object[]{"E1"});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new Object[]{"E4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[]{"E4"});
             listener.Reset();
     
             stmt.Dispose();
@@ -315,23 +314,23 @@ namespace com.espertech.esper.regression.view
             string text = "select irstream a.p00||b.p10 as string from pattern [every a=SupportBean_S0 -> b=SupportBean_S1]#unique(a.id)#unique(b.id) retain-union";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
             epService.EPRuntime.SendEvent(new SupportBean_S1(2, "E2"));
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1E2"});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "E3"));
             epService.EPRuntime.SendEvent(new SupportBean_S1(20, "E4"));
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1E2", "E3E4"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3E4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3E4"});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E5"));
             epService.EPRuntime.SendEvent(new SupportBean_S1(2, "E6"));
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E3E4", "E5E6"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new Object[]{"E1E2"});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new Object[]{"E5E6"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new object[]{"E1E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[]{"E5E6"});
     
             stmt.Dispose();
         }
@@ -341,58 +340,58 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#unique(intPrimitive)#unique(intBoxed) retain-union");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "E1", 1, 10);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
     
             SendEvent(epService, "E2", 2, 10);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2"});
     
             SendEvent(epService, "E3", 1, 20);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E2", "E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new Object[]{"E1"});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new Object[]{"E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[]{"E3"});
             listener.Reset();
     
             SendEvent(epService, "E4", 1, 20);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E2", "E4"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new Object[]{"E3"});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new Object[]{"E4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new object[]{"E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[]{"E4"});
             listener.Reset();
     
             SendEvent(epService, "E5", 2, 30);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E2", "E4", "E5"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E5"});
     
             SendEvent(epService, "E6", 3, 10);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E4", "E5", "E6"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new Object[]{"E2"});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new Object[]{"E6"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[]{"E6"});
             listener.Reset();
     
             SendEvent(epService, "E7", 3, 30);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E4", "E5", "E6", "E7"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E7"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E7"});
     
             SendEvent(epService, "E8", 4, 10);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E4", "E5", "E7", "E8"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new Object[]{"E6"});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new Object[]{"E8"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new object[]{"E6"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[]{"E8"});
             listener.Reset();
     
             SendEvent(epService, "E9", 3, 50);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E4", "E5", "E7", "E8", "E9"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E9"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E9"});
     
             SendEvent(epService, "E10", 2, 30);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E4", "E8", "E9", "E10"));
             Assert.AreEqual(2, listener.LastOldData.Length);
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{"E5"});
-            EPAssertionUtil.AssertProps(listener.LastOldData[1], fields, new Object[]{"E7"});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new Object[]{"E10"});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{"E5"});
+            EPAssertionUtil.AssertProps(listener.LastOldData[1], fields, new object[]{"E7"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[]{"E10"});
             listener.Reset();
     
             stmt.Dispose();
@@ -403,40 +402,40 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#Sort(2, intPrimitive)#Sort(2, intBoxed) retain-union");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "E1", 1, 10);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
     
             SendEvent(epService, "E2", 2, 9);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2"});
     
             SendEvent(epService, "E3", 0, 0);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3"});
     
             SendEvent(epService, "E4", -1, -1);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E3", "E4"));
             Assert.AreEqual(2, listener.LastOldData.Length);
-            Object[] result = {listener.LastOldData[0].Get("theString"), listener.LastOldData[1].Get("theString")};
+            object[] result = {listener.LastOldData[0].Get("theString"), listener.LastOldData[1].Get("theString")};
             EPAssertionUtil.AssertEqualsAnyOrder(result, new string[]{"E1", "E2"});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new Object[]{"E4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[]{"E4"});
             listener.Reset();
     
             SendEvent(epService, "E5", 1, 1);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E3", "E4"));
             Assert.AreEqual(1, listener.LastOldData.Length);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new Object[]{"E5"});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new Object[]{"E5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new object[]{"E5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[]{"E5"});
             listener.Reset();
     
             SendEvent(epService, "E6", 0, 0);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E4", "E6"));
             Assert.AreEqual(1, listener.LastOldData.Length);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new Object[]{"E3"});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new Object[]{"E6"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new object[]{"E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[]{"E6"});
             listener.Reset();
     
             stmt.Dispose();
@@ -446,7 +445,7 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#unique(intPrimitive)#Time(10 sec) retain-union");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionTimeWinUnique(epService, listener, stmt);
     
@@ -460,7 +459,7 @@ namespace com.espertech.esper.regression.view
             Assert.AreEqual(stmtText, model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionTimeWinUnique(epService, listener, stmt);
     
@@ -473,7 +472,7 @@ namespace com.espertech.esper.regression.view
             epService.EPAdministrator.CreateEPL("insert into MyWindowTwo select * from SupportBean");
             epService.EPAdministrator.CreateEPL("on SupportBean_S0 delete from MyWindowTwo where intBoxed = id");
             var listener = new SupportUpdateListener();
-            stmtWindow.AddListener(listener);
+            stmtWindow.Events += listener.Update;
     
             TryAssertionTimeWinUnique(epService, listener, stmtWindow);
     
@@ -486,39 +485,39 @@ namespace com.espertech.esper.regression.view
             epService.EPAdministrator.CreateEPL("insert into MyWindowThree select * from SupportBean");
             epService.EPAdministrator.CreateEPL("on SupportBean_S0 delete from MyWindowThree where intBoxed = id");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"theString"};
     
             SendTimer(epService, 1000);
             SendEvent(epService, "E1", 1, 10);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
     
             SendTimer(epService, 2000);
             SendEvent(epService, "E2", 2, 20);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2"});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(20));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new Object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new object[]{"E2"});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1"));
     
             SendTimer(epService, 3000);
             SendEvent(epService, "E3", 3, 30);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3"});
             SendEvent(epService, "E4", 3, 40);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E3", "E4"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E4"});
     
             SendTimer(epService, 4000);
             SendEvent(epService, "E5", 4, 50);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E3", "E4", "E5"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E5"});
             SendEvent(epService, "E6", 4, 50);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E3", "E4", "E5", "E6"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E6"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E6"});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(20));
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E3", "E4", "E5", "E6"));
@@ -526,7 +525,7 @@ namespace com.espertech.esper.regression.view
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(50));
             Assert.AreEqual(2, listener.LastOldData.Length);
-            Object[] result = {listener.LastOldData[0].Get("theString"), listener.LastOldData[1].Get("theString")};
+            object[] result = {listener.LastOldData[0].Get("theString"), listener.LastOldData[1].Get("theString")};
             EPAssertionUtil.AssertEqualsAnyOrder(result, new string[]{"E5", "E6"});
             listener.Reset();
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E3", "E4"));
@@ -535,7 +534,7 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimer(epService, 13000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new Object[]{"E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new object[]{"E3"});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E4"));
     
             SendTimer(epService, 10000000);
@@ -550,59 +549,59 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, 1000);
             SendEvent(epService, "E1", 1);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
     
             SendTimer(epService, 2000);
             SendEvent(epService, "E2", 2);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2"});
     
             SendTimer(epService, 3000);
             SendEvent(epService, "E3", 1);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3"});
     
             SendTimer(epService, 4000);
             SendEvent(epService, "E4", 3);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E4"});
             SendEvent(epService, "E5", 1);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E5"});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3", "E4", "E5"));
             SendEvent(epService, "E6", 3);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E6"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E6"});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3", "E4", "E5", "E6"));
     
             SendTimer(epService, 5000);
             SendEvent(epService, "E7", 4);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E7"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E7"});
             SendEvent(epService, "E8", 4);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E8"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E8"});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8"));
     
             SendTimer(epService, 6000);
             SendEvent(epService, "E9", 4);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E9"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E9"});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9"));
     
             SendTimer(epService, 10999);
             Assert.IsFalse(listener.IsInvoked);
             SendTimer(epService, 11000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new object[]{"E1"});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9"));
     
             SendTimer(epService, 12999);
             Assert.IsFalse(listener.IsInvoked);
             SendTimer(epService, 13000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new Object[]{"E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new object[]{"E3"});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E2", "E4", "E5", "E6", "E7", "E8", "E9"));
     
             SendTimer(epService, 14000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new Object[]{"E4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new object[]{"E4"});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E2", "E5", "E6", "E7", "E8", "E9"));
     
             SendTimer(epService, 15000);
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{"E7"});
-            EPAssertionUtil.AssertProps(listener.LastOldData[1], fields, new Object[]{"E8"});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{"E7"});
+            EPAssertionUtil.AssertProps(listener.LastOldData[1], fields, new object[]{"E8"});
             listener.Reset();
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E2", "E5", "E6", "E9"));
     
@@ -645,10 +644,10 @@ namespace com.espertech.esper.regression.view
             epService.EPRuntime.SendEvent(bean);
         }
     
-        private Object[][] ToArr(params Object[] values) {
+        private object[][] ToArr(params object[] values) {
             var arr = new Object[values.Length][];
             for (int i = 0; i < values.Length; i++) {
-                arr[i] = new Object[]{values[i]};
+                arr[i] = new object[]{values[i]};
             }
             return arr;
         }

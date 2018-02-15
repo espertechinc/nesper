@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -59,7 +58,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             var listener = new SupportUpdateListener();
             string stmtText = "select a.theString from pattern [every a=SupportBean(theString like 'A%') -> b=SupportBean(theString like 'B%')] order by a.theString desc";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtText);
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("A2", 2));
@@ -67,7 +66,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
             EventBean[] received = listener.GetNewDataListFlattened();
             Assert.AreEqual(2, received.Length);
-            EPAssertionUtil.AssertPropsPerRow(received, "a.theString".Split(','), new Object[][]
+            EPAssertionUtil.AssertPropsPerRow(received, "a.theString".Split(','), new object[][]
             {
                 new object[] {"A2"}, new object[] {"A1"}
             });
@@ -77,7 +76,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             string stmtTextThree = "select a.theString from pattern [every a=SupportBean(theString like 'A%') -> b=SupportBean(theString like 'B%')] " +
                     "output every 2 events order by a.theString desc";
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL(stmtTextThree);
-            stmtThree.AddListener(listenerThree);
+            stmtThree.Events += listenerThree.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("A2", 2));
@@ -86,7 +85,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
             EventBean[] receivedThree = listenerThree.GetNewDataListFlattened();
             Assert.AreEqual(2, receivedThree.Length);
-            EPAssertionUtil.AssertPropsPerRow(receivedThree, "a.theString".Split(','), new Object[][]
+            EPAssertionUtil.AssertPropsPerRow(receivedThree, "a.theString".Split(','), new object[][]
             {
                 new object[] {"A2"}, new object[] {"A1"}
             });
@@ -95,7 +94,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             string stmtTextTwo = "select rstream theString from SupportBean#Groupwin(theString)#Time(10) order by theString desc";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listenerTwo = new SupportUpdateListener();
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
@@ -104,7 +103,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(11000));
             EventBean[] receivedTwo = listenerTwo.GetNewDataListFlattened();
             Assert.AreEqual(2, receivedTwo.Length);
-            EPAssertionUtil.AssertPropsPerRow(receivedTwo, "theString".Split(','), new Object[][]
+            EPAssertionUtil.AssertPropsPerRow(receivedTwo, "theString".Split(','), new object[][]
             {
                 new object[] {"A2"}, new object[] {"A1"}
             });
@@ -125,7 +124,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             SendEvent(epService, "CAT", 15);
             SendEvent(epService, "IBM", 100);
             EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), new string[]{"symbol", "theString", "price"},
-                    new Object[][]{
+                    new object[][]{
                             new object[] {"CAT", "CAT", 15d},
                             new object[] {"IBM", "IBM", 49d},
                             new object[] {"CAT", "CAT", 50d},
@@ -134,7 +133,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
             SendEvent(epService, "KGB", 75);
             EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), new string[]{"symbol", "theString", "price"},
-                    new Object[][]{
+                    new object[][]{
                             new object[] {"CAT", "CAT", 15d},
                             new object[] {"IBM", "IBM", 49d},
                             new object[] {"CAT", "CAT", 50d},
@@ -194,7 +193,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
             var listener = new SupportUpdateListener();
             EPStatement statement = epService.EPAdministrator.Create(model);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             SendEvent(epService, "IBM", 2);
             SendEvent(epService, "KGB", 1);
             SendEvent(epService, "CMU", 3);
@@ -227,7 +226,7 @@ namespace com.espertech.esper.regression.resultset.orderby
                     "order by price desc, symbol asc";
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPrice(spv);
-            Collections.Reverse(spv.Symbols);
+            CompatExtensions.Reverse(spv.Symbols);
             AssertValues(listener, spv.Symbols, "symbol");
             ClearValuesDropStmt(epService, spv);
     
@@ -246,7 +245,7 @@ namespace com.espertech.esper.regression.resultset.orderby
                     "order by symbol desc";
             CreateAndSend(epService, statementString, listener);
             OrderValuesBySymbol(spv);
-            Collections.Reverse(spv.Symbols);
+            CompatExtensions.Reverse(spv.Symbols);
             AssertValues(listener, spv.Symbols, "symbol");
             AssertValues(listener, spv.Volumes, "volume");
             ClearValuesDropStmt(epService, spv);
@@ -257,8 +256,8 @@ namespace com.espertech.esper.regression.resultset.orderby
                     "order by symbol desc, price desc";
             CreateAndSend(epService, statementString, listener);
             OrderValuesBySymbolPrice(spv);
-            Collections.Reverse(spv.Symbols);
-            Collections.Reverse(spv.Prices);
+            CompatExtensions.Reverse(spv.Symbols);
+            CompatExtensions.Reverse(spv.Prices);
             AssertValues(listener, spv.Symbols, "symbol");
             AssertValues(listener, spv.Prices, "price");
             ClearValuesDropStmt(epService, spv);
@@ -953,7 +952,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
         private void CreateAndSend(EPServiceProvider epService, string statementString, SupportUpdateListener listener) {
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementString);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             SendEvent(epService, "IBM", 2);
             SendEvent(epService, "KGB", 1);
             SendEvent(epService, "CMU", 3);

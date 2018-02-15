@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionCoalesceLong(EPServiceProvider epService) {
             EPStatement stmt = SetupCoalesce(epService, "coalesce(longBoxed, intBoxed, shortBoxed)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("result"));
     
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("result"));
     
             TryCoalesceLong(epService, listener);
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("result"));
     
             TryCoalesceLong(epService, listener);
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionCoalesceDouble(EPServiceProvider epService) {
             EPStatement stmt = SetupCoalesce(epService, "coalesce(null, byteBoxed, shortBoxed, intBoxed, longBoxed, floatBoxed, doubleBoxed)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("result"));
     
             SendEventWithDouble(epService, null, null, null, null, null, null);
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regression.expr.expr
         private void TryCoalesceBeans(EPServiceProvider epService, string epl) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SupportBean theEvent = SendEvent(epService, "s0");
             EventBean eventReceived = listener.AssertOneGetNewAndReset();

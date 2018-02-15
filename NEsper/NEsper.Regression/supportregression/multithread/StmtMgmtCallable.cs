@@ -24,10 +24,10 @@ namespace com.espertech.esper.supportregression.multithread
     public class StmtMgmtCallable : ICallable<bool>
     {
         private readonly EPServiceProvider _engine;
-        private readonly Object[][] _statements;
+        private readonly object[][] _statements;
         private readonly int _numRepeats;
 
-        public StmtMgmtCallable(EPServiceProvider engine, Object[][] statements, int numRepeats)
+        public StmtMgmtCallable(EPServiceProvider engine, object[][] statements, int numRepeats)
         {
             this._engine = engine;
             this._statements = statements;
@@ -40,7 +40,7 @@ namespace com.espertech.esper.supportregression.multithread
             {
                 for (int loop = 0; loop < _numRepeats; loop++)
                 {
-                    foreach (Object[] statement in _statements)
+                    foreach (object[] statement in _statements)
                     {
                         bool isEPL = statement[0].AsBoolean();
                         string statementText = (string) statement[1];

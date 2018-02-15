@@ -50,54 +50,54 @@ namespace com.espertech.esper.regression.events.plugin {
         public static void RunAssertionCaseStatic(EPServiceProvider epService) {
             var listeners = SupportUpdateListener.MakeListeners(5);
             var stmt = epService.EPAdministrator.CreateEPL("select * from TestTypeOne");
-            stmt.AddListener(listeners[0]);
+            stmt.Events += listeners[0].Update;
             stmt = epService.EPAdministrator.CreateEPL("select * from TestTypeTwo");
-            stmt.AddListener(listeners[1]);
+            stmt.Events += listeners[1].Update;
             stmt = epService.EPAdministrator.CreateEPL("select * from TestTypeThree");
-            stmt.AddListener(listeners[2]);
+            stmt.Events += listeners[2].Update;
             stmt = epService.EPAdministrator.CreateEPL("select * from TestTypeFour");
-            stmt.AddListener(listeners[3]);
+            stmt.Events += listeners[3].Update;
 
             // static senders
             var sender = epService.EPRuntime.GetEventSender("TestTypeOne");
-            sender.SendEvent(MakeProperties(new string[][] {{"r1", "A"}, {"t1", "B"}}));
+            sender.SendEvent(MakeProperties(new string[][] { new[] { "r1", "A"}, new[] { "t1", "B"}}));
             EPAssertionUtil.AssertAllPropsSortedByName(listeners[0].AssertOneGetNewAndReset(), new object[] {"A", "B"});
             Assert.IsFalse(listeners[3].IsInvoked || listeners[1].IsInvoked || listeners[2].IsInvoked);
 
             sender = epService.EPRuntime.GetEventSender("TestTypeTwo");
-            sender.SendEvent(MakeProperties(new string[][] {{"r2", "C"}, {"t2", "D"}}));
+            sender.SendEvent(MakeProperties(new string[][] { new[] { "r2", "C"}, new[] { "t2", "D"}}));
             EPAssertionUtil.AssertAllPropsSortedByName(listeners[1].AssertOneGetNewAndReset(), new object[] {"C", "D"});
             Assert.IsFalse(listeners[3].IsInvoked || listeners[0].IsInvoked || listeners[2].IsInvoked);
 
             sender = epService.EPRuntime.GetEventSender("TestTypeThree");
-            sender.SendEvent(MakeProperties(new string[][] {{"r3", "E"}, {"t3", "F"}}));
+            sender.SendEvent(MakeProperties(new string[][] { new[] { "r3", "E"}, new[] { "t3", "F"}}));
             EPAssertionUtil.AssertAllPropsSortedByName(listeners[2].AssertOneGetNewAndReset(), new object[] {"E", "F"});
             Assert.IsFalse(listeners[3].IsInvoked || listeners[1].IsInvoked || listeners[0].IsInvoked);
 
             sender = epService.EPRuntime.GetEventSender("TestTypeFour");
-            sender.SendEvent(MakeProperties(new string[][] {{"r2", "G"}, {"t4", "H"}}));
+            sender.SendEvent(MakeProperties(new string[][] { new[] { "r2", "G"}, new[] { "t4", "H"}}));
             EPAssertionUtil.AssertAllPropsSortedByName(listeners[3].AssertOneGetNewAndReset(), new object[] {"G", "H"});
             Assert.IsFalse(listeners[0].IsInvoked || listeners[1].IsInvoked || listeners[2].IsInvoked);
 
             // dynamic sender - decides on event type thus a particular update listener should see the event
             var uriList = new[] {new Uri("type://properties/test1"), new Uri("type://properties/test2")};
             var dynamicSender = epService.EPRuntime.GetEventSender(uriList);
-            dynamicSender.SendEvent(MakeProperties(new string[][] {{"r3", "I"}, {"t3", "J"}}));
+            dynamicSender.SendEvent(MakeProperties(new string[][] { new[] { "r3", "I"}, new[] { "t3", "J"}}));
             EPAssertionUtil.AssertAllPropsSortedByName(listeners[2].AssertOneGetNewAndReset(), new object[] {"I", "J"});
-            dynamicSender.SendEvent(MakeProperties(new string[][] {{"r1", "K"}, {"t1", "L"}}));
+            dynamicSender.SendEvent(MakeProperties(new string[][] { new[] { "r1", "K"}, new[] { "t1", "L"}}));
             EPAssertionUtil.AssertAllPropsSortedByName(listeners[0].AssertOneGetNewAndReset(), new object[] {"K", "L"});
-            dynamicSender.SendEvent(MakeProperties(new string[][] {{"r2", "M"}, {"t2", "N"}}));
+            dynamicSender.SendEvent(MakeProperties(new string[][] { new[] { "r2", "M"}, new[] { "t2", "N"}}));
             EPAssertionUtil.AssertAllPropsSortedByName(listeners[1].AssertOneGetNewAndReset(), new object[] {"M", "N"});
-            dynamicSender.SendEvent(MakeProperties(new string[][] {{"r2", "O"}, {"t4", "P"}}));
+            dynamicSender.SendEvent(MakeProperties(new string[][] {new []{"r2", "O"}, new[] { "t4", "P"}}));
             EPAssertionUtil.AssertAllPropsSortedByName(listeners[3].AssertOneGetNewAndReset(), new object[] {"O", "P"});
-            dynamicSender.SendEvent(MakeProperties(new string[][] {{"r2", "O"}, {"t3", "P"}}));
+            dynamicSender.SendEvent(MakeProperties(new string[][] { new[] { "r2", "O"}, new[] { "t3", "P"}}));
             AssertNoneReceived(listeners);
 
             uriList = new[] {new Uri("type://properties/test2")};
             dynamicSender = epService.EPRuntime.GetEventSender(uriList);
-            dynamicSender.SendEvent(MakeProperties(new string[][] {{"r1", "I"}, {"t1", "J"}}));
+            dynamicSender.SendEvent(MakeProperties(new string[][] { new[] { "r1", "I"}, new[] { "t1", "J"}}));
             AssertNoneReceived(listeners);
-            dynamicSender.SendEvent(MakeProperties(new string[][] {{"r2", "Q"}, {"t2", "R"}}));
+            dynamicSender.SendEvent(MakeProperties(new string[][] { new[] { "r2", "Q"}, new[] { "t2", "R"}}));
             EPAssertionUtil.AssertAllPropsSortedByName(listeners[1].AssertOneGetNewAndReset(), new object[] {"Q", "R"});
         }
 

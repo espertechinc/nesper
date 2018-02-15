@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -109,7 +107,7 @@ namespace com.espertech.esper.regression.expr.datetime
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // query
             long startTime = DateTimeHelper.CurrentTimeMillis;
@@ -119,7 +117,7 @@ namespace com.espertech.esper.regression.expr.datetime
             }
             long endTime = DateTimeHelper.CurrentTimeMillis;
             long delta = endTime - startTime;
-            Assert.IsTrue("Delta=" + delta / 1000d, delta < 500);
+            Assert.IsTrue(delta < 500, "Delta=" + delta / 1000d);
     
             stmt.Dispose();
         }

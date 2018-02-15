@@ -20,7 +20,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util.support;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -78,33 +77,33 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "varaggPWD" + key + ".mearr.SelectFrom(i => i.p0) as c4 " +
                     "from SupportBean_S0";
             var listener = new SupportUpdateListener();
-            SupportModelHelper.CreateByCompileOrParse(epService, soda, eplSelect).AddListener(listener);
+            SupportModelHelper.CreateByCompileOrParse(epService, soda, eplSelect).Events += listener.Update;
     
             string eplMerge = "on PopulateEvent merge varaggPWD " +
                     "when not matched then insert " +
                     "select key, ts, mb, mbarr, me, mearr";
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplMerge);
     
-            Object[] @event = MakePopulateEvent();
+            object[] @event = MakePopulateEvent();
             epService.EPRuntime.SendEvent(@event, "PopulateEvent");
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E1"));
             EventBean output = listener.AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(output, "c0,c1,c3".Split(','),
-                    new Object[]{55, "x", "p0value"});
-            Assert.AreEqual(1, ((Collection) output.Get("c2")).Count);
+                    new object[]{55, "x", "p0value"});
+            Assert.AreEqual(1, ((ICollection<object>) output.Get("c2")).Count);
             Assert.AreEqual("[0_p0, 1_p0]", output.Get("c4").ToString());
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
-        private Object[] MakePopulateEvent() {
-            return new Object[]{
+        private object[] MakePopulateEvent() {
+            return new object[]{
                     "E1",
                     DateTimeParser.ParseDefaultMSec("2002-05-30T09:55:00.000"), // ts
                     new MyBean(),   // mb
                     new MyBean[]{new MyBean(), new MyBean()},   // mbarr
-                    new Object[]{"p0value"},   // me
-                    new Object[][]{new object[] {"0_p0"}, new object[] {"1_p0"}}    // mearr
+                    new object[]{"p0value"},   // me
+                    new object[][]{new object[] {"0_p0"}, new object[] {"1_p0"}}    // mearr
             };
         }
     
@@ -118,7 +117,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "select lastever(longPrimitive) as a1, window(*) as a2 from SupportBean#Time(10 seconds)" +
                     (grouped ? " group by theString" : "");
             EPStatement stmtInto = SupportModelHelper.CreateByCompileOrParse(epService, soda, eplInto);
-            var expectedAggType = new Object[][]{new object[] {"a1", typeof(long)}, new object[] {"a2", typeof(SupportBean[])}};
+            var expectedAggType = new object[][]{new object[] {"a1", typeof(long)}, new object[] {"a2", typeof(SupportBean[])}};
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedAggType, stmtInto.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
             string key = grouped ? "[\"E1\"]" : "";
@@ -126,18 +125,18 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "varaggWDE" + key + ".a2.CountOf() as c1 from SupportBean_S0";
             EPStatement stmtGet = SupportModelHelper.CreateByCompileOrParse(epService, soda, eplGet);
             var listener = new SupportUpdateListener();
-            stmtGet.AddListener(listener);
-            var expectedGetType = new Object[][]{new object[] {"c0", typeof(bool?)}, new object[] {"c1", typeof(int?)}};
+            stmtGet.Events += listener.Update;
+            var expectedGetType = new object[][]{new object[] {"c0", typeof(bool?)}, new object[] {"c1", typeof(int?)}};
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedGetType, stmtGet.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
             string[] fields = "c0,c1".Split(',');
             MakeSendBean(epService, "E1", 10, 100);
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, 1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, 1});
     
             MakeSendBean(epService, "E1", 20, 200);
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, 2});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("table_varaggWDE__internal", false);
@@ -171,22 +170,22 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     " from SupportBean_S0";
             EPStatement stmtSelect = SupportModelHelper.CreateByCompileOrParse(epService, soda, eplSelect);
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
-            var expectedAggType = new Object[][]{new object[] {"c0", typeof(int?)}, new object[] {"c1", typeof(int?)}, new object[] {"c2", typeof(Collection)}};
+            stmtSelect.Events += listener.Update;
+            var expectedAggType = new object[][]{new object[] {"c0", typeof(int?)}, new object[] {"c1", typeof(int?)}, new object[] {"c2", typeof(ICollection<object>)}};
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedAggType, stmtSelect.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
             string[] fields = "c0,c1,c2".Split(',');
             MakeSendBean(epService, "E1", 10, 0);
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{10, 1, Collections.SingletonList(10)});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10, 1, Collections.SingletonList(10)});
     
             MakeSendBean(epService, "E1", 20, 0);
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{20, 2, Collections.SingletonList(10)});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{20, 2, Collections.SingletonList(10)});
     
             MakeSendBean(epService, "E1", 30, 0);
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{30, 2, Collections.SingletonList(20)});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{30, 2, Collections.SingletonList(20)});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("table_varaggNDM__internal", false);

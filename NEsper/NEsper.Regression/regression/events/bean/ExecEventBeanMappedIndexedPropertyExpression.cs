@@ -83,7 +83,7 @@ namespace com.espertech.esper.regression.events.bean
             defType.Put("value", typeof(string));
             defType.Put("properties", typeof(Map));
             epService.EPAdministrator.Configuration.AddEventType("InputEvent", defType);
-            epService.EPAdministrator.CreateEPL("select name,value,Properties(name) = value as ok from InputEvent").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select name,value,Properties(name) = value as ok from InputEvent").Events += listener.Update;
     
             listener.Reset();
             epService.EPRuntime.SendEvent(MakeMapEvent("name", "value1", Collections.SingletonDataMap("name", "xxxx")), "InputEvent");
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regression.events.bean
             Assert.IsTrue((bool?) listener.AssertOneGetNewAndReset().Get("ok"));
     
             // test Object-array-type
-            epService.EPAdministrator.Configuration.AddEventType("ObjectArrayEvent", new string[]{"mapped", "indexed"}, new Object[]{new Dictionary<string, object>(), typeof(int[])});
+            epService.EPAdministrator.Configuration.AddEventType("ObjectArrayEvent", new string[]{"mapped", "indexed"}, new object[]{new Dictionary<string, object>(), typeof(int[])});
             string eplObjectArray = "select " +
                     "Mapped(theString) as val0," +
                     "Indexed(intPrimitive) as val1 " +
@@ -109,31 +109,31 @@ namespace com.espertech.esper.regression.events.bean
     
         private void RunAssertionMap(EPServiceProvider epService, SupportUpdateListener listener, string epl) {
             EPStatement stmtMap = epService.EPAdministrator.CreateEPL(epl);
-            stmtMap.AddListener(listener);
+            stmtMap.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeMapEvent(), "MapEvent");
             epService.EPRuntime.SendEvent(new SupportBean("keyOne", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0,val1".Split(','), new Object[]{"valueOne", 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0,val1".Split(','), new object[]{"valueOne", 2});
             stmtMap.Dispose();
         }
     
         private void RunAssertionObjectArray(EPServiceProvider epService, SupportUpdateListener listener, string epl) {
             EPStatement stmtObjectArray = epService.EPAdministrator.CreateEPL(epl);
-            stmtObjectArray.AddListener(listener);
+            stmtObjectArray.Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(new Object[]{Collections.SingletonMap("keyOne", "valueOne"), new int[]{1, 2}}, "ObjectArrayEvent");
+            epService.EPRuntime.SendEvent(new object[]{Collections.SingletonMap("keyOne", "valueOne"), new int[]{1, 2}}, "ObjectArrayEvent");
             epService.EPRuntime.SendEvent(new SupportBean("keyOne", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0,val1".Split(','), new Object[]{"valueOne", 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0,val1".Split(','), new object[]{"valueOne", 2});
             stmtObjectArray.Dispose();
         }
     
         private void RunAssertionBean(EPServiceProvider epService, SupportUpdateListener listener, string epl) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
             epService.EPRuntime.SendEvent(new SupportBean("keyOne", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0,val1".Split(','), new Object[]{"valueOne", 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0,val1".Split(','), new object[]{"valueOne", 2});
             stmt.Dispose();
         }
     

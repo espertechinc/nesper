@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -17,8 +17,6 @@ using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util.support;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNotNull;
 
 using NUnit.Framework;
 
@@ -26,23 +24,23 @@ namespace com.espertech.esper.regression.events.xml
 {
     public class ExecEventXMLNoSchemaEventTransposeDOM : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.ViewResources.IterableUnbound = true;
+            configuration.EngineDefaults.ViewResources.IsIterableUnbound = true;
         }
     
         public override void Run(EPServiceProvider epService) {
             var eventTypeMeta = new ConfigurationEventTypeXMLDOM();
             eventTypeMeta.RootElementName = "simpleEvent";
-            // eventTypeMeta.XPathPropertyExpr = false; <== the default
+            // eventTypeMeta.IsXPathPropertyExpr = false; <== the default
             epService.EPAdministrator.Configuration.AddEventType("TestXMLSchemaType", eventTypeMeta);
     
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL("insert into MyNestedStream select nested1 from TestXMLSchemaType");
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{
+            EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
                     new EventPropertyDescriptor("nested1", typeof(string), null, false, false, false, false, false),
             }, stmtInsert.EventType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(stmtInsert.EventType);
     
             EPStatement stmtSelectWildcard = epService.EPAdministrator.CreateEPL("select * from TestXMLSchemaType");
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[0], stmtSelectWildcard.EventType.PropertyDescriptors);
+            EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[0], stmtSelectWildcard.EventType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(stmtSelectWildcard.EventType);
     
             SupportXML.SendDefaultEvent(epService.EPRuntime, "test");

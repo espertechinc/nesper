@@ -46,12 +46,12 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             // create window
             string stmtTextCreateOne = "create window MyWindow#keepall as SupportBean";
             EPStatement stmtCreateOne = epService.EPAdministrator.CreateEPL(stmtTextCreateOne);
-            stmtCreateOne.AddListener(listeners[0]);
+            stmtCreateOne.Events += listeners[0].Update;
     
             // create window
             string stmtTextCreateTwo = "create window MyWindowTwo#keepall as MyWindow";
             EPStatement stmtCreateTwo = epService.EPAdministrator.CreateEPL(stmtTextCreateTwo);
-            stmtCreateTwo.AddListener(listeners[1]);
+            stmtCreateTwo.Events += listeners[1].Update;
     
             // create insert into
             string stmtTextInsertOne = "insert into MyWindow select * from SupportBean";
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             // create consumer
             string stmtTextSelectOne = "select theString from MyWindow";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
-            stmtSelectOne.AddListener(listeners[2]);
+            stmtSelectOne.Events += listeners[2].Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             var fields = new[]{"theString"};
@@ -76,7 +76,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             // create window
             string stmtTextCreateOne = "create window MyWindowIWT#keepall as SupportBean";
             EPStatement stmtCreateOne = epService.EPAdministrator.CreateEPL(stmtTextCreateOne, "name1");
-            stmtCreateOne.AddListener(listeners[0]);
+            stmtCreateOne.Events += listeners[0].Update;
             EventType eventTypeOne = stmtCreateOne.EventType;
     
             // create insert into
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             // create window with keep-all
             string stmtTextCreateTwo = "create window MyWindowTwo#keepall as MyWindowIWT insert";
             EPStatement stmtCreateTwo = epService.EPAdministrator.CreateEPL(stmtTextCreateTwo);
-            stmtCreateTwo.AddListener(listeners[2]);
+            stmtCreateTwo.Events += listeners[2].Update;
             EPAssertionUtil.AssertPropsPerRow(stmtCreateTwo.GetEnumerator(), fields, new[] {new object[] {"A1"}, new object[] {"B2"}, new object[] {"C3"}, new object[] {"A4"}, new object[] {"C5"}});
             EventType eventTypeTwo = stmtCreateTwo.First().EventType;
             Assert.IsFalse(listeners[2].IsInvoked);
@@ -109,7 +109,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             // create window with keep-all and filter
             string stmtTextCreateThree = "create window MyWindowThree#keepall as MyWindowIWT insert where theString like 'A%'";
             EPStatement stmtCreateThree = epService.EPAdministrator.CreateEPL(stmtTextCreateThree);
-            stmtCreateThree.AddListener(listeners[3]);
+            stmtCreateThree.Events += listeners[3].Update;
             EPAssertionUtil.AssertPropsPerRow(stmtCreateThree.GetEnumerator(), fields, new[] {new object[] {"A1"}, new object[] {"A4"}});
             EventType eventTypeThree = stmtCreateThree.First().EventType;
             Assert.IsFalse(listeners[3].IsInvoked);
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             // create window with last-per-id
             string stmtTextCreateFour = "create window MyWindowFour#unique(intPrimitive) as MyWindowIWT insert";
             EPStatement stmtCreateFour = epService.EPAdministrator.CreateEPL(stmtTextCreateFour);
-            stmtCreateFour.AddListener(listeners[4]);
+            stmtCreateFour.Events += listeners[4].Update;
             EPAssertionUtil.AssertPropsPerRow(stmtCreateFour.GetEnumerator(), fields, new[] {new object[] {"C3"}, new object[] {"C5"}});
             EventType eventTypeFour = stmtCreateFour.First().EventType;
             Assert.IsFalse(listeners[4].IsInvoked);
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             EPStatement stmtCreateOne = epService.EPAdministrator.CreateEPL(stmtTextCreateOne);
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmtCreateOne.EventType.UnderlyingType));
             var listener = new SupportUpdateListener();
-            stmtCreateOne.AddListener(listener);
+            stmtCreateOne.Events += listener.Update;
     
             // create insert into
             string stmtTextInsertOne = "insert into MyWindowIWOM select a, b from MyMap";
@@ -215,7 +215,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPAdministrator.Configuration.AddEventType("SupportBean_B", typeof(SupportBean_B));
     
             var config = new ConfigurationVariantStream();
-            //config.TypeVariance = ConfigurationVariantStream.TypeVariance.ANY;
+            //config.TypeVariance = TypeVarianceEnum.ANY;
             config.AddEventTypeName("SupportBean_A");
             config.AddEventTypeName("SupportBean_B");
             epService.EPAdministrator.Configuration.AddVariantStream("VarStream", config);

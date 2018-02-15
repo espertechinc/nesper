@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertNull;
 
 using NUnit.Framework;
 
@@ -50,7 +49,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             string eplSubquery = "select p00, (select * from MyInfra) @eventbean as detail from SupportBean_S0";
             EPStatement stmtSubquery = epService.EPAdministrator.CreateEPL(eplSubquery);
             var listener = new SupportUpdateListener();
-            stmtSubquery.AddListener(listener);
+            stmtSubquery.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
             AssertReceived(listener, null);
@@ -58,18 +57,18 @@ namespace com.espertech.esper.regression.nwtable.infra
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
-            AssertReceived(listener, new Object[][]{new object[] {"E1", 1}});
+            AssertReceived(listener, new object[][]{new object[] {"E1", 1}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
-            AssertReceived(listener, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
+            AssertReceived(listener, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfra", false);
         }
     
-        private void AssertReceived(SupportUpdateListener listener, Object[][] values) {
+        private void AssertReceived(SupportUpdateListener listener, object[][] values) {
             EventBean @event = listener.AssertOneGetNewAndReset();
             EventBean[] events = (EventBean[]) @event.GetFragment("detail");
             if (values == null) {

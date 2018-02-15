@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
@@ -52,13 +52,13 @@ namespace com.espertech.esper.regression.epl.contained
             string stmtText = "insert into BookStream select * from OrderEvent[books]";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             EPStatement stmtNW = epService.EPAdministrator.CreateEPL("create window MyWindow#lastevent as BookDesc");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from BookStream bs where not Exists (select * from MyWindow mw where mw.price > bs.price)");
     
             epService.EPRuntime.SendEvent(MakeEventOne());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"10020"}, new object[] {"10021"}, new object[] {"10022"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"10020"}, new object[] {"10021"}, new object[] {"10022"}});
             listener.Reset();
     
             // higest price (27 is the last value)
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regression.epl.contained
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionUnidirectionalJoin(epService, listener);
     
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regression.epl.contained
             Assert.AreEqual(stmtText, model.ToEPL());
             Assert.AreEqual(stmtTextFormatted, model.ToEPL(new EPStatementFormatter(true)));
             stmt = epService.EPAdministrator.Create(model);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionUnidirectionalJoin(epService, listener);
     
@@ -105,17 +105,17 @@ namespace com.espertech.esper.regression.epl.contained
             string[] fields = "orderEvent.orderdetail.orderId,book.bookId,book.title,item.amount".Split(',');
             epService.EPRuntime.SendEvent(MakeEventOne());
             Assert.AreEqual(3, listener.LastNewData.Length);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"PO200901", "10020", "Enders Game", 10}, new object[] {"PO200901", "10020", "Enders Game", 30}, new object[] {"PO200901", "10021", "Foundation 1", 25}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"PO200901", "10020", "Enders Game", 10}, new object[] {"PO200901", "10020", "Enders Game", 30}, new object[] {"PO200901", "10021", "Foundation 1", 25}});
             listener.Reset();
     
             epService.EPRuntime.SendEvent(MakeEventTwo());
             Assert.AreEqual(1, listener.LastNewData.Length);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"PO200902", "10022", "Stranger in a Strange Land", 5}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"PO200902", "10022", "Stranger in a Strange Land", 5}});
             listener.Reset();
     
             epService.EPRuntime.SendEvent(MakeEventThree());
             Assert.AreEqual(1, listener.LastNewData.Length);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"PO200903", "10021", "Foundation 1", 50}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"PO200903", "10021", "Foundation 1", 50}});
         }
     
         private void RunAssertionUnidirectionalJoinCount(EPServiceProvider epService) {
@@ -128,16 +128,16 @@ namespace com.espertech.esper.regression.epl.contained
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEventOne());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "count(*)".Split(','), new Object[]{3L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "count(*)".Split(','), new object[]{3L});
     
             epService.EPRuntime.SendEvent(MakeEventTwo());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "count(*)".Split(','), new Object[]{1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "count(*)".Split(','), new object[]{1L});
     
             epService.EPRuntime.SendEvent(MakeEventThree());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "count(*)".Split(','), new Object[]{1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "count(*)".Split(','), new object[]{1L});
     
             epService.EPRuntime.SendEvent(MakeEventFour());
             Assert.IsFalse(listener.IsInvoked);
@@ -155,26 +155,26 @@ namespace com.espertech.esper.regression.epl.contained
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEventOne());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{3L});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {3L}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{3L});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {3L}});
     
             epService.EPRuntime.SendEvent(MakeEventTwo());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "count(*)".Split(','), new Object[]{4L});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {4L}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "count(*)".Split(','), new object[]{4L});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {4L}});
     
             epService.EPRuntime.SendEvent(MakeEventThree());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "count(*)".Split(','), new Object[]{5L});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {5L}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "count(*)".Split(','), new object[]{5L});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {5L}});
     
             epService.EPRuntime.SendEvent(MakeEventFour());
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(MakeEventOne());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "count(*)".Split(','), new Object[]{8L});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {8L}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "count(*)".Split(','), new object[]{8L});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {8L}});
     
             stmt.Dispose();
         }
@@ -190,21 +190,21 @@ namespace com.espertech.esper.regression.epl.contained
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEventOne());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"10020", "A001", 10}, new object[] {"10020", "A003", 30}, new object[] {"10021", "A002", 25}});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"10020", "A001", 10}, new object[] {"10020", "A003", 30}, new object[] {"10021", "A002", 25}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"10020", "A001", 10}, new object[] {"10020", "A003", 30}, new object[] {"10021", "A002", 25}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {"10020", "A001", 10}, new object[] {"10020", "A003", 30}, new object[] {"10021", "A002", 25}});
             listener.Reset();
     
             epService.EPRuntime.SendEvent(MakeEventTwo());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"10022", "B001", 5}});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"10020", "A001", 10}, new object[] {"10020", "A003", 30}, new object[] {"10021", "A002", 25}, new object[] {"10022", "B001", 5}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"10022", "B001", 5}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {"10020", "A001", 10}, new object[] {"10020", "A003", 30}, new object[] {"10021", "A002", 25}, new object[] {"10022", "B001", 5}});
             listener.Reset();
     
             epService.EPRuntime.SendEvent(MakeEventThree());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new Object[][]{new object[] {"10021", "C001", 50}});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"10020", "A001", 10}, new object[] {"10020", "A003", 30}, new object[] {"10021", "A002", 25}, new object[] {"10021", "C001", 50}, new object[] {"10022", "B001", 5}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"10021", "C001", 50}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {"10020", "A001", 10}, new object[] {"10020", "A003", 30}, new object[] {"10021", "A002", 25}, new object[] {"10021", "C001", 50}, new object[] {"10022", "B001", 5}});
             listener.Reset();
     
             epService.EPRuntime.SendEvent(MakeEventFour());
@@ -220,15 +220,15 @@ namespace com.espertech.esper.regression.epl.contained
             string stmtText = "select count(*) from OrderEvent[books]";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEventOne());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{3L});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {3L}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{3L});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {3L}});
     
             epService.EPRuntime.SendEvent(MakeEventFour());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{5L});
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new Object[][]{new object[] {5L}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{5L});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {5L}});
     
             stmt.Dispose();
         }
@@ -238,28 +238,28 @@ namespace com.espertech.esper.regression.epl.contained
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@IterableUnbound select bookId from OrderEvent[books]");
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("@IterableUnbound select books[0].author as val from OrderEvent(books[0].bookId = '10020')");
     
             epService.EPRuntime.SendEvent(MakeEventOne());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, "bookId".Split(','), new Object[][]{new object[] {"10020"}, new object[] {"10021"}, new object[] {"10022"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, "bookId".Split(','), new object[][]{new object[] {"10020"}, new object[] {"10021"}, new object[] {"10022"}});
             listener.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmtOne.GetEnumerator(), "bookId".Split(','), new Object[][]{new object[] {"10020"}, new object[] {"10021"}, new object[] {"10022"}});
-            EPAssertionUtil.AssertPropsPerRow(stmtTwo.GetEnumerator(), "val".Split(','), new Object[][]{new object[] {"Orson Scott Card"}});
+            EPAssertionUtil.AssertPropsPerRow(stmtOne.GetEnumerator(), "bookId".Split(','), new object[][]{new object[] {"10020"}, new object[] {"10021"}, new object[] {"10022"}});
+            EPAssertionUtil.AssertPropsPerRow(stmtTwo.GetEnumerator(), "val".Split(','), new object[][]{new object[] {"Orson Scott Card"}});
     
             epService.EPRuntime.SendEvent(MakeEventFour());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, "bookId".Split(','), new Object[][]{new object[] {"10031"}, new object[] {"10032"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, "bookId".Split(','), new object[][]{new object[] {"10031"}, new object[] {"10032"}});
             listener.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmtOne.GetEnumerator(), "bookId".Split(','), new Object[][]{new object[] {"10031"}, new object[] {"10032"}});
-            EPAssertionUtil.AssertPropsPerRow(stmtTwo.GetEnumerator(), "val".Split(','), new Object[][]{new object[] {"Orson Scott Card"}});
+            EPAssertionUtil.AssertPropsPerRow(stmtOne.GetEnumerator(), "bookId".Split(','), new object[][]{new object[] {"10031"}, new object[] {"10032"}});
+            EPAssertionUtil.AssertPropsPerRow(stmtTwo.GetEnumerator(), "val".Split(','), new object[][]{new object[] {"Orson Scott Card"}});
     
             // add where clause
             stmtOne.Dispose();
             stmtTwo.Dispose();
             stmtOne = epService.EPAdministrator.CreateEPL("select bookId from OrderEvent[books where author='Orson Scott Card']");
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
             epService.EPRuntime.SendEvent(MakeEventOne());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, "bookId".Split(','), new Object[][]{new object[] {"10020"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, "bookId".Split(','), new object[][]{new object[] {"10020"}});
             listener.Reset();
     
             stmtOne.Dispose();
@@ -271,19 +271,19 @@ namespace com.espertech.esper.regression.epl.contained
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEventOne());
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, "bookId".Split(','), new Object[][]{new object[] {"10020"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, "bookId".Split(','), new object[][]{new object[] {"10020"}});
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), "bookId".Split(','), new Object[][]{new object[] {"10020"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), "bookId".Split(','), new object[][]{new object[] {"10020"}});
     
             epService.EPRuntime.SendEvent(MakeEventFour());
             Assert.IsNull(listener.LastOldData);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, "bookId".Split(','), new Object[][]{new object[] {"10031"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, "bookId".Split(','), new object[][]{new object[] {"10031"}});
             listener.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), "bookId".Split(','), new Object[][]{new object[] {"10031"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), "bookId".Split(','), new object[][]{new object[] {"10031"}});
     
             stmt.Dispose();
         }
@@ -295,10 +295,10 @@ namespace com.espertech.esper.regression.epl.contained
             string[] fields = "word".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SentenceEvent("I am testing this"));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"I"}, new object[] {"am"}, new object[] {"testing"}, new object[] {"this"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"I"}, new object[] {"am"}, new object[] {"testing"}, new object[] {"this"}});
     
             stmt.Dispose();
         }
@@ -308,10 +308,10 @@ namespace com.espertech.esper.regression.epl.contained
             epService.EPAdministrator.CreateEPL("create objectarray schema ContainedId(id string)");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from MyBeanWithArray[select topId, * from containedIds @Type(ContainedId)]");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new MyBeanWithArray("A", "one,two,three".Split(',')));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "topId,id".Split(','),
-                    new Object[][]{new object[] {"A", "one"}, new object[] {"A", "two"}, new object[] {"A", "three"}});
+                    new object[][]{new object[] {"A", "one"}, new object[] {"A", "two"}, new object[] {"A", "three"}});
             stmt.Dispose();
         }
     

@@ -234,7 +234,7 @@ namespace com.espertech.esper.regression.support
             int totalExpected = 0;
             foreach (EventExpressionCase descriptor in _caseList.Results)
             {
-                totalExpected += descriptor.ExpectedResults.Values.sum(events => events.Count);
+                totalExpected += descriptor.ExpectedResults.Values.Sum(events => events.Count);
             }
 
             if (totalExpected != totalEventsReceived && testStyle != PatternTestStyle.USE_EPL_AND_CONSUME_NOCHECK)
@@ -391,7 +391,7 @@ namespace com.espertech.esper.regression.support
         /// <summary>Clear the event list of all listeners </summary>
         private int CountListenerEvents()
         {
-            return _listeners.SelectMany(listener => listener.NewDataList).sum(events => events.Length);
+            return _listeners.SelectMany(listener => listener.NewDataList).Sum(events => events.Length);
         }
 
         private void PrintList(IEnumerable<EventDescriptor> events)

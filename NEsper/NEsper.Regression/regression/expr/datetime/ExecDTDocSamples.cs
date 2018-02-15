@@ -57,7 +57,7 @@ namespace com.espertech.esper.regression.expr.datetime
         private void TryRun(EPServiceProvider epService, string condition, string tsa, string tsb, bool isInvoked) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from pattern [a=A -> b=B] as abc where " + condition);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", tsa, 0));
             epService.EPRuntime.SendEvent(SupportTimeStartEndB.Make("E2", tsb, 0));

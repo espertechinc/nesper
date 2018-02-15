@@ -17,8 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertFalse;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -27,8 +25,8 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     public class ExecOutputLimitFirstHaving : RegressionExecution {
     
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.Logging.EnableExecutionDebug = true;
-            configuration.EngineDefaults.Logging.EnableTimerDebug = false;
+            configuration.EngineDefaults.Logging.IsEnableExecutionDebug = true;
+            configuration.EngineDefaults.Logging.IsEnableTimerDebug = false;
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -44,15 +42,15 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             string query = "select doublePrimitive from SupportBean having doublePrimitive > 1 output first every 2 events";
             EPStatement statement = epService.EPAdministrator.CreateEPL(query);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             TryAssertion2Events(epService, listener);
-            statement.Destroy();
+            statement.Dispose();
     
             // test joined
             query = "select doublePrimitive from SupportBean#lastevent,SupportBean_ST0#lastevent st0 having doublePrimitive > 1 output first every 2 events";
             statement = epService.EPAdministrator.CreateEPL(query);
             epService.EPRuntime.SendEvent(new SupportBean_ST0("ID", 1));
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             TryAssertion2Events(epService, listener);
         }
     
@@ -63,7 +61,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             string query = "select sum(doublePrimitive) as val0 from SupportBean#length(5) having sum(doublePrimitive) > 100 output first every 2 seconds";
             EPStatement statement = epService.EPAdministrator.CreateEPL(query);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendBeanEvent(epService, 10);
             SendBeanEvent(epService, 80);
@@ -71,7 +69,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
             SendBeanEvent(epService, 11);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{101d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{101d});
     
             SendBeanEvent(epService, 1);
     
@@ -84,7 +82,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             Assert.IsFalse(listener.IsInvoked);
     
             SendBeanEvent(epService, 100);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{114d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{114d});
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(4999));
             SendBeanEvent(epService, 0);
@@ -92,14 +90,14 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(5000));
             SendBeanEvent(epService, 0);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{102d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{102d});
         }
     
         private void RunAssertionHavingAvgOutputFirstEveryTwoMinutes(EPServiceProvider epService) {
             string query = "select doublePrimitive, avg(doublePrimitive) from SupportBean having doublePrimitive > 2*avg(doublePrimitive) output first every 2 minutes";
             EPStatement statement = epService.EPAdministrator.CreateEPL(query);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendBeanEvent(epService, 1);
             Assert.IsFalse(listener.IsInvoked);

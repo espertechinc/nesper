@@ -118,7 +118,7 @@ namespace com.espertech.esper.regression.client
             var stmt = epService.EPAdministrator.CreateEPL(
                 "select " + methodName + "(theString).Where(v => v.id in ('id1', 'id3')) as c0 from SupportBean");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("id0,id1,id2,id3,id4", 0));
             var coll = (ICollection<Map>) listener.AssertOneGetNewAndReset().Get("c0");
@@ -239,7 +239,7 @@ namespace com.espertech.esper.regression.client
                        "ExecClientSingleRowFunctionPlugIn.LocalIsNullValue(*, 'theString') as c1 from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("a", 1));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {false, false});
@@ -252,7 +252,7 @@ namespace com.espertech.esper.regression.client
             var textPattern =
                 "select * from pattern [a=SupportBean -> b=SupportBean(theString=GetValueAsString(a, 'theString'))]";
             var stmtPattern = epService.EPAdministrator.CreateEPL(textPattern);
-            stmtPattern.AddListener(listener);
+            stmtPattern.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
             EPAssertionUtil.AssertProps(
@@ -262,7 +262,7 @@ namespace com.espertech.esper.regression.client
             // test filter
             var textFilter = "select * from SupportBean('E1'=GetValueAsString(*, 'theString'))";
             var stmtFilter = epService.EPAdministrator.CreateEPL(textFilter);
-            stmtFilter.AddListener(listener);
+            stmtFilter.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
             Assert.AreEqual(1, listener.GetAndResetLastNewData().Length);
@@ -272,7 +272,7 @@ namespace com.espertech.esper.regression.client
             var textAccessAgg =
                 "select * from SupportBean#keepall having 'E2' = GetValueAsString(last(*), 'theString')";
             var stmtAccessAgg = epService.EPAdministrator.CreateEPL(textAccessAgg);
-            stmtAccessAgg.AddListener(listener);
+            stmtAccessAgg.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
             Assert.AreEqual(1, listener.GetAndResetLastNewData().Length);
@@ -282,7 +282,7 @@ namespace com.espertech.esper.regression.client
             var textWindowAgg =
                 "select * from SupportBean#keepall having EventsCheckStrings(window(*), 'theString', 'E1')";
             var stmtWindowAgg = epService.EPAdministrator.CreateEPL(textWindowAgg);
-            stmtWindowAgg.AddListener(listener);
+            stmtWindowAgg.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
             Assert.AreEqual(1, listener.GetAndResetLastNewData().Length);
@@ -294,7 +294,7 @@ namespace com.espertech.esper.regression.client
             var text = "select Surroundx('test') as val from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var fields = new[] {"val"};
             epService.EPRuntime.SendEvent(new SupportBean("a", 3));
@@ -306,7 +306,7 @@ namespace com.espertech.esper.regression.client
             var text = "select ChainTop().ChainValue(12,intPrimitive) as val from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             TryAssertionChainMethod(epService, listener);
 
@@ -315,7 +315,7 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(text, model.ToEPL());
             stmt = epService.EPAdministrator.Create(model);
             Assert.AreEqual(text, stmt.Text);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             TryAssertionChainMethod(epService, listener);
         }
@@ -325,7 +325,7 @@ namespace com.espertech.esper.regression.client
             var text = "select Power3(intPrimitive) as val from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             TryAssertionSingleMethod(epService, listener);
 
@@ -334,14 +334,14 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(text, model.ToEPL());
             stmt = epService.EPAdministrator.Create(model);
             Assert.AreEqual(text, stmt.Text);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             TryAssertionSingleMethod(epService, listener);
 
             stmt.Dispose();
             text = "select Power3(2) as val from SupportBean";
             stmt = epService.EPAdministrator.CreateEPL(text);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             TryAssertionSingleMethod(epService, listener);
             stmt.Dispose();
@@ -349,7 +349,7 @@ namespace com.espertech.esper.regression.client
             // test passing a context as well
             text = "@Name('A') select Power3Context(intPrimitive) as val from SupportBean";
             stmt = epService.EPAdministrator.CreateEPL(text, (object) "my_user_object");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             MySingleRowFunction.MethodInvokeContexts.Clear();
             TryAssertionSingleMethod(epService, listener);
@@ -364,13 +364,13 @@ namespace com.espertech.esper.regression.client
 
             // test exception behavior
             // logged-only
-            epService.EPAdministrator.CreateEPL("select ThrowExceptionLogMe() from SupportBean").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select ThrowExceptionLogMe() from SupportBean").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPAdministrator.DestroyAllStatements();
 
             // rethrow
             epService.EPAdministrator.CreateEPL("@Name('S0') select ThrowExceptionRethrow() from SupportBean")
-                .AddListener(listener);
+                .Events += listener.Update;
             try
             {
                 epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -386,7 +386,7 @@ namespace com.espertech.esper.regression.client
 
             // NPE when boxed is null
             epService.EPAdministrator.CreateEPL("@Name('S1') select Power3Rethrow(intBoxed) from SupportBean")
-                .AddListener(listener);
+                .Events += listener.Update;
             try
             {
                 epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -503,7 +503,7 @@ namespace com.espertech.esper.regression.client
             buf.Write("intPrimitive from SupportBean");
 
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(buf.ToString()).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(buf.ToString()).Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean());
             var @out = listener.AssertOneGetNewAndReset();
@@ -533,7 +533,7 @@ namespace com.espertech.esper.regression.client
                 "java.util.Collections.List({'a', 'b'}) as c3 " +
                 "from SupportBean");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean());
             var @event = listener.AssertOneGetNewAndReset();
@@ -547,7 +547,7 @@ namespace com.espertech.esper.regression.client
 
         private void AreEqualColl(EventBean @event, string property, params string[] values)
         {
-            var data = (Collection) @event.Get(property);
+            var data = (ICollection<object>) @event.Get(property);
             EPAssertionUtil.AssertEqualsExactOrder(values, data.ToArray());
         }
 

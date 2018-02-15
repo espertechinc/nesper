@@ -8,23 +8,20 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
+using com.espertech.esper.regression.events;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.assertNotNull;
-// using static junit.framework.TestCase.fail;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -37,10 +34,10 @@ namespace com.espertech.esper.regression.client
             configuration.EngineDefaults.ExceptionHandling.HandlerFactories.Clear();
             configuration.EngineDefaults.ExceptionHandling.AddClass(typeof(SupportExceptionHandlerFactory));
     
-            configuration.EngineDefaults.Threading.InternalTimerEnabled = false;
-            configuration.EngineDefaults.Threading.ThreadPoolInbound = true;
+            configuration.EngineDefaults.Threading.IsInternalTimerEnabled = false;
+            configuration.EngineDefaults.Threading.IsThreadPoolInbound = true;
             configuration.EngineDefaults.Threading.ThreadPoolInboundNumThreads = 4;
-            configuration.EngineDefaults.Expression.UdfCache = false;
+            configuration.EngineDefaults.Expression.IsUdfCache = false;
             configuration.AddEventType("MyMap", new Dictionary<string, object>());
             configuration.AddEventType<SupportBean>();
             configuration.AddImport(typeof(SupportStaticMethodLib).FullName);
@@ -56,11 +53,11 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionExceptionHandler(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("throwException", GetType().FullName, "throwException", ConfigurationPlugInSingleRowFunction.ValueCache.DISABLED, FilterOptimizableEnum.ENABLED, true);
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("throwException", GetType().FullName, "throwException", ValueCacheEnum.DISABLED, FilterOptimizableEnum.ENABLED, true);
             string epl = "@Name('ABCName') select * from SupportBean(ThrowException())";
             epService.EPAdministrator.CreateEPL(epl);
     
-            SupportExceptionHandlerFactory.SupportExceptionHandler handler = SupportExceptionHandlerFactory.Handlers.Get(SupportExceptionHandlerFactory.Handlers.Count - 1);
+            SupportExceptionHandlerFactory.SupportExceptionHandler handler = SupportExceptionHandlerFactory.Handlers[SupportExceptionHandlerFactory.Handlers.Count - 1];
             epService.EPRuntime.SendEvent(new SupportBean());
     
             int count = 0;
@@ -84,11 +81,11 @@ namespace com.espertech.esper.regression.client
             var listenerTwo = new SupportListenerTimerHRes();
             var listenerThree = new SupportListenerTimerHRes();
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select SupportStaticMethodLib.Sleep(100) from MyMap");
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select SupportStaticMethodLib.Sleep(100) from SupportBean");
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL("select SupportStaticMethodLib.Sleep(100) from XMLType");
-            stmtThree.AddListener(listenerThree);
+            stmtThree.Events += listenerThree.Update;
     
             EventSender senderOne = epService.EPRuntime.GetEventSender("MyMap");
             EventSender senderTwo = epService.EPRuntime.GetEventSender("SupportBean");

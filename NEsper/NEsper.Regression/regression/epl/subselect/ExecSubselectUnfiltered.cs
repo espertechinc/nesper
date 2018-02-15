@@ -16,8 +16,6 @@ using com.espertech.esper.util;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -62,7 +60,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtTextTwo = "select (select cnt from MyCount#lastevent) as value from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
             Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("value"));
@@ -78,7 +76,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
             Assert.IsFalse(listener.IsInvoked);
@@ -107,7 +105,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(10));
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
@@ -121,7 +119,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
             Assert.IsFalse(listener.IsInvoked);
@@ -138,7 +136,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // check type
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("idS3"));
@@ -250,7 +248,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunUnfilteredStreamPrior(EPServiceProvider epService, EPStatement stmt) {
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // check type
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("idS1"));
@@ -278,7 +276,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // check type
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("idS1"));
@@ -304,7 +302,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // check type
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("idS1"));
@@ -330,7 +328,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(1, "X"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
@@ -373,7 +371,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // check type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("value"));
@@ -398,7 +396,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // check type
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("idS1_0"));
@@ -436,7 +434,7 @@ namespace com.espertech.esper.regression.epl.subselect
         private void TryAssertSingleRowUnfiltered(EPServiceProvider epService, string stmtText, string columnName) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // check type
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType(columnName));
@@ -465,7 +463,7 @@ namespace com.espertech.esper.regression.epl.subselect
         private void TryAssertMultiRowUnfiltered(EPServiceProvider epService, string stmtText, string columnName) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // check type
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType(columnName));

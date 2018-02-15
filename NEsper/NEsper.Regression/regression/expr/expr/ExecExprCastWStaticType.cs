@@ -16,7 +16,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.assertEquals;
 
 using NUnit.Framework;
 
@@ -53,7 +52,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmt);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             var map = new Dictionary<string, Object>();
             map.Put("anInt", "100");

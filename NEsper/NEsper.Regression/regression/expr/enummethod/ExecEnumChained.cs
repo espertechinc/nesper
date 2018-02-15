@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.bean.sales;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -36,7 +35,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             string eplFragment = "select Sales.Where(x => x.cost > 1000).min(y => y.buyer.age) as val from PersonSales";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val".Split(','), new Type[]{typeof(int?)});
     
             PersonSales bean = PersonSales.Make();

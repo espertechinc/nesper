@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.filter;
 using com.espertech.esper.supportregression.bean;
+using com.espertech.esper.supportregression.context;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
@@ -46,7 +47,7 @@ namespace com.espertech.esper.regression.context
             var eplSum = "context Ctx600a select context.label as c0, count(*) as c1 from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(eplSum);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendAssertBooleanExprFilter(epService, listener, "B1", "bgroup", 1);
             SendAssertBooleanExprFilter(epService, listener, "A1", "agroup", 1);
@@ -70,7 +71,7 @@ namespace com.espertech.esper.regression.context
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), stmt.GetSafeEnumerator(), fields, new[] {new object[] {0, "grp1", "E3", -108}, new object[] {1, "grp2", "E1", 3}, new object[] {1, "grp2", "E2", -5}, new object[] {2, "grp3", "E1", 60}});
     
             // test iterator targeted by context partition id
-            var selectorById = new SupportSelectorById(Collections.SingletonList(1));
+            var selectorById = new SupportSelectorById(Collections.SingletonSet(1));
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(selectorById), stmt.GetSafeEnumerator(selectorById), fields, new[] {new object[] {1, "grp2", "E1", 3}, new object[] {1, "grp2", "E2", -5}});
     
             // test iterator targeted for a given category
@@ -80,7 +81,7 @@ namespace com.espertech.esper.regression.context
             // test iterator targeted for a given filtered category
             var filtered = new MySelectorFilteredCategory("grp1");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(filtered), stmt.GetSafeEnumerator(filtered), fields, new[] {new object[] {0, "grp1", "E3", -108}});
-            Assert.IsFalse(stmt.GetEnumerator(new SupportSelectorCategory((ICollection<string>) null)).MoveNext());
+            Assert.IsFalse(stmt.GetEnumerator(new SupportSelectorCategory((ISet<string>) null)).MoveNext());
             Assert.IsFalse(stmt.GetEnumerator(new SupportSelectorCategory(Collections.GetEmptySet<string>())).MoveNext());
     
             // test always-false filter - compare context partition info
@@ -133,7 +134,7 @@ namespace com.espertech.esper.regression.context
             var statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context CategorizedContext " +
                     "select context.name as c0, context.label as c1, sum(intPrimitive) as c2 from SupportBean");
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             Assert.AreEqual(3, filterSpi.FilterCountApprox);
             AgentInstanceAssertionUtil.AssertInstanceCounts(statement.StatementContext, 3, 0, 0, 0);
     
@@ -199,7 +200,7 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertion(EPServiceProvider epService, SupportUpdateListener listener, string ctx, EPStatementSPI statement) {
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             var fields = "c0,c1,c2".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean("E1", 5));

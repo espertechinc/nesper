@@ -17,8 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.rowrecog;
 
-// using static org.junit.Assert.assertFalse;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -47,7 +45,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportRecogBean("s1", 1));
             epService.EPRuntime.SendEvent(new SupportRecogBean("s2", 2));
@@ -60,7 +58,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             epService.EPRuntime.SendEvent(new SupportRecogBean("s1", 7));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
-                    new Object[][]{new object[] {"s1", 7}});
+                    new object[][]{new object[] {"s1", 7}});
             Assert.IsFalse(stmt.HasFirst());
     
             stmt.Dispose();
@@ -90,7 +88,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendTimer(50, epService);
             epService.EPRuntime.SendEvent(new SupportRecogBean("E1", 1));
@@ -114,9 +112,9 @@ namespace com.espertech.esper.regression.rowrecog
             SendTimer(11500, epService);
             epService.EPRuntime.SendEvent(new SupportRecogBean("E6", 3));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
-                    new Object[][]{new object[] {"E4", "E5", "E6"}});
+                    new object[][]{new object[] {"E4", "E5", "E6"}});
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                    new Object[][]{new object[] {"E4", "E5", "E6"}});
+                    new object[][]{new object[] {"E4", "E5", "E6"}});
     
             SendTimer(11999, epService);
             Assert.IsTrue(stmt.HasFirst());
@@ -144,7 +142,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendTimer(50, epService);
             epService.EPRuntime.SendEvent(new SupportRecogBean("A1", "001", 1));
@@ -159,11 +157,11 @@ namespace com.espertech.esper.regression.rowrecog
             epService.EPRuntime.SendEvent(new SupportRecogBean("B3", "003", -1));
             Assert.IsFalse(listener.IsInvoked);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                    new Object[][]{new object[] {null, "B2", "C1"}});
+                    new object[][]{new object[] {null, "B2", "C1"}});
     
             SendTimer(5050, epService);
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
-                    new Object[][]{new object[] {null, "B2", "C1"}});
+                    new object[][]{new object[] {null, "B2", "C1"}});
             Assert.IsFalse(stmt.HasFirst());
     
             SendTimer(6000, epService);
@@ -183,11 +181,11 @@ namespace com.espertech.esper.regression.rowrecog
             epService.EPRuntime.SendEvent(new SupportRecogBean("C6", "003", 10));
             Assert.IsFalse(listener.IsInvoked);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                    new Object[][]{new object[] {null, "B4", "C6"}, new object[] {"A2", null, "C5"}});
+                    new object[][]{new object[] {null, "B4", "C6"}, new object[] {"A2", null, "C5"}});
     
             SendTimer(15050, epService);
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
-                    new Object[][]{new object[] {null, "B4", "C6"}, new object[] {"A2", null, "C5"}});
+                    new object[][]{new object[] {null, "B4", "C6"}, new object[] {"A2", null, "C5"}});
             Assert.IsFalse(stmt.HasFirst());
     
             stmt.Dispose();

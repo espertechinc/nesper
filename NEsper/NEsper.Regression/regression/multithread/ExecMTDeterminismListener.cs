@@ -20,8 +20,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -41,10 +39,10 @@ namespace com.espertech.esper.regression.multithread
             TrySend(3, 1000, false, null);
         }
     
-        private void TrySend(int numThreads, int numEvents, bool isPreserveOrder, ConfigurationEngineDefaults.ThreadingConfig.Locking locking) {
+        private void TrySend(int numThreads, int numEvents, bool isPreserveOrder, ConfigurationEngineDefaults.ThreadingConfig.Locking? locking) {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.EngineDefaults.Threading.ListenerDispatchPreserveOrder = isPreserveOrder;
-            config.EngineDefaults.Threading.ListenerDispatchLocking = locking;
+            config.EngineDefaults.Threading.IsListenerDispatchPreserveOrder = isPreserveOrder;
+            config.EngineDefaults.Threading.ListenerDispatchLocking = locking.GetValueOrDefault();
     
             EPServiceProvider engine = EPServiceProviderManager.GetProvider(this.GetType().Name, config);
             engine.Initialize();
@@ -52,11 +50,11 @@ namespace com.espertech.esper.regression.multithread
             // setup statements
             EPStatement stmtInsert = engine.EPAdministrator.CreateEPL("select count(*) as cnt from " + typeof(SupportBean).FullName);
             var listener = new SupportMTUpdateListener();
-            stmtInsert.AddListener(listener);
+            stmtInsert.Events += listener.Update;
     
             // execute
             var threadPool = Executors.NewFixedThreadPool(numThreads);
-            var future = new Future[numThreads];
+            var future = new Future<bool>[numThreads];
             for (int i = 0; i < numThreads; i++) {
                 future[i] = threadPool.Submit(new SendEventCallable(i, engine, new GeneratorIterator(numEvents)));
             }
@@ -65,7 +63,7 @@ namespace com.espertech.esper.regression.multithread
             threadPool.AwaitTermination(10, TimeUnit.SECONDS);
     
             for (int i = 0; i < numThreads; i++) {
-                Assert.IsTrue((bool?) future[i].Get());
+                Assert.IsTrue(future[i].GetValueOrDefault());
             }
     
             EventBean[] events = listener.GetNewDataListFlattened();
@@ -73,7 +71,7 @@ namespace com.espertech.esper.regression.multithread
             for (int i = 0; i < events.Length; i++) {
                 result[i] = (long) events[i].Get("cnt");
             }
-            //Log.Info(".trySend result=" + Arrays.ToString(result));
+            //Log.Info(".trySend result=" + CompatExtensions.Render(result));
     
             // assert result
             Assert.AreEqual(numEvents * numThreads, events.Length);

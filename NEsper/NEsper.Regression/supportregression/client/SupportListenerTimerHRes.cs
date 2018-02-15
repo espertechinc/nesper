@@ -19,16 +19,16 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.supportregression.client
 {
-    public class SupportListenerTimerHRes : UpdateListener {
-        private List<Pair<long, EventBean[]>> newEvents = Collections.SynchronizedList(new List<Pair<long, EventBean[]>>());
+    public class SupportListenerTimerHRes
+    {
+        private readonly IList<Pair<long, EventBean[]>> _newEvents = 
+            CompatExtensions.AsSyncList(new List<Pair<long, EventBean[]>>());
     
-        public void Update(EventBean[] newData, EventBean[] oldEvents) {
+        public void Update(object sender, UpdateEventArgs args) {
             long time = PerformanceObserver.NanoTime;
-            newEvents.Add(new Pair<long, EventBean[]>(time, newData));
+            _newEvents.Add(new Pair<long, EventBean[]>(time, args.NewEvents));
         }
-    
-        public List<Pair<long, EventBean[]>> GetNewEvents() {
-            return newEvents;
-        }
+
+        public IList<Pair<long, EventBean[]>> NewEvents => _newEvents;
     }
 } // end of namespace

@@ -174,7 +174,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             var stmtOnSelect = epService.EPAdministrator.CreateEPL(
                 "on SupportBean_S0 s0 select nw.f1 as f1, nw.f2 as f2 from MyInfraONR nw where nw.f2 = s0.id");
             var listener = new SupportUpdateListener();
-            stmtOnSelect.AddListener(listener);
+            stmtOnSelect.Events += listener.Update;
             Assert.AreEqual(namedWindow ? 1 : 2, GetIndexCount(epService, namedWindow, "MyInfraONR"));
 
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
@@ -350,7 +350,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 "when not matched then insert select theString as pkey, intPrimitive as col0, longPrimitive as col1");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("on SupportBean_S0 select col0,col1 from MyInfraIS where pkey=p00")
-                .AddListener(listener);
+                .Events += listener.Update;
 
             MakeSendSupportBean(epService, "E1", 10, 100L);
             AssertCols(epService, listener, "E1,E2", new[] {new object[] {10, 100L}, null});
@@ -429,7 +429,7 @@ namespace com.espertech.esper.regression.nwtable.infra
         private void AssertIndexesRef(EPServiceProvider epService, bool isNamedWindow, string name, string csvNames)
         {
             var entry = GetIndexEntry(epService, isNamedWindow, name);
-            if (csvNames.IsEmpty())
+            if (string.IsNullOrEmpty(csvNames))
             {
                 Assert.IsNull(entry);
             }

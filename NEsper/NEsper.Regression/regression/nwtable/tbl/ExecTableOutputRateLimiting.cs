@@ -42,12 +42,12 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select key, thesum from MyTable output snapshot every 1 seconds");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             currentTime.Set(currentTime.Get() + 1000L);
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(currentTime.Get()));
             EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetAndResetLastNewData(), "key,thesum".Split(','),
-                    new Object[][]{new object[] {"E1", 40}, new object[] {"E2", 20}});
+                    new object[][]{new object[] {"E1", 40}, new object[] {"E2", 20}});
     
             currentTime.Set(currentTime.Get() + 1000L);
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(currentTime.Get()));

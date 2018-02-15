@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -24,8 +23,8 @@ namespace com.espertech.esper.regression.expr.expr
 {
     public class ExecExprMathDivisionRules : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.Expression.IntegerDivision = true;
-            configuration.EngineDefaults.Expression.DivisionByZeroReturnsNull = true;
+            configuration.EngineDefaults.Expression.IsIntegerDivision = true;
+            configuration.EngineDefaults.Expression.IsDivisionByZeroReturnsNull = true;
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -33,7 +32,7 @@ namespace com.espertech.esper.regression.expr.expr
             string epl = "select intPrimitive/intBoxed as result from SupportBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("result"));
     
             SendEvent(epService, 100, 3);
@@ -46,7 +45,7 @@ namespace com.espertech.esper.regression.expr.expr
             Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("result"));
         }
     
-        private void SendEvent(EPServiceProvider epService, int? intPrimitive, int? intBoxed) {
+        private void SendEvent(EPServiceProvider epService, int intPrimitive, int? intBoxed) {
             var bean = new SupportBean();
             bean.IntBoxed = intBoxed;
             bean.IntPrimitive = intPrimitive;

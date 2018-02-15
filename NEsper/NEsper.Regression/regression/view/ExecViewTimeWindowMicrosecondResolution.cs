@@ -29,7 +29,7 @@ namespace com.espertech.esper.regression.view
         public override void Run(EPServiceProvider defaultEPService) {
             IDictionary<TimeUnit, EPServiceProvider> epServices = SupportEngineFactory.SetupEnginesByTimeUnit();
     
-            foreach (EPServiceProvider epService in epServices.Values()) {
+            foreach (EPServiceProvider epService in epServices.Values) {
                 epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             }
             EPServiceProvider engineMillis = epServices.Get(TimeUnit.MILLISECONDS);
@@ -62,19 +62,18 @@ namespace com.espertech.esper.regression.view
             isolated.EPRuntime.SendEvent(new SupportBean("E1", 1));
     
             isolated.EPRuntime.SendEvent(new CurrentTimeEvent(flipTime - 1));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1"}});
     
             isolated.EPRuntime.SendEvent(new CurrentTimeEvent(flipTime));
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
     
-            isolated.Destroy();
+            isolated.Dispose();
         }
     
         private static long TimePlusMonth(long timeInMillis, int monthToAdd) {
-            Calendar cal = GregorianCalendar.Instance;
-            cal.TimeInMillis = timeInMillis;
-            cal.Add(Calendar.MONTH, monthToAdd);
-            return Cal.TimeInMillis;
+            DateTimeEx dtx = DateTimeEx.GetInstance(TimeZoneInfo.Local, timeInMillis);
+            dtx.AddMonths(monthToAdd, DateTimeMathStyle.Java);
+            return dtx.TimeInMillis;
         }
     }
 } // end of namespace

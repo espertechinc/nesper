@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lrreport;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -53,22 +52,22 @@ namespace com.espertech.esper.regression.expr.enummethod
             string eplFragment = "select Items.Where(i => i.location.x = 0 and i.location.y = 0) as zeroloc from LocationReport";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(LocationReportFactory.MakeSmall());
     
-            Item[] items = ToArrayItems((ICollection<Item>) listener.AssertOneGetNewAndReset().Get("zeroloc"));
+            Item[] items = listener.AssertOneGetNewAndReset().Get("zeroloc").UnwrapIntoArray<Item>();
             Assert.AreEqual(1, items.Length);
             Assert.AreEqual("P00020", items[0].AssetId);
     
             stmtFragment.Dispose();
             eplFragment = "select Items.Where(i => i.location.x = 0).Where(i => i.location.y = 0) as zeroloc from LocationReport";
             stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(LocationReportFactory.MakeSmall());
     
-            items = ToArrayItems((ICollection<Item>) listener.AssertOneGetNewAndReset().Get("zeroloc"));
+            items = listener.AssertOneGetNewAndReset().Get("zeroloc").UnwrapIntoArray<Item>();
             Assert.AreEqual(1, items.Length);
             Assert.AreEqual("P00020", items[0].AssetId);
     
@@ -82,13 +81,13 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "from Item";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new Zone("Z1", new Rectangle(0, 0, 20, 20)));
             epService.EPRuntime.SendEvent(new Zone("Z2", new Rectangle(21, 21, 40, 40)));
             epService.EPRuntime.SendEvent(new Item("A1", new Location(10, 10)));
     
-            Zone[] zones = ToArrayZones((ICollection<Zone>) listener.AssertOneGetNewAndReset().Get("zones"));
+            Zone[] zones = listener.AssertOneGetNewAndReset().Get("zones").UnwrapIntoArray<Zone>();
             Assert.AreEqual(1, zones.Length);
             Assert.AreEqual("Z1", zones[0].Name);
     
@@ -113,25 +112,25 @@ namespace com.espertech.esper.regression.expr.enummethod
             string epl = "select ZoneWindow.Where(z => Inrect(z.rectangle, location)) as zones from Item";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new Zone("Z1", new Rectangle(0, 0, 20, 20)));
             epService.EPRuntime.SendEvent(new Zone("Z2", new Rectangle(21, 21, 40, 40)));
             epService.EPRuntime.SendEvent(new Item("A1", new Location(10, 10)));
     
-            Zone[] zones = ToArrayZones((ICollection<Zone>) listener.AssertOneGetNewAndReset().Get("zones"));
+            Zone[] zones = listener.AssertOneGetNewAndReset().Get("zones").UnwrapIntoArray<Zone>();
             Assert.AreEqual(1, zones.Length);
             Assert.AreEqual("Z1", zones[0].Name);
             stmt.Dispose();
     
             epl = "select ZoneWindow(name in ('Z4', 'Z5', 'Z3')).Where(z => Inrect(z.rectangle, location)) as zones from Item";
             stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new Zone("Z3", new Rectangle(0, 0, 20, 20)));
             epService.EPRuntime.SendEvent(new Item("A1", new Location(10, 10)));
     
-            zones = ToArrayZones((ICollection<Zone>) listener.AssertOneGetNewAndReset().Get("zones"));
+            zones = listener.AssertOneGetNewAndReset().Get("zones").UnwrapIntoArray<Zone>();
             Assert.AreEqual(1, zones.Length);
             Assert.AreEqual("Z3", zones[0].Name);
     
@@ -143,15 +142,15 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "from Item(type='P')#Time(10) group by assetId";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new Item("P0001", new Location(10, 10), "P", null));
-            Item[] items = ToArrayItems((ICollection<Item>) listener.AssertOneGetNewAndReset().Get("centeritems"));
+            Item[] items = listener.AssertOneGetNewAndReset().Get("centeritems").UnwrapIntoArray<Item>();
             Assert.AreEqual(1, items.Length);
             Assert.AreEqual("P0001", items[0].AssetId);
     
             epService.EPRuntime.SendEvent(new Item("P0002", new Location(10, 1000), "P", null));
-            items = ToArrayItems((ICollection<Item>) listener.AssertOneGetNewAndReset().Get("centeritems"));
+            items = listener.AssertOneGetNewAndReset().Get("centeritems").UnwrapIntoArray<Item>();
             Assert.AreEqual(0, items.Length);
     
             stmt.Dispose();
@@ -162,15 +161,15 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "from Item(type='P')#Time(10) as items";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new Item("P0001", new Location(10, 10), "P", null));
-            Item[] items = ToArrayItems((ICollection<Item>) listener.AssertOneGetNewAndReset().Get("centeritems"));
+            Item[] items = listener.AssertOneGetNewAndReset().Get("centeritems").UnwrapIntoArray<Item>();
             Assert.AreEqual(1, items.Length);
             Assert.AreEqual("P0001", items[0].AssetId);
     
             epService.EPRuntime.SendEvent(new Item("P0002", new Location(10, 1000), "P", null));
-            items = ToArrayItems((ICollection<Item>) listener.AssertOneGetNewAndReset().Get("centeritems"));
+            items = listener.AssertOneGetNewAndReset().Get("centeritems").UnwrapIntoArray<Item>();
             Assert.AreEqual(1, items.Length);
             Assert.AreEqual("P0001", items[0].AssetId);
     
@@ -182,10 +181,10 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "from LocationReport";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(LocationReportFactory.MakeSmall());
-            Item[] items = ToArrayItems((ICollection<Item>) listener.AssertOneGetNewAndReset().Get("centeritems"));
+            Item[] items = listener.AssertOneGetNewAndReset().Get("centeritems").UnwrapIntoArray<Item>();
             Assert.AreEqual(1, items.Length);
             Assert.AreEqual("P00020", items[0].AssetId);
     
@@ -199,10 +198,10 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "from Item as item";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new Item("A1", new Location(5, 5)));
-            Zone[] zones = ToArrayZones((ICollection<Zone>) listener.AssertOneGetNewAndReset().Get("zones"));
+            Zone[] zones = listener.AssertOneGetNewAndReset().Get("zones").UnwrapIntoArray<Zone>();
             Assert.AreEqual(1, zones.Length);
             Assert.AreEqual("Z1", zones[0].Name);
     
@@ -217,10 +216,10 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "Passengers(lr).Where(x => assetId = 'P01') as p2 from LocationReport lr";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(LocationReportFactory.MakeSmall());
-            Item[] items = ToArrayItems((ICollection<Item>) listener.AssertOneGetNewAndReset().Get("p"));
+            Item[] items = listener.AssertOneGetNewAndReset().Get("p").UnwrapIntoArray<Item>();
             Assert.AreEqual(2, items.Length);
             Assert.AreEqual("P00002", items[0].AssetId);
             Assert.AreEqual("P00020", items[1].AssetId);
@@ -281,47 +280,47 @@ namespace com.espertech.esper.regression.expr.enummethod
             Validate(epService, "{1, 2, 3}.Average()", 2.0);
             Validate(epService, "{1, 2, 3}.CountOf()", 3);
             Validate(epService, "{1, 2, 3}.CountOf(v => v < 2)", 1);
-            Validate(epService, "{1, 2, 3}.Except({1})", new Object[]{2, 3});
-            Validate(epService, "{1, 2, 3}.Intersect({2,3})", new Object[]{2, 3});
+            Validate(epService, "{1, 2, 3}.Except({1})", new object[]{2, 3});
+            Validate(epService, "{1, 2, 3}.Intersect({2,3})", new object[]{2, 3});
             Validate(epService, "{1, 2, 3}.FirstOf()", 1);
             Validate(epService, "{1, 2, 3}.FirstOf(v => v / 2 = 1)", 2);
-            Validate(epService, "{1, 2, 3}.Intersect({2, 3})", new Object[]{2, 3});
+            Validate(epService, "{1, 2, 3}.Intersect({2, 3})", new object[]{2, 3});
             Validate(epService, "{1, 2, 3}.LastOf()", 3);
             Validate(epService, "{1, 2, 3}.LastOf(v => v < 3)", 2);
             Validate(epService, "{1, 2, 3, 2, 1}.LeastFrequent()", 3);
             Validate(epService, "{1, 2, 3, 2, 1}.max()", 3);
             Validate(epService, "{1, 2, 3, 2, 1}.min()", 1);
             Validate(epService, "{1, 2, 3, 2, 1, 2}.MostFrequent()", 2);
-            Validate(epService, "{2, 3, 2, 1}.OrderBy()", new Object[]{1, 2, 2, 3});
-            Validate(epService, "{2, 3, 2, 1}.DistinctOf()", new Object[]{2, 3, 1});
-            Validate(epService, "{2, 3, 2, 1}.Reverse()", new Object[]{1, 2, 3, 2});
+            Validate(epService, "{2, 3, 2, 1}.OrderBy()", new object[]{1, 2, 2, 3});
+            Validate(epService, "{2, 3, 2, 1}.DistinctOf()", new object[]{2, 3, 1});
+            Validate(epService, "{2, 3, 2, 1}.Reverse()", new object[]{1, 2, 3, 2});
             Validate(epService, "{1, 2, 3}.SequenceEqual({1})", false);
             Validate(epService, "{1, 2, 3}.SequenceEqual({1, 2, 3})", true);
             Validate(epService, "{1, 2, 3}.SumOf()", 6);
-            Validate(epService, "{1, 2, 3}.Take(2)", new Object[]{1, 2});
-            Validate(epService, "{1, 2, 3}.TakeLast(2)", new Object[]{2, 3});
-            Validate(epService, "{1, 2, 3}.TakeWhile(v => v < 3)", new Object[]{1, 2});
-            Validate(epService, "{1, 2, 3}.TakeWhile((v,ind) => ind < 2)", new Object[]{1, 2});
-            Validate(epService, "{1, 2, -1, 4, 5, 6}.TakeWhile((v,ind) => ind < 5 and v > 0)", new Object[]{1, 2});
-            Validate(epService, "{1, 2, 3}.TakeWhileLast(v => v > 1)", new Object[]{2, 3});
-            Validate(epService, "{1, 2, 3}.TakeWhileLast((v,ind) => ind < 2)", new Object[]{2, 3});
-            Validate(epService, "{1, 2, -1, 4, 5, 6}.TakeWhileLast((v,ind) => ind < 5 and v > 0)", new Object[]{4, 5, 6});
-            Validate(epService, "{1, 2, 3}.Union({4, 5})", new Object[]{1, 2, 3, 4, 5});
-            Validate(epService, "{1, 2, 3}.Where(v => v != 2)", new Object[]{1, 3});
+            Validate(epService, "{1, 2, 3}.Take(2)", new object[]{1, 2});
+            Validate(epService, "{1, 2, 3}.TakeLast(2)", new object[]{2, 3});
+            Validate(epService, "{1, 2, 3}.TakeWhile(v => v < 3)", new object[]{1, 2});
+            Validate(epService, "{1, 2, 3}.TakeWhile((v,ind) => ind < 2)", new object[]{1, 2});
+            Validate(epService, "{1, 2, -1, 4, 5, 6}.TakeWhile((v,ind) => ind < 5 and v > 0)", new object[]{1, 2});
+            Validate(epService, "{1, 2, 3}.TakeWhileLast(v => v > 1)", new object[]{2, 3});
+            Validate(epService, "{1, 2, 3}.TakeWhileLast((v,ind) => ind < 2)", new object[]{2, 3});
+            Validate(epService, "{1, 2, -1, 4, 5, 6}.TakeWhileLast((v,ind) => ind < 5 and v > 0)", new object[]{4, 5, 6});
+            Validate(epService, "{1, 2, 3}.Union({4, 5})", new object[]{1, 2, 3, 4, 5});
+            Validate(epService, "{1, 2, 3}.Where(v => v != 2)", new object[]{1, 3});
         }
     
         private void Validate(EPServiceProvider epService, string select, Object expected) {
             string epl = "select " + select + " as result from SupportBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             Object result = listener.AssertOneGetNewAndReset().Get("result");
     
-            if (expected is Object[]) {
-                Object[] returned = ((Collection) result).ToArray();
-                EPAssertionUtil.AssertEqualsExactOrder((Object[]) expected, returned);
+            if (expected is object[]) {
+                object[] returned = result.UnwrapIntoArray<object>();
+                EPAssertionUtil.AssertEqualsExactOrder((object[]) expected, returned);
             } else {
                 Assert.AreEqual(expected, result);
             }
@@ -341,14 +340,6 @@ namespace com.espertech.esper.regression.expr.enummethod
             Assert.AreEqual(epl, stmt.Text);
     
             stmt.Dispose();
-        }
-    
-        private Zone[] ToArrayZones(ICollection<Zone> it) {
-            return It.ToArray(new Zone[it.Count]);
-        }
-    
-        private Item[] ToArrayItems(ICollection<Item> it) {
-            return It.ToArray(new Item[it.Count]);
         }
     }
 } // end of namespace

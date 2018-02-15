@@ -41,7 +41,7 @@ namespace com.espertech.esper.supportregression.dataflow
         {
             if (_lines.MoveNext())
             {
-                _dataFlowEmitter.Submit(new Object[] { _lines.Current });
+                _dataFlowEmitter.Submit(new object[] { _lines.Current });
             }
             else
             {

@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -24,7 +23,7 @@ namespace com.espertech.esper.regression.events.bean
 {
     public class ExecEventBeanPropertyResolutionCaseInsensitiveEngineDefault : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = Configuration.PropertyResolutionStyle.CASE_INSENSITIVE;
+            configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
             configuration.AddEventType("Bean", typeof(SupportBean));
         }
     
@@ -36,7 +35,7 @@ namespace com.espertech.esper.regression.events.bean
         internal static void TryCaseInsensitive(EPServiceProvider epService, string stmtText, string propOneName, string propTwoName) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 10));
             EventBean result = listener.AssertOneGetNewAndReset();

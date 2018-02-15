@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -34,7 +33,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "select sum(intPrimitive) as total from SupportBean group by theString");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select (select total from varagg where key = s0.p00) as value " +
-                    "from SupportBean_S0 as s0").AddListener(listener);
+                    "from SupportBean_S0 as s0").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G2", 200));
             AssertValues(epService, listener, "G1,G2", new int?[]{null, 200});
@@ -45,12 +44,12 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             // subquery against unkeyed
             epService.EPAdministrator.CreateEPL("create table InfraOne (string string, intPrimitive int)");
-            epService.EPAdministrator.CreateEPL("select (select intPrimitive from InfraOne where string = s0.p00) as c0 from SupportBean_S0 as s0").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select (select intPrimitive from InfraOne where string = s0.p00) as c0 from SupportBean_S0 as s0").Events += listener.Update;
             epService.EPAdministrator.CreateEPL("insert into InfraOne select theString as string, intPrimitive from SupportBean");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0".Split(','), new Object[]{10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0".Split(','), new object[]{10});
         }
     
         private static void AssertValues(EPServiceProvider engine, SupportUpdateListener listener, string keys, int?[] values) {
@@ -58,7 +57,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             for (int i = 0; i < keyarr.Length; i++) {
                 engine.EPRuntime.SendEvent(new SupportBean_S0(0, keyarr[i]));
                 EventBean @event = listener.AssertOneGetNewAndReset();
-                Assert.AreEqual("Failed for key '" + keyarr[i] + "'", values[i], @event.Get("value"));
+                Assert.AreEqual(values[i], @event.Get("value"), "Failed for key '" + keyarr[i] + "'");
             }
         }
     }

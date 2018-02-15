@@ -19,7 +19,6 @@ using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.dataflow;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -38,7 +37,7 @@ namespace com.espertech.esper.regression.dataflow
                     "DefaultSupportCaptureOp(WordCountStream) {}";
             epService.EPAdministrator.CreateEPL(epl);
     
-            var future = new DefaultSupportCaptureOp<Object>(1);
+            var future = new DefaultSupportCaptureOp<object>(1);
             var source = new MyLineFeedSource(Collections.List("Test this code", "Test line two").GetEnumerator());
     
             var options = new EPDataFlowInstantiationOptions()
@@ -46,10 +45,10 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.DataFlowRuntime.Instantiate("WordCount", options).Start();
     
-            Object[] received = future.Get(3, TimeUnit.SECONDS);
+            object[] received = future.GetValue(3, TimeUnit.SECONDS);
             Assert.AreEqual(1, received.Length);
             MyWordCountStats stats = (MyWordCountStats) received[0];
-            EPAssertionUtil.AssertProps(stats, "lines,words,chars".Split(','), new Object[]{2, 6, 23});
+            EPAssertionUtil.AssertProps(stats, "lines,words,chars".Split(','), new object[]{2, 6, 23});
         }
     }
 } // end of namespace

@@ -8,7 +8,8 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Collections.ObjectModel;
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -17,8 +18,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -66,14 +65,14 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "from SupportBean_ST0 st0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             for (int i = 0; i < 5000; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean_ST0("ID", "K50", 1050));
                 EventBean theEvent = listener.AssertOneGetNewAndReset();
                 for (int j = 0; j < 10; j++) {
-                    Collection coll = (Collection) theEvent.Get("val" + j);
+                    var coll = theEvent.Get("val" + j).Unwrap<object>();
                     Assert.AreEqual(1, coll.Count);
                     SupportBean bean = (SupportBean) coll.First();
                     Assert.AreEqual("K50", bean.TheString);
@@ -81,7 +80,7 @@ namespace com.espertech.esper.regression.expr.enummethod
                 }
             }
             long delta = DateTimeHelper.CurrentTimeMillis - start;
-            Assert.IsTrue("Delta = " + delta, delta < 1000);
+            Assert.IsTrue(delta < 1000, "Delta = " + delta);
     
             stmt.Dispose();
         }
@@ -106,14 +105,14 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "from SupportBean_ST0 st0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             for (int i = 0; i < 5000; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean_ST0("ID", "K50", 1050));
                 EventBean theEvent = listener.AssertOneGetNewAndReset();
                 for (int j = 0; j < 10; j++) {
-                    Collection coll = (Collection) theEvent.Get("val" + j);
+                    var coll = theEvent.Get("val" + j).Unwrap<object>();
                     Assert.AreEqual(1, coll.Count);
                     SupportBean bean = (SupportBean) coll.First();
                     Assert.AreEqual("K50", bean.TheString);
@@ -121,7 +120,7 @@ namespace com.espertech.esper.regression.expr.enummethod
                 }
             }
             long delta = DateTimeHelper.CurrentTimeMillis - start;
-            Assert.IsTrue("Delta = " + delta, delta < 1000);
+            Assert.IsTrue(delta < 1000, "Delta = " + delta);
     
             // This will create a single dispatch
             // epService.EPRuntime.SendEvent(new SupportBean("E1", 1));

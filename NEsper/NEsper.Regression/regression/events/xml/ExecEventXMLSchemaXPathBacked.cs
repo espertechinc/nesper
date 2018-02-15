@@ -74,7 +74,7 @@ namespace com.espertech.esper.regression.events.xml
                             " from TestXMLSchemaType#length(100)";
     
             EPStatement selectStmt = epService.EPAdministrator.CreateEPL(stmt);
-            selectStmt.AddListener(updateListener);
+            selectStmt.Events += updateListener.Update;
             type = selectStmt.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(type);
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{

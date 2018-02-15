@@ -11,8 +11,6 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using NUnit.Framework;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 namespace com.espertech.esper.regression.expr.expr
 {
@@ -24,7 +22,7 @@ namespace com.espertech.esper.regression.expr.expr
                       " from " + typeof(SupportBean).FullName + "#length(3) where Not(longBoxed > intBoxed)";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendEvent(epService, 1, 1, 0);
             Assert.AreEqual(0L, listener.LastNewData[0].Get("myMod"));

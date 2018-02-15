@@ -66,7 +66,7 @@ namespace com.espertech.esper.supportregression.bean
 
         public string P13 { get; set; }
 
-        public static Object[] MakeS1(String propOne,
+        public static object[] MakeS1(String propOne,
                                       String[] propTwo)
         {
             _idCounter++;

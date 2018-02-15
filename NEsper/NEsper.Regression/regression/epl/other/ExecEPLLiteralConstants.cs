@@ -32,13 +32,13 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statement);
             var updateListener = new SupportUpdateListener();
-            stmt.AddListener(updateListener);
+            stmt.Events += updateListener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("e1", 100));
     
             EPAssertionUtil.AssertProps(updateListener.AssertOneGetNewAndReset(),
                     "mybyte,myunicode,zero8,zero9,zeroZero8".Split(','),
-                    new Object[]{(byte) 35, "A", 8, 9, 8});
+                    new object[]{(byte) 35, "A", 8, 9, 8});
         }
     }
 } // end of namespace

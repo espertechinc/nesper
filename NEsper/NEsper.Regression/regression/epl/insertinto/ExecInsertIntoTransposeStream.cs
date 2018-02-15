@@ -26,8 +26,6 @@ using com.espertech.esper.util;
 using NEsper.Avro.Extensions;
 
 // using static org.apache.avro.SchemaBuilder.record;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.fail;
 
 using NUnit.Framework;
 
@@ -76,20 +74,20 @@ namespace com.espertech.esper.regression.epl.insertinto
             }
             string epl = "insert into MySchema select Transpose(" + generateFunction + "(theString, intPrimitive)) from SupportBean";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl, "first").AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl, "first").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", 2});
     
             // MySchema already Exists, start second statement
-            epService.EPAdministrator.CreateEPL(epl, "second").AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl, "second").Events += listener.Update;
             epService.EPAdministrator.GetStatement("first").Dispose();
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3", 3});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3", 3});
     
             epService.EPAdministrator.Configuration.RemoveEventType("MySchema", true);
             epService.EPAdministrator.DestroyAllStatements();
@@ -102,14 +100,14 @@ namespace com.espertech.esper.regression.epl.insertinto
             string stmtTextTwo = "select * from MyStream";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             EventType type = stmt.EventType;
             Assert.AreEqual(typeof(Pair<object, object>), type.UnderlyingType);
     
             epService.EPRuntime.SendEvent(new SupportBean("I1", 1));
             EventBean result = listener.AssertOneGetNewAndReset();
             var underlying = (Pair<object, object>) result.Underlying;
-            EPAssertionUtil.AssertProps(result, "dummy,theString,intPrimitive".Split(','), new Object[]{1, "OI1", 10});
+            EPAssertionUtil.AssertProps(result, "dummy,theString,intPrimitive".Split(','), new object[]{1, "OI1", 10});
             Assert.AreEqual("OI1", ((SupportBean) underlying.First).TheString);
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -122,20 +120,20 @@ namespace com.espertech.esper.regression.epl.insertinto
             string stmtTextTwo = "select * from OtherStream(theString like 'O%')";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             EventType type = stmt.EventType;
             Assert.AreEqual(typeof(SupportBean), type.UnderlyingType);
     
             epService.EPRuntime.SendEvent(new SupportBean("I1", 1));
             EventBean result = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(result, "theString,intPrimitive".Split(','), new Object[]{"OI1", 10});
+            EPAssertionUtil.AssertProps(result, "theString,intPrimitive".Split(','), new object[]{"OI1", 10});
             Assert.AreEqual("OI1", ((SupportBean) result.Underlying).TheString);
     
             // try second statement as "OtherStream" now already Exists
             epService.EPAdministrator.CreateEPL(stmtTextOne, "second");
             epService.EPAdministrator.GetStatement("first").Dispose();
             epService.EPRuntime.SendEvent(new SupportBean("I2", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString,intPrimitive".Split(','), new Object[]{"OI2", 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString,intPrimitive".Split(','), new object[]{"OI2", 10});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -150,11 +148,11 @@ namespace com.espertech.esper.regression.epl.insertinto
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
             Assert.AreEqual(typeof(SupportBean), stmtOne.EventType.UnderlyingType);
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("I1", 1));
             EventBean resultOne = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(resultOne, "theString,intPrimitive".Split(','), new Object[]{"OI1", 10});
+            EPAssertionUtil.AssertProps(resultOne, "theString,intPrimitive".Split(','), new object[]{"OI1", 10});
             Assert.AreEqual("OI1", ((SupportBean) resultOne.Underlying).TheString);
             stmtOne.Dispose();
     
@@ -162,11 +160,11 @@ namespace com.espertech.esper.regression.epl.insertinto
             string stmtTextTwo = "insert into SupportBeanNumeric select Transpose(CustomTwo(intPrimitive, intPrimitive+1)) as col1 from SupportBean(theString like 'I%')";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             Assert.AreEqual(typeof(SupportBeanNumeric), stmtTwo.EventType.UnderlyingType);
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("I2", 10));
             EventBean resultTwo = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(resultTwo, "intOne,intTwo".Split(','), new Object[]{10, 11});
+            EPAssertionUtil.AssertProps(resultTwo, "intOne,intTwo".Split(','), new object[]{10, 11});
             Assert.AreEqual(11, (int) ((SupportBeanNumeric) resultTwo.Underlying).IntTwo);
             stmtTwo.Dispose();
     
@@ -227,7 +225,7 @@ namespace com.espertech.esper.regression.epl.insertinto
         }
     
         private void RunAssertionTransposeEventJoinMap(EPServiceProvider epService) {
-            IDictionary<string, Object> metadata = MakeMap(new Object[][]{new object[] {"id", typeof(string)}});
+            IDictionary<string, Object> metadata = MakeMap(new object[][]{new object[] {"id", typeof(string)}});
             epService.EPAdministrator.Configuration.AddEventType("AEventTE", metadata);
             epService.EPAdministrator.Configuration.AddEventType("BEventTE", metadata);
     
@@ -237,14 +235,14 @@ namespace com.espertech.esper.regression.epl.insertinto
             string stmtTextTwo = "select a.id, b.id from MyStreamTE";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            IDictionary<string, Object> eventOne = MakeMap(new Object[][]{new object[] {"id", "A1"}});
-            IDictionary<string, Object> eventTwo = MakeMap(new Object[][]{new object[] {"id", "B1"}});
+            IDictionary<string, Object> eventOne = MakeMap(new object[][]{new object[] {"id", "A1"}});
+            IDictionary<string, Object> eventTwo = MakeMap(new object[][]{new object[] {"id", "B1"}});
             epService.EPRuntime.SendEvent(eventOne, "AEventTE");
             epService.EPRuntime.SendEvent(eventTwo, "BEventTE");
     
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.id,b.id".Split(','), new Object[]{"A1", "B1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.id,b.id".Split(','), new object[]{"A1", "B1"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -259,11 +257,11 @@ namespace com.espertech.esper.regression.epl.insertinto
             string stmtTextTwo = "select a.id, b.id from MyStream2Bean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             epService.EPRuntime.SendEvent(new SupportBean_B("B1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.id,b.id".Split(','), new Object[]{"A1", "B1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.id,b.id".Split(','), new object[]{"A1", "B1"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -277,17 +275,17 @@ namespace com.espertech.esper.regression.epl.insertinto
             string stmtTextTwo = "select inneritem.nestedValue as result from MyStreamComplex";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "result".Split(','), new Object[]{"nestedValue"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "result".Split(','), new object[]{"nestedValue"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
         private void RunAssertionInvalidTranspose(EPServiceProvider epService) {
-            IDictionary<string, Object> metadata = MakeMap(new Object[][]{
-                new object[] {"nested", MakeMap(new Object[][]{new object[] {"nestedValue", typeof(string)}})}
+            IDictionary<string, Object> metadata = MakeMap(new object[][]{
+                new object[] {"nested", MakeMap(new object[][]{new object[] {"nestedValue", typeof(string)}})}
             });
             epService.EPAdministrator.Configuration.AddEventType("ComplexMap", metadata);
     
@@ -323,8 +321,8 @@ namespace com.espertech.esper.regression.epl.insertinto
             return @out;
         }
     
-        public static Object[] LocalGenerateOA(string @string, int intPrimitive) {
-            return new Object[]{@string, intPrimitive};
+        public static object[] LocalGenerateOA(string @string, int intPrimitive) {
+            return new object[]{@string, intPrimitive};
         }
     
         public static GenericRecord LocalGenerateAvro(string @string, int intPrimitive) {
@@ -337,9 +335,9 @@ namespace com.espertech.esper.regression.epl.insertinto
             return record;
         }
     
-        private IDictionary<string, Object> MakeMap(Object[][] entries) {
+        private IDictionary<string, Object> MakeMap(object[][] entries) {
             var result = new Dictionary<string, Object>();
-            foreach (Object[] entry in entries) {
+            foreach (object[] entry in entries) {
                 result.Put((string) entry[0], entry[1]);
             }
             return result;

@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
+using System.Net.Mime;
+using System.Text;
 using com.espertech.esper.client;
 using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
@@ -17,8 +19,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNotNull;
 
 using NUnit.Framework;
 
@@ -26,7 +26,7 @@ namespace com.espertech.esper.regression.events.render
 {
     public class ExecEventRender : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.ViewResources.IterableUnbound = true;
+            configuration.EngineDefaults.ViewResources.IsIterableUnbound = true;
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.events.render
             epService.EPAdministrator.Configuration.AddEventType(typeof(MyRendererEvent));
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from MyRendererEvent");
-            epService.EPRuntime.SendEvent(new MyRendererEvent("id1", new Object[][]{new object[] {1, "x"}, new object[] {2, "y"}}));
+            epService.EPRuntime.SendEvent(new MyRendererEvent("id1", new object[][]{new object[] {1, "x"}, new object[] {2, "y"}}));
     
             MyRenderer.Contexts.Clear();
             var jsonOptions = new JSONRenderingOptions();
@@ -69,10 +69,10 @@ namespace com.espertech.esper.regression.events.render
     
         private void RunAssertionObjectArray(EPServiceProvider epService) {
             string[] props = {"p0", "p1", "p2", "p3", "p4"};
-            Object[] types = {typeof(string), typeof(int), typeof(SupportBean_S0), typeof(long), typeof(double?)};
+            object[] types = {typeof(string), typeof(int), typeof(SupportBean_S0), typeof(long), typeof(double?)};
             epService.EPAdministrator.Configuration.AddEventType("MyObjectArrayType", props, types);
     
-            Object[] values = {"abc", 1, new SupportBean_S0(1, "p00"), 2L, 3d};
+            object[] values = {"abc", 1, new SupportBean_S0(1, "p00"), 2L, 3d};
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from MyObjectArrayType");
             epService.EPRuntime.SendEvent(values, "MyObjectArrayType");
     
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regression.events.render
             Assert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
     
             var opt = new XMLRenderingOptions();
-            opt.DefaultAsAttribute = true;
+            opt.IsDefaultAsAttribute = true;
             string xmlTwo = epService.EPRuntime.EventRenderer.RenderXML("MyEvent", stmt.First(), opt);
             string expectedTwo = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                     "<MyEvent>\n" +
@@ -138,28 +138,28 @@ namespace com.espertech.esper.regression.events.render
         }
     
         private string RemoveNewline(string text) {
-            return Text.ReplaceAll("\\s\\s+|\\n|\\r", " ").Trim();
+            return text.RegexReplaceAll("\\s\\s+|\\n|\\r", " ").Trim();
         }
     
         public class MyRendererEvent {
             private readonly string id;
-            private readonly Object[][] someProperties;
+            private readonly object[][] someProperties;
     
-            public MyRendererEvent(string id, Object[][] someProperties) {
+            public MyRendererEvent(string id, object[][] someProperties) {
                 this.id = id;
                 this.someProperties = someProperties;
             }
-    
-            public string GetId() {
-                return id;
+
+            public string Id {
+                get { return id; }
             }
-    
-            public Object[][] GetSomeProperties() {
-                return someProperties;
+
+            public object[][] SomeProperties {
+                get { return someProperties; }
             }
-    
-            public IDictionary<string, Object> GetMappedProperty() {
-                return Collections.SingletonDataMap("key", "value");
+
+            public IDictionary<string, object> MappedProperty {
+                get { return Collections.SingletonDataMap("key", "value"); }
             }
         }
     
@@ -169,7 +169,7 @@ namespace com.espertech.esper.regression.events.render
     
             public void Render(EventPropertyRendererContext context) {
                 if (context.PropertyName.Equals("someProperties")) {
-                    Object[] value = (Object[]) context.PropertyValue;
+                    object[] value = (object[]) context.PropertyValue;
     
                     StringBuilder builder = context.StringBuilder;
                     if (context.IsJsonFormatted) {
@@ -193,13 +193,10 @@ namespace com.espertech.esper.regression.events.render
     
                 contexts.Add(context.Copy());
             }
-    
-            public static List<EventPropertyRendererContext> GetContexts() {
-                return contexts;
-            }
-    
-            public static void SetContexts(List<EventPropertyRendererContext> contexts) {
-                MyRenderer.contexts = contexts;
+
+            public static List<EventPropertyRendererContext> Contexts {
+                get { return contexts; }
+                set { contexts = value; }
             }
         }
     }

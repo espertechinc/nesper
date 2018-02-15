@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.events.xml
             string text = "select a.url as sesja from pattern [ every a=PageVisitEvent(url='page1') ]";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var updateListener = new SupportUpdateListener();
-            stmt.AddListener(updateListener);
+            stmt.Events += updateListener.Update;
     
             SupportXML.SendEvent(epService.EPRuntime,
                     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +

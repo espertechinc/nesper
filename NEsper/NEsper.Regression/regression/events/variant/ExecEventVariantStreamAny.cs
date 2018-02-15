@@ -18,7 +18,6 @@ using com.espertech.esper.events;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -27,7 +26,7 @@ namespace com.espertech.esper.regression.events.variant
     public class ExecEventVariantStreamAny : RegressionExecution {
         public override void Configure(Configuration configuration) {
             var variant = new ConfigurationVariantStream();
-            variant.TypeVariance = ConfigurationVariantStream.TypeVariance.ANY;
+            variant.TypeVariance = TypeVarianceEnum.ANY;
             configuration.AddVariantStream("MyVariantStream", variant);
             Assert.IsTrue(configuration.IsVariantStreamExists("MyVariantStream"));
         }
@@ -57,7 +56,7 @@ namespace com.espertech.esper.regression.events.variant
             Assert.AreSame(type, valueAddTypes[0]);
     
             Assert.AreEqual(0, type.PropertyNames.Length);
-            Assert.AreEqual(0, type.PropertyDescriptors.Length);
+            Assert.AreEqual(0, type.PropertyDescriptors.Count);
         }
     
         private void RunAssertionAnyType(EPServiceProvider epService) {
@@ -69,7 +68,7 @@ namespace com.espertech.esper.regression.events.variant
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from MyVariantStream");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(0, stmt.EventType.PropertyNames.Length);
     
             var eventOne = new SupportBean("E0", -1);
@@ -82,30 +81,30 @@ namespace com.espertech.esper.regression.events.variant
     
             stmt.Dispose();
             stmt = epService.EPAdministrator.CreateEPL("select theString,id,intPrimitive from MyVariantStream");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(Object), stmt.EventType.GetPropertyType("theString"));
             Assert.AreEqual(typeof(Object), stmt.EventType.GetPropertyType("id"));
             Assert.AreEqual(typeof(Object), stmt.EventType.GetPropertyType("intPrimitive"));
     
             string[] fields = "theString,id,intPrimitive".Split(',');
             epService.EPRuntime.SendEvent(new SupportBeanVariantStream("E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 10));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", null, 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", null, 10});
     
             epService.EPRuntime.SendEvent(new SupportBean_A("E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, "E3", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, "E3", null});
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("s1", 100, 1000L, "f1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"s1", "f1", 1000L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"s1", "f1", 1000L});
             epService.EPAdministrator.DestroyAllStatements();
     
             // Test inserting a wrapper of underlying plus properties
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.CreateEPL("create variant schema TheVariantStream as *");
             epService.EPAdministrator.CreateEPL("insert into TheVariantStream select 'test' as eventConfigId, * from SupportBean");
-            epService.EPAdministrator.CreateEPL("select * from TheVariantStream").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from TheVariantStream").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             EventBean @event = listener.AssertOneGetNewAndReset();
@@ -118,7 +117,7 @@ namespace com.espertech.esper.regression.events.variant
         private void RunAssertionAnyTypeStaggered(EPServiceProvider epService) {
             // test insert into staggered with map
             var configVariantStream = new ConfigurationVariantStream();
-            configVariantStream.TypeVariance = ConfigurationVariantStream.TypeVariance.ANY;
+            configVariantStream.TypeVariance = TypeVarianceEnum.ANY;
             epService.EPAdministrator.Configuration.AddVariantStream("VarStream", configVariantStream);
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.Configuration.AddEventType("SupportMarketDataBean", typeof(SupportMarketDataBean));
@@ -130,7 +129,7 @@ namespace com.espertech.esper.regression.events.variant
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
     
             EventBean[] arr = EPAssertionUtil.EnumeratorToArray(epService.EPAdministrator.GetStatement("Target").GetEnumerator());
-            EPAssertionUtil.AssertPropsPerRow(arr, new string[]{"abc"}, new Object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertPropsPerRow(arr, new string[]{"abc"}, new object[][]{new object[] {"E1"}});
     
             epService.EPAdministrator.CreateEPL("insert into MyStream2 select feed from SupportMarketDataBean");
             epService.EPAdministrator.CreateEPL("insert into VarStream select feed as abc from MyStream2");
@@ -138,7 +137,7 @@ namespace com.espertech.esper.regression.events.variant
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("IBM", 1, 1L, "E2"));
     
             arr = EPAssertionUtil.EnumeratorToArray(epService.EPAdministrator.GetStatement("Target").GetEnumerator());
-            EPAssertionUtil.AssertPropsPerRow(arr, new string[]{"abc"}, new Object[][]{new object[] {"E1"}, new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRow(arr, new string[]{"abc"}, new object[][]{new object[] {"E1"}, new object[] {"E2"}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }

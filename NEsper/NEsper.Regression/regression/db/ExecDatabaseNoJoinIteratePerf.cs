@@ -46,11 +46,11 @@ namespace com.espertech.esper.regression.db
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             SendSupportBeanEvent(epService, true, 20, 60);
     
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             for (int i = 0; i < 10000; i++) {
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {4L, true}});
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {4L, true}});
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             long delta = end - start;
             Assert.IsTrue(delta < 1000, "delta=" + delta);
     

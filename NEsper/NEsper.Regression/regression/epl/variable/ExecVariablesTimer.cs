@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -15,8 +15,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -24,7 +22,7 @@ namespace com.espertech.esper.regression.epl.variable
 {
     public class ExecVariablesTimer : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.Threading.InternalTimerEnabled = true;
+            configuration.EngineDefaults.Threading.IsInternalTimerEnabled = true;
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -36,13 +34,13 @@ namespace com.espertech.esper.regression.epl.variable
             string stmtTextSet = "on pattern [every timer:Interval(100 milliseconds)] set var1 = current_timestamp, var2 = var1 + 1, var3 = var1 + var2";
             EPStatement stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
-            stmtSet.AddListener(listenerSet);
+            stmtSet.Events += listenerSet.Update;
     
             Thread.Sleep(1000);
             stmtSet.Dispose();
     
             EventBean[] received = listenerSet.GetNewDataListFlattened();
-            Assert.IsTrue("received : " + received.Length, received.Length >= 5);
+            Assert.IsTrue(received.Length >= 5, "received : " + received.Length);
     
             for (int i = 0; i < received.Length; i++) {
                 long var1 = (long) received[i].Get("var1");

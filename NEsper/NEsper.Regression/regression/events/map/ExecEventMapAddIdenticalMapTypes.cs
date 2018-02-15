@@ -15,7 +15,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.fail;
 
 using NUnit.Framework;
 
@@ -23,10 +22,10 @@ namespace com.espertech.esper.regression.events.map
 {
     public class ExecEventMapAddIdenticalMapTypes : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
-            IDictionary<string, Object> levelOne1 = ExecEventMap.MakeMap(new Object[][]{new object[] {"simpleOne", typeof(int?)}});
-            IDictionary<string, Object> levelOne2 = ExecEventMap.MakeMap(new Object[][]{new object[] {"simpleOne", typeof(long)}});
-            IDictionary<string, Object> levelZero1 = ExecEventMap.MakeMap(new Object[][]{new object[] {"map", levelOne1}});
-            IDictionary<string, Object> levelZero2 = ExecEventMap.MakeMap(new Object[][]{new object[] {"map", levelOne2}});
+            IDictionary<string, Object> levelOne1 = ExecEventMap.MakeMap(new object[][]{new object[] {"simpleOne", typeof(int?)}});
+            IDictionary<string, Object> levelOne2 = ExecEventMap.MakeMap(new object[][]{new object[] {"simpleOne", typeof(long)}});
+            IDictionary<string, Object> levelZero1 = ExecEventMap.MakeMap(new object[][]{new object[] {"map", levelOne1}});
+            IDictionary<string, Object> levelZero2 = ExecEventMap.MakeMap(new object[][]{new object[] {"map", levelOne2}});
     
             // can add the same nested type twice
             epService.EPAdministrator.Configuration.AddEventType("ABC", levelZero1);

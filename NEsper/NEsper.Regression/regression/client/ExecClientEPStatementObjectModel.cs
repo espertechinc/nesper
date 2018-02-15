@@ -18,8 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNotNull;
 
 using NUnit.Framework;
 
@@ -46,7 +44,7 @@ namespace com.espertech.esper.regression.client
     
             var stmt = epService.EPAdministrator.Create(model, "s1");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var theEvent = new SupportBean();
             epService.EPRuntime.SendEvent(theEvent);
@@ -90,7 +88,7 @@ namespace com.espertech.esper.regression.client
     
             var stmt = epService.EPAdministrator.Create(model, "s1");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var theEvent = new SupportBean();
             epService.EPRuntime.SendEvent(theEvent);

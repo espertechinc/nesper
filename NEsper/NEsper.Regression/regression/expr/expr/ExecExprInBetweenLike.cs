@@ -44,11 +44,11 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var s1 = new SupportBean_S1(100);
             var arrayBean = new SupportBeanArrayCollMap(s1);
-            arrayBean.ObjectArr = new Object[]{null, "a", false, s1};
+            arrayBean.ObjectArr = new object[]{null, "a", false, s1};
             epService.EPRuntime.SendEvent(arrayBean);
             Assert.AreEqual(true, listener.AssertOneGetNewAndReset().Get("value"));
     
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regression.expr.expr
             prepared.SetObject(1, new int[]{10, 20, 30});
             EPStatement stmt = epService.EPAdministrator.Create(prepared);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             Assert.IsTrue((bool?) listener.AssertOneGetNewAndReset().Get("result"));
@@ -81,13 +81,13 @@ namespace com.espertech.esper.regression.expr.expr
             string stmtText = "select 10 in (arrayProperty) as result from " + typeof(SupportBeanComplexProps).FullName;
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("result"));
     
             stmtText = "select 5 in (arrayProperty) as result from " + typeof(SupportBeanComplexProps).FullName;
             EPStatement selectTestCaseTwo = epService.EPAdministrator.CreateEPL(stmtText);
             var listenerTwo = new SupportUpdateListener();
-            selectTestCaseTwo.AddListener(listenerTwo);
+            selectTestCaseTwo.Events += listenerTwo.Update;
     
             epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
             Assert.AreEqual(true, listener.AssertOneGetNewAndReset().Get("result"));
@@ -99,98 +99,98 @@ namespace com.espertech.esper.regression.expr.expr
             // Arrays
             stmtText = "select 1 in (intArr, longArr) as resOne, 1 not in (intArr, longArr) as resTwo from " + typeof(SupportBeanArrayCollMap).FullName;
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "resOne, resTwo".Split(',');
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(new int[]{10, 20, 30}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true});
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(new int[]{10, 1, 30}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, false});
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(new int[]{30}, new long?[]{20L, 1L}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, false});
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(new int[]{}, new long?[]{null, 1L}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, false});
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(null, new long?[]{1L, 100L}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, false});
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(null, new long?[]{0L, 100L}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true});
             stmt.Dispose();
     
             // Collection
             stmtText = "select 1 in (intCol, longCol) as resOne, 1 not in (longCol, intCol) as resTwo from " + typeof(SupportBeanArrayCollMap).FullName;
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(true, new int[]{10, 20, 30}, null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true});
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(true, new int[]{10, 20, 1}, null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, false});
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(true, new int[]{30}, new long?[]{20L, 1L}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true});
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(true, new int[]{}, new long?[]{null, 1L}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true});
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(true, null, new long?[]{1L, 100L}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true});
             stmt.Dispose();
     
             // Maps
             stmtText = "select 1 in (longMap, intMap) as resOne, 1 not in (longMap, intMap) as resTwo from " + typeof(SupportBeanArrayCollMap).FullName;
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(false, new int[]{10, 20, 30}, null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true});
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(false, new int[]{10, 20, 1}, null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, false});
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(false, new int[]{30}, new long?[]{20L, 1L}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true});
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(false, new int[]{}, new long?[]{null, 1L}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true});
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(false, null, new long?[]{1L, 100L}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true});
             stmt.Dispose();
     
             // Mixed
             stmtText = "select 1 in (longBoxed, intArr, longMap, intCol) as resOne, 1 not in (longBoxed, intArr, longMap, intCol) as resTwo from " + typeof(SupportBeanArrayCollMap).FullName;
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(1L, new int[0], new long?[0], new int[0]));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, false});
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(2L, null, new long?[0], new int[0]));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true});
     
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(null, null, null, new int[]{3, 4, 5, 6, 7, 7, 7, 8, 8, 8, 1}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, false});
     
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(-1L, null, new long?[]{1L}, new int[]{3, 4, 5, 6, 7, 7, 7, 8, 8}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true});
             epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(-1L, new int[]{1}, null, new int[]{}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, false});
             stmt.Dispose();
     
             // Object array
             stmtText = "select 1 in (objectArr) as resOne, 2 in (objectArr) as resTwo from " + typeof(SupportBeanArrayCollMap).FullName;
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(new Object[]{}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, false});
-            epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(new Object[]{1, 2}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, true});
-            epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(new Object[]{1d, 2L}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, false});
-            epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(new Object[]{null, 2}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, true});
+            epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(new object[]{}));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, false});
+            epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(new object[]{1, 2}));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, true});
+            epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(new object[]{1d, 2L}));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, false});
+            epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(new object[]{null, 2}));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, true});
             stmt.Dispose();
     
             // Object array
             stmtText = "select 1 in ({1,2,3}) as resOne, 2 in ({0, 1}) as resTwo from " + typeof(SupportBeanArrayCollMap).FullName;
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(new Object[]{}));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, false});
+            epService.EPRuntime.SendEvent(new SupportBeanArrayCollMap(new object[]{}));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, false});
     
             stmt.Dispose();
         }
@@ -337,7 +337,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement selectTestCase = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            selectTestCase.AddListener(listener);
+            selectTestCase.Events += listener.Update;
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
     
             SendAndAssert(epService, listener, 1, 2, 3, 4L, false);
@@ -356,7 +356,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement selectTestCase = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            selectTestCase.AddListener(listener);
+            selectTestCase.Events += listener.Update;
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
     
             SendAndAssert(epService, listener, 1, 2f, 3d, 4L, false);
@@ -375,7 +375,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement selectTestCase = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            selectTestCase.AddListener(listener);
+            selectTestCase.Events += listener.Update;
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
     
             SendAndAssert(epService, listener, 1, 2, 3L, false);
@@ -400,50 +400,50 @@ namespace com.espertech.esper.regression.expr.expr
                             "intPrimitive not in (2:4) as nro, intPrimitive not in [2:4] as nrc, intPrimitive not in [2:4) as nrho, intPrimitive not in (2:4] as nrhc " +
                             "from SupportBean#lastevent");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, false, false, false, true, true, true, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, false, false, false, true, true, true, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, true, true, false, true, false, false, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true, true, false, true, false, false, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, true, true, true, false, false, false, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, true, true, true, false, false, false, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 4));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, true, false, true, true, false, true, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true, false, true, true, false, true, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 5));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false, false, false, false, true, true, true, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, false, false, false, true, true, true, true});
     
             // test range reversed
             stmt.Dispose();
             stmt = epService.EPAdministrator.CreateEPL(
                     "select intPrimitive between 4 and 2 as r1, intPrimitive in [4:2] as r2 from SupportBean#lastevent");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             fields = "r1,r2".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean("E1", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true, true});
     
             // test string type
             stmt.Dispose();
             fields = "ro".Split(',');
             stmt = epService.EPAdministrator.CreateEPL("select theString in ('a':'d') as ro from SupportBean#lastevent");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("a", 5));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false});
     
             epService.EPRuntime.SendEvent(new SupportBean("b", 5));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true});
     
             epService.EPRuntime.SendEvent(new SupportBean("c", 5));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true});
     
             epService.EPRuntime.SendEvent(new SupportBean("d", 5));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false});
     
             stmt.Dispose();
         }
@@ -453,7 +453,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement selectTestCase = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            selectTestCase.AddListener(listener);
+            selectTestCase.Events += listener.Update;
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
     
             SendAndAssert(epService, listener, 1, 2f, 3d, false);
@@ -562,7 +562,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement selectTestCase = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            selectTestCase.AddListener(listener);
+            selectTestCase.Events += listener.Update;
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
     
             for (int i = 0; i < input.Length; i++) {
@@ -578,7 +578,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement selectTestCase = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            selectTestCase.AddListener(listener);
+            selectTestCase.Events += listener.Update;
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
     
             for (int i = 0; i < input.Length; i++) {
@@ -594,7 +594,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement selectTestCase = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            selectTestCase.AddListener(listener);
+            selectTestCase.Events += listener.Update;
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
     
             for (int i = 0; i < input.Length; i++) {
@@ -614,7 +614,7 @@ namespace com.espertech.esper.regression.expr.expr
             Assert.AreEqual(epl, compiled.ToEPL());
     
             var listener = new SupportUpdateListener();
-            selectTestCase.AddListener(listener);
+            selectTestCase.Events += listener.Update;
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
     
             for (int i = 0; i < input.Length; i++) {

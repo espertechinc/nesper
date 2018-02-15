@@ -17,7 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.*;
 
 using NUnit.Framework;
 
@@ -32,7 +31,7 @@ namespace com.espertech.esper.regression.epl.other
             string stmtText = "select * from " + typeof(SupportBean).FullName + "#length(3)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var testListener = new SupportUpdateListener();
-            statement.AddListener(testListener);
+            statement.Events += testListener.Update;
     
             Object theEvent = SendEvent(epService, "a");
             SendEvent(epService, "b");

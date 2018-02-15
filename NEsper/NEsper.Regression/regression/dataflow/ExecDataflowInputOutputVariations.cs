@@ -20,7 +20,6 @@ using com.espertech.esper.dataflow.interfaces;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -61,7 +60,7 @@ namespace com.espertech.esper.regression.dataflow
                     "SupportOpCountFutureOneA(out_17) {}\n";
             epService.EPAdministrator.CreateEPL(epl);
     
-            var futureOneA = new DefaultSupportCaptureOp<Object>(1);
+            var futureOneA = new DefaultSupportCaptureOp<object>(1);
             var operators = new Dictionary<string, Object>();
             operators.Put("SupportOpCountFutureOneA", futureOneA);
     
@@ -70,8 +69,8 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.DataFlowRuntime.Instantiate("MyGraph", options).Start();
     
-            Object[] result = futureOneA.Get(3, TimeUnit.SECONDS);
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[][]{new object[] {"A1"}}, result);
+            object[] result = futureOneA.GetValue(3, TimeUnit.SECONDS);
+            EPAssertionUtil.AssertEqualsAnyOrder(new object[][]{new object[] {"A1"}}, result);
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -97,10 +96,10 @@ namespace com.espertech.esper.regression.dataflow
                     "SupportOpCountFutureTwoB(OutTwo) {}\n";
             epService.EPAdministrator.CreateEPL(epl);
     
-            var futureOneA = new DefaultSupportCaptureOp<Object>(2);
-            var futureOneB = new DefaultSupportCaptureOp<Object>(2);
-            var futureTwoA = new DefaultSupportCaptureOp<Object>(2);
-            var futureTwoB = new DefaultSupportCaptureOp<Object>(2);
+            var futureOneA = new DefaultSupportCaptureOp<object>(2);
+            var futureOneB = new DefaultSupportCaptureOp<object>(2);
+            var futureTwoA = new DefaultSupportCaptureOp<object>(2);
+            var futureTwoB = new DefaultSupportCaptureOp<object>(2);
     
             var operators = new Dictionary<string, Object>();
             operators.Put("SupportOpCountFutureOneA", futureOneA);
@@ -113,10 +112,10 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.DataFlowRuntime.Instantiate("MultiInMultiOutGraph", options).Start();
     
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[][]{new object[] {"S1-10"}, new object[] {"S1-20"}}, futureOneA.Get(3, TimeUnit.SECONDS));
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[][]{new object[] {"S1-10"}, new object[] {"S1-20"}}, futureOneB.Get(3, TimeUnit.SECONDS));
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[][]{new object[] {"S0-A1"}, new object[] {"S0-A2"}}, futureTwoA.Get(3, TimeUnit.SECONDS));
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[][]{new object[] {"S0-A1"}, new object[] {"S0-A2"}}, futureTwoB.Get(3, TimeUnit.SECONDS));
+            EPAssertionUtil.AssertEqualsAnyOrder(new object[][]{new object[] {"S1-10"}, new object[] {"S1-20"}}, futureOneA.GetValue(3, TimeUnit.SECONDS));
+            EPAssertionUtil.AssertEqualsAnyOrder(new object[][]{new object[] {"S1-10"}, new object[] {"S1-20"}}, futureOneB.GetValue(3, TimeUnit.SECONDS));
+            EPAssertionUtil.AssertEqualsAnyOrder(new object[][]{new object[] {"S0-A1"}, new object[] {"S0-A2"}}, futureTwoA.GetValue(3, TimeUnit.SECONDS));
+            EPAssertionUtil.AssertEqualsAnyOrder(new object[][]{new object[] {"S0-A1"}, new object[] {"S0-A2"}}, futureTwoB.GetValue(3, TimeUnit.SECONDS));
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -137,15 +136,15 @@ namespace com.espertech.esper.regression.dataflow
                     "DefaultSupportCaptureOp(FinalResult) {}\n";
             epService.EPAdministrator.CreateEPL(epl);
     
-            var future = new DefaultSupportCaptureOp<Object>(1);
+            var future = new DefaultSupportCaptureOp<object>(1);
             var options = new EPDataFlowInstantiationOptions()
                     .OperatorProvider(new DefaultSupportGraphOpProvider(future));
     
             epService.EPRuntime.DataFlowRuntime.Instantiate("FactorialGraph", options).Start();
     
-            Object[] result = future.Get(3, TimeUnit.SECONDS);
+            object[] result = future.GetValue(3, TimeUnit.SECONDS);
             Assert.AreEqual(1, result.Length);
-            Assert.AreEqual((long) 5 * 4 * 3 * 2, ((Object[]) result[0])[0]);
+            Assert.AreEqual((long) 5 * 4 * 3 * 2, ((object[]) result[0])[0]);
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -157,16 +156,16 @@ namespace com.espertech.esper.regression.dataflow
             private EPDataFlowEmitter graphContext;
     
             public void OnInput(int number) {
-                graphContext.SubmitPort(0, new Object[]{number, (long) number});
+                graphContext.SubmitPort(0, new object[]{number, (long) number});
             }
     
             public void OnTemp(int current, long temp) {
                 if (current == 1) {
-                    graphContext.SubmitPort(1, new Object[]{temp});   // we are done
+                    graphContext.SubmitPort(1, new object[]{temp});   // we are done
                 } else {
                     current--;
                     long result = temp * current;
-                    graphContext.SubmitPort(0, new Object[]{current, result});
+                    graphContext.SubmitPort(0, new object[]{current, result});
                 }
             }
         }
@@ -179,12 +178,12 @@ namespace com.espertech.esper.regression.dataflow
     
             public void OnS0(string value) {
                 string output = "S0-" + value;
-                graphContext.SubmitPort(1, new Object[]{output});
+                graphContext.SubmitPort(1, new object[]{output});
             }
     
             public void OnS1(int value) {
                 string output = "S1-" + value;
-                graphContext.SubmitPort(0, new Object[]{output});
+                graphContext.SubmitPort(0, new object[]{output});
             }
         }
     }

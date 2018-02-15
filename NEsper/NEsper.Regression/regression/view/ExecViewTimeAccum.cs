@@ -18,8 +18,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -46,7 +44,7 @@ namespace com.espertech.esper.regression.view
             SendCurrentTime(epService, "2002-02-01T09:00:00.000");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select rstream * from SupportBean#Time_accum(1 month)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
     
@@ -54,7 +52,7 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
     
             SendCurrentTime(epService, "2002-03-01T09:00:00.000");
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "theString".Split(','), new Object[][]{new object[] {"E1"}, new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "theString".Split(','), new object[][]{new object[] {"E1"}, new object[] {"E2"}});
     
             stmt.Dispose();
         }
@@ -66,7 +64,7 @@ namespace com.espertech.esper.regression.view
                     "select irstream * from " + typeof(SupportMarketDataBean).FullName +
                             "#Time_accum(10 sec)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
     
             SendTimer(epService, startTime + 10000);
@@ -99,7 +97,7 @@ namespace com.espertech.esper.regression.view
             Assert.IsNull(listener.LastNewData);
             Assert.AreEqual(1, listener.OldDataList.Count);
             Assert.AreEqual(4, listener.LastOldData.Length);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[0], events[1], events[2], events[3]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[0], events[1], events[2], events[3]}, listener.GetOldDataListFlattened());
             listener.Reset();
     
             // no events till 50 sec
@@ -121,7 +119,7 @@ namespace com.espertech.esper.regression.view
             Assert.IsNull(listener.LastNewData);
             Assert.AreEqual(1, listener.OldDataList.Count);
             Assert.AreEqual(2, listener.LastOldData.Length);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[4], events[5]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[4], events[5]}, listener.GetOldDataListFlattened());
             listener.Reset();
     
             // next window
@@ -136,7 +134,7 @@ namespace com.espertech.esper.regression.view
             Assert.IsNull(listener.LastNewData);
             Assert.AreEqual(1, listener.OldDataList.Count);
             Assert.AreEqual(2, listener.LastOldData.Length);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[6], events[7]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[6], events[7]}, listener.GetOldDataListFlattened());
             listener.Reset();
     
             stmt.Dispose();
@@ -149,7 +147,7 @@ namespace com.espertech.esper.regression.view
                     "select rstream * from " + typeof(SupportMarketDataBean).FullName +
                             "#Time_accum(10 sec)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
     
             SendTimer(epService, startTime + 10000);
@@ -164,7 +162,7 @@ namespace com.espertech.esper.regression.view
             // flush out of the window
             SendTimer(epService, startTime + 20000);
             Assert.AreEqual(1, listener.NewDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[0], events[1], events[2]}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[0], events[1], events[2]}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             stmt.Dispose();
@@ -177,7 +175,7 @@ namespace com.espertech.esper.regression.view
                     "select irstream price, Prev(1, price) as prevPrice, Prior(1, price) as priorPrice from " + typeof(SupportMarketDataBean).FullName +
                             "#Time_accum(10 sec)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
     
             // 1st event
@@ -217,7 +215,7 @@ namespace com.espertech.esper.regression.view
                     "select irstream sum(price) as sumPrice from " + typeof(SupportMarketDataBean).FullName +
                             "#Time_accum(10 sec)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
     
             // 1st event
@@ -252,7 +250,7 @@ namespace com.espertech.esper.regression.view
                     "select irstream * from " + typeof(SupportMarketDataBean).FullName +
                             "#Groupwin(symbol)#Time_accum(10 sec)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
     
             // 1st S1 event
@@ -284,7 +282,7 @@ namespace com.espertech.esper.regression.view
             Assert.IsNull(listener.LastNewData);
             Assert.AreEqual(1, listener.OldDataList.Count);
             Assert.AreEqual(2, listener.LastOldData.Length);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[2], events[12]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[2], events[12]}, listener.GetOldDataListFlattened());
             listener.Reset();
     
             // 3rd S2 event
@@ -296,13 +294,13 @@ namespace com.espertech.esper.regression.view
             Assert.IsNull(listener.LastNewData);
             Assert.AreEqual(1, listener.OldDataList.Count);
             Assert.AreEqual(3, listener.LastOldData.Length);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[1], events[11], events[21]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[1], events[11], events[21]}, listener.GetOldDataListFlattened());
             listener.Reset();
     
             SendTimer(epService, startTime + 39000);
             Assert.IsNull(listener.LastNewData);
             Assert.AreEqual(1, listener.LastOldData.Length);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[32]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[32]}, listener.GetOldDataListFlattened());
             listener.Reset();
     
             stmt.Dispose();

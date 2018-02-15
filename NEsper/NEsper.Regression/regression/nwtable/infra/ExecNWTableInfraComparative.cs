@@ -46,7 +46,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             string[] fields = "c0,c1".Split(',');
             DeploymentResult deployed = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("Listen").AddListener(listener);
+            epService.EPAdministrator.GetStatement("Listen").Events += listener.Update;
     
             long startLoad = PerformanceObserver.NanoTime;
             for (int i = 0; i < numEvents; i++) {
@@ -59,7 +59,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 for (int i = 0; i < numEvents; i++) {
                     string key = "E" + i;
                     epService.EPRuntime.SendEvent(new SupportBean_S0(0, key));
-                    EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{key, i});
+                    EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{key, i});
                 }
             }
             long deltaQuery = PerformanceObserver.NanoTime - startQuery;

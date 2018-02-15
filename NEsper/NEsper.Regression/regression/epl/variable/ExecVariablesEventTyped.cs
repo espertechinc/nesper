@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -92,13 +91,13 @@ namespace com.espertech.esper.regression.epl.variable
     
             string[] fields = "varbean.theString,varbean.intPrimitive,varbean.TheString".Split(',');
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("select varbean.theString,varbean.intPrimitive,varbean.TheString from S0");
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, null});
     
             EPStatement stmtSet = epService.EPAdministrator.CreateEPL("on A set varbean.theString = 'A', varbean.intPrimitive = 1");
-            stmtSet.AddListener(listenerSet);
+            stmtSet.Events += listenerSet.Update;
             epService.EPRuntime.SendEvent(new SupportBean_A("E1"));
             listenerSet.Reset();
     
@@ -110,7 +109,7 @@ namespace com.espertech.esper.regression.epl.variable
             epService.EPRuntime.SendEvent(new SupportBean_A("E2"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(3));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A", 1, "A"});
-            AssertNotSame(setBean, epService.EPRuntime.GetVariableValue("varbean"));
+            Assert.AreNotSame(setBean, epService.EPRuntime.GetVariableValue("varbean"));
             Assert.AreEqual(1, ((SupportBean) epService.EPRuntime.GetVariableValue("varbean")).IntPrimitive);
             EPAssertionUtil.AssertProps(listenerSet.AssertOneGetNewAndReset(), "varbean.theString,varbean.intPrimitive".Split(','), new object[]{"A", 1});
             EPAssertionUtil.AssertProps(stmtSet.First(), "varbean.theString,varbean.intPrimitive".Split(','), new object[]{"A", 1});
@@ -118,14 +117,14 @@ namespace com.espertech.esper.regression.epl.variable
             // test self evaluate
             stmtSet.Dispose();
             stmtSet = epService.EPAdministrator.CreateEPL("on A set varbean.theString = A.id, varbean.theString = '>'||varbean.theString||'<'");
-            stmtSet.AddListener(listenerSet);
+            stmtSet.Events += listenerSet.Update;
             epService.EPRuntime.SendEvent(new SupportBean_A("E3"));
             Assert.AreEqual(">E3<", ((SupportBean) epService.EPRuntime.GetVariableValue("varbean")).TheString);
     
             // test widen
             stmtSet.Dispose();
             stmtSet = epService.EPAdministrator.CreateEPL("on A set varbean.longPrimitive = 1");
-            stmtSet.AddListener(listenerSet);
+            stmtSet.Events += listenerSet.Update;
             epService.EPRuntime.SendEvent(new SupportBean_A("E4"));
             Assert.AreEqual(1, ((SupportBean) epService.EPRuntime.GetVariableValue("varbean")).LongPrimitive);
     
@@ -147,7 +146,7 @@ namespace com.espertech.esper.regression.epl.variable
     
             string[] fields = "varobject,varbean,varbean.id,vartype,vartype.id".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select varobject, varbean, varbean.id, vartype, vartype.id from SupportBean");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // test null
             epService.EPRuntime.SendEvent(new SupportBean());
@@ -166,13 +165,13 @@ namespace com.espertech.esper.regression.epl.variable
             // test on-set for Object and EventType
             string[] fieldsTop = "varobject,vartype,varbean".Split(',');
             EPStatement stmtSet = epService.EPAdministrator.CreateEPL("on S0Type(p00='X') arrival set var@object =1, vartype=arrival, varbean=null");
-            stmtSet.AddListener(listener);
+            stmtSet.Events += listener.Update;
     
             var s0objectTwo = new SupportBean_S0(2, "X");
             epService.EPRuntime.SendEvent(s0objectTwo);
             Assert.AreEqual(1, epService.EPRuntime.GetVariableValue("varobject"));
             Assert.AreEqual(s0objectTwo, epService.EPRuntime.GetVariableValue("vartype"));
-            Assert.AreEqual(s0objectTwo, epService.EPRuntime.GetVariableValue(Collections.Singleton("vartype")).Get("vartype"));
+            Assert.AreEqual(s0objectTwo, epService.EPRuntime.GetVariableValue(Collections.SingletonSet("vartype")).Get("vartype"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTop, new object[]{1, s0objectTwo, null});
             EPAssertionUtil.AssertProps(stmtSet.First(), fieldsTop, new object[]{1, s0objectTwo, null});
     
@@ -195,12 +194,12 @@ namespace com.espertech.esper.regression.epl.variable
     
             // test on-set for Bean class
             stmtSet = epService.EPAdministrator.CreateEPL("on " + typeof(SupportBean_A).Name + "(id='Y') arrival set var@object =null, vartype=null, varbean=arrival");
-            stmtSet.AddListener(listener);
+            stmtSet.Events += listener.Update;
             var a1objectTwo = new SupportBean_A("Y");
             epService.EPRuntime.SendEvent(new SupportBean_A("Y"));
             Assert.AreEqual(null, epService.EPRuntime.GetVariableValue("varobject"));
             Assert.AreEqual(null, epService.EPRuntime.GetVariableValue("vartype"));
-            Assert.AreEqual(a1objectTwo, epService.EPRuntime.GetVariableValue(Collections.Singleton("varbean")).Get("varbean"));
+            Assert.AreEqual(a1objectTwo, epService.EPRuntime.GetVariableValue(Collections.SingletonSet("varbean")).Get("varbean"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTop, new object[]{null, null, a1objectTwo});
             EPAssertionUtil.AssertProps(stmtSet.First(), fieldsTop, new object[]{null, null, a1objectTwo});
     

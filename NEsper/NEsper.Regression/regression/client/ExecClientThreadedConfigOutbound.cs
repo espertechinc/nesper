@@ -16,8 +16,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -25,9 +23,9 @@ namespace com.espertech.esper.regression.client
 {
     public class ExecClientThreadedConfigOutbound : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.Threading.InternalTimerEnabled = false;
-            configuration.EngineDefaults.Expression.UdfCache = false;
-            configuration.EngineDefaults.Threading.ThreadPoolOutbound = true;
+            configuration.EngineDefaults.Threading.IsInternalTimerEnabled = false;
+            configuration.EngineDefaults.Expression.IsUdfCache = false;
+            configuration.EngineDefaults.Threading.IsThreadPoolOutbound = true;
             configuration.EngineDefaults.Threading.ThreadPoolOutboundNumThreads = 5;
             configuration.AddEventType<SupportBean>();
         }
@@ -35,7 +33,7 @@ namespace com.espertech.esper.regression.client
         public override void Run(EPServiceProvider epService) {
             var listener = new SupportListenerSleeping(200);
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             long start = PerformanceObserver.NanoTime;
             for (int i = 0; i < 5; i++) {
@@ -43,7 +41,7 @@ namespace com.espertech.esper.regression.client
             }
             long end = PerformanceObserver.NanoTime;
             long delta = (end - start) / 1000000;
-            Assert.IsTrue("Delta is " + delta, delta < 100);
+            Assert.IsTrue(delta < 100, "Delta is " + delta);
     
             Thread.Sleep(1000);
             Assert.AreEqual(5, listener.NewEvents.Count);

@@ -50,24 +50,24 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "a_string,c_string,maxb,minb,minb2x,firstb,lastb,countb".Split(',');
             epService.EPRuntime.SendEvent(new SupportRecogBean("E1", 0));
             epService.EPRuntime.SendEvent(new SupportRecogBean("E2", 1));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
-                    new Object[][]{new object[] {"E1", "E2", null, null, null, null, null, 0L}});
+                    new object[][]{new object[] {"E1", "E2", null, null, null, null, null, 0L}});
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                    new Object[][]{new object[] {"E1", "E2", null, null, null, null, null, 0L}});
+                    new object[][]{new object[] {"E1", "E2", null, null, null, null, null, 0L}});
     
             epService.EPRuntime.SendEvent(new SupportRecogBean("E3", 0));
             epService.EPRuntime.SendEvent(new SupportRecogBean("E4", 5));
             epService.EPRuntime.SendEvent(new SupportRecogBean("E5", 3));
             epService.EPRuntime.SendEvent(new SupportRecogBean("E6", 1));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
-                    new Object[][]{new object[] {"E3", "E6", 5, 3, 6, 5, 3, 2L}});
+                    new object[][]{new object[] {"E3", "E6", 5, 3, 6, 5, 3, 2L}});
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                    new Object[][]{new object[] {"E1", "E2", null, null, null, null, null, 0L}, new object[] {"E3", "E6", 5, 3, 6, 5, 3, 2L}});
+                    new object[][]{new object[] {"E1", "E2", null, null, null, null, null, 0L}, new object[] {"E3", "E6", 5, 3, 6, 5, 3, 2L}});
     
             epService.EPRuntime.SendEvent(new SupportRecogBean("E7", 0));
             epService.EPRuntime.SendEvent(new SupportRecogBean("E8", 4));
@@ -76,9 +76,9 @@ namespace com.espertech.esper.regression.rowrecog
             epService.EPRuntime.SendEvent(new SupportRecogBean("E11", 2));
             epService.EPRuntime.SendEvent(new SupportRecogBean("E12", 1));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
-                    new Object[][]{new object[] {"E7", "E12", 7, -1, -2, 4, 2, 4L}});
+                    new object[][]{new object[] {"E7", "E12", 7, -1, -2, 4, 2, 4L}});
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                    new Object[][]{new object[] {"E1", "E2", null, null, null, null, null, 0L},
+                    new object[][]{new object[] {"E1", "E2", null, null, null, null, null, 0L},
                         new object[]{"E3", "E6", 5, 3, 6, 5, 3, 2L},
                         new object[]{"E7", "E12", 7, -1, -2, 4, 2, 4L},
                     });
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "a_string,d_string,sumb,sumc,sumaplusb,sumaplusc".Split(',');
             epService.EPRuntime.SendEvent(new SupportRecogBean("E1", "x", 10));
@@ -124,15 +124,15 @@ namespace com.espertech.esper.regression.rowrecog
     
             epService.EPRuntime.SendEvent(new SupportRecogBean("E11", "y", 999));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
-                    new Object[][]{new object[] {"E2", "E11", 7, -11, 47, 29}});
+                    new object[][]{new object[] {"E2", "E11", 7, -11, 47, 29}});
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                    new Object[][]{new object[] {"E2", "E11", 7, -11, 47, 29}});
+                    new object[][]{new object[] {"E2", "E11", 7, -11, 47, 29}});
     
             epService.EPRuntime.SendEvent(new SupportRecogBean("E12", "x", 999));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
-                    new Object[][]{new object[] {"E1", "E12", 15, -7, 35, 13}});
+                    new object[][]{new object[] {"E1", "E12", 15, -7, 35, 13}});
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                    new Object[][]{new object[] {"E1", "E12", 15, -7, 35, 13}, new object[] {"E2", "E11", 7, -11, 47, 29}});
+                    new object[][]{new object[] {"E1", "E12", 15, -7, 35, 13}, new object[] {"E2", "E11", 7, -11, 47, 29}});
     
             stmt.Dispose();
         }

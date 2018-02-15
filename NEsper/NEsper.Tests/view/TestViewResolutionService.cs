@@ -89,7 +89,7 @@ namespace com.espertech.esper.view
             }
             catch (ViewProcessingException ex)
             {
-                log.Debug(".testInvalidViewName Expected exception caught, msg=" + ex.Message);
+                Log.Debug(".testInvalidViewName Expected exception caught, msg=" + ex.Message);
             }
         }
     
@@ -111,6 +111,6 @@ namespace com.espertech.esper.view
             return new ViewResolutionServiceImpl(registry, null, null);
         }
     
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

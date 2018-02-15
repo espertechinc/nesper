@@ -17,26 +17,22 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertSame;
 
 using NUnit.Framework;
 
+using static com.espertech.esper.supportregression.util.IndexBackingTableInfo;
+
 namespace com.espertech.esper.regression.nwtable.tbl
 {
-    public class ExecTableFAFExecuteQuery : IndexBackingTableInfo, IRegressionExecution
+    public class ExecTableFAFExecuteQuery : RegressionExecution
     {
-        public bool ExcludeWhenInstrumented() {
-            return false;
-        }
-
-        public void Configure(Configuration configuration) {
+        public override void Configure(Configuration configuration) {
             configuration.EngineDefaults.Logging.IsEnableQueryPlan = true;
             configuration.AddEventType("SupportBean", typeof(SupportBean).FullName);
             configuration.AddEventType("SupportBean_A", typeof(SupportBean_A).Name);
         }
     
-        public void Run(EPServiceProvider epService) {
+        public override void Run(EPServiceProvider epService) {
             RunAssertionFAFInsert(epService);
             RunAssertionFAFDelete(epService);
             RunAssertionFAFUpdate(epService);
@@ -50,7 +46,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string eplInsertInto = "insert into MyTableINS (p0, p1) select 'a', 1";
             EPOnDemandQueryResult resultOne = epService.EPRuntime.ExecuteQuery(eplInsertInto);
             AssertFAFInsertResult(resultOne, propertyNames, stmt);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), propertyNames, new Object[][]{new object[] {"a", 1}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), propertyNames, new object[][]{new object[] {"a", 1}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -75,7 +71,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             epService.EPRuntime.ExecuteQuery("update MyTableUPD set p1 = 'ABC'");
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(epService.EPAdministrator.GetStatement("TheTable").GetEnumerator(), fields, new Object[][]{new object[] {"E1", "ABC"}, new object[] {"E2", "ABC"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(epService.EPAdministrator.GetStatement("TheTable").GetEnumerator(), fields, new object[][]{new object[] {"E1", "ABC"}, new object[] {"E2", "ABC"}});
             epService.EPAdministrator.DestroyAllStatements();
         }
     
@@ -86,7 +82,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             EPOnDemandQueryResult result = epService.EPRuntime.ExecuteQuery("select * from MyTableSEL");
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(result.Array, fields, new Object[][]{new object[] {"E1"}, new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(result.Array, fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}});
             epService.EPAdministrator.DestroyAllStatements();
         }
     

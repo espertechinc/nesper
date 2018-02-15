@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static junit.framework.TestCase.assertEquals;
 
 using NUnit.Framework;
 
@@ -42,7 +41,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             for (int i = 0; i < 5; i++) {
                 Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("t" + i));
@@ -74,7 +73,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             for (int i = 0; i < 11; i++) {
                 Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("t" + i));
@@ -119,7 +118,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("t0"));
     
@@ -145,7 +144,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("t0"));
     

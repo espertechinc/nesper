@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -15,8 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
-// using static com.espertech.esper.regression.event.xml.ExecEventXMLSchemaXPathBacked.getConfigTestType;
-// using static junit.framework.TestCase.*;
+using static com.espertech.esper.regression.events.xml.ExecEventXMLSchemaXPathBacked;
 
 using NUnit.Framework;
 

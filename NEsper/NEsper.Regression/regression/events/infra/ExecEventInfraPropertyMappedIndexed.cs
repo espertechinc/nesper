@@ -24,7 +24,6 @@ using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 // using static com.espertech.esper.supportregression.@event.SupportEventInfra.*;
 // using static org.apache.avro.SchemaBuilder.*;
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -81,7 +80,7 @@ namespace com.espertech.esper.regression.events.infra
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             send.Invoke(epService, underlying);
             EventBean @event = listener.AssertOneGetNewAndReset();
@@ -118,11 +117,11 @@ namespace com.espertech.esper.regression.events.infra
                 "AvroSchema",
                 TypeBuilder.Field(
                     "indexed", TypeBuilder.Array(
-                        TypeBuilder.String(
+                        TypeBuilder.StringType(
                             TypeBuilder.Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE)))),
                 TypeBuilder.Field(
                     "mapped", TypeBuilder.Map(
-                        TypeBuilder.String(
+                        TypeBuilder.StringType(
                             TypeBuilder.Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE))))
             );
         }

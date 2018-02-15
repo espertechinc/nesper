@@ -35,10 +35,10 @@ namespace com.espertech.esper.regression.resultset.orderby
             SendEvent(epService, "IBM", 49);
             SendEvent(epService, "CAT", 15);
             SendEvent(epService, "IBM", 100);
-            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new Object[][]{new object[] {214d}});
+            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new object[][]{new object[] {214d}});
     
             SendEvent(epService, "KGB", 75);
-            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new Object[][]{new object[] {289d}});
+            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new object[][]{new object[] {289d}});
     
             // JIRA ESPER-644 Infinite loop when restarting a statement
             epService.EPAdministrator.Configuration.AddEventType("FB", Collections.SingletonDataMap("timeTaken", typeof(double)));

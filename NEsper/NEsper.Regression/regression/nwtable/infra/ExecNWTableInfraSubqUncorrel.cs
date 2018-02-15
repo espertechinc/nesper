@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -47,7 +45,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             // create window
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsertOne = "insert into MyInfra select theString as a, longPrimitive as b, longBoxed as c from " + typeof(SupportBean).FullName;
@@ -60,20 +58,20 @@ namespace com.espertech.esper.regression.nwtable.infra
             }
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
             EPAssertionUtil.AssertEqualsAnyOrder(stmtSelectOne.EventType.PropertyNames, new string[]{"value", "symbol"});
             Assert.AreEqual(typeof(string), stmtSelectOne.EventType.GetPropertyType("value"));
             Assert.AreEqual(typeof(string), stmtSelectOne.EventType.GetPropertyType("symbol"));
     
             SendMarketBean(epService, "M1");
             var fieldsStmt = new string[]{"value", "symbol"};
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new Object[]{null, "M1"});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new object[]{null, "M1"});
     
             SendSupportBean(epService, "S1", 1L, 2L);
             Assert.IsFalse(listenerStmtOne.IsInvoked);
             var fieldsWin = new string[]{"a", "b", "c"};
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fieldsWin, new Object[]{"S1", 1L, 2L});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fieldsWin, new object[]{"S1", 1L, 2L});
             } else {
                 Assert.IsFalse(listenerWindow.IsInvoked);
             }
@@ -85,57 +83,57 @@ namespace com.espertech.esper.regression.nwtable.infra
             }
             EPStatement stmtSelectTwo = epService.EPAdministrator.CreateEPL(stmtTextSelectTwo);
             var listenerStmtTwo = new SupportUpdateListener();
-            stmtSelectTwo.AddListener(listenerStmtTwo);
+            stmtSelectTwo.Events += listenerStmtTwo.Update;
     
             SendMarketBean(epService, "M1");
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new Object[]{"S1", "M1"});
-            EPAssertionUtil.AssertProps(listenerStmtTwo.AssertOneGetNewAndReset(), fieldsStmt, new Object[]{"S1", "M1"});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new object[]{"S1", "M1"});
+            EPAssertionUtil.AssertProps(listenerStmtTwo.AssertOneGetNewAndReset(), fieldsStmt, new object[]{"S1", "M1"});
     
             SendSupportBean(epService, "S2", 10L, 20L);
             Assert.IsFalse(listenerStmtOne.IsInvoked);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fieldsWin, new Object[]{"S2", 10L, 20L});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fieldsWin, new object[]{"S2", 10L, 20L});
             }
     
             SendMarketBean(epService, "M2");
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new Object[]{null, "M2"});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new object[]{null, "M2"});
             Assert.IsFalse(listenerWindow.IsInvoked);
-            EPAssertionUtil.AssertProps(listenerStmtTwo.AssertOneGetNewAndReset(), fieldsStmt, new Object[]{null, "M2"});
+            EPAssertionUtil.AssertProps(listenerStmtTwo.AssertOneGetNewAndReset(), fieldsStmt, new object[]{null, "M2"});
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportBean_A).Name + " delete from MyInfra where id = a";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             // delete S1
             epService.EPRuntime.SendEvent(new SupportBean_A("S1"));
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetOldAndReset(), fieldsWin, new Object[]{"S1", 1L, 2L});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetOldAndReset(), fieldsWin, new object[]{"S1", 1L, 2L});
             }
     
             SendMarketBean(epService, "M3");
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new Object[]{"S2", "M3"});
-            EPAssertionUtil.AssertProps(listenerStmtTwo.AssertOneGetNewAndReset(), fieldsStmt, new Object[]{"S2", "M3"});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new object[]{"S2", "M3"});
+            EPAssertionUtil.AssertProps(listenerStmtTwo.AssertOneGetNewAndReset(), fieldsStmt, new object[]{"S2", "M3"});
     
             // delete S2
             epService.EPRuntime.SendEvent(new SupportBean_A("S2"));
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetOldAndReset(), fieldsWin, new Object[]{"S2", 10L, 20L});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetOldAndReset(), fieldsWin, new object[]{"S2", 10L, 20L});
             }
     
             SendMarketBean(epService, "M4");
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new Object[]{null, "M4"});
-            EPAssertionUtil.AssertProps(listenerStmtTwo.AssertOneGetNewAndReset(), fieldsStmt, new Object[]{null, "M4"});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new object[]{null, "M4"});
+            EPAssertionUtil.AssertProps(listenerStmtTwo.AssertOneGetNewAndReset(), fieldsStmt, new object[]{null, "M4"});
     
             SendSupportBean(epService, "S3", 100L, 200L);
             if (namedWindow) {
-                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fieldsWin, new Object[]{"S3", 100L, 200L});
+                EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fieldsWin, new object[]{"S3", 100L, 200L});
             }
     
             SendMarketBean(epService, "M5");
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new Object[]{"S3", "M5"});
-            EPAssertionUtil.AssertProps(listenerStmtTwo.AssertOneGetNewAndReset(), fieldsStmt, new Object[]{"S3", "M5"});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fieldsStmt, new object[]{"S3", "M5"});
+            EPAssertionUtil.AssertProps(listenerStmtTwo.AssertOneGetNewAndReset(), fieldsStmt, new object[]{"S3", "M5"});
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfra", false);
         }

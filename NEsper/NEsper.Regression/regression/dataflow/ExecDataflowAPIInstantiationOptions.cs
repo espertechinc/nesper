@@ -19,8 +19,6 @@ using com.espertech.esper.dataflow.interfaces;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.assertNotNull;
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -50,10 +48,10 @@ namespace com.espertech.esper.regression.dataflow
             Assert.AreEqual("abc", myOp.PropOne);
             Assert.AreEqual("def", myOp.PropTwo);
     
-            Assert.AreEqual(3, myParameterProvider.contextMap.Count);
-            Assert.IsNotNull(myParameterProvider.contextMap.Get("propOne"));
+            Assert.AreEqual(3, myParameterProvider.ContextMap.Count);
+            Assert.IsNotNull(myParameterProvider.ContextMap.Get("propOne"));
     
-            EPDataFlowOperatorParameterProviderContext context = myParameterProvider.contextMap.Get("propTwo");
+            EPDataFlowOperatorParameterProviderContext context = myParameterProvider.ContextMap.Get("propTwo");
             Assert.AreEqual("propTwo", context.ParameterName);
             Assert.AreEqual("MyOp", context.OperatorName);
             Assert.AreSame(myOp, context.OperatorInstance);
@@ -61,7 +59,7 @@ namespace com.espertech.esper.regression.dataflow
             Assert.AreEqual(null, context.ProvidedValue);
             Assert.AreEqual("MyDataFlowOne", context.DataFlowName);
     
-            context = myParameterProvider.contextMap.Get("propThree");
+            context = myParameterProvider.ContextMap.Get("propThree");
             Assert.AreEqual("propThree", context.ParameterName);
             Assert.AreEqual("MyOp", context.OperatorName);
             Assert.AreSame(myOp, context.OperatorInstance);
@@ -81,8 +79,8 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlowOne", options);
     
-            Assert.AreEqual(1, myOperatorProvider.contextMap.Count);
-            EPDataFlowOperatorProviderContext context = myOperatorProvider.contextMap.Get("MyOp");
+            Assert.AreEqual(1, myOperatorProvider.ContextMap.Count);
+            EPDataFlowOperatorProviderContext context = myOperatorProvider.ContextMap.Get("MyOp");
             Assert.AreEqual("MyOp", context.OperatorName);
             Assert.IsNotNull(context.Spec);
             Assert.AreEqual("MyDataFlowOne", context.DataFlowName);
@@ -92,44 +90,41 @@ namespace com.espertech.esper.regression.dataflow
     
         public class MyOp : DataFlowSourceOperator {
     
-            private readonly string id;
+            private readonly string _id;
     
             [DataFlowOpParameter]
-            private string propOne;
+            private string _propOne;
     
             [DataFlowOpParameter]
-            private string propTwo;
+            private string _propTwo;
     
             [DataFlowOpParameter]
-            private string propThree;
+            private string _propThree;
     
             public MyOp(string id) {
-                this.id = id;
+                this._id = id;
             }
     
             public void Next() {
             }
-    
-            public string GetPropOne() {
-                return propOne;
+
+            public string PropOne {
+                get { return _propOne; }
+                set { _propOne = value; }
             }
-    
-            public void SetPropOne(string propOne) {
-                this.propOne = propOne;
+
+            public string Id {
+                get { return _id; }
             }
-    
-            public string GetId() {
-                return id;
+
+            public string PropTwo {
+                get { return _propTwo; }
             }
-    
-            public string GetPropTwo() {
-                return propTwo;
+
+            public string PropThree {
+                get { return _propThree; }
             }
-    
-            public string GetPropThree() {
-                return propThree;
-            }
-    
+
             public DataFlowOpInitializeResult Initialize(DataFlowOpInitializateContext context) {
                 return null;
             }
@@ -141,26 +136,34 @@ namespace com.espertech.esper.regression.dataflow
             }
         }
     
-        public class MyParameterProvider : EPDataFlowOperatorParameterProvider {
-    
-            private IDictionary<string, EPDataFlowOperatorParameterProviderContext> contextMap = new Dictionary<string, EPDataFlowOperatorParameterProviderContext>();
-            private readonly IDictionary<string, Object> values;
-    
+        public class MyParameterProvider : EPDataFlowOperatorParameterProvider
+        {
+            private IDictionary<string, EPDataFlowOperatorParameterProviderContext> _contextMap = 
+                new Dictionary<string, EPDataFlowOperatorParameterProviderContext>();
+            private readonly IDictionary<string, Object> _values;
+
+            public IDictionary<string, EPDataFlowOperatorParameterProviderContext> ContextMap => _contextMap;
+
+            public IDictionary<string, object> Values => _values;
+
             public MyParameterProvider(IDictionary<string, Object> values) {
-                this.values = values;
+                _values = values;
             }
     
             public Object Provide(EPDataFlowOperatorParameterProviderContext context) {
-                contextMap.Put(context.ParameterName, context);
-                return Values.Get(context.ParameterName);
+                _contextMap.Put(context.ParameterName, context);
+                return _values.Get(context.ParameterName);
             }
         }
     
         public class MyOperatorProvider : EPDataFlowOperatorProvider {
-            private IDictionary<string, EPDataFlowOperatorProviderContext> contextMap = new Dictionary<string, EPDataFlowOperatorProviderContext>();
-    
+            private readonly IDictionary<string, EPDataFlowOperatorProviderContext> _contextMap = 
+                new Dictionary<string, EPDataFlowOperatorProviderContext>();
+
+            public IDictionary<string, EPDataFlowOperatorProviderContext> ContextMap => _contextMap;
+
             public Object Provide(EPDataFlowOperatorProviderContext context) {
-                contextMap.Put(context.OperatorName, context);
+                _contextMap.Put(context.OperatorName, context);
                 return new MyOp("test");
             }
         }

@@ -33,7 +33,7 @@ namespace com.espertech.esper.client
             Variables = new VariablesConfig();
             StreamSelection = new StreamSelectionConfig();
             TimeSource = new TimeSourceConfig();
-            MetricsReporting = new MetricsReportingConfig();
+            MetricsReporting = new ConfigurationMetricsReporting();
             Language = new LanguageConfig();
             Expression = new ExpressionConfig();
             Execution = new ExecutionConfig();
@@ -91,7 +91,7 @@ namespace com.espertech.esper.client
         /// Returns the metrics reporting configuration.
         /// </summary>
         /// <value>metrics reporting config</value>
-        public MetricsReportingConfig MetricsReporting { get; private set; }
+        public ConfigurationMetricsReporting MetricsReporting { get; private set; }
 
         /// <summary>
         /// Returns the language-related settings for the engine.

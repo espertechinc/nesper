@@ -49,10 +49,10 @@ namespace com.espertech.esper.regression.client
     
             string epl = "@Name('All-Order-Events') @Audit('stream,property') select price from OrderEvent";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             if (EventRepresentationChoiceExtensions.GetEngineDefault(epService).IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(new Object[]{100d}, "OrderEvent");
+                epService.EPRuntime.SendEvent(new object[]{100d}, "OrderEvent");
             } else {
                 epService.EPRuntime.SendEvent(Collections.SingletonDataMap("price", 100d), "OrderEvent");
             }
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regression.client
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             EPStatement stmtSchedule = epService.EPAdministrator.CreateEPL("@Name('ABC') @Audit('schedule') select irstream * from SupportBean#Time(1 sec)");
             var listener = new SupportUpdateListener();
-            stmtSchedule.AddListener(listener);
+            stmtSchedule.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             listener.Reset();
             Log.Info("Sending time");
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regression.client
                     "expression INN {  x => x.theString }" +
                     "expression OUT { x => INN(x) } " +
                     "select DEF(), OUT(sb) from SupportBean sb");
-            stmtExprDef.AddListener(listener);
+            stmtExprDef.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.AreEqual(1, listener.AssertOneGetNewAndReset().Get("DEF()"));
             stmtExprDef.Dispose();
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regression.client
             // pattern-instances
             AUDITLOG.Info("*** Pattern-Lifecycle: ");
             EPStatement stmtPatternLife = epService.EPAdministrator.CreateEPL("@Name('ABC') @Audit('pattern-instances') select a.intPrimitive as val0 from pattern [every a=SupportBean -> (b=SupportBean_ST0 and not SupportBean_ST1)]");
-            stmtPatternLife.AddListener(listener);
+            stmtPatternLife.Events += listener.Update;
             Log.Info("Sending E1");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Log.Info("Sending E2");
@@ -131,7 +131,7 @@ namespace com.espertech.esper.regression.client
             // pattern
             AUDITLOG.Info("*** Pattern: ");
             EPStatement stmtPattern = epService.EPAdministrator.CreateEPL("@Name('ABC') @Audit('pattern') select a.intPrimitive as val0 from pattern [a=SupportBean -> b=SupportBean_ST0]");
-            stmtPattern.AddListener(listener);
+            stmtPattern.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean_ST0("E2", 2));
             Assert.AreEqual(1, listener.AssertOneGetNewAndReset().Get("val0"));
@@ -140,19 +140,19 @@ namespace com.espertech.esper.regression.client
             // view
             AUDITLOG.Info("*** View: ");
             EPStatement stmtView = epService.EPAdministrator.CreateEPL("@Name('ABC') @Audit('view') select intPrimitive from SupportBean#lastevent");
-            stmtView.AddListener(listener);
+            stmtView.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 50));
             Assert.AreEqual(50, listener.AssertOneGetNewAndReset().Get("intPrimitive"));
             stmtView.Dispose();
     
             EPStatement stmtGroupedView = epService.EPAdministrator.CreateEPL("@Audit Select * From SupportBean#Groupwin(theString)#length(2)");
-            stmtGroupedView.AddListener(listener);
+            stmtGroupedView.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 50));
             listener.Reset();
             stmtGroupedView.Dispose();
     
             EPStatement stmtGroupedWIntersectionView = epService.EPAdministrator.CreateEPL("@Audit Select * From SupportBean#Groupwin(theString)#length(2)#unique(intPrimitive)");
-            stmtGroupedWIntersectionView.AddListener(listener);
+            stmtGroupedWIntersectionView.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 50));
             listener.Reset();
             stmtGroupedWIntersectionView.Dispose();
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regression.client
             // expression
             AUDITLOG.Info("*** Expression: ");
             EPStatement stmtExpr = epService.EPAdministrator.CreateEPL("@Name('ABC') @Audit('expression') select intPrimitive*100 as val0, sum(intPrimitive) as val1 from SupportBean");
-            stmtExpr.AddListener(listener);
+            stmtExpr.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 50));
             Assert.AreEqual(5000, listener.AssertOneGetNew().Get("val0"));
             Assert.AreEqual(50, listener.AssertOneGetNewAndReset().Get("val1"));
@@ -169,7 +169,7 @@ namespace com.espertech.esper.regression.client
             // expression-detail
             AUDITLOG.Info("*** Expression-Nested: ");
             EPStatement stmtExprNested = epService.EPAdministrator.CreateEPL("@Name('ABC') @Audit('expression-nested') select ('A'||theString)||'X' as val0 from SupportBean");
-            stmtExprNested.AddListener(listener);
+            stmtExprNested.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 50));
             Assert.AreEqual("AE1X", listener.AssertOneGetNewAndReset().Get("val0"));
             stmtExprNested.Dispose();
@@ -177,7 +177,7 @@ namespace com.espertech.esper.regression.client
             // property
             AUDITLOG.Info("*** Property: ");
             EPStatement stmtProp = epService.EPAdministrator.CreateEPL("@Name('ABC') @Audit('property') select intPrimitive from SupportBean");
-            stmtProp.AddListener(listener);
+            stmtProp.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 50));
             Assert.AreEqual(50, listener.AssertOneGetNewAndReset().Get("intPrimitive"));
             stmtProp.Dispose();
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regression.client
             EPStatement stmtTable = epService.EPAdministrator.CreateEPL("@Name('create-table') @Audit create table TableOne(c0 string primary key, cnt count(*))");
             EPStatement stmtIntoTable = epService.EPAdministrator.CreateEPL("@Name('into-table') @Audit into table TableOne select count(*) as cnt from SupportBean group by theString");
             EPStatement stmtAccessTable = epService.EPAdministrator.CreateEPL("@Name('access-table') @Audit select TableOne[id].cnt from SupportBean_ST0");
-            stmtAccessTable.AddListener(listener);
+            stmtAccessTable.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean_ST0("E1", 0));
             stmtTable.Dispose();

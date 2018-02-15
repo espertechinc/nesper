@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -95,37 +94,37 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement joinView = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            joinView.AddListener(listener);
+            joinView.Events += listener.Update;
     
             // s1, s2, s0
             epService.EPRuntime.SendEvent(new SupportBean_S1(100, "A_1"));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean_S2(200, "A_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, null, 100, "A_1", 200, "A_1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, 100, "A_1", 200, "A_1"});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "A_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{0, "A_1", 100, "A_1", 200, "A_1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{0, "A_1", 100, "A_1", 200, "A_1"});
     
             // s1, s0, s2
             epService.EPRuntime.SendEvent(new SupportBean_S1(103, "D_1"));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean_S2(203, "D_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, null, 103, "D_1", 203, "D_1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, 103, "D_1", 203, "D_1"});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(3, "D_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{3, "D_1", 103, "D_1", 203, "D_1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{3, "D_1", 103, "D_1", 203, "D_1"});
     
             // s2, s1, s0
             epService.EPRuntime.SendEvent(new SupportBean_S2(201, "B_1"));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(101, "B_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, null, 101, "B_1", 201, "B_1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, 101, "B_1", 201, "B_1"});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "B_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1, "B_1", 101, "B_1", 201, "B_1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1, "B_1", 101, "B_1", 201, "B_1"});
     
             // s2, s0, s1
             epService.EPRuntime.SendEvent(new SupportBean_S2(202, "C_1"));
@@ -135,7 +134,7 @@ namespace com.espertech.esper.regression.epl.join
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(102, "C_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{2, "C_1", 102, "C_1", 202, "C_1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{2, "C_1", 102, "C_1", 202, "C_1"});
     
             // s0, s1, s2
             epService.EPRuntime.SendEvent(new SupportBean_S0(4, "E_1"));
@@ -145,7 +144,7 @@ namespace com.espertech.esper.regression.epl.join
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean_S2(204, "E_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{4, "E_1", 104, "E_1", 204, "E_1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{4, "E_1", 104, "E_1", 204, "E_1"});
     
             // s0, s2, s1
             epService.EPRuntime.SendEvent(new SupportBean_S0(5, "F_1"));
@@ -155,7 +154,7 @@ namespace com.espertech.esper.regression.epl.join
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(105, "F_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{5, "F_1", 105, "F_1", 205, "F_1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{5, "F_1", 105, "F_1", 205, "F_1"});
         }
     }
 } // end of namespace

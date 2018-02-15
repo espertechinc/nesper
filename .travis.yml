@@ -3,7 +3,9 @@ solution: NEsper.sln
 dist: trusty
 sudo: required
 mono:
-	- beta
+	- latest
+	- 3.12.0
+	
 dotnet: 1.0.3
 
 

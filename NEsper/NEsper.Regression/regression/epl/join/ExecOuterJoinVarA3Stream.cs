@@ -21,7 +21,6 @@ using com.espertech.esper.supportregression.util;
 using com.espertech.esper.type;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -65,7 +64,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var fields = new string[]{"t1.col1", "t1.col2", "t2.col1", "t2.col2", "t3.col1", "t3.col2"};
     
@@ -73,25 +72,25 @@ namespace com.espertech.esper.regression.epl.join
             Assert.IsFalse(listener.IsInvoked);
     
             SendMapEvent(epService, "type1", "b1", "a1");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"b1", "a1", null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"b1", "a1", null, null, null, null});
     
             SendMapEvent(epService, "type1", "a1", "a1");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"a1", "a1", null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"a1", "a1", null, null, null, null});
     
             SendMapEvent(epService, "type1", "b1", "b1");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"b1", "b1", null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"b1", "b1", null, null, null, null});
     
             SendMapEvent(epService, "type1", "a1", "b1");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"a1", "b1", "a1", "b1", null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"a1", "b1", "a1", "b1", null, null});
     
             SendMapEvent(epService, "type3", "c1", "b1");
             Assert.IsFalse(listener.IsInvoked);
     
             SendMapEvent(epService, "type1", "d1", "b1");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"d1", "b1", null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"d1", "b1", null, null, null, null});
     
             SendMapEvent(epService, "type3", "d1", "bx");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"d1", "b1", null, null, "d1", "bx"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"d1", "b1", null, null, "d1", "bx"});
     
             Assert.IsFalse(listener.IsInvoked);
             epService.EPAdministrator.DestroyAllStatements();
@@ -107,7 +106,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(10, "A_1", "B_1"));
             epService.EPRuntime.SendEvent(new SupportBean_S1(11, "A_2", "B_1"));
@@ -122,19 +121,19 @@ namespace com.espertech.esper.regression.epl.join
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "A_3", "B_3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1, "A_3", "B_3", null, null, null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1, "A_3", "B_3", null, null, null, null, null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "A_1", "B_3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{2, "A_1", "B_3", null, null, null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{2, "A_1", "B_3", null, null, null, null, null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(3, "A_3", "B_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{3, "A_3", "B_1", null, null, null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{3, "A_3", "B_1", null, null, null, null, null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(4, "A_2", "B_2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{4, "A_2", "B_2", 13, "A_2", "B_2", 23, "A_2", "B_2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{4, "A_2", "B_2", 13, "A_2", "B_2", 23, "A_2", "B_2"});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(5, "A_2", "B_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{5, "A_2", "B_1", 11, "A_2", "B_1", 21, "A_2", "B_1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{5, "A_2", "B_1", 11, "A_2", "B_1", 21, "A_2", "B_1"});
     
             stmt.Dispose();
         }
@@ -154,7 +153,7 @@ namespace com.espertech.esper.regression.epl.join
             Assert.AreEqual("select * from " + typeof(SupportBean_S0).Name + "#keepall as s0 left outer join " + typeof(SupportBean_S1).Name + "#keepall as s1 on s0.p00 = s1.p10 left outer join " + typeof(SupportBean_S2).Name + "#keepall as s2 on s0.p00 = s2.p20", model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertion(epService, listener);
         }
@@ -169,7 +168,7 @@ namespace com.espertech.esper.regression.epl.join
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             Assert.AreEqual(epl, model.ToEPL());
     
@@ -189,7 +188,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertion(epService, listener);
         }
@@ -207,7 +206,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertion(epService, listener);
         }
@@ -225,7 +224,7 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertion(epService, listener);
         }
@@ -233,17 +232,17 @@ namespace com.espertech.esper.regression.epl.join
         private void TryAssertion(EPServiceProvider epService, SupportUpdateListener listener) {
             // Test s0 outer join to 2 streams, 2 results for each (cartesian product)
             //
-            Object[] s1Events = SupportBean_S1.MakeS1("A", new string[]{"A-s1-1", "A-s1-2"});
+            object[] s1Events = SupportBean_S1.MakeS1("A", new string[]{"A-s1-1", "A-s1-2"});
             SendEvent(epService, s1Events);
             Assert.IsFalse(listener.IsInvoked);
     
-            Object[] s2Events = SupportBean_S2.MakeS2("A", new string[]{"A-s2-1", "A-s2-2"});
+            object[] s2Events = SupportBean_S2.MakeS2("A", new string[]{"A-s2-1", "A-s2-2"});
             SendEvent(epService, s2Events);
             Assert.IsFalse(listener.IsInvoked);
     
-            Object[] s0Events = SupportBean_S0.MakeS0("A", new string[]{"A-s0-1"});
+            object[] s0Events = SupportBean_S0.MakeS0("A", new string[]{"A-s0-1"});
             SendEvent(epService, s0Events);
-            var expected = new Object[][]{
+            var expected = new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0]},
                     new object[] {s0Events[0], s1Events[1], s2Events[0]},
                     new object[] {s0Events[0], s1Events[0], s2Events[1]},
@@ -255,11 +254,11 @@ namespace com.espertech.esper.regression.epl.join
             //
             s0Events = SupportBean_S0.MakeS0("B", new string[]{"B-s0-1"});
             SendEvent(epService, s0Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{new object[] {s0Events[0], null, null}}, GetAndResetNewEvents(listener));
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{new object[] {s0Events[0], null, null}}, GetAndResetNewEvents(listener));
     
             s0Events = SupportBean_S0.MakeS0("B", new string[]{"B-s0-2"});
             SendEvent(epService, s0Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{new object[] {s0Events[0], null, null}}, GetAndResetNewEvents(listener));
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{new object[] {s0Events[0], null, null}}, GetAndResetNewEvents(listener));
     
             // Test s0 outer join to s1 and s2, one row for s1 and no results for s2
             //
@@ -269,7 +268,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s0Events = SupportBean_S0.MakeS0("C", new string[]{"C-s0-1"});
             SendEvent(epService, s0Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{new object[] {s0Events[0], s1Events[0], null}}, GetAndResetNewEvents(listener));
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{new object[] {s0Events[0], s1Events[0], null}}, GetAndResetNewEvents(listener));
     
             // Test s0 outer join to s1 and s2, two rows for s1 and no results for s2
             //
@@ -279,7 +278,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s0Events = SupportBean_S0.MakeS0("D", new string[]{"D-s0-1"});
             SendEvent(epService, s0Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{
                     new object[] {s0Events[0], s1Events[0], null},
                     new object[] {s0Events[0], s1Events[1], null}}, GetAndResetNewEvents(listener));
     
@@ -291,7 +290,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s0Events = SupportBean_S0.MakeS0("E", new string[]{"E-s0-1"});
             SendEvent(epService, s0Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{new object[] {s0Events[0], null, s2Events[0]}}, GetAndResetNewEvents(listener));
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{new object[] {s0Events[0], null, s2Events[0]}}, GetAndResetNewEvents(listener));
     
             // Test s0 outer join to s1 and s2, two rows for s2 and no results for s1
             //
@@ -301,7 +300,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s0Events = SupportBean_S0.MakeS0("F", new string[]{"F-s0-1"});
             SendEvent(epService, s0Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{
                     new object[] {s0Events[0], null, s2Events[0]},
                     new object[] {s0Events[0], null, s2Events[1]}}, GetAndResetNewEvents(listener));
     
@@ -317,7 +316,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s0Events = SupportBean_S0.MakeS0("G", new string[]{"G-s0-2"});
             SendEvent(epService, s0Events);
-            expected = new Object[][]{
+            expected = new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0]},
                     new object[] {s0Events[0], s1Events[0], s2Events[1]},
             };
@@ -335,7 +334,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s0Events = SupportBean_S0.MakeS0("H", new string[]{"H-s0-2"});
             SendEvent(epService, s0Events);
-            expected = new Object[][]{
+            expected = new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0]},
                     new object[] {s0Events[0], s1Events[1], s2Events[0]},
             };
@@ -353,7 +352,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s0Events = SupportBean_S0.MakeS0("I", new string[]{"I-s0-2"});
             SendEvent(epService, s0Events);
-            expected = new Object[][]{
+            expected = new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0]},
             };
             EPAssertionUtil.AssertSameAnyOrder(expected, GetAndResetNewEvents(listener));
@@ -362,17 +361,17 @@ namespace com.espertech.esper.regression.epl.join
             //
             s0Events = SupportBean_S0.MakeS0("Q", new string[]{"Q-s0-1"});
             SendEvent(epService, s0Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{new object[] {s0Events[0], null, null}}, GetAndResetNewEvents(listener));
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{new object[] {s0Events[0], null, null}}, GetAndResetNewEvents(listener));
     
             s2Events = SupportBean_S2.MakeS2("Q", new string[]{"Q-s2-1", "Q-s2-2"});
             SendEvent(epService, s2Events[0]);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{new object[] {s0Events[0], null, s2Events[0]}}, GetAndResetNewEvents(listener));
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{new object[] {s0Events[0], null, s2Events[0]}}, GetAndResetNewEvents(listener));
             SendEvent(epService, s2Events[1]);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{new object[] {s0Events[0], null, s2Events[1]}}, GetAndResetNewEvents(listener));
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{new object[] {s0Events[0], null, s2Events[1]}}, GetAndResetNewEvents(listener));
     
             s1Events = SupportBean_S1.MakeS1("Q", new string[]{"Q-s1-1"});
             SendEvent(epService, s1Events);
-            expected = new Object[][]{
+            expected = new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0]},
                     new object[] {s0Events[0], s1Events[0], s2Events[1]},
             };
@@ -391,24 +390,24 @@ namespace com.espertech.esper.regression.epl.join
             //
             s0Events = SupportBean_S0.MakeS0("S", new string[]{"S-s0-1"});
             SendEvent(epService, s0Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{new object[] {s0Events[0], null, null}}, GetAndResetNewEvents(listener));
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{new object[] {s0Events[0], null, null}}, GetAndResetNewEvents(listener));
     
             s1Events = SupportBean_S1.MakeS1("S", new string[]{"S-s1-1"});
             SendEvent(epService, s1Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{new object[] {s0Events[0], s1Events[0], null}}, GetAndResetNewEvents(listener));
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{new object[] {s0Events[0], s1Events[0], null}}, GetAndResetNewEvents(listener));
     
             // Test s1 inner join to s0 and outer to s2:  s0 with 1 rows, s2 with 1 rows
             //
             s0Events = SupportBean_S0.MakeS0("T", new string[]{"T-s0-1"});
             SendEvent(epService, s0Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{new object[] {s0Events[0], null, null}}, GetAndResetNewEvents(listener));
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{new object[] {s0Events[0], null, null}}, GetAndResetNewEvents(listener));
     
             s2Events = SupportBean_S2.MakeS2("T", new string[]{"T-s2-1"});
             SendEventsAndReset(epService, listener, s2Events);
     
             s1Events = SupportBean_S1.MakeS1("T", new string[]{"T-s1-1"});
             SendEvent(epService, s1Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{new object[] {s0Events[0], s1Events[0], s2Events[0]}}, GetAndResetNewEvents(listener));
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{new object[] {s0Events[0], s1Events[0], s2Events[0]}}, GetAndResetNewEvents(listener));
     
             // Test s1 inner join to s0 and outer to s2:  s0 with 2 rows, s2 with 0 rows
             //
@@ -417,7 +416,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s1Events = SupportBean_S1.MakeS1("U", new string[]{"U-s1-1"});
             SendEvent(epService, s1Events);
-            expected = new Object[][]{
+            expected = new object[][]{
                     new object[] {s0Events[0], s1Events[0], null},
                     new object[] {s0Events[1], s1Events[0], null},
             };
@@ -433,7 +432,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s1Events = SupportBean_S1.MakeS1("V", new string[]{"V-s1-1"});
             SendEvent(epService, s1Events);
-            expected = new Object[][]{
+            expected = new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0]},
                     new object[] {s0Events[1], s1Events[0], s2Events[0]},
             };
@@ -449,7 +448,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s1Events = SupportBean_S1.MakeS1("W", new string[]{"W-s1-1"});
             SendEvent(epService, s1Events);
-            expected = new Object[][]{
+            expected = new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0]},
                     new object[] {s0Events[1], s1Events[0], s2Events[0]},
                     new object[] {s0Events[0], s1Events[0], s2Events[1]},
@@ -467,7 +466,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s2Events = SupportBean_S2.MakeS2("J", new string[]{"J-s2-1"});
             SendEvent(epService, s2Events);
-            expected = new Object[][]{
+            expected = new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0]},
                     new object[] {s0Events[0], s1Events[1], s2Events[0]},
             };
@@ -489,7 +488,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s2Events = SupportBean_S2.MakeS2("L", new string[]{"L-s2-1"});
             SendEvent(epService, s2Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{new object[] {s0Events[0], null, s2Events[0]}}, GetAndResetNewEvents(listener));
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{new object[] {s0Events[0], null, s2Events[0]}}, GetAndResetNewEvents(listener));
     
             // Test s2 inner join to s0 and outer to s1:  s0 with 1 rows, s1 with 1 rows
             //
@@ -501,7 +500,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s2Events = SupportBean_S2.MakeS2("M", new string[]{"M-s2-1"});
             SendEvent(epService, s2Events);
-            EPAssertionUtil.AssertSameAnyOrder(new Object[][]{new object[] {s0Events[0], s1Events[0], s2Events[0]}}, GetAndResetNewEvents(listener));
+            EPAssertionUtil.AssertSameAnyOrder(new object[][]{new object[] {s0Events[0], s1Events[0], s2Events[0]}}, GetAndResetNewEvents(listener));
     
             // Test s2 inner join to s0 and outer to s1:  s0 with 2 rows, s1 with 0 rows
             //
@@ -510,7 +509,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s2Events = SupportBean_S2.MakeS2("N", new string[]{"N-s2-1"});
             SendEvent(epService, s2Events);
-            expected = new Object[][]{
+            expected = new object[][]{
                     new object[] {s0Events[0], null, s2Events[0]},
                     new object[] {s0Events[1], null, s2Events[0]},
             };
@@ -526,7 +525,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s2Events = SupportBean_S2.MakeS2("O", new string[]{"O-s2-1"});
             SendEvent(epService, s2Events);
-            expected = new Object[][]{
+            expected = new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0]},
                     new object[] {s0Events[1], s1Events[0], s2Events[0]},
             };
@@ -542,7 +541,7 @@ namespace com.espertech.esper.regression.epl.join
     
             s2Events = SupportBean_S2.MakeS2("P", new string[]{"P-s2-1"});
             SendEvent(epService, s2Events);
-            expected = new Object[][]{
+            expected = new object[][]{
                     new object[] {s0Events[0], s1Events[0], s2Events[0]},
                     new object[] {s0Events[1], s1Events[0], s2Events[0]},
                     new object[] {s0Events[0], s1Events[1], s2Events[0]},
@@ -581,12 +580,12 @@ namespace com.espertech.esper.regression.epl.join
             epService.EPRuntime.SendEvent(theEvent);
         }
     
-        private void SendEventsAndReset(EPServiceProvider epService, SupportUpdateListener listener, Object[] events) {
+        private void SendEventsAndReset(EPServiceProvider epService, SupportUpdateListener listener, object[] events) {
             SendEvent(epService, events);
             listener.Reset();
         }
     
-        private void SendEvent(EPServiceProvider epService, Object[] events) {
+        private void SendEvent(EPServiceProvider epService, object[] events) {
             for (int i = 0; i < events.Length; i++) {
                 epService.EPRuntime.SendEvent(events[i]);
             }
@@ -599,7 +598,7 @@ namespace com.espertech.esper.regression.epl.join
             epService.EPRuntime.SendEvent(mapEvent, type);
         }
     
-        private Object[][] GetAndResetNewEvents(SupportUpdateListener listener) {
+        private object[][] GetAndResetNewEvents(SupportUpdateListener listener) {
             EventBean[] newEvents = listener.LastNewData;
             listener.Reset();
             return ArrayHandlingUtil.GetUnderlyingEvents(newEvents, new string[]{"s0", "s1", "s2"});

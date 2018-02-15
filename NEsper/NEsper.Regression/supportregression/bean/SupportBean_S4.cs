@@ -26,11 +26,11 @@ namespace com.espertech.esper.supportregression.bean
 
         private static int idCounter;
 
-        public static Object[] MakeS4(String propOne, String[] propTwo)
+        public static object[] MakeS4(String propOne, String[] propTwo)
 		{
 			idCounter++;
 			
-			Object[] events = new Object[propTwo.Length];
+			object[] events = new Object[propTwo.Length];
 			for (int i = 0; i < propTwo.Length; i++)
 			{
 				events[i] = new SupportBean_S4(idCounter, propOne, propTwo[i]);

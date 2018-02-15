@@ -14,8 +14,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -40,14 +38,14 @@ namespace com.espertech.esper.regression.epl.subselect
             var eplSingleIndex = "select (select p00 from S0#keepall as s0 where s0.p01 in (s1.p10, s1.p11)) as c0 from S1 as s1";
             var stmtSingleIdx = epService.EPAdministrator.CreateEPL(eplSingleIndex);
             var listener = new SupportUpdateListener();
-            stmtSingleIdx.AddListener(listener);
+            stmtSingleIdx.Events += listener.Update;
     
             TryAssertionPerformanceInKeywordAsPartOfSubquery(epService, listener);
             stmtSingleIdx.Dispose();
     
             var eplMultiIdx = "select (select p00 from S0#keepall as s0 where s1.p11 in (s0.p00, s0.p01)) as c0 from S1 as s1";
             var stmtMultiIdx = epService.EPAdministrator.CreateEPL(eplMultiIdx);
-            stmtMultiIdx.AddListener(listener);
+            stmtMultiIdx.Events += listener.Update;
     
             TryAssertionPerformanceInKeywordAsPartOfSubquery(epService, listener);
     
@@ -77,7 +75,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // preload with 10k events
             for (var i = 0; i < 10000; i++) {
@@ -108,7 +106,7 @@ namespace com.espertech.esper.regression.epl.subselect
                     "select p10 from S1#length(10000) where s0.p00 = p10)";
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // preload with 10k events
             for (var i = 0; i < 10000; i++) {

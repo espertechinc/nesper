@@ -49,7 +49,7 @@ namespace com.espertech.esper.regression.expr.expr
             var stmtText = "select typeof(prop?), typeof(key) from MyDynoPropSchema as s0";
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionDynamicProps(epService, listener);
     
@@ -57,7 +57,7 @@ namespace com.espertech.esper.regression.expr.expr
             var model = epService.EPAdministrator.CompileEPL(stmtText);
             Assert.AreEqual(stmtText, model.ToEPL());
             stmt = epService.EPAdministrator.Create(model);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionDynamicProps(epService, listener);
     
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regression.expr.expr
             var stmtText = "select typeof(A) as t0 from VarSchema as A";
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
                 epService.EPRuntime.SendEvent(new object[]{"value"}, "EventOne");
@@ -156,7 +156,7 @@ namespace com.espertech.esper.regression.expr.expr
                     "  define A as typeof(A) = \"EventOne\",\n" +
                     "         B as typeof(B) = \"EventTwo\"\n" +
                     "  )");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
                 epService.EPRuntime.SendEvent(new object[]{"value"}, "EventOne");
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regression.expr.expr
             var stmtText = "select typeof(A) as t0 from ISupportA as A";
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new ISupportAImpl(null, null));
             Assert.AreEqual(typeof(ISupportAImpl).Name, listener.AssertOneGetNewAndReset().Get("t0"));
@@ -217,7 +217,7 @@ namespace com.espertech.esper.regression.expr.expr
             var stmtText = eventRepresentationEnum.GetAnnotationText() + " select typeof(s0.inside) as t0, typeof(s0.insidearr) as t1 from MySchema as s0";
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
                 epService.EPRuntime.SendEvent(new object[2], "MySchema");

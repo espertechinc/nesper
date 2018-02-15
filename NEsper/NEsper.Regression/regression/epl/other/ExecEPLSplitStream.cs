@@ -83,11 +83,11 @@ namespace com.espertech.esper.regression.epl.other
             string stmtOrigText = "on SupportBean insert into AStream select *";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtOrigText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SupportUpdateListener[] listeners = GetListeners();
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select * from AStream");
-            stmtOne.AddListener(listeners[0]);
+            stmtOne.Events += listeners[0].Update;
     
             SendSupportBean(epService, "E1", 1);
             AssertReceivedSingle(listeners, 0, "E1");
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regression.epl.other
             EPStatement stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
     
             stmtOne = epService.EPAdministrator.CreateEPL("select value from BStreamABC");
-            stmtOne.AddListener(listeners[1]);
+            stmtOne.Events += listeners[1].Update;
     
             SendSupportBean(epService, "E1", 6);
             Assert.AreEqual(18, listeners[1].AssertOneGetNewAndReset().Get("value"));
@@ -151,14 +151,14 @@ namespace com.espertech.esper.regression.epl.other
                     "insert into BStreamSub select (select p01 from S0#lastevent) as string where intPrimitive<>(select id from S0#lastevent) or (select id from S0#lastevent) is null";
             EPStatement stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
             var listener = new SupportUpdateListener();
-            stmtOrig.AddListener(listener);
+            stmtOrig.Events += listener.Update;
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select * from AStreamSub");
             var listenerAStream = new SupportUpdateListener();
-            stmtOne.AddListener(listenerAStream);
+            stmtOne.Events += listenerAStream.Update;
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select * from BStreamSub");
             var listenerBStream = new SupportUpdateListener();
-            stmtTwo.AddListener(listenerBStream);
+            stmtTwo.Events += listenerBStream.Update;
     
             SendSupportBean(epService, "E1", 1);
             Assert.IsFalse(listenerAStream.GetAndClearIsInvoked());
@@ -185,13 +185,13 @@ namespace com.espertech.esper.regression.epl.other
                     "output all";
             EPStatement stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
             var listener = new SupportUpdateListener();
-            stmtOrig.AddListener(listener);
+            stmtOrig.Events += listener.Update;
     
             SupportUpdateListener[] listeners = GetListeners();
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select * from AStream2S");
-            stmtOne.AddListener(listeners[0]);
+            stmtOne.Events += listeners[0].Update;
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select * from BStream2S");
-            stmtTwo.AddListener(listeners[1]);
+            stmtTwo.Events += listeners[1].Update;
     
             Assert.AreNotSame(stmtOne.EventType, stmtTwo.EventType);
             Assert.AreSame(stmtOne.EventType.UnderlyingType, stmtTwo.EventType.UnderlyingType);
@@ -219,10 +219,10 @@ namespace com.espertech.esper.regression.epl.other
                     "insert into CStream2S select theString || '_3' as theString " +
                     "output all";
             stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
-            stmtOrig.AddListener(listener);
+            stmtOrig.Events += listener.Update;
     
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL("select * from CStream2S");
-            stmtThree.AddListener(listeners[2]);
+            stmtThree.Events += listeners[2].Update;
     
             SendSupportBean(epService, "E1", 2);
             AssertReceivedEach(listeners, new[]{"E1_1", "E1_2", "E1_3"});
@@ -250,15 +250,15 @@ namespace com.espertech.esper.regression.epl.other
                     "insert into CStream34 select theString||'_3' as theString";
             EPStatement stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
             var listener = new SupportUpdateListener();
-            stmtOrig.AddListener(listener);
+            stmtOrig.Events += listener.Update;
     
             SupportUpdateListener[] listeners = GetListeners();
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select * from AStream34");
-            stmtOne.AddListener(listeners[0]);
+            stmtOne.Events += listeners[0].Update;
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select * from BStream34");
-            stmtTwo.AddListener(listeners[1]);
+            stmtTwo.Events += listeners[1].Update;
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL("select * from CStream34");
-            stmtThree.AddListener(listeners[2]);
+            stmtThree.Events += listeners[2].Update;
 
             Assert.AreNotSame(stmtOne.EventType, stmtTwo.EventType);
             Assert.AreSame(stmtOne.EventType.UnderlyingType, stmtTwo.EventType.UnderlyingType);
@@ -286,10 +286,10 @@ namespace com.espertech.esper.regression.epl.other
                     "insert into DStream34 select theString||'_4' as theString";
             stmtOrig.Dispose();
             stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
-            stmtOrig.AddListener(listener);
+            stmtOrig.Events += listener.Update;
     
             EPStatement stmtFour = epService.EPAdministrator.CreateEPL("select * from DStream34");
-            stmtFour.AddListener(listeners[3]);
+            stmtFour.Events += listeners[3].Update;
     
             SendSupportBean(epService, "E5", -999);
             AssertReceivedSingle(listeners, 2, "E5_3");
@@ -345,13 +345,13 @@ namespace com.espertech.esper.regression.epl.other
     
         private void TryAssertion(EPServiceProvider epService, EPStatement stmtOrig) {
             var listener = new SupportUpdateListener();
-            stmtOrig.AddListener(listener);
+            stmtOrig.Events += listener.Update;
     
             SupportUpdateListener[] listeners = GetListeners();
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select * from AStream2SP");
-            stmtOne.AddListener(listeners[0]);
+            stmtOne.Events += listeners[0].Update;
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select * from BStream2SP");
-            stmtTwo.AddListener(listeners[1]);
+            stmtTwo.Events += listeners[1].Update;
 
             Assert.AreNotSame(stmtOne.EventType, stmtTwo.EventType);
             Assert.AreSame(stmtOne.EventType.UnderlyingType, stmtTwo.EventType.UnderlyingType);
@@ -390,7 +390,7 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("on OtherStream select col2 from WinTwo");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // populate WinOne
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
@@ -434,9 +434,9 @@ namespace com.espertech.esper.regression.epl.other
             SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
     
             SupportUpdateListener[] listeners = GetListeners();
-            epService.EPAdministrator.CreateEPL("select * from StartEvent").AddListener(listeners[0]);
-            epService.EPAdministrator.CreateEPL("select * from ThenEvent").AddListener(listeners[1]);
-            epService.EPAdministrator.CreateEPL("select * from MoreEvent").AddListener(listeners[2]);
+            epService.EPAdministrator.CreateEPL("select * from StartEvent").Events += listeners[0].Update;
+            epService.EPAdministrator.CreateEPL("select * from ThenEvent").Events += listeners[1].Update;
+            epService.EPAdministrator.CreateEPL("select * from MoreEvent").Events += listeners[2].Update;
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventOne());
             string[] fieldsOrderId = "oi".Split(',');
@@ -458,9 +458,9 @@ namespace com.espertech.esper.regression.epl.other
             SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
     
             SupportUpdateListener[] listeners = GetListeners();
-            epService.EPAdministrator.CreateEPL("select * from BeginEvent").AddListener(listeners[0]);
-            epService.EPAdministrator.CreateEPL("select * from OrderItem").AddListener(listeners[1]);
-            epService.EPAdministrator.CreateEPL("select * from EndEvent").AddListener(listeners[2]);
+            epService.EPAdministrator.CreateEPL("select * from BeginEvent").Events += listeners[0].Update;
+            epService.EPAdministrator.CreateEPL("select * from OrderItem").Events += listeners[1].Update;
+            epService.EPAdministrator.CreateEPL("select * from EndEvent").Events += listeners[2].Update;
     
             EventType typeOrderItem = epService.EPAdministrator.Configuration.GetEventType("OrderItem");
             Assert.AreEqual("[amount, itemId, price, productId, orderId]", CompatExtensions.Render(typeOrderItem.PropertyNames));
@@ -494,7 +494,7 @@ namespace com.espertech.esper.regression.epl.other
             SupportUpdateListener[] listeners = GetListeners();
             var listenerEPL = new[]{"select * from StreamOne", "select * from StreamTwo", "select * from StreamThree"};
             for (int i = 0; i < listenerEPL.Length; i++) {
-                epService.EPAdministrator.CreateEPL(listenerEPL[i]).AddListener(listeners[i]);
+                epService.EPAdministrator.CreateEPL(listenerEPL[i]).Events += listeners[i].Update;
                 listeners[i].Reset();
             }
     
@@ -537,7 +537,7 @@ namespace com.espertech.esper.regression.epl.other
             DeploymentResult result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
     
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("count").AddListener(listener);
+            epService.EPAdministrator.GetStatement("count").Events += listener.Update;
     
             IDictionary<string, object> @event = new Dictionary<string, object>();
             @event.Put("orderId", "1010");

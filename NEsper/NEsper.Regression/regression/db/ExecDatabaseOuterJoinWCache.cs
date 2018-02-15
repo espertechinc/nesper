@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.db
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", -1));
             Assert.IsTrue(listener.GetAndClearIsInvoked());

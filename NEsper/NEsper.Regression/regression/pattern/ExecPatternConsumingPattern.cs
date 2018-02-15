@@ -18,7 +18,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -80,13 +79,13 @@ namespace com.espertech.esper.regression.pattern
             var listener = new SupportUpdateListener();
             epService.EPAdministrator
                 .CreateEPL("select * from pattern @DiscardPartialsOnMatch [every a=A -> B] order by a.id desc")
-                .AddListener(listener);
+                .Events += listener.Update;
             epService.EPRuntime.SendEvent(new AEvent("A1", null, null));
             epService.EPRuntime.SendEvent(new AEvent("A2", null, null));
             epService.EPRuntime.SendEvent(new BEvent("B1", null));
             var events = listener.GetAndResetLastNewData();
             EPAssertionUtil.AssertPropsPerRow(
-                events, "a.id".Split(','), new Object[][] {new object[] {"A2"}, new object[] {"A1"}});
+                events, "a.id".Split(','), new object[][] {new object[] {"A2"}, new object[] {"A1"}});
 
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -115,12 +114,12 @@ namespace com.espertech.esper.regression.pattern
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " + TargetEnum.DISCARD_ONLY.GetText() + " [" +
-                "every a=A -> b=B -> timer:Interval(a.mysec)]").AddListener(listener);
+                "every a=A -> b=B -> timer:Interval(a.mysec)]").Events += listener.Update;
             SendAEvent(epService, "A1", 5); // 5 seconds for this one
             SendAEvent(epService, "A2", 1); // 1 seconds for this one
             SendBEvent(epService, "B1");
             SendTime(epService, 1000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"A2", "B1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"A2", "B1"});
 
             SendTime(epService, 5000);
             Assert.IsFalse(listener.IsInvoked);
@@ -143,12 +142,12 @@ namespace com.espertech.esper.regression.pattern
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " + TargetEnum.DISCARD_ONLY.GetText() + " [" +
-                "every a=A -> timer:Interval(a.mysec) and not (B -> C)]").AddListener(listener);
+                "every a=A -> timer:Interval(a.mysec) and not (B -> C)]").Events += listener.Update;
             SendAEvent(epService, "A1", 5); // 5 sec
             SendAEvent(epService, "A2", 1); // 1 sec
             SendBEvent(epService, "B1");
             SendTime(epService, 1000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"A2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"A2"});
 
             SendCEvent(epService, "C1", null);
             SendTime(epService, 5000);
@@ -172,12 +171,12 @@ namespace com.espertech.esper.regression.pattern
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " + TargetEnum.DISCARD_ONLY.GetText() + " [" +
-                "every a=A -> (b=B -> c=C(pc=a.pa)) or timer:Interval(1000)]").AddListener(listener);
+                "every a=A -> (b=B -> c=C(pc=a.pa)) or timer:Interval(1000)]").Events += listener.Update;
             SendAEvent(epService, "A1", "x");
             SendAEvent(epService, "A2", "y");
             SendBEvent(epService, "B1");
             SendCEvent(epService, "C1", "y");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"A2", "B1", "C1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"A2", "B1", "C1"});
 
             SendCEvent(epService, "C1", "x");
             Assert.IsFalse(listener.IsInvoked);
@@ -206,12 +205,12 @@ namespace com.espertech.esper.regression.pattern
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " +
                 (matchDiscard ? TargetEnum.DISCARD_ONLY.GetText() : "") + " [" +
-                "every a=A -> every" + everySuffix + " (b=B -> c=C(pc=a.pa))]").AddListener(listener);
+                "every a=A -> every" + everySuffix + " (b=B -> c=C(pc=a.pa))]").Events += listener.Update;
             SendAEvent(epService, "A1", "x");
             SendAEvent(epService, "A2", "y");
             SendBEvent(epService, "B1");
             SendCEvent(epService, "C1", "y");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"A2", "B1", "C1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"A2", "B1", "C1"});
 
             SendCEvent(epService, "C2", "x");
             if (matchDiscard)
@@ -221,7 +220,7 @@ namespace com.espertech.esper.regression.pattern
             else
             {
                 EPAssertionUtil.AssertProps(
-                    listener.AssertOneGetNewAndReset(), fields, new Object[] {"A1", "B1", "C2"});
+                    listener.AssertOneGetNewAndReset(), fields, new object[] {"A1", "B1", "C2"});
             }
 
             epService.EPAdministrator.DestroyAllStatements();
@@ -233,17 +232,17 @@ namespace com.espertech.esper.regression.pattern
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " + TargetEnum.DISCARD_ONLY.GetText() + "[" +
-                "every a=A -> every" + distinct + " b=B]").AddListener(listener);
+                "every a=A -> every" + distinct + " b=B]").Events += listener.Update;
             SendAEvent(epService, "A1");
             SendBEvent(epService, "B1");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"A1", "B1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"A1", "B1"});
 
             SendBEvent(epService, "B2");
             Assert.IsFalse(listener.IsInvoked);
 
             SendAEvent(epService, "A2");
             SendBEvent(epService, "B3");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"A2", "B3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"A2", "B3"});
 
             SendBEvent(epService, "B4");
             Assert.IsFalse(listener.IsInvoked);
@@ -257,11 +256,11 @@ namespace com.espertech.esper.regression.pattern
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern "
-                + (matchDiscard ? TargetEnum.DISCARD_ONLY.GetText() : "") + "[" + pattern + "]").AddListener(listener);
+                + (matchDiscard ? TargetEnum.DISCARD_ONLY.GetText() : "") + "[" + pattern + "]").Events += listener.Update;
 
             SendAEvent(epService, "E1");
             SendAEvent(epService, "E2");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"E1", "E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"E1", "E2"});
 
             SendAEvent(epService, "E3");
             if (matchDiscard)
@@ -270,11 +269,11 @@ namespace com.espertech.esper.regression.pattern
             }
             else
             {
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"E2", "E3"});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"E2", "E3"});
             }
 
             SendAEvent(epService, "E4");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"E3", "E4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"E3", "E4"});
 
             SendAEvent(epService, "E5");
             if (matchDiscard)
@@ -283,11 +282,11 @@ namespace com.espertech.esper.regression.pattern
             }
             else
             {
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"E4", "E5"});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"E4", "E5"});
             }
 
             SendAEvent(epService, "E6");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"E5", "E6"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"E5", "E6"});
 
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -302,24 +301,24 @@ namespace com.espertech.esper.regression.pattern
             {
                 var model = epService.EPAdministrator.CompileEPL(epl);
                 Assert.AreEqual(epl, model.ToEPL());
-                epService.EPAdministrator.Create(model).AddListener(listener);
+                epService.EPAdministrator.Create(model).Events += listener.Update;
             }
             else
             {
-                epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+                epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
             }
 
             SendAEvent(epService, "A1", "x");
             SendAEvent(epService, "A2", "y");
             SendBEvent(epService, "B1");
             SendCEvent(epService, "C1", "y");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"A2", "B1", "C1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"A2", "B1", "C1"});
 
             SendCEvent(epService, "C2", "x");
             if (target == TargetEnum.SUPPRESS_ONLY || target == TargetEnum.NONE)
             {
                 EPAssertionUtil.AssertProps(
-                    listener.AssertOneGetNewAndReset(), fields, new Object[] {"A1", "B1", "C2"});
+                    listener.AssertOneGetNewAndReset(), fields, new object[] {"A1", "B1", "C2"});
             }
             else
             {
@@ -336,13 +335,13 @@ namespace com.espertech.esper.regression.pattern
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " +
                 (matchDiscard ? TargetEnum.DISCARD_ONLY.GetText() : "") + "[" +
-                "every a=A -> [2] b=B(pb in (a.pa, '-'))]").AddListener(listener);
+                "every a=A -> [2] b=B(pb in (a.pa, '-'))]").Events += listener.Update;
 
             SendAEvent(epService, "A1", "x");
             SendAEvent(epService, "A2", "y");
             SendBEvent(epService, "B1", "-"); // applies to both matches
             SendBEvent(epService, "B2", "y");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"A2", "B1", "B2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"A2", "B1", "B2"});
 
             SendBEvent(epService, "B3", "x");
             if (matchDiscard)
@@ -352,7 +351,7 @@ namespace com.espertech.esper.regression.pattern
             else
             {
                 EPAssertionUtil.AssertProps(
-                    listener.AssertOneGetNewAndReset(), fields, new Object[] {"A1", "B1", "B3"});
+                    listener.AssertOneGetNewAndReset(), fields, new object[] {"A1", "B1", "B3"});
             }
 
             epService.EPAdministrator.DestroyAllStatements();
@@ -365,13 +364,13 @@ namespace com.espertech.esper.regression.pattern
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " +
                 (matchDiscard ? TargetEnum.DISCARD_ONLY.GetText() : "") + " [" +
-                "every a=A -> [1] (b=B -> c=C(pc=a.pa))]").AddListener(listener);
+                "every a=A -> [1] (b=B -> c=C(pc=a.pa))]").Events += listener.Update;
 
             SendAEvent(epService, "A1", "x");
             SendAEvent(epService, "A2", "y");
             SendBEvent(epService, "B1");
             SendCEvent(epService, "C1", "y");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"A2", "B1", "C1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"A2", "B1", "C1"});
 
             SendCEvent(epService, "C2", "x");
             if (matchDiscard)
@@ -381,7 +380,7 @@ namespace com.espertech.esper.regression.pattern
             else
             {
                 EPAssertionUtil.AssertProps(
-                    listener.AssertOneGetNewAndReset(), fields, new Object[] {"A1", "B1", "C2"});
+                    listener.AssertOneGetNewAndReset(), fields, new object[] {"A1", "B1", "C2"});
             }
 
             epService.EPAdministrator.DestroyAllStatements();
@@ -394,13 +393,13 @@ namespace com.espertech.esper.regression.pattern
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " + TargetEnum.DISCARD_ONLY.GetText() + "[" +
-                "every a1=A -> ([:100] aarr=A until (timer:Interval(10 sec) and not b=B))]").AddListener(listener);
+                "every a1=A -> ([:100] aarr=A until (timer:Interval(10 sec) and not b=B))]").Events += listener.Update;
 
             SendAEvent(epService, "A1");
             SendTime(epService, 1000);
             SendAEvent(epService, "A2");
             SendTime(epService, 10000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"A1", "A2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"A1", "A2"});
 
             SendTime(epService, 11000);
             Assert.IsFalse(listener.IsInvoked);
@@ -418,11 +417,11 @@ namespace com.espertech.esper.regression.pattern
             {
                 var model = epService.EPAdministrator.CompileEPL(epl);
                 Assert.AreEqual(epl, model.ToEPL());
-                epService.EPAdministrator.Create(model).AddListener(listener);
+                epService.EPAdministrator.Create(model).Events += listener.Update;
             }
             else
             {
-                epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+                epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
             }
 
             SendAEvent(epService, "A1");
@@ -432,13 +431,13 @@ namespace com.espertech.esper.regression.pattern
             if (target == TargetEnum.SUPPRESS_ONLY || target == TargetEnum.DISCARD_AND_SUPPRESS)
             {
                 EPAssertionUtil.AssertProps(
-                    listener.AssertOneGetNewAndReset(), fields, new Object[] {"A1", "A2", "B1"});
+                    listener.AssertOneGetNewAndReset(), fields, new object[] {"A1", "A2", "B1"});
             }
             else
             {
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     listener.GetAndResetLastNewData(), fields,
-                    new Object[][] {new object[] {"A1", "A2", "B1"}, new object[] {"A2", null, "B1"}});
+                    new object[][] {new object[] {"A1", "A2", "B1"}, new object[] {"A2", null, "B1"}});
             }
 
             epService.EPAdministrator.DestroyAllStatements();
@@ -451,12 +450,12 @@ namespace com.espertech.esper.regression.pattern
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " +
                 (matchDiscard ? TargetEnum.DISCARD_ONLY.GetText() : "") + " [" +
-                "every a=A -> b=B and c=C(pc=a.pa)]").AddListener(listener);
+                "every a=A -> b=B and c=C(pc=a.pa)]").Events += listener.Update;
             SendAEvent(epService, "A1", "x");
             SendAEvent(epService, "A2", "y");
             SendBEvent(epService, "B1");
             SendCEvent(epService, "C1", "y");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"A2", "B1", "C1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"A2", "B1", "C1"});
 
             SendCEvent(epService, "C2", "x");
             if (matchDiscard)
@@ -466,7 +465,7 @@ namespace com.espertech.esper.regression.pattern
             else
             {
                 EPAssertionUtil.AssertProps(
-                    listener.AssertOneGetNewAndReset(), fields, new Object[] {"A1", "B1", "C2"});
+                    listener.AssertOneGetNewAndReset(), fields, new object[] {"A1", "B1", "C2"});
             }
 
             epService.EPAdministrator.DestroyAllStatements();
@@ -479,13 +478,13 @@ namespace com.espertech.esper.regression.pattern
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " +
                 (matchDiscard ? TargetEnum.DISCARD_ONLY.GetText() : "") + " [" +
-                "every a=A -> D and (b=B -> c=C(pc=a.pa))]").AddListener(listener);
+                "every a=A -> D and (b=B -> c=C(pc=a.pa))]").Events += listener.Update;
             SendAEvent(epService, "A1", "x");
             SendAEvent(epService, "A2", "y");
             SendDEvent(epService, "D1");
             SendBEvent(epService, "B1");
             SendCEvent(epService, "C1", "y");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"A2", "B1", "C1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"A2", "B1", "C1"});
 
             SendCEvent(epService, "C2", "x");
             if (matchDiscard)
@@ -495,7 +494,7 @@ namespace com.espertech.esper.regression.pattern
             else
             {
                 EPAssertionUtil.AssertProps(
-                    listener.AssertOneGetNewAndReset(), fields, new Object[] {"A1", "B1", "C2"});
+                    listener.AssertOneGetNewAndReset(), fields, new object[] {"A1", "B1", "C2"});
             }
 
             epService.EPAdministrator.DestroyAllStatements();
@@ -508,12 +507,12 @@ namespace com.espertech.esper.regression.pattern
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " +
                 (matchDiscard ? TargetEnum.DISCARD_ONLY.GetText() : "") + "[" +
-                "every a=A -> b=B -> c=C(pc=a.pa) where timer:Within(1)]").AddListener(listener);
+                "every a=A -> b=B -> c=C(pc=a.pa) where timer:Within(1)]").Events += listener.Update;
             SendAEvent(epService, "A1", "x");
             SendAEvent(epService, "A2", "y");
             SendBEvent(epService, "B1");
             SendCEvent(epService, "C1", "y");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"A2", "B1", "C1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"A2", "B1", "C1"});
 
             SendCEvent(epService, "C2", "x");
             if (matchDiscard)
@@ -523,7 +522,7 @@ namespace com.espertech.esper.regression.pattern
             else
             {
                 EPAssertionUtil.AssertProps(
-                    listener.AssertOneGetNewAndReset(), fields, new Object[] {"A1", "B1", "C2"});
+                    listener.AssertOneGetNewAndReset(), fields, new object[] {"A1", "B1", "C2"});
             }
 
             epService.EPAdministrator.DestroyAllStatements();
@@ -536,12 +535,12 @@ namespace com.espertech.esper.regression.pattern
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " +
                 (matchDiscard ? TargetEnum.DISCARD_ONLY.GetText() : "") + " [" +
-                "every a=A -> (b=B -> c=C(pc=a.pa)) where timer:Within(1)]").AddListener(listener);
+                "every a=A -> (b=B -> c=C(pc=a.pa)) where timer:Within(1)]").Events += listener.Update;
             SendAEvent(epService, "A1", "x");
             SendAEvent(epService, "A2", "y");
             SendBEvent(epService, "B1");
             SendCEvent(epService, "C1", "y");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {"A2", "B1", "C1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"A2", "B1", "C1"});
 
             SendCEvent(epService, "C2", "x");
             if (matchDiscard)
@@ -551,7 +550,7 @@ namespace com.espertech.esper.regression.pattern
             else
             {
                 EPAssertionUtil.AssertProps(
-                    listener.AssertOneGetNewAndReset(), fields, new Object[] {"A1", "B1", "C2"});
+                    listener.AssertOneGetNewAndReset(), fields, new object[] {"A1", "B1", "C2"});
             }
 
             epService.EPAdministrator.DestroyAllStatements();

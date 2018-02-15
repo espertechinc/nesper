@@ -17,8 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -65,21 +63,21 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{null, null});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{null, null});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 0));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, false});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 1));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{false, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{false, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", -1));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, false});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, false});
     
             stmt.Dispose();
         }
@@ -91,15 +89,15 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{false, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{false, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{false, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{false, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 10));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, false});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, false});
     
             stmt.Dispose();
         }
@@ -111,14 +109,14 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{false, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{false, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 19));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 11));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{false, true});
-            SendVEAndAssert(epService, listener, fields, 11, new Object[]{true, false});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{false, true});
+            SendVEAndAssert(epService, listener, fields, 11, new object[]{true, false});
     
             stmt.Dispose();
         }
@@ -130,18 +128,18 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{null, null});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, false});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{false, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{false, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", -1));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, false});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, false});
     
             stmt.Dispose();
         }
@@ -156,16 +154,16 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, false, false});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, false, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 19));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 11));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, true, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, true, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 9));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{false, true, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{false, true, true});
     
             stmt.Dispose();
         }
@@ -179,21 +177,21 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, false, false});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, false, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 19));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, false, false});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, false, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 11));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, true, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, true, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 9));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, true, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, true, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 9));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{false, true, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{false, true, true});
     
             stmt.Dispose();
         }
@@ -207,15 +205,15 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, false, false});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, false, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, true, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, true, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 11));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{false, true, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{false, true, true});
     
             stmt.Dispose();
         }
@@ -229,15 +227,15 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{null, null, null});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{null, null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, true, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, true, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 11));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{false, false, false});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{false, false, false});
     
             stmt.Dispose();
         }
@@ -251,21 +249,21 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{null, null, null});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{null, null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{null, null, null});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{null, null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 0));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, true, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, true, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 1));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{false, false, false});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{false, false, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", -1));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{null, null, null});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{null, null, null});
     
             stmt.Dispose();
         }
@@ -279,18 +277,18 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, false, false});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, false, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, false, false});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, false, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 10));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, true, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, true, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 11));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{false, true, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{false, true, true});
     
             stmt.Dispose();
         }
@@ -301,15 +299,15 @@ namespace com.espertech.esper.regression.epl.subselect
                     "not Exists (select sum(intPrimitive) from SupportBean  having sum(intPrimitive) < 15) as c1 from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendVEAndAssert(epService, listener, fields, new Object[]{false, true});
+            SendVEAndAssert(epService, listener, fields, new object[]{false, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            SendVEAndAssert(epService, listener, fields, new Object[]{true, false});
+            SendVEAndAssert(epService, listener, fields, new object[]{true, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 100));
-            SendVEAndAssert(epService, listener, fields, new Object[]{false, true});
+            SendVEAndAssert(epService, listener, fields, new object[]{false, true});
     
             stmt.Dispose();
         }
@@ -320,12 +318,12 @@ namespace com.espertech.esper.regression.epl.subselect
                     "not Exists (select sum(intPrimitive) from SupportBean) as c1 from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendVEAndAssert(epService, listener, fields, new Object[]{true, false});
+            SendVEAndAssert(epService, listener, fields, new object[]{true, false});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            SendVEAndAssert(epService, listener, fields, new Object[]{true, false});
+            SendVEAndAssert(epService, listener, fields, new object[]{true, false});
     
             stmt.Dispose();
         }
@@ -339,16 +337,16 @@ namespace com.espertech.esper.regression.epl.subselect
                     "not Exists (select sum(anint) from MyWindow group by key) as c1 from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendVEAndAssert(epService, listener, fields, new Object[]{false, true});
+            SendVEAndAssert(epService, listener, fields, new object[]{false, true});
     
             epService.EPRuntime.SendEvent(new SupportIdAndValueEvent("E1", 19));
-            SendVEAndAssert(epService, listener, fields, new Object[]{true, false});
+            SendVEAndAssert(epService, listener, fields, new object[]{true, false});
     
             epService.EPRuntime.ExecuteQuery("delete from MyWindow");
     
-            SendVEAndAssert(epService, listener, fields, new Object[]{false, true});
+            SendVEAndAssert(epService, listener, fields, new object[]{false, true});
     
             stmt.Dispose();
             stmtNamedWindow.Dispose();
@@ -364,19 +362,19 @@ namespace com.espertech.esper.regression.epl.subselect
                     "not Exists (select sum(anint) from MyWindow group by key having sum(anint) < 15) as c1 from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendVEAndAssert(epService, listener, fields, new Object[]{false, true});
+            SendVEAndAssert(epService, listener, fields, new object[]{false, true});
     
             epService.EPRuntime.SendEvent(new SupportIdAndValueEvent("E1", 19));
-            SendVEAndAssert(epService, listener, fields, new Object[]{false, true});
+            SendVEAndAssert(epService, listener, fields, new object[]{false, true});
     
             epService.EPRuntime.SendEvent(new SupportIdAndValueEvent("E2", 12));
-            SendVEAndAssert(epService, listener, fields, new Object[]{true, false});
+            SendVEAndAssert(epService, listener, fields, new object[]{true, false});
     
             epService.EPRuntime.ExecuteQuery("delete from MyWindow");
     
-            SendVEAndAssert(epService, listener, fields, new Object[]{false, true});
+            SendVEAndAssert(epService, listener, fields, new object[]{false, true});
     
             stmt.Dispose();
             stmtNamedWindow.Dispose();
@@ -392,21 +390,21 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{null, null, null});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{null, null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 19));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{null, null, null});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{null, null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 11));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, true, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, true, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 9));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{null, null, null});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{null, null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", -1000));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{false, false, false});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{false, false, false});
     
             stmt.Dispose();
         }
@@ -420,15 +418,15 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{null, null, null});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{null, null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 11));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{true, true, true});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{true, true, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", -1000));
-            SendVEAndAssert(epService, listener, fields, 10, new Object[]{false, false, false});
+            SendVEAndAssert(epService, listener, fields, 10, new object[]{false, false, false});
     
             stmt.Dispose();
         }
@@ -437,7 +435,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtText = "select id from S0 where Exists (select max(id) from S1#length(3))";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEventS0(epService, 1);
             Assert.AreEqual(1, listener.AssertOneGetNewAndReset().Get("id"));
@@ -453,7 +451,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtText = "select id from S0 where id in (select max(id) from S1#length(2))";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEventS0(epService, 1);
             Assert.IsFalse(listener.IsInvoked);
@@ -476,12 +474,12 @@ namespace com.espertech.esper.regression.epl.subselect
             stmt.Dispose();
         }
     
-        private void SendVEAndAssert(EPServiceProvider epService, SupportUpdateListener listener, string[] fields, int value, Object[] expected) {
+        private void SendVEAndAssert(EPServiceProvider epService, SupportUpdateListener listener, string[] fields, int value, object[] expected) {
             epService.EPRuntime.SendEvent(new SupportValueEvent(value));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, expected);
         }
     
-        private void SendVEAndAssert(EPServiceProvider epService, SupportUpdateListener listener, string[] fields, Object[] expected) {
+        private void SendVEAndAssert(EPServiceProvider epService, SupportUpdateListener listener, string[] fields, object[] expected) {
             epService.EPRuntime.SendEvent(new SupportValueEvent(-1));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, expected);
         }

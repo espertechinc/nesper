@@ -17,7 +17,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -57,7 +56,7 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPAdministrator.CreateEPL("create window MyWindowSNW#unique(p00)#keepall as S0");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from pattern[S1(SupportSingleRowFunction((select * from MyWindowSNW)))]");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S1(1));
             listener.AssertInvokedAndReset();
         }
@@ -67,14 +66,14 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtTextOne = "select s.id as myid from pattern [every s=S0(p00 in (select p10 from S1#lastevent))]";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
             TryAssertion(epService, listener);
             stmtOne.Dispose();
     
             // subselect in filter
             string stmtTextTwo = "select id as myid from S0(p00 in (select p10 from S1#lastevent))";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTextTwo);
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
             TryAssertion(epService, listener);
             stmtTwo.Dispose();
     
@@ -83,7 +82,7 @@ namespace com.espertech.esper.regression.epl.subselect
             EPStatement stmtInsertThree = epService.EPAdministrator.CreateEPL("insert into MyS1Window select * from S1");
             string stmtTextThree = "select id as myid from S0(p00 in (select p10 from MyS1Window))";
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL(stmtTextThree);
-            stmtThree.AddListener(listener);
+            stmtThree.Events += listener.Update;
             TryAssertion(epService, listener);
             stmtThree.Dispose();
             stmtInsertThree.Dispose();
@@ -94,7 +93,7 @@ namespace com.espertech.esper.regression.epl.subselect
             EPStatement stmtInsertFour = epService.EPAdministrator.CreateEPL("insert into MyS1Window select * from S1");
             string stmtTextFour = "select s.id as myid from pattern [every s=S0(p00 in (select p10 from MyS1Window))]";
             EPStatement stmtFour = epService.EPAdministrator.CreateEPL(stmtTextFour);
-            stmtFour.AddListener(listener);
+            stmtFour.Events += listener.Update;
             TryAssertion(epService, listener);
             stmtFour.Dispose();
             stmtInsertFour.Dispose();
@@ -106,13 +105,13 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtTextTwo = "select sp1.id as myid from pattern[every sp1=S0(Exists (select * from S1#keepall as stream1 where stream1.p10 = sp1.p00))]";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listener = new SupportUpdateListener();
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
             TryAssertionCorrelated(epService, listener);
             stmtTwo.Dispose();
     
             string stmtTextOne = "select id as myid from S0(Exists (select stream1.id from S1#keepall as stream1 where stream1.p10 = stream0.p00)) as stream0";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
             TryAssertionCorrelated(epService, listener);
             stmtOne.Dispose();
     
@@ -120,7 +119,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtTextThree = "select sp0.p00||'+'||sp1.p10 as myid from pattern[" +
                     "every sp0=S0 -> sp1=S1(p11 = (select stream2.p21 from S2#keepall as stream2 where stream2.p20 = sp0.p00))]";
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL(stmtTextThree);
-            stmtThree.AddListener(listener);
+            stmtThree.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S2(21, "X", "A"));
             epService.EPRuntime.SendEvent(new SupportBean_S2(22, "Y", "B"));
@@ -148,7 +147,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtText = "select * from S0(id = (select sum(id) from S1#length(2)))";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
             epService.EPRuntime.SendEvent(new SupportBean_S1(1));
@@ -217,7 +216,7 @@ namespace com.espertech.esper.regression.epl.subselect
             Assert.AreEqual(10, listener.AssertOneGetNewAndReset().Get("myid"));
         }
     
-        public static bool SupportSingleRowFunction(params Object[] v) {
+        public static bool SupportSingleRowFunction(params object[] v) {
             return true;
         }
     }

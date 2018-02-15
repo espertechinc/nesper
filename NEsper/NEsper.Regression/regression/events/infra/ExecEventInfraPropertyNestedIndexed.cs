@@ -154,7 +154,7 @@ namespace com.espertech.esper.regression.events.infra
             var epl = "select * from " + typename;
             var statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
 
             send.Invoke(epService, 1, 2, 3, 4);
             var @event = listener.AssertOneGetNewAndReset();
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regression.events.infra
                       "from " + typename;
             var statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             var fields = "c0,exists_c0,c1,exists_c1,c2,exists_c2,c3,exists_c3".Split(',');
 
             foreach (var property in fields)

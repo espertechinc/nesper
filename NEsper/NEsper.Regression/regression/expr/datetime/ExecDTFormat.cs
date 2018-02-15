@@ -45,15 +45,15 @@ namespace com.espertech.esper.regression.expr.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string)});
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            Object[] expected = SupportDateTime.GetArrayCoerced(startTime, "sdf", "sdf", "sdf", "sdf", "dtf_isodt", "dtf_isozdt");
+            object[] expected = SupportDateTime.GetArrayCoerced(startTime, "sdf", "sdf", "sdf", "sdf", "dtf_isodt", "dtf_isozdt");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, expected);
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{SupportDateTime.GetValueCoerced(startTime, "sdf"), null, null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{SupportDateTime.GetValueCoerced(startTime, "sdf"), null, null, null, null, null});
     
             stmtFragment.Dispose();
         }
@@ -75,18 +75,18 @@ namespace com.espertech.esper.regression.expr.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypesAllSame(stmtFragment.EventType, fields, typeof(string));
     
             SupportDateTime sdt = SupportDateTime.Make(startTime);
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            var expected = new Object[]{
+            var expected = new object[]{
                     sdf.Format(sdt.Longdate), sdf.Format(sdt.Utildate), 
             };
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, expected);
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, null, null, null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, null, null, null, null, null});
     
             stmtFragment.Dispose();
         }

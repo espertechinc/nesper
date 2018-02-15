@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -43,7 +41,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // preload with 10k events
             for (int i = 0; i < 10000; i++) {
@@ -59,7 +57,7 @@ namespace com.espertech.esper.regression.epl.subselect
             long endTime = DateTimeHelper.CurrentTimeMillis;
             long delta = endTime - startTime;
     
-            Assert.IsTrue("Failed perf test, delta=" + delta, delta < 1000);
+            Assert.IsTrue(delta < 1000, "Failed perf test, delta=" + delta);
             stmt.Dispose();
         }
     
@@ -68,7 +66,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // preload with 10k events
             for (int i = 0; i < 10000; i++) {
@@ -84,7 +82,7 @@ namespace com.espertech.esper.regression.epl.subselect
             long endTime = DateTimeHelper.CurrentTimeMillis;
             long delta = endTime - startTime;
     
-            Assert.IsTrue("Failed perf test, delta=" + delta, delta < 1000);
+            Assert.IsTrue(delta < 1000, "Failed perf test, delta=" + delta);
             stmt.Dispose();
         }
     
@@ -103,7 +101,7 @@ namespace com.espertech.esper.regression.epl.subselect
         private void TryPerfJoin3Criteria(EPServiceProvider epService, string stmtText) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // preload with 10k events
             for (int i = 0; i < 10000; i++) {
@@ -121,7 +119,7 @@ namespace com.espertech.esper.regression.epl.subselect
             long endTime = DateTimeHelper.CurrentTimeMillis;
             long delta = endTime - startTime;
     
-            Assert.IsTrue("Failed perf test, delta=" + delta, delta < 1500);
+            Assert.IsTrue(delta < 1500, "Failed perf test, delta=" + delta);
             stmt.Dispose();
         }
     }

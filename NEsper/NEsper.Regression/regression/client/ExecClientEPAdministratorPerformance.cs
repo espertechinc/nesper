@@ -15,8 +15,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -29,7 +27,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertion1kValidStmtsPerformance(EPServiceProvider epService) {
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             for (int i = 0; i < 1000; i++) {
                 string text = "select * from " + typeof(SupportBean).FullName;
                 EPStatement stmt = epService.EPAdministrator.CreateEPL(text, "s1");
@@ -39,14 +37,14 @@ namespace com.espertech.esper.regression.client
                 stmt.Stop();
                 stmt.Dispose();
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             long delta = end - start;
-            Assert.IsTrue(".test10kValid delta=" + delta, delta < 5000);
+            Assert.IsTrue(delta < 5000, ".test10kValid delta=" + delta);
             epService.EPAdministrator.DestroyAllStatements();
         }
     
         private void RunAssertion1kInvalidStmts(EPServiceProvider epService) {
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             for (int i = 0; i < 1000; i++) {
                 try {
                     string text = "select xxx from " + typeof(SupportBean).FullName;
@@ -55,9 +53,9 @@ namespace com.espertech.esper.regression.client
                     // expected
                 }
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             long delta = end - start;
-            Assert.IsTrue(".test1kInvalid delta=" + delta, delta < 2500);
+            Assert.IsTrue(delta < 2500, ".test1kInvalid delta=" + delta);
             epService.EPAdministrator.DestroyAllStatements();
         }
     }

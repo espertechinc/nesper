@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.regression.support;
@@ -150,7 +151,7 @@ namespace com.espertech.esper.regression.pattern
             var listener = new SupportUpdateListener();
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmt);
             Assert.AreEqual(StatementType.SELECT, ((EPStatementSPI) statement).StatementMetadata.StatementType);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SupportBean_A eventA;
             EventBean received;
@@ -199,7 +200,7 @@ namespace com.espertech.esper.regression.pattern
                     "where B.source != A.source";
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SupportCallEvent eventOne = SendEvent(epService.EPRuntime, 2000002601, "18", "123456789014795", DateToLong("2005-09-26 13:02:53.200"), DateToLong("2005-09-26 13:03:34.400"));
             SupportCallEvent eventTwo = SendEvent(epService.EPRuntime, 2000002607, "20", "123456789014795", DateToLong("2005-09-26 13:03:17.300"), DateToLong("2005-09-26 13:03:58.600"));
@@ -234,7 +235,7 @@ namespace com.espertech.esper.regression.pattern
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             for (int i = 0; i < 10; i++) {
                 /*
@@ -270,7 +271,7 @@ namespace com.espertech.esper.regression.pattern
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             var theEvent = new SupportRFIDEvent("a", "1");
             epService.EPRuntime.SendEvent(theEvent);
@@ -312,7 +313,7 @@ namespace com.espertech.esper.regression.pattern
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             var theEvent = new SupportRFIDEvent("a", "2");
             epService.EPRuntime.SendEvent(theEvent);
@@ -345,7 +346,7 @@ namespace com.espertech.esper.regression.pattern
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             var eventOne = new SupportBean();
             epService.EPRuntime.SendEvent(eventOne);
@@ -369,7 +370,7 @@ namespace com.espertech.esper.regression.pattern
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             var events = new Object[10];
             events[0] = new SupportBean_A("A1");
@@ -389,8 +390,8 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(events[4]);
             Assert.AreEqual(2, listener.LastNewData.Length);
             var fields = new string[]{"a", "b", "c", "d"};
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{events[0], events[2], events[3], events[4]});
-            EPAssertionUtil.AssertProps(listener.LastNewData[1], fields, new Object[]{events[1], events[2], events[3], events[4]});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{events[0], events[2], events[3], events[4]});
+            EPAssertionUtil.AssertProps(listener.LastNewData[1], fields, new object[]{events[1], events[2], events[3], events[4]});
     
             statement.Dispose();
         }
@@ -401,7 +402,7 @@ namespace com.espertech.esper.regression.pattern
     
             EPStatement statement = epService.EPAdministrator.CreatePattern("every a=SupportBean -> b=SupportBean(b.intPrimitive <= a.intPrimitive)");
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 11));
@@ -409,7 +410,7 @@ namespace com.espertech.esper.regression.pattern
     
             statement.Dispose();
             statement = epService.EPAdministrator.CreatePattern("every a=SupportBean -> b=SupportBean(a.intPrimitive >= b.intPrimitive)");
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 11));
@@ -431,7 +432,7 @@ namespace com.espertech.esper.regression.pattern
                     "(SupportBean(theString='C2') and not timer:Interval(10))";
             EPStatement statement = epService.EPAdministrator.CreatePattern(pattern);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
             epService.EPRuntime.SendEvent(new SupportBean("E", 0));
@@ -446,10 +447,9 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private long DateToLong(string dateText) {
-            var format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-            Date date = format.Parse(dateText);
-            Log.Debug(".dateToLong out=" + date.ToString());
-            return Date.Time;
+            var date = DateTimeOffset.Parse(dateText);
+            Log.Debug(".dateToLong out=" + date);
+            return date.TimeInMillis();
         }
     
         private SupportCallEvent SendEvent(EPRuntime runtime, long callId, string source, string destination, long startTime, long endTime) {

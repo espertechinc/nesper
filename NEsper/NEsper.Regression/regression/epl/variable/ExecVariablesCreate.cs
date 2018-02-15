@@ -20,7 +20,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -51,7 +50,7 @@ namespace com.espertech.esper.regression.epl.variable
             string stmtTextSelect = "select var1OM, var2OM from " + typeof(SupportBean).FullName;
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
     
             var fieldsVar = new string[]{"var1OM", "var2OM"};
             SendSupportBean(epService, "E1", 10);
@@ -76,7 +75,7 @@ namespace com.espertech.esper.regression.epl.variable
             string stmtTextSelect = "select var1CSS, var2CSS from " + typeof(SupportBean).FullName;
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
     
             var fieldsVar = new string[]{"var1CSS", "var2CSS"};
             SendSupportBean(epService, "E1", 10);
@@ -100,7 +99,7 @@ namespace com.espertech.esper.regression.epl.variable
                 epService.EPAdministrator.CreateEPL("select MissingScript(x) from SupportBean");
             } catch (Exception ex) {
                 foreach (string statementName in epService.EPAdministrator.StatementNames) {
-                    epService.EPAdministrator.GetStatement(statementName).Destroy();
+                    epService.EPAdministrator.GetStatement(statementName).Dispose();
                 }
             }
             epService.EPAdministrator.CreateEPL("create variable int x = 123");
@@ -113,7 +112,7 @@ namespace com.espertech.esper.regression.epl.variable
             EPStatement stmtCreateOne = epService.EPAdministrator.CreateEPL(stmtCreateTextOne);
             Assert.AreEqual(StatementType.CREATE_VARIABLE, ((EPStatementSPI) stmtCreateOne).StatementMetadata.StatementType);
             var listenerCreateOne = new SupportUpdateListener();
-            stmtCreateOne.AddListener(listenerCreateOne);
+            stmtCreateOne.Events += listenerCreateOne.Update;
             var fieldsVar1 = new string[]{"var1SAI"};
             EPAssertionUtil.AssertPropsPerRow(stmtCreateOne.GetEnumerator(), fieldsVar1, new object[][]{new object[] {null}});
             Assert.IsFalse(listenerCreateOne.IsInvoked);
@@ -126,7 +125,7 @@ namespace com.espertech.esper.regression.epl.variable
             string stmtCreateTextTwo = "create variable long var2SAI = 20";
             EPStatement stmtCreateTwo = epService.EPAdministrator.CreateEPL(stmtCreateTextTwo);
             var listenerCreateTwo = new SupportUpdateListener();
-            stmtCreateTwo.AddListener(listenerCreateTwo);
+            stmtCreateTwo.Events += listenerCreateTwo.Update;
             var fieldsVar2 = new string[]{"var2SAI"};
             EPAssertionUtil.AssertPropsPerRow(stmtCreateTwo.GetEnumerator(), fieldsVar2, new object[][]{new object[] {20L}});
             Assert.IsFalse(listenerCreateTwo.IsInvoked);
@@ -217,7 +216,7 @@ namespace com.espertech.esper.regression.epl.variable
             buf.Append(typeof(SupportBean).FullName);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(buf.ToString());
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // assert initialization values
             SendSupportBean(epService, "E1", 1);

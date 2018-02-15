@@ -22,7 +22,7 @@ namespace com.espertech.esper.regression.expr.expr
             string epl = "select intPrimitive/intBoxed as result from SupportBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("result"));
     
             SendEvent(epService, 100, 3);

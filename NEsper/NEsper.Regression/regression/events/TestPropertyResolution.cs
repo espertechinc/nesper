@@ -13,7 +13,6 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.metrics.instrumentation;
-using com.espertech.esper.supportregession.bean;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.util;
@@ -42,7 +41,7 @@ namespace com.espertech.esper.regression.events
 	        SupportUpdateListener listener = new SupportUpdateListener();
 
 	        EPStatement stmt = epService.EPAdministrator.CreateEPL("select `seconds`, `order` from SomeKeywords");
-	        stmt.AddListener(listener);
+	        stmt.Events += listener.Update;
 
 	        object theEvent = new SupportBeanReservedKeyword(1, 2);
 	        epService.EPRuntime.SendEvent(theEvent);
@@ -52,7 +51,7 @@ namespace com.espertech.esper.regression.events
 
 	        stmt.Dispose();
 	        stmt = epService.EPAdministrator.CreateEPL("select * from `Order`");
-	        stmt.AddListener(listener);
+	        stmt.Events += listener.Update;
 
 	        epService.EPRuntime.SendEvent(theEvent);
 	        eventBean = listener.AssertOneGetNewAndReset();
@@ -61,7 +60,7 @@ namespace com.espertech.esper.regression.events
 
 	        stmt.Dispose();
 	        stmt = epService.EPAdministrator.CreateEPL("select timestamp.`hour` as val from SomeKeywords");
-	        stmt.AddListener(listener);
+	        stmt.Events += listener.Update;
 
 	        SupportBeanReservedKeyword bean = new SupportBeanReservedKeyword(1, 2);
 	        bean.Timestamp = new SupportBeanReservedKeyword.Inner();
@@ -78,7 +77,7 @@ namespace com.espertech.esper.regression.events
 	        defType.Put("children's books", typeof(int[]));
 	        defType.Put("my <> map", typeof(IDictionary<string, object>));
 	        epService.EPAdministrator.Configuration.AddEventType("MyType", defType);
-	        epService.EPAdministrator.CreateEPL("select `candidate book` as c0, `XML Message UnderlyingType` as c1, `select` as c2, `children's books`[0] as c3, `my <> map`('xx') as c4 from MyType").AddListener(listener);
+	        epService.EPAdministrator.CreateEPL("select `candidate book` as c0, `XML Message UnderlyingType` as c1, `select` as c2, `children's books`[0] as c3, `my <> map`('xx') as c4 from MyType").Events += listener.Update;
 
 	        IDictionary<string, object> defValues = new Dictionary<string, object>();
 	        defValues.Put("candidate book", "Enders Game");
@@ -112,7 +111,7 @@ namespace com.espertech.esper.regression.events
 	        // test escape in column name
 	        epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 	        EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select theString as `order`, theString as `price.for.goods` from SupportBean");
-	        stmtTwo.AddListener(listener);
+	        stmtTwo.Events += listener.Update;
 	        Assert.AreEqual(typeof(string), stmtTwo.EventType.GetPropertyType("order"));
 	        Assert.AreEqual("price.for.goods", stmtTwo.EventType.PropertyDescriptors[1].PropertyName);
 
@@ -144,7 +143,7 @@ namespace com.espertech.esper.regression.events
 
 	        EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from " + typeof(SupportBeanWriteOnly).FullName);
 	        SupportUpdateListener listener = new SupportUpdateListener();
-	        stmt.AddListener(listener);
+	        stmt.Events += listener.Update;
 
 	        object theEvent = new SupportBeanWriteOnly();
 	        epService.EPRuntime.SendEvent(theEvent);
@@ -172,7 +171,7 @@ namespace com.espertech.esper.regression.events
 
 	        EPStatement stmt = epService.EPAdministrator.CreateEPL("select MYPROPERTY, myproperty, myProperty from " + typeof(SupportBeanDupProperty).FullName);
 	        SupportUpdateListener listener = new SupportUpdateListener();
-	        stmt.AddListener(listener);
+	        stmt.Events += listener.Update;
 
             var uevent = new SupportBeanDupProperty("lowercamel", "uppercamel", "upper", "lower");
 
@@ -206,7 +205,7 @@ namespace com.espertech.esper.regression.events
 
 	        EPStatement stmt = epService.EPAdministrator.CreateEPL("select MYPROPERTY, myproperty, myProperty, MyProperty from " + typeof(SupportBeanDupProperty).FullName);
 	        SupportUpdateListener listener = new SupportUpdateListener();
-	        stmt.AddListener(listener);
+	        stmt.Events += listener.Update;
 
 	        epService.EPRuntime.SendEvent(new SupportBeanDupProperty("lowercamel", "uppercamel", "upper", "lower"));
 	        EventBean result = listener.AssertOneGetNewAndReset();
@@ -223,7 +222,7 @@ namespace com.espertech.esper.regression.events
 	                "MAPPED('keyOne') as val3, " +
 	                "INDEXED[0] as val4 " +
 	                " from " + typeof(SupportBeanComplexProps).FullName);
-	        stmt.AddListener(listener);
+	        stmt.Events += listener.Update;
 	        epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
 	        EventBean theEvent = listener.AssertOneGetNewAndReset();
 	        Assert.AreEqual("NestedValue", theEvent.Get("val1"));
@@ -249,7 +248,7 @@ namespace com.espertech.esper.regression.events
 
 	        EPStatement stmt = epService.EPAdministrator.CreateEPL("select fieldLegacyVal from SupportLegacyBean");
 	        SupportUpdateListener listener = new SupportUpdateListener();
-	        stmt.AddListener(listener);
+	        stmt.Events += listener.Update;
 
 	        SupportLegacyBean theEvent = new SupportLegacyBean("E1");
 	        theEvent.fieldLegacyVal = "val1";
@@ -274,7 +273,7 @@ namespace com.espertech.esper.regression.events
 
 	        EPStatement stmt = epService.EPAdministrator.CreateEPL("select MYPROPERTY, myproperty, myProperty from " + typeof(SupportBeanDupProperty).FullName);
 	        SupportUpdateListener listener = new SupportUpdateListener();
-	        stmt.AddListener(listener);
+	        stmt.Events += listener.Update;
 
 	        epService.EPRuntime.SendEvent(new SupportBeanDupProperty("lowercamel", "uppercamel", "upper", "lower"));
 	        EventBean result = listener.AssertOneGetNewAndReset();
@@ -325,7 +324,7 @@ namespace com.espertech.esper.regression.events
 
 	        EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
 	        SupportUpdateListener listener = new SupportUpdateListener();
-	        stmt.AddListener(listener);
+	        stmt.Events += listener.Update;
 
 	        epService.EPRuntime.SendEvent(new SupportBean("A", 10));
 	        EventBean result = listener.AssertOneGetNewAndReset();

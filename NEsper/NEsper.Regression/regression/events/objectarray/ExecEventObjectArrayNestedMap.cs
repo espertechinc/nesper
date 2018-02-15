@@ -34,18 +34,18 @@ namespace com.espertech.esper.regression.events.objectarray
             lev2def.Put("sb", "SupportBean");
             var lev1def = new Dictionary<string, Object>();
             lev1def.Put("lev1name", lev2def);
-            epService.EPAdministrator.Configuration.AddEventType("MyMapNestedObjectArray", new string[]{"lev0name"}, new Object[]{lev1def});
-            Assert.AreEqual(typeof(Object[]), epService.EPAdministrator.Configuration.GetEventType("MyMapNestedObjectArray").UnderlyingType);
+            epService.EPAdministrator.Configuration.AddEventType("MyMapNestedObjectArray", new string[]{"lev0name"}, new object[]{lev1def});
+            Assert.AreEqual(typeof(object[]), epService.EPAdministrator.Configuration.GetEventType("MyMapNestedObjectArray").UnderlyingType);
     
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select lev0name.lev1name.sb.theString as val from MyMapNestedObjectArray").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select lev0name.lev1name.sb.theString as val from MyMapNestedObjectArray").Events += listener.Update;
     
             var lev2data = new Dictionary<string, Object>();
             lev2data.Put("sb", eventAdapterService.AdapterForTypedObject(new SupportBean("E1", 0), supportBeanType));
             var lev1data = new Dictionary<string, Object>();
             lev1data.Put("lev1name", lev2data);
     
-            epService.EPRuntime.SendEvent(new Object[]{lev1data}, "MyMapNestedObjectArray");
+            epService.EPRuntime.SendEvent(new object[]{lev1data}, "MyMapNestedObjectArray");
             Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("val"));
     
             try {

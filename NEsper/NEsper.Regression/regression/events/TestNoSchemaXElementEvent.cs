@@ -488,8 +488,8 @@ namespace com.espertech.esper.regression.events
             Object value = theEvent.Get("A");
             EPAssertionUtil.AssertProps(
                 theEvent,
-                new String[] {"A"},
-                new Object[] {new Object[]
+                new string[] {"A"},
+                new object[] {new object[]
                                   {
                                       "987654321", 
                                       "9876543210"

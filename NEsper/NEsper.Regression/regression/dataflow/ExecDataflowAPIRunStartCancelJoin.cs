@@ -581,7 +581,7 @@ namespace com.espertech.esper.regression.dataflow
 
             // non-blocking run, spinning wait
             dfOne.Start();
-            var start = DateTimeHelper.CurrentTimeMillis;
+            var start = PerformanceObserver.MilliTime;
             while (dfOne.State != EPDataFlowState.COMPLETE)
             {
                 if (DateTimeHelper.CurrentTimeMillis - start > 1000)

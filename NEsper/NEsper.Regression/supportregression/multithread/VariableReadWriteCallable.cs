@@ -34,7 +34,7 @@ namespace com.espertech.esper.supportregression.multithread
 
             _selectListener = new SupportUpdateListener();
             var stmtText = "select var1, var2, var3 from " + typeof(SupportBean_A).Name + "(id='" + threadNum + "')";
-            engine.EPAdministrator.CreateEPL(stmtText).AddListener(_selectListener);
+            engine.EPAdministrator.CreateEPL(stmtText).Events += _selectListener.Update;
         }
 
         public bool Call()

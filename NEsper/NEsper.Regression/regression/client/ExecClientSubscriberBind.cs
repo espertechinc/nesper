@@ -19,8 +19,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.subscriber;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -126,7 +124,7 @@ namespace com.espertech.esper.regression.client
             TryAssertionBindWildcardIRStream(epService, new SupportSubscriberMultirowUnderlyingNStmt());
             TryAssertionBindWildcardIRStream(epService, new SupportSubscriberMultirowUnderlyingWStmt());
     
-            // Object[] and "Object..." binding
+            // object[] and "Object..." binding
             foreach (EventRepresentationChoice rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                 TryAssertionObjectArrayDelivery(epService, rep, new SupportSubscriberRowByRowObjectArrayPlainNStmt());
                 TryAssertionObjectArrayDelivery(epService, rep, new SupportSubscriberRowByRowObjectArrayPlainWStmt());
@@ -171,7 +169,7 @@ namespace com.espertech.esper.regression.client
             var listener = new SupportUpdateListener();
             var subscriber = new SupportSubscriberRowByRowObjectArrayPlainNStmt();
     
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             stmt.Subscriber = subscriber;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
     
@@ -195,13 +193,13 @@ namespace com.espertech.esper.regression.client
             subscriber.AssertNoneReceived();
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            subscriber.AssertOneReceivedAndReset(stmt, 2, 0, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}}, null);
+            subscriber.AssertOneReceivedAndReset(stmt, 2, 0, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}}, null);
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
             subscriber.AssertNoneReceived();
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
-            subscriber.AssertOneReceivedAndReset(stmt, 2, 2, new Object[][]{new object[] {"E3", 3}, new object[] {"E4", 4}}, new Object[][] {new object[] {"E1", 1}, new object[] {"E2", 2}});
+            subscriber.AssertOneReceivedAndReset(stmt, 2, 2, new object[][]{new object[] {"E3", 3}, new object[] {"E4", 4}}, new object[][] {new object[] {"E1", 1}, new object[] {"E2", 2}});
         }
     
         private void TryAssertionBindObjectArr(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum, SupportSubscriberMultirowObjectArrayBase subscriber) {
@@ -214,13 +212,13 @@ namespace com.espertech.esper.regression.client
             subscriber.AssertNoneReceived();
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            subscriber.AssertOneReceivedAndReset(stmt, FIELDS, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}}, null);
+            subscriber.AssertOneReceivedAndReset(stmt, FIELDS, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}}, null);
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
             subscriber.AssertNoneReceived();
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
-            subscriber.AssertOneReceivedAndReset(stmt, FIELDS, new Object[][]{new object[] {"E3", 3}, new object[] {"E4", 4}}, new Object[][] {new object[] {"E1", 1}, new object[] {"E2", 2}});
+            subscriber.AssertOneReceivedAndReset(stmt, FIELDS, new object[][]{new object[] {"E3", 3}, new object[] {"E4", 4}}, new object[][] {new object[] {"E1", 1}, new object[] {"E2", 2}});
     
             stmt.Dispose();
         }
@@ -235,13 +233,13 @@ namespace com.espertech.esper.regression.client
             subscriber.AssertNoneReceived();
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            subscriber.AssertOneReceivedAndReset(stmt, FIELDS, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}}, null);
+            subscriber.AssertOneReceivedAndReset(stmt, FIELDS, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}}, null);
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
             subscriber.AssertNoneReceived();
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
-            subscriber.AssertOneReceivedAndReset(stmt, FIELDS, new Object[][]{new object[] {"E3", 3}, new object[] {"E4", 4}}, new Object[][] {new object[] {"E1", 1}, new object[] {"E2", 2}});
+            subscriber.AssertOneReceivedAndReset(stmt, FIELDS, new object[][]{new object[] {"E3", 3}, new object[] {"E4", 4}}, new object[][] {new object[] {"E1", 1}, new object[] {"E2", 2}});
     
             stmt.Dispose();
         }
@@ -258,7 +256,7 @@ namespace com.espertech.esper.regression.client
             bean.LongPrimitive = 3;
             bean.FloatPrimitive = 4;
             epService.EPRuntime.SendEvent(bean);
-            subscriber.AssertOneReceivedAndReset(stmt, new Object[]{1, 2L, 3d, 4d});
+            subscriber.AssertOneReceivedAndReset(stmt, new object[]{1, 2L, 3d, 4d});
     
             stmt.Dispose();
         }
@@ -269,10 +267,10 @@ namespace com.espertech.esper.regression.client
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            subscriber.AssertOneAndReset(stmt, new Object[]{"E1", 1});
+            subscriber.AssertOneAndReset(stmt, new object[]{"E1", 1});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 10));
-            subscriber.AssertOneAndReset(stmt, new Object[]{"E2", 10});
+            subscriber.AssertOneAndReset(stmt, new object[]{"E2", 10});
     
             stmt.Dispose();
         }
@@ -283,13 +281,13 @@ namespace com.espertech.esper.regression.client
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            subscriber.AssertIRStreamAndReset(stmt, FIELDS, new Object[]{"E1", 1}, null);
+            subscriber.AssertIRStreamAndReset(stmt, FIELDS, new object[]{"E1", 1}, null);
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 10));
-            subscriber.AssertIRStreamAndReset(stmt, FIELDS, new Object[]{"E2", 10}, null);
+            subscriber.AssertIRStreamAndReset(stmt, FIELDS, new object[]{"E2", 10}, null);
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
-            subscriber.AssertIRStreamAndReset(stmt, FIELDS, new Object[]{"E1", 2}, new Object[]{"E1", 1});
+            subscriber.AssertIRStreamAndReset(stmt, FIELDS, new object[]{"E1", 2}, new object[]{"E1", 1});
     
             stmt.Dispose();
         }
@@ -299,7 +297,7 @@ namespace com.espertech.esper.regression.client
     
             SupportBeanComplexProps theEvent = SupportBeanComplexProps.MakeDefaultBean();
             epService.EPRuntime.SendEvent(theEvent);
-            subscriber.AssertOneReceivedAndReset(stmt, new Object[]{theEvent.Nested, theEvent.Nested.NestedNested});
+            subscriber.AssertOneReceivedAndReset(stmt, new object[]{theEvent.Nested, theEvent.Nested.NestedNested});
         }
     
         private void TryAssertionEnum(EPServiceProvider epService, EPStatement stmtEnum, SupportSubscriberRowByRowSpecificBase subscriber) {
@@ -307,13 +305,13 @@ namespace com.espertech.esper.regression.client
     
             var theEvent = new SupportBeanWithEnum("abc", SupportEnum.ENUM_VALUE_1);
             epService.EPRuntime.SendEvent(theEvent);
-            subscriber.AssertOneReceivedAndReset(stmtEnum, new Object[]{theEvent.TheString, theEvent.SupportEnum});
+            subscriber.AssertOneReceivedAndReset(stmtEnum, new object[]{theEvent.TheString, theEvent.SupportEnum});
         }
     
         private void TryAssertionNullSelected(EPServiceProvider epService, EPStatement stmt, SupportSubscriberRowByRowSpecificBase subscriber) {
             stmt.Subscriber = subscriber;
             epService.EPRuntime.SendEvent(new SupportBean());
-            subscriber.AssertOneReceivedAndReset(stmt, new Object[]{null, null});
+            subscriber.AssertOneReceivedAndReset(stmt, new object[]{null, null});
         }
     
         private void TryAssertionStreamSelectWJoin(EPServiceProvider epService, SupportSubscriberRowByRowSpecificBase subscriber) {
@@ -324,7 +322,7 @@ namespace com.espertech.esper.regression.client
             var s1 = new SupportMarketDataBean("E1", 0, 0L, "");
             epService.EPRuntime.SendEvent(s0);
             epService.EPRuntime.SendEvent(s1);
-            subscriber.AssertOneReceivedAndReset(stmt, new Object[]{null, s1, s0});
+            subscriber.AssertOneReceivedAndReset(stmt, new object[]{null, s1, s0});
     
             stmt.Dispose();
         }
@@ -337,7 +335,7 @@ namespace com.espertech.esper.regression.client
             var s1 = new SupportMarketDataBean("E1", 0, 0L, "");
             epService.EPRuntime.SendEvent(s0);
             epService.EPRuntime.SendEvent(s1);
-            subscriber.AssertOneReceivedAndReset(stmt, new Object[]{s0, s1});
+            subscriber.AssertOneReceivedAndReset(stmt, new object[]{s0, s1});
     
             stmt.Dispose();
         }
@@ -346,7 +344,7 @@ namespace com.espertech.esper.regression.client
             stmt.Subscriber = subscriber;
             var theEvent = new SupportBean("E2", 1);
             epService.EPRuntime.SendEvent(theEvent);
-            subscriber.AssertOneReceivedAndReset(stmt, new Object[]{theEvent});
+            subscriber.AssertOneReceivedAndReset(stmt, new object[]{theEvent});
         }
     
         private void TryAssertionStreamWildcardJoin(EPServiceProvider epService, SupportSubscriberRowByRowSpecificBase subscriber) {
@@ -357,7 +355,7 @@ namespace com.espertech.esper.regression.client
             var s1 = new SupportMarketDataBean("E1", 0, 0L, "");
             epService.EPRuntime.SendEvent(s0);
             epService.EPRuntime.SendEvent(s1);
-            subscriber.AssertOneReceivedAndReset(stmt, new Object[]{"E1<", s1, s0});
+            subscriber.AssertOneReceivedAndReset(stmt, new object[]{"E1<", s1, s0});
     
             stmt.Dispose();
         }
@@ -367,7 +365,7 @@ namespace com.espertech.esper.regression.client
     
             var s0 = new SupportBean("E1", 100);
             epService.EPRuntime.SendEvent(s0);
-            subscriber.AssertOneReceivedAndReset(stmt, new Object[]{s0, 102, "xE1x"});
+            subscriber.AssertOneReceivedAndReset(stmt, new object[]{s0, 102, "xE1x"});
         }
     
         private void TryAssertionOutputLimitNoJoin(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum, SupportSubscriberRowByRowSpecificBase subscriber) {
@@ -379,7 +377,7 @@ namespace com.espertech.esper.regression.client
             subscriber.AssertNoneReceived();
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            subscriber.AssertMultipleReceivedAndReset(stmt, new Object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
+            subscriber.AssertMultipleReceivedAndReset(stmt, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
     
             stmt.Dispose();
         }
@@ -393,7 +391,7 @@ namespace com.espertech.esper.regression.client
             subscriber.AssertNoneReceived();
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
-            subscriber.AssertMultipleReceivedAndReset(stmt, new Object[][]{new object[] {"E1", 1}, new object[] {"E1", 2}});
+            subscriber.AssertMultipleReceivedAndReset(stmt, new object[][]{new object[] {"E1", 1}, new object[] {"E1", 2}});
             stmt.Dispose();
         }
     
@@ -412,7 +410,7 @@ namespace com.espertech.esper.regression.client
     
             var s2 = new SupportBean("E1", 300);
             epService.EPRuntime.SendEvent(s2);
-            subscriber.AssertOneReceivedAndReset(stmt, new Object[]{s0});
+            subscriber.AssertOneReceivedAndReset(stmt, new object[]{s0});
     
             stmt.Dispose();
         }
@@ -425,13 +423,13 @@ namespace com.espertech.esper.regression.client
             var s1 = new SupportBean("E2", 200);
             epService.EPRuntime.SendEvent(s0);
             epService.EPRuntime.SendEvent(s1);
-            subscriber.AssertOneReceivedAndReset(stmt, new Object[]{s0, s1}, null);
+            subscriber.AssertOneReceivedAndReset(stmt, new object[]{s0, s1}, null);
     
             var s2 = new SupportBean("E3", 300);
             var s3 = new SupportBean("E4", 400);
             epService.EPRuntime.SendEvent(s2);
             epService.EPRuntime.SendEvent(s3);
-            subscriber.AssertOneReceivedAndReset(stmt, new Object[]{s2, s3}, new Object[]{s0, s1});
+            subscriber.AssertOneReceivedAndReset(stmt, new object[]{s2, s3}, new object[]{s0, s1});
     
             stmt.Dispose();
         }
@@ -442,12 +440,12 @@ namespace com.espertech.esper.regression.client
             var subscriber = new SupportSubscriberRowByRowStatic();
             stmt.Subscriber = subscriber;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 100));
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[][]{new object[] {"E1", 100}}, SupportSubscriberRowByRowStatic.GetAndResetIndicate());
+            EPAssertionUtil.AssertEqualsExactOrder(new object[][]{new object[] {"E1", 100}}, SupportSubscriberRowByRowStatic.GetAndResetIndicate());
     
             var subscriberWStmt = new SupportSubscriberRowByRowStaticWStatement();
             stmt.Subscriber = subscriberWStmt;
             epService.EPRuntime.SendEvent(new SupportBean("E2", 200));
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[][]{new object[] {"E2", 200}}, SupportSubscriberRowByRowStaticWStatement.GetIndicate());
+            EPAssertionUtil.AssertEqualsExactOrder(new object[][]{new object[] {"E2", 200}}, SupportSubscriberRowByRowStaticWStatement.GetIndicate());
             Assert.AreEqual(stmt, SupportSubscriberRowByRowStaticWStatement.GetStatements()[0]);
             subscriberWStmt.Reset();
     
@@ -465,7 +463,7 @@ namespace com.espertech.esper.regression.client
             stmt.Subscriber = new EPSubscriber(subscriber, "SomeNewDataMayHaveArrived");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            subscriber.AssertOneReceivedAndReset(stmt, new Object[]{"E1"}, null);
+            subscriber.AssertOneReceivedAndReset(stmt, new object[]{"E1"}, null);
         }
     
         private void TryAssertionPreferEPStatement(EPServiceProvider epService) {
@@ -474,7 +472,7 @@ namespace com.espertech.esper.regression.client
             stmt.Subscriber = subscriber;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
-            subscriber.AssertOneReceivedAndReset(stmt, new Object[]{"E1", 10});
+            subscriber.AssertOneReceivedAndReset(stmt, new object[]{"E1", 10});
     
             stmt.Dispose();
         }

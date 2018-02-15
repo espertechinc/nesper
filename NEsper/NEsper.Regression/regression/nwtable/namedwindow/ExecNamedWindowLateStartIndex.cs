@@ -17,8 +17,6 @@ using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -34,9 +32,9 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             // test join
             string eplJoin = "select * from SupportBean_S0 as s0 unidirectional, AWindow(p00='x') as aw where aw.id = s0.id";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(eplJoin).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(eplJoin).Events += listener.Update;
             if (!InstrumentationHelper.ENABLED) {
-                Assert.AreEqual(2, MyCountAccessEvent.AndResetCountGetterCalled);
+                Assert.AreEqual(2, MyCountAccessEvent.GetAndResetCountGetterCalled());
             }
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(-1, "x"));
@@ -45,9 +43,9 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             // test subquery no-index-share
             string eplSubqueryNoIndexShare = "select (select id from AWindow(p00='x') as aw where aw.id = s0.id) " +
                     "from SupportBean_S0 as s0 unidirectional";
-            epService.EPAdministrator.CreateEPL(eplSubqueryNoIndexShare).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(eplSubqueryNoIndexShare).Events += listener.Update;
             if (!InstrumentationHelper.ENABLED) {
-                Assert.AreEqual(2, MyCountAccessEvent.AndResetCountGetterCalled);
+                Assert.AreEqual(2, MyCountAccessEvent.GetAndResetCountGetterCalled());
             }
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(-1, "x"));
@@ -58,9 +56,9 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             string eplSubqueryWithIndexShare = "select (select id from AWindow(p00='x') as aw where aw.id = s0.id) " +
                     "from SupportBean_S0 as s0 unidirectional";
-            epService.EPAdministrator.CreateEPL(eplSubqueryWithIndexShare).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(eplSubqueryWithIndexShare).Events += listener.Update;
             if (!InstrumentationHelper.ENABLED) {
-                Assert.AreEqual(2, MyCountAccessEvent.AndResetCountGetterCalled);
+                Assert.AreEqual(2, MyCountAccessEvent.GetAndResetCountGetterCalled());
             }
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(-1, "x"));
@@ -76,13 +74,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPAdministrator.CreateEPL(createEpl);
             epService.EPAdministrator.CreateEPL("insert into AWindow select * from MyCountAccessEvent");
             epService.EPAdministrator.CreateEPL("create index I1 on AWindow(p00)");
-            MyCountAccessEvent.AndResetCountGetterCalled;
+            MyCountAccessEvent.GetAndResetCountGetterCalled();
             for (int i = 0; i < 100; i++) {
                 epService.EPRuntime.SendEvent(new MyCountAccessEvent(i, "E" + i));
             }
             epService.EPRuntime.SendEvent(new MyCountAccessEvent(-1, "x"));
             if (!InstrumentationHelper.ENABLED) {
-                Assert.AreEqual(101, MyCountAccessEvent.AndResetCountGetterCalled);
+                Assert.AreEqual(101, MyCountAccessEvent.GetAndResetCountGetterCalled());
             }
         }
     

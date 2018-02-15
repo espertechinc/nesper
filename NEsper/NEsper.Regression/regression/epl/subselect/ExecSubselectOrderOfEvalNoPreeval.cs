@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -24,7 +23,7 @@ namespace com.espertech.esper.regression.epl.subselect
 {
     public class ExecSubselectOrderOfEvalNoPreeval : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.Expression.SelfSubselectPreeval = false;
+            configuration.EngineDefaults.Expression.IsSelfSubselectPreeval = false;
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -33,7 +32,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             string epl = "select * from SupportBean(intPrimitive<10) where intPrimitive not in (select intPrimitive from SupportBean#unique(intPrimitive))";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(epl);
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 5));
             Assert.IsTrue(listener.GetAndClearIsInvoked());
@@ -42,7 +41,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             string eplTwo = "select * from SupportBean where intPrimitive not in (select intPrimitive from SupportBean(intPrimitive<10)#unique(intPrimitive))";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(eplTwo);
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 5));
             Assert.IsTrue(listener.GetAndClearIsInvoked());

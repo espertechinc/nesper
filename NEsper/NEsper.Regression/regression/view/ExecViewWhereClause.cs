@@ -17,8 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -34,7 +32,7 @@ namespace com.espertech.esper.regression.view
             string epl = "select * from " + typeof(SupportMarketDataBean).FullName + "#length(3) where symbol='CSCO'";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendMarketDataEvent(epService, "IBM");
             Assert.IsFalse(listener.GetAndClearIsInvoked());
@@ -64,8 +62,8 @@ namespace com.espertech.esper.regression.view
             stmt = epService.EPAdministrator.CreateEPL("select * From MapEvent#Time(30 seconds) where criteria");
     
             try {
-                epService.EPRuntime.SendEvent(Collections.SingletonMap("criteria", 15), "MapEvent");
-                Fail(); // ensure exception handler rethrows
+                epService.EPRuntime.SendEvent(Collections.SingletonDataMap("criteria", 15), "MapEvent");
+                Assert.Fail(); // ensure exception handler rethrows
             } catch (EPException ex) {
                 // fine
             }
@@ -85,7 +83,7 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendSupportBeanEvent(epService, 1, 2, 3, 4);
             Assert.IsFalse(listener.GetAndClearIsInvoked());

@@ -20,7 +20,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
 using static com.espertech.esper.supportregression.util.SupportSpatialUtil;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -45,7 +44,7 @@ namespace com.espertech.esper.regression.spatial
         private void RunAssertionFilterIndexTypeAssertion(EPServiceProvider epService) {
             string eplNoIndex = "select * from SupportSpatialEventRectangle(Rectangle(0, 0, 1, 1).Intersects(Rectangle(x, y, width, height)))";
             SupportFilterHelper.AssertFilterMulti(epService, eplNoIndex, "SupportSpatialEventRectangle", new SupportFilterItem[][] {
-                new []{SupportFilterItem.GetBoolExprFilterItem()}
+                new []{SupportFilterItem.BoolExprFilterItem}
             });
     
             string eplIndexed = "expression myindex {Mxcifquadtree(0, 0, 100, 100)}" +
@@ -54,7 +53,7 @@ namespace com.espertech.esper.regression.spatial
                 new []{new SupportFilterItem("x,y,width,height/myindex/mxcifquadtree/0.0,0.0,100.0,100.0,4.0,20.0", FilterOperator.ADVANCED_INDEX)}
             });
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendAssertEventRectangle(epService, listener, 10, 20, 0, 0, true);
             SendAssertEventRectangle(epService, listener, 9, 19, 0.9999, 0.9999, false);
@@ -69,7 +68,7 @@ namespace com.espertech.esper.regression.spatial
             EPStatement stmt = epService.EPAdministrator.CreateEPL("expression myindex {Mxcifquadtree(0, 0, 100, 100)}" +
                     "select * from pattern [every p=SupportSpatialEventRectangle -> SupportSpatialAABB(Rectangle(p.x, p.y, p.width, p.height, filterindex:myindex).Intersects(Rectangle(x, y, width, height)))]");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendSpatialEventRectanges(epService, 100, 50);
             SendAssertSpatialAABB(epService, listener, 100, 50, 1000);

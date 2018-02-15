@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Linq;
 using System.Xml;
 
 using com.espertech.esper.client;
@@ -18,26 +19,25 @@ using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util.support;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.events.xml
 {
     public class ExecEventXMLSchemaEventTransposeNodeArray : RegressionExecution {
-        private static readonly string CLASSLOADER_SCHEMA_URI = "regression/simpleSchema.xsd";
+        private const string CLASSLOADER_SCHEMA_URI = "regression/simpleSchema.xsd";
     
         public override void Run(EPServiceProvider epService) {
             var eventTypeMeta = new ConfigurationEventTypeXMLDOM();
             eventTypeMeta.RootElementName = "simpleEvent";
-            string schemaUri = typeof(ExecEventXMLSchemaEventTransposeNodeArray).ClassLoader.GetResource(CLASSLOADER_SCHEMA_URI).ToString();
+            string schemaUri = ResourceManager.ResolveResourceURL(CLASSLOADER_SCHEMA_URI).ToString();
             eventTypeMeta.SchemaResource = schemaUri;
             epService.EPAdministrator.Configuration.AddEventType("TestXMLSchemaType", eventTypeMeta);
     
             // try array property insert
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL("select nested3.nested4 as narr from TestXMLSchemaType#lastevent");
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{
-                    new EventPropertyDescriptor("narr", typeof(Node[]), typeof(XmlNode), false, false, true, false, true),
+            EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
+                    new EventPropertyDescriptor("narr", typeof(XmlNode[]), typeof(XmlNode), false, false, true, false, true),
             }, stmtInsert.EventType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(stmtInsert.EventType);
     
@@ -56,7 +56,7 @@ namespace com.espertech.esper.regression.events.xml
     
             // try array index property insert
             EPStatement stmtInsertItem = epService.EPAdministrator.CreateEPL("select nested3.nested4[1] as narr from TestXMLSchemaType#lastevent");
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{
+            EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
                     new EventPropertyDescriptor("narr", typeof(XmlNode), null, false, false, false, false, true),
             }, stmtInsertItem.EventType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(stmtInsertItem.EventType);

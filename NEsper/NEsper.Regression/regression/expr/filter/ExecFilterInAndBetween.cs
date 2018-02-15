@@ -14,7 +14,6 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -36,7 +35,7 @@ namespace com.espertech.esper.regression.expr.filter
                     + "(intPrimitive in (a.intOne, a.intTwo))]";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendBeanNumeric(epService, 10, 20);
             SendBeanInt(epService, 10);
@@ -50,7 +49,7 @@ namespace com.espertech.esper.regression.expr.filter
             expr = "select * from pattern [a=" + typeof(SupportBean_S0).Name + " -> every b=" + typeof(SupportBean).FullName
                     + "(theString in (a.p00, a.p01, a.p02))]";
             stmt = epService.EPAdministrator.CreateEPL(expr);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "a", "b", "c", "d"));
             SendBeanString(epService, "a");
@@ -71,7 +70,7 @@ namespace com.espertech.esper.regression.expr.filter
             string expr = "select * from " + typeof(SupportBean).FullName + "(intPrimitive in (1, 10))";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendBeanInt(epService, 10);
             Assert.IsTrue(listener.GetAndClearIsInvoked());
@@ -88,7 +87,7 @@ namespace com.espertech.esper.regression.expr.filter
             inPstmt.SetObject(1, types);
     
             EPStatement inStmt = epService.EPAdministrator.Create(inPstmt);
-            inStmt.AddListener(listener);
+            inStmt.Events += listener.Update;
     
             var theEvent = new SupportBean();
             theEvent.EnumValue = SupportEnum.ENUM_VALUE_2;
@@ -119,40 +118,40 @@ namespace com.espertech.esper.regression.expr.filter
             TryExpr(epService, "(theString in ('b':'d'])", "theString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{false, false, true, true, false});
             TryExpr(epService, "(theString in ['b':'d'))", "theString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{false, true, true, false, false});
             TryExpr(epService, "(theString in ('b':'d'))", "theString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{false, false, true, false, false});
-            TryExpr(epService, "(boolPrimitive in (false))", "boolPrimitive", new Object[]{true, false}, new bool[]{false, true});
-            TryExpr(epService, "(boolPrimitive in (false, false, false))", "boolPrimitive", new Object[]{true, false}, new bool[]{false, true});
-            TryExpr(epService, "(boolPrimitive in (false, true, false))", "boolPrimitive", new Object[]{true, false}, new bool[]{true, true});
-            TryExpr(epService, "(intBoxed in (4, 6, 1))", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, true, false, false, true, false, true});
-            TryExpr(epService, "(intBoxed in (3))", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, true, false, false, false});
-            TryExpr(epService, "(longBoxed in (3))", "longBoxed", new Object[]{0L, 1L, 2L, 3L, 4L, 5L, 6L}, new bool[]{false, false, false, true, false, false, false});
-            TryExpr(epService, "(intBoxed between 4 and 6)", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, false, true, true, true});
-            TryExpr(epService, "(intBoxed between 2 and 1)", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, true, true, false, false, false, false});
-            TryExpr(epService, "(intBoxed between 4 and -1)", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, true, true, false, false});
-            TryExpr(epService, "(intBoxed in [2:4])", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, true, true, true, false, false});
-            TryExpr(epService, "(intBoxed in (2:4])", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, true, true, false, false});
-            TryExpr(epService, "(intBoxed in [2:4))", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, true, true, false, false, false});
-            TryExpr(epService, "(intBoxed in (2:4))", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, true, false, false, false});
+            TryExpr(epService, "(boolPrimitive in (false))", "boolPrimitive", new object[]{true, false}, new bool[]{false, true});
+            TryExpr(epService, "(boolPrimitive in (false, false, false))", "boolPrimitive", new object[]{true, false}, new bool[]{false, true});
+            TryExpr(epService, "(boolPrimitive in (false, true, false))", "boolPrimitive", new object[]{true, false}, new bool[]{true, true});
+            TryExpr(epService, "(intBoxed in (4, 6, 1))", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, true, false, false, true, false, true});
+            TryExpr(epService, "(intBoxed in (3))", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, true, false, false, false});
+            TryExpr(epService, "(longBoxed in (3))", "longBoxed", new object[]{0L, 1L, 2L, 3L, 4L, 5L, 6L}, new bool[]{false, false, false, true, false, false, false});
+            TryExpr(epService, "(intBoxed between 4 and 6)", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, false, true, true, true});
+            TryExpr(epService, "(intBoxed between 2 and 1)", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, true, true, false, false, false, false});
+            TryExpr(epService, "(intBoxed between 4 and -1)", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, true, true, false, false});
+            TryExpr(epService, "(intBoxed in [2:4])", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, true, true, true, false, false});
+            TryExpr(epService, "(intBoxed in (2:4])", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, true, true, false, false});
+            TryExpr(epService, "(intBoxed in [2:4))", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, true, true, false, false, false});
+            TryExpr(epService, "(intBoxed in (2:4))", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, true, false, false, false});
         }
     
         private void RunAssertionNotInExpr(EPServiceProvider epService) {
-            TryExpr(epService, "(intBoxed not between 4 and 6)", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, true, false, false, false});
-            TryExpr(epService, "(intBoxed not between 2 and 1)", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, false, false, true, true, true, true});
-            TryExpr(epService, "(intBoxed not between 4 and -1)", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, false, false, true, true});
-            TryExpr(epService, "(intBoxed not in [2:4])", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, false, false, false, true, true});
-            TryExpr(epService, "(intBoxed not in (2:4])", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, false, false, true, true});
-            TryExpr(epService, "(intBoxed not in [2:4))", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, false, false, true, true, true});
-            TryExpr(epService, "(intBoxed not in (2:4))", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, false, true, true, true});
+            TryExpr(epService, "(intBoxed not between 4 and 6)", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, true, false, false, false});
+            TryExpr(epService, "(intBoxed not between 2 and 1)", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, false, false, true, true, true, true});
+            TryExpr(epService, "(intBoxed not between 4 and -1)", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, false, false, true, true});
+            TryExpr(epService, "(intBoxed not in [2:4])", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, false, false, false, true, true});
+            TryExpr(epService, "(intBoxed not in (2:4])", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, false, false, true, true});
+            TryExpr(epService, "(intBoxed not in [2:4))", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, false, false, true, true, true});
+            TryExpr(epService, "(intBoxed not in (2:4))", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, false, true, true, true});
             TryExpr(epService, "(theString not in ['b':'d'])", "theString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{true, false, false, false, true});
             TryExpr(epService, "(theString not in ('b':'d'])", "theString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{true, true, false, false, true});
             TryExpr(epService, "(theString not in ['b':'d'))", "theString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{true, false, false, true, true});
             TryExpr(epService, "(theString not in ('b':'d'))", "theString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{true, true, false, true, true});
             TryExpr(epService, "(theString not in ('a', 'b'))", "theString", new string[]{"a", "x", "b", "y"}, new bool[]{false, true, false, true});
-            TryExpr(epService, "(boolPrimitive not in (false))", "boolPrimitive", new Object[]{true, false}, new bool[]{true, false});
-            TryExpr(epService, "(boolPrimitive not in (false, false, false))", "boolPrimitive", new Object[]{true, false}, new bool[]{true, false});
-            TryExpr(epService, "(boolPrimitive not in (false, true, false))", "boolPrimitive", new Object[]{true, false}, new bool[]{false, false});
-            TryExpr(epService, "(intBoxed not in (4, 6, 1))", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, false, true, true, false, true, false});
-            TryExpr(epService, "(intBoxed not in (3))", "intBoxed", new Object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, false, true, true, true});
-            TryExpr(epService, "(longBoxed not in (3))", "longBoxed", new Object[]{0L, 1L, 2L, 3L, 4L, 5L, 6L}, new bool[]{true, true, true, false, true, true, true});
+            TryExpr(epService, "(boolPrimitive not in (false))", "boolPrimitive", new object[]{true, false}, new bool[]{true, false});
+            TryExpr(epService, "(boolPrimitive not in (false, false, false))", "boolPrimitive", new object[]{true, false}, new bool[]{true, false});
+            TryExpr(epService, "(boolPrimitive not in (false, true, false))", "boolPrimitive", new object[]{true, false}, new bool[]{false, false});
+            TryExpr(epService, "(intBoxed not in (4, 6, 1))", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, false, true, true, false, true, false});
+            TryExpr(epService, "(intBoxed not in (3))", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, false, true, true, true});
+            TryExpr(epService, "(longBoxed not in (3))", "longBoxed", new object[]{0L, 1L, 2L, 3L, 4L, 5L, 6L}, new bool[]{true, true, true, false, true, true, true});
         }
     
         private void RunAssertionReuse(EPServiceProvider epService) {
@@ -219,7 +218,7 @@ namespace com.espertech.esper.regression.expr.filter
             for (int i = 0; i < statements.Length; i++) {
                 testListener[i] = new SupportUpdateListener();
                 stmt[i] = epService.EPAdministrator.CreateEPL(statements[i]);
-                stmt[i].AddListener(testListener[i]);
+                stmt[i].Events += testListener[i].Update;
             }
     
             // send event, all should receive the event
@@ -252,11 +251,11 @@ namespace com.espertech.esper.regression.expr.filter
             }
         }
     
-        private void TryExpr(EPServiceProvider epService, string filterExpr, string fieldName, Object[] values, bool[] isInvoked) {
+        private void TryExpr(EPServiceProvider epService, string filterExpr, string fieldName, object[] values, bool[] isInvoked) {
             string expr = "select * from " + typeof(SupportBean).FullName + filterExpr;
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             for (int i = 0; i < values.Length; i++) {
                 SendBean(epService, fieldName, values[i]);

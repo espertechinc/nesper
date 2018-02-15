@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -24,7 +23,7 @@ namespace com.espertech.esper.regression.view
 {
     public class ExecViewMultipleExpiry : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.ViewResources.AllowMultipleExpiryPolicies = true;
+            configuration.EngineDefaults.ViewResources.IsAllowMultipleExpiryPolicies = true;
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -35,10 +34,10 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             SendMarketDataEvent(epService, "DELL", 1, 50);
             SendMarketDataEvent(epService, "DELL", 2, 50);
-            Object[] values = EPAssertionUtil.EnumeratorToArray(stmt.GetEnumerator());
+            object[] values = EPAssertionUtil.EnumeratorToArray(stmt.GetEnumerator());
             Assert.AreEqual(1, values.Length);
         }
     

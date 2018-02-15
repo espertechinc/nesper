@@ -18,8 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -103,19 +101,19 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(numIndexes, ((EPServiceProviderSPI) epService).NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             int loops = 1000;
     
             for (int i = 0; i < loops; i++) {
                 epService.EPRuntime.SendEvent(theEvent);
                 Assert.AreEqual(expected, listener.AssertOneGetNewAndReset().Get("sumi"));
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             long delta = end - start;
-            Assert.IsTrue("delta=" + delta, delta < 1000);
+            Assert.IsTrue(delta < 1000, "delta=" + delta);
     
             stmt.Dispose();
             Assert.AreEqual(0, ((EPServiceProviderSPI) epService).NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
@@ -141,14 +139,14 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             // delete rows
             var listener = new SupportUpdateListener();
-            stmtCreate.AddListener(listener);
+            stmtCreate.Events += listener.Update;
             long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 10000; i++) {
                 SendSupportBean_A(epService, "S" + i);
             }
             long endTime = DateTimeHelper.CurrentTimeMillis;
             long delta = endTime - startTime;
-            Assert.IsTrue("Delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "Delta=" + delta);
     
             // assert they are deleted
             Assert.AreEqual(50000 - 10000, EPAssertionUtil.EnumeratorCount(stmtCreate.GetEnumerator()));
@@ -178,14 +176,14 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             // delete rows
             var listener = new SupportUpdateListener();
-            stmtCreate.AddListener(listener);
+            stmtCreate.Events += listener.Update;
             long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 10000; i++) {
                 SendMarketBean(epService, "S" + i, i);
             }
             long endTime = DateTimeHelper.CurrentTimeMillis;
             long delta = endTime - startTime;
-            Assert.IsTrue("Delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "Delta=" + delta);
     
             // assert they are deleted
             Assert.AreEqual(50000 - 10000, EPAssertionUtil.EnumeratorCount(stmtCreate.GetEnumerator()));
@@ -223,7 +221,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             // delete all rows
             var listener = new SupportUpdateListener();
-            stmtCreate.AddListener(listener);
+            stmtCreate.Events += listener.Update;
             long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 10000; i++) {
                 SendMarketBean(epService, "S" + i, i);
@@ -231,7 +229,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             }
             long endTime = DateTimeHelper.CurrentTimeMillis;
             long delta = endTime - startTime;
-            Assert.IsTrue("Delta=" + delta, delta < 1500);
+            Assert.IsTrue(delta < 1500, "Delta=" + delta);
     
             // assert they are all deleted
             Assert.AreEqual(0, EPAssertionUtil.EnumeratorCount(stmtCreate.GetEnumerator()));
@@ -264,7 +262,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             }
             long endTime = DateTimeHelper.CurrentTimeMillis;
             long delta = endTime - startTime;
-            Assert.IsTrue("Delta=" + delta, delta < 1000);
+            Assert.IsTrue(delta < 1000, "Delta=" + delta);
             Assert.AreEqual(10000, EPAssertionUtil.EnumeratorCount(stmtCreate.GetEnumerator()));
     
             // destroy all

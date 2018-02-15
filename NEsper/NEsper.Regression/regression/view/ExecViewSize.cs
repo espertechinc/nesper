@@ -25,7 +25,7 @@ namespace com.espertech.esper.regression.view
             string statementText = "select irstream size from " + typeof(SupportMarketDataBean).FullName + "#size";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "DELL", 1L);
             AssertSize(listener, 1, 0);
@@ -36,14 +36,14 @@ namespace com.espertech.esper.regression.view
             stmt.Dispose();
             statementText = "select size, symbol, feed from " + typeof(SupportMarketDataBean).FullName + "#Size(symbol, feed)";
             stmt = epService.EPAdministrator.CreateEPL(statementText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             string[] fields = "size,symbol,feed".Split(',');
     
             SendEvent(epService, "DELL", 1L);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1L, "DELL", "f1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1L, "DELL", "f1"});
     
             SendEvent(epService, "DELL", 1L);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{2L, "DELL", "f1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{2L, "DELL", "f1"});
         }
     
         private void SendEvent(EPServiceProvider epService, string symbol, long volume) {
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.view
         }
     
         private void AssertSize(SupportUpdateListener listener, long newSize, long oldSize) {
-            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "size", new Object[]{newSize}, new Object[]{oldSize});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), "size", new object[]{newSize}, new object[]{oldSize});
         }
     }
 } // end of namespace

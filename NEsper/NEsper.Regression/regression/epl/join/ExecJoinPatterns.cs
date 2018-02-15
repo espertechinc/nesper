@@ -17,7 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -45,7 +44,7 @@ namespace com.espertech.esper.regression.epl.join
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
     
             var updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener);
+            statement.Events += updateListener.Update;
     
             SendEventS1(epService, 1, "s1A");
             SendEventS0(epService, 2, "a");
@@ -101,7 +100,7 @@ namespace com.espertech.esper.regression.epl.join
             theEvent = updateListener.AssertOneGetNewAndReset();
             AssertEventData(theEvent, null, null, 70, "b", 70, "s1-70");
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertion2PatternJoinSelect(EPServiceProvider epService) {
@@ -122,7 +121,7 @@ namespace com.espertech.esper.regression.epl.join
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
     
             var updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener);
+            statement.Events += updateListener.Update;
     
             SendEventS3(epService, 2, "d");
             SendEventS0(epService, 3, "a");
@@ -177,7 +176,7 @@ namespace com.espertech.esper.regression.epl.join
             theEvent = updateListener.AssertOneGetNewAndReset();
             AssertEventData(theEvent, 51, 56, 51, 55, "a6", "b6", "c6", "d6");
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertion2PatternJoinWildcard(EPServiceProvider epService) {
@@ -191,7 +190,7 @@ namespace com.espertech.esper.regression.epl.join
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
     
             var updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener);
+            statement.Events += updateListener.Update;
     
             SupportBean_S0 s0 = SendEventS0(epService, 100, "");
             SupportBean_S1 s1 = SendEventS1(epService, 1, "");
@@ -208,7 +207,7 @@ namespace com.espertech.esper.regression.epl.join
             Assert.AreSame(s2, result.Get("es2").Underlying);
             Assert.AreSame(s3, result.Get("es3").Underlying);
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private SupportBean_S0 SendEventS0(EPServiceProvider epService, int id, string p00) {

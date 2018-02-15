@@ -131,7 +131,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             {
                 Log.Info("Started event send for read");
                 var listener = new SupportUpdateListener();
-                _epService.EPAdministrator.GetStatement("listen").AddListener(listener);
+                _epService.EPAdministrator.GetStatement("listen").Events += listener.Update;
 
                 try
                 {

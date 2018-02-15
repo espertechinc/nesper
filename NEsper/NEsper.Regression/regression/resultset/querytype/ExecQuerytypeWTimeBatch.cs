@@ -17,7 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -45,7 +44,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             string stmtText = "select irstream sum(price) as sumPrice from MarketData#Time_batch(1 sec)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // send first batch
             SendMDEvent(epService, "DELL", 10, 0L);
@@ -77,7 +76,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             string stmtText = "select irstream sum(price) as sumPrice from MarketData#Time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.symbol = S1.theString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendSupportEvent(epService, "DELL");
             SendSupportEvent(epService, "IBM");
@@ -112,7 +111,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             string stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData#Time_batch(1 sec)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // send first batch
             SendMDEvent(epService, "DELL", 10, 0L);
@@ -148,7 +147,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             string stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData#Time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.symbol = S1.theString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendSupportEvent(epService, "DELL");
             SendSupportEvent(epService, "IBM");
@@ -187,7 +186,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             string stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData#Time_batch(1 sec) group by symbol order by symbol asc";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // send first batch
             SendMDEvent(epService, "DELL", 10, 0L);
@@ -225,7 +224,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     " group by symbol";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendSupportEvent(epService, "DELL");
             SendSupportEvent(epService, "IBM");
@@ -237,14 +236,14 @@ namespace com.espertech.esper.regression.resultset.querytype
             SendTimer(epService, 1000);
     
             string[] fields = "symbol,sumPrice".Split(',');
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"DELL", 30d}, new object[] {"IBM", 15d}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"DELL", 30d}, new object[] {"IBM", 15d}});
     
             // send second batch
             SendMDEvent(epService, "IBM", 20, 600L);
             SendTimer(epService, 2000);
     
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.LastNewData, fields, new Object[][]{new object[] {"DELL", null}, new object[] {"IBM", 20d}});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetAndResetLastOldData(), fields, new Object[][]{new object[] {"DELL", 30d}, new object[] {"IBM", 15d}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.LastNewData, fields, new object[][]{new object[] {"DELL", null}, new object[] {"IBM", 20d}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetAndResetLastOldData(), fields, new object[][]{new object[] {"DELL", 30d}, new object[] {"IBM", 15d}});
     
             stmt.Dispose();
         }
@@ -254,7 +253,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             string stmtText = "select irstream symbol, sum(price) as sumPrice, volume from MarketData#Time_batch(1 sec) group by symbol";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendMDEvent(epService, "DELL", 10, 200L);
             SendMDEvent(epService, "IBM", 15, 500L);
@@ -289,7 +288,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     " group by symbol";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendSupportEvent(epService, "DELL");
             SendSupportEvent(epService, "IBM");

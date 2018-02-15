@@ -10,7 +10,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace com.espertech.esper.supportregession.bean
+namespace com.espertech.esper.supportregression.bean
 {
     /// <summary>
     /// Legacy class for testing style accessor methods.

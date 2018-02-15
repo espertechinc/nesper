@@ -115,7 +115,7 @@ namespace com.espertech.esper.regression.events.infra
             var stmtText = "select id? as myid, Exists(id?) as exists_myid from " + typename;
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             Assert.AreEqual(expectedPropertyType, stmt.EventType.GetPropertyType("myid"));
             Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("exists_myid"));
@@ -169,9 +169,9 @@ namespace com.espertech.esper.regression.events.infra
                 AVRO_TYPENAME,
                 TypeBuilder.Field(
                     "id", TypeBuilder.Union(
-                        TypeBuilder.Null(),
-                        TypeBuilder.Int(),
-                        TypeBuilder.Boolean())));
+                        TypeBuilder.NullType(),
+                        TypeBuilder.IntType(),
+                        TypeBuilder.BooleanType())));
         }
     }
 } // end of namespace

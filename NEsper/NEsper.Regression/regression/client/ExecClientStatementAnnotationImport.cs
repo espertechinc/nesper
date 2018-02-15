@@ -24,7 +24,7 @@ namespace com.espertech.esper.regression.client
     public class ExecClientStatementAnnotationImport : RegressionExecution {
         public override void Configure(Configuration configuration) {
             configuration.AddAnnotationImport(typeof(SupportEnum));
-            configuration.AddAnnotationImport(typeof(MyAnnotationValueEnum));
+            configuration.AddAnnotationImport(typeof(MyAnnotationValueEnumAttribute));
             configuration.AddEventType<SupportBean>();
         }
     
@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.client
             SupportMessageAssertUtil.TryInvalid(epService, epl, "Failed to process statement annotations: Failed to resolve @-annotation");
     
             // runtime import
-            epService.EPAdministrator.Configuration.AddAnnotationImport(typeof(MyAnnotationValueEnumTwo).Name);
+            epService.EPAdministrator.Configuration.AddAnnotationImport(typeof(MyAnnotationValueEnumTwoAttribute));
             epService.EPAdministrator.CreateEPL(epl);
     
             // try invalid use : these are annotation-specific imports of an annotation and an enum

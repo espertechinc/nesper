@@ -45,7 +45,7 @@ namespace com.espertech.esper.regression.context
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(eplOne);
     
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from NewSupportBean").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from NewSupportBean").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.IsFalse(listener.GetAndClearIsInvoked());
@@ -65,22 +65,22 @@ namespace com.espertech.esper.regression.context
                     "output all;";
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(eplTwo);
     
-            epService.EPAdministrator.CreateEPL("select * from NewEventTwo").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from NewEventTwo").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 100));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{100});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{100});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
         private void RunAssertionVirtualDataWindow(EPServiceProvider epService) {
             SupportVirtualDWFactory.Windows.Clear();
-            SupportVirtualDWFactory.Destroyed = false;
+            SupportVirtualDWFactory.IsDestroyed = false;
     
             epService.EPAdministrator.CreateEPL("create context CtxSegmented as partition by theString from SupportBean");
             epService.EPAdministrator.CreateEPL("context CtxSegmented create window TestVDWWindow.test:Vdw() as SupportBean");

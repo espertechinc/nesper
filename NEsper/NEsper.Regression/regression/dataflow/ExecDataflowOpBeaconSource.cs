@@ -69,7 +69,7 @@ namespace com.espertech.esper.regression.dataflow
                     .OperatorProvider(new DefaultSupportGraphOpProvider(future));
             var df = epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlowOne", options);
             df.Start();
-            Object[] output = future.GetValue(2, TimeUnit.SECONDS);
+            object[] output = future.GetValue(2, TimeUnit.SECONDS);
             Assert.AreEqual(3, output.Length);
             stmtGraph.Dispose();
         }
@@ -87,7 +87,7 @@ namespace com.espertech.esper.regression.dataflow
                     .OperatorProvider(new DefaultSupportGraphOpProvider(future));
             var df = epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlowOne", options);
             df.Start();
-            Object[] output = future.GetValue(2, TimeUnit.SECONDS);
+            object[] output = future.GetValue(2, TimeUnit.SECONDS);
             Assert.AreEqual(1, output.Length);
             stmtGraph.Dispose();
             return output[0];
@@ -140,10 +140,10 @@ namespace com.espertech.esper.regression.dataflow
             var instance = epService.EPRuntime.DataFlowRuntime.Instantiate("MyGraph", options);
     
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from SupportBean").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from SupportBean").Events += listener.Update;
             instance.Run();
             Thread.Sleep(200);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString".Split(','), new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E1"});
     
             // invalid: no output stream
             SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "DF1", "create dataflow DF1 BeaconSource {}",
@@ -175,7 +175,7 @@ namespace com.espertech.esper.regression.dataflow
     
                 if (!eventbean) {
                     if (representationEnum.IsObjectArrayEvent()) {
-                        var row = (Object[]) output[i];
+                        var row = (object[]) output[i];
                         Assert.AreEqual("abc", row[0]);
                         var val = (long) row[1];
                         Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
@@ -206,7 +206,7 @@ namespace com.espertech.esper.regression.dataflow
         private void RunAssertionBeaconNoType(EPServiceProvider epService)
         {
             EPDataFlowInstantiationOptions options;
-            Object[] output;
+            object[] output;
     
             epService.EPAdministrator.CreateEPL("create dataflow MyDataFlowOne " +
                     "BeaconSource -> BeaconStream {}" +
@@ -247,10 +247,10 @@ namespace com.espertech.esper.regression.dataflow
             var futureExactThree = new DefaultSupportCaptureOp(2);
             options = new EPDataFlowInstantiationOptions()
                     .OperatorProvider(new DefaultSupportGraphOpProvider(futureExactThree));
-            var start = DateTimeHelper.CurrentTimeMillis;
+            var start = PerformanceObserver.MilliTime;
             epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlowThree", options).Start();
             output = futureExactThree.GetValue(1, TimeUnit.SECONDS);
-            var end = DateTimeHelper.CurrentTimeMillis;
+            var end = PerformanceObserver.MilliTime;
             Assert.AreEqual(2, output.Length);
             Assert.IsTrue(end - start > 490, "delta=" + (end - start));
     

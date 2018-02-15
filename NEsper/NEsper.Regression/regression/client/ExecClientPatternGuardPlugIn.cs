@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -45,7 +44,7 @@ namespace com.espertech.esper.regression.client
             string stmtText = "select * from pattern [(every Bean) where myplugin:Count_to(10)]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             for (int i = 0; i < 10; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean());
@@ -56,7 +55,7 @@ namespace com.espertech.esper.regression.client
             epService.EPRuntime.SendEvent(new SupportBean());
             Assert.IsFalse(listener.IsInvoked);
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionGuardVariable(EPServiceProvider epService) {
@@ -68,7 +67,7 @@ namespace com.espertech.esper.regression.client
             string stmtText = "select * from pattern [(every Bean) where myplugin:Count_to(COUNT_TO)]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             for (int i = 0; i < 3; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean());
@@ -79,7 +78,7 @@ namespace com.espertech.esper.regression.client
             epService.EPRuntime.SendEvent(new SupportBean());
             Assert.IsFalse(listener.IsInvoked);
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {

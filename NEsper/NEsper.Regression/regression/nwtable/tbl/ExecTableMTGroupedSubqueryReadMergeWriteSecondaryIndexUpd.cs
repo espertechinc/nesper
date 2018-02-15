@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertNull;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -65,7 +63,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "from SupportBean as sb";
             EPStatement stmtSubselect = epService.EPAdministrator.CreateEPL(eplSubselect);
             var listener = new SupportUpdateListener();
-            stmtSubselect.AddListener(listener);
+            stmtSubselect.Events += listener.Update;
     
             var writeRunnable = new WriteRunnable(epService);
             var readRunnable = new ReadRunnable(epService, listener);

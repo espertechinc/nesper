@@ -69,14 +69,14 @@ namespace com.espertech.esper.regression.nwtable.infra
     
             string backingUniqueS1 = "unique hash={S1(string)} btree={} advanced={}";
     
-            var preloadedEventsOne = new Object[]{new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
+            var preloadedEventsOne = new object[]{new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
             var listenerStmtOne = new SupportUpdateListener();
             var eventSendAssertion = new IndexAssertionEventSend(() => {
                 string[] fields = "s2,ssb1[0].s1,ssb1[0].i1".Split(',');
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanTwo("E2", 50, 21, 22));
-                EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"E2", "E2", 20});
+                EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"E2", "E2", 20});
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanTwo("E1", 60, 11, 12));
-                EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E1", 10});
+                EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E1", 10});
             });
             var noAssertion = new IndexAssertionEventSend(() => { });
     
@@ -114,14 +114,14 @@ namespace com.espertech.esper.regression.nwtable.infra
             string backingBtreeD1 = "non-unique hash={} btree={D1(double)} advanced={}";
             string primaryIndexTable = namedWindow ? null : "MyInfra";
     
-            var preloadedEventsOne = new Object[]{new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
+            var preloadedEventsOne = new object[]{new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
             var listener = new SupportUpdateListener();
             var eventSendAssertion = new IndexAssertionEventSend(() => {
                 string[] fields = "s2,ssb1[0].s1,ssb1[0].i1".Split(',');
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanTwo("E2", 50, 21, 22));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", "E2", 20});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", "E2", 20});
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanTwo("E1", 60, 11, 12));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E1", 10});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E1", 10});
             });
     
             // no index one field (essentially duplicated since declared std:unique)
@@ -225,7 +225,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfraMIH", false);
         }
     
-        private void AssertIndexChoice(EPServiceProvider epService, SupportUpdateListener listenerStmtOne, bool namedWindow, bool indexShare, string[] indexes, Object[] preloadedEvents, string datawindow,
+        private void AssertIndexChoice(EPServiceProvider epService, SupportUpdateListener listenerStmtOne, bool namedWindow, bool indexShare, string[] indexes, object[] preloadedEvents, string datawindow,
                                        IndexAssertion[] assertions) {
             string epl = namedWindow ?
                     "create window MyInfra." + datawindow + " as select * from SSB1" :
@@ -263,7 +263,7 @@ namespace com.espertech.esper.regression.nwtable.infra
     
                 // assert index and access
                 SupportQueryPlanIndexHook.AssertSubqueryBackingAndReset(0, assertion.ExpectedIndexName, assertion.IndexBackingClass);
-                consumeStmt.AddListener(listenerStmtOne);
+                consumeStmt.Events += listenerStmtOne.Update;
                 assertion.EventSendAssertion.Invoke();
                 consumeStmt.Dispose();
             }
@@ -296,7 +296,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             }
             EPStatement consumeStmt = epService.EPAdministrator.CreateEPL(consumeEpl);
             var listener = new SupportUpdateListener();
-            consumeStmt.AddListener(listener);
+            consumeStmt.Events += listener.Update;
     
             string[] fields = "id,details[0].theString,details[0].intPrimitive".Split(',');
     
@@ -305,21 +305,21 @@ namespace com.espertech.esper.regression.nwtable.infra
             epService.EPRuntime.SendEvent(new SupportBean("E3", 30));
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1, "E1", 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1, "E1", 10});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{2, "E2", 20});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{2, "E2", 20});
     
             // test late start
             consumeStmt.Dispose();
             consumeStmt = epService.EPAdministrator.CreateEPL(consumeEpl);
-            consumeStmt.AddListener(listener);
+            consumeStmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1, "E1", 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1, "E1", 10});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{2, "E2", 20});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{2, "E2", 20});
     
             if (stmtIndex != null) {
                 stmtIndex.Dispose();

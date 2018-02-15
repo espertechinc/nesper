@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Reflection;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -18,16 +18,17 @@ using com.espertech.esper.regression.spatial;
 using com.espertech.esper.spatial.quadtree.core;
 using com.espertech.esper.supportregression.bean;
 
-// using static org.junit.Assert.*;
-
 using NUnit.Framework;
 
 using static NUnit.Framework.Assert;
 
 namespace com.espertech.esper.supportregression.util
 {
-    public class SupportSpatialUtil {
-        public static void AssertRectanglesSingleValue(EPServiceProvider epService, SupportUpdateListener listener, List<BoundingBox> rectangles, params string[] matches) {
+    public class SupportSpatialUtil
+    {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public static void AssertRectanglesSingleValue(EPServiceProvider epService, SupportUpdateListener listener, IList<BoundingBox> rectangles, params string[] matches) {
             for (var i = 0; i < rectangles.Count; i++) {
                 BoundingBox box = rectangles[i];
                 SendRectangle(epService, "R" + box.ToString(), box.MinX, box.MinY, box.MaxX - box.MinX, box.MaxY - box.MinY);
@@ -42,11 +43,11 @@ namespace com.espertech.esper.supportregression.util
                 SendRectangle(epService, "R" + box.ToString(), box.MinX, box.MinY, box.MaxX - box.MinX, box.MaxY - box.MinY);
                 if (matches[i] == null) {
                     if (listener.IsInvoked) {
-                        Fail("Unexpected output for box " + i + ": " + SortJoinProperty(listener.GetAndResetLastNewData(), "c0"));
+                        Assert.Fail("Unexpected output for box " + i + ": " + SortJoinProperty(listener.GetAndResetLastNewData(), "c0"));
                     }
                 } else {
                     if (!listener.IsInvoked) {
-                        Fail("No output for box " + i);
+                        Assert.Fail("No output for box " + i);
                     }
                     Assert.AreEqual(matches[i], SortJoinProperty(listener.GetAndResetLastNewData(), "c0"));
                 }
@@ -81,11 +82,8 @@ namespace com.espertech.esper.supportregression.util
                 var num = int.Parse(value.Substring(1));
                 sorted.Put(num, value);
             }
-            var joiner = new StringJoiner(",");
-            foreach (string data in sorted.Values()) {
-                joiner.Add(data);
-            }
-            return joiner.ToString();
+
+            return string.Join(",", sorted.Values);
         }
     
         public static void SendSpatialPoints(EPServiceProvider epService, int numX, int numY) {
@@ -96,11 +94,13 @@ namespace com.espertech.esper.supportregression.util
             }
         }
     
-        public static Object[][] GetExpected(List<SupportSpatialPoint> points, double x, double y, double width, double height) {
+        public static object[][] GetExpected(
+            IList<SupportSpatialPoint> points, double x, double y, double width, double height)
+        {
             var expected = new SortedSet<string>();
             var boundingBox = new BoundingBox(x, y, x + width, y + height);
             foreach (var p in points) {
-                if (boundingBox.ContainsPoint(p.Px, p.Py)) {
+                if (boundingBox.ContainsPoint(p.Px.Value, p.Py.Value)) {
                     if (expected.Contains(p.Id)) {
                         Assert.Fail();
                     }
@@ -110,13 +110,13 @@ namespace com.espertech.esper.supportregression.util
             var rows = new Object[expected.Count][];
             var index = 0;
             foreach (var id in expected) {
-                rows[index++] = new Object[]{id};
+                rows[index++] = new object[]{id};
             }
             return rows;
         }
     
         public static void SendAssertSpatialAABB(EPServiceProvider epService, SupportUpdateListener listener, int numX, int numY, long deltaMSec) {
-            var start = DateTimeHelper.CurrentTimeMillis;
+            var start = PerformanceObserver.MilliTime;
             for (var x = 0; x < numX; x++) {
                 for (var y = 0; y < numY; y++) {
                     epService.EPRuntime.SendEvent(new SupportSpatialAABB("", x, y, 0.1, 0.1));

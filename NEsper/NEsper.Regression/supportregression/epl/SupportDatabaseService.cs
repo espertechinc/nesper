@@ -61,6 +61,8 @@ namespace com.espertech.esper.supportregression.epl
             get { return DbDriverFactoryODBC.Driver; }
         }
 
+	    public const string MYSQLDB_PROVIDER_TYPE = "mysql";
+
         public const String DBNAME_FULL = "mydb";
         public const String DBNAME_PART = "mydb2";
 

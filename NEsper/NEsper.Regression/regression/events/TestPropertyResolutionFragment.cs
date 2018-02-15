@@ -54,7 +54,7 @@ namespace com.espertech.esper.regression.events
 	        _epService.EPAdministrator.Configuration.AddEventType("TypeRoot", mapOuter);
 
 	        var stmt = _epService.EPAdministrator.CreateEPL("select * from TypeRoot");
-	        stmt.AddListener(_listener);
+	        stmt.Events += _listener.Update;
 
 	        IDictionary<string, object> dataInner = new Dictionary<string, object>();
 	        dataInner.Put("p1someval", "A");
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regression.events
 	        _epService.EPAdministrator.Configuration.AddEventType("TypeRoot", props, types);
 
 	        var stmt = _epService.EPAdministrator.CreateEPL("select * from TypeRoot");
-	        stmt.AddListener(_listener);
+	        stmt.Events += _listener.Update;
 
 	        IDictionary<string, object> dataInner = new Dictionary<string, object>();
 	        dataInner.Put("p1someval", "A");
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regression.events
 	        _epService.EPAdministrator.Configuration.AddEventType("TypeRoot", mapOuter);
 
 	        var stmt = _epService.EPAdministrator.CreateEPL("select *, p0simple.p1id + 1 as plusone, p0bean as mybean from TypeRoot");
-	        stmt.AddListener(_listener);
+	        stmt.Events += _listener.Update;
 
 	        IDictionary<string, object> dataInner = new Dictionary<string, object>();
 	        dataInner.Put("p1id", 10);
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regression.events
 	        _epService.EPAdministrator.Configuration.AddEventType("TypeRoot", new string[] {"p0simple", "p0bean"}, new object[] {"TypeLev0", typeof(SupportBeanComplexProps)});
 
 	        var stmt = _epService.EPAdministrator.CreateEPL("select *, p0simple.p1id + 1 as plusone, p0bean as mybean from TypeRoot");
-	        stmt.AddListener(_listener);
+	        stmt.Events += _listener.Update;
 
 	        _epService.EPRuntime.SendEvent(new object[] {new object[]{10}, SupportBeanComplexProps.MakeDefaultBean()}, "TypeRoot");
 
@@ -178,9 +178,9 @@ namespace com.espertech.esper.regression.events
         [Test]
 	    public void TestNativeBeanFragment() {
 	        var stmt = _epService.EPAdministrator.CreateEPL("select * from " + typeof(SupportBeanComplexProps).FullName);
-	        stmt.AddListener(_listener);
+	        stmt.Events += _listener.Update;
 	        stmt = _epService.EPAdministrator.CreateEPL("select * from " + typeof(SupportBeanCombinedProps).FullName);
-	        stmt.AddListener(_listener);
+	        stmt.Events += _listener.Update;
 
 	        // assert nested fragments
 	        _epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
@@ -231,7 +231,7 @@ namespace com.espertech.esper.regression.events
 	        _epService.EPAdministrator.Configuration.AddEventType("TypeRoot", mapOuter);
 
 	        var stmt = _epService.EPAdministrator.CreateEPL("select * from TypeRoot");
-	        stmt.AddListener(_listener);
+	        stmt.Events += _listener.Update;
 
 	        IDictionary<string, object> dataInner = new Dictionary<string, object>();
 	        dataInner.Put("p1id", 10);
@@ -274,7 +274,7 @@ namespace com.espertech.esper.regression.events
 	        _epService.EPAdministrator.Configuration.AddEventType("TypeRoot", new string[] {"p0simple", "p0array"}, new object[] {"TypeLev0", "TypeLev0[]"});
 
 	        var stmt = _epService.EPAdministrator.CreateEPL("select * from TypeRoot");
-	        stmt.AddListener(_listener);
+	        stmt.Events += _listener.Update;
 	        Assert.AreEqual(typeof(object[]), stmt.EventType.UnderlyingType);
 
 	        _epService.EPRuntime.SendEvent(new object[] {new object[] {10}, new object[] {new object[] {20}, new object[] {21}}}, "TypeRoot");
@@ -315,7 +315,7 @@ namespace com.espertech.esper.regression.events
 	        _epService.EPAdministrator.Configuration.AddEventType("TypeRoot", mapOuter);
 
 	        var stmt = _epService.EPAdministrator.CreateEPL("select * from TypeRoot");
-	        stmt.AddListener(_listener);
+	        stmt.Events += _listener.Update;
 
 	        IDictionary<string, object> dataInner = new Dictionary<string, object>();
 	        dataInner.Put("p1id", 10);
@@ -356,7 +356,7 @@ namespace com.espertech.esper.regression.events
 	        _epService.EPAdministrator.Configuration.AddEventType("TypeMapTwo", typeMap);
 
 	        var stmt = _epService.EPAdministrator.CreateEPL("select * from pattern[one=TypeMapOne until two=TypeMapTwo]");
-	        stmt.AddListener(_listener);
+	        stmt.Events += _listener.Update;
 
 	        IDictionary<string, object> dataInner = new Dictionary<string, object>();
 	        dataInner.Put("p2id", 2000);
@@ -419,7 +419,7 @@ namespace com.espertech.esper.regression.events
 	        _epService.EPAdministrator.Configuration.AddEventType("TypeMapTwo", props, types);
 
 	        var stmt = _epService.EPAdministrator.CreateEPL("select * from pattern[one=TypeMapOne until two=TypeMapTwo]");
-	        stmt.AddListener(_listener);
+	        stmt.Events += _listener.Update;
 
 	        var dataInner = new object[] {2000};
 	        var dataArray = new object[] {1, new SupportBean("E1", 100),
@@ -486,7 +486,7 @@ namespace com.espertech.esper.regression.events
 	        _epService.EPAdministrator.Configuration.AddEventType("TypeRoot", mapOuter);
 
 	        var stmt = _epService.EPAdministrator.CreateEPL("select * from TypeRoot");
-	        stmt.AddListener(_listener);
+	        stmt.Events += _listener.Update;
 
 	        IDictionary<string, object> dataInner = new Dictionary<string, object>();
 	        dataInner.Put("p1simple", new SupportBean("E1", 11));
@@ -540,7 +540,7 @@ namespace com.espertech.esper.regression.events
 	        _epService.EPAdministrator.Configuration.AddEventType("TypeRoot", propsOuter, typesOuter);
 
 	        var stmt = _epService.EPAdministrator.CreateEPL("select * from TypeRoot");
-	        stmt.AddListener(_listener);
+	        stmt.Events += _listener.Update;
 	        Assert.AreEqual(typeof(object[]), stmt.EventType.UnderlyingType);
 
 	        object[] dataInner = {new SupportBean("E1", 11), new SupportBean[] {new SupportBean("A1", 21), new SupportBean("A2", 22)},
@@ -596,7 +596,7 @@ namespace com.espertech.esper.regression.events
 	        _epService.EPAdministrator.Configuration.AddEventType("TypeRoot", mapOuter);
 
 	        var stmt = _epService.EPAdministrator.CreateEPL("select * from TypeRoot");
-	        stmt.AddListener(_listener);
+	        stmt.Events += _listener.Update;
 
 	        IDictionary<string, object> dataLev1 = new Dictionary<string, object>();
 	        dataLev1.Put("p2id", 10);
@@ -650,7 +650,7 @@ namespace com.espertech.esper.regression.events
 	        _epService.EPAdministrator.Configuration.AddEventType("TypeRoot", new string[] {"p0simple", "p0array"}, new object[] {"TypeLev0", "TypeLev0[]"});
 
 	        var stmt = _epService.EPAdministrator.CreateEPL("select * from TypeRoot");
-	        stmt.AddListener(_listener);
+	        stmt.Events += _listener.Update;
 	        Assert.AreEqual(typeof(object[]), stmt.EventType.UnderlyingType);
 
 	        var dataLev1 = new object[] {10};
@@ -710,7 +710,7 @@ namespace com.espertech.esper.regression.events
 	        _epService.EPAdministrator.Configuration.AddEventType("OuterMap", mapOuter);
 
 	        var stmt = _epService.EPAdministrator.CreateEPL("select * from OuterMap");
-	        stmt.AddListener(_listener);
+	        stmt.Events += _listener.Update;
 
 	        IDictionary<string, object> dataInnerInner = new Dictionary<string, object>();
 	        dataInnerInner.Put("p2id", 10);

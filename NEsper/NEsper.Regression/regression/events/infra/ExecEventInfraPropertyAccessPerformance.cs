@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -32,7 +31,7 @@ namespace com.espertech.esper.regression.events.infra
     
             EPStatement joinView = epService.EPAdministrator.CreateEPL(joinStatement);
             var updateListener = new SupportUpdateListener();
-            joinView.AddListener(updateListener);
+            joinView.Events += updateListener.Update;
     
             // Send events for each stream
             SupportBeanCombinedProps theEvent = SupportBeanCombinedProps.MakeDefaultBean();

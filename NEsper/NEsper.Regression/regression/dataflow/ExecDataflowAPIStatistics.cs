@@ -19,8 +19,6 @@ using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -38,7 +36,7 @@ namespace com.espertech.esper.regression.dataflow
                     "DefaultSupportSourceOp -> outstream<SupportBean> {} " +
                     "DefaultSupportCaptureOp(outstream) {}");
     
-            var source = new DefaultSupportSourceOp(new Object[]{new SupportBean("E1", 1), new SupportBean("E2", 2)});
+            var source = new DefaultSupportSourceOp(new object[]{new SupportBean("E1", 1), new SupportBean("E2", 2)});
             var capture = new DefaultSupportCaptureOp();
             var options = new EPDataFlowInstantiationOptions()
                     .OperatorProvider(new DefaultSupportGraphOpProvider(source, capture))
@@ -49,7 +47,7 @@ namespace com.espertech.esper.regression.dataflow
     
             instance.Run();
     
-            List<EPDataFlowInstanceOperatorStat> stats = instance.Statistics.OperatorStatistics;
+            IList<EPDataFlowInstanceOperatorStat> stats = instance.Statistics.OperatorStatistics;
             Assert.AreEqual(2, stats.Count);
     
             EPDataFlowInstanceOperatorStat sourceStat = stats[0];

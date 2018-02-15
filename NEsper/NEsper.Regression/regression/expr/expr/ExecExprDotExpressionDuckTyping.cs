@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -24,7 +23,7 @@ namespace com.espertech.esper.regression.expr.expr
 {
     public class ExecExprDotExpressionDuckTyping : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.Expression.DuckTyping = true;
+            configuration.EngineDefaults.Expression.IsDuckTyping = true;
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -39,9 +38,9 @@ namespace com.espertech.esper.regression.expr.expr
                     "from SupportBeanDuckType dt ";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            var rows = new Object[][]{
+            var rows = new object[][]{
                     new object[] {"strval", typeof(Object)},
                     new object[] {"intval", typeof(Object)},
                     new object[] {"commonstrval", typeof(Object)},
@@ -57,10 +56,10 @@ namespace com.espertech.esper.regression.expr.expr
             string[] fields = "strval,intval,commonstrval,commonintval,commondoubleval".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBeanDuckTypeOne("x"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"x", null, null, -1, 12.9876d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"x", null, null, -1, 12.9876d});
     
             epService.EPRuntime.SendEvent(new SupportBeanDuckTypeTwo(-10));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, -10, "mytext", null, 11.1234d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, -10, "mytext", null, 11.1234d});
         }
     }
 } // end of namespace

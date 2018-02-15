@@ -20,8 +20,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.fail;
 
 using NUnit.Framework;
 
@@ -39,7 +37,7 @@ namespace com.espertech.esper.regression.dataflow
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
     
             EPDataFlowRuntime dfruntime = epService.EPRuntime.DataFlowRuntime;
-            EPAssertionUtil.AssertEqualsAnyOrder(new string[]{"MyGraph"}, dfruntime.DataFlows);
+            EPAssertionUtil.AssertEqualsAnyOrder(new string[]{"MyGraph"}, dfruntime.GetDataFlows());
             EPDataFlowDescriptor desc = dfruntime.GetDataFlow("MyGraph");
             Assert.AreEqual("MyGraph", desc.DataFlowName);
             Assert.AreEqual(EPStatementState.STARTED, desc.StatementState);
@@ -60,7 +58,7 @@ namespace com.espertech.esper.regression.dataflow
             // destroy - should be gone
             stmt.Dispose(); // removed, create again
             Assert.AreEqual(null, dfruntime.GetDataFlow("MyGraph"));
-            Assert.AreEqual(0, dfruntime.DataFlows.Length);
+            Assert.AreEqual(0, dfruntime.GetDataFlows().Length);
             TryInstantiate(epService, "MyGraph", "Data flow by name 'MyGraph' has not been defined");
             try {
                 stmt.Start();

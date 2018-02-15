@@ -30,6 +30,8 @@ using NUnit.Framework;
 
 using static com.espertech.esper.supportregression.events.SupportEventInfra;
 
+using static NEsper.Avro.Extensions.TypeBuilder;
+
 namespace com.espertech.esper.regression.events.infra
 {
     public class ExecEventInfraPropertyUnderlyingSimple : RegressionExecution
@@ -121,7 +123,7 @@ namespace com.espertech.esper.regression.events.infra
             var epl = "select * from " + typename;
             var statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             var fields = "myInt,myString".Split(',');
 
             Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("myInt").GetBoxedType());
@@ -150,7 +152,7 @@ namespace com.espertech.esper.regression.events.infra
                 typename;
             var statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             var fields = "myInt,exists_myInt,myString,exists_myString".Split(',');
 
             Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("myInt").GetBoxedType());
@@ -267,14 +269,11 @@ namespace com.espertech.esper.regression.events.infra
             configuration.AddEventTypeAvro(AVRO_TYPENAME, new ConfigurationEventTypeAvro(GetAvroSchema()));
         }
 
-        private static RecordSchema GetAvroSchema()
-        {
+        private static RecordSchema GetAvroSchema() {
             return SchemaBuilder.Record(
                 AVRO_TYPENAME,
-                TypeBuilder.Field("myInt", TypeBuilder.Int()),
-                TypeBuilder.Field(
-                    "myString", TypeBuilder.String(
-                        TypeBuilder.Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE))));
+                Field("myInt", IntType()),
+                Field("myString", StringType(Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE))));
         }
 
         internal delegate object FunctionSendEventIntString(

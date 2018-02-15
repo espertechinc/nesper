@@ -52,9 +52,9 @@ namespace com.espertech.esper.regression.events.infra
                     "Unexpected event object of type " + typeof(SupportBean).FullName + ", expected java.util.Map");
     
             // Object-Array
-            RunAssertionSuccess(epService, OA_TYPENAME, new Object[]{});
+            RunAssertionSuccess(epService, OA_TYPENAME, new object[]{});
             RunAssertionInvalid(epService, OA_TYPENAME, new SupportBean(),
-                    "Unexpected event object of type " + typeof(SupportBean).FullName + ", expected Object[]");
+                    "Unexpected event object of type " + typeof(SupportBean).FullName + ", expected object[]");
     
             // XML
             RunAssertionSuccess(epService, XML_TYPENAME, SupportXML.GetDocument("<myevent/>").DocumentElement);
@@ -88,12 +88,12 @@ namespace com.espertech.esper.regression.events.infra
     
         private void RunAssertionSuccess(EPServiceProvider epService,
                                          string typename,
-                                         params Object[] correctUnderlyings) {
+                                         params object[] correctUnderlyings) {
     
             string stmtText = "select * from " + typename;
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             EventSender sender = epService.EPRuntime.GetEventSender(typename);
             foreach (Object underlying in correctUnderlyings) {
@@ -124,7 +124,7 @@ namespace com.espertech.esper.regression.events.infra
     
         private void AddOAEventType(EPServiceProvider epService) {
             string[] names = {};
-            Object[] types = {};
+            object[] types = {};
             epService.EPAdministrator.Configuration.AddEventType(OA_TYPENAME, names, types);
         }
     

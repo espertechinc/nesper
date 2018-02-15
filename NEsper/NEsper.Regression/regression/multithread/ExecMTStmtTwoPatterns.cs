@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -16,7 +16,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -49,7 +48,7 @@ namespace com.espertech.esper.regression.multithread
                     "        ) -> eventFinal=SupportEvent(userId in ('100','101'), direction != event1.direction ) where timer:Within(1 hour)";
     
             var runnable = new TwoPatternRunnable(epService);
-            var t = new Thread(runnable);
+            var t = new Thread(runnable.Run);
             t.Start();
             Thread.Sleep(100);
     
@@ -57,7 +56,7 @@ namespace com.espertech.esper.regression.multithread
             for (int i = 0; i < 10; i++) {
                 EPStatement statement = epService.EPAdministrator.CreatePattern(statementTwo);
                 Thread.Sleep(200);
-                statement.Destroy();
+                statement.Dispose();
             }
     
             runnable.SetShutdown(true);

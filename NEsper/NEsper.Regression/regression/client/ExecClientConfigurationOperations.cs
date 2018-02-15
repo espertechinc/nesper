@@ -44,7 +44,7 @@ namespace com.espertech.esper.regression.client
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from " + typeof(MyAutoNamedEventType).Name);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             var eventOne = new MyAutoNamedEventType(10);
             epService.EPRuntime.SendEvent(eventOne);
@@ -54,7 +54,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionAutoNamePackageAmbigous(EPServiceProvider epService) {
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from " + typeof(SupportAmbigousEventType).Name,
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from SupportAmbigousEventType",
                     "Failed to resolve event type: Failed to resolve name 'SupportAmbigousEventType', the class was ambigously found both in package 'com.espertech.esper.supportregression.bean' and in package 'com.espertech.esper.supportregression.client'");
     
             SupportMessageAssertUtil.TryInvalid(epService, "select * from XXXX",
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regression.client
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from AddedDOMOne");
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             XmlDocument eventOne = MakeDOMEvent("RootAddedDOMOne");
             epService.EPRuntime.SendEvent(eventOne);
@@ -87,7 +87,7 @@ namespace com.espertech.esper.regression.client
             epService.EPAdministrator.Configuration.AddEventType("AddedMapNameSecond", domConfig);
             var testListenerTwo = new SupportUpdateListener();
             stmt = epService.EPAdministrator.CreateEPL("select * from AddedMapNameSecond");
-            stmt.AddListener(testListenerTwo);
+            stmt.Events += testListenerTwo.Update;
     
             XmlDocument eventTwo = MakeDOMEvent("RootAddedDOMOne");
             epService.EPRuntime.SendEvent(eventTwo);
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regression.client
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from AddedMapOne");
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             var eventOne = new Dictionary<string, object>();
             eventOne.Put("prop1", 1);
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regression.client
             epService.EPAdministrator.Configuration.AddEventType("AddedMapNameSecond", mapProps);
             var testListenerTwo = new SupportUpdateListener();
             stmt = epService.EPAdministrator.CreateEPL("select * from AddedMapNameSecond");
-            stmt.AddListener(testListenerTwo);
+            stmt.Events += testListenerTwo.Update;
     
             var eventTwo = new Dictionary<string, object>();
             eventTwo.Put("prop1", 1);
@@ -175,7 +175,7 @@ namespace com.espertech.esper.regression.client
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from AddedMapOne");
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             var eventOne = new Dictionary<string, object>();
             eventOne.Put("prop1", 1);
@@ -188,7 +188,7 @@ namespace com.espertech.esper.regression.client
             epService.EPAdministrator.Configuration.AddEventType("AddedMapNameSecond", mapProps);
             var testListenerTwo = new SupportUpdateListener();
             stmt = epService.EPAdministrator.CreateEPL("select * from AddedMapNameSecond");
-            stmt.AddListener(testListenerTwo);
+            stmt.Events += testListenerTwo.Update;
     
             var eventTwo = new Dictionary<string, object>();
             eventTwo.Put("prop1", 1);
@@ -224,7 +224,7 @@ namespace com.espertech.esper.regression.client
             epService.EPAdministrator.Configuration.AddEventType("AddedName", typeof(SupportBean).FullName);
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from AddedName");
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             var eventOne = new SupportBean("a", 1);
             epService.EPRuntime.SendEvent(eventOne);
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regression.client
             epService.EPAdministrator.Configuration.AddEventType("AddedNameSecond", typeof(SupportBean).FullName);
             var testListenerTwo = new SupportUpdateListener();
             stmt = epService.EPAdministrator.CreateEPL("select * from AddedNameSecond");
-            stmt.AddListener(testListenerTwo);
+            stmt.Events += testListenerTwo.Update;
     
             var eventTwo = new SupportBean("b", 2);
             epService.EPRuntime.SendEvent(eventTwo);
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regression.client
             Assert.IsTrue(epService.EPAdministrator.Configuration.IsEventTypeExists("AddedName"));
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from AddedName");
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             var eventOne = new SupportBean("a", 1);
             epService.EPRuntime.SendEvent(eventOne);
@@ -279,7 +279,7 @@ namespace com.espertech.esper.regression.client
             epService.EPAdministrator.Configuration.AddEventType("AddedNameSecond", typeof(SupportBean));
             var testListenerTwo = new SupportUpdateListener();
             stmt = epService.EPAdministrator.CreateEPL("select * from AddedNameSecond");
-            stmt.AddListener(testListenerTwo);
+            stmt.Events += testListenerTwo.Update;
     
             var eventTwo = new SupportBean("b", 2);
             epService.EPRuntime.SendEvent(eventTwo);

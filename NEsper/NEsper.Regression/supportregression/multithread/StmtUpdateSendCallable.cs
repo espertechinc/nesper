@@ -10,14 +10,14 @@ using System;
 using System.Reflection;
 using System.Threading;
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using NUnit.Framework;
 
 namespace com.espertech.esper.supportregression.multithread
 {
-    public class StmtUpdateSendCallable
-    {
+    public class StmtUpdateSendCallable : ICallable<bool> {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly EPServiceProvider _engine;
         private readonly int _numRepeats;
@@ -30,14 +30,14 @@ namespace com.espertech.esper.supportregression.multithread
             this._numRepeats = numRepeats;
         }
 
-        public object Call()
+        public bool Call()
         {
             try
             {
                 Log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " sending " + _numRepeats + " events");
                 for (var loop = 0; loop < _numRepeats; loop++)
                 {
-                    var id = long.ToString(_threadNum * 100000000 + loop);
+                    var id = Convert.ToString(_threadNum * 100000000 + loop);
                     var bean = new SupportBean(id, 0);
                     _engine.EPRuntime.SendEvent(bean);
                 }

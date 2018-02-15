@@ -28,13 +28,13 @@ namespace com.espertech.esper.supportregression.multithread
         private readonly List<UpdateItem> _updates = new List<UpdateItem>();
     
         public StmtNamedWindowUpdateCallable(string threadName, EPServiceProvider engine, int numRepeats) {
-            this._engine = (EPRuntimeSPI) engine.EPRuntime;
-            this._numRepeats = numRepeats;
-            this._threadName = threadName;
+            _engine = (EPRuntimeSPI) engine.EPRuntime;
+            _numRepeats = numRepeats;
+            _threadName = threadName;
         }
     
         public UpdateResult Call() {
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             try {
                 var random = new Random();
                 for (int loop = 0; loop < _numRepeats; loop++) {
@@ -47,7 +47,7 @@ namespace com.espertech.esper.supportregression.multithread
                 Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return null;
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             return new UpdateResult(end - start, _updates);
         }
     
@@ -60,45 +60,28 @@ namespace com.espertech.esper.supportregression.multithread
         }
     
         public class UpdateResult {
-            private long _delta;
-            private List<UpdateItem> _updates;
-    
-            public UpdateResult(long delta, List<UpdateItem> updates) {
-                this._delta = delta;
-                this._updates = updates;
+            public UpdateResult(long delta, IList<UpdateItem> updates) {
+                Delta = delta;
+                Updates = updates;
             }
-    
-            public long GetDelta() {
-                return _delta;
-            }
-    
-            public List<UpdateItem> GetUpdates() {
-                return _updates;
-            }
+
+            public long Delta { get; }
+
+            public IList<UpdateItem> Updates { get; }
         }
     
         public class UpdateItem {
-            private string _theString;
-            private int _intval;
-            private double _doublePrimitive;
-    
             public UpdateItem(string theString, int intval, double doublePrimitive) {
-                this._theString = theString;
-                this._intval = intval;
-                this._doublePrimitive = doublePrimitive;
+                TheString = theString;
+                Intval = intval;
+                DoublePrimitive = doublePrimitive;
             }
-    
-            public string GetTheString() {
-                return _theString;
-            }
-    
-            public int GetIntval() {
-                return _intval;
-            }
-    
-            public double GetDoublePrimitive() {
-                return _doublePrimitive;
-            }
+
+            public string TheString { get; }
+
+            public int Intval { get; }
+
+            public double DoublePrimitive { get; }
         }
     
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

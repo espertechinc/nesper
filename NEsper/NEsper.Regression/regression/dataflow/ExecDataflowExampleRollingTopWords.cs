@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.client.dataflow;
 using com.espertech.esper.client.scopetest;
@@ -22,7 +22,6 @@ using com.espertech.esper.dataflow.ops;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -33,7 +32,7 @@ namespace com.espertech.esper.regression.dataflow
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddImport(GetType().FullName);
     
-            string epl = "create dataflow RollingTopWords\n" +
+            var epl = "create dataflow RollingTopWords\n" +
                     "create objectarray schema WordEvent (word string),\n" +
                     "Emitter -> wordstream<WordEvent> {name:'a'} // Produces word stream\n" +
                     "Select(wordstream) -> wordcount { // Sliding time window count per word\n" +
@@ -51,19 +50,26 @@ namespace com.espertech.esper.regression.dataflow
             var options = new EPDataFlowInstantiationOptions();
             options.OperatorProvider(new DefaultSupportGraphOpProvider(capture));
     
-            EPDataFlowInstance instanceOne = epService.EPRuntime.DataFlowRuntime.Instantiate("RollingTopWords", options);
-            Emitter emitter = instanceOne.StartCaptive().Emitters.Get("a");
+            var instanceOne = epService.EPRuntime.DataFlowRuntime.Instantiate("RollingTopWords", options);
+            var emitter = instanceOne.StartCaptive().Emitters.Get("a");
     
-            foreach (string word in new string[]{"this", "is", "a", "test", "that", "is", "a", "word", "test"}) {
-                emitter.Submit(new Object[]{word});
+            foreach (var word in new string[]{"this", "is", "a", "test", "that", "is", "a", "word", "test"}) {
+                emitter.Submit(new object[]{word});
             }
-            Assert.AreEqual(0, capture.CurrentAndReset.Length);
+            Assert.AreEqual(0, capture.GetCurrentAndReset().Length);
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(2000));
             Assert.AreEqual(1, capture.Current.Length);
-            Map map = (Map) capture.Current[0];
-            Object[][] rows = (Object[][]) map.Get("rankedWords");
-            EPAssertionUtil.AssertPropsPerRow(rows, "word,count".Split(','), new Object[][]{new object[] {"is", 2L}, new object[] {"a", 2L}, new object[] {"test", 2L}});
+            var map = (IDictionary<string, object>) capture.Current[0];
+            var rows = map.Get("rankedWords").UnwrapIntoList<object[]>();
+            EPAssertionUtil.AssertPropsPerRow(
+                rows,
+                "word,count".Split(','),
+                new object[][] {
+                    new object[] {"is", 2L},
+                    new object[] {"a", 2L},
+                    new object[] {"test", 2L}
+                });
     
             instanceOne.Cancel();
         }
@@ -115,8 +121,8 @@ namespace com.espertech.esper.regression.dataflow
                 Thread.Sleep(100);
                 var words = new string[]{"this", "is", "a", "test"};
                 var rand = new Random();
-                string word = words[rand.NextInt(words.Length)];
-                graphContext.Submit(new Object[]{word});
+                var word = words[rand.Next(words.Length)];
+                graphContext.Submit(new object[]{word});
             }
     
             public DataFlowOpInitializeResult Initialize(DataFlowOpInitializateContext context) {

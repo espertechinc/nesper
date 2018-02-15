@@ -8,7 +8,7 @@
 
 using System;
 using System.IO;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.deploy;
 using com.espertech.esper.client.scopetest;
@@ -19,8 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.fail;
 
 using NUnit.Framework;
 
@@ -200,11 +198,11 @@ namespace com.espertech.esper.regression.client
             var charEndsFound = new int[module.Items.Count];
     
             for (int i = 0; i < module.Items.Count; i++) {
-                stmtsFound[i] = module.Items.Get(i).Expression;
-                comments[i] = module.Items.Get(i).IsCommentOnly;
-                lineNumsFound[i] = module.Items.Get(i).LineNumber;
-                charStartsFound[i] = module.Items.Get(i).CharPosStart;
-                charEndsFound[i] = module.Items.Get(i).CharPosEnd;
+                stmtsFound[i] = module.Items[i].Expression;
+                comments[i] = module.Items[i].IsCommentOnly;
+                lineNumsFound[i] = module.Items[i].LineNumber;
+                charStartsFound[i] = module.Items[i].CharPosStart;
+                charEndsFound[i] = module.Items[i].CharPosEnd;
             }
     
             EPAssertionUtil.AssertEqualsExactOrder(statementsExpected, stmtsFound);

@@ -124,35 +124,31 @@ namespace com.espertech.esper.supportregression.util
                 return lastNew;
             }
         }
-    
-        public EventBean[] GetLastOldData()
-        {
-            return _lastOldData;
+
+        public EventBean[] LastOldData {
+            get { return _lastOldData; }
         }
-    
-        public IList<EventBean[]> GetNewDataList()
-        {
-            return _newDataList;
+
+        public IList<EventBean[]> NewDataList {
+            get { return _newDataList; }
         }
-    
-        public IList<EventBean[]> GetNewDataListCopy()
-        {
-            using (_oLock.Acquire())
-            {
-                return new List<EventBean[]>(_newDataList);
+
+        public IList<EventBean[]> NewDataListCopy {
+            get {
+                using (_oLock.Acquire()) {
+                    return new List<EventBean[]>(_newDataList);
+                }
             }
         }
 
-        public IList<EventBean[]> GetOldDataList()
-        {
-            return _oldDataList;
+        public IList<EventBean[]> OldDataList {
+            get { return _oldDataList; }
         }
-    
-        public bool IsInvoked()
-        {
-            return _isInvoked;
+
+        public bool IsInvoked {
+            get { return _isInvoked; }
         }
-    
+
         public bool GetAndClearIsInvoked()
         {
             using(_oLock.Acquire()) {

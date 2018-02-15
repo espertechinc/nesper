@@ -18,6 +18,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.filter;
 using com.espertech.esper.supportregression.bean;
+using com.espertech.esper.supportregression.context;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
@@ -66,7 +67,7 @@ namespace com.espertech.esper.regression.context
             string eplAnalysis = "context IndividualBean " +
                     "select * from pattern [every (event1=SupportBean(StringContainsX(theString) = false) -> event2=SupportBean(StringContainsX(theString) = true))]";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(eplAnalysis).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(eplAnalysis).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("F1", 0));
             epService.EPRuntime.SendEvent(new SupportBean("F1", 0));
@@ -92,7 +93,7 @@ namespace com.espertech.esper.regression.context
                     ")";
             EPStatement stmtMatchRecog = epService.EPAdministrator.CreateEPL(eplMatchRecog);
             var listener = new SupportUpdateListener();
-            stmtMatchRecog.AddListener(listener);
+            stmtMatchRecog.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEvent("A", 1, 10));
             epService.EPRuntime.SendEvent(MakeEvent("B", 1, 30));
@@ -116,7 +117,7 @@ namespace com.espertech.esper.regression.context
                     "  define A as A.intPrimitive >= Prev(A.intPrimitive),B as B.intPrimitive >= Prev(B.intPrimitive) " +
                     ")";
             EPStatement stmtMatchRecogWithPrev = epService.EPAdministrator.CreateEPL(eplMatchRecogWithPrev);
-            stmtMatchRecogWithPrev.AddListener(listener);
+            stmtMatchRecogWithPrev.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEvent("A", 1, 101));
             epService.EPRuntime.SendEvent(MakeEvent("B", 1, 201));
@@ -148,7 +149,7 @@ namespace com.espertech.esper.regression.context
                     "where A.pageName is not null and (B.pageName is null or C.pageName is null) ";
             EPStatement statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             // Set up statement for finding missing events
             SendWebEventsComplete(epService, 0);
@@ -267,7 +268,7 @@ namespace com.espertech.esper.regression.context
                     "(select id from SupportBean_S0#lastevent)" +
                     "  from SupportBean#keepall");
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             for (int i = 0; i < 10000; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean("E" + i, i));
@@ -292,7 +293,7 @@ namespace com.espertech.esper.regression.context
                     "select sum(sb.intPrimitive) as col1, sum(s0.id) as col2 " +
                     "from pattern [every (s0=SupportBean_S0 or sb=SupportBean)]");
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             Assert.AreEqual(2, filterSPI.FilterCountApprox);
     
@@ -344,7 +345,7 @@ namespace com.espertech.esper.regression.context
             var fields = new[]{"col1"};
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("context SegmentedByAString select sum(id) as col1 from SupportBean_S0");
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             Assert.AreEqual(2, filterSPI.FilterCountApprox);
     
@@ -364,7 +365,7 @@ namespace com.espertech.esper.regression.context
             Assert.AreEqual(4, filterSPI.FilterCountApprox);
     
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("context SegmentedByAString select sum(intPrimitive) as col1 from SupportBean");
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
     
             Assert.AreEqual(6, filterSPI.FilterCountApprox);
     
@@ -398,7 +399,7 @@ namespace com.espertech.esper.regression.context
             string[] fields = "col1".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context SegmentedByString select count(*) as col1 from ISupportA");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new ISupportAImpl("A1", "AB1"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1L});
@@ -424,7 +425,7 @@ namespace com.espertech.esper.regression.context
                     "select theString as c1, intPrimitive as c2, id as c3, p00 as c4, context.key1 as c5, context.key2 as c6 " +
                     "from SupportBean#lastevent, SupportBean_S0#lastevent");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 1));
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "G1"));
@@ -452,7 +453,7 @@ namespace com.espertech.esper.regression.context
                             "@Audit @Name('Insert') context Ctx insert into EventData select * from Event;" +
                             "@Audit @Name('Test') context Ctx select irstream * from EventData;";
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
-            epService.EPAdministrator.GetStatement("Test").AddListener(listener);
+            epService.EPAdministrator.GetStatement("Test").Events += listener.Update;
             epService.EPRuntime.SendEvent(new Event("G1", "SG1", 1, 10.45));
             Assert.IsTrue(listener.IsInvoked);
             epService.EPAdministrator.DestroyAllStatements();
@@ -485,7 +486,7 @@ namespace com.espertech.esper.regression.context
             EPStatement stmtPrev = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
                     "select theString, (select Prev(0, id) from SupportBean_S0#keepall) as col1 from SupportBean");
             var listener = new SupportUpdateListener();
-            stmtPrev.AddListener(listener);
+            stmtPrev.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsPrev, new object[]{"G1", null});
@@ -509,7 +510,7 @@ namespace com.espertech.esper.regression.context
             var fieldsPrior = new[]{"theString", "col1"};
             EPStatement stmtPrior = epService.EPAdministrator.CreateEPL("@Name('B') context SegmentedByString " +
                     "select theString, (select Prior(0, id) from SupportBean_S0#keepall) as col1 from SupportBean");
-            stmtPrior.AddListener(listener);
+            stmtPrior.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsPrior, new object[]{"G1", null});
@@ -538,7 +539,7 @@ namespace com.espertech.esper.regression.context
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
                     "select intPrimitive as val0, Prior(1, intPrimitive) as val1 from SupportBean");
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10, null});
@@ -561,7 +562,7 @@ namespace com.espertech.esper.regression.context
                     "select theString, intPrimitive, (select p00 from SupportBean_S0#lastevent as s0 where sb.intPrimitive = s0.id) as val0 " +
                     "from SupportBean as sb");
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "s1"));
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
@@ -596,7 +597,7 @@ namespace com.espertech.esper.regression.context
                     "select theString, intPrimitive, (select p00 from MyWindowTwo as s0 where sb.intPrimitive = s0.id) as val0 " +
                     "from SupportBean as sb");
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             TryAssertionSubqueryNW(epService, listener);
     
@@ -612,7 +613,7 @@ namespace com.espertech.esper.regression.context
                     "select theString, intPrimitive, (select p00 from MyWindowThree as s0 where sb.intPrimitive = s0.id) as val0 " +
                     "from SupportBean as sb");
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             TryAssertionSubqueryNW(epService, listener);
     
@@ -648,7 +649,7 @@ namespace com.espertech.esper.regression.context
                     "select * from SupportBean#keepall as sb, SupportBean_S0#keepall as s0 " +
                     "where intPrimitive = id");
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("G2", 20));
@@ -677,7 +678,7 @@ namespace com.espertech.esper.regression.context
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
                     "select * from pattern [every a=SupportBean -> b=SupportBean(intPrimitive=a.intPrimitive+1)]");
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("G1", 20));
@@ -699,7 +700,7 @@ namespace com.espertech.esper.regression.context
             // add another statement: contexts already exist, this one uses @Consume
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
                     "select * from pattern [every a=SupportBean -> b=SupportBean(intPrimitive=a.intPrimitive+1)@Consume]");
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("G1", 20));
@@ -722,7 +723,7 @@ namespace com.espertech.esper.regression.context
             var fieldsThree = new[]{"a.theString", "a.intPrimitive", "b.id", "b.p00"};
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
                     "select * from pattern [every a=SupportBean -> b=SupportBean_S0(id=a.intPrimitive)@Consume]");
-            stmtThree.AddListener(listener);
+            stmtThree.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("G2", 10));
@@ -742,7 +743,7 @@ namespace com.espertech.esper.regression.context
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
                     "select irstream intPrimitive, Prevwindow(items) as pw from SupportBean#length(2) as items");
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
             AssertViewData(listener, 10, new[] {new object[] {"G1", 10}}, null);
@@ -779,7 +780,7 @@ namespace com.espertech.esper.regression.context
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
                     "select context.name as c1, context.id as c2, context.key1 as c3, theString as c4 " +
                     "from SupportBean#length(2) as items");
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{ctx, 0, "G1", "G1"});
@@ -789,7 +790,7 @@ namespace com.espertech.esper.regression.context
             epService.EPAdministrator.CreateEPL("create variable bool trigger = false");
             epService.EPAdministrator.CreateEPL("create context MyCtx partition by theString from SupportBean");
             epService.EPAdministrator.CreateEPL("@Name('Out') context MyCtx select * from SupportBean#Expr(not trigger) for Grouped_delivery(theString)");
-            epService.EPAdministrator.GetStatement("Out").AddListener(listener);
+            epService.EPAdministrator.GetStatement("Out").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
@@ -807,7 +808,7 @@ namespace com.espertech.esper.regression.context
                     "where theString is 'Test'";
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("select").AddListener(listener);
+            epService.EPAdministrator.GetStatement("select").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("Test", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
@@ -821,7 +822,7 @@ namespace com.espertech.esper.regression.context
             epService.EPAdministrator.CreateEPL("create context MyContext partition by theString from SupportBean");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context MyContext select count(*) as cnt from SupportBean");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean(null, 10));
             Assert.AreEqual(1L, listener.AssertOneGetNewAndReset().Get("cnt"));
@@ -839,7 +840,7 @@ namespace com.espertech.esper.regression.context
             epService.EPAdministrator.CreateEPL("create context MyContext partition by theString, intBoxed, intPrimitive from SupportBean");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context MyContext select count(*) as cnt from SupportBean");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendSBEvent(epService, "A", null, 1);
             Assert.AreEqual(1L, listener.AssertOneGetNewAndReset().Get("cnt"));

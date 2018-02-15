@@ -11,8 +11,6 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertFalse;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -22,7 +20,7 @@ namespace com.espertech.esper.regression.context
     
         public override void Configure(Configuration configuration) {
             configuration.AddEventType<SupportBean>();
-            configuration.EngineDefaults.Execution.Prioritized = true;
+            configuration.EngineDefaults.Execution.IsPrioritized = true;
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -32,12 +30,12 @@ namespace com.espertech.esper.regression.context
             EPStatement statementWithDropAnnotation = epService.EPAdministrator.CreateEPL(
                     "@Drop @Priority(1) context SegmentedByMessage select 'test1' from SupportBean");
             var statementWithDropAnnotationListener = new SupportUpdateListener();
-            statementWithDropAnnotation.AddListener(statementWithDropAnnotationListener);
+            statementWithDropAnnotation.Events += statementWithDropAnnotationListener.Update;
     
             EPStatement lowPriorityStatement = epService.EPAdministrator.CreateEPL(
                     "@Priority(0) context SegmentedByMessage select 'test2' from SupportBean");
             var lowPriorityStatementListener = new SupportUpdateListener();
-            lowPriorityStatement.AddListener(lowPriorityStatementListener);
+            lowPriorityStatement.Events += lowPriorityStatementListener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("test msg", 1));
     

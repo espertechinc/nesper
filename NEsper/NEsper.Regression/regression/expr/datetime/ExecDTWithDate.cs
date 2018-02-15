@@ -47,14 +47,14 @@ namespace com.espertech.esper.regression.expr.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]
             {
                 typeof(long?), typeof(DateTimeOffset?), typeof(long?)
             });
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null});
     
             string expectedTime = "2004-09-03T09:00:00.000";
             epService.EPRuntime.SetVariableValue("varyear", 2004);

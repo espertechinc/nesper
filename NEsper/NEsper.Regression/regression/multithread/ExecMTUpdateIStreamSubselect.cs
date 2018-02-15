@@ -17,7 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -30,7 +29,7 @@ namespace com.espertech.esper.regression.multithread
             EPStatement stmt = epService.EPAdministrator.CreateEPL("update istream SupportBean as sb " +
                     "set longPrimitive = (select count(*) from SupportBean_S0#keepall as s0 where s0.p00 = sb.theString)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // insert 5 data events for each symbol
             int numGroups = 20;

@@ -68,8 +68,8 @@ namespace com.espertech.esper.regression.events.xml
             SupportEventTypeAssertionUtil.AssertConsistency(stmtExampleTwo_3.First());
     
             Object resultArray = stmtExampleOne.First().Get("idarray");
-            EPAssertionUtil.AssertEqualsExactOrder((Object[]) resultArray, new string[]{"urn:epc:1:2.24.400", "urn:epc:1:2.24.401"});
-            EPAssertionUtil.AssertProps(stmtExampleOne.First(), "countTags,countTagsInt".Split(','), new Object[]{2d, 2});
+            EPAssertionUtil.AssertEqualsExactOrder((object[]) resultArray, new string[]{"urn:epc:1:2.24.400", "urn:epc:1:2.24.401"});
+            EPAssertionUtil.AssertProps(stmtExampleOne.First(), "countTags,countTagsInt".Split(','), new object[]{2d, 2});
             Assert.AreEqual("urn:epc:1:2.24.400", stmtExampleTwo_1.First().Get("ID"));
             Assert.AreEqual("urn:epc:1:2.24.401", stmtExampleTwo_3.First().Get("mytags[1].ID"));
         }

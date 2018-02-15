@@ -19,8 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.regression.client.ExecClientMetricsReportingNW;
-// using static org.junit.Assert.assertFalse;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -39,11 +37,11 @@ namespace com.espertech.esper.regression.client
     
             statements[0] = epService.EPAdministrator.CreateEPL("select * from " + typeof(StatementMetric).FullName, "stmtmetric");
             var listenerStmtMetric = new SupportUpdateListener();
-            statements[0].AddListener(listenerStmtMetric);
+            statements[0].Events += listenerStmtMetric.Update;
     
             statements[1] = epService.EPAdministrator.CreateEPL("select * from " + typeof(EngineMetric).FullName, "enginemetric");
             var listenerEngineMetric = new SupportUpdateListener();
-            statements[1].AddListener(listenerEngineMetric);
+            statements[1].Events += listenerEngineMetric.Update;
     
             statements[2] = epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive=1)#keepall where MyMetricFunctions.TakeCPUTime(longPrimitive)");
             SendEvent(epService, "E1", 1, CPUGOALONENANO);
@@ -69,7 +67,7 @@ namespace com.espertech.esper.regression.client
             Assert.IsTrue(listenerStmtMetric.GetAndClearIsInvoked());
             Assert.IsTrue(listenerEngineMetric.GetAndClearIsInvoked());
     
-            statements[2].Destroy();
+            statements[2].Dispose();
             SendTimer(epService, 51000);
             Assert.IsTrue(listenerStmtMetric.IsInvoked); // metrics statements reported themselves
             Assert.IsTrue(listenerEngineMetric.IsInvoked);

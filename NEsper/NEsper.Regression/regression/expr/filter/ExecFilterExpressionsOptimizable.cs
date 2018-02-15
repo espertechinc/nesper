@@ -25,8 +25,6 @@ using com.espertech.esper.util;
 
 using static com.espertech.esper.supportregression.util.SupportFilterItem;
 // using static com.espertech.esper.supportregression.util.SupportFilterItem.GetBoolExprFilterItem;
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -126,7 +124,7 @@ namespace com.espertech.esper.regression.expr.filter
     
             EPStatement epStatement = epService.EPAdministrator.CreateEPL("select * from SupportBean(myCheckServiceProvider.Check())");
             var listener = new SupportUpdateListener();
-            epStatement.AddListener(listener);
+            epStatement.Events += listener.Update;
             var latch = new CountDownLatch(1);
     
             var executorService = Executors.NewSingleThreadExecutor();
@@ -190,7 +188,7 @@ namespace com.espertech.esper.regression.expr.filter
     
             string epl = "select * from pattern[a=SupportBean() -> b=SupportBean(MyCustomBigDecimalEquals(a.bigDecimal, b.bigDecimal))]";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             var beanOne = new SupportBean("E1", 0);
             beanOne.DecimalBoxed = 13.0m;
@@ -215,7 +213,7 @@ namespace com.espertech.esper.regression.expr.filter
                 string epl = "select * from SupportBean(" + filter + ")";
                 AssertFilterSingle(epService, epl, "theString", FilterOperator.IN_LIST_OF_VALUES);
                 var listener = new SupportUpdateListener();
-                epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+                epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
                 epService.EPRuntime.SendEvent(new SupportBean("a", 0));
                 Assert.IsTrue(listener.GetAndClearIsInvoked());
@@ -276,7 +274,7 @@ namespace com.espertech.esper.regression.expr.filter
             var listener = new SupportUpdateListener();
             for (int i = 0; i < 1000; i++) {
                 string epl = "select * from SupportBean(theString = '" + i + "' or intPrimitive=" + i + ")";
-                epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+                epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
             }
     
             long start = PerformanceObserver.NanoTime;
@@ -306,7 +304,7 @@ namespace com.espertech.esper.regression.expr.filter
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from MyEventInKeywordValue#keepall where 1 in (" + field + ")");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(SerializableObjectCopier.Copy(prototype));
             Assert.IsTrue(listener.IsInvokedAndReset());
@@ -318,7 +316,7 @@ namespace com.espertech.esper.regression.expr.filter
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from MyEventInKeywordValue#keepall where 1 not in (" + field + ")");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(SerializableObjectCopier.Copy(prototype));
             Assert.IsFalse(listener.IsInvokedAndReset());
@@ -330,7 +328,7 @@ namespace com.espertech.esper.regression.expr.filter
     
             EPStatementSPI stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("select * from pattern[every a=MyEventInKeywordValue -> SupportBean(intPrimitive in (a." + field + "))]");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(prototype), 1, true);
             AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(prototype), 2, true);
@@ -348,7 +346,7 @@ namespace com.espertech.esper.regression.expr.filter
     
             EPStatementSPI stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("select * from pattern[every a=MyEventInKeywordValue -> SupportBean(intPrimitive not in (a." + field + "))]");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(prototype), 0, true);
             AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(prototype), 3, true);
@@ -374,10 +372,10 @@ namespace com.espertech.esper.regression.expr.filter
             epService.EPAdministrator.CreateEPL("create context MyContext initiated by MyEventInKeywordValue as mie terminated after 24 hours");
     
             EPStatement statementOne = epService.EPAdministrator.CreateEPL("context MyContext select * from SupportBean#keepall where intPrimitive in (context.mie.ints)");
-            statementOne.AddListener(listenerOne);
+            statementOne.Events += listenerOne.Update;
     
             EPStatementSPI statementTwo = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context MyContext select * from SupportBean(intPrimitive in (context.mie.ints))");
-            statementTwo.AddListener(listenerTwo);
+            statementTwo.Events += listenerTwo.Update;
     
             epService.EPRuntime.SendEvent(new MyEventInKeywordValue(new[]{1, 2}));
     
@@ -412,7 +410,7 @@ namespace com.espertech.esper.regression.expr.filter
             string epl = "select (select * from SupportBean_IntAlphabetic(a=1 or b=1)#keepall) as c0 from SupportBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SupportBean_IntAlphabetic iaOne = IntEvent(1, 1);
             epService.EPRuntime.SendEvent(iaOne);
@@ -430,11 +428,11 @@ namespace com.espertech.esper.regression.expr.filter
             string epl = "context MyContext select * from SupportBean_IntAlphabetic(d=1 or e=1)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendAssertEvents(epService, listener,
-                    new Object[]{IntEvent(1, 0, 0, 0, 1), IntEvent(0, 1, 0, 1, 0), IntEvent(0, 0, 1, 1, 1)},
-                    new Object[]{IntEvent(0, 0, 0, 1, 0), IntEvent(1, 0, 0, 0, 0), IntEvent(0, 0, 1, 0, 0)}
+                    new object[]{IntEvent(1, 0, 0, 0, 1), IntEvent(0, 1, 0, 1, 0), IntEvent(0, 0, 1, 1, 1)},
+                    new object[]{IntEvent(0, 0, 0, 1, 0), IntEvent(1, 0, 0, 0, 0), IntEvent(0, 0, 1, 0, 0)}
             );
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -445,11 +443,11 @@ namespace com.espertech.esper.regression.expr.filter
             string epl = "context MyContext select * from SupportBean_IntAlphabetic(c=1 or d=1)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendAssertEvents(epService, listener,
-                    new Object[]{IntEvent(100, 1, 0, 1), IntEvent(100, 1, 1, 0)},
-                    new Object[]{IntEvent(100, 0, 0, 1), IntEvent(100, 1, 0, 0)}
+                    new object[]{IntEvent(100, 1, 0, 1), IntEvent(100, 1, 1, 0)},
+                    new object[]{IntEvent(100, 0, 0, 1), IntEvent(100, 1, 0, 0)}
             );
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -459,11 +457,11 @@ namespace com.espertech.esper.regression.expr.filter
             string epl = "context MyContext select * from SupportBean_IntAlphabetic(d=1)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendAssertEvents(epService, listener,
-                    new Object[]{IntEvent(100, 1, 0, 1), IntEvent(100, 0, 1, 1)},
-                    new Object[]{IntEvent(100, 0, 0, 1), IntEvent(100, 1, 0, 0)}
+                    new object[]{IntEvent(100, 1, 0, 1), IntEvent(100, 0, 1, 1)},
+                    new object[]{IntEvent(100, 0, 0, 1), IntEvent(100, 1, 0, 0)}
             );
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -477,16 +475,16 @@ namespace com.espertech.esper.regression.expr.filter
                 EPStatement stmt = SupportFilterHelper.AssertFilterMulti(epService, epl, "SupportBean_StringAlphabetic", new[]
                 {
                     new[]{new SupportFilterItem("a", FilterOperator.EQUAL), new SupportFilterItem("b", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("a", FilterOperator.EQUAL), GetBoolExprFilterItem()},
-                    new[]{new SupportFilterItem("b", FilterOperator.EQUAL), GetBoolExprFilterItem()},
-                    new[]{GetBoolExprFilterItem()},
+                    new[]{new SupportFilterItem("a", FilterOperator.EQUAL), BoolExprFilterItem},
+                    new[]{new SupportFilterItem("b", FilterOperator.EQUAL), BoolExprFilterItem},
+                    new[]{BoolExprFilterItem},
                 });
                 var listener = new SupportUpdateListener();
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
     
                 SendAssertEvents(epService, listener,
-                        new Object[]{StringEvent("a", "b"), StringEvent("A1", "b"), StringEvent("a", "B1"), StringEvent("A1", "B1")},
-                        new Object[]{StringEvent("x", "b"), StringEvent("a", "x"), StringEvent("A1", "C"), StringEvent("C", "B1")}
+                        new object[]{StringEvent("a", "b"), StringEvent("A1", "b"), StringEvent("a", "B1"), StringEvent("A1", "B1")},
+                        new object[]{StringEvent("x", "b"), StringEvent("a", "x"), StringEvent("A1", "C"), StringEvent("C", "B1")}
                 );
                 epService.EPAdministrator.DestroyAllStatements();
             }
@@ -500,15 +498,15 @@ namespace com.espertech.esper.regression.expr.filter
                 string epl = "select * from SupportBean_StringAlphabetic(" + filter + ")";
                 EPStatement stmt = SupportFilterHelper.AssertFilterMulti(epService, epl, "SupportBean_StringAlphabetic", new[]
                 {
-                    new[]{new SupportFilterItem("b", FilterOperator.EQUAL), GetBoolExprFilterItem()},
-                    new[]{new SupportFilterItem("c", FilterOperator.EQUAL), GetBoolExprFilterItem()},
+                    new[]{new SupportFilterItem("b", FilterOperator.EQUAL), BoolExprFilterItem},
+                    new[]{new SupportFilterItem("c", FilterOperator.EQUAL), BoolExprFilterItem},
                 });
                 var listener = new SupportUpdateListener();
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
     
                 SendAssertEvents(epService, listener,
-                        new Object[]{StringEvent("a1", "b", null), StringEvent("a1", null, "c")},
-                        new Object[]{StringEvent("x", "b", null), StringEvent("a1", null, null), StringEvent("a1", null, "x")}
+                        new object[]{StringEvent("a1", "b", null), StringEvent("a1", null, "c")},
+                        new object[]{StringEvent("x", "b", null), StringEvent("a1", null, null), StringEvent("a1", null, "x")}
                 );
                 epService.EPAdministrator.DestroyAllStatements();
             }
@@ -530,15 +528,15 @@ namespace com.espertech.esper.regression.expr.filter
                 string epl = "select * from SupportBean_IntAlphabetic(" + filter + ")";
                 EPStatement stmt = SupportFilterHelper.AssertFilterMulti(epService, epl, "SupportBean_IntAlphabetic", new[]
                 {
-                    new[]{new SupportFilterItem("a", FilterOperator.NOT_IN_LIST_OF_VALUES), GetBoolExprFilterItem()},
-                    new[]{new SupportFilterItem("a", FilterOperator.NOT_IN_LIST_OF_VALUES), GetBoolExprFilterItem()},
+                    new[]{new SupportFilterItem("a", FilterOperator.NOT_IN_LIST_OF_VALUES), BoolExprFilterItem},
+                    new[]{new SupportFilterItem("a", FilterOperator.NOT_IN_LIST_OF_VALUES), BoolExprFilterItem},
                 });
                 var listener = new SupportUpdateListener();
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
     
                 SendAssertEvents(epService, listener,
-                        new Object[]{IntEvent(3), IntEvent(4), IntEvent(0)},
-                        new Object[]{IntEvent(2), IntEvent(1)}
+                        new object[]{IntEvent(3), IntEvent(4), IntEvent(0)},
+                        new object[]{IntEvent(2), IntEvent(1)}
                 );
                 epService.EPAdministrator.DestroyAllStatements();
             }
@@ -556,11 +554,11 @@ namespace com.espertech.esper.regression.expr.filter
                     new[]{new SupportFilterItem("a", FilterOperator.NOT_IN_LIST_OF_VALUES), new SupportFilterItem("a", FilterOperator.NOT_EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
     
                 SendAssertEvents(epService, listener,
-                        new Object[]{IntEvent(3), IntEvent(4), IntEvent(0)},
-                        new Object[]{IntEvent(2), IntEvent(1)}
+                        new object[]{IntEvent(3), IntEvent(4), IntEvent(0)},
+                        new object[]{IntEvent(2), IntEvent(1)}
                 );
                 epService.EPAdministrator.DestroyAllStatements();
             }
@@ -578,11 +576,11 @@ namespace com.espertech.esper.regression.expr.filter
                     new[]{new SupportFilterItem("a", FilterOperator.NOT_IN_LIST_OF_VALUES), new SupportFilterItem("c", FilterOperator.EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
     
                 SendAssertEvents(epService, listener,
-                        new Object[]{IntEvent(3, 1, 0), IntEvent(3, 0, 1), IntEvent(0, 1, 0)},
-                        new Object[]{IntEvent(2, 0, 0), IntEvent(1, 0, 0), IntEvent(3, 0, 0)}
+                        new object[]{IntEvent(3, 1, 0), IntEvent(3, 0, 1), IntEvent(0, 1, 0)},
+                        new object[]{IntEvent(2, 0, 0), IntEvent(1, 0, 0), IntEvent(3, 0, 0)}
                 );
                 epService.EPAdministrator.DestroyAllStatements();
             }
@@ -600,7 +598,7 @@ namespace com.espertech.esper.regression.expr.filter
                     new[]{new SupportFilterItem("theString", FilterOperator.EQUAL), new SupportFilterItem("longPrimitive", FilterOperator.EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
     
                 SendAssertEvents(epService, listener,
                         new[]{MakeEvent("a", 1, 0), MakeEvent("a", 0, 10), MakeEvent("a", 1, 10)},
@@ -624,11 +622,11 @@ namespace com.espertech.esper.regression.expr.filter
                     new[]{new SupportFilterItem("a", FilterOperator.EQUAL), new SupportFilterItem("b", FilterOperator.EQUAL), new SupportFilterItem("e", FilterOperator.EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
     
                 SendAssertEvents(epService, listener,
-                        new Object[]{IntEvent(1, 1, 0, 1, 0), IntEvent(1, 0, 1, 0, 1), IntEvent(1, 1, 0, 0, 1), IntEvent(1, 0, 1, 1, 0)},
-                        new Object[]{IntEvent(1, 0, 0, 1, 0), IntEvent(1, 0, 0, 1, 0), IntEvent(1, 1, 1, 0, 0), IntEvent(0, 1, 1, 1, 1)}
+                        new object[]{IntEvent(1, 1, 0, 1, 0), IntEvent(1, 0, 1, 0, 1), IntEvent(1, 1, 0, 0, 1), IntEvent(1, 0, 1, 1, 0)},
+                        new object[]{IntEvent(1, 0, 0, 1, 0), IntEvent(1, 0, 0, 1, 0), IntEvent(1, 1, 1, 0, 0), IntEvent(0, 1, 1, 1, 1)}
                 );
                 epService.EPAdministrator.DestroyAllStatements();
             }
@@ -655,7 +653,7 @@ namespace com.espertech.esper.regression.expr.filter
                     new[]{new SupportFilterItem("doubleBoxed", FilterOperator.EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
     
                 SendAssertEvents(epService, listener,
                         new[]{MakeEvent("a", 1, 10, 100, true, 2, 20, 200), MakeEvent("a", 0, 0, 0, true, 0, 0, 0),
@@ -682,7 +680,7 @@ namespace com.espertech.esper.regression.expr.filter
                     new[]{new SupportFilterItem("doublePrimitive", FilterOperator.EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
     
                 SendAssertEvents(epService, listener,
                         new[]{MakeEvent("a", 1, 10, 100), MakeEvent("x", 0, 0, 100), MakeEvent("x", 0, 10, 100), MakeEvent("a", 0, 0, 0)},
@@ -706,7 +704,7 @@ namespace com.espertech.esper.regression.expr.filter
                     new[]{new SupportFilterItem("intPrimitive", FilterOperator.EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
     
                 SendAssertEvents(epService, listener,
                         new[]{MakeEvent("a", 1), MakeEvent("b", 0), MakeEvent("x", 1)},
@@ -730,7 +728,7 @@ namespace com.espertech.esper.regression.expr.filter
                     new[]{new SupportFilterItem("theString", FilterOperator.EQUAL), new SupportFilterItem("intPrimitive", FilterOperator.EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
     
                 SendAssertEvents(epService, listener,
                         new[]{MakeEvent("a", 1), MakeEvent("b", 2)},
@@ -754,7 +752,7 @@ namespace com.espertech.esper.regression.expr.filter
                     new[]{new SupportFilterItem("longPrimitive", FilterOperator.EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
     
                 SendAssertEvents(epService, listener,
                         new[]{MakeEvent("a", 0, 0), MakeEvent("b", 1, 0), MakeEvent("c", 0, 2), MakeEvent("c", 0, 2)},
@@ -764,7 +762,7 @@ namespace com.espertech.esper.regression.expr.filter
             }
         }
     
-        private void SendAssertEvents(EPServiceProvider epService, SupportUpdateListener listener, Object[] matches, Object[] nonMatches) {
+        private void SendAssertEvents(EPServiceProvider epService, SupportUpdateListener listener, object[] matches, object[] nonMatches) {
             listener.Reset();
             foreach (Object match in matches) {
                 epService.EPRuntime.SendEvent(match);
@@ -793,7 +791,7 @@ namespace com.espertech.esper.regression.expr.filter
                     new[]{new SupportFilterItem("theString", FilterOperator.EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
     
                 epService.EPRuntime.SendEvent(new SupportBean("a", 0));
                 listener.AssertOneGetNewAndReset();
@@ -811,7 +809,7 @@ namespace com.espertech.esper.regression.expr.filter
             // test function returns lookup value and "equals"
             for (int i = 0; i < listeners.Length; i++) {
                 EPStatement stmt = epService.EPAdministrator.CreateEPL(epl.Replace("!NUM!", Convert.ToString(i)));
-                stmt.AddListener(listeners[i]);
+                stmt.Events += listeners[i].Update;
             }
     
             long startTime = DateTimeHelper.CurrentTimeMillis;
@@ -837,7 +835,7 @@ namespace com.espertech.esper.regression.expr.filter
             var listener = new SupportUpdateListener();
             for (int i = 0; i < count; i++) {
                 EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
             }
     
             long startTime = DateTimeHelper.CurrentTimeMillis;
@@ -886,7 +884,7 @@ namespace com.espertech.esper.regression.expr.filter
             epService.EPAdministrator.Configuration.AddEventType(typeof(SupportOverrideBase));
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportOverrideBase(typeof(e) = 'SupportOverrideBase') as e");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             listener.Reset();
     
             epService.EPRuntime.SendEvent(new SupportOverrideBase(""));
@@ -901,7 +899,7 @@ namespace com.espertech.esper.regression.expr.filter
         private void TryOrRewriteContextPartitionedInitiated(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("@Name('ctx') create context MyContext initiated by SupportBean(theString='A' or intPrimitive=1) terminated after 24 hours");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("@Name('select') context MyContext select * from SupportBean").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("@Name('select') context MyContext select * from SupportBean").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 1));
             listener.AssertOneGetNewAndReset();
@@ -912,7 +910,7 @@ namespace com.espertech.esper.regression.expr.filter
         private void TryOrRewriteContextPartitionedInitiatedSameEvent(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create context MyContext initiated by SupportBean terminated after 24 hours");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("context MyContext select * from SupportBean(theString='A' or intPrimitive=1)").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("context MyContext select * from SupportBean(theString='A' or intPrimitive=1)").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 1));
             listener.AssertOneGetNewAndReset();

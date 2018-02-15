@@ -109,7 +109,7 @@ namespace com.espertech.esper.regression.dataflow
                     "jsonobj: {a: \"a\",b: \"b\"}\n" +
                     "}\n";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(soda);
-            EPAssertionUtil.Assert.AreEqualIgnoreNewline(soda, model.ToEPL(new EPStatementFormatter(true)));
+            EPAssertionUtil.AssertEqualsIgnoreNewline(soda, model.ToEPL(new EPStatementFormatter(true)));
             epService.EPAdministrator.Create(model);
         }
     

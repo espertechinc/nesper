@@ -16,16 +16,14 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.resultset.aggregate
 {
     public class ExecAggregateMedianAndDeviation : RegressionExecution {
-        private static readonly string SYMBOL_DELL = "DELL";
-        private static readonly string SYMBOL_IBM = "IBM";
+        private const string SYMBOL_DELL = "DELL";
+        private const string SYMBOL_IBM = "IBM";
     
         public override void Run(EPServiceProvider epService) {
             RunAssertionStmt(epService);
@@ -46,14 +44,14 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionStmt(epService, listener, stmt);
     
             // Test NaN sensitivity
             stmt.Dispose();
             stmt = epService.EPAdministrator.CreateEPL("select stddev(price) as val from " + typeof(SupportMarketDataBean).FullName + "#length(3)");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "A", Double.NaN);
             SendEvent(epService, "B", Double.NaN);
@@ -106,7 +104,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
@@ -131,7 +129,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));

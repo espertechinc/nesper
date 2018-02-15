@@ -17,6 +17,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.filter;
 using com.espertech.esper.supportregression.bean;
+using com.espertech.esper.supportregression.context;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
@@ -70,11 +71,11 @@ namespace com.espertech.esper.regression.context
             epService.EPRuntime.SendEvent(new SupportBean("E3", 100));
             epService.EPRuntime.SendEvent(new SupportBean("E3", 101));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 3));
-            var expected = new Object[][]{new object[] {0, "S0_1", "E1", 6}, new object[] {0, "S0_1", "E2", 10}, new object[] {0, "S0_1", "E3", 201}};
+            var expected = new object[][]{new object[] {0, "S0_1", "E1", 6}, new object[] {0, "S0_1", "E2", 10}, new object[] {0, "S0_1", "E3", 201}};
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), stmt.GetSafeEnumerator(), fields, expected);
     
             // test iterator targeted by context partition id
-            var selectorById = new SupportSelectorById(Collections.SingletonList(0));
+            var selectorById = new SupportSelectorById(Collections.SingletonSet(0));
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(selectorById), stmt.GetSafeEnumerator(selectorById), fields, expected);
     
             // test iterator targeted by property on triggering event
@@ -86,8 +87,8 @@ namespace com.espertech.esper.regression.context
             // test always-false filter - compare context partition info
             filtered = new SupportSelectorFilteredInitTerm(null);
             Assert.IsFalse(stmt.GetEnumerator(filtered).MoveNext());
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{1000L}, filtered.ContextsStartTimes);
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{"S0_1"}, filtered.P00PropertyValues);
+            EPAssertionUtil.AssertEqualsAnyOrder(new object[]{1000L}, filtered.ContextsStartTimes);
+            EPAssertionUtil.AssertEqualsAnyOrder(new object[]{"S0_1"}, filtered.P00PropertyValues);
     
             try {
                 stmt.GetEnumerator(new ProxyContextPartitionSelectorSegmented() {
@@ -111,7 +112,7 @@ namespace com.espertech.esper.regression.context
             var listener = new SupportUpdateListener();
             var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.s0.id as c1, context.s1.id as c2, sum(intPrimitive) as c3 " +
                     "from SupportBean#keepall output snapshot when terminated");
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean_S0(100, "G1"));    // starts it
@@ -121,7 +122,7 @@ namespace com.espertech.esper.regression.context
             Assert.IsFalse(listener.GetAndClearIsInvoked());
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(200, "G1"));  // terminate
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{100, 200, 5});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{100, 200, 5});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(101, "G2"));    // starts new one
             epService.EPRuntime.SendEvent(new SupportBean_S0(102, "G3"));    // ignored
@@ -131,7 +132,7 @@ namespace com.espertech.esper.regression.context
             epService.EPRuntime.SendEvent(new SupportBean("E6", 6));
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(201, "G2"));  // terminate
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{101, 201, 15});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{101, 201, 15});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -145,18 +146,18 @@ namespace com.espertech.esper.regression.context
             var listener = new SupportUpdateListener();
             var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.s0.p00 as c1, sum(intPrimitive) as c2 " +
                     "from SupportBean#keepall");
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean_S0(100, "G1"));    // starts it
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"G1", 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"G1", 2});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(200, "GX"));  // false terminate
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"G1", 5});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"G1", 5});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(200, "G1"));  // actual terminate
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
@@ -165,13 +166,13 @@ namespace com.espertech.esper.regression.context
             epService.EPRuntime.SendEvent(new SupportBean_S0(101, "G2"));    // starts second
     
             epService.EPRuntime.SendEvent(new SupportBean("E6", 6));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"G2", 6});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"G2", 6});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(101, null));    // false terminate
             epService.EPRuntime.SendEvent(new SupportBean_S1(101, "GY"));    // false terminate
     
             epService.EPRuntime.SendEvent(new SupportBean("E7", 7));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"G2", 13});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"G2", 13});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(300, "G2"));  // actual terminate
             epService.EPRuntime.SendEvent(new SupportBean("E8", 8));
@@ -195,7 +196,7 @@ namespace com.espertech.esper.regression.context
             var listener = new SupportUpdateListener();
             var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.startTime as c1, context.endTime as c2, sum(intPrimitive) as c3 " +
                     "from SupportBean#keepall");
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.IsFalse(listener.GetAndClearIsInvoked());
@@ -203,12 +204,12 @@ namespace com.espertech.esper.regression.context
             SendTimeEvent(epService, "2002-05-1T08:00:05.000");
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{DateTimeParser.ParseDefaultMSec("2002-05-1T08:00:05.000"), DateTimeParser.ParseDefaultMSec("2002-05-1T08:00:15.000"), 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{DateTimeParser.ParseDefaultMSec("2002-05-1T08:00:05.000"), DateTimeParser.ParseDefaultMSec("2002-05-1T08:00:15.000"), 2});
     
             SendTimeEvent(epService, "2002-05-1T08:00:14.999");
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsShort, new Object[]{5});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsShort, new object[]{5});
     
             SendTimeEvent(epService, "2002-05-1T08:00:15.000");
     
@@ -218,7 +219,7 @@ namespace com.espertech.esper.regression.context
             SendTimeEvent(epService, "2002-05-1T08:00:20.000");
     
             epService.EPRuntime.SendEvent(new SupportBean("E5", 5));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{DateTimeParser.ParseDefaultMSec("2002-05-1T08:00:20.000"), DateTimeParser.ParseDefaultMSec("2002-05-1T08:00:30.000"), 5});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{DateTimeParser.ParseDefaultMSec("2002-05-1T08:00:20.000"), DateTimeParser.ParseDefaultMSec("2002-05-1T08:00:30.000"), 5});
     
             SendTimeEvent(epService, "2002-05-1T08:00:30.000");
     
@@ -240,7 +241,7 @@ namespace com.espertech.esper.regression.context
             var listener = new SupportUpdateListener();
             var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.s0.p00 as c1, sum(intPrimitive) as c2 " +
                     "from SupportBean#keepall output snapshot when terminated");
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean_S0(100, "S0_1"));    // starts it
@@ -250,7 +251,7 @@ namespace com.espertech.esper.regression.context
     
             // terminate
             epService.EPRuntime.SendEvent(new SupportBean_S1(200, "S1_1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S0_1", 5});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S0_1", 5});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(201, "S1_2"));
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
@@ -258,13 +259,13 @@ namespace com.espertech.esper.regression.context
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(102, "S0_2"));    // starts it
             epService.EPRuntime.SendEvent(new SupportBean_S1(201, "S1_3"));    // ends it
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S0_2", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S0_2", null});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(103, "S0_3"));    // starts it
             epService.EPRuntime.SendEvent(new SupportBean("E5", 6));           // some more data
             epService.EPRuntime.SendEvent(new SupportBean_S0(104, "S0_4"));    // ignored
             epService.EPRuntime.SendEvent(new SupportBean_S1(201, "S1_3"));    // ends it
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S0_3", 6});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S0_3", 6});
     
             statement.Dispose();
             epService.EPAdministrator.DestroyAllStatements();
@@ -280,7 +281,7 @@ namespace com.espertech.esper.regression.context
             var listener = new SupportUpdateListener();
             var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.s0.p00 as c1, sum(intPrimitive) as c2 " +
                     "from SupportBean#keepall");
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean_S0(100, "S0_1"));    // starts it
@@ -291,21 +292,21 @@ namespace com.espertech.esper.regression.context
             SendTimeEvent(epService, "2002-05-1T08:00:01.000"); // 1 second passes
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S0_1", 4});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S0_1", 4});
     
             epService.EPRuntime.SendEvent(new SupportBean("E5", 5));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S0_1", 9});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S0_1", 9});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(101, "S0_2"));    // ignored
             SendTimeEvent(epService, "2002-05-1T08:00:03.000");
     
             epService.EPRuntime.SendEvent(new SupportBean("E6", 6));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S0_1", 15});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S0_1", 15});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(101, "S1_1"));    // ignored
     
             epService.EPRuntime.SendEvent(new SupportBean("E7", 7));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S0_1", 22});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S0_1", 22});
     
             SendTimeEvent(epService, "2002-05-1T08:00:04.000"); // terminates
     
@@ -319,7 +320,7 @@ namespace com.espertech.esper.regression.context
             SendTimeEvent(epService, "2002-05-1T08:00:11.000");
     
             epService.EPRuntime.SendEvent(new SupportBean("E10", 10));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"S0_3", 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"S0_3", 10});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -330,7 +331,7 @@ namespace com.espertech.esper.regression.context
     
             var listener = new SupportUpdateListener();
             var statement = epService.EPAdministrator.CreateEPL("context EverySecond select * from SupportBean");
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
             Assert.IsTrue(listener.GetAndClearIsInvoked());
@@ -378,7 +379,7 @@ namespace com.espertech.esper.regression.context
             var listener = new SupportUpdateListener();
             var stmtText = "context NineToFive select * from SupportBean_S0 as s0, sql:MyDB ['select * from mytesttable where ${id} = mytesttable.mybigint'] as s1";
             var statement = epService.EPAdministrator.CreateEPL(stmtText);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
             Assert.IsFalse(listener.IsInvoked);
@@ -386,7 +387,7 @@ namespace com.espertech.esper.regression.context
             // now started
             SendTimeEvent(epService, "2002-05-1T09:00:00.000");
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"Y"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"Y"});
     
             // now gone
             SendTimeEvent(epService, "2002-05-1T17:00:00.000");
@@ -398,7 +399,7 @@ namespace com.espertech.esper.regression.context
             SendTimeEvent(epService, "2002-05-2T09:00:00.000");
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"X"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"X"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -412,7 +413,7 @@ namespace com.espertech.esper.regression.context
             var statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NineToFive " +
                     "select Prev(theString) as col1, Prevwindow(sb) as col2, Prevtail(theString) as col3, Prior(1, theString) as col4, sum(intPrimitive) as col5 " +
                     "from SupportBean#keepall as sb");
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
             Assert.IsFalse(listener.IsInvoked);
@@ -421,13 +422,13 @@ namespace com.espertech.esper.regression.context
             SendTimeEvent(epService, "2002-05-1T09:00:00.000");
             var event1 = new SupportBean("E1", 1);
             epService.EPRuntime.SendEvent(event1);
-            var expected = new Object[][]{new object[] {null, new SupportBean[]{event1}, "E1", null, 1}};
+            var expected = new object[][]{new object[] {null, new SupportBean[]{event1}, "E1", null, 1}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, expected);
             EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), statement.GetSafeEnumerator(), fields, expected);
     
             var event2 = new SupportBean("E2", 2);
             epService.EPRuntime.SendEvent(event2);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", new SupportBean[]{event2, event1}, "E1", "E1", 3});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", new SupportBean[]{event2, event1}, "E1", "E1", 3});
     
             // now gone
             SendTimeEvent(epService, "2002-05-1T17:00:00.000");
@@ -442,7 +443,7 @@ namespace com.espertech.esper.regression.context
     
             var event3 = new SupportBean("E3", 9);
             epService.EPRuntime.SendEvent(event3);
-            expected = new Object[][]{new object[] {null, new SupportBean[]{event3}, "E3", null, 9}};
+            expected = new object[][]{new object[] {null, new SupportBean[]{event3}, "E3", null, 9}};
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, expected);
             EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), statement.GetSafeEnumerator(), fields, expected);
             AgentInstanceAssertionUtil.AssertInstanceCounts(statement.StatementContext, 1, 0, 3, 1);
@@ -459,7 +460,7 @@ namespace com.espertech.esper.regression.context
             var statement = epService.EPAdministrator.CreateEPL("context NineToFive " +
                     "select sb.theString as col1, sb.intPrimitive as col2, s0.id as col3, s0.p00 as col4 " +
                     "from SupportBean#keepall as sb full outer join SupportBean_S0#keepall as s0 on p00 = theString");
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
@@ -468,10 +469,10 @@ namespace com.espertech.esper.regression.context
             // now started
             SendTimeEvent(epService, "2002-05-1T09:00:00.000");
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, null, 1, "E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, 1, "E1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 5));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 5, 1, "E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 5, 1, "E1"});
     
             // now gone
             SendTimeEvent(epService, "2002-05-1T17:00:00.000");
@@ -485,10 +486,10 @@ namespace com.espertech.esper.regression.context
     
             SendTimeEvent(epService, "2002-05-1T09:00:00.000");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 4));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 4, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 4, null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 4, 2, "E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 4, 2, "E1"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -499,7 +500,7 @@ namespace com.espertech.esper.regression.context
     
             var listener = new SupportUpdateListener();
             var statement = epService.EPAdministrator.CreateEPL("context NineToFive select * from pattern[every timer:Interval(10 sec)]");
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             var spi = (EPServiceProviderSPI) epService;
             Assert.AreEqual(1, spi.SchedulingService.ScheduleHandleCount);   // from the context
     
@@ -536,7 +537,7 @@ namespace com.espertech.esper.regression.context
             var fields = "theString,col".Split(',');
             var listener = new SupportUpdateListener();
             var statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NineToFive select theString, (select p00 from SupportBean_S0#lastevent) as col from SupportBean");
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
             Assert.AreEqual(0, filterSPI.FilterCountApprox);   // from the context
     
             // now started
@@ -544,11 +545,11 @@ namespace com.espertech.esper.regression.context
             Assert.AreEqual(2, filterSPI.FilterCountApprox);   // from the context
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", null});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(11, "S01"));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", "S01"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", "S01"});
     
             // now gone
             SendTimeEvent(epService, "2002-05-1T17:00:00.000");
@@ -563,11 +564,11 @@ namespace com.espertech.esper.regression.context
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3", null});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(12, "S02"));
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E4", "S02"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E4", "S02"});
             AgentInstanceAssertionUtil.AssertInstanceCounts(statement.StatementContext, 1, 1, 0, 0);
     
             // now gone
@@ -590,7 +591,7 @@ namespace com.espertech.esper.regression.context
             var fields = "theString,intPrimitive".Split(',');
             var listener = new SupportUpdateListener();
             var stmt = epService.EPAdministrator.CreateEPL("context NineToFive create window MyWindow#keepall as SupportBean");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPAdministrator.CreateEPL("context NineToFive insert into MyWindow select * from SupportBean");
     
@@ -606,14 +607,14 @@ namespace com.espertech.esper.regression.context
             SendTimeEvent(epService, "2002-05-1T09:00:00.000");
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", 2});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(3, "E1"));
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{"E1", 3});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{"E1", 1});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{"E1", 3});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{"E1", 1});
             listener.Reset();
     
             // now gone
@@ -627,7 +628,7 @@ namespace com.espertech.esper.regression.context
             SendTimeEvent(epService, "2002-05-2T09:00:00.000");
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -691,25 +692,25 @@ namespace com.espertech.esper.regression.context
             var stmtContext = epService.EPAdministrator.CreateEPL("@Name('context') create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)");
             AssertContextEventType(stmtContext.EventType);
             var contextListener = new SupportUpdateListener();
-            stmtContext.AddListener(contextListener);
+            stmtContext.Events += contextListener.Update;
             stmtContext.Subscriber = new MiniSubscriber();
     
             var stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context NineToFive " +
                     "select * from SupportBean");
-            stmtOne.AddListener(new SupportUpdateListener());
+            stmtOne.Events += new SupportUpdateListener().Update;
     
             SendTimeAndAssert(epService, "2002-05-1T08:59:30.000", false, 1);
             SendTimeAndAssert(epService, "2002-05-1T08:59:59.999", false, 1);
             SendTimeAndAssert(epService, "2002-05-1T09:00:00.000", true, 1);
     
             var stmtTwo = epService.EPAdministrator.CreateEPL("@Name('B') context NineToFive select * from SupportBean");
-            stmtTwo.AddListener(new SupportUpdateListener());
+            stmtTwo.Events += new SupportUpdateListener().Update;
     
             SendTimeAndAssert(epService, "2002-05-1T16:59:59.000", true, 2);
             SendTimeAndAssert(epService, "2002-05-1T17:00:00.000", false, 2);
     
             var stmtThree = epService.EPAdministrator.CreateEPL("@Name('C') context NineToFive select * from SupportBean");
-            stmtThree.AddListener(new SupportUpdateListener());
+            stmtThree.Events += new SupportUpdateListener().Update;
     
             SendTimeAndAssert(epService, "2002-05-2T08:59:59.999", false, 3);
             SendTimeAndAssert(epService, "2002-05-2T09:00:00.000", true, 3);
@@ -731,7 +732,7 @@ namespace com.espertech.esper.regression.context
             var stmtLast = epService.EPAdministrator.CreateEPL("@Name('A') context NineToFive " +
                     "select context.name as c1, context.startTime as c2, context.endTime as c3, theString as c4 from SupportBean");
             var listener = new SupportUpdateListener();
-            stmtLast.AddListener(listener);
+            stmtLast.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             var theEvent = listener.AssertOneGetNewAndReset();
@@ -753,14 +754,14 @@ namespace com.espertech.esper.regression.context
             Assert.AreEqual(1, ctxMgmtService.ContextCount);
     
             var stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context NineToFive select * from SupportBean");
-            stmtOne.AddListener(new SupportUpdateListener());
+            stmtOne.Events += new SupportUpdateListener().Update;
     
             SendTimeAndAssert(epService, "2002-05-1T09:16:00.000", true, 1);
             SendTimeAndAssert(epService, "2002-05-1T16:59:59.000", true, 1);
             SendTimeAndAssert(epService, "2002-05-1T17:00:00.000", false, 1);
     
             var stmtTwo = epService.EPAdministrator.CreateEPL("@Name('B') context NineToFive select * from SupportBean");
-            stmtTwo.AddListener(new SupportUpdateListener());
+            stmtTwo.Events += new SupportUpdateListener().Update;
     
             SendTimeAndAssert(epService, "2002-05-2T08:59:59.999", false, 2);
             SendTimeAndAssert(epService, "2002-05-2T09:15:00.000", true, 2);

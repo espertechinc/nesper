@@ -19,19 +19,17 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.view;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.view
 {
     public class ExecViewTimeWindowWeightedAvg : RegressionExecution {
-        private static readonly string SYMBOL = "CSCO.O";
-        private static readonly string FEED = "feed1";
+        private const string SYMBOL = "CSCO.O";
+        private const string FEED = "feed1";
     
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.Threading.InternalTimerEnabled = true;
+            configuration.EngineDefaults.Threading.IsInternalTimerEnabled = true;
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -40,7 +38,7 @@ namespace com.espertech.esper.regression.view
                     "select * from " + typeof(SupportMarketDataBean).FullName +
                             "(symbol='" + SYMBOL + "')#Time(3.0)#Weighted_avg(price, volume, symbol, feed)");
             var testListener = new SupportUpdateListener();
-            weightedAvgView.AddListener(testListener);
+            weightedAvgView.Events += testListener.Update;
     
             Assert.AreEqual(typeof(double?), weightedAvgView.EventType.GetPropertyType("average"));
             testListener.Reset();
@@ -84,8 +82,9 @@ namespace com.espertech.esper.regression.view
     
         private void CheckValue(EPServiceProvider epService, SupportUpdateListener testListener, EPStatement weightedAvgView, double avgE) {
             IEnumerator<EventBean> iterator = weightedAvgView.GetEnumerator();
-            CheckValue(iterator.Next(), avgE);
-            Assert.IsTrue(!iterator.HasNext());
+            Assert.IsTrue(iterator.MoveNext());
+            CheckValue(iterator.Current, avgE);
+            Assert.IsTrue(!iterator.MoveNext());
     
             Assert.IsTrue(testListener.LastNewData.Length == 1);
             EventBean listenerValues = testListener.LastNewData[0];

@@ -23,11 +23,11 @@ using NUnit.Framework;
 namespace com.espertech.esper.regression.view
 {
     public class ExecViewGroupWithinGroup : RegressionExecution {
-        private static readonly string SYMBOL_MSFT = "MSFT";
-        private static readonly string SYMBOL_GE = "GE";
+        private const string SYMBOL_MSFT = "MSFT";
+        private const string SYMBOL_GE = "GE";
     
-        private static readonly string FEED_INFO = "INFO";
-        private static readonly string FEED_REU = "REU";
+        private const string FEED_INFO = "INFO";
+        private const string FEED_REU = "REU";
     
         public override void Run(EPServiceProvider epService) {
             // Listen to all ticks
@@ -37,9 +37,9 @@ namespace com.espertech.esper.regression.view
             var listener = new SupportUpdateListener();
     
             // Counts per symbol, feed and volume the events
-            viewGrouped.AddListener(listener);
+            viewGrouped.Events += listener.Update;
     
-            var mapList = new List<>();
+            var mapList = new List<IDictionary<string, object>>();
     
             // Set up a map of expected values
     

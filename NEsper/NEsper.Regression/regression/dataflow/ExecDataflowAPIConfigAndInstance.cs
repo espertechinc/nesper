@@ -16,8 +16,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -74,7 +72,7 @@ namespace com.espertech.esper.regression.dataflow
             dataFlowRuntime.SaveConfiguration("MyFirstFlow", "MyDataflow", null);
             EPDataFlowInstance instance = dataFlowRuntime.InstantiateSavedConfiguration("MyFirstFlow");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from MyEvent").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from MyEvent").Events += listener.Update;
             instance.Run();
             Assert.IsTrue(listener.GetAndClearIsInvoked());
             EPAssertionUtil.AssertEqualsExactOrder(new string[]{"MyFirstFlow"}, dataFlowRuntime.SavedConfigurations);

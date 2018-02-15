@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -40,12 +39,12 @@ namespace com.espertech.esper.regression.epl.join
             string eplOne = "select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where intBoxed between rangeStart and rangeEnd";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(eplOne);
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             string eplTwo = "select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where theString = key and intBoxed in [rangeStart: rangeEnd]";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(eplTwo);
             var listenerTwo = new SupportUpdateListener();
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
     
             // null join lookups
             SendEvent(epService, new SupportBeanRange("R1", "G", (int?) null, null));
@@ -63,9 +62,9 @@ namespace com.espertech.esper.regression.epl.join
             Object eventTwo = SendSupportBean(epService, "G", 101, 5);
             SendEvent(epService, new SupportBeanRange("R4", "G", 0, 10));
             EventBean[] events = listener.GetAndResetLastNewData();
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{eventOne, eventTwo}, EPAssertionUtil.GetUnderlying(events));
+            EPAssertionUtil.AssertEqualsAnyOrder(new object[]{eventOne, eventTwo}, EPAssertionUtil.GetUnderlying(events));
             events = listenerTwo.GetAndResetLastNewData();
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{eventOne, eventTwo}, EPAssertionUtil.GetUnderlying(events));
+            EPAssertionUtil.AssertEqualsAnyOrder(new object[]{eventOne, eventTwo}, EPAssertionUtil.GetUnderlying(events));
     
             // test string compare
             string eplThree = "select sb.* from SupportBeanRange#keepall sb, SupportBean#lastevent where theString in [rangeStartStr:rangeEndStr]";
@@ -89,16 +88,17 @@ namespace com.espertech.esper.regression.epl.join
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(joinStatement);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             Assert.AreEqual(typeof(SupportBean), stmt.EventType.GetPropertyType("streamA"));
             Assert.AreEqual(typeof(SupportBean), stmt.EventType.GetPropertyType("streamB"));
             Assert.AreEqual(2, stmt.EventType.PropertyNames.Length);
     
-            int[][] eventData = {{1, 100},
-                    {2, 100},
-                    {1, 200},
-                    {2, 200}};
+            int[][] eventData = {
+                new []{1, 100},
+                new []{2, 100},
+                new []{1, 200},
+                new []{2, 200}};
             var eventsA = new SupportBean[eventData.Length];
             var eventsB = new SupportBean[eventData.Length];
     

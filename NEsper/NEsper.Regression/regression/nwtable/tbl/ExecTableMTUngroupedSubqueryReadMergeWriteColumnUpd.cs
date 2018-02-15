@@ -106,7 +106,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             public ReadRunnable(EPServiceProvider epService) {
                 _epService = epService;
                 _listener = new SupportUpdateListener();
-                epService.EPAdministrator.GetStatement("out").AddListener(_listener);
+                epService.EPAdministrator.GetStatement("out").Events += _listener.Update;
             }
     
             public void SetShutdown(bool shutdown) {

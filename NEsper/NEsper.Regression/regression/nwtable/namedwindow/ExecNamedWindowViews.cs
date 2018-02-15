@@ -118,7 +118,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
         private void TryAssertionBeanContained(EPServiceProvider epService, EventRepresentationChoice rep) {
             EPStatement stmtW = epService.EPAdministrator.CreateEPL(rep.GetAnnotationText() + " create window MyWindowBC#keepall as (bean " + typeof(SupportBean_S0).Name + ")");
             var listenerWindow = new SupportUpdateListener();
-            stmtW.AddListener(listenerWindow);
+            stmtW.Events += listenerWindow.Update;
             Assert.IsTrue(rep.MatchesClass(stmtW.EventType.UnderlyingType));
             epService.EPAdministrator.CreateEPL("insert into MyWindowBC select bean.* as bean from " + typeof(SupportBean_S0).FullName + " as bean");
     
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             string[] fields = "theString".Split(',');
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("out").AddListener(listener);
+            epService.EPAdministrator.GetStatement("out").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), fields, new[] {new object[] {"E1"}}, null);
@@ -159,13 +159,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             // Test create from class
             EPStatement stmt = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create window MyWindowBB#keepall as SupportBean");
             var listenerWindow = new SupportUpdateListener();
-            stmt.AddListener(listenerWindow);
+            stmt.Events += listenerWindow.Update;
             epService.EPAdministrator.CreateEPL("insert into MyWindowBB select * from SupportBean");
     
             EPStatementSPI stmtConsume = (EPStatementSPI) epService.EPAdministrator.CreateEPL("select * from MyWindowBB");
             Assert.IsTrue(stmtConsume.StatementContext.IsStatelessSelect);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtConsume.AddListener(listenerStmtOne);
+            stmtConsume.Events += listenerStmtOne.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
             AssertEvent(listenerWindow.AssertOneGetNewAndReset(), "MyWindowBB");
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             EPStatement stmtUpdate = epService.EPAdministrator.CreateEPL("on SupportBean_A update MyWindowBB set theString='s'");
             var listenerStmtTwo = new SupportUpdateListener();
-            stmtUpdate.AddListener(listenerStmtTwo);
+            stmtUpdate.Events += listenerStmtTwo.Update;
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             AssertEvent(listenerStmtTwo.LastNewData[0], "MyWindowBB");
     
@@ -196,7 +196,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             var stmtABC = epService.EPAdministrator.CreateEPL("select * from ABC");
             var listenerStmtOne = new SupportUpdateListener();
-            stmtABC.AddListener(listenerStmtOne);
+            stmtABC.Events += listenerStmtOne.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
             Assert.IsTrue(listenerStmtOne.IsInvoked);
@@ -235,7 +235,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPAdministrator.CreateEPL("on TypeTrigger insert into WinTwo(col2) select col1 from WinOne");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("on OtherStream select col2 from WinTwo");
             var listenerStmtOne = new SupportUpdateListener();
-            stmt.AddListener(listenerStmtOne);
+            stmt.Events += listenerStmtOne.Update;
     
             // populate WinOne
             epService.EPRuntime.SendEvent(new SupportBean("E1", 9));
@@ -276,7 +276,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var fields = new[]{"key", "value"};
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(createWindowStatement);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             Assert.AreEqual(typeof(string), stmtCreate.EventType.GetPropertyType("key"));
             Assert.AreEqual(typeof(long), stmtCreate.EventType.GetPropertyType("value"));
@@ -287,17 +287,17 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream key, value*2 as value from MyWindow";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             string stmtTextSelectTwo = "select irstream key, sum(value) as value from MyWindow group by key";
             EPStatement stmtSelectTwo = epService.EPAdministrator.CreateEPL(stmtTextSelectTwo);
             var listenerStmtTwo = new SupportUpdateListener();
-            stmtSelectTwo.AddListener(listenerStmtTwo);
+            stmtSelectTwo.Events += listenerStmtTwo.Update;
     
             string stmtTextSelectThree = "select irstream key, value from MyWindow where value >= 10";
             EPStatement stmtSelectThree = epService.EPAdministrator.CreateEPL(stmtTextSelectThree);
             var listenerStmtThree = new SupportUpdateListener();
-            stmtSelectThree.AddListener(listenerStmtThree);
+            stmtSelectThree.Events += listenerStmtThree.Update;
     
             // send events
             SendSupportBean(epService, "E1", 10L);
@@ -332,7 +332,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             // create delete stmt
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(deleteStatement);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             // send delete event
             SendMarketBean(epService, "E1");
@@ -389,7 +389,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowTW#Time(10 sec) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
             EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, null);
     
             // create insert into
@@ -400,13 +400,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream key, value as value from MyWindowTW";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " as s0 delete from MyWindowTW as s1 where s0.symbol = s1.key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendTimer(epService, 1000);
             SendSupportBean(epService, "E1", 1L);
@@ -482,7 +482,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowTFW#Firsttime(10 sec) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
             EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, null);
     
             // create insert into
@@ -493,13 +493,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream key, value as value from MyWindowTFW";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " as s0 delete from MyWindowTFW as s1 where s0.symbol = s1.key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendSupportBean(epService, "E1", 1L);
             EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L});
@@ -550,7 +550,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowETW#Ext_timed(value, 10 sec) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowETW select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -560,13 +560,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream key, value as value from MyWindowETW";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).Name + " delete from MyWindowETW where symbol = key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendSupportBean(epService, "E1", 1000L);
             EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1000L});
@@ -615,7 +615,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowTOW#Time_order(value, 10 sec) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowTOW select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -625,13 +625,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream key, value as value from MyWindowTOW";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).Name + " delete from MyWindowTOW where symbol = key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendTimer(epService, 5000);
             SendSupportBean(epService, "E1", 3000L);
@@ -684,7 +684,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowLW#length(3) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowLW select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -694,13 +694,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream key, value as value from MyWindowLW";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).Name + " delete from MyWindowLW where symbol = key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendSupportBean(epService, "E1", 1L);
             EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L});
@@ -756,7 +756,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowLFW#Firstlength(2) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowLFW select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -766,13 +766,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream key, value as value from MyWindowLFW";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).Name + " delete from MyWindowLFW where symbol = key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendSupportBean(epService, "E1", 1L);
             EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L});
@@ -812,7 +812,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowTA#Time_accum(10 sec) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowTA select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -822,13 +822,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream key, value as value from MyWindowTA";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " as s0 delete from MyWindowTA as s1 where s0.symbol = s1.key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendTimer(epService, 1000);
             SendSupportBean(epService, "E1", 1L);
@@ -940,7 +940,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowTB#Time_batch(10 sec) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowTB select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -950,13 +950,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select key, value as value from MyWindowTB";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " as s0 delete from MyWindowTB as s1 where s0.symbol = s1.key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendTimer(epService, 1000);
             SendSupportBean(epService, "E1", 1L);
@@ -1017,7 +1017,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowTBLC#Time_batch(10 sec) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowTBLC select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -1033,7 +1033,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select sum(value) as value from MyWindowTBLC";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             SendTimer(epService, 8000);
             SendSupportBean(epService, "E3", 3L);
@@ -1055,7 +1055,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowLB#length_batch(3) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowLB select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -1065,13 +1065,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select key, value as value from MyWindowLB";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " as s0 delete from MyWindowLB as s1 where s0.symbol = s1.key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendSupportBean(epService, "E1", 1L);
             SendSupportBean(epService, "E2", 2L);
@@ -1147,7 +1147,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowSW#Sort(3, value asc) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowSW select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -1157,13 +1157,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select key, value as value from MyWindowSW";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " as s0 delete from MyWindowSW as s1 where s0.symbol = s1.key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendSupportBean(epService, "E1", 10L);
             EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", 10L});
@@ -1230,7 +1230,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowTLB#Time_length_batch(10 sec, 3) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowTLB select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -1240,13 +1240,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select key, value as value from MyWindowTLB";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " as s0 delete from MyWindowTLB as s1 where s0.symbol = s1.key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendTimer(epService, 1000);
             SendSupportBean(epService, "E1", 1L);
@@ -1313,7 +1313,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowWPG#Groupwin(value)#length(2) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowWPG select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -1323,13 +1323,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream key, value as value from MyWindowWPG";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).Name + " delete from MyWindowWPG where symbol = key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendSupportBean(epService, "E1", 1L);
             EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L});
@@ -1394,7 +1394,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowTBPG#Groupwin(value)#Time_batch(10 sec) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowTBPG select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -1404,7 +1404,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select key, value as value from MyWindowTBPG";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             SendTimer(epService, 1000);
             SendSupportBean(epService, "E1", 10L);
@@ -1436,7 +1436,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowDISM#keepall as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowDISM select theString as key, longBoxed+1 as value from " + typeof(SupportBean).FullName;
@@ -1449,7 +1449,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select key, value as value from MyWindowDISM";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             SendSupportBean(epService, "E1", 10L);
             Assert.AreEqual(2, listenerWindow.NewDataList.Count);    // listener to window gets 2 individual events
@@ -1469,7 +1469,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowLE#lastevent as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowLE select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -1479,13 +1479,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream key, value as value from MyWindowLE";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " as s0 delete from MyWindowLE as s1 where s0.symbol = s1.key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendSupportBean(epService, "E1", 1L);
             EPAssertionUtil.AssertProps(listenerStmtOne.LastNewData[0], fields, new object[]{"E1", 1L});
@@ -1538,7 +1538,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowFE#firstevent as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowFE select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -1548,13 +1548,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream key, value as value from MyWindowFE";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " as s0 delete from MyWindowFE as s1 where s0.symbol = s1.key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendSupportBean(epService, "E1", 1L);
             EPAssertionUtil.AssertProps(listenerStmtOne.LastNewData[0], fields, new object[]{"E1", 1L});
@@ -1606,7 +1606,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowUN#unique(key) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowUN select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -1616,13 +1616,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream key, value as value from MyWindowUN";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " as s0 delete from MyWindowUN as s1 where s0.symbol = s1.key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendSupportBean(epService, "G1", 1L);
             EPAssertionUtil.AssertProps(listenerStmtOne.LastNewData[0], fields, new object[]{"G1", 1L});
@@ -1675,7 +1675,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowFU#Firstunique(key) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowFU select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -1685,13 +1685,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream key, value as value from MyWindowFU";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " as s0 delete from MyWindowFU as s1 where s0.symbol = s1.key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendSupportBean(epService, "G1", 1L);
             EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"G1", 1L});
@@ -1732,7 +1732,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowFC#unique(key) as select theString as key, intPrimitive as value from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowFC select theString as key, intPrimitive as value from " + typeof(SupportBean).FullName;
@@ -1742,13 +1742,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream key, value as value from MyWindowFC(value > 0, value < 10)";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " as s0 delete from MyWindowFC as s1 where s0.symbol = s1.key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendSupportBeanInt(epService, "G1", 5);
             EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"G1", 5});
@@ -1915,7 +1915,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowFCLS#keepall as select theString as key, intPrimitive as value from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowFCLS select theString as key, intPrimitive as value from " + typeof(SupportBean).FullName;
@@ -1929,7 +1929,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream sum(value) as sumvalue from MyWindowFCLS(value > 0, value < 10)";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
             EPAssertionUtil.AssertPropsPerRow(stmtSelectOne.GetEnumerator(), fields, new[] {new object[] {7}});
     
             SendSupportBeanInt(epService, "G4", 1);
@@ -1952,7 +1952,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " as s0 delete from MyWindowFCLS as s1 where s0.symbol = s1.key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendMarketBean(epService, "G4");
             EPAssertionUtil.AssertProps(listenerStmtOne.LastNewData[0], fields, new object[]{16});
@@ -2037,7 +2037,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowPS#keepall as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             Assert.AreEqual(typeof(string), stmtCreate.EventType.GetPropertyType("key"));
             Assert.AreEqual(typeof(long), stmtCreate.EventType.GetPropertyType("value"));
@@ -2048,12 +2048,12 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select Prior(1, key) as priorKeyOne, Prior(2, key) as priorKeyTwo from MyWindowPS";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             string stmtTextSelectThree = "select average from MyWindowPS#Uni(value)";
             EPStatement stmtSelectThree = epService.EPAdministrator.CreateEPL(stmtTextSelectThree);
             var listenerStmtThree = new SupportUpdateListener();
-            stmtSelectThree.AddListener(listenerStmtThree);
+            stmtSelectThree.Events += listenerStmtThree.Update;
     
             // send events
             SendSupportBean(epService, "E1", 1L);
@@ -2087,7 +2087,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowLCL#keepall as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             Assert.AreEqual(typeof(string), stmtCreate.EventType.GetPropertyType("key"));
             Assert.AreEqual(typeof(long), stmtCreate.EventType.GetPropertyType("value"));
@@ -2105,7 +2105,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream average from MyWindowLCL#Uni(value)";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
             EPAssertionUtil.AssertPropsPerRow(stmtSelectOne.GetEnumerator(), fieldsStat, new[] {new object[] {1.5d}});
     
             SendSupportBean(epService, "E3", 2L);
@@ -2121,7 +2121,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectTwo = "select count(*) as cnt from MyWindowLCL";
             EPStatement stmtSelectTwo = epService.EPAdministrator.CreateEPL(stmtTextSelectTwo);
             var listenerStmtTwo = new SupportUpdateListener();
-            stmtSelectTwo.AddListener(listenerStmtTwo);
+            stmtSelectTwo.Events += listenerStmtTwo.Update;
             EPAssertionUtil.AssertPropsPerRow(stmtSelectTwo.GetEnumerator(), fieldsCnt, new[] {new object[] {4L}});
             EPAssertionUtil.AssertPropsPerRow(stmtSelectOne.GetEnumerator(), fieldsStat, new[] {new object[] {7 / 4d}});
     
@@ -2142,7 +2142,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowLCJ#keepall as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             Assert.AreEqual(typeof(string), stmtCreate.EventType.GetPropertyType("key"));
             Assert.AreEqual(typeof(long), stmtCreate.EventType.GetPropertyType("value"));
@@ -2163,7 +2163,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                     " on s0.value = s1.volume";
             EPStatement stmtSelectTwo = epService.EPAdministrator.CreateEPL(stmtTextSelectTwo);
             var listenerStmtTwo = new SupportUpdateListener();
-            stmtSelectTwo.AddListener(listenerStmtTwo);
+            stmtSelectTwo.Events += listenerStmtTwo.Update;
             Assert.IsFalse(listenerStmtTwo.IsInvoked);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtSelectTwo.GetEnumerator(), fieldsJoin, new[] {new object[] {"E1", 1L, null}, new object[] {"E2", 1L, null}});
     
@@ -2194,12 +2194,12 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowPAT#keepall as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             string stmtTextPattern = "select a.key as key, a.value as value from pattern [every a=MyWindowPAT(key='S1') or a=MyWindowPAT(key='S2')]";
             EPStatement stmtPattern = epService.EPAdministrator.CreateEPL(stmtTextPattern);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtPattern.AddListener(listenerStmtOne);
+            stmtPattern.Events += listenerStmtOne.Update;
     
             string stmtTextInsert = "insert into MyWindowPAT select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsert);
@@ -2229,7 +2229,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowETB#Ext_timed_batch(value, 10 sec, 0L) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsert = "insert into MyWindowETB select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
@@ -2239,13 +2239,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select irstream key, value as value from MyWindowETB";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " as s0 delete from MyWindowETB as s1 where s0.symbol = s1.key";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendSupportBean(epService, "E1", 1000L);
             SendSupportBean(epService, "E2", 8000L);

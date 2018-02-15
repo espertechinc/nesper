@@ -47,7 +47,7 @@ namespace com.espertech.esper.regression.spatial
         private void RunAssertionFilterIndexTypeAssertion(EPServiceProvider epService) {
             string eplNoIndex = "select * from SupportSpatialAABB(Point(0, 0).Inside(Rectangle(x, y, width, height)))";
             SupportFilterHelper.AssertFilterMulti(epService, eplNoIndex, "SupportSpatialAABB", new SupportFilterItem[][] {
-                new []{SupportFilterItem.GetBoolExprFilterItem()}
+                new []{SupportFilterItem.BoolExprFilterItem}
             });
     
             string eplIndexed = "expression myindex {Pointregionquadtree(0, 0, 100, 100)}" +
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regression.spatial
         private void RunAssertionFilterIndexUnoptimized(EPServiceProvider epService) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportSpatialAABB(Point(5, 10).Inside(Rectangle(x, y, width, height)))");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendRectangle(epService, "R1", 0, 0, 5, 10);
             SendRectangle(epService, "R2", 4, 3, 2, 20);
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regression.spatial
                 for (int y = 0; y < 20; y++) {
                     prepared.SetObject(1, x);
                     prepared.SetObject(2, y);
-                    epService.EPAdministrator.Create(prepared).AddListener(listener);
+                    epService.EPAdministrator.Create(prepared).Events += listener.Update;
                 }
             }
             SendAssertSpatialAABB(epService, listener, 100, 20, 1000);
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regression.spatial
             EPStatement stmt = epService.EPAdministrator.CreateEPL("expression myindex {Pointregionquadtree(0, 0, 100, 100)}" +
                     "select * from pattern [every p=SupportSpatialPoint -> SupportSpatialAABB(Point(p.px, p.py, filterindex:myindex).Inside(Rectangle(x, y, width, height)))]");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendSpatialPoints(epService, 100, 100);
             SendAssertSpatialAABB(epService, listener, 100, 100, 1000);
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regression.spatial
             EPStatement stmt = epService.EPAdministrator.CreateEPL("expression myindex {Pointregionquadtree(0, 0, 100, 100)}" +
                     "context PerPointCtx select count(*) from SupportSpatialAABB(Point(context.ssp.px, context.ssp.py, filterindex:myindex).Inside(Rectangle(x, y, width, height)))");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendSpatialPoints(epService, 100, 100);
             SendAssertSpatialAABB(epService, listener, 100, 100, 1000);

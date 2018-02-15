@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertFalse;
-// using static org.junit.Assert.assertSame;
 
 using NUnit.Framework;
 
@@ -34,7 +32,7 @@ namespace com.espertech.esper.regression.view
                     "select * from " + typeof(SupportBean).FullName +
                             "(theString != 'a')");
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendEvent(epService, "a");
             Assert.IsFalse(listener.IsInvoked);
@@ -48,7 +46,7 @@ namespace com.espertech.esper.regression.view
             theEvent = SendEvent(epService, null);
             Assert.IsFalse(listener.IsInvoked);
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionCombinationEqualsOp(EPServiceProvider epService) {
@@ -56,7 +54,7 @@ namespace com.espertech.esper.regression.view
                     "select * from " + typeof(SupportBean).FullName +
                             "(theString != 'a', intPrimitive=0)");
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendEvent(epService, "b", 1);
             Assert.IsFalse(listener.IsInvoked);
@@ -70,7 +68,7 @@ namespace com.espertech.esper.regression.view
             SendEvent(epService, null, 0);
             Assert.IsFalse(listener.IsInvoked);
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private Object SendEvent(EPServiceProvider epService, string stringValue) {

@@ -21,7 +21,6 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -148,7 +147,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                 }
             }
     
-            Assert.AreEqual("Received: " + ToCSV(received), expectedCSV.Length, received.Length);
+            Assert.AreEqual(expectedCSV.Length, received.Length, "Received: " + ToCSV(received));
             for (int i = 0; i < expectedCSV.Length; i++) {
                 string receivedCSV = ToCSV(received[i]);
                 Assert.AreEqual("Failed at row " + i, expectedCSV[i], receivedCSV);

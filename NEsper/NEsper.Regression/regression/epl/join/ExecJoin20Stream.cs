@@ -17,8 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertFalse;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -29,17 +27,17 @@ namespace com.espertech.esper.regression.epl.join
             epService.EPAdministrator.Configuration.AddEventType("S0", typeof(SupportBean_S0).Name);
     
             var buf = new StringWriter();
-            buf.Append("select * from ");
+            buf.Write("select * from ");
     
             string delimiter = "";
             for (int i = 0; i < 20; i++) {
-                buf.Append(delimiter);
-                buf.Append("S0(id=" + i + ")#lastevent as s_" + i);
+                buf.Write(delimiter);
+                buf.Write("S0(id=" + i + ")#lastevent as s_" + i);
                 delimiter = ", ";
             }
             EPStatement stmt = epService.EPAdministrator.CreateEPL(buf.ToString());
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             for (int i = 0; i < 19; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean_S0(i));

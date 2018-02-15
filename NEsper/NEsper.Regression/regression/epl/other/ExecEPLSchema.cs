@@ -33,11 +33,6 @@ using NEsper.Avro.Util.Support;
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 using static NEsper.Avro.Extensions.TypeBuilder;
 
-// using static junit.framework.TestCase.*;
-// using static org.apache.avro.SchemaBuilder.record;
-// using static org.apache.avro.SchemaBuilder.unionOf;
-// using static org.junit.Assert.assertEquals;
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.epl.other
@@ -96,14 +91,14 @@ namespace com.espertech.esper.regression.epl.other
     
             var stmtSchemaInsert = epService.EPAdministrator.CreateEPL("insert into MySchema select sb as bean, s0Arr as beanarray from BeanSourceEvent");
             var listener = new SupportUpdateListener();
-            stmtSchemaInsert.AddListener(listener);
+            stmtSchemaInsert.Events += listener.Update;
             epService.EPRuntime.SendEvent(theEvent);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "bean.theString,beanarray[0].id".Split(','), new object[]{"E1", 2});
             stmtSchemaInsert.Dispose();
     
             // test named window
             var stmtWindow = epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as (bean SupportBean, beanarray SupportBean_S0[])");
-            stmtWindow.AddListener(listener);
+            stmtWindow.Events += listener.Update;
             Assert.AreEqual(new EventPropertyDescriptor("bean", typeof(SupportBean), null, false, false, false, false, true), stmtWindow.EventType.GetPropertyDescriptor("bean"));
             Assert.AreEqual(new EventPropertyDescriptor("beanarray", typeof(SupportBean_S0[]), typeof(SupportBean_S0), false, false, true, false, true), stmtWindow.EventType.GetPropertyDescriptor("beanarray"));
     
@@ -128,7 +123,7 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPAdministrator.Configuration.AddEventType("MyConfiguredMap", configDef);
     
             var stmtMapInsert = epService.EPAdministrator.CreateEPL("insert into MyConfiguredMap select sb as bean, s0Arr as beanarray from BeanSourceEvent");
-            stmtMapInsert.AddListener(listener);
+            stmtMapInsert.Events += listener.Update;
             epService.EPRuntime.SendEvent(theEvent);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "bean.theString,beanarray[0].id".Split(','), new object[]{"E1", 2});
             stmtMapInsert.Dispose();
@@ -148,7 +143,7 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create schema E1 () copyfrom BaseOne");
             var stmtOne = epService.EPAdministrator.CreateEPL("select * from E1");
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmtOne.EventType.UnderlyingType));
             Assert.AreEqual(typeof(string), stmtOne.EventType.GetPropertyType("prop1"));
             Assert.AreEqual(typeof(int?), stmtOne.EventType.GetPropertyType("prop2").GetBoxedType());
@@ -205,7 +200,7 @@ namespace com.espertech.esper.regression.epl.other
                 Assert.AreEqual(typeof(Map), stmtThree.EventType.GetPropertyType("f"));
             } else if (eventRepresentationEnum.IsAvroEvent()) {
                 Assert.AreEqual(typeof(GenericRecord), stmtThree.EventType.GetPropertyType("c"));
-                Assert.AreEqual(typeof(Collection), stmtThree.EventType.GetPropertyType("d"));
+                Assert.AreEqual(typeof(ICollection<object>), stmtThree.EventType.GetPropertyType("d"));
                 Assert.AreEqual(typeof(GenericRecord), stmtThree.EventType.GetPropertyType("f"));
             } else {
                 Assert.Fail();
@@ -318,28 +313,28 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionAvroSchemaWAnnotation(EPServiceProvider epService) {
-            Schema schema = SchemaBuilder.Union(TypeBuilder.Int(), TypeBuilder.String());
+            var schema = SchemaBuilder.Union(TypeBuilder.IntType(), TypeBuilder.StringType());
             var epl = "@AvroSchemaField(name='carId',schema='" + schema.ToString() + "') create avro schema MyEvent(carId @object)";
             epService.EPAdministrator.CreateEPL(epl);
-            Log.Info(schema);
+            Log.Info(schema.ToString());
         }
     
         private void RunAssertionColDefPlain(EPServiceProvider epService) {
             foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                 TryAssertionColDefPlain(epService, rep);
             }
-    
+
             // test property classname, either simple or fully-qualified.
-            epService.EPAdministrator.Configuration.AddImport("java.beans.EventHandler");
-            epService.EPAdministrator.Configuration.AddImport("java.sql.*");
-            epService.EPAdministrator.CreateEPL("create schema MySchema (f1 Timestamp, f2 java.beans.BeanDescriptor, f3 EventHandler, f4 null)");
+            epService.EPAdministrator.Configuration.AddImport<System.Data.DataRow>(); // "java.beans.EventHandler"
+            epService.EPAdministrator.Configuration.AddImport<System.DateTime>(); // "java.sql.*"
+            epService.EPAdministrator.CreateEPL("create schema MySchema (f1 DateTime, f2 System.Data.DataRow, f3 Action, f4 null)");
     
             var eventType = epService.EPAdministrator.Configuration.GetEventType("MySchema");
-            Assert.AreEqual(typeof(java.sql.Timestamp), eventType.GetPropertyType("f1"));
-            Assert.AreEqual(typeof(java.beans.BeanDescriptor), eventType.GetPropertyType("f2"));
-            Assert.AreEqual(typeof(java.beans.EventHandler), eventType.GetPropertyType("f3"));
+            Assert.AreEqual(typeof(System.DateTime), eventType.GetPropertyType("f1"));
+            Assert.AreEqual(typeof(System.Data.DataRow), eventType.GetPropertyType("f2"));
+            Assert.AreEqual(typeof(System.Action), eventType.GetPropertyType("f3"));
             Assert.AreEqual(null, eventType.GetPropertyType("f4"));
-    
+
             epService.EPAdministrator.DestroyAllStatements();
         }
     
@@ -366,7 +361,7 @@ namespace com.espertech.esper.regression.epl.other
             Assert.AreEqual(2, stmtCreate.EventType.PropertyDescriptors.Count);
             stmtSelect = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " select * from MyEventType");
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmtSelect.EventType.UnderlyingType));
     
             // send event
@@ -425,11 +420,11 @@ namespace com.espertech.esper.regression.epl.other
             var stmtSelectOne = epService.EPAdministrator.CreateEPL("select * from SupportBeanOne");
             Assert.AreEqual(typeof(SupportBean_ST0), stmtSelectOne.EventType.UnderlyingType);
             var listener = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listener);
+            stmtSelectOne.Events += listener.Update;
     
             var stmtSelectTwo = epService.EPAdministrator.CreateEPL("select * from SupportBeanTwo");
             Assert.AreEqual(typeof(SupportBean_ST0), stmtSelectTwo.EventType.UnderlyingType);
-            stmtSelectTwo.AddListener(listener);
+            stmtSelectTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_ST0("E1", 2));
             EPAssertionUtil.AssertPropsPerRow(listener.GetNewDataListFlattened(), "id,p00".Split(','), new object[][]{new object[] {"E1", 2}, new object[] {"E1", 2}});
@@ -459,9 +454,9 @@ namespace com.espertech.esper.regression.epl.other
         private void TryAssertionNestableMapArray(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum) {
             var stmtInner = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create schema MyInnerType as (inn1 string[], inn2 int[])");
             var inner = stmtInner.EventType;
-            Assert.AreEqual(eventRepresentationEnum.IsAvroEvent() ? typeof(Collection) : typeof(string[]), inner.GetPropertyType("inn1"));
+            Assert.AreEqual(eventRepresentationEnum.IsAvroEvent() ? typeof(ICollection<object>) : typeof(string[]), inner.GetPropertyType("inn1"));
             Assert.IsTrue(inner.GetPropertyDescriptor("inn1").IsIndexed);
-            Assert.AreEqual(eventRepresentationEnum.IsAvroEvent() ? typeof(Collection) : typeof(int?[]), inner.GetPropertyType("inn2"));
+            Assert.AreEqual(eventRepresentationEnum.IsAvroEvent() ? typeof(ICollection<object>) : typeof(int?[]), inner.GetPropertyType("inn2"));
             Assert.IsTrue(inner.GetPropertyDescriptor("inn2").IsIndexed);
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(inner.UnderlyingType));
     
@@ -477,7 +472,7 @@ namespace com.espertech.esper.regression.epl.other
     
             var stmtSelect = epService.EPAdministrator.CreateEPL("select * from MyOuterType");
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmtSelect.EventType.UnderlyingType));
     
             if (eventRepresentationEnum.IsObjectArrayEvent()) {

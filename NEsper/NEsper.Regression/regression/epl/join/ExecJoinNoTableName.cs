@@ -26,7 +26,7 @@ namespace com.espertech.esper.regression.epl.join
                                 " where symbol=theString and volume=longBoxed";
 
             var joinView = epService.EPAdministrator.CreateEPL(joinStatement);
-            joinView.AddListener(updateListener);
+            joinView.Events += updateListener.Update;
 
             var setOne = new object[5];
             var setTwo = new object[5];

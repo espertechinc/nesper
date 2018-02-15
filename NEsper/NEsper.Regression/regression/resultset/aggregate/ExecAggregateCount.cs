@@ -12,7 +12,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -31,7 +30,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             string statementText = "select *, count(*) as cnt from " + typeof(SupportMarketDataBean).FullName;
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "S0", 1L);
             Assert.IsTrue(listener.GetAndClearIsInvoked());
@@ -58,7 +57,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             string statementText = "select count(*) as cnt from " + typeof(SupportMarketDataBean).FullName + "#Time(1)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "DELL", 1L);
             Assert.IsTrue(listener.GetAndClearIsInvoked());
@@ -87,7 +86,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             string statementText = "select irstream sum(intPrimitive) as mysum from " + theEvent + " having sum(intPrimitive) = 2";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService);
             Assert.IsFalse(listener.GetAndClearIsInvoked());
@@ -104,7 +103,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             string statementText = "select irstream count(*) as mysum from " + theEvent + " having count(*) = 2";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService);
             Assert.IsFalse(listener.GetAndClearIsInvoked());

@@ -18,8 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -46,7 +44,7 @@ namespace com.espertech.esper.regression.rowrecog
                     " pattern (A B)" +
                     ")";
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(engine, soda, epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "a,b".Split(',');
             var beans = new SupportBean[4];
@@ -57,12 +55,12 @@ namespace com.espertech.esper.regression.rowrecog
             engine.EPRuntime.SendEvent(beans[0]);
             Assert.IsFalse(listener.IsInvoked);
             engine.EPRuntime.SendEvent(beans[1]);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{beans[0], beans[1]});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{beans[0], beans[1]});
     
             engine.EPRuntime.SendEvent(beans[2]);
             Assert.IsFalse(listener.IsInvoked);
             engine.EPRuntime.SendEvent(beans[3]);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{beans[2], beans[3]});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{beans[2], beans[3]});
     
             stmt.Dispose();
         }
@@ -79,7 +77,7 @@ namespace com.espertech.esper.regression.rowrecog
                     "        A as (A.intPrimitive=1)," +
                     "        B as (B.intPrimitive=2))";
             var listener = new SupportUpdateListener();
-            engine.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            engine.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             engine.EPRuntime.SendEvent(new SupportBean("E1", 1));
             engine.EPRuntime.SendEvent(new SupportBean("E2", 2));

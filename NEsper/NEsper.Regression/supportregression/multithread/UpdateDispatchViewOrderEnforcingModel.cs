@@ -38,7 +38,7 @@ namespace com.espertech.esper.supportregression.multithread
                 lock (this)
                 {
                     nextFuture = new DispatchFuture(this, _currentFuture);
-                    _currentFuture.SetLater(nextFuture);
+                    _currentFuture.Later = nextFuture;
                     _currentFuture = nextFuture;
                 }
 

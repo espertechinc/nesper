@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Text;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -17,7 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.rowrecog;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -139,7 +138,7 @@ namespace com.espertech.esper.regression.rowrecog
             string delimiter = "";
             foreach (string measure in testDesc.Measures.Split(',')) {
                 buf.Append(delimiter);
-                buf.Append(measure.ToUpperCase(Locale.ENGLISH)).Append(".theString as ").Append(ReplaceBrackets(measure)).Append("val");
+                buf.Append(measure.ToUpperInvariant()).Append(".theString as ").Append(ReplaceBrackets(measure)).Append("val");
                 delimiter = ",";
             }
             buf.Append("\n all matches ");
@@ -147,22 +146,22 @@ namespace com.espertech.esper.regression.rowrecog
             buf.Append("\n pattern (").Append(testDesc.Pattern).Append(") \n");
             buf.Append("  define ");
     
-            var defines = new HashSet<>();
+            var defines = new HashSet<string>();
             foreach (string measure in testDesc.Measures.Split(',')) {
-                defines.Add(RemoveBrackets(measure).ToUpperCase(Locale.ENGLISH));
+                defines.Add(RemoveBrackets(measure).ToUpperInvariant());
             }
     
             delimiter = "";
             foreach (string define in defines) {
                 buf.Append(delimiter);
-                buf.Append(define).Append(" as (").Append(define).Append(".theString like '").Append(define.ToLowerCase(Locale.ENGLISH)).Append("%')");
+                buf.Append(define).Append(" as (").Append(define).Append(".theString like '").Append(define.ToLowerInvariant()).Append("%')");
                 delimiter = ",\n";
             }
             buf.Append(")");
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(buf.ToString());
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             foreach (SupportTestCaseItem testcase in testDesc.TestCases) {
                 int count = 0;
@@ -183,7 +182,7 @@ namespace com.espertech.esper.regression.rowrecog
         }
     
         private string ReplaceBrackets(string indexed) {
-            return Indexed.Replace("[", "").Replace("]", "");
+            return indexed.Replace("[", "").Replace("]", "");
         }
     
         private string RemoveBrackets(string indexed) {
@@ -191,14 +190,14 @@ namespace com.espertech.esper.regression.rowrecog
             if (index == -1) {
                 return indexed;
             }
-            return Indexed.Substring(0, indexed.Length() - index - 2);
+            return indexed.Substring(0, indexed.Length - index - 2);
         }
     
         private void Compare(string sent, EventBean[] received, string measures, SupportTestCaseItem testDesc) {
     
             string message = "For sent: " + sent;
             if (testDesc.Expected == null) {
-                Assert.AreEqual(message, 0, received.Length);
+                Assert.AreEqual(0, received.Length, message);
                 return;
             }
     
@@ -216,9 +215,9 @@ namespace com.espertech.esper.regression.rowrecog
             }
     
             if (testDesc.Expected.Length != received.Length) {
-                Log.Info("expected: " + Arrays.ToString(testDesc.Expected));
-                Log.Info("received: " + Arrays.ToString(receivedText));
-                Assert.AreEqual(message, testDesc.Expected.Length, received.Length);
+                Log.Info("expected: " + CompatExtensions.Render(testDesc.Expected));
+                Log.Info("received: " + CompatExtensions.Render(receivedText));
+                Assert.AreEqual(testDesc.Expected.Length, received.Length, message);
             }
     
             Log.Debug("comparing: " + message);

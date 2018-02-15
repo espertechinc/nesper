@@ -50,10 +50,10 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string[] fields = "prop1,prop2".Split(',');
             string eplSelect = "select irstream prop1, prop2 from NamedWin";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(eplSelect).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(eplSelect).Events += listener.Update;
     
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(new Object[]{"dummyValue"}, "StartValueEvent");
+                epService.EPRuntime.SendEvent(new object[]{"dummyValue"}, "StartValueEvent");
             } else if (eventRepresentationEnum.IsMapEvent()) {
                 epService.EPRuntime.SendEvent(new Dictionary<string, object>(), "StartValueEvent");
             } else if (eventRepresentationEnum.IsAvroEvent()) {
@@ -63,10 +63,10 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                 Assert.Fail();
             }
     
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"V1", "O1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"V1", "O1"});
     
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(new Object[]{"dummyValue"}, "TestInputEvent");
+                epService.EPRuntime.SendEvent(new object[]{"dummyValue"}, "TestInputEvent");
             } else if (eventRepresentationEnum.IsMapEvent()) {
                 epService.EPRuntime.SendEvent(new Dictionary<string, object>(), "TestInputEvent");
             } else if (eventRepresentationEnum.IsAvroEvent()) {
@@ -76,8 +76,8 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                 Assert.Fail();
             }
     
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{"V1", "O1"});
-            EPAssertionUtil.AssertProps(listener.GetAndResetLastNewData()[0], fields, new Object[]{"V1", "U1"});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{"V1", "O1"});
+            EPAssertionUtil.AssertProps(listener.GetAndResetLastNewData()[0], fields, new object[]{"V1", "U1"});
             epService.EPAdministrator.DestroyAllStatements();
             foreach (string name in "StartValueEvent,TestForwardEvent,TestInputEvent,NamedWin".Split(',')) {
                 epService.EPAdministrator.Configuration.RemoveEventType(name, true);
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             stmtText = "select * from ResultStream";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 7));
             Assert.IsFalse(listener.IsInvoked, "E1");

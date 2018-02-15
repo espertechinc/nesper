@@ -20,8 +20,6 @@ using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertTrue;
-// using static org.junit.Assert.fail;
 
 using NUnit.Framework;
 
@@ -355,7 +353,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             SupportMessageAssertUtil.TryInvalid(epService, "create schema aggvar_ungrouped as " + typeof(SupportBean).FullName,
                     "Error starting statement: A table by name 'aggvar_ungrouped' already Exists [");
             try {
-                epService.EPAdministrator.Configuration.AddEventType("aggvar_ungrouped", "p0".Split(','), new Object[]{typeof(int)});
+                epService.EPAdministrator.Configuration.AddEventType("aggvar_ungrouped", "p0".Split(','), new object[]{typeof(int)});
                 Assert.Fail();
             } catch (EPException ex) {
                 SupportMessageAssertUtil.AssertMessage(ex, "A table by name 'aggvar_ungrouped' already Exists");

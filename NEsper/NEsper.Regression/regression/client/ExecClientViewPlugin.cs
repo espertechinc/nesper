@@ -18,8 +18,6 @@ using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -42,7 +40,7 @@ namespace com.espertech.esper.regression.client
             string text = "select * from A.mynamespace:Flushedsimple(price)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             SendEvent(epService, 1);
             SendEvent(epService, 2);
@@ -57,7 +55,7 @@ namespace com.espertech.esper.regression.client
             string text = "select irstream * from A.mynamespace:Trendspotter(price)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             SendEvent(epService, 10);
             AssertReceived(testListener, 1L, null);
@@ -105,8 +103,8 @@ namespace com.espertech.esper.regression.client
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("", price, null, null));
         }
     
-        private void AssertReceived(SupportUpdateListener testListener, long newTrendCount, long oldTrendCount) {
-            EPAssertionUtil.AssertPropsPerRow(testListener.AssertInvokedAndReset(), "trendcount", new Object[]{newTrendCount}, new Object[]{oldTrendCount});
+        private void AssertReceived(SupportUpdateListener testListener, long newTrendCount, long? oldTrendCount) {
+            EPAssertionUtil.AssertPropsPerRow(testListener.AssertInvokedAndReset(), "trendcount", new object[]{newTrendCount}, new object[]{oldTrendCount});
         }
     }
 } // end of namespace

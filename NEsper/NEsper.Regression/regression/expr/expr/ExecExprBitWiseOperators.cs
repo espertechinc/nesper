@@ -14,8 +14,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static junit.framework.TestCase.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -56,7 +54,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             RunBitWiseOperators(epService, listener);
     
@@ -91,7 +89,7 @@ namespace com.espertech.esper.regression.expr.expr
                     "(boolPrimitive & boolBoxed) as myFifthProperty " +
                     " from " + typeof(SupportBean).FullName + "#length(3) ";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             EventType type = stmt.EventType;
             Assert.AreEqual(typeof(byte?), type.GetPropertyType("myFirstProperty"));

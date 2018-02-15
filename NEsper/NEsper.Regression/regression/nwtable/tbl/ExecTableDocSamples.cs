@@ -45,25 +45,25 @@ namespace com.espertech.esper.regression.nwtable.tbl
             DeploymentResult d = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
     
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("trigger").AddListener(listener);
+            epService.EPAdministrator.GetStatement("trigger").Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(Collections.SingletonMap("startThreshold", 100L), "ResetEvent");
-            epService.EPRuntime.SendEvent(Collections.SingletonMap("value", 30L), "ValueEvent");
-            epService.EPRuntime.SendEvent(Collections.SingletonMap("value", 99L), "ValueEvent");
-            epService.EPRuntime.SendEvent(Collections.SingletonMap("value", 100L), "ValueEvent");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "value".Split(','), new Object[]{100L});
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("startThreshold", 100L), "ResetEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 30L), "ValueEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 99L), "ValueEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 100L), "ValueEvent");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "value".Split(','), new object[]{100L});
     
-            epService.EPRuntime.SendEvent(Collections.SingletonMap("value", 101L), "ValueEvent");
-            epService.EPRuntime.SendEvent(Collections.SingletonMap("value", 103L), "ValueEvent");
-            epService.EPRuntime.SendEvent(Collections.SingletonMap("value", 130L), "ValueEvent");
-            epService.EPRuntime.SendEvent(Collections.SingletonMap("value", 199L), "ValueEvent");
-            epService.EPRuntime.SendEvent(Collections.SingletonMap("value", 200L), "ValueEvent");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "value".Split(','), new Object[]{200L});
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 101L), "ValueEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 103L), "ValueEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 130L), "ValueEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 199L), "ValueEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 200L), "ValueEvent");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "value".Split(','), new object[]{200L});
     
-            epService.EPRuntime.SendEvent(Collections.SingletonMap("value", 201L), "ValueEvent");
-            epService.EPRuntime.SendEvent(Collections.SingletonMap("value", 260L), "ValueEvent");
-            epService.EPRuntime.SendEvent(Collections.SingletonMap("value", 301L), "ValueEvent");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "value".Split(','), new Object[]{301L});
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 201L), "ValueEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 260L), "ValueEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 301L), "ValueEvent");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "value".Split(','), new object[]{301L});
     
             epService.EPAdministrator.DeploymentAdmin.UndeployRemove(d.DeploymentId);
         }

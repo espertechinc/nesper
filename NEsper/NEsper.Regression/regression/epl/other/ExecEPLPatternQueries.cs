@@ -56,7 +56,7 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement statement = epService.EPAdministrator.Create(model);
             var updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener);
+            statement.Events += updateListener.Update;
     
             SendEventS0(epService, 1);
             AssertEventIds(updateListener, 1, null);
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regression.epl.other
     
             EPStatement statement = epService.EPAdministrator.Create(model);
             var updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener);
+            statement.Events += updateListener.Update;
     
             SendEventS0(epService, 1);
             AssertEventIds(updateListener, 1, null);
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regression.epl.other
                     "where (s0.id is not null and s0.id < 100) or (s1.id is not null and s1.id >= 100)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener);
+            statement.Events += updateListener.Update;
     
             SendEventS0(epService, 1);
             AssertEventIds(updateListener, 1, null);
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regression.epl.other
                     " or every s1=" + typeof(SupportBean_S1).Name + "]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener);
+            statement.Events += updateListener.Update;
     
             SendEventS0(epService, 1);
             AssertEventSums(updateListener, 1, null, null);
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regression.epl.other
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var updateListener = new SupportUpdateListener();
     
-            statement.AddListener(updateListener);
+            statement.Events += updateListener.Update;
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
             SendEvent(epService, 1, "e1a");

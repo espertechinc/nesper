@@ -70,7 +70,7 @@ namespace com.espertech.esper.regression.epl.other
                 "set intPrimitive=myvar, intBoxed=intPrimitive");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             string[] fields = "intPrimitive,intBoxed".Split(',');
 
             epService.EPRuntime.SendEvent(MakeSupportBean("E1", 1, 2));
@@ -146,16 +146,16 @@ namespace com.espertech.esper.regression.epl.other
             var listenerInsert = new SupportUpdateListener();
             EPStatement stmtInsert =
                 epService.EPAdministrator.CreateEPL("insert into MyStreamBW select * from SupportBean");
-            stmtInsert.AddListener(listenerInsert);
+            stmtInsert.Events += listenerInsert.Update;
 
             var listenerUpdate = new SupportUpdateListener();
             EPStatement stmtUpdOne = epService.EPAdministrator.CreateEPL(
                 "update istream MyStreamBW set intPrimitive=10, theString='O_' || theString where intPrimitive=1");
-            stmtUpdOne.AddListener(listenerUpdate);
+            stmtUpdOne.Events += listenerUpdate.Update;
 
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("select * from MyStreamBW");
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
 
             string[] fields = "theString,intPrimitive".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean("E1", 9));
@@ -184,7 +184,7 @@ namespace com.espertech.esper.regression.epl.other
 
             EPStatement stmtUpdTwo = epService.EPAdministrator.CreateEPL(
                 "update istream MyStreamBW as xyz set intPrimitive=xyz.intPrimitive + 1000 where intPrimitive=2");
-            stmtUpdTwo.AddListener(listenerUpdate);
+            stmtUpdTwo.Events += listenerUpdate.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("E5", 2));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"E5", 1002});
@@ -235,7 +235,7 @@ namespace com.espertech.esper.regression.epl.other
 
             EPStatement stmtUpdThree =
                 epService.EPAdministrator.CreateEPL("update istream MyStreamBW set intPrimitive=intBoxed");
-            stmtUpdThree.AddListener(listenerUpdate);
+            stmtUpdThree.Events += listenerUpdate.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("E11", 2));
             EPAssertionUtil.AssertProps(listenerUpdate.AssertOneGetNew(), fields, new object[] {"E11", 2});
@@ -255,13 +255,13 @@ namespace com.espertech.esper.regression.epl.other
             var listenerInsert = new SupportUpdateListener();
             EPStatement stmtInsert =
                 epService.EPAdministrator.CreateEPL("insert into MyStreamII select * from MyMapTypeII");
-            stmtInsert.AddListener(listenerInsert);
+            stmtInsert.Events += listenerInsert.Update;
 
             EPStatement stmtUpd = epService.EPAdministrator.CreateEPL("update istream MyStreamII set p0=p1, p1=p0");
 
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("select * from MyStreamII");
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
 
             string[] fields = "p0,p1,p2".Split(',');
             epService.EPRuntime.SendEvent(MakeMap("p0", 10, "p1", 1, "p2", 100), "MyMapTypeII");
@@ -325,7 +325,7 @@ namespace com.espertech.esper.regression.epl.other
             EPStatement stmtSelect =
                 epService.EPAdministrator.CreateEPL("select * from MyStream where intPrimitive > 0");
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
 
             string[] fields = "theString,intPrimitive".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean("A1", 0));
@@ -342,7 +342,7 @@ namespace com.espertech.esper.regression.epl.other
 
             stmtSelect.Stop();
             stmtSelect = epService.EPAdministrator.CreateEPL("select * from MyStream");
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmtSelect.EventType.UnderlyingType));
 
             epService.EPRuntime.SendEvent(new SupportBean("D1", -2));
@@ -388,7 +388,7 @@ namespace com.espertech.esper.regression.epl.other
                 "@Name('a') update istream BaseInterface set i='XYZ' where i like 'E%'");
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("select * from BaseOne");
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
 
             string[] fields = "i,p".Split(',');
             epService.EPRuntime.SendEvent(MakeMap("p0", "E1", "p1", "E1"), "MyMapTypeIDB");
@@ -426,7 +426,7 @@ namespace com.espertech.esper.regression.epl.other
 
             stmtSelect.Stop();
             stmtSelect = epService.EPAdministrator.CreateEPL("select * from BaseInterface");
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(MakeMap("p0", "E2", "p1", "E7"), "MyMapTypeIDB");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), new[] {"i"}, new object[] {"XYZ"});
@@ -449,10 +449,10 @@ namespace com.espertech.esper.regression.epl.other
             var listenerWindowSelect = new SupportUpdateListener();
 
             epService.EPAdministrator.CreateEPL("create window AWindow#keepall select * from MyMapTypeNW")
-                .AddListener(listenerWindow);
+                .Events += listenerWindow.Update;
             epService.EPAdministrator.CreateEPL("insert into AWindow select * from MyMapTypeNW")
-                .AddListener(listenerInsert);
-            epService.EPAdministrator.CreateEPL("select * from AWindow").AddListener(listenerWindowSelect);
+                .Events += listenerInsert.Update;
+            epService.EPAdministrator.CreateEPL("select * from AWindow").Events += listenerWindowSelect.Update;
             epService.EPAdministrator.CreateEPL("update istream AWindow set p1='newvalue'");
 
             epService.EPRuntime.SendEvent(MakeMap("p0", "E1", "p1", "oldvalue"), "MyMapTypeNW");
@@ -464,20 +464,20 @@ namespace com.espertech.esper.regression.epl.other
                 listenerWindowSelect.AssertOneGetNewAndReset(), fields, new object[] {"E1", "newvalue"});
 
             epService.EPAdministrator.CreateEPL("on SupportBean(theString='A') select win.* from AWindow as win")
-                .AddListener(listenerOnSelect);
+                .Events += listenerOnSelect.Update;
             epService.EPRuntime.SendEvent(new SupportBean("A", 0));
             EPAssertionUtil.AssertProps(
                 listenerOnSelect.AssertOneGetNewAndReset(), fields, new object[] {"E1", "newvalue"});
 
             epService.EPAdministrator
                 .CreateEPL("on SupportBean(theString='B') insert into MyOtherStream select win.* from AWindow as win")
-                .AddListener(listenerOnSelect);
+                .Events += listenerOnSelect.Update;
             epService.EPRuntime.SendEvent(new SupportBean("B", 1));
             EPAssertionUtil.AssertProps(
                 listenerOnSelect.AssertOneGetNewAndReset(), fields, new object[] {"E1", "newvalue"});
 
             epService.EPAdministrator.CreateEPL("update istream MyOtherStream set p0='a', p1='b'");
-            epService.EPAdministrator.CreateEPL("select * from MyOtherStream").AddListener(listenerInsertOnSelect);
+            epService.EPAdministrator.CreateEPL("select * from MyOtherStream").Events += listenerInsertOnSelect.Update;
             epService.EPRuntime.SendEvent(new SupportBean("B", 1));
             EPAssertionUtil.AssertProps(
                 listenerOnSelect.AssertOneGetNewAndReset(), fields, new object[] {"E1", "newvalue"});
@@ -493,7 +493,7 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPAdministrator.CreateEPL("insert into AStream select * from SupportBean");
             epService.EPAdministrator.CreateEPL("update istream AStream set longBoxed=intBoxed, intBoxed=null");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from AStream").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from AStream").Events += listener.Update;
 
             var bean = new SupportBean("E1", 0);
             bean.LongBoxed = 888L;
@@ -514,7 +514,7 @@ namespace com.espertech.esper.regression.epl.other
             // test map
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("select * from MyMapTypeSR");
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
             epService.EPAdministrator.CreateEPL("update istream MyMapTypeSR set p0='a'");
 
             string[] fields = "p0,p1".Split(',');
@@ -545,7 +545,7 @@ namespace com.espertech.esper.regression.epl.other
 
             // test bean
             stmtSelect = epService.EPAdministrator.CreateEPL("select * from SupportBean");
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
             epService.EPAdministrator.CreateEPL("update istream SupportBean set intPrimitive=999");
 
             fields = "theString,intPrimitive".Split(',');
@@ -588,7 +588,7 @@ namespace com.espertech.esper.regression.epl.other
             // test map
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("select * from MyMapTypeSODA");
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
             epService.EPAdministrator.Create(model);
 
             string[] fields = "p0,p1".Split(',');
@@ -619,7 +619,7 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPAdministrator.CreateEPL(
                 "update istream ABCStreamXML set valOne = 987, valTwo=123 where prop1='SAMPLE_V1'");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from ABCStreamXML").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from ABCStreamXML").Events += listener.Update;
 
             epService.EPRuntime.SendEvent(simpleDoc);
             EPAssertionUtil.AssertProps(
@@ -636,7 +636,7 @@ namespace com.espertech.esper.regression.epl.other
             EPStatement stmtUpd =
                 epService.EPAdministrator.CreateEPL("update istream ABCStreamWO set valOne = 987, valTwo=123");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from ABCStreamWO").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from ABCStreamWO").Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             EPAssertionUtil.AssertProps(
@@ -665,7 +665,7 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPAdministrator.CreateEPL("insert into ABCStreamCM select * from SupportBeanCopyMethod");
             epService.EPAdministrator.CreateEPL("update istream ABCStreamCM set valOne = 'x', valTwo='y'");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from ABCStreamCM").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from ABCStreamCM").Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBeanCopyMethod("1", "2"));
             EPAssertionUtil.AssertProps(
@@ -690,7 +690,7 @@ namespace com.espertech.esper.regression.epl.other
             EPStatement stmtUpd = epService.EPAdministrator.CreateEPL(
                 "update istream ABCStreamSQ set theString = (select s0 from MyMapTypeSelect#lastevent) where intPrimitive in (select w0 from MyMapTypeWhere#keepall)");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from ABCStreamSQ").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from ABCStreamSQ").Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"E1", 0});
@@ -753,7 +753,7 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPAdministrator.CreateEPL("@Name('C') update istream ABCStreamUO set s0='C'");
             epService.EPAdministrator.CreateEPL("@Name('D') update istream ABCStreamUO set s0='D'");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from ABCStreamUO").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from ABCStreamUO").Events += listener.Update;
 
             epService.EPRuntime.SendEvent(MakeMap("s0", "", "s1", 1), "MyMapTypeUO");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"D", 1});
@@ -772,21 +772,21 @@ namespace com.espertech.esper.regression.epl.other
 
             string[] fields = "theString,intPrimitive,value1".Split(',');
             epService.EPAdministrator.CreateEPL("insert into ABCStreamLD select *, 'orig' as value1 from SupportBean")
-                .AddListener(listenerInsert);
+                .Events += listenerInsert.Update;
             epService.EPAdministrator
                 .CreateEPL(
                     "@Name('A') update istream ABCStreamLD set theString='A', value1='a' where intPrimitive in (1,2)")
-                .AddListener(listeners[0]);
+                .Events += listeners[0].Update;
             epService.EPAdministrator
                 .CreateEPL(
                     "@Name('B') update istream ABCStreamLD set theString='B', value1='b' where intPrimitive in (1,3)")
-                .AddListener(listeners[1]);
+                .Events += listeners[1].Update;
             epService.EPAdministrator
                 .CreateEPL(
                     "@Name('C') update istream ABCStreamLD set theString='C', value1='c' where intPrimitive in (2,3)")
-                .AddListener(listeners[2]);
+                .Events += listeners[2].Update;
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from ABCStreamLD").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from ABCStreamLD").Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             EPAssertionUtil.AssertProps(
@@ -835,16 +835,16 @@ namespace com.espertech.esper.regression.epl.other
 
             string[] fields = "theString,intPrimitive,value1".Split(',');
             epService.EPAdministrator.CreateEPL("insert into ABCStreamLDM select *, 'orig' as value1 from SupportBean")
-                .AddListener(listenerInsert);
+                .Events += listenerInsert.Update;
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from ABCStreamLDM").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from ABCStreamLDM").Events += listener.Update;
 
             epService.EPAdministrator.CreateEPL("@Name('A') update istream ABCStreamLDM set theString='A', value1='a'");
             epService.EPAdministrator.CreateEPL("@Name('B') update istream ABCStreamLDM set theString='B', value1='b'")
-                .AddListener(listeners[1]);
+                .Events += listeners[1].Update;
             epService.EPAdministrator.CreateEPL("@Name('C') update istream ABCStreamLDM set theString='C', value1='c'");
             epService.EPAdministrator.CreateEPL("@Name('D') update istream ABCStreamLDM set theString='D', value1='d'")
-                .AddListener(listeners[3]);
+                .Events += listeners[3].Update;
             epService.EPAdministrator.CreateEPL("@Name('E') update istream ABCStreamLDM set theString='E', value1='e'");
 
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
@@ -862,8 +862,8 @@ namespace com.espertech.esper.regression.epl.other
 
             epService.EPAdministrator.GetStatement("B").RemoveAllEventHandlers();
             epService.EPAdministrator.GetStatement("D").RemoveAllEventHandlers();
-            epService.EPAdministrator.GetStatement("A").AddListener(listeners[0]);
-            epService.EPAdministrator.GetStatement("E").AddListener(listeners[4]);
+            epService.EPAdministrator.GetStatement("A").Events += listeners[0].Update;
+            epService.EPAdministrator.GetStatement("E").Events += listeners[4].Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("E5", 5));
             EPAssertionUtil.AssertProps(

@@ -14,7 +14,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -50,12 +49,12 @@ namespace com.espertech.esper.regression.client
             prepared.SetObject("my/value/int", 10);
             prepared.SetObject("/my/value/long", 100L);
             var listenerOne = new SupportUpdateListener();
-            epService.EPAdministrator.Create(prepared).AddListener(listenerOne);
+            epService.EPAdministrator.Create(prepared).Events += listenerOne.Update;
     
             SupportBean @event = new SupportBean("E1", 10);
             @event.LongPrimitive = 100;
             epService.EPRuntime.SendEvent(@event);
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), "c0".Split(','), new Object[]{10});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), "c0".Split(','), new object[]{10});
     
             SupportMessageAssertUtil.TryInvalid(epService, "select ?,?:a from SupportBean",
                     "Inconsistent use of substitution parameters, expecting all substitutions to either all provide a name or provide no name");
@@ -71,7 +70,7 @@ namespace com.espertech.esper.regression.client
             EPPreparedStatement prepared = epService.EPAdministrator.PrepareEPL("select * from SupportBean(theString = ?.TheString)");
             prepared.SetObject(1, new SupportBean("E1", 0));
             var listenerOne = new SupportUpdateListener();
-            epService.EPAdministrator.Create(prepared).AddListener(listenerOne);
+            epService.EPAdministrator.Create(prepared).Events += listenerOne.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             Assert.IsTrue(listenerOne.IsInvoked);
@@ -86,13 +85,13 @@ namespace com.espertech.esper.regression.client
             prepared.SetObject(1, "e1");
             EPStatement statement = epService.EPAdministrator.Create(prepared);
             var listenerOne = new SupportUpdateListener();
-            statement.AddListener(listenerOne);
+            statement.Events += listenerOne.Update;
             Assert.AreEqual("select * from pattern [" + typeof(SupportBean).FullName + "(theString=\"e1\")]", statement.Text);
     
             prepared.SetObject(1, "e2");
             statement = epService.EPAdministrator.Create(prepared);
             var listenerTwo = new SupportUpdateListener();
-            statement.AddListener(listenerTwo);
+            statement.Events += listenerTwo.Update;
             Assert.AreEqual("select * from pattern [com.espertech.esper.supportregression.bean.SupportBean(theString=\"e2\")]", statement.Text);
     
             epService.EPRuntime.SendEvent(new SupportBean("e2", 10));
@@ -103,7 +102,7 @@ namespace com.espertech.esper.regression.client
             Assert.IsFalse(listenerTwo.IsInvoked);
             Assert.IsTrue(listenerOne.GetAndClearIsInvoked());
     
-            statement.Destroy();
+            statement.Dispose();
             prepared = epService.EPAdministrator.PrepareEPL("create window MyWindow#Time(?) as " + typeof(SupportBean).FullName);
             prepared.SetObject(1, 300);
             statement = epService.EPAdministrator.Create(prepared);
@@ -120,12 +119,12 @@ namespace com.espertech.esper.regression.client
             preparedStmt.SetObject(1, "S1");
             EPStatement stmtS1 = epService.EPAdministrator.Create(preparedStmt);
             var listenerOne = new SupportUpdateListener();
-            stmtS1.AddListener(listenerOne);
+            stmtS1.Events += listenerOne.Update;
     
             preparedStmt.SetObject(1, "S2");
             EPStatement stmtS2 = epService.EPAdministrator.Create(preparedStmt);
             var listenerTwo = new SupportUpdateListener();
-            stmtS2.AddListener(listenerTwo);
+            stmtS2.Events += listenerTwo.Update;
     
             // test no event, should return null
             epService.EPRuntime.SendEvent(new SupportBean("e1", -1));
@@ -160,13 +159,13 @@ namespace com.espertech.esper.regression.client
             prepared.SetObject(1, "e1");
             EPStatement statement = epService.EPAdministrator.Create(prepared);
             var listenerOne = new SupportUpdateListener();
-            statement.AddListener(listenerOne);
+            statement.Events += listenerOne.Update;
             Assert.AreEqual("select * from " + typeof(SupportBean).FullName + "(theString=\"e1\")", statement.Text);
     
             prepared.SetObject(1, "e2");
             statement = epService.EPAdministrator.Create(prepared);
             var listenerTwo = new SupportUpdateListener();
-            statement.AddListener(listenerTwo);
+            statement.Events += listenerTwo.Update;
             Assert.AreEqual("select * from Com.espertech.esper.supportregression.bean.SupportBean(theString=\"e2\")", statement.Text);
     
             epService.EPRuntime.SendEvent(new SupportBean("e2", 10));
@@ -184,7 +183,7 @@ namespace com.espertech.esper.regression.client
             var lKey = new MyObjectKeyInterface();
             preparedStatement.SetObject(1, lKey);
             statement = epService.EPAdministrator.Create(preparedStatement);
-            statement.AddListener(listenerOne);
+            statement.Events += listenerOne.Update;
     
             epService.EPRuntime.SendEvent(new MyEventOne(lKey));
             Assert.IsTrue(listenerOne.GetAndClearIsInvoked());
@@ -196,7 +195,7 @@ namespace com.espertech.esper.regression.client
             var cKey = new MyObjectKeyConcrete();
             preparedStatement.SetObject(1, cKey);
             statement = epService.EPAdministrator.Create(preparedStatement);
-            statement.AddListener(listenerOne);
+            statement.Events += listenerOne.Update;
     
             epService.EPRuntime.SendEvent(new MyEventTwo(cKey));
             Assert.IsTrue(listenerOne.GetAndClearIsInvoked());
@@ -231,7 +230,7 @@ namespace com.espertech.esper.regression.client
                 statement = epService.EPAdministrator.Create(prepared);
             }
             var listenerOne = new SupportUpdateListener();
-            statement.AddListener(listenerOne);
+            statement.Events += listenerOne.Update;
             if (compareText) {
                 Assert.AreEqual("select * from " + typeof(SupportBean).FullName + "(theString=\"e1\" and intPrimitive=1)", statement.Text);
             }
@@ -244,7 +243,7 @@ namespace com.espertech.esper.regression.client
                 statement = epService.EPAdministrator.Create(prepared);
             }
             var listenerTwo = new SupportUpdateListener();
-            statement.AddListener(listenerTwo);
+            statement.Events += listenerTwo.Update;
             if (compareText) {
                 Assert.AreEqual("select * from " + typeof(SupportBean).FullName + "(theString=\"e2\" and intPrimitive=2)", statement.Text);
             }
@@ -270,12 +269,12 @@ namespace com.espertech.esper.regression.client
     
             EPStatement statement = epService.EPAdministrator.Create(prepared);
             var listenerOne = new SupportUpdateListener();
-            statement.AddListener(listenerOne);
+            statement.Events += listenerOne.Update;
             Assert.AreEqual("select * from " + typeof(SupportBean).FullName + "(theString=\"e1\")", statement.Text);
     
             statement = epService.EPAdministrator.Create(prepared);
             var listenerTwo = new SupportUpdateListener();
-            statement.AddListener(listenerTwo);
+            statement.Events += listenerTwo.Update;
             Assert.AreEqual("select * from Com.espertech.esper.supportregression.bean.SupportBean(theString=\"e1\")", statement.Text);
     
             epService.EPRuntime.SendEvent(new SupportBean("e2", 10));

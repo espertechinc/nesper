@@ -84,7 +84,7 @@ namespace com.espertech.esper.regression.pattern
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("A2", 2));

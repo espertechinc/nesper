@@ -20,10 +20,9 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 using NEsper.Avro.Extensions;
 
-// using static org.apache.avro.SchemaBuilder.record;
-// using static org.junit.Assert.*;
-
 using NUnit.Framework;
+
+using static NEsper.Avro.Extensions.TypeBuilder;
 
 namespace com.espertech.esper.regression.epl.insertinto
 {
@@ -50,30 +49,30 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPAdministrator.CreateEPL("create objectarray schema MyOASource (p0 string, p1 string, i0 MyInner)");
             epService.EPAdministrator.CreateEPL("insert into MyOATarget select p0, p1, i0, null as unfilled from MyOASource");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from MyOATarget").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from MyOATarget").Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(new Object[]{"p0value", "p1value", new Object[]{"i"}}, "MyOASource");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "p0,p1".Split(','), new Object[]{"p0value", "p1value"});
+            epService.EPRuntime.SendEvent(new object[]{"p0value", "p1value", new object[]{"i"}}, "MyOASource");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "p0,p1".Split(','), new object[]{"p0value", "p1value"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
         private void RunAssertPopulateFromNamedWindow(EPServiceProvider epService, EventRepresentationChoice type) {
-            epService.EPAdministrator.CreateEPL("create " + type.OutputTypeCreateSchemaName + " schema Node(nid string)");
+            epService.EPAdministrator.CreateEPL("create " + type.GetOutputTypeCreateSchemaName() + " schema Node(nid string)");
             epService.EPAdministrator.CreateEPL("create window NodeWindow#unique(nid) as Node");
             epService.EPAdministrator.CreateEPL("insert into NodeWindow select * from Node");
-            epService.EPAdministrator.CreateEPL("create " + type.OutputTypeCreateSchemaName + " schema NodePlus(npid string, node Node)");
+            epService.EPAdministrator.CreateEPL("create " + type.GetOutputTypeCreateSchemaName() + " schema NodePlus(npid string, node Node)");
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("insert into NodePlus select 'E1' as npid, n1 as node from NodeWindow n1");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             if (type.IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(new Object[]{"n1"}, "Node");
+                epService.EPRuntime.SendEvent(new object[]{"n1"}, "Node");
             } else if (type.IsMapEvent()) {
-                epService.EPRuntime.SendEvent(Collections.SingletonMap("nid", "n1"), "Node");
+                epService.EPRuntime.SendEvent(Collections.SingletonDataMap("nid", "n1"), "Node");
             } else if (type.IsAvroEvent()) {
-                var genericRecord = new GenericRecord(Record("name").Fields().RequiredString("nid").EndRecord());
+                var genericRecord = new GenericRecord(SchemaBuilder.Record("name", RequiredString("nid")));
                 genericRecord.Put("nid", "n1");
                 epService.EPRuntime.SendEventAvro(genericRecord, "Node");
             } else {
@@ -99,7 +98,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                     "from pattern [e1=MyStream -> e2=MyStream]");
             epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " @Name('Target') select * from CompositeEvent");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("Target").AddListener(listener);
+            epService.EPAdministrator.GetStatement("Target").Events += listener.Update;
     
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
                 epService.EPRuntime.SendEvent(MakeEvent(10).Values.ToArray(), "MyEvent");
@@ -133,14 +132,14 @@ namespace com.espertech.esper.regression.epl.insertinto
                     "select c as myEvent, 'test' as class, false as reverse " +
                     "from MyEvent(myId=1) c");
             var listener = new SupportUpdateListener();
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmtOne.EventType.UnderlyingType));
     
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("insert into SuspectMyEvent " +
                     "select c.myEvent as myEvent, class " +
                     "from AllMyEvent(not reverse) c");
             var listenerTwo = new SupportUpdateListener();
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
     
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
                 epService.EPRuntime.SendEvent(MakeEvent(1).Values.ToArray(), "MyEvent");
@@ -176,7 +175,7 @@ namespace com.espertech.esper.regression.epl.insertinto
         }
     
         private GenericRecord MakeEventAvro(int myId) {
-            Schema schema = Record("schema").Fields().RequiredInt("myId").EndRecord();
+            var schema = SchemaBuilder.Record("schema", RequiredInt("myId"));
             var record = new GenericRecord(schema);
             record.Put("myId", myId);
             return record;

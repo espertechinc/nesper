@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNull;
 
 using NUnit.Framework;
 
@@ -44,11 +42,11 @@ namespace com.espertech.esper.regression.epl.insertinto
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtTwoText);
     
             var updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener);
+            statement.Events += updateListener.Update;
     
             SendEventsAndAssert(epService, updateListener);
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionProps(EPServiceProvider epService) {
@@ -65,11 +63,11 @@ namespace com.espertech.esper.regression.epl.insertinto
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtTwoText);
     
             var updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener);
+            statement.Events += updateListener.Update;
     
             SendEventsAndAssert(epService, updateListener);
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void RunAssertionNoProps(EPServiceProvider epService) {
@@ -86,11 +84,11 @@ namespace com.espertech.esper.regression.epl.insertinto
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtTwoText);
     
             var updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener);
+            statement.Events += updateListener.Update;
     
             SendEventsAndAssert(epService, updateListener);
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private void SendEventsAndAssert(EPServiceProvider epService, SupportUpdateListener updateListener) {

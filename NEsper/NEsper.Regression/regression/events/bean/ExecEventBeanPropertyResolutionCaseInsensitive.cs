@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static junit.framework.TestCase.assertTrue;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -25,13 +23,13 @@ namespace com.espertech.esper.regression.events.bean
 {
     public class ExecEventBeanPropertyResolutionCaseInsensitive : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = Configuration.PropertyResolutionStyle.CASE_INSENSITIVE;
+            configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
         }
     
         public override void Run(EPServiceProvider epService) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select MYPROPERTY, myproperty, myProperty, MyProperty from " + typeof(SupportBeanDupProperty).FullName);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanDupProperty("lowercamel", "uppercamel", "upper", "lower"));
             EventBean result = listener.AssertOneGetNewAndReset();
@@ -46,7 +44,7 @@ namespace com.espertech.esper.regression.events.bean
                     "MAPPED('keyOne') as val3, " +
                     "INDEXED[0] as val4 " +
                     " from " + typeof(SupportBeanComplexProps).FullName);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
             EventBean theEvent = listener.AssertOneGetNewAndReset();
             Assert.AreEqual("nestedValue", theEvent.Get("val1"));

@@ -19,8 +19,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -54,8 +52,8 @@ namespace com.espertech.esper.regression.multithread
     
             string stmtSetOneText = "on " + typeof(SupportBean).FullName + " set var1=longPrimitive, var2=longPrimitive, var3=var3+1";
             string stmtSetTwoText = "on " + typeof(SupportMarketDataBean).Name + " set var1=volume, var2=volume, var3=var3+1";
-            epService.EPAdministrator.CreateEPL(stmtSetOneText).AddListener(listenerSetOne);
-            epService.EPAdministrator.CreateEPL(stmtSetTwoText).AddListener(listenerSetTwo);
+            epService.EPAdministrator.CreateEPL(stmtSetOneText).Events += listenerSetOne.Update;
+            epService.EPAdministrator.CreateEPL(stmtSetTwoText).Events += listenerSetTwo.Update;
     
             TrySetAndReadAtomic(epService, listenerSetOne, listenerSetTwo, 2, 10000);
         }
@@ -72,13 +70,13 @@ namespace com.espertech.esper.regression.multithread
             threadPool.AwaitTermination(10, TimeUnit.SECONDS);
     
             for (int i = 0; i < numThreads; i++) {
-                Assert.IsTrue((bool?) future[i].Get());
+                Assert.IsTrue(future[i].GetValueOrDefault());
             }
     
             // Determine if we have all numbers for var3 and didn't skip one.
             // Since "var3 = var3 + 1" is executed by multiple statements and threads we need to have
             // this counter have all the values from 0 to N-1.
-            var var3Values = new TreeSet<long>();
+            var var3Values = new SortedSet<long>();
             foreach (EventBean theEvent in listenerSetOne.GetNewDataListFlattened()) {
                 var3Values.Add((long) theEvent.Get("var3"));
             }

@@ -17,7 +17,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -52,14 +51,14 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("context CtxNowTillS0 create table MyTable(pkey string primary key, thesum sum(int), col0 string)");
             epService.EPAdministrator.CreateEPL("context CtxNowTillS0 into table MyTable select sum(intPrimitive) as thesum from SupportBean group by theString");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("context CtxNowTillS0 select pkey as c0, thesum as c1 from MyTable output snapshot when terminated").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("context CtxNowTillS0 select pkey as c0, thesum as c1 from MyTable output snapshot when terminated").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 50));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 60));
             epService.EPRuntime.SendEvent(new SupportBean_S0(-1)); // terminated
             EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetAndResetLastNewData(), "c0,c1".Split(','),
-                    new Object[][]{new object[] {"E1", 110}, new object[] {"E2", 20}});
+                    new object[][]{new object[] {"E1", 110}, new object[] {"E2", 20}});
     
             epService.EPAdministrator.CreateEPL("context CtxNowTillS0 create index MyIdx on MyTable(col0)");
             epService.EPAdministrator.CreateEPL("context CtxNowTillS0 select * from MyTable, SupportBean_S1 where col0 = p11");
@@ -69,7 +68,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPRuntime.SendEvent(new SupportBean("E3", 10));
             epService.EPRuntime.SendEvent(new SupportBean_S0(-1)); // terminated
             EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.GetAndResetLastNewData(), "c0,c1".Split(','),
-                    new Object[][]{new object[] {"E1", 30}, new object[] {"E3", 100}});
+                    new object[][]{new object[] {"E1", 30}, new object[] {"E3", 100}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -80,7 +79,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("context CtxPerString create table MyTable(thesum sum(int))");
             epService.EPAdministrator.CreateEPL("context CtxPerString into table MyTable select sum(intPrimitive) as thesum from SupportBean");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("context CtxPerString select MyTable.thesum as c0 from SupportBean_S0").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("context CtxPerString select MyTable.thesum as c0 from SupportBean_S0").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 50));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));

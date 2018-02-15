@@ -18,7 +18,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -26,7 +25,7 @@ namespace com.espertech.esper.regression.view
 {
     public class ExecViewTimeWindowUnique : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.ViewResources.AllowMultipleExpiryPolicies = true;
+            configuration.EngineDefaults.ViewResources.IsAllowMultipleExpiryPolicies = true;
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -39,7 +38,7 @@ namespace com.espertech.esper.regression.view
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             SendCurrentTime(epService, "2002-02-01T09:00:00.000");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select rstream * from SupportBean#Time(1 month)").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select rstream * from SupportBean#Time(1 month)").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
     
@@ -49,13 +48,13 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
     
             SendCurrentTime(epService, "2002-03-01T09:00:00.000");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString".Split(','), new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E1"});
     
             SendCurrentTimeWithMinus(epService, "2002-03-15T09:00:00.000", 1);
             Assert.IsFalse(listener.IsInvoked);
     
             SendCurrentTime(epService, "2002-03-15T09:00:00.000");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString".Split(','), new Object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E2"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -67,7 +66,7 @@ namespace com.espertech.esper.regression.view
                     "select irstream * from " + typeof(SupportMarketDataBean).FullName +
                             "#Time(3.0)#unique(symbol)");
             var listener = new SupportUpdateListener();
-            windowUniqueView.AddListener(listener);
+            windowUniqueView.Events += listener.Update;
     
             SendTimer(epService, 0);
     
@@ -87,43 +86,43 @@ namespace com.espertech.esper.regression.view
                     "select irstream * from " + typeof(SupportMarketDataBean).FullName +
                             "#Time(3.0)#unique(symbol, price)");
             var listener = new SupportUpdateListener();
-            windowUniqueView.AddListener(listener);
+            windowUniqueView.Events += listener.Update;
             var fields = new string[]{"symbol", "price", "volume"};
     
             SendEvent(epService, "IBM", 10, 1L);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"IBM", 10.0, 1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"IBM", 10.0, 1L});
     
             SendEvent(epService, "IBM", 11, 2L);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"IBM", 11.0, 2L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"IBM", 11.0, 2L});
     
             SendEvent(epService, "IBM", 10, 3L);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{"IBM", 10.0, 3L});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{"IBM", 10.0, 1L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{"IBM", 10.0, 3L});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{"IBM", 10.0, 1L});
             listener.Reset();
     
             SendEvent(epService, "IBM", 11, 4L);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{"IBM", 11.0, 4L});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{"IBM", 11.0, 2L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{"IBM", 11.0, 4L});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{"IBM", 11.0, 2L});
             listener.Reset();
     
             SendTimer(epService, 2000);
             SendEvent(epService, null, 11, 5L);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, 11.0, 5L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, 11.0, 5L});
     
             SendTimer(epService, 3000);
             Assert.AreEqual(2, listener.LastOldData.Length);
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{"IBM", 10.0, 3L});
-            EPAssertionUtil.AssertProps(listener.LastOldData[1], fields, new Object[]{"IBM", 11.0, 4L});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{"IBM", 10.0, 3L});
+            EPAssertionUtil.AssertProps(listener.LastOldData[1], fields, new object[]{"IBM", 11.0, 4L});
             listener.Reset();
     
             SendEvent(epService, null, 11, 6L);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new Object[]{null, 11.0, 6L});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{null, 11.0, 5L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[]{null, 11.0, 6L});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{null, 11.0, 5L});
             listener.Reset();
     
             SendTimer(epService, 6000);
             Assert.AreEqual(1, listener.LastOldData.Length);
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new Object[]{null, 11.0, 6L});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[]{null, 11.0, 6L});
             listener.Reset();
     
             epService.EPAdministrator.DestroyAllStatements();

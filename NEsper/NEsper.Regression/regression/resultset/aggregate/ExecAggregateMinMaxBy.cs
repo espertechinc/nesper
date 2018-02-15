@@ -51,7 +51,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "group by longPrimitive";
             var stmtPlain = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmtPlain.AddListener(listener);
+            stmtPlain.Events += listener.Update;
     
             TryAssertionGroupedSortedMinMax(epService, listener);
             stmtPlain.Dispose();
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             var model = epService.EPAdministrator.CompileEPL(epl);
             Assert.AreEqual(epl, model.ToEPL());
             var stmtSoda = epService.EPAdministrator.Create(model);
-            stmtSoda.AddListener(listener);
+            stmtSoda.Events += listener.Update;
             Assert.AreEqual(epl, stmtSoda.Text);
             TryAssertionGroupedSortedMinMax(epService, listener);
             stmtSoda.Dispose();
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "from S0#lastevent, SupportBean#Groupwin(longPrimitive)#length(3) as sb " +
                     "group by longPrimitive";
             var stmtJoin = epService.EPAdministrator.CreateEPL(eplJoin);
-            stmtJoin.AddListener(listener);
+            stmtJoin.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "p00"));
             TryAssertionGroupedSortedMinMax(epService, listener);
             stmtJoin.Dispose();
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             var fields = "c0".Split(',');
             var joinMultirow = "select sorted(intPrimitive desc) as c0 from S0#keepall, SupportBean#length(2)";
             var stmtJoinMultirow = epService.EPAdministrator.CreateEPL(joinMultirow);
-            stmtJoinMultirow.AddListener(listener);
+            stmtJoinMultirow.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "S1"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "S2"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(3, "S3"));
@@ -94,17 +94,17 @@ namespace com.espertech.esper.regression.resultset.aggregate
             var eventOne = new SupportBean("E1", 1);
             epService.EPRuntime.SendEvent(eventOne);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{new Object[]{eventOne}});
+                    new object[]{new object[]{eventOne}});
     
             var eventTwo = new SupportBean("E2", 2);
             epService.EPRuntime.SendEvent(eventTwo);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{new Object[]{eventTwo, eventOne}});
+                    new object[]{new object[]{eventTwo, eventOne}});
     
             var eventThree = new SupportBean("E3", 0);
             epService.EPRuntime.SendEvent(eventThree);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{new Object[]{eventTwo, eventThree}});
+                    new object[]{new object[]{eventTwo, eventThree}});
     
             stmtJoinMultirow.Dispose();
         }
@@ -115,64 +115,64 @@ namespace com.espertech.esper.regression.resultset.aggregate
             var eventOne = MakeEvent("E1", 1, 1);
             epService.EPRuntime.SendEvent(eventOne);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{
-                            new Object[]{eventOne},
-                            new Object[]{eventOne},
-                            new Object[]{eventOne},
+                    new object[]{
+                            new object[]{eventOne},
+                            new object[]{eventOne},
+                            new object[]{eventOne},
                             eventOne, eventOne, eventOne, eventOne});
     
             var eventTwo = MakeEvent("E2", 2, 1);
             epService.EPRuntime.SendEvent(eventTwo);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{
-                            new Object[]{eventOne, eventTwo},
-                            new Object[]{eventTwo, eventOne},
-                            new Object[]{eventOne, eventTwo},
+                    new object[]{
+                            new object[]{eventOne, eventTwo},
+                            new object[]{eventTwo, eventOne},
+                            new object[]{eventOne, eventTwo},
                             eventTwo, eventOne, eventTwo, eventOne});
     
             var eventThree = MakeEvent("E3", 0, 1);
             epService.EPRuntime.SendEvent(eventThree);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{
-                            new Object[]{eventOne, eventTwo, eventThree},
-                            new Object[]{eventTwo, eventOne, eventThree},
-                            new Object[]{eventThree, eventOne, eventTwo},
+                    new object[]{
+                            new object[]{eventOne, eventTwo, eventThree},
+                            new object[]{eventTwo, eventOne, eventThree},
+                            new object[]{eventThree, eventOne, eventTwo},
                             eventTwo, eventThree, eventTwo, eventThree});
     
             var eventFour = MakeEvent("E4", 3, 1);   // pushes out E1
             epService.EPRuntime.SendEvent(eventFour);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{
-                            new Object[]{eventTwo, eventThree, eventFour},
-                            new Object[]{eventFour, eventTwo, eventThree},
-                            new Object[]{eventThree, eventTwo, eventFour},
+                    new object[]{
+                            new object[]{eventTwo, eventThree, eventFour},
+                            new object[]{eventFour, eventTwo, eventThree},
+                            new object[]{eventThree, eventTwo, eventFour},
                             eventFour, eventThree, eventFour, eventThree});
     
             var eventFive = MakeEvent("E5", -1, 2);   // group 2
             epService.EPRuntime.SendEvent(eventFive);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{
-                            new Object[]{eventFive},
-                            new Object[]{eventFive},
-                            new Object[]{eventFive},
+                    new object[]{
+                            new object[]{eventFive},
+                            new object[]{eventFive},
+                            new object[]{eventFive},
                             eventFive, eventFive, eventFive, eventFive});
     
             var eventSix = MakeEvent("E6", -1, 1);   // pushes out E2
             epService.EPRuntime.SendEvent(eventSix);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{
-                            new Object[]{eventThree, eventFour, eventSix},
-                            new Object[]{eventFour, eventThree, eventSix},
-                            new Object[]{eventSix, eventThree, eventFour},
+                    new object[]{
+                            new object[]{eventThree, eventFour, eventSix},
+                            new object[]{eventFour, eventThree, eventSix},
+                            new object[]{eventSix, eventThree, eventFour},
                             eventFour, eventSix, eventFour, eventSix});
     
             var eventSeven = MakeEvent("E7", 2, 2);   // group 2
             epService.EPRuntime.SendEvent(eventSeven);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{
-                            new Object[]{eventFive, eventSeven},
-                            new Object[]{eventSeven, eventFive},
-                            new Object[]{eventFive, eventSeven},
+                    new object[]{
+                            new object[]{eventFive, eventSeven},
+                            new object[]{eventSeven, eventFive},
+                            new object[]{eventFive, eventSeven},
                             eventSeven, eventFive, eventSeven, eventFive});
     
         }
@@ -193,21 +193,21 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "from SupportBean#length(5)";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var eventOne = MakeEvent("E1", 1, 10);
             epService.EPRuntime.SendEvent(eventOne);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{eventOne, eventOne, 10L, "E1", 1, eventOne, 10L, "E1", 1, eventOne});
+                    new object[]{eventOne, eventOne, 10L, "E1", 1, eventOne, 10L, "E1", 1, eventOne});
     
             var eventTwo = MakeEvent("E2", 2, 20);
             epService.EPRuntime.SendEvent(eventTwo);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{eventTwo, eventOne, 20L, "E2", 2, eventTwo, 10L, "E1", 1, eventOne});
+                    new object[]{eventTwo, eventOne, 20L, "E2", 2, eventTwo, 10L, "E1", 1, eventOne});
     
             var eventThree = MakeEvent("E3", 3, 5);
             epService.EPRuntime.SendEvent(eventThree);
-            var resultThree = new Object[]{eventTwo, eventThree, 20L, "E2", 2, eventTwo, 5L, "E3", 3, eventThree};
+            var resultThree = new object[]{eventTwo, eventThree, 20L, "E2", 2, eventTwo, 5L, "E3", 3, eventThree};
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, resultThree);
     
             var eventFour = MakeEvent("E4", 4, 5);
@@ -224,19 +224,19 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             var eventSeven = MakeEvent("E7", 7, 20);
             epService.EPRuntime.SendEvent(eventSeven); // expires E2
-            var resultSeven = new Object[]{eventTwo, eventThree, 20L, "E5", 5, eventFive, 5L, "E3", 3, eventThree};
+            var resultSeven = new object[]{eventTwo, eventThree, 20L, "E5", 5, eventFive, 5L, "E3", 3, eventThree};
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, resultSeven);
     
             epService.EPRuntime.SendEvent(MakeEvent("E8", 8, 20)); // expires E3
-            var resultEight = new Object[]{eventTwo, eventThree, 20L, "E5", 5, eventFive, 5L, "E4", 4, eventFour};
+            var resultEight = new object[]{eventTwo, eventThree, 20L, "E5", 5, eventFive, 5L, "E4", 4, eventFour};
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, resultEight);
     
             epService.EPRuntime.SendEvent(MakeEvent("E9", 9, 19)); // expires E4
-            var resultNine = new Object[]{eventTwo, eventThree, 20L, "E5", 5, eventFive, 10L, "E6", 6, eventSix};
+            var resultNine = new object[]{eventTwo, eventThree, 20L, "E5", 5, eventFive, 10L, "E6", 6, eventSix};
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, resultNine);
     
             epService.EPRuntime.SendEvent(MakeEvent("E10", 10, 12)); // expires E5
-            var resultTen = new Object[]{eventTwo, eventThree, 20L, "E7", 7, eventSeven, 10L, "E6", 6, eventSix};
+            var resultTen = new object[]{eventTwo, eventThree, 20L, "E7", 7, eventSeven, 10L, "E6", 6, eventSix};
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, resultTen);
     
             stmt.Dispose();
@@ -274,39 +274,39 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "minby(theString).longPrimitive as c7 " +
                     "from SupportBean#keepall");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEvent("C", 10, 1L));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L});
+                    new object[]{1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L});
     
             epService.EPRuntime.SendEvent(MakeEvent("P", 5, 2L));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{1L, 2L, 2L, 1L, 1L, 2L, 2L, 1L});
+                    new object[]{1L, 2L, 2L, 1L, 1L, 2L, 2L, 1L});
     
             epService.EPRuntime.SendEvent(MakeEvent("G", 7, 3L));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{1L, 2L, 2L, 1L, 1L, 2L, 2L, 1L});
+                    new object[]{1L, 2L, 2L, 1L, 1L, 2L, 2L, 1L});
     
             epService.EPRuntime.SendEvent(MakeEvent("A", 7, 4L));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{1L, 2L, 2L, 4L, 1L, 2L, 2L, 4L});
+                    new object[]{1L, 2L, 2L, 4L, 1L, 2L, 2L, 4L});
     
             epService.EPRuntime.SendEvent(MakeEvent("G", 1, 5L));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{1L, 2L, 5L, 4L, 1L, 2L, 5L, 4L});
+                    new object[]{1L, 2L, 5L, 4L, 1L, 2L, 5L, 4L});
     
             epService.EPRuntime.SendEvent(MakeEvent("X", 7, 6L));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{1L, 6L, 5L, 4L, 1L, 6L, 5L, 4L});
+                    new object[]{1L, 6L, 5L, 4L, 1L, 6L, 5L, 4L});
     
             epService.EPRuntime.SendEvent(MakeEvent("G", 100, 7L));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{7L, 6L, 5L, 4L, 7L, 6L, 5L, 4L});
+                    new object[]{7L, 6L, 5L, 4L, 7L, 6L, 5L, 4L});
     
             epService.EPRuntime.SendEvent(MakeEvent("Z", 1000, 8L));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{8L, 8L, 5L, 4L, 8L, 8L, 5L, 4L});
+                    new object[]{8L, 8L, 5L, 4L, 8L, 8L, 5L, 4L});
     
             stmt.Dispose();
         }
@@ -321,39 +321,39 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "sorted(theString desc, intPrimitive asc) as c3 " +
                     "from SupportBean#keepall");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var eventOne = new SupportBean("C", 10);
             epService.EPRuntime.SendEvent(eventOne);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[][]{
-                    new Object[]{eventOne},
-                    new Object[]{eventOne},
-                    new Object[]{eventOne},
-                    new Object[]{eventOne}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[][]{
+                    new object[]{eventOne},
+                    new object[]{eventOne},
+                    new object[]{eventOne},
+                    new object[]{eventOne}});
     
             var eventTwo = new SupportBean("D", 20);
             epService.EPRuntime.SendEvent(eventTwo);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[][]{
-                    new Object[]{eventTwo, eventOne},
-                    new Object[]{eventOne, eventTwo},
-                    new Object[]{eventOne, eventTwo},
-                    new Object[]{eventTwo, eventOne}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[][]{
+                    new object[]{eventTwo, eventOne},
+                    new object[]{eventOne, eventTwo},
+                    new object[]{eventOne, eventTwo},
+                    new object[]{eventTwo, eventOne}});
     
             var eventThree = new SupportBean("C", 15);
             epService.EPRuntime.SendEvent(eventThree);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[][]{
-                    new Object[]{eventTwo, eventThree, eventOne},
-                    new Object[]{eventOne, eventThree, eventTwo},
-                    new Object[]{eventOne, eventThree, eventTwo},
-                    new Object[]{eventTwo, eventOne, eventThree}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[][]{
+                    new object[]{eventTwo, eventThree, eventOne},
+                    new object[]{eventOne, eventThree, eventTwo},
+                    new object[]{eventOne, eventThree, eventTwo},
+                    new object[]{eventTwo, eventOne, eventThree}});
     
             var eventFour = new SupportBean("D", 19);
             epService.EPRuntime.SendEvent(eventFour);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[][]{
-                    new Object[]{eventTwo, eventFour, eventThree, eventOne},
-                    new Object[]{eventOne, eventThree, eventFour, eventTwo},
-                    new Object[]{eventOne, eventThree, eventFour, eventTwo},
-                    new Object[]{eventFour, eventTwo, eventOne, eventThree}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[][]{
+                    new object[]{eventTwo, eventFour, eventThree, eventOne},
+                    new object[]{eventOne, eventThree, eventFour, eventTwo},
+                    new object[]{eventOne, eventThree, eventFour, eventTwo},
+                    new object[]{eventFour, eventTwo, eventOne, eventThree}});
     
             stmt.Dispose();
     
@@ -369,31 +369,31 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "maxby(theString, intPrimitive).longPrimitive as c6," +
                     "minby(theString, intPrimitive).longPrimitive as c7 " +
                     "from SupportBean#keepall");
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEvent("C", 10, 1L));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTwo,
-                    new Object[]{1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L});
+                    new object[]{1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L});
     
             epService.EPRuntime.SendEvent(MakeEvent("P", 5, 2L));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTwo,
-                    new Object[]{1L, 2L, 2L, 1L, 1L, 2L, 2L, 1L});
+                    new object[]{1L, 2L, 2L, 1L, 1L, 2L, 2L, 1L});
     
             epService.EPRuntime.SendEvent(MakeEvent("C", 9, 3L));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTwo,
-                    new Object[]{1L, 2L, 2L, 3L, 1L, 2L, 2L, 3L});
+                    new object[]{1L, 2L, 2L, 3L, 1L, 2L, 2L, 3L});
     
             epService.EPRuntime.SendEvent(MakeEvent("C", 11, 4L));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTwo,
-                    new Object[]{4L, 2L, 2L, 3L, 4L, 2L, 2L, 3L});
+                    new object[]{4L, 2L, 2L, 3L, 4L, 2L, 2L, 3L});
     
             epService.EPRuntime.SendEvent(MakeEvent("X", 11, 5L));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTwo,
-                    new Object[]{5L, 2L, 5L, 3L, 5L, 2L, 5L, 3L});
+                    new object[]{5L, 2L, 5L, 3L, 5L, 2L, 5L, 3L});
     
             epService.EPRuntime.SendEvent(MakeEvent("X", 0, 6L));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTwo,
-                    new Object[]{5L, 6L, 5L, 3L, 5L, 6L, 5L, 3L});
+                    new object[]{5L, 6L, 5L, 3L, 5L, 6L, 5L, 3L});
     
             stmtTwo.Dispose();
         }
@@ -407,19 +407,19 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "minby(intPrimitive).theString as c3 " +
                     "from SupportBean");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E1", "E1", "E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E1", "E1", "E1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", "E1", "E2", "E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", "E1", "E2", "E1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", "E3", "E2", "E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", "E3", "E2", "E3"});
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E4", "E3", "E4", "E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E4", "E3", "E4", "E3"});
     
             stmt.Dispose();
         }

@@ -15,9 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
-// using static com.espertech.esper.regression.event.xml.ExecEventXMLNoSchemaSimpleXMLXPathProperties.sendEvent;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNotNull;
+using static com.espertech.esper.regression.events.xml.ExecEventXMLNoSchemaSimpleXMLXPathProperties;
 
 using NUnit.Framework;
 
@@ -27,7 +25,7 @@ namespace com.espertech.esper.regression.events.xml
         public override void Configure(Configuration configuration) {
             var xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
             xmlDOMEventTypeDesc.RootElementName = "myevent";
-            xmlDOMEventTypeDesc.XPathPropertyExpr = false;    // <== DOM getter
+            xmlDOMEventTypeDesc.IsXPathPropertyExpr = false;    // <== DOM getter
             configuration.AddEventType("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
         }
     
@@ -42,7 +40,7 @@ namespace com.espertech.esper.regression.events.xml
     
             EPStatement joinView = epService.EPAdministrator.CreateEPL(stmt);
             var updateListener = new SupportUpdateListener();
-            joinView.AddListener(updateListener);
+            joinView.Events += updateListener.Update;
     
             // Generate document with the specified in element1 to confirm we have independent events
             SendEvent(epService, "EventA");

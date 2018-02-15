@@ -73,7 +73,7 @@ namespace com.espertech.esper.regression.view
                 epService.EPRuntime.SendEvent(new SupportBean("P3", 0));
             }
     
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "id,cnt".Split(','), new Object[][]{new object[] {"P1", 2L}, new object[] {"P2", 4L}, new object[] {"P3", 3L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "id,cnt".Split(','), new object[][]{new object[] {"P1", 2L}, new object[] {"P2", 4L}, new object[] {"P3", 3L}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }

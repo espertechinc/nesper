@@ -17,7 +17,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -39,7 +38,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
             // set cache size
             if (configuredCacheSize != null) {
-                configuration.EngineDefaults.Execution.DeclaredExprValueCacheSize = configuredCacheSize;
+                configuration.EngineDefaults.Execution.DeclaredExprValueCacheSize = configuredCacheSize.Value;
             }
         }
     
@@ -50,7 +49,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             // set up
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "expression myExpr {v => AlwaysTrue(null) } select MyExpr(st0) as c0, MyExpr(st1) as c1, MyExpr(st0) as c2, MyExpr(st1) as c3 from SupportBean_ST0#lastevent as st0, SupportBean_ST1#lastevent as st1");
-            stmt.AddListener(new SupportUpdateListener());
+            stmt.Events += new SupportUpdateListener().Update;
     
             // send event and assert
             SupportStaticMethodLib.Invocations.Clear();

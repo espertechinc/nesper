@@ -18,7 +18,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -39,7 +38,7 @@ namespace com.espertech.esper.regression.epl.variable
             string stmtTextSelect = "select count(*) as cnt from " + typeof(SupportBean).FullName + " output last every var_output_limit events";
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
     
             TryAssertionOutputRateEventsAll(epService, listener);
     
@@ -56,7 +55,7 @@ namespace com.espertech.esper.regression.epl.variable
             string stmtTextSelect = "select count(*) as cnt from " + typeof(SupportBean).FullName + " output last every var_output_limit events";
             EPStatement stmtSelect = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
             Assert.AreEqual(stmtTextSelect, model.ToEPL());
     
             TryAssertionOutputRateEventsAll(epService, listener);
@@ -70,7 +69,7 @@ namespace com.espertech.esper.regression.epl.variable
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtTextSelect);
             EPStatement stmtSelect = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
             Assert.AreEqual(stmtTextSelect, model.ToEPL());
     
             TryAssertionOutputRateEventsAll(epService, listener);
@@ -134,7 +133,7 @@ namespace com.espertech.esper.regression.epl.variable
             string stmtTextSelect = "select count(*) as cnt from " + typeof(SupportBean).FullName + " output snapshot every var_output_limit seconds";
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listener = new SupportUpdateListener();
-            stmtSelect.AddListener(listener);
+            stmtSelect.Events += listener.Update;
     
             SendSupportBeans(epService, "E1", "E2");   // varargs: sends 2 events
             SendTimer(epService, 2999);
@@ -221,7 +220,7 @@ namespace com.espertech.esper.regression.epl.variable
             epService.EPRuntime.SendEvent(bean);
         }
     
-        private void SendSetterBean(EPServiceProvider epService, long longValue) {
+        private void SendSetterBean(EPServiceProvider epService, long? longValue) {
             var bean = new SupportMarketDataBean("", 0, longValue, "");
             epService.EPRuntime.SendEvent(bean);
         }

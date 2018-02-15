@@ -20,8 +20,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -74,14 +72,14 @@ namespace com.espertech.esper.regression.epl.other
                                  typeof(SupportBeanComplexProps).FullName + " as s0";
             var listenerOne = new SupportUpdateListener();
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtOneText);
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
             Assert.AreEqual(
                 typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested), stmtOne.EventType.UnderlyingType);
 
             string stmtTwoText = "select nestedValue from StreamA";
             var listenerTwo = new SupportUpdateListener();
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTwoText);
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
             Assert.AreEqual(typeof(string), stmtTwo.EventType.GetPropertyType("nestedValue"));
 
             epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
@@ -99,13 +97,13 @@ namespace com.espertech.esper.regression.epl.other
                                  typeof(SupportBean).FullName + "]";
             var listenerOne = new SupportUpdateListener();
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtOneText);
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
 
             string stmtTwoText = "insert into streamA select a.* from pattern [every a=" +
                                  typeof(SupportBean).FullName + " where timer:Within(30 sec)]";
             var listenerTwo = new SupportUpdateListener();
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTwoText);
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
 
             EventType eventType = stmtOne.EventType;
             Assert.AreEqual(typeof(SupportBean), eventType.UnderlyingType);
@@ -140,7 +138,7 @@ namespace com.espertech.esper.regression.epl.other
 
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
 
             string epl = "select s0.*, s1.* as s1stream, theString as sym from " + typeof(SupportBean).FullName +
                          "#keepall as s0, " +
@@ -168,7 +166,7 @@ namespace com.espertech.esper.regression.epl.other
             string epl = "select *, win.* from " + typeof(SupportBean).FullName + "#length(3) as win";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
 
             EventType type = stmt.EventType;
             Assert.IsTrue(type.PropertyNames.Length > 15);
@@ -186,7 +184,7 @@ namespace com.espertech.esper.regression.epl.other
                          typeof(SupportMarketDataBean).Name + "#keepall as s1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
 
             EventType type = stmt.EventType;
             Assert.AreEqual(7, type.PropertyNames.Length);
@@ -211,7 +209,7 @@ namespace com.espertech.esper.regression.epl.other
             string epl = "select *, win.* as s0 from " + typeof(SupportBean).FullName + "#length(3) as win";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
 
             EventType type = stmt.EventType;
             Assert.IsTrue(type.PropertyNames.Length > 15);
@@ -233,7 +231,7 @@ namespace com.espertech.esper.regression.epl.other
                          typeof(SupportMarketDataBean).Name + "#keepall as s1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
 
             EventType type = stmt.EventType;
             Assert.AreEqual(4, type.PropertyNames.Length);
@@ -260,7 +258,7 @@ namespace com.espertech.esper.regression.epl.other
                          typeof(SupportBean).FullName + "#length(3) as theString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
 
             EventType type = stmt.EventType;
             Assert.AreEqual(4, type.PropertyNames.Length);
@@ -285,7 +283,7 @@ namespace com.espertech.esper.regression.epl.other
                          typeof(SupportMarketDataBean).Name + "#keepall as s1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
 
             EventType type = stmt.EventType;
             Assert.AreEqual(5, type.PropertyNames.Length);
@@ -315,7 +313,7 @@ namespace com.espertech.esper.regression.epl.other
                          "#length(3) as string";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
 
             EventType type = stmt.EventType;
             Assert.AreEqual(22, type.PropertyNames.Length);
@@ -339,7 +337,7 @@ namespace com.espertech.esper.regression.epl.other
                          typeof(SupportMarketDataBean).Name + "#keepall as s1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
 
             EventType type = stmt.EventType;
             Assert.AreEqual(7, type.PropertyNames.Length);
@@ -363,7 +361,7 @@ namespace com.espertech.esper.regression.epl.other
             string epl = "select theString.* from " + typeof(SupportBean).FullName + "#length(3) as theString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
 
             EventType type = stmt.EventType;
             Assert.IsTrue(type.PropertyNames.Length > 10);
@@ -380,7 +378,7 @@ namespace com.espertech.esper.regression.epl.other
             string epl = "select theString.* as s0 from " + typeof(SupportBean).FullName + "#length(3) as theString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
 
             EventType type = stmt.EventType;
             Assert.AreEqual(1, type.PropertyNames.Length);
@@ -399,7 +397,7 @@ namespace com.espertech.esper.regression.epl.other
                          typeof(SupportMarketDataBean).Name + "#keepall as s1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
 
             EventType type = stmt.EventType;
             Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1"));
@@ -417,7 +415,7 @@ namespace com.espertech.esper.regression.epl.other
             epl = "select s0.* as szero from " + typeof(SupportBean).FullName + "#length(3) as s0, " +
                   typeof(SupportMarketDataBean).Name + "#keepall as s1";
             stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
 
             type = stmt.EventType;
             Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("szero"));
@@ -438,7 +436,7 @@ namespace com.espertech.esper.regression.epl.other
                          typeof(SupportMarketDataBean).Name + "#keepall as s1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
 
             EventType type = stmt.EventType;
             Assert.AreEqual(typeof(long), type.GetPropertyType("volume"));
@@ -456,7 +454,7 @@ namespace com.espertech.esper.regression.epl.other
             epl = "select s0.* from " + typeof(SupportBean).FullName + "#length(3) as s0, " +
                   typeof(SupportMarketDataBean).Name + "#keepall as s1";
             stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
 
             type = stmt.EventType;
             Assert.AreEqual(typeof(string), type.GetPropertyType("theString"));

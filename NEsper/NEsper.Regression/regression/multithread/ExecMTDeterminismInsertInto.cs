@@ -19,8 +19,6 @@ using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -50,7 +48,7 @@ namespace com.espertech.esper.regression.multithread
             }
             EPStatement stmtInsertTwo = engine.EPAdministrator.CreateEPL("select ident, sum(cnt) as mysum from MyStream group by ident");
             var listener = new SupportUpdateListener();
-            stmtInsertTwo.AddListener(listener);
+            stmtInsertTwo.Events += listener.Update;
     
             // execute
             var threadPool = Executors.NewFixedThreadPool(numThreads);
@@ -106,7 +104,7 @@ namespace com.espertech.esper.regression.multithread
             EPStatement stmtInsertOne = epService.EPAdministrator.CreateEPL("insert into MyStreamOne select count(*) as cnt from " + typeof(SupportBean).FullName);
             EPStatement stmtInsertTwo = epService.EPAdministrator.CreateEPL("insert into MyStreamTwo select sum(cnt) as mysum from MyStreamOne");
             var listener = new SupportUpdateListener();
-            stmtInsertTwo.AddListener(listener);
+            stmtInsertTwo.Events += listener.Update;
     
             // execute
             var threadPool = Executors.NewFixedThreadPool(numThreads);
@@ -168,7 +166,7 @@ namespace com.espertech.esper.regression.multithread
                 string text = "select * from pattern [MyStream(cnt=" + (i + 1) + ") -> MyStream(cnt=" + (i + 2) + ")]";
                 EPStatement stmt = engine.EPAdministrator.CreateEPL(text);
                 listeners[i] = new SupportUpdateListener();
-                stmt.AddListener(listeners[i]);
+                stmt.Events += listeners[i].Update;
             }
     
             // execute

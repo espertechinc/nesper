@@ -14,9 +14,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
-// using static com.espertech.esper.regression.event.xml.ExecEventXMLSchemaXPathBacked.getConfigTestType;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.fail;
+using static com.espertech.esper.regression.events.xml.ExecEventXMLSchemaXPathBacked;
 
 using NUnit.Framework;
 

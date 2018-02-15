@@ -15,8 +15,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static junit.framework.TestCase.*;
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -38,7 +36,7 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionRegexpFilterWithDanglingMetaCharacter(EPServiceProvider epService) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean where theString regexp \"*any*\"");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
             Assert.IsFalse(listener.IsInvoked);
@@ -54,7 +52,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             RunLikeRegexStringAndNull(epService, listener);
     
@@ -66,7 +64,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(-1, "TBT-ABC"));
             Assert.IsTrue((bool?) listener.AssertOneGetNewAndReset().Get("result"));
@@ -95,7 +93,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             RunLikeRegexStringAndNull(epService, testListener);
     
@@ -126,7 +124,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             RunLikeRegexStringAndNull(epService, testListener);
     
@@ -135,28 +133,28 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunLikeRegexStringAndNull(EPServiceProvider epService, SupportUpdateListener listener) {
             SendS0Event(epService, "a", "b", "c", "d");
-            AssertReceived(listener, new Object[][]{new object[] {"r1", false}, new object[] {"r2", false}, new object[] {"r3", false}});
+            AssertReceived(listener, new object[][]{new object[] {"r1", false}, new object[] {"r2", false}, new object[] {"r3", false}});
     
             SendS0Event(epService, null, "b", null, "d");
-            AssertReceived(listener, new Object[][]{new object[] {"r1", null}, new object[] {"r2", null}, new object[] {"r3", null}});
+            AssertReceived(listener, new object[][]{new object[] {"r1", null}, new object[] {"r2", null}, new object[] {"r3", null}});
     
             SendS0Event(epService, "a", null, "c", null);
-            AssertReceived(listener, new Object[][]{new object[] {"r1", null}, new object[] {"r2", null}, new object[] {"r3", null}});
+            AssertReceived(listener, new object[][]{new object[] {"r1", null}, new object[] {"r2", null}, new object[] {"r3", null}});
     
             SendS0Event(epService, null, null, null, null);
-            AssertReceived(listener, new Object[][]{new object[] {"r1", null}, new object[] {"r2", null}, new object[] {"r3", null}});
+            AssertReceived(listener, new object[][]{new object[] {"r1", null}, new object[] {"r2", null}, new object[] {"r3", null}});
     
             SendS0Event(epService, "abcdef", "%de_", "a", "[a-c]");
-            AssertReceived(listener, new Object[][]{new object[] {"r1", true}, new object[] {"r2", true}, new object[] {"r3", true}});
+            AssertReceived(listener, new object[][]{new object[] {"r1", true}, new object[] {"r2", true}, new object[] {"r3", true}});
     
             SendS0Event(epService, "abcdef", "b%de_", "d", "[a-c]");
-            AssertReceived(listener, new Object[][]{new object[] {"r1", false}, new object[] {"r2", false}, new object[] {"r3", false}});
+            AssertReceived(listener, new object[][]{new object[] {"r1", false}, new object[] {"r2", false}, new object[] {"r3", false}});
     
             SendS0Event(epService, "!adex", "!%de_", "", ".");
-            AssertReceived(listener, new Object[][]{new object[] {"r1", true}, new object[] {"r2", false}, new object[] {"r3", false}});
+            AssertReceived(listener, new object[][]{new object[] {"r1", true}, new object[] {"r2", false}, new object[] {"r3", false}});
     
             SendS0Event(epService, "%dex", "!%de_", "a", ".");
-            AssertReceived(listener, new Object[][]{new object[] {"r1", false}, new object[] {"r2", true}, new object[] {"r3", true}});
+            AssertReceived(listener, new object[][]{new object[] {"r1", false}, new object[] {"r2", true}, new object[] {"r3", true}});
         }
     
         private void RunAssertionInvalidLikeRegEx(EPServiceProvider epService) {
@@ -178,16 +176,16 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement selectTestCase = epService.EPAdministrator.CreateEPL(caseExpr);
             var testListener = new SupportUpdateListener();
-            selectTestCase.AddListener(testListener);
+            selectTestCase.Events += testListener.Update;
     
             SendSupportBeanEvent(epService, 101, 1.1);
-            AssertReceived(testListener, new Object[][]{new object[] {"r1", true}, new object[] {"r2", false}});
+            AssertReceived(testListener, new object[][]{new object[] {"r1", true}, new object[] {"r2", false}});
     
             SendSupportBeanEvent(epService, 102, 11d);
-            AssertReceived(testListener, new Object[][]{new object[] {"r1", false}, new object[] {"r2", true}});
+            AssertReceived(testListener, new object[][]{new object[] {"r1", false}, new object[] {"r2", true}});
     
             SendSupportBeanEvent(epService, null, null);
-            AssertReceived(testListener, new Object[][]{new object[] {"r1", null}, new object[] {"r2", null}});
+            AssertReceived(testListener, new object[][]{new object[] {"r1", null}, new object[] {"r2", null}});
         }
     
         private void TryInvalid(EPServiceProvider epService, string expr) {
@@ -200,9 +198,9 @@ namespace com.espertech.esper.regression.expr.expr
             }
         }
     
-        private void AssertReceived(SupportUpdateListener testListener, Object[][] objects) {
+        private void AssertReceived(SupportUpdateListener testListener, object[][] objects) {
             EventBean theEvent = testListener.AssertOneGetNewAndReset();
-            foreach (Object[] @object in objects) {
+            foreach (object[] @object in objects) {
                 string key = (string) @object[0];
                 Object result = @object[1];
                 Assert.AreEqual(result, theEvent.Get(key), "key=" + key + " result=" + result);

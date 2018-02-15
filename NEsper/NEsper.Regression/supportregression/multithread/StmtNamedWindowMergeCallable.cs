@@ -31,7 +31,7 @@ namespace com.espertech.esper.supportregression.multithread
         }
     
         public bool? Call() {
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             try {
                 for (int i = 0; i < _numEvents; i++) {
                     _engine.SendEvent(new SupportBean("E" + Convert.ToString(i), 0));
@@ -40,7 +40,7 @@ namespace com.espertech.esper.supportregression.multithread
                 Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return null;
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             return true;
         }
     

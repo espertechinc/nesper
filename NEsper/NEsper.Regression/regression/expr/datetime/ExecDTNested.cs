@@ -31,7 +31,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]
             {
                 typeof(DateTimeOffset?), typeof(long?)
@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     "longdate.Set('hour', 1).Set('minute', 2).Set('second', 3).ToCalendar() as val1" +
                     " from SupportDateTime";
             stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]
             {
                 typeof(DateTimeEx), typeof(DateTimeEx)

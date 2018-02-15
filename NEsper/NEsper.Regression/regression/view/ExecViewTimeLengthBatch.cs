@@ -17,7 +17,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -46,7 +45,7 @@ namespace com.espertech.esper.regression.view
                     "select irstream * from " + typeof(SupportMarketDataBean).FullName +
                             "#Time_length_batch(10 sec, 3)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
     
             // Send 3 events in batch
@@ -58,7 +57,7 @@ namespace com.espertech.esper.regression.view
     
             engine.SendEvent(events[2]);
             Assert.AreEqual(1, listener.NewDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[0], events[1], events[2]}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[0], events[1], events[2]}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             // Send another 3 events in batch
@@ -69,8 +68,8 @@ namespace com.espertech.esper.regression.view
             engine.SendEvent(events[5]);
             Assert.AreEqual(1, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.OldDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[0], events[1], events[2]}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[3], events[4], events[5]}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[0], events[1], events[2]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[3], events[4], events[5]}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             // Expire the last 3 events by moving time
@@ -80,8 +79,8 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime + 10000);
             Assert.AreEqual(1, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.OldDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[3], events[4], events[5]}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[3], events[4], events[5]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             SendTimer(epService, startTime + 10001);
@@ -98,8 +97,8 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime + 20000);
             Assert.AreEqual(1, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.OldDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[6]}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[6]}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             SendTimer(epService, startTime + 20001);
@@ -117,8 +116,8 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime + 30000);
             Assert.AreEqual(1, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.OldDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[6]}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[7], events[8]}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[6]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[7], events[8]}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             // Send three events, the the 3 events batch
@@ -135,8 +134,8 @@ namespace com.espertech.esper.regression.view
             engine.SendEvent(events[11]);
             Assert.AreEqual(1, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.OldDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[7], events[8]}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[9], events[10], events[11]}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[7], events[8]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[9], events[10], events[11]}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             // Send 1 event, let the timer to do the batch
@@ -149,8 +148,8 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime + 39000 + 10000);
             Assert.AreEqual(1, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.OldDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[9], events[10], events[11]}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[12]}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[9], events[10], events[11]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[12]}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             SendTimer(epService, startTime + 39000 + 10001);
@@ -163,8 +162,8 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime + 39000 + 20000);
             Assert.AreEqual(1, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.OldDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[12]}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[12]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             SendTimer(epService, startTime + 39000 + 20001);
@@ -193,8 +192,8 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime + 100000);
             Assert.AreEqual(1, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.OldDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[13]}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[13]}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             stmt.Dispose();
@@ -208,7 +207,7 @@ namespace com.espertech.esper.regression.view
                     "select irstream * from " + typeof(SupportMarketDataBean).FullName +
                             "#Time_length_batch(10 sec, 3, 'FORCE_UPDATE')");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
     
             // Send 3 events in batch
@@ -220,7 +219,7 @@ namespace com.espertech.esper.regression.view
     
             engine.SendEvent(events[2]);
             Assert.AreEqual(1, listener.NewDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[0], events[1], events[2]}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[0], events[1], events[2]}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             // Send another 3 events in batch
@@ -231,8 +230,8 @@ namespace com.espertech.esper.regression.view
             engine.SendEvent(events[5]);
             Assert.AreEqual(1, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.OldDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[0], events[1], events[2]}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[3], events[4], events[5]}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[0], events[1], events[2]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[3], events[4], events[5]}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             // Expire the last 3 events by moving time
@@ -242,8 +241,8 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime + 10000);
             Assert.AreEqual(1, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.OldDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[3], events[4], events[5]}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[3], events[4], events[5]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             SendTimer(epService, startTime + 10001);
@@ -260,8 +259,8 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime + 20000);
             Assert.AreEqual(1, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.OldDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[6]}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[6]}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             SendTimer(epService, startTime + 20001);
@@ -279,8 +278,8 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime + 30000);
             Assert.AreEqual(1, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.OldDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[6]}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[7], events[8]}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[6]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[7], events[8]}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             // Send three events, the the 3 events batch
@@ -297,8 +296,8 @@ namespace com.espertech.esper.regression.view
             engine.SendEvent(events[11]);
             Assert.AreEqual(1, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.OldDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[7], events[8]}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[9], events[10], events[11]}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[7], events[8]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[9], events[10], events[11]}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             // Send 1 event, let the timer to do the batch
@@ -311,8 +310,8 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime + 39000 + 10000);
             Assert.AreEqual(1, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.OldDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[9], events[10], events[11]}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[12]}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[9], events[10], events[11]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[12]}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             SendTimer(epService, startTime + 39000 + 10001);
@@ -325,8 +324,8 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime + 39000 + 20000);
             Assert.AreEqual(1, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.OldDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[12]}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[12]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             SendTimer(epService, startTime + 39000 + 20001);
@@ -339,8 +338,8 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime + 39000 + 30000);
             Assert.AreEqual(1, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.OldDataList.Count);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             SendTimer(epService, startTime + 39000 + 30001);
@@ -351,8 +350,8 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimer(epService, startTime + 39000 + 40000);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             SendTimer(epService, startTime + 39000 + 40001);
@@ -369,8 +368,8 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimer(epService, startTime + 89000);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[13]}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[13]}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             // Send 3 more events
@@ -381,8 +380,8 @@ namespace com.espertech.esper.regression.view
     
             SendTimer(epService, startTime + 92000);
             engine.SendEvent(events[16]);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[13]}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[14], events[15], events[16]}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[13]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[14], events[15], events[16]}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             // Send no events, let the timer do a batch
@@ -390,8 +389,8 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimer(epService, startTime + 102000);
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{events[14], events[15], events[16]}, listener.GetOldDataListFlattened());
-            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new Object[]{}, listener.GetNewDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{events[14], events[15], events[16]}, listener.GetOldDataListFlattened());
+            EPAssertionUtil.AssertEqualsExactOrderUnderlying(new object[]{}, listener.GetNewDataListFlattened());
             listener.Reset();
     
             stmt.Dispose();
@@ -405,7 +404,7 @@ namespace com.espertech.esper.regression.view
                     "select sum(price) from " + typeof(SupportMarketDataBean).FullName +
                             "#Time_length_batch(10 sec, 3, 'FORCE_UPDATE')");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
     
             // Send 1 events in batch
@@ -439,7 +438,7 @@ namespace com.espertech.esper.regression.view
                     "select sum(price) from " + typeof(SupportMarketDataBean).FullName +
                             "#Time_length_batch(10 sec, 3, 'force_update, start_eager')");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
             Assert.IsFalse(listener.IsInvoked);
     
@@ -473,7 +472,7 @@ namespace com.espertech.esper.regression.view
                     "select sum(price) from " + typeof(SupportMarketDataBean).FullName +
                             "#Time_length_batch(10 sec, 3, 'force_update')");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             // No batch as we are not start eager
             SendTimer(epService, startTime + 10000);
@@ -493,7 +492,7 @@ namespace com.espertech.esper.regression.view
                     "select price, Prev(1, price) as prevPrice, Prior(1, price) as priorPrice from " + typeof(SupportMarketDataBean).FullName +
                             "#Time_length_batch(10 sec, 3)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
     
             // Send 3 events in batch
@@ -521,7 +520,7 @@ namespace com.espertech.esper.regression.view
                     "select symbol, sum(price) as s from " + typeof(SupportMarketDataBean).FullName +
                             "#Time_length_batch(5, 10, \"START_EAGER\") group by symbol order by symbol asc");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendTimer(epService, startTime + 4000);
             Assert.IsFalse(listener.IsInvoked);

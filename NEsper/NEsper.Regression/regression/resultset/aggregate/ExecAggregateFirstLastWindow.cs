@@ -54,7 +54,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             epService.EPAdministrator.Configuration.AddEventType("ChainEvent", typeof(ChainEvent));
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select First().property as val0, First().MyMethod() as val1, window() as val2 from ChainEvent#lastevent");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new ChainEvent("p1"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0,val1".Split(','), new object[]{"p1", "abc"});
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             string epl = "on SupportBean(theString like 'B%') select last(mw.intPrimitive) as li, max(mw.intPrimitive) as mi from MyWindowOne mw";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             string[] fields = "li,mi".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 10));
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "from SupportBean#length(3)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             string[] fields = "p0,p1,p2,n0,n1,n2,l1,l2,l3".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionFirstLastIndexed(epService, listener);
     
@@ -147,7 +147,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             stmt.Dispose();
             epl += ", SupportBean_A#lastevent";
             stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
     
             TryAssertionFirstLastIndexed(epService, listener);
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "from SupportBean#keepall";
     
             stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "f0".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
@@ -228,7 +228,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             string epl = "select id, (select window(sb.*) from SupportBean#length(2) as sb) as w from SupportBean_A";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             string[] fields = "id,w".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
@@ -253,7 +253,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             string epl = "select sum(intPrimitive) as si, window(sa.intPrimitive) as wi from SupportBean#length(2) as sa";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             string[] fields = "si,wi".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             stmt.Dispose();
             epl = "select sum(intPrimitive) as si, window(sa.intPrimitive) as wi from SupportBean#keepall as sa group by theString";
             stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1, IntArray(1)});
@@ -289,7 +289,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             string epl = "select sum(intPrimitive) as si, window(sa.intPrimitive) as wi from SupportBean#keepall as sa output every 2 events";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             string[] fields = "si,wi".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -321,7 +321,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "last(*) from SupportBean#length(2) as sa";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var rows = new[]
             {
@@ -344,7 +344,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "last(*) as l1 " +
                     "from SupportBean#length(2) as sa";
             stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionType(epService, listener, false);
     
@@ -359,7 +359,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "having SupportStaticMethodLib.AlwaysTrue({First(sa.doublePrimitive + sa.intPrimitive), " +
                     "First(sa.intPrimitive), window(sa.*), last(*)})";
             stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionType(epService, listener, true);
     
@@ -394,7 +394,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "order by ast, bst";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "ast,bst,fas,was,las,fbs,wbs,lbs".Split(',');
     
@@ -458,7 +458,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "on sa.id = sb.id";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "aid,bid,fb,wb,lb".Split(',');
     
@@ -495,7 +495,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "from SupportBean#length_batch(2) as sb";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "fs,ws,ls".Split(',');
     
@@ -529,7 +529,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "from SupportBean#length_batch(6) as sb group by theString order by theString asc";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "theString,fi,wi,li".Split(',');
     
@@ -579,7 +579,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "from MyWindowTwo";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 30));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new[]{"E1", Split("E1,E2,E3"), "E3"});
@@ -600,7 +600,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "from MyWindowThree";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new[]{"E1", Split("E1"), "E1"});
@@ -678,14 +678,14 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "from SupportBean#length(2) as sb";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionStar(epService, listener);
             stmt.Dispose();
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
             stmt = epService.EPAdministrator.Create(model);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(epl, model.ToEPL());
     
             TryAssertionStar(epService, listener);
@@ -723,7 +723,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "from SupportBean as sb";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "f1,f2,f3,l1,l2,l3".Split(',');
     
@@ -749,7 +749,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "from SupportBean#length(2)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionUngrouped(epService, listener);
     
@@ -757,7 +757,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
             stmt = epService.EPAdministrator.Create(model);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(epl, model.ToEPL());
     
             TryAssertionUngrouped(epService, listener);
@@ -766,7 +766,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             // test null-value provided
             EPStatement stmtWNull = epService.EPAdministrator.CreateEPL("select window(intBoxed).Take(10) from SupportBean#length(2)");
-            stmtWNull.AddListener(listener);
+            stmtWNull.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
     
             stmtWNull.Dispose();
@@ -784,7 +784,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "group by theString order by theString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionGrouped(epService, listener);
     
@@ -793,7 +793,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             // SODA
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
             stmt = epService.EPAdministrator.Create(model);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(epl, model.ToEPL());
     
             TryAssertionGrouped(epService, listener);
@@ -802,14 +802,14 @@ namespace com.espertech.esper.regression.resultset.aggregate
             stmt.Dispose();
             string newEPL = "@Hint('disable_reclaim_group') " + epl;
             stmt = epService.EPAdministrator.CreateEPL(newEPL);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryAssertionGrouped(epService, listener);
     
             // test hints
             stmt.Dispose();
             newEPL = "@Hint('reclaim_group_aged=10,reclaim_group_freq=5') " + epl;
             stmt = epService.EPAdministrator.CreateEPL(newEPL);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryAssertionGrouped(epService, listener);
             stmt.Dispose();
     

@@ -21,7 +21,7 @@ namespace com.espertech.esper.regression.events.xml
 {
     public class ExecEventXMLNoSchemaEventTransposeXPathConfigured : RegressionExecution
     {
-        private static readonly string CLASSLOADER_SCHEMA_URI = "regression/simpleSchema.xsd";
+        private const string CLASSLOADER_SCHEMA_URI = "regression/simpleSchema.xsd";
     
         public override void Configure(Configuration configuration) {
             configuration.EngineDefaults.ViewResources.IsIterableUnbound = true;
@@ -65,8 +65,8 @@ namespace com.espertech.esper.regression.events.xml
             SupportXML.SendDefaultEvent(epService.EPRuntime, "ABC");
     
             EventBean received = stmtInsert.First();
-            EPAssertionUtil.AssertProps(received, "nested1simple.prop1,nested1simple.prop2,nested1simple.attr1,nested1simple.nested2.prop3[1]".Split(','), new Object[]{"SAMPLE_V1", "true", "SAMPLE_ATTR1", "4"});
-            EPAssertionUtil.AssertProps(received, "nested4array[0].id,nested4array[0].prop5[1],nested4array[1].id".Split(','), new Object[]{"a", "SAMPLE_V8", "b"});
+            EPAssertionUtil.AssertProps(received, "nested1simple.prop1,nested1simple.prop2,nested1simple.attr1,nested1simple.nested2.prop3[1]".Split(','), new object[]{"SAMPLE_V1", "true", "SAMPLE_ATTR1", "4"});
+            EPAssertionUtil.AssertProps(received, "nested4array[0].id,nested4array[0].prop5[1],nested4array[1].id".Split(','), new object[]{"a", "SAMPLE_V8", "b"});
     
             // assert event and fragments alone
             EventBean wildcardStmtEvent = stmtWildcard.First();

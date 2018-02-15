@@ -51,12 +51,12 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                     "merge MyWindowUNP as mywin when matched then " +
                     "update set Mywin.DoublePrimitive = id, IncreaseIntCopyDouble(initial, mywin)");
             var mergeListener = new SupportUpdateListener();
-            stmt.AddListener(mergeListener);
+            stmt.Events += mergeListener.Update;
             string[] fields = "intPrimitive,doublePrimitive,doubleBoxed".Split(',');
     
             epService.EPRuntime.SendEvent(MakeSupportBean("E1", 10, 2));
             epService.EPRuntime.SendEvent(new SupportBean_S0(5, "E1"));
-            EPAssertionUtil.AssertProps(mergeListener.GetAndResetLastNewData()[0], fields, new Object[]{11, 5d, 5d});
+            EPAssertionUtil.AssertProps(mergeListener.GetAndResetLastNewData()[0], fields, new object[]{11, 5d, 5d});
     
             // try a case-statement
             string eplCase = "on SupportBean_S0 merge MyWindowUNP " +
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPAdministrator.CreateEPL("@Name('C') on A merge B when not matched then insert select 1 as id when matched then insert select 1 as id");
     
             var nwListener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("@Name('D') select * from B").AddListener(nwListener);
+            epService.EPAdministrator.CreateEPL("@Name('D') select * from B").Events += nwListener.Update;
             epService.EPAdministrator.CreateEPL("@Name('E') insert into A select intPrimitive as id FROM SupportBean");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -90,13 +90,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPAdministrator.CreateEPL("on W1 as a merge W2 as b when not matched then insert into OutStream " +
                     "select a.theString as c0, Istream() as c1");
             var mergeListener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from OutStream").AddListener(mergeListener);
+            epService.EPAdministrator.CreateEPL("select * from OutStream").Events += mergeListener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(mergeListener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", true});
+            EPAssertionUtil.AssertProps(mergeListener.AssertOneGetNewAndReset(), fields, new object[]{"E1", true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertProps(mergeListener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", true});
+            EPAssertionUtil.AssertProps(mergeListener.AssertOneGetNewAndReset(), fields, new object[]{"E2", true});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -142,8 +142,8 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             SendOrderEvent(epService, eventRepresentationEnum, "O1", "P1", 10, 100, false);
             SendOrderEvent(epService, eventRepresentationEnum, "O1", "P1", 11, 200, false);
             SendOrderEvent(epService, eventRepresentationEnum, "O2", "P2", 3, 300, false);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(epService.EPAdministrator.GetStatement("nwProd").GetEnumerator(), "productId,totalPrice".Split(','), new Object[][]{new object[] {"P1", 21d}, new object[] {"P2", 3d}});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(epService.EPAdministrator.GetStatement("nwOrd").GetEnumerator(), "orderId,quantity".Split(','), new Object[][]{new object[] {"O1", 200}, new object[] {"O2", 300}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(epService.EPAdministrator.GetStatement("nwProd").GetEnumerator(), "productId,totalPrice".Split(','), new object[][]{new object[] {"P1", 21d}, new object[] {"P2", 3d}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(epService.EPAdministrator.GetStatement("nwOrd").GetEnumerator(), "orderId,quantity".Split(','), new object[][]{new object[] {"O1", 200}, new object[] {"O2", 300}});
     
             string module = "create schema StreetCarCountSchema (streetid string, carcount int);" +
                     "    create schema StreetChangeEvent (streetid string, action string);" +
@@ -163,7 +163,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void SendOrderEvent(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum, string orderId, string productId, double price, int quantity, bool deletedFlag) {
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(new Object[]{orderId, productId, price, quantity, deletedFlag}, "OrderEvent");
+                epService.EPRuntime.SendEvent(new object[]{orderId, productId, price, quantity, deletedFlag}, "OrderEvent");
             } else if (eventRepresentationEnum.IsMapEvent()) {
                 var theEvent = new LinkedHashMap<string, Object>();
                 theEvent.Put("orderId", orderId);
@@ -216,10 +216,10 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                     "insert select bookId as c1, title as c2 ";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var mergeListener = new SupportUpdateListener();
-            stmt.AddListener(mergeListener);
+            stmt.Events += mergeListener.Update;
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventOne());
-            EPAssertionUtil.AssertPropsPerRow(mergeListener.LastNewData, fields, new Object[][]{
+            EPAssertionUtil.AssertPropsPerRow(mergeListener.LastNewData, fields, new object[][]{
                 new object[] {"10020", "Enders Game"},
                 new object[] {"10021", "Foundation 1"},
                 new object[] {"10022", "Stranger in a Strange Land"}});
@@ -235,14 +235,14 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
     
             EventBean theEvent = stmtWindow.First();
-            EPAssertionUtil.AssertProps(theEvent, "theString,intPrimitive".Split(','), new Object[]{null, 10});
+            EPAssertionUtil.AssertProps(theEvent, "theString,intPrimitive".Split(','), new object[]{null, 10});
             stmtMerge.Dispose();
     
             epl = "on SupportBean as up merge MergeWindow as mv where mv.theString=up.theString when not matched then insert select theString, intPrimitive";
             epService.EPAdministrator.CreateEPL(epl);
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
     
-            EPAssertionUtil.AssertPropsPerRow(stmtWindow.GetEnumerator(), "theString,intPrimitive".Split(','), new Object[][]{new object[] {null, 10}, new object[] {"E2", 20}});
+            EPAssertionUtil.AssertPropsPerRow(stmtWindow.GetEnumerator(), "theString,intPrimitive".Split(','), new object[][]{new object[] {null, 10}, new object[] {"E2", 20}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -278,7 +278,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             EPAssertionUtil.AssertPropsPerRowAnyOrder(namedWindowStmt.GetEnumerator(), fields, null);
     
             SendMyEvent(epService, eventRepresentationEnum, "X3", 3);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(namedWindowStmt.GetEnumerator(), fields, new Object[][]{new object[] {"A2", 20}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(namedWindowStmt.GetEnumerator(), fields, new object[][]{new object[] {"A2", 20}});
     
             epService.EPRuntime.SendEvent(new SupportBean_A("Y1"));
             epService.EPRuntime.SendEvent(new SupportBean("A3", 30));
@@ -287,19 +287,19 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             SendMyEvent(epService, eventRepresentationEnum, "X4", 4);
             epService.EPRuntime.SendEvent(new SupportBean("A4", 40));
             SendMyEvent(epService, eventRepresentationEnum, "X5", 5);   // ignored as matched (no where clause, no B event)
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(namedWindowStmt.GetEnumerator(), fields, new Object[][]{new object[] {"A3", 30}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(namedWindowStmt.GetEnumerator(), fields, new object[][]{new object[] {"A3", 30}});
     
             epService.EPRuntime.SendEvent(new SupportBean("B1", 50));
             SendMyEvent(epService, eventRepresentationEnum, "X6", 6);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(namedWindowStmt.GetEnumerator(), fields, new Object[][]{new object[] {"B1", 50}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(namedWindowStmt.GetEnumerator(), fields, new object[][]{new object[] {"B1", 50}});
     
             epService.EPRuntime.SendEvent(new SupportBean("B2", 60));
             SendMyEvent(epService, eventRepresentationEnum, "X7", 7);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(namedWindowStmt.GetEnumerator(), fields, new Object[][]{new object[] {"B2", 60}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(namedWindowStmt.GetEnumerator(), fields, new object[][]{new object[] {"B2", 60}});
     
             epService.EPRuntime.SendEvent(new SupportBean("B2", 0));
             SendMyEvent(epService, eventRepresentationEnum, "X8", 8);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(namedWindowStmt.GetEnumerator(), fields, new Object[][]{new object[] {"B2", 60}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(namedWindowStmt.GetEnumerator(), fields, new object[][]{new object[] {"B2", 60}});
     
             epService.EPRuntime.SendEvent(new SupportBean("C1", 1));
             SendMyEvent(epService, eventRepresentationEnum, "X9", 9);
@@ -307,7 +307,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             epService.EPRuntime.SendEvent(new SupportBean("C1", 0));
             SendMyEvent(epService, eventRepresentationEnum, "X10", 10);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(namedWindowStmt.GetEnumerator(), fields, new Object[][]{new object[] {"A4", 40}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(namedWindowStmt.GetEnumerator(), fields, new object[][]{new object[] {"A4", 40}});
     
             epService.EPAdministrator.DestroyAllStatements();
             foreach (string name in "MyEvent,MySchema,MyWindowSS".Split(',')) {
@@ -323,7 +323,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void SendMyEvent(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum, string in1, int in2) {
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(new Object[]{in1, in2}, "MyEvent");
+                epService.EPRuntime.SendEvent(new object[]{in1, in2}, "MyEvent");
             } else if (eventRepresentationEnum.IsMapEvent()) {
                 var theEvent = new LinkedHashMap<string, object>();
                 theEvent.Put("in1", in1);

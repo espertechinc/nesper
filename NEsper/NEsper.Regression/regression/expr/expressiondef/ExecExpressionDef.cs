@@ -71,7 +71,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             epService.EPAdministrator.CreateEPL("create expression F1 { (select intPrimitive from SupportBean#lastevent)}");
             epService.EPAdministrator.CreateEPL("create expression F2 { param => (select a.intPrimitive from SupportBean#unique(theString) as a where a.theString = param.theString) }");
             epService.EPAdministrator.CreateEPL("create expression F3 { s => F1()+F2(s) }");
-            epService.EPAdministrator.CreateEPL("select F3(myevent) as c0 from SupportBean as myevent").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select F3(myevent) as c0 from SupportBean as myevent").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{20});
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
                             "expression def { (x, y) => x.intPrimitive * y.intPrimitive }" +
                             "select Abc(*) as c0, Def(*, *) as c1 from SupportBean";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(eplNonJoin).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(eplNonJoin).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0, c1".Split(','), new object[]{2, 4});
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
             var eplPattern = "expression abc { x => intPrimitive * 2} " +
                     "select * from pattern [a=SupportBean -> b=SupportBean(intPrimitive = Abc(a))]";
-            epService.EPAdministrator.CreateEPL(eplPattern).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(eplPattern).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 4));
@@ -131,7 +131,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
                             "select Last2X(sb).SelectFrom(a => a.col2).SequenceEqual(Last2Y(sb)) as val from SupportBean as sb";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 1));
             Assert.AreEqual(true, listener.AssertOneGetNewAndReset().Get("val"));
@@ -151,11 +151,11 @@ namespace com.espertech.esper.regression.expr.expressiondef
                     "insert into OtherStream select Gettotal(sb) as val0 from SupportBean sb";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(Map), stmt.EventType.GetPropertyType("val0"));
     
             var listenerTwo = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select val0.col1 as c1, val0.col2 as c2 from OtherStream").AddListener(listenerTwo);
+            epService.EPAdministrator.CreateEPL("select val0.col1 as c1, val0.col2 as c2 from OtherStream").Events += listenerTwo.Update;
             var fieldsConsume = "c1,c2".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -184,7 +184,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
         private void TryAssertionAnnotation(EPServiceProvider epService, string epl) {
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("Scalar()"));
             Assert.AreEqual("test", stmt.Name);
@@ -229,7 +229,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 5));
@@ -262,7 +262,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var fields = new string[]{"val1"};
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[]{typeof(string)});
     
             epService.EPRuntime.SendEvent(new SupportBean_ST0("ST0", 0));
@@ -298,7 +298,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var fields = new string[]{"val1", "val2"};
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[]{typeof(int?), typeof(int?)});
     
             epService.EPRuntime.SendEvent(new SupportBean_ST0("ST0", 0));
@@ -331,7 +331,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var fields = new string[]{"val0", "val1"};
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[]{typeof(string), typeof(string)});
     
             epService.EPRuntime.SendEvent(new SupportBean("E0", 0));
@@ -366,7 +366,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var fields = new string[]{"val0", "val1"};
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[]{typeof(string), typeof(string)});
     
             epService.EPRuntime.SendEvent(new SupportBean("E0", 0));
@@ -403,7 +403,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmt.EventType, fieldsSelected, new Type[]
             {
                 typeof(ICollection<object>), typeof(ICollection<object>)
@@ -475,7 +475,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             epService.EPAdministrator.CreateEPL("insert into MyWindow (val0, val1) select theString, intPrimitive from SupportBean");
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmt.EventType, fieldSelected, new Type[]{typeof(ICollection<object>)});
     
             epService.EPRuntime.SendEvent(new SupportBean("E0", 0));
@@ -517,7 +517,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[]{typeof(int?), typeof(int?), typeof(double?), typeof(long)});
     
             epService.EPRuntime.SendEvent(GetSupportBean(5, 6));
@@ -537,7 +537,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
     
-            epService.EPAdministrator.CreateEPL("select * from DEF").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from DEF").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean());
             Assert.IsTrue(listener.IsInvoked);
         }
@@ -559,7 +559,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
                             "expression lambda2 { o => 3 * o.intPrimitive }\n" +
                             "select sum(Lambda1(e)) as c0, sum(Lambda2(e)) as c1 from SupportBean as e";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10, 30});
@@ -574,7 +574,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmt.EventType, "val1".Split(','), new Type[]{typeof(ICollection<object>), typeof(ICollection<object>)});
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
@@ -618,7 +618,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             epService.EPAdministrator.CreateEPL("insert into MyWindow" + windowPostfix + "(myObject) select Cast(intPrimitive, long) from SupportBean");
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             var props = new string[]{"myObject"};
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
@@ -639,7 +639,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
         private void TryAssertionScalarReturn(EPServiceProvider epService, string epl) {
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmt.EventType, "val1".Split(','), new Type[]{typeof(ICollection<object>)});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2,E3,E4"));
@@ -667,7 +667,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
                     "from SupportBean as t";
             var stmt = epService.EPAdministrator.CreateEPL(eplDeclared);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionTwoParameterArithmetic(epService, listener, stmt, fields);
     
@@ -677,7 +677,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             Assert.AreEqual(eplFormatted, model.ToEPL(new EPStatementFormatter(true)));
             stmt = epService.EPAdministrator.Create(model);
             Assert.AreEqual(eplDeclared, stmt.Text);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionTwoParameterArithmetic(epService, listener, stmt, fields);
             stmt.Dispose();
@@ -689,7 +689,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
                     "expression fThree alias for {intPrimitive+100} " +
                     "select fZero, fOne, fTwo, fThree from SupportBean";
             var stmtAlias = epService.EPAdministrator.CreateEPL(eplAlias);
-            stmtAlias.AddListener(listener);
+            stmtAlias.Events += listener.Update;
             TryAssertionTwoParameterArithmetic(epService, listener, stmtAlias, new string[]{"fZero", "fOne", "fTwo", "fThree"});
             stmtAlias.Dispose();
         }
@@ -733,7 +733,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmt.EventType, "val1,val2".Split(','), new Type[]
             {
                 typeof(ICollection<object>), typeof(ICollection<object>)
@@ -771,7 +771,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var fields = "val1,val2".Split(',');
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[]{typeof(int?), typeof(int?)});
     
             epService.EPRuntime.SendEvent(new SupportBean());
@@ -799,7 +799,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var fields = "val1,val2,val3".Split(',');
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[]{typeof(int?), typeof(int?), typeof(int?)});
     
             epService.EPRuntime.SendEvent(new SupportBean());
@@ -823,7 +823,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
         private void TryAssertionWhereClauseExpression(EPServiceProvider epService, string epl) {
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
             Assert.IsFalse(listener.GetAndClearIsInvoked());

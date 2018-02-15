@@ -20,7 +20,6 @@ using com.espertech.esper.pattern;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -218,7 +217,7 @@ namespace com.espertech.esper.regression.pattern
             } else {
                 Assert.AreEqual(expectedIfDifferent, writer.ToString());
             }
-            spi.Destroy();
+            spi.Dispose();
         }
     }
 } // end of namespace

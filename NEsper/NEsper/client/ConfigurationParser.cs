@@ -1506,7 +1506,7 @@ namespace com.espertech.esper.client
                     var name = GetRequiredAttribute(subElement, "name");
                     long interval = Int64.Parse(GetRequiredAttribute(subElement, "interval"));
 
-                    var metrics = new MetricsReportingConfig.StmtGroupMetrics();
+                    var metrics = new ConfigurationMetricsReporting.StmtGroupMetrics();
                     metrics.Interval = interval;
                     configuration.EngineDefaults.MetricsReporting.AddStmtGroup(name, metrics);
 
@@ -1683,7 +1683,7 @@ namespace com.espertech.esper.client
         }
 
         private static void HandleMetricsReportingPatterns(
-            MetricsReportingConfig.StmtGroupMetrics groupDef,
+            ConfigurationMetricsReporting.StmtGroupMetrics groupDef,
             XmlElement parentElement)
         {
             foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))

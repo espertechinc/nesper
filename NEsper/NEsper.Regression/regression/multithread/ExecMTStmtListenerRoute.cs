@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -38,10 +37,10 @@ namespace com.espertech.esper.regression.multithread
             EPStatement stmtListen = epService.EPAdministrator.CreateEPL(
                     " select * from " + typeof(SupportMarketDataBean).FullName);
             var listener = new SupportMTUpdateListener();
-            stmtListen.AddListener(listener);
+            stmtListen.Events += listener.Update;
     
             // Set of events routed by each listener
-            Set<SupportMarketDataBean> routed = Collections.SynchronizedSet(new HashSet<SupportMarketDataBean>());
+            var routed = CompatExtensions.AsSyncSet(new HashSet<SupportMarketDataBean>());
     
             var threadPool = Executors.NewFixedThreadPool(numThreads);
             var future = new Future<bool>[numThreads];
@@ -54,7 +53,7 @@ namespace com.espertech.esper.regression.multithread
             threadPool.AwaitTermination(10, TimeUnit.SECONDS);
     
             for (int i = 0; i < numThreads; i++) {
-                Assert.IsTrue((bool?) future[i].Get());
+                Assert.IsTrue(future[i].GetValueOrDefault());
             }
     
             // assert

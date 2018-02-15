@@ -20,7 +20,6 @@ using com.espertech.esper.regression.events;
 using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -53,52 +52,52 @@ namespace com.espertech.esper.regression.epl.contained
             string stmtTextOne = "select orderId, items.item[0].itemId from MediaOrder";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
     
             string stmtTextTwo = "select * from MediaOrder[books.book]";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listenerTwo = new SupportUpdateListener();
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
     
             string stmtTextThree = "select * from MediaOrder(orderId='PO200901')[books.book]";
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL(stmtTextThree);
             var listenerThree = new SupportUpdateListener();
-            stmtThree.AddListener(listenerThree);
+            stmtThree.Events += listenerThree.Update;
     
             string stmtTextFour = "select count(*) from MediaOrder[books.book]#unique(bookId)";
             EPStatement stmtFour = epService.EPAdministrator.CreateEPL(stmtTextFour);
             var listenerFour = new SupportUpdateListener();
-            stmtFour.AddListener(listenerFour);
+            stmtFour.Events += listenerFour.Update;
     
             string stmtTextFive = "select * from MediaOrder[books.book][review]";
             EPStatement stmtFive = epService.EPAdministrator.CreateEPL(stmtTextFive);
             var listenerFive = new SupportUpdateListener();
-            stmtFive.AddListener(listenerFive);
+            stmtFive.Events += listenerFive.Update;
     
             string stmtTextSix = "select * from pattern [c=Cancel -> o=MediaOrder(orderId = c.orderId)[books.book]]";
             EPStatement stmtSix = epService.EPAdministrator.CreateEPL(stmtTextSix);
             var listenerSix = new SupportUpdateListener();
-            stmtSix.AddListener(listenerSix);
+            stmtSix.Events += listenerSix.Update;
     
             string stmtTextSeven = "select * from MediaOrder[select orderId, bookId from books.book][select * from review]";
             EPStatement stmtSeven = epService.EPAdministrator.CreateEPL(stmtTextSeven);
             var listenerSeven = new SupportUpdateListener();
-            stmtSeven.AddListener(listenerSeven);
+            stmtSeven.Events += listenerSeven.Update;
     
             string stmtTextEight = "select * from MediaOrder[select * from books.book][select reviewId, comment from review]";
             EPStatement stmtEight = epService.EPAdministrator.CreateEPL(stmtTextEight);
             var listenerEight = new SupportUpdateListener();
-            stmtEight.AddListener(listenerEight);
+            stmtEight.Events += listenerEight.Update;
     
             string stmtTextNine = "select * from MediaOrder[books.book as book][select book.*, reviewId, comment from review]";
             EPStatement stmtNine = epService.EPAdministrator.CreateEPL(stmtTextNine);
             var listenerNine = new SupportUpdateListener();
-            stmtNine.AddListener(listenerNine);
+            stmtNine.Events += listenerNine.Update;
     
             string stmtTextTen = "select * from MediaOrder[books.book as book][select mediaOrder.*, bookId, reviewId from review] as mediaOrder";
             EPStatement stmtTen = epService.EPAdministrator.CreateEPL(stmtTextTen);
             var listenerTen = new SupportUpdateListener();
-            stmtTen.AddListener(listenerTen);
+            stmtTen.Events += listenerTen.Update;
     
             string stmtTextElevenZero = "insert into ReviewStream select * from MediaOrder[books.book as book]\n" +
                     "    [select mediaOrder.* as mediaOrder, book.* as book, review.* as review from review as review] as mediaOrder";
@@ -106,27 +105,27 @@ namespace com.espertech.esper.regression.epl.contained
             string stmtTextElevenOne = "select mediaOrder.orderId, book.bookId, review.reviewId from ReviewStream";
             EPStatement stmtElevenOne = epService.EPAdministrator.CreateEPL(stmtTextElevenOne);
             var listenerEleven = new SupportUpdateListener();
-            stmtElevenOne.AddListener(listenerEleven);
+            stmtElevenOne.Events += listenerEleven.Update;
     
             string stmtTextTwelve = "select * from MediaOrder[books.book where author = 'Orson Scott Card'][review]";
             EPStatement stmtTwelve = epService.EPAdministrator.CreateEPL(stmtTextTwelve);
             var listenerTwelve = new SupportUpdateListener();
-            stmtTwelve.AddListener(listenerTwelve);
+            stmtTwelve.Events += listenerTwelve.Update;
     
             epService.EPRuntime.SendEvent(eventDocOne);
     
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), "orderId,items.item[0].itemId".Split(','), new Object[]{"PO200901", "100001"});
-            EPAssertionUtil.AssertPropsPerRow(listenerTwo.LastNewData, "bookId".Split(','), new Object[][]{new object[] {"B001"}, new object[] {"B002"}});
-            EPAssertionUtil.AssertPropsPerRow(listenerThree.LastNewData, "bookId".Split(','), new Object[][]{new object[] {"B001"}, new object[] {"B002"}});
-            EPAssertionUtil.AssertPropsPerRow(listenerFour.LastNewData, "count(*)".Split(','), new Object[][]{new object[] {2L}});
-            EPAssertionUtil.AssertPropsPerRow(listenerFive.LastNewData, "reviewId".Split(','), new Object[][]{new object[] {"1"}});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), "orderId,items.item[0].itemId".Split(','), new object[]{"PO200901", "100001"});
+            EPAssertionUtil.AssertPropsPerRow(listenerTwo.LastNewData, "bookId".Split(','), new object[][]{new object[] {"B001"}, new object[] {"B002"}});
+            EPAssertionUtil.AssertPropsPerRow(listenerThree.LastNewData, "bookId".Split(','), new object[][]{new object[] {"B001"}, new object[] {"B002"}});
+            EPAssertionUtil.AssertPropsPerRow(listenerFour.LastNewData, "count(*)".Split(','), new object[][]{new object[] {2L}});
+            EPAssertionUtil.AssertPropsPerRow(listenerFive.LastNewData, "reviewId".Split(','), new object[][]{new object[] {"1"}});
             Assert.IsFalse(listenerSix.IsInvoked);
-            EPAssertionUtil.AssertPropsPerRow(listenerSeven.LastNewData, "orderId,bookId,reviewId".Split(','), new Object[][]{new object[] {"PO200901", "B001", "1"}});
-            EPAssertionUtil.AssertPropsPerRow(listenerEight.LastNewData, "reviewId,bookId".Split(','), new Object[][]{new object[] {"1", "B001"}});
-            EPAssertionUtil.AssertPropsPerRow(listenerNine.LastNewData, "reviewId,bookId".Split(','), new Object[][]{new object[] {"1", "B001"}});
-            EPAssertionUtil.AssertPropsPerRow(listenerTen.LastNewData, "reviewId,bookId".Split(','), new Object[][]{new object[] {"1", "B001"}});
-            EPAssertionUtil.AssertPropsPerRow(listenerEleven.LastNewData, "mediaOrder.orderId,book.bookId,review.reviewId".Split(','), new Object[][]{new object[] {"PO200901", "B001", "1"}});
-            EPAssertionUtil.AssertPropsPerRow(listenerTwelve.LastNewData, "reviewId".Split(','), new Object[][]{new object[] {"1"}});
+            EPAssertionUtil.AssertPropsPerRow(listenerSeven.LastNewData, "orderId,bookId,reviewId".Split(','), new object[][]{new object[] {"PO200901", "B001", "1"}});
+            EPAssertionUtil.AssertPropsPerRow(listenerEight.LastNewData, "reviewId,bookId".Split(','), new object[][]{new object[] {"1", "B001"}});
+            EPAssertionUtil.AssertPropsPerRow(listenerNine.LastNewData, "reviewId,bookId".Split(','), new object[][]{new object[] {"1", "B001"}});
+            EPAssertionUtil.AssertPropsPerRow(listenerTen.LastNewData, "reviewId,bookId".Split(','), new object[][]{new object[] {"1", "B001"}});
+            EPAssertionUtil.AssertPropsPerRow(listenerEleven.LastNewData, "mediaOrder.orderId,book.bookId,review.reviewId".Split(','), new object[][]{new object[] {"PO200901", "B001", "1"}});
+            EPAssertionUtil.AssertPropsPerRow(listenerTwelve.LastNewData, "reviewId".Split(','), new object[][]{new object[] {"1"}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -135,43 +134,43 @@ namespace com.espertech.esper.regression.epl.contained
             string stmtText = "select book.bookId,item.itemId from MediaOrder[books.book] as book, MediaOrder[items.item] as item where productId = bookId order by bookId, item.itemId asc";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "book.bookId,item.itemId".Split(',');
             epService.EPRuntime.SendEvent(eventDocOne);
             PrintRows(epService, listener.LastNewData);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"B001", "100001"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"B001", "100001"}});
     
             epService.EPRuntime.SendEvent(eventDocOne);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"B001", "100001"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"B001", "100001"}});
     
             epService.EPRuntime.SendEvent(eventDocTwo);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"B005", "200002"}, new object[] {"B005", "200004"}, new object[] {"B006", "200001"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"B005", "200002"}, new object[] {"B005", "200004"}, new object[] {"B006", "200001"}});
     
             // count
             stmt.Dispose();
             fields = "count(*)".Split(',');
             stmtText = "select count(*) from MediaOrder[books.book] as book, MediaOrder[items.item] as item where productId = bookId order by bookId asc";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(eventDocTwo);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {3L}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {3L}});
     
             epService.EPRuntime.SendEvent(eventDocOne);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {4L}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {4L}});
     
             // unidirectional count
             stmt.Dispose();
             stmtText = "select count(*) from MediaOrder[books.book] as book unidirectional, MediaOrder[items.item] as item where productId = bookId order by bookId asc";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(eventDocTwo);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {3L}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {3L}});
     
             epService.EPRuntime.SendEvent(eventDocOne);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {1L}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {1L}});
     
             stmt.Dispose();
         }
@@ -180,40 +179,40 @@ namespace com.espertech.esper.regression.epl.contained
             string stmtText = "select book.bookId,item.itemId from MediaOrder[books.book] as book left outer join MediaOrder[items.item] as item on productId = bookId order by bookId, item.itemId asc";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "book.bookId,item.itemId".Split(',');
             epService.EPRuntime.SendEvent(eventDocTwo);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"B005", "200002"}, new object[] {"B005", "200004"}, new object[] {"B006", "200001"}, new object[] {"B008", null}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"B005", "200002"}, new object[] {"B005", "200004"}, new object[] {"B006", "200001"}, new object[] {"B008", null}});
     
             epService.EPRuntime.SendEvent(eventDocOne);
             PrintRows(epService, listener.LastNewData);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"B001", "100001"}, new object[] {"B002", null}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"B001", "100001"}, new object[] {"B002", null}});
     
             // count
             stmt.Dispose();
             fields = "count(*)".Split(',');
             stmtText = "select count(*) from MediaOrder[books.book] as book left outer join MediaOrder[items.item] as item on productId = bookId";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(eventDocTwo);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {4L}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {4L}});
     
             epService.EPRuntime.SendEvent(eventDocOne);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {6L}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {6L}});
     
             // unidirectional count
             stmt.Dispose();
             stmtText = "select count(*) from MediaOrder[books.book] as book unidirectional left outer join MediaOrder[items.item] as item on productId = bookId";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(eventDocTwo);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {4L}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {4L}});
     
             epService.EPRuntime.SendEvent(eventDocOne);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {2L}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {2L}});
     
             stmt.Dispose();
         }
@@ -222,40 +221,40 @@ namespace com.espertech.esper.regression.epl.contained
             string stmtText = "select orderId, book.bookId,item.itemId from MediaOrder[books.book] as book full outer join MediaOrder[select orderId, * from items.item] as item on productId = bookId order by bookId, item.itemId asc";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "book.bookId,item.itemId".Split(',');
             epService.EPRuntime.SendEvent(eventDocTwo);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {null, "200003"}, new object[] {"B005", "200002"}, new object[] {"B005", "200004"}, new object[] {"B006", "200001"}, new object[] {"B008", null}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {null, "200003"}, new object[] {"B005", "200002"}, new object[] {"B005", "200004"}, new object[] {"B006", "200001"}, new object[] {"B008", null}});
     
             epService.EPRuntime.SendEvent(eventDocOne);
             PrintRows(epService, listener.LastNewData);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"B001", "100001"}, new object[] {"B002", null}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"B001", "100001"}, new object[] {"B002", null}});
     
             // count
             stmt.Dispose();
             fields = "count(*)".Split(',');
             stmtText = "select count(*) from MediaOrder[books.book] as book full outer join MediaOrder[items.item] as item on productId = bookId";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(eventDocTwo);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {5L}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {5L}});
     
             epService.EPRuntime.SendEvent(eventDocOne);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {7L}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {7L}});
     
             // unidirectional count
             stmt.Dispose();
             stmtText = "select count(*) from MediaOrder[books.book] as book unidirectional full outer join MediaOrder[items.item] as item on productId = bookId";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(eventDocTwo);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {4L}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {4L}});
     
             epService.EPRuntime.SendEvent(eventDocOne);
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {2L}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {2L}});
     
             stmt.Dispose();
         }
@@ -275,13 +274,13 @@ namespace com.espertech.esper.regression.epl.contained
             string stmtText = "select category, subEventType, avg(responseTimeMillis) as avgTime from ResponseEvent[select category, * from subEvents]#Time(1 min) group by category, subEventType order by category, subEventType";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new ResponseEvent("svcOne", new SubEvent[]{new SubEvent(1000, "typeA"), new SubEvent(800, "typeB")}));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"svcOne", "typeA", 1000.0}, new object[] {"svcOne", "typeB", 800.0}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"svcOne", "typeA", 1000.0}, new object[] {"svcOne", "typeB", 800.0}});
     
             epService.EPRuntime.SendEvent(new ResponseEvent("svcOne", new SubEvent[]{new SubEvent(400, "typeB"), new SubEvent(500, "typeA")}));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {"svcOne", "typeA", 750.0}, new object[] {"svcOne", "typeB", 600.0}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"svcOne", "typeA", 750.0}, new object[] {"svcOne", "typeB", 600.0}});
     
             stmt.Dispose();
         }

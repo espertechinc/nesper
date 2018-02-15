@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Resources;
 using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.client.deploy;
@@ -18,6 +19,7 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
 using NUnit.Framework;
+using ResourceManager = com.espertech.esper.compat.ResourceManager;
 
 namespace com.espertech.esper.regression.client
 {
@@ -250,7 +252,7 @@ namespace com.espertech.esper.regression.client
             epService.EPAdministrator.DeploymentAdmin.Deploy(module, null);
             Assert.IsTrue(epService.EPAdministrator.DeploymentAdmin.IsDeployed("com.testit"));
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("A").AddListener(listener);
+            epService.EPAdministrator.GetStatement("A").Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("E1", 4));
             Assert.AreEqual(5, listener.AssertOneGetNewAndReset().Get("val"));
@@ -309,7 +311,7 @@ namespace com.espertech.esper.regression.client
         private void RunAssertionShortcutReadDeploy(EPServiceProvider epService)
         {
             var resource = "regression/test_module_12.epl";
-            var input = Thread.CurrentThread().ContextClassLoader.GetResourceAsStream(resource);
+            var input = ResourceManager.GetResourceAsStream(resource);
             Assert.IsNotNull(input);
             var resultOne = epService.EPAdministrator.DeploymentAdmin.ReadDeploy(input, null, null, null);
             epService.EPAdministrator.DeploymentAdmin.UndeployRemove(resultOne.DeploymentId);

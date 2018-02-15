@@ -112,13 +112,13 @@ namespace com.espertech.esper.regression.epl.insertinto
     
             var stmtOne = epService.EPAdministrator.CreateEPL(textOne);
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
             var type = stmtOne.EventType;
             Assert.AreEqual(underlyingType, type.UnderlyingType);
     
             var stmtTwo = epService.EPAdministrator.CreateEPL(textTwo);
             var listenerTwo = new SupportUpdateListener();
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
             type = stmtTwo.EventType;
             Assert.AreEqual(underlyingType, type.UnderlyingType);
     
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPAdministrator.CreateEPL("insert into " + typeNameTarget + " select " + typeof(SupportStaticMethodLib).FullName + "." + functionName + "(s0) from " + typeNameOrigin + " as s0");
             var stmt = epService.EPAdministrator.CreateEPL("select * from " + typeNameTarget);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             sendEvent.Invoke(epService, @event, typeNameOrigin);
     

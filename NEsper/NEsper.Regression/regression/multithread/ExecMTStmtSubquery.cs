@@ -19,8 +19,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -44,7 +42,7 @@ namespace com.espertech.esper.regression.multithread
                     "select (select id from S0#length(1000000) where id = s1.id) as value from S1 as s1");
     
             var listener = new SupportMTUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var threadPool = Executors.NewFixedThreadPool(numThreads);
             var future = new Future<bool>[numThreads];
@@ -57,7 +55,7 @@ namespace com.espertech.esper.regression.multithread
             threadPool.AwaitTermination(10, TimeUnit.SECONDS);
     
             for (int i = 0; i < numThreads; i++) {
-                Assert.IsTrue((bool?) future[i].Get());
+                Assert.IsTrue(future[i].GetValueOrDefault());
             }
     
             // Assert results
@@ -71,7 +69,7 @@ namespace com.espertech.esper.regression.multithread
             foreach (EventBean theEvent in resultNewData) {
                 values.Add((int?) theEvent.Get("value"));
             }
-            Assert.AreEqual("Unexpected duplicates", totalExpected, values.Count);
+            Assert.AreEqual(totalExpected, values.Count, "Unexpected duplicates");
     
             listener.Reset();
             stmt.Stop();

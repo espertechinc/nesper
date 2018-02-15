@@ -20,7 +20,6 @@ using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.dataflow;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -66,10 +65,10 @@ namespace com.espertech.esper.regression.dataflow
     
         private void RunAssertion(EPServiceProvider epService) {
     
-            var future = new DefaultSupportCaptureOp<Object>(1);
+            var future = new DefaultSupportCaptureOp<object>(1);
             var source = new MyObjectArrayGraphSource(Collections.List(
-                    new Object[]{"trade", "GE", 100d, 1000L, null, null}, // vwap = 100, minPrice=100
-                    new Object[]{"quote", "GE", null, null, 99.5d, 2000L}  //
+                    new object[]{"trade", "GE", 100d, 1000L, null, null}, // vwap = 100, minPrice=100
+                    new object[]{"quote", "GE", null, null, 99.5d, 2000L}  //
             ).GetEnumerator());
     
             var options = new EPDataFlowInstantiationOptions()
@@ -77,13 +76,13 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.DataFlowRuntime.Instantiate("VWAPSample", options).Start();
     
-            Object[] received = future.Get(5, TimeUnit.SECONDS);
+            object[] received = future.GetValue(5, TimeUnit.SECONDS);
             Assert.AreEqual(1, received.Length);
-            EPAssertionUtil.AssertProps(received[0], "index".Split(','), new Object[]{2000 * Math.Exp(100 - 99.5)});
+            EPAssertionUtil.AssertProps(received[0], "index".Split(','), new object[]{2000 * Math.Exp(100 - 99.5)});
         }
     
         private string RemoveNewlines(string text) {
-            return Text.Replace("\n", "").Replace("\r", "");
+            return text.Replace("\n", "").Replace("\r", "");
         }
     }
 } // end of namespace

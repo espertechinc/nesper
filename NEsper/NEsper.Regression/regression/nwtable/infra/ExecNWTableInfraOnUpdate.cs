@@ -45,19 +45,19 @@ namespace com.espertech.esper.regression.nwtable.infra
                     " set intPrimitive=id, intBoxed=mywin.intPrimitive, doublePrimitive=initial.intPrimitive" +
                     " where mywin.theString = sb.p00");
             var listenerWindow = new SupportUpdateListener();
-            stmt.AddListener(listenerWindow);
+            stmt.Events += listenerWindow.Update;
             string[] fields = "intPrimitive,intBoxed,doublePrimitive".Split(',');
     
             epService.EPRuntime.SendEvent(MakeSupportBean("E1", 1, 2));
             epService.EPRuntime.SendEvent(new SupportBean_S0(5, "E1"));
-            EPAssertionUtil.AssertProps(listenerWindow.GetAndResetLastNewData()[0], fields, new Object[]{5, 5, 1.0});
+            EPAssertionUtil.AssertProps(listenerWindow.GetAndResetLastNewData()[0], fields, new object[]{5, 5, 1.0});
     
             epService.EPRuntime.SendEvent(MakeSupportBean("E2", 10, 20));
             epService.EPRuntime.SendEvent(new SupportBean_S0(6, "E2"));
-            EPAssertionUtil.AssertProps(listenerWindow.GetAndResetLastNewData()[0], fields, new Object[]{6, 6, 10.0});
+            EPAssertionUtil.AssertProps(listenerWindow.GetAndResetLastNewData()[0], fields, new object[]{6, 6, 10.0});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(7, "E1"));
-            EPAssertionUtil.AssertProps(listenerWindow.GetAndResetLastNewData()[0], fields, new Object[]{7, 7, 5.0});
+            EPAssertionUtil.AssertProps(listenerWindow.GetAndResetLastNewData()[0], fields, new object[]{7, 7, 5.0});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfra", false);
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             epService.EPRuntime.SendEvent(new SupportBean_A("E1"));
             epService.EPRuntime.SendEvent(new SupportBean_A("E2"));
     
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "theString,intPrimitive".Split(','), new Object[][]{new object[] {"E1", 3}, new object[] {"E2", 7}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "theString,intPrimitive".Split(','), new object[][]{new object[] {"E1", 3}, new object[] {"E2", 7}});
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfraSS", false);
         }

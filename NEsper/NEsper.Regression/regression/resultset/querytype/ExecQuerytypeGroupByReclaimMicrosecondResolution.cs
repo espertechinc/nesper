@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -30,7 +29,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             IDictionary<TimeUnit, EPServiceProvider> epServices = SupportEngineFactory.SetupEnginesByTimeUnit();
     
-            foreach (EPServiceProvider epService in epServices.Values()) {
+            foreach (EPServiceProvider epService in epServices.Values) {
                 epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             }
     
@@ -57,7 +56,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             isolated.EPRuntime.SendEvent(new SupportBean("E3", 0));
             AssertCount(stmt, 2);
     
-            isolated.Destroy();
+            isolated.Dispose();
         }
     
         private static void AssertCount(EPStatement stmt, long count) {

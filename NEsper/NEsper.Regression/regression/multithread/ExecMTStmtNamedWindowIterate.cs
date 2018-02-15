@@ -13,9 +13,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
-// using static org.junit.Assert.assertTrue;
-
+using com.espertech.esper.supportregression.multithread;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.multithread

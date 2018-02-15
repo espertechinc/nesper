@@ -18,8 +18,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertFalse;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -37,7 +35,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                     "from SupportBean_S0\n" +
                     "output last At(context.sse.atminute, context.sse.athour, *, *, *, *) and when terminated\n");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new MySimpleScheduleEvent(10, 15));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));

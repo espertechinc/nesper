@@ -38,26 +38,26 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "from Bean";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(SupportBean_ST0), typeof(SupportBean_ST0), typeof(string), typeof(int?)});
     
             SupportBean_ST0_Container bean = SupportBean_ST0_Container.Make2Value("E1,12", "E2,11", "E2,2");
             epService.EPRuntime.SendEvent(bean);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{bean.Contained[2], bean.Contained[0], "E2", 12});
+                    new object[]{bean.Contained[2], bean.Contained[0], "E2", 12});
     
             bean = SupportBean_ST0_Container.Make2Value("E1,12");
             epService.EPRuntime.SendEvent(bean);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{bean.Contained[0], bean.Contained[0], "E1", 12});
+                    new object[]{bean.Contained[0], bean.Contained[0], "E1", 12});
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value(null));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{null, null, null, null});
+                    new object[]{null, null, null, null});
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value());
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
-                    new Object[]{null, null, null, null});
+                    new object[]{null, null, null, null});
             stmtFragment.Dispose();
     
             // test scalar-coll with lambda
@@ -68,22 +68,22 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "strvals.MaxBy(v => ExtractNum(v)) as val1 " +
                     "from SupportCollection";
             EPStatement stmtLambda = epService.EPAdministrator.CreateEPL(eplLambda);
-            stmtLambda.AddListener(listener);
+            stmtLambda.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtLambda.EventType, fieldsLambda, new Type[]{typeof(string), typeof(string)});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E2,E1,E5,E4"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsLambda, new Object[]{"E1", "E5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsLambda, new object[]{"E1", "E5"});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsLambda, new Object[]{"E1", "E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsLambda, new object[]{"E1", "E1"});
             listener.Reset();
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString(null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsLambda, new Object[]{null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsLambda, new object[]{null, null});
             listener.Reset();
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString(""));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsLambda, new Object[]{null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsLambda, new object[]{null, null});
         }
     }
 } // end of namespace

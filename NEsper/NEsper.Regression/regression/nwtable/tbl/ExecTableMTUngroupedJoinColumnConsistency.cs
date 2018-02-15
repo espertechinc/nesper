@@ -15,8 +15,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertNull;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -144,7 +142,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             public ReadRunnable(EPServiceProvider epService) {
                 this._epService = epService;
                 _listener = new SupportUpdateListener();
-                epService.EPAdministrator.GetStatement("out").AddListener(_listener);
+                epService.EPAdministrator.GetStatement("out").Events += _listener.Update;
             }
     
             public void SetShutdown(bool shutdown) {

@@ -90,7 +90,7 @@ namespace com.espertech.esper.regression.db
             var statement = engine.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
 
             Log.Debug(".trySendEvents Sending " + numEvents + " events");
             for (var i = 0; i < numEvents; i++)

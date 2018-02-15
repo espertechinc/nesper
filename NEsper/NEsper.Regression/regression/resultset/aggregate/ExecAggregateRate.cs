@@ -39,14 +39,14 @@ namespace com.espertech.esper.regression.resultset.aggregate
             var epl = "select rate(10) as myrate from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             TryAssertion(epService, listener);
 
             stmt.Dispose();
             var model = epService.EPAdministrator.CompileEPL(epl);
             stmt = epService.EPAdministrator.Create(model);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(epl, model.ToEPL());
 
             TryAssertion(epService, listener);
@@ -68,7 +68,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                 "select RATE(longPrimitive) as myrate, RATE(longPrimitive, intPrimitive) as myqtyrate from SupportBean#length(3)";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendEvent(epService, 1000, 10);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {null, null});

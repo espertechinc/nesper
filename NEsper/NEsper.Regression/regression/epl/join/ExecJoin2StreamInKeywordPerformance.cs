@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -40,7 +39,7 @@ namespace com.espertech.esper.regression.epl.join
             string[] fields = "val".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             for (int i = 0; i < 10000; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean("E" + i, i));
@@ -49,10 +48,10 @@ namespace com.espertech.esper.regression.epl.join
             long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 1000; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E645", "E8975"));
-                EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new Object[][]{new object[] {645}, new object[] {8975}});
+                EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {645}, new object[] {8975}});
             }
             long delta = DateTimeHelper.CurrentTimeMillis - startTime;
-            Assert.IsTrue("delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "delta=" + delta);
             Log.Info("delta=" + delta);
     
             stmt.Dispose();
@@ -64,7 +63,7 @@ namespace com.espertech.esper.regression.epl.join
             string[] fields = "val".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             for (int i = 0; i < 10000; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean_S0(i, "p00_" + i, "p01_" + i));
@@ -73,10 +72,10 @@ namespace com.espertech.esper.regression.epl.join
             long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 1000; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean("p01_645", 0));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{645});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{645});
             }
             long delta = DateTimeHelper.CurrentTimeMillis - startTime;
-            Assert.IsTrue("delta=" + delta, delta < 500);
+            Assert.IsTrue(delta < 500, "delta=" + delta);
             Log.Info("delta=" + delta);
     
             stmt.Dispose();

@@ -14,6 +14,7 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
+using com.espertech.esper.supportregression.context;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
@@ -46,27 +47,27 @@ namespace com.espertech.esper.regression.context
             epService.EPAdministrator.CreateEPL("context MyCtx create variable int mycontextvar = 0");
             epService.EPAdministrator.CreateEPL("context MyCtx on SupportBean(intPrimitive > 0) set mycontextvar = intPrimitive");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("context MyCtx select mycontextvar from SupportBean_S0").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("context MyCtx select mycontextvar from SupportBean_S0").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("P1", 0));   // allocate partition P1
             epService.EPRuntime.SendEvent(new SupportBean("P1", 10));   // set variable
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "P1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10});
     
             epService.EPRuntime.SendEvent(new SupportBean("P2", 11));   // allocate and set variable partition E2
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "P2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{11});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{11});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(3, "P1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10});
             epService.EPRuntime.SendEvent(new SupportBean_S0(4, "P2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{11});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{11});
             epService.EPRuntime.SendEvent(new SupportBean_S0(5, "P3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{0});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{0});
     
             epService.EPRuntime.SendEvent(new SupportBean("P3", 12));
             epService.EPRuntime.SendEvent(new SupportBean_S0(6, "P3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{12});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{12});
     
             foreach (string statement in epService.EPAdministrator.StatementNames) {
                 epService.EPAdministrator.GetStatement(statement).Stop();
@@ -83,30 +84,30 @@ namespace com.espertech.esper.regression.context
             epService.EPAdministrator.CreateEPL("context MyCtx on SupportBean(theString = context.s0.p00) set mycontextvar = intPrimitive");
             epService.EPAdministrator.CreateEPL("context MyCtx on SupportBean(intPrimitive < 0) set mycontextvar = intPrimitive");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("context MyCtx select mycontextvar from SupportBean_S2(p20 = context.s0.p00)").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("context MyCtx select mycontextvar from SupportBean_S2(p20 = context.s0.p00)").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "P1"));    // allocate partition P1
             epService.EPRuntime.SendEvent(new SupportBean_S2(1, "P1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{5});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{5});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "P2"));    // allocate partition P2
             epService.EPRuntime.SendEvent(new SupportBean("P2", 10));
             epService.EPRuntime.SendEvent(new SupportBean_S2(2, "P2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10});
     
             // set all to -1
             epService.EPRuntime.SendEvent(new SupportBean("P2", -1));
             epService.EPRuntime.SendEvent(new SupportBean_S2(2, "P2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{-1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{-1});
             epService.EPRuntime.SendEvent(new SupportBean_S2(2, "P1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{-1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{-1});
     
             epService.EPRuntime.SendEvent(new SupportBean("P2", 20));
             epService.EPRuntime.SendEvent(new SupportBean("P1", 21));
             epService.EPRuntime.SendEvent(new SupportBean_S2(2, "P2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{20});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{20});
             epService.EPRuntime.SendEvent(new SupportBean_S2(2, "P1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{21});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{21});
     
             // terminate context partitions
             epService.EPRuntime.SendEvent(new SupportBean_S1(0, "P1"));
@@ -114,7 +115,7 @@ namespace com.espertech.esper.regression.context
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "P1"));    // allocate partition P1
             epService.EPRuntime.SendEvent(new SupportBean_S2(1, "P1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{5});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{5});
     
             epService.EPAdministrator.DestroyAllStatements();
     
@@ -138,25 +139,25 @@ namespace com.espertech.esper.regression.context
             string[] fields = "mycontextvar".Split(',');
             var listenerCreateVariable = new SupportUpdateListener();
             EPStatement stmtVar = epService.EPAdministrator.CreateEPL("@Name('var') context MyCtx create variable int mycontextvar = 5");
-            stmtVar.AddListener(listenerCreateVariable);
+            stmtVar.Events += listenerCreateVariable.Update;
     
             var listenerUpdate = new SupportUpdateListener();
             EPStatement stmtUpd = epService.EPAdministrator.CreateEPL("@Name('upd') context MyCtx on SupportBean(theString = context.s0.p00) set mycontextvar = intPrimitive");
-            stmtUpd.AddListener(listenerUpdate);
+            stmtUpd.Events += listenerUpdate.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "P1"));    // allocate partition P1
             epService.EPRuntime.SendEvent(new SupportBean("P1", 100));    // update
-            EPAssertionUtil.AssertProps(listenerUpdate.AssertOneGetNewAndReset(), "mycontextvar".Split(','), new Object[]{100});
-            EPAssertionUtil.AssertPropsPerRow(EPAssertionUtil.EnumeratorToArray(stmtUpd.GetEnumerator()), fields, new Object[][]{new object[] {100}});
+            EPAssertionUtil.AssertProps(listenerUpdate.AssertOneGetNewAndReset(), "mycontextvar".Split(','), new object[]{100});
+            EPAssertionUtil.AssertPropsPerRow(EPAssertionUtil.EnumeratorToArray(stmtUpd.GetEnumerator()), fields, new object[][]{new object[] {100}});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "P2"));    // allocate partition P1
             epService.EPRuntime.SendEvent(new SupportBean("P2", 101));    // update
-            EPAssertionUtil.AssertProps(listenerUpdate.AssertOneGetNewAndReset(), "mycontextvar".Split(','), new Object[]{101});
-            EPAssertionUtil.AssertPropsPerRow(EPAssertionUtil.EnumeratorToArray(stmtUpd.GetEnumerator()), fields, new Object[][]{new object[] {100}, new object[] {101}});
+            EPAssertionUtil.AssertProps(listenerUpdate.AssertOneGetNewAndReset(), "mycontextvar".Split(','), new object[]{101});
+            EPAssertionUtil.AssertPropsPerRow(EPAssertionUtil.EnumeratorToArray(stmtUpd.GetEnumerator()), fields, new object[][]{new object[] {100}, new object[] {101}});
     
             EventBean[] events = EPAssertionUtil.EnumeratorToArray(stmtVar.GetEnumerator());
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(events, "mycontextvar".Split(','), new Object[][]{new object[] {100}, new object[] {101}});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerCreateVariable.GetNewDataListFlattened(), "mycontextvar".Split(','), new Object[][]{new object[] {100}, new object[] {101}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(events, "mycontextvar".Split(','), new object[][]{new object[] {100}, new object[] {101}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerCreateVariable.GetNewDataListFlattened(), "mycontextvar".Split(','), new object[][]{new object[] {100}, new object[] {101}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }

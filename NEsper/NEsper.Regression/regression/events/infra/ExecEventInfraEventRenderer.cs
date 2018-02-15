@@ -56,8 +56,8 @@ namespace com.espertech.esper.regression.events.infra
             RunAssertion(epService, MAP_TYPENAME, FMAP, topInner);
     
             // Object-array
-            var oaInner = new Object[]{10};
-            var oaTop = new Object[]{1, "abc", oaInner};
+            var oaInner = new object[]{10};
+            var oaTop = new object[]{1, "abc", oaInner};
             RunAssertion(epService, OA_TYPENAME, FOA, oaTop);
     
             // XML
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regression.events.infra
             string epl = "select * from " + typename;
             EPStatement statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             send.Invoke(epService, @event);
     
@@ -111,11 +111,11 @@ namespace com.espertech.esper.regression.events.infra
     
         private void AddOAEventType(EPServiceProvider epService) {
             var namesInner = new string[]{"myInsideInt"};
-            var typesInner = new Object[]{typeof(int)};
+            var typesInner = new object[]{typeof(int)};
             epService.EPAdministrator.Configuration.AddEventType(OA_TYPENAME + "_1", namesInner, typesInner);
     
             var names = new string[]{"myInt", "myString", "nested"};
-            var types = new Object[]{typeof(int), typeof(string), OA_TYPENAME + "_1"};
+            var types = new object[]{typeof(int), typeof(string), OA_TYPENAME + "_1"};
             epService.EPAdministrator.Configuration.AddEventType(OA_TYPENAME, names, types);
         }
     
@@ -151,11 +151,11 @@ namespace com.espertech.esper.regression.events.infra
     
         private static RecordSchema GetAvroSchema() {
             Schema inner = SchemaBuilder.Record(AVRO_TYPENAME + "_inside",
-                    TypeBuilder.Field("myInsideInt", TypeBuilder.Int()));
+                    TypeBuilder.Field("myInsideInt", TypeBuilder.IntType()));
     
             return SchemaBuilder.Record(AVRO_TYPENAME,
-                    TypeBuilder.Field("myInt", TypeBuilder.Int()),
-                    TypeBuilder.Field("myString", TypeBuilder.String(
+                    TypeBuilder.Field("myInt", TypeBuilder.IntType()),
+                    TypeBuilder.Field("myString", TypeBuilder.StringType(
                             TypeBuilder.Property(PROP_STRING_KEY, PROP_STRING_VALUE))),
                     TypeBuilder.Field("nested", inner));
         }

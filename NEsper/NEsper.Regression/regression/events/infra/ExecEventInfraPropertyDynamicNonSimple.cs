@@ -128,7 +128,7 @@ namespace com.espertech.esper.regression.events.infra
 
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var propertyNames = "indexed1,indexed2,mapped1,mapped2".Split(',');
             foreach (var propertyName in propertyNames)
@@ -187,14 +187,14 @@ namespace com.espertech.esper.regression.events.infra
                 AVRO_TYPENAME,
                 TypeBuilder.Field(
                     "indexed", TypeBuilder.Union(
-                        TypeBuilder.Null(),
-                        TypeBuilder.Int(),
-                        TypeBuilder.Array(TypeBuilder.Int()))),
+                        TypeBuilder.NullType(),
+                        TypeBuilder.IntType(),
+                        TypeBuilder.Array(TypeBuilder.IntType()))),
                 TypeBuilder.Field(
                     "mapped", TypeBuilder.Union(
-                        TypeBuilder.Null(),
-                        TypeBuilder.Int(),
-                        TypeBuilder.Map(TypeBuilder.Int())))
+                        TypeBuilder.NullType(),
+                        TypeBuilder.IntType(),
+                        TypeBuilder.Map(TypeBuilder.IntType())))
             );
         }
     }

@@ -16,16 +16,14 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.resultset.aggregate
 {
     public class ExexAggregateCountWGroupBy : RegressionExecution {
-        private static readonly string SYMBOL_DELL = "DELL";
-        private static readonly string SYMBOL_IBM = "IBM";
+        private const string SYMBOL_DELL = "DELL";
+        private const string SYMBOL_IBM = "IBM";
     
         public override void Run(EPServiceProvider epService) {
             RunAssertionCountOneViewOM(epService);
@@ -62,7 +60,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionCount(epService, listener, stmt);
     
@@ -75,25 +73,25 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "group by symbol order by symbol asc";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, SYMBOL_DELL, 50L);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "symbol,cnt,val".Split(','), new Object[]{"DELL", 1L, 1d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "symbol,cnt,val".Split(','), new object[]{"DELL", 1L, 1d});
     
             SendEvent(epService, SYMBOL_DELL, 51L);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "symbol,cnt,val".Split(','), new Object[]{"DELL", 2L, 1.5d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "symbol,cnt,val".Split(','), new object[]{"DELL", 2L, 1.5d});
     
             SendEvent(epService, SYMBOL_DELL, 52L);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "symbol,cnt,val".Split(','), new Object[]{"DELL", 3L, 2d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "symbol,cnt,val".Split(','), new object[]{"DELL", 3L, 2d});
     
             SendEvent(epService, "IBM", 52L);
             EventBean[] events = listener.LastNewData;
-            EPAssertionUtil.AssertProps(events[0], "symbol,cnt,val".Split(','), new Object[]{"DELL", 2L, 2d});
-            EPAssertionUtil.AssertProps(events[1], "symbol,cnt,val".Split(','), new Object[]{"IBM", 1L, 1d});
+            EPAssertionUtil.AssertProps(events[0], "symbol,cnt,val".Split(','), new object[]{"DELL", 2L, 2d});
+            EPAssertionUtil.AssertProps(events[1], "symbol,cnt,val".Split(','), new object[]{"IBM", 1L, 1d});
             listener.Reset();
     
             SendEvent(epService, SYMBOL_DELL, 53L);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "symbol,cnt,val".Split(','), new Object[]{"DELL", 2L, 2.5d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "symbol,cnt,val".Split(','), new object[]{"DELL", 2L, 2.5d});
     
             stmt.Dispose();
         }
@@ -112,7 +110,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionCount(epService, listener, stmt);
     
@@ -130,7 +128,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionCount(epService, listener, stmt);
     
@@ -150,7 +148,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));

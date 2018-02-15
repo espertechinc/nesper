@@ -17,14 +17,13 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.resultset.querytype
 {
     public class ExecQuerytypeRowForAllHaving : RegressionExecution {
-        private static readonly string JOIN_KEY = "KEY";
+        private const string JOIN_KEY = "KEY";
     
         public override void Run(EPServiceProvider epService) {
             RunAssertionSumOneView(epService);
@@ -38,7 +37,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "having sum(longBoxed) > 10";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssert(epService, listener, stmt);
     
@@ -54,7 +53,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanString(JOIN_KEY));
     
@@ -92,7 +91,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     + "#unique(symbol) having avg(price) <= 0";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendEvent(epService, "A", -1);
             Assert.AreEqual(-1.0d, listener.LastNewData[0].Get("aprice"));
@@ -115,7 +114,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             Assert.AreEqual(-1d, listener.LastNewData[0].Get("aprice"));
             listener.Reset();
     
-            statement.Destroy();
+            statement.Dispose();
         }
     
         private Object SendEvent(EPServiceProvider epService, string symbol, double price) {

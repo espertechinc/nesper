@@ -20,16 +20,16 @@ namespace com.espertech.esper.supportregression.context
 {
     public class SupportSelectorPartitioned : ContextPartitionSelectorSegmented
     {
-        public SupportSelectorPartitioned(IList<Object[]> keys) {
+        public SupportSelectorPartitioned(IList<object[]> keys) {
             this.PartitionKeys = keys;
         }
     
-        public SupportSelectorPartitioned(Object[] keys) {
+        public SupportSelectorPartitioned(object[] keys) {
             this.PartitionKeys = Collections.SingletonList(keys);
         }
     
         public SupportSelectorPartitioned(Object singleKey) {
-            this.PartitionKeys = Collections.SingletonList(new Object[]{singleKey});
+            this.PartitionKeys = Collections.SingletonList(new object[]{singleKey});
         }
 
         public IList<object[]> PartitionKeys { get; }

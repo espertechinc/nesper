@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -43,12 +42,12 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                     " set Mywin.IntPrimitive = 10," +
                     "     SetBeanLongPrimitive999(mywin)");
             var listenerWindow = new SupportUpdateListener();
-            stmt.AddListener(listenerWindow);
+            stmt.Events += listenerWindow.Update;
     
             string[] fields = "intPrimitive,longPrimitive".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
-            EPAssertionUtil.AssertProps(listenerWindow.GetAndResetLastNewData()[0], fields, new Object[]{10, 999L});
+            EPAssertionUtil.AssertProps(listenerWindow.GetAndResetLastNewData()[0], fields, new object[]{10, 999L});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -57,7 +56,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowMDW#unique(theString)#length(2) as select * from SupportBean";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             string stmtTextInsertOne = "insert into MyWindowMDW select * from SupportBean";
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
@@ -72,12 +71,12 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             EventBean[] oldevents = listenerWindow.LastOldData;
     
             Assert.AreEqual(1, newevents.Length);
-            EPAssertionUtil.AssertProps(newevents[0], "intPrimitive".Split(','), new Object[]{300});
+            EPAssertionUtil.AssertProps(newevents[0], "intPrimitive".Split(','), new object[]{300});
             Assert.AreEqual(1, oldevents.Length);
             oldevents = EPAssertionUtil.Sort(oldevents, "theString");
-            EPAssertionUtil.AssertPropsPerRow(oldevents, "theString,intPrimitive".Split(','), new Object[][]{new object[] {"E2", 3}});
+            EPAssertionUtil.AssertPropsPerRow(oldevents, "theString,intPrimitive".Split(','), new object[][]{new object[] {"E2", 3}});
     
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "theString,intPrimitive".Split(','), new Object[][]{new object[] {"E1", 2}, new object[] {"E2", 300}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "theString,intPrimitive".Split(','), new object[][]{new object[] {"E1", 2}, new object[] {"E2", 300}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -86,7 +85,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowMU#unique(theString)#length(2) retain-union as select * from SupportBean";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             string stmtTextInsertOne = "insert into MyWindowMU select * from SupportBean";
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
@@ -101,12 +100,12 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             EventBean[] oldevents = listenerWindow.LastOldData;
     
             Assert.AreEqual(1, newevents.Length);
-            EPAssertionUtil.AssertProps(newevents[0], "intPrimitive".Split(','), new Object[]{300});
+            EPAssertionUtil.AssertProps(newevents[0], "intPrimitive".Split(','), new object[]{300});
             Assert.AreEqual(1, oldevents.Length);
-            EPAssertionUtil.AssertPropsPerRow(oldevents, "theString,intPrimitive".Split(','), new Object[][]{new object[] {"E2", 3}});
+            EPAssertionUtil.AssertPropsPerRow(oldevents, "theString,intPrimitive".Split(','), new object[][]{new object[] {"E2", 3}});
     
             EventBean[] events = EPAssertionUtil.Sort(stmtCreate.GetEnumerator(), "theString");
-            EPAssertionUtil.AssertPropsPerRow(events, "theString,intPrimitive".Split(','), new Object[][]{new object[] {"E1", 2}, new object[] {"E2", 300}});
+            EPAssertionUtil.AssertPropsPerRow(events, "theString,intPrimitive".Split(','), new object[][]{new object[] {"E1", 2}, new object[] {"E2", 300}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -116,7 +115,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowSC#keepall as select * from " + typeof(SupportBeanAbstractSub).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsertOne = "insert into MyWindowSC select * from " + typeof(SupportBeanAbstractSub).FullName;
@@ -130,7 +129,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             listenerWindow.Reset();
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(listenerWindow.LastNewData[0], new string[]{"v1", "v2"}, new Object[]{"E1", "E1"});
+            EPAssertionUtil.AssertProps(listenerWindow.LastNewData[0], new string[]{"v1", "v2"}, new object[]{"E1", "E1"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }

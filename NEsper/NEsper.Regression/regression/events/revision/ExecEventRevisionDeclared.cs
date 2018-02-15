@@ -101,69 +101,69 @@ namespace com.espertech.esper.regression.events.revision
         private void RunAssertionRevision(EPServiceProvider epService, EPStatement stmtCreateWin) {
             var listenerOne = new SupportUpdateListener();
             EPStatement consumerOne = epService.EPAdministrator.CreateEPL("select * from RevQuote");
-            consumerOne.AddListener(listenerOne);
+            consumerOne.Events += listenerOne.Update;
             EPStatement consumerTwo = epService.EPAdministrator.CreateEPL("select k0, count(*) as count, sum(long.ParseLong(p0)) as sum from RevQuote group by k0");
             var listenerTwo = new SupportUpdateListener();
-            consumerTwo.AddListener(listenerTwo);
+            consumerTwo.Events += listenerTwo.Update;
             EPStatement consumerThree = epService.EPAdministrator.CreateEPL("select * from RevQuote output every 2 events");
             var listenerThree = new SupportUpdateListener();
-            consumerThree.AddListener(listenerThree);
+            consumerThree.Events += listenerThree.Update;
             string[] agg = "k0,count,sum".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportRevisionFull("k00", "01", "p10", "20", "p30", "40", "50"));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{"k00", "01", "p10", "20", "p30", "40", "50"});
-            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new Object[]{"k00", "01", "p10", "20", "p30", "40", "50"});
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), agg, new Object[]{"k00", 1L, 1L});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"k00", "01", "p10", "20", "p30", "40", "50"});
+            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new object[]{"k00", "01", "p10", "20", "p30", "40", "50"});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), agg, new object[]{"k00", 1L, 1L});
             Assert.IsFalse(listenerThree.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportDeltaThree("k00", "03", "41"));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{"k00", "03", "p10", "20", "p30", "41", "50"});
-            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new Object[]{"k00", "03", "p10", "20", "p30", "41", "50"});
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), agg, new Object[]{"k00", 1L, 3L});
-            EPAssertionUtil.AssertProps(listenerThree.LastNewData[0], fields, new Object[]{"k00", "01", "p10", "20", "p30", "40", "50"});
-            EPAssertionUtil.AssertProps(listenerThree.LastNewData[1], fields, new Object[]{"k00", "03", "p10", "20", "p30", "41", "50"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"k00", "03", "p10", "20", "p30", "41", "50"});
+            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new object[]{"k00", "03", "p10", "20", "p30", "41", "50"});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), agg, new object[]{"k00", 1L, 3L});
+            EPAssertionUtil.AssertProps(listenerThree.LastNewData[0], fields, new object[]{"k00", "01", "p10", "20", "p30", "40", "50"});
+            EPAssertionUtil.AssertProps(listenerThree.LastNewData[1], fields, new object[]{"k00", "03", "p10", "20", "p30", "41", "50"});
             listenerThree.Reset();
     
             epService.EPRuntime.SendEvent(new SupportDeltaOne("k00", "p11", "51"));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{"k00", "03", "p11", "20", "p30", "41", "51"});
-            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new Object[]{"k00", "03", "p11", "20", "p30", "41", "51"});
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), agg, new Object[]{"k00", 1L, 3L});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"k00", "03", "p11", "20", "p30", "41", "51"});
+            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new object[]{"k00", "03", "p11", "20", "p30", "41", "51"});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), agg, new object[]{"k00", 1L, 3L});
             Assert.IsFalse(listenerThree.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportDeltaTwo("k00", "04", "21", "p31"));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{"k00", "04", "p11", "21", "p31", "41", "51"});
-            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new Object[]{"k00", "04", "p11", "21", "p31", "41", "51"});
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), agg, new Object[]{"k00", 1L, 4L});
-            EPAssertionUtil.AssertProps(listenerThree.LastNewData[0], fields, new Object[]{"k00", "03", "p11", "20", "p30", "41", "51"});
-            EPAssertionUtil.AssertProps(listenerThree.LastNewData[1], fields, new Object[]{"k00", "04", "p11", "21", "p31", "41", "51"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"k00", "04", "p11", "21", "p31", "41", "51"});
+            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new object[]{"k00", "04", "p11", "21", "p31", "41", "51"});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), agg, new object[]{"k00", 1L, 4L});
+            EPAssertionUtil.AssertProps(listenerThree.LastNewData[0], fields, new object[]{"k00", "03", "p11", "20", "p30", "41", "51"});
+            EPAssertionUtil.AssertProps(listenerThree.LastNewData[1], fields, new object[]{"k00", "04", "p11", "21", "p31", "41", "51"});
             listenerThree.Reset();
     
             epService.EPRuntime.SendEvent(new SupportDeltaFour("k00", "05", "22", "52"));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{"k00", "05", "p11", "22", "p31", "41", "52"});
-            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new Object[]{"k00", "05", "p11", "22", "p31", "41", "52"});
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), agg, new Object[]{"k00", 1L, 5L});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"k00", "05", "p11", "22", "p31", "41", "52"});
+            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new object[]{"k00", "05", "p11", "22", "p31", "41", "52"});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), agg, new object[]{"k00", 1L, 5L});
             Assert.IsFalse(listenerThree.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportDeltaFive("k00", "p12", "53"));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{"k00", "05", "p12", "22", "p31", "41", "53"});
-            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new Object[]{"k00", "05", "p12", "22", "p31", "41", "53"});
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), agg, new Object[]{"k00", 1L, 5L});
-            EPAssertionUtil.AssertProps(listenerThree.LastNewData[0], fields, new Object[]{"k00", "05", "p11", "22", "p31", "41", "52"});
-            EPAssertionUtil.AssertProps(listenerThree.LastNewData[1], fields, new Object[]{"k00", "05", "p12", "22", "p31", "41", "53"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"k00", "05", "p12", "22", "p31", "41", "53"});
+            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new object[]{"k00", "05", "p12", "22", "p31", "41", "53"});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), agg, new object[]{"k00", 1L, 5L});
+            EPAssertionUtil.AssertProps(listenerThree.LastNewData[0], fields, new object[]{"k00", "05", "p11", "22", "p31", "41", "52"});
+            EPAssertionUtil.AssertProps(listenerThree.LastNewData[1], fields, new object[]{"k00", "05", "p12", "22", "p31", "41", "53"});
             listenerThree.Reset();
     
             epService.EPRuntime.SendEvent(new SupportRevisionFull("k00", "06", "p13", "23", "p32", "42", "54"));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{"k00", "06", "p13", "23", "p32", "42", "54"});
-            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new Object[]{"k00", "06", "p13", "23", "p32", "42", "54"});
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), agg, new Object[]{"k00", 1L, 6L});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"k00", "06", "p13", "23", "p32", "42", "54"});
+            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new object[]{"k00", "06", "p13", "23", "p32", "42", "54"});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), agg, new object[]{"k00", 1L, 6L});
             Assert.IsFalse(listenerThree.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportDeltaOne("k00", "p14", "55"));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{"k00", "06", "p14", "23", "p32", "42", "55"});
-            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new Object[]{"k00", "06", "p14", "23", "p32", "42", "55"});
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), agg, new Object[]{"k00", 1L, 6L});
-            EPAssertionUtil.AssertProps(listenerThree.LastNewData[0], fields, new Object[]{"k00", "06", "p13", "23", "p32", "42", "54"});
-            EPAssertionUtil.AssertProps(listenerThree.LastNewData[1], fields, new Object[]{"k00", "06", "p14", "23", "p32", "42", "55"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"k00", "06", "p14", "23", "p32", "42", "55"});
+            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new object[]{"k00", "06", "p14", "23", "p32", "42", "55"});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), agg, new object[]{"k00", 1L, 6L});
+            EPAssertionUtil.AssertProps(listenerThree.LastNewData[0], fields, new object[]{"k00", "06", "p13", "23", "p32", "42", "54"});
+            EPAssertionUtil.AssertProps(listenerThree.LastNewData[1], fields, new object[]{"k00", "06", "p14", "23", "p32", "42", "55"});
             listenerThree.Reset();
     
             consumerOne.Dispose();
@@ -176,14 +176,14 @@ namespace com.espertech.esper.regression.events.revision
             var statements = new List<EPStatement>();
             EPStatement consumerOne = epService.EPAdministrator.CreateEPL("select irstream * from RevQuote");
             var listenerOne = new SupportUpdateListener();
-            consumerOne.AddListener(listenerOne);
+            consumerOne.Events += listenerOne.Update;
             statements.Add(consumerOne);
     
             statements.Add(epService.EPAdministrator.CreateEPL("on SupportBean(intPrimitive=2) as sb delete from RevQuote where theString = p2"));
 
             Log.Debug("a00");
             epService.EPRuntime.SendEvent(new SupportRevisionFull("a", "a00", "a10", "a20", "a30", "a40", "a50"));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{"a", "a00", "a10", "a20", "a30", "a40", "a50"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"a", "a00", "a10", "a20", "a30", "a40", "a50"});
     
             epService.EPRuntime.SendEvent(new SupportDeltaThree("x", "03", "41"));
             Assert.IsFalse(listenerOne.IsInvoked);
@@ -192,40 +192,40 @@ namespace com.espertech.esper.regression.events.revision
 
             Log.Debug("b00");
             epService.EPRuntime.SendEvent(new SupportRevisionFull("b", "b00", "b10", "b20", "b30", "b40", "b50"));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{"b", "b00", "b10", "b20", "b30", "b40", "b50"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"b", "b00", "b10", "b20", "b30", "b40", "b50"});
 
             Log.Debug("a01");
             epService.EPRuntime.SendEvent(new SupportDeltaThree("a", "a01", "a41"));
-            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new Object[]{"a", "a01", "a10", "a20", "a30", "a41", "a50"});
-            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new Object[]{"a", "a00", "a10", "a20", "a30", "a40", "a50"});
+            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new object[]{"a", "a01", "a10", "a20", "a30", "a41", "a50"});
+            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new object[]{"a", "a00", "a10", "a20", "a30", "a40", "a50"});
             listenerOne.Reset();
 
             Log.Debug("c00");
             epService.EPRuntime.SendEvent(new SupportRevisionFull("c", "c00", "c10", "c20", "c30", "c40", "c50"));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{"c", "c00", "c10", "c20", "c30", "c40", "c50"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"c", "c00", "c10", "c20", "c30", "c40", "c50"});
     
             statements.Add(epService.EPAdministrator.CreateEPL("on SupportBean(intPrimitive=0) as sb delete from RevQuote where theString = p0"));
 
             Log.Debug("c11");
             epService.EPRuntime.SendEvent(new SupportDeltaFive("c", "c11", "c51"));
-            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new Object[]{"c", "c00", "c11", "c20", "c30", "c40", "c51"});
-            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new Object[]{"c", "c00", "c10", "c20", "c30", "c40", "c50"});
+            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new object[]{"c", "c00", "c11", "c20", "c30", "c40", "c51"});
+            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new object[]{"c", "c00", "c10", "c20", "c30", "c40", "c50"});
             listenerOne.Reset();
     
             statements.Add(epService.EPAdministrator.CreateEPL("on SupportBean(intPrimitive=1) as sb delete from RevQuote where theString = p1"));
 
             Log.Debug("d00");
             epService.EPRuntime.SendEvent(new SupportRevisionFull("d", "d00", "d10", "d20", "d30", "d40", "d50"));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{"d", "d00", "d10", "d20", "d30", "d40", "d50"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"d", "d00", "d10", "d20", "d30", "d40", "d50"});
 
             Log.Debug("d01");
             epService.EPRuntime.SendEvent(new SupportDeltaFour("d", "d01", "d21", "d51"));
-            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new Object[]{"d", "d01", "d10", "d21", "d30", "d40", "d51"});
-            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new Object[]{"d", "d00", "d10", "d20", "d30", "d40", "d50"});
+            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new object[]{"d", "d01", "d10", "d21", "d30", "d40", "d51"});
+            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new object[]{"d", "d00", "d10", "d20", "d30", "d40", "d50"});
             listenerOne.Reset();
     
             EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields,
-                    new Object[][]{
+                    new object[][]{
                         new object[] {"b", "b00", "b10", "b20", "b30", "b40", "b50"},
                         new object[] {"a", "a01", "a10", "a20", "a30", "a41", "a50"},
                         new object[] {"c", "c00", "c11", "c20", "c30", "c40", "c51"},
@@ -239,24 +239,24 @@ namespace com.espertech.esper.regression.events.revision
     
             Log.Debug("delete b");
             epService.EPRuntime.SendEvent(new SupportBean("b40", 4));  // delete b
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetOldAndReset(), fields, new Object[]{"b", "b00", "b10", "b20", "b30", "b40", "b50"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetOldAndReset(), fields, new object[]{"b", "b00", "b10", "b20", "b30", "b40", "b50"});
             EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields,
-                    new Object[][]{new object[] {"a", "a01", "a10", "a20", "a30", "a41", "a50"}, new object[] {"c", "c00", "c11", "c20", "c30", "c40", "c51"}, new object[] {"d", "d01", "d10", "d21", "d30", "d40", "d51"}});
+                    new object[][]{new object[] {"a", "a01", "a10", "a20", "a30", "a41", "a50"}, new object[] {"c", "c00", "c11", "c20", "c30", "c40", "c51"}, new object[] {"d", "d01", "d10", "d21", "d30", "d40", "d51"}});
 
             Log.Debug("delete d");
             epService.EPRuntime.SendEvent(new SupportBean("d21", 2)); // delete d
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetOldAndReset(), fields, new Object[]{"d", "d01", "d10", "d21", "d30", "d40", "d51"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetOldAndReset(), fields, new object[]{"d", "d01", "d10", "d21", "d30", "d40", "d51"});
             EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields,
-                    new Object[][]{new object[] {"a", "a01", "a10", "a20", "a30", "a41", "a50"}, new object[] {"c", "c00", "c11", "c20", "c30", "c40", "c51"}});
+                    new object[][]{new object[] {"a", "a01", "a10", "a20", "a30", "a41", "a50"}, new object[] {"c", "c00", "c11", "c20", "c30", "c40", "c51"}});
 
             Log.Debug("delete a");
             epService.EPRuntime.SendEvent(new SupportBean("a30", 3)); // delete a
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetOldAndReset(), fields, new Object[]{"a", "a01", "a10", "a20", "a30", "a41", "a50"});
-            EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields, new Object[][]{new object[] {"c", "c00", "c11", "c20", "c30", "c40", "c51"}});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetOldAndReset(), fields, new object[]{"a", "a01", "a10", "a20", "a30", "a41", "a50"});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields, new object[][]{new object[] {"c", "c00", "c11", "c20", "c30", "c40", "c51"}});
 
             Log.Debug("delete c");
             epService.EPRuntime.SendEvent(new SupportBean("c11", 1)); // delete c
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetOldAndReset(), fields, new Object[]{"c", "c00", "c11", "c20", "c30", "c40", "c51"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetOldAndReset(), fields, new object[]{"c", "c00", "c11", "c20", "c30", "c40", "c51"});
             EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields, null);
     
             epService.EPRuntime.SendEvent(new SupportBean("c11", 1));
@@ -275,7 +275,7 @@ namespace com.espertech.esper.regression.events.revision
     
             EPStatement consumerOne = epService.EPAdministrator.CreateEPL("select * from RevQuote");
             var listenerOne = new SupportUpdateListener();
-            consumerOne.AddListener(listenerOne);
+            consumerOne.Events += listenerOne.Update;
     
             for (int i = 0; i < groups.Length; i++) {
                 string key = groups[i];

@@ -17,7 +17,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -25,13 +24,13 @@ namespace com.espertech.esper.regression.events.bean
 {
     public class ExecEventBeanPropertyResolutionCaseDistinctInsensitive : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE;
+            configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE;
         }
     
         public override void Run(EPServiceProvider epService) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select MYPROPERTY, myproperty, myProperty from " + typeof(SupportBeanDupProperty).FullName);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanDupProperty("lowercamel", "uppercamel", "upper", "lower"));
             EventBean result = listener.AssertOneGetNewAndReset();

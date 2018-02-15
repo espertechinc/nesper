@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -46,7 +45,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             DeploymentResult result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
     
-            epService.EPAdministrator.GetStatement("s0").AddListener(listener);
+            epService.EPAdministrator.GetStatement("s0").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("a", 1));
             Assert.IsTrue(listener.IsInvokedAndReset());
@@ -76,10 +75,10 @@ namespace com.espertech.esper.regression.expr.expressiondef
             epService.EPAdministrator.CreateEPL("create expression F1 alias for {10}");
             epService.EPAdministrator.CreateEPL("create expression F2 alias for {20}");
             epService.EPAdministrator.CreateEPL("create expression F3 alias for {F1+F2}");
-            epService.EPAdministrator.CreateEPL("select F3 as c0 from SupportBean").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select F3 as c0 from SupportBean").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{30});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{30});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -89,7 +88,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
                     "select total, total+1 from SupportBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] fields = "total,total+1".Split(',');
             foreach (string field in fields) {
@@ -97,7 +96,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             }
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{10, 11});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10, 11});
     
             stmt.Dispose();
         }
@@ -111,7 +110,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("create expression myalias alias for {1}");
-            epService.EPAdministrator.CreateEPL("select myaliastwo from SupportBean(intPrimitive = myalias)").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select myaliastwo from SupportBean(intPrimitive = myalias)").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             Assert.IsFalse(listener.IsInvoked);

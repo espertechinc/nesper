@@ -21,10 +21,10 @@ namespace com.espertech.esper.supportregression.multithread
     public class SendEventRWLockCallable : ICallable<bool> {
         private readonly int _threadNum;
         private readonly EPServiceProvider _engine;
-        private readonly IEnumerator<Object> _events;
+        private readonly IEnumerator<object> _events;
         private readonly ILockable _sharedStartLock;
     
-        public SendEventRWLockCallable(int threadNum, ILockable sharedStartLock, EPServiceProvider engine, IEnumerator<Object> events) {
+        public SendEventRWLockCallable(int threadNum, ILockable sharedStartLock, EPServiceProvider engine, IEnumerator<object> events) {
             this._threadNum = threadNum;
             this._engine = engine;
             this._events = events;

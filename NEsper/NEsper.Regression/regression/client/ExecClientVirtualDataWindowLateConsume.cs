@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.client
             var stmtAggregate =
                 epService.EPAdministrator.CreateEPL("@Name('ABC') select sum(intPrimitive) as val0 from MyVDW");
             var listener = new SupportUpdateListener();
-            stmtAggregate.AddListener(listener);
+            stmtAggregate.Events += listener.Update;
             EPAssertionUtil.AssertProps(stmtAggregate.First(), fields, new object[] {100});
 
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));

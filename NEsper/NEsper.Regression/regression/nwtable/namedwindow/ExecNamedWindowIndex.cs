@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPRuntime.SendEvent(new SupportBean("E1", 4));
             epService.EPRuntime.SendEvent(new SupportBean("E0", 5));
     
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtWindow.GetEnumerator(), "theString,intPrimitive".Split(','), new Object[][]{new object[] {"E0", 5}, new object[] {"E1", 4}, new object[] {"E2", 3}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtWindow.GetEnumerator(), "theString,intPrimitive".Split(','), new object[][]{new object[] {"E0", 5}, new object[] {"E1", 4}, new object[] {"E2", 3}});
         }
     }
 } // end of namespace

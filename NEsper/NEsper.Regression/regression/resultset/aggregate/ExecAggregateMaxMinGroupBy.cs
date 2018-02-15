@@ -14,16 +14,14 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.resultset.aggregate
 {
     public class ExecAggregateMaxMinGroupBy : RegressionExecution {
-        private static readonly string SYMBOL_DELL = "DELL";
-        private static readonly string SYMBOL_IBM = "IBM";
+        private const string SYMBOL_DELL = "DELL";
+        private const string SYMBOL_IBM = "IBM";
     
         public override void Run(EPServiceProvider epService) {
             RunAssertionMinMax(epService);
@@ -46,7 +44,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionMinMax(epService, listener, stmt);
     
@@ -82,7 +80,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionMinMax(epService, listener, stmt);
     
@@ -103,7 +101,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionMinMax(epService, listener, stmt);
     
@@ -124,7 +122,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
@@ -140,7 +138,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "DELL", 100L);
             SendEvent(epService, "DELL", 105L);
@@ -163,7 +161,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "DELL", 100L);
             SendEvent(epService, "DELL", 105L);

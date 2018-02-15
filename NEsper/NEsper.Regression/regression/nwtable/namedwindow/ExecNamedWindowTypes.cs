@@ -64,11 +64,11 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             EPStatement stmt = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create window SchemaWindow#lastevent as (s1 SchemaOne)");
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
             var listenerWindow = new SupportUpdateListener();
-            stmt.AddListener(listenerWindow);
+            stmt.Events += listenerWindow.Update;
             epService.EPAdministrator.CreateEPL("insert into SchemaWindow (s1) select sone from SchemaOne as sone");
     
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(new Object[]{10, 11}, "SchemaOne");
+                epService.EPRuntime.SendEvent(new object[]{10, 11}, "SchemaOne");
             } else if (eventRepresentationEnum.IsMapEvent()) {
                 var theEvent = new LinkedHashMap<string, object>();
                 theEvent.Put("col1", 10);
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             } else {
                 Assert.Fail();
             }
-            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), "s1.col1,s1.col2".Split(','), new Object[]{10, 11});
+            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), "s1.col1,s1.col2".Split(','), new object[]{10, 11});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("SchemaOne", true);
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmtCreate.EventType.UnderlyingType));
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
             EPAssertionUtil.AssertEqualsAnyOrder(stmtCreate.EventType.PropertyNames, new string[]{"one", "two"});
             EventType eventType = stmtCreate.EventType;
             Assert.AreEqual("T1", eventType.GetFragmentType("one").FragmentType.Name);
@@ -132,7 +132,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             outerData.Put("two", innerDataTwo);
     
             epService.EPRuntime.SendEvent(outerData, "OuterType");
-            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), "one.i1,two.i2".Split(','), new Object[]{1, 2});
+            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), "one.i1,two.i2".Split(','), new object[]{1, 2});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyWindowMT", true);
@@ -143,7 +143,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowNW#keepall as select theString as a, longPrimitive as b, longBoxed as c from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
             EPAssertionUtil.AssertEqualsAnyOrder(stmtCreate.EventType.PropertyNames, new string[]{"a", "b", "c"});
             Assert.AreEqual(typeof(string), stmtCreate.EventType.GetPropertyType("a"));
             Assert.AreEqual(typeof(long), stmtCreate.EventType.GetPropertyType("b"));
@@ -175,7 +175,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select a, b, c from MyWindowNW";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
             EPAssertionUtil.AssertEqualsAnyOrder(stmtSelectOne.EventType.PropertyNames, new string[]{"a", "b", "c"});
             Assert.AreEqual(typeof(string), stmtCreate.EventType.GetPropertyType("a"));
             Assert.AreEqual(typeof(long), stmtCreate.EventType.GetPropertyType("b"));
@@ -185,20 +185,20 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " as s0 delete from MyWindowNW as s1 where s0.symbol = s1.a";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
-            stmtDelete.AddListener(listenerStmtDelete);
+            stmtDelete.Events += listenerStmtDelete.Update;
     
             SendSupportBean(epService, "E1", 1L, 10L);
             var fields = new string[]{"a", "b", "c"};
-            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1L, 10L});
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1L, 10L});
+            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L, 10L});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L, 10L});
     
             SendMarketBean(epService, "S1", 99L);
-            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"S1", 99L, 99L});
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"S1", 99L, 99L});
+            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"S1", 99L, 99L});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"S1", 99L, 99L});
     
             SendMap(epService, "M1", 100L, 101L);
-            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"M1", 101L, 100L});
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"M1", 101L, 100L});
+            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"M1", 101L, 100L});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"M1", 101L, 100L});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -208,7 +208,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowNWNA#keepall as select theString, longPrimitive, longBoxed from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsertOne = "insert into MyWindowNWNA select theString, longPrimitive, longBoxed from " + typeof(SupportBean).FullName;
@@ -224,20 +224,20 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select theString, longPrimitive, longBoxed from MyWindowNWNA";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             SendSupportBean(epService, "E1", 1L, 10L);
             var fields = new string[]{"theString", "longPrimitive", "longBoxed"};
-            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1L, 10L});
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1L, 10L});
+            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L, 10L});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L, 10L});
     
             SendMarketBean(epService, "S1", 99L);
-            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"S1", 99L, 99L});
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"S1", 99L, 99L});
+            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"S1", 99L, 99L});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"S1", 99L, 99L});
     
             SendMap(epService, "M1", 100L, 101L);
-            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"M1", 101L, 100L});
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"M1", 101L, 100L});
+            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"M1", 101L, 100L});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"M1", 101L, 100L});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -247,7 +247,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowCA#keepall as select '' as theString, 0L as longPrimitive, 0L as longBoxed from MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsertOne = "insert into MyWindowCA select theString, longPrimitive, longBoxed from " + typeof(SupportBean).FullName;
@@ -260,16 +260,16 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select theString, longPrimitive, longBoxed from MyWindowCA";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             SendSupportBean(epService, "E1", 1L, 10L);
             var fields = new string[]{"theString", "longPrimitive", "longBoxed"};
-            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1L, 10L});
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"E1", 1L, 10L});
+            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L, 10L});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L, 10L});
     
             SendMarketBean(epService, "S1", 99L);
-            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"S1", 99L, 99L});
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"S1", 99L, 99L});
+            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"S1", 99L, 99L});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"S1", 99L, 99L});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -287,7 +287,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             var listener = new SupportUpdateListener();
             string parentQuery = "@Name('Parent') select parent from ParentWindow as parent";
-            epService.EPAdministrator.CreateEPL(parentQuery).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(parentQuery).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new NWTypesChildClass());
             Assert.AreEqual(1, listener.GetNewDataListFlattened().Length);
@@ -302,7 +302,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPAdministrator.CreateEPL("on EventTypeOne as ev insert into NamedWindow select ev as event");
     
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                epService.EPRuntime.SendEvent(new Object[]{10}, "EventTypeOne");
+                epService.EPRuntime.SendEvent(new object[]{10}, "EventTypeOne");
             } else if (eventRepresentationEnum.IsMapEvent()) {
                 epService.EPRuntime.SendEvent(Collections.SingletonDataMap("hsi", 10), "EventTypeOne");
             } else if (eventRepresentationEnum.IsAvroEvent()) {
@@ -330,7 +330,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowCTA#keepall (myvalue string[])";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsertOne = "insert into MyWindowCTA select {'a','b'} as myvalue from " + typeof(SupportBean).FullName;
@@ -348,7 +348,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowCTS#keepall (stringValOne varchar, stringValTwo string, intVal int, longVal long)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // assert type metadata
             EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI) epService).EventAdapterService.GetEventTypeByName("MyWindowCTS");
@@ -370,12 +370,12 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select stringValOne, stringValTwo, intVal, longVal from MyWindowCTS";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             SendSupportBean(epService, "E1", 1L, 10L);
             string[] fields = "stringValOne,stringValTwo,intVal,longVal".Split(',');
-            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E1", 1, 10L});
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E1", 1, 10L});
+            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E1", 1, 10L});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E1", 1, 10L});
     
             // create window with two views
             stmtTextCreate = "create window MyWindowCTSTwo#unique(stringValOne)#keepall (stringValOne varchar, stringValTwo string, intVal int, longVal long)";
@@ -404,7 +404,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowWNF#keepall select * from " + typeof(SupportBean_A).Name;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsertOne = "insert into MyWindowWNF select * from " + typeof(SupportBean_A).Name;
@@ -414,12 +414,12 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select id from default.MyWindowWNF";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("E1"));
             var fields = new string[]{"id"};
-            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -434,12 +434,12 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextInsertOne = "insert into MyWindowMAM select * from MyMap";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
             var listenerWindow = new SupportUpdateListener();
-            stmt.AddListener(listenerWindow);
+            stmt.Events += listenerWindow.Update;
     
             SendMap(epService, "k1", 100L, 200L);
             EventBean theEvent = listenerWindow.AssertOneGetNewAndReset();
             Assert.IsTrue(theEvent is MappedEventBean);
-            EPAssertionUtil.AssertProps(theEvent, "key,primitive".Split(','), new Object[]{"k1", 100L});
+            EPAssertionUtil.AssertProps(theEvent, "key,primitive".Split(','), new object[]{"k1", 100L});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -449,7 +449,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowWI#keepall as select * from " + typeof(SupportBeanBase).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsertOne = "insert into MyWindowWI select * from " + typeof(SupportBean_A).Name;
@@ -463,16 +463,16 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select id from MyWindowWI";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("E1"));
             var fields = new string[]{"id"};
-            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
     
             epService.EPRuntime.SendEvent(new SupportBean_B("E2"));
-            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E2"});
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"E2"});
+            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E2"});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"E2"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -482,7 +482,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowNSB#keepall as " + typeof(SupportBean_A).Name;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsertOne = "insert into MyWindowNSB select * from " + typeof(SupportBean_A).Name;
@@ -492,12 +492,12 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select id from MyWindowNSB";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("E1"));
             var fields = new string[]{"id"};
-            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"E1"});
+            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"E1"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -507,7 +507,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextCreate = "create window MyWindowWWF#keepall as select *, id as myid from " + typeof(SupportBean_A).Name;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
-            stmtCreate.AddListener(listenerWindow);
+            stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
             string stmtTextInsertOne = "insert into MyWindowWWF select *, id || 'A' as myid from " + typeof(SupportBean_A).Name;
@@ -517,12 +517,12 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextSelectOne = "select id, myid from MyWindowWWF";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
-            stmtSelectOne.AddListener(listenerStmtOne);
+            stmtSelectOne.Events += listenerStmtOne.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("E1"));
             var fields = new string[]{"id", "myid"};
-            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E1A"});
-            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E1A"});
+            EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E1A"});
+            EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E1A"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }

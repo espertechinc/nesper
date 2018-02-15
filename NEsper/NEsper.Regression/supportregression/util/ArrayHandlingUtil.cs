@@ -19,7 +19,7 @@ namespace com.espertech.esper.supportregression.util
     public class ArrayHandlingUtil
     {
         public static EventBean[] Reorder(String key, EventBean[] events) {
-            return Reorder(new String[] {key}, events);
+            return Reorder(new string[] {key}, events);
         }
 
         public static EventBean[] Reorder(String[] keys, EventBean[] events) {
@@ -40,13 +40,13 @@ namespace com.espertech.esper.supportregression.util
         }
     
         public static MultiKeyUntyped GetMultiKey(EventBean theEvent, String[] keys) {
-            Object[] mk = new Object[keys.Length];
+            object[] mk = new Object[keys.Length];
             for (int i = 0; i < keys.Length; i++) {
                 mk[i] = theEvent.Get(keys[i]);
             }
             return new MultiKeyUntyped(mk);
         }
-        public static Object[][] GetUnderlyingEvents(EventBean[] events, String[] keys)
+        public static object[][] GetUnderlyingEvents(EventBean[] events, String[] keys)
         {
             return events
                 .Select(eventBean => keys.Select(eventBean.Get).ToArray())

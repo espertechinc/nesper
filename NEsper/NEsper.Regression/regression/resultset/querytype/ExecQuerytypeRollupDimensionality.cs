@@ -15,8 +15,6 @@ using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -63,7 +61,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             epService.EPAdministrator.CreateEPL(hint + "@Name('s1') context MyContext select theString as c0, sum(intPrimitive) as c1 " +
                     "from SupportBean group by Rollup(theString) output " + outputLimit + " when terminated");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.GetStatement("s1").AddListener(listener);
+            epService.EPAdministrator.GetStatement("s1").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -92,7 +90,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select longPrimitive as c0, sum(intPrimitive) as c1 " +
                     "from SupportBean group by Rollup(case when longPrimitive > 0 then 1 else 0 end)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("c0"));
             string[] fields = "c0,c1".Split(',');
     
@@ -122,7 +120,7 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionContextPartitionAlsoRollup(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create context SegmentedByString partition by theString from SupportBean");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("context SegmentedByString select theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from SupportBean group by Rollup(theString, intPrimitive)").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("context SegmentedByString select theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from SupportBean group by Rollup(theString, intPrimitive)").Events += listener.Update;
             string[] fields = "c0,c1,c2".Split(',');
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10));
@@ -145,7 +143,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("on SupportBean_S0 as s0 select mw.theString as c0, sum(mw.intPrimitive) as c1, count(*) as c2 from MyWindow mw group by Rollup(mw.theString)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             string[] fields = "c0,c1,c2".Split(',');
     
             // {E0, 0}, {E1, 1}, {E2, 2}, {E0, 3}, {E1, 4}, {E2, 5}, {E0, 6}, {E1, 7}, {E2, 8}, {E0, 9}
@@ -197,7 +195,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("@Name('s1')" +
                     "select theString as c0, intPrimitive as c1, longPrimitive as c2, sum(doublePrimitive) as c3 from SupportBean " +
-                    "group by " + groupBy).AddListener(listener);
+                    "group by " + groupBy).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 10, 100, 1000));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
@@ -225,7 +223,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "select theString as c0, intPrimitive as c1, longPrimitive as c2, sum(doublePrimitive) as c3 from SupportBean " +
                     "group by " + groupBy);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c1"));
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("c2"));
     
@@ -260,7 +258,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "select theString as c0, intPrimitive as c1, longPrimitive as c2, sum(doublePrimitive) as c3 from SupportBean " +
                     "group by " + groupBy);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c1"));
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("c2"));
     
@@ -289,7 +287,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from SupportBean#length(4) " +
                     "group by grouping Sets(theString, intPrimitive)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c1"));
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 10, 100));
@@ -326,7 +324,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from SupportBean#length(4) " +
                     "group by grouping Sets((), (theString, intPrimitive))");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c1"));
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 10, 100));
@@ -358,7 +356,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "select theString as c0, intPrimitive as c1, longPrimitive as c2, doublePrimitive as c3, sum(intBoxed) as c4 from SupportBean " +
                     "group by Cube(theString, intPrimitive, longPrimitive, doublePrimitive)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c1"));
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("c2"));
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c3"));
@@ -461,7 +459,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "Grouping(longPrimitive) as c7," +
                     "Grouping_id(theString, intPrimitive, longPrimitive) as c8 " +
                     "from SupportBean#length(4) " +
-                    "group by " + groupBy).AddListener(listener);
+                    "group by " + groupBy).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10, 100));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
@@ -556,7 +554,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("@Name('s1')" +
                     "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from MyWindow " +
-                    "group by " + groupBy).AddListener(listener);
+                    "group by " + groupBy).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEvent(0, "E1", 10, 100));    // insert event
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields,
@@ -611,7 +609,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("@Name('s1')" +
                     "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from MyWindow " +
-                    "group by " + groupBy).AddListener(listener);
+                    "group by " + groupBy).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEvent(0, "E1", 10, 100));    // insert event intBoxed=0
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields,
@@ -742,7 +740,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             epService.EPAdministrator.CreateEPL("@Name('s1')" +
                     "select theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 " +
                     "from SupportBean#length(3) " + (join ? ", SupportBean_S0#lastevent " : "") +
-                    "group by Rollup(theString, intPrimitive)").AddListener(listener);
+                    "group by Rollup(theString, intPrimitive)").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 10, 100));
@@ -830,7 +828,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "select theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from SupportBean " +
                     "group by Rollup(theString, intPrimitive)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c1"));
     
@@ -871,7 +869,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("@Name('s1')" +
                     "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from SupportBean#length_batch(4) " +
-                    "group by Rollup(theString, intPrimitive)").AddListener(listener);
+                    "group by Rollup(theString, intPrimitive)").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 10, 100));
             epService.EPRuntime.SendEvent(MakeEvent("E2", 20, 200));
@@ -914,7 +912,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("@Name('s1')" +
                     "select theString as c0, sum(intPrimitive) as c1 from SupportBean " +
-                    "group by " + rollup).AddListener(listener);
+                    "group by " + rollup).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
@@ -957,7 +955,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             epService.EPAdministrator.CreateEPL("@Name('s1')" +
                     "select theString as c0, intPrimitive as c1, longPrimitive as c2, count(*) as c3, sum(doublePrimitive) as c4 " +
                     "from SupportBean#keepall " + (isJoin ? ", SupportBean_S0#lastevent " : "") +
-                    "group by " + groupByClause).AddListener(listener);
+                    "group by " + groupByClause).Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10, 100));
@@ -993,7 +991,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             string epl = "select sum(intPrimitive) as c0, theString as c1, window(*) as c2 " +
                     "from SupportBean#length(2) sb group by Rollup(theString) order by theString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var eventOne = new SupportBean("E1", 1);
             epService.EPRuntime.SendEvent(eventOne);

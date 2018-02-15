@@ -54,13 +54,13 @@ namespace com.espertech.esper.regression.nwtable.infra
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(0));  // end
     
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerUnAggUngr.GetAndResetLastNewData(), "pkey0,pkey1,c0".Split(','), new Object[][]{new object[] {"E1", 10, 100L}, new object[] {"E2", 20, 200L}});
-            EPAssertionUtil.AssertProps(listenerFullyAggUngr.AssertOneGetNewAndReset(), "thecnt".Split(','), new Object[]{2L});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerAggUngr.GetAndResetLastNewData(), "pkey0,thecnt".Split(','), new Object[][]{new object[] {"E1", 2L}, new object[] {"E2", 2L}});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerFullyAggGroup.GetAndResetLastNewData(), "pkey0,thecnt".Split(','), new Object[][]{new object[] {"E1", 1L}, new object[] {"E2", 1L}});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerAggGroup.GetAndResetLastNewData(), "pkey0,pkey1,thecnt".Split(','), new Object[][]{new object[] {"E1", 10, 1L}, new object[] {"E2", 20, 1L}});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerAggGroupRollup.GetAndResetLastNewData(), "pkey0,pkey1,thecnt".Split(','), new Object[][]{
-                    new object[] {"E1", 10, 1L}, {"E2", 20, 1L}, {"E1", null, 1L}, {"E2", null, 1L}, {null, null, 2L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerUnAggUngr.GetAndResetLastNewData(), "pkey0,pkey1,c0".Split(','), new object[][]{new object[] {"E1", 10, 100L}, new object[] {"E2", 20, 200L}});
+            EPAssertionUtil.AssertProps(listenerFullyAggUngr.AssertOneGetNewAndReset(), "thecnt".Split(','), new object[]{2L});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerAggUngr.GetAndResetLastNewData(), "pkey0,thecnt".Split(','), new object[][]{new object[] {"E1", 2L}, new object[] {"E2", 2L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerFullyAggGroup.GetAndResetLastNewData(), "pkey0,thecnt".Split(','), new object[][]{new object[] {"E1", 1L}, new object[] {"E2", 1L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerAggGroup.GetAndResetLastNewData(), "pkey0,pkey1,thecnt".Split(','), new object[][]{new object[] {"E1", 10, 1L}, new object[] {"E2", 20, 1L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerAggGroupRollup.GetAndResetLastNewData(), "pkey0,pkey1,thecnt".Split(','), new object[][]{
+                    new object[] {"E1", 10, 1L}, new object[]{"E2", 20, 1L}, new object[]{"E1", null, 1L}, new object[]{"E2", null, 1L}, new object[]{null, null, 2L}});
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfra", false);
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regression.nwtable.infra
         private SupportUpdateListener Register(EPServiceProvider epService, string epl) {
             var listener = new SupportUpdateListener();
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             return listener;
         }
     

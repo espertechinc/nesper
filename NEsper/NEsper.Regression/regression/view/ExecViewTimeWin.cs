@@ -17,15 +17,14 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.view
 {
     public class ExecViewTimeWin : RegressionExecution {
-        private static readonly string SYMBOL_DELL = "DELL";
-        private static readonly string SYMBOL_IBM = "IBM";
+        private const string SYMBOL_DELL = "DELL";
+        private const string SYMBOL_IBM = "IBM";
     
         public override void Run(EPServiceProvider epService) {
             RunAssertionWinTimeSum(epService);
@@ -40,7 +39,7 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(sumTimeExpr);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             TryAssertion(epService, testListener, stmt);
     
@@ -55,7 +54,7 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(sumTimeUniExpr);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             TryGroupByAssertions(epService, testListener, stmt);
     
@@ -70,7 +69,7 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(sumTimeUniExpr);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             TrySingleAssertion(epService, testListener, stmt);
     

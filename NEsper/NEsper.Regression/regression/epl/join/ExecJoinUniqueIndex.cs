@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.epl.join
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanTwo("E2", 1, 2, 0));
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanTwo("E3", 1, 3, 9));
                 epService.EPRuntime.SendEvent(new SupportSimpleBeanOne("EX", 1, 3, 9));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"EX", "E3"});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"EX", "E3"});
             });
 
             var testCases = EnumHelper.GetValues<CaseEnum>();
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regression.epl.join
             eplUnique += whereClause;
     
             EPStatement stmtUnique = epService.EPAdministrator.CreateEPL(eplUnique);
-            stmtUnique.AddListener(listener);
+            stmtUnique.Events += listener.Update;
     
             SupportQueryPlanIndexHook.AssertJoinOneStreamAndReset(unique);
     

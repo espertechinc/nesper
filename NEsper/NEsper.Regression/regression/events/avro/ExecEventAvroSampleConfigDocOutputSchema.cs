@@ -35,7 +35,7 @@ namespace com.espertech.esper.regression.events.avro
             var schemaTwo = SchemaBuilder.Record("MyAvroEvent",
                     TypeBuilder.RequiredInt("carId"),
                     TypeBuilder.Field("carType",
-                        TypeBuilder.String(
+                        TypeBuilder.StringType(
                             TypeBuilder.Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE))));
 
             Assert.AreEqual("{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"string\"}}]}", schemaTwo.ToString());
@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.events.avro
             // Define CarLocUpdateEvent event type (example for runtime-configuration interface)
             var schemaThree = SchemaBuilder.Record("CarLocUpdateEvent",
                     TypeBuilder.Field("carId", 
-                        TypeBuilder.String(
+                        TypeBuilder.StringType(
                             TypeBuilder.Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE))),
                     TypeBuilder.RequiredInt("direction"));
             var avroEvent = new ConfigurationEventTypeAvro(schemaThree);
@@ -51,7 +51,7 @@ namespace com.espertech.esper.regression.events.avro
     
             stmt = epService.EPAdministrator.CreateEPL("select count(*) from CarLocUpdateEvent(direction = 1)#Time(1 min)");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             var @event = new GenericRecord(schemaThree);
             @event.Put("carId", "A123456");
             @event.Put("direction", 1);

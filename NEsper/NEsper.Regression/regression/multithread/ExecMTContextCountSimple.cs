@@ -20,7 +20,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -42,9 +41,9 @@ namespace com.espertech.esper.regression.multithread
     
         private void TrySendContextCountSimple(EPServiceProvider epService, int numThreads, int numRepeats) {
             var listener = new SupportMTUpdateListener();
-            epService.EPAdministrator.GetStatement("select").AddListener(listener);
+            epService.EPAdministrator.GetStatement("select").Events += listener.Update;
     
-            var events = new List<Object>();
+            var events = new List<object>();
             for (int i = 0; i < numRepeats; i++) {
                 events.Add(new SupportBean("E" + i, i));
             }

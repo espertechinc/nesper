@@ -16,16 +16,14 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.resultset.querytype
 {
     public class ExecQuerytypeGroupByEventPerRowHaving : RegressionExecution {
-        private static readonly string SYMBOL_DELL = "DELL";
-        private static readonly string SYMBOL_IBM = "IBM";
+        private const string SYMBOL_DELL = "DELL";
+        private const string SYMBOL_IBM = "IBM";
     
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
@@ -43,7 +41,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "select theString, intPrimitive from SupportBean_S0#lastevent, SupportBean#length_batch(3) group by theString having count(*) > 1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
@@ -52,7 +50,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             EventBean[] received = listener.GetNewDataListFlattened();
             EPAssertionUtil.AssertPropsPerRow(received, "theString,intPrimitive".Split(','),
-                    new Object[][]{new object[] {"E2", 20}, new object[] {"E2", 21}});
+                    new object[][]{new object[] {"E2", 20}, new object[] {"E2", 21}});
             listener.Reset();
             stmt.Dispose();
         }
@@ -67,7 +65,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssertionSum(epService, listener, stmt);
     
@@ -86,7 +84,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
@@ -107,13 +105,13 @@ namespace com.espertech.esper.regression.resultset.querytype
             Assert.IsFalse(listener.IsInvoked);
     
             SendEvent(epService, SYMBOL_DELL, 20000, 54);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{SYMBOL_DELL, 20000L, 103d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{SYMBOL_DELL, 20000L, 103d});
     
             SendEvent(epService, SYMBOL_IBM, 1000, 10);
             Assert.IsFalse(listener.IsInvoked);
     
             SendEvent(epService, SYMBOL_IBM, 5000, 20);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new Object[]{SYMBOL_DELL, 10000L, 54d});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), fields, new object[]{SYMBOL_DELL, 10000L, 54d});
     
             SendEvent(epService, SYMBOL_IBM, 6000, 5);
             Assert.IsFalse(listener.IsInvoked);

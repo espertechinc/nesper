@@ -14,7 +14,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -36,7 +35,7 @@ namespace com.espertech.esper.regression.expr.expr
             Assert.AreEqual(typeof(long), type.GetPropertyType("myMaxEx"));
     
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryMinMaxWindowStats(epService, listener);
     
@@ -64,7 +63,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryMinMaxWindowStats(epService, listener);
     
@@ -84,7 +83,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryMinMaxWindowStats(epService, listener);
     

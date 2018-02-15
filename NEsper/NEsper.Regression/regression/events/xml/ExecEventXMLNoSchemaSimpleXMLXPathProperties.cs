@@ -87,7 +87,7 @@ namespace com.espertech.esper.regression.events.xml
                             "from TestXMLNoSchemaType#length(100)";
     
             EPStatement joinView = epService.EPAdministrator.CreateEPL(stmt);
-            joinView.AddListener(updateListener);
+            joinView.Events += updateListener.Update;
     
             // Generate document with the specified in element1 to confirm we have independent events
             SendEvent(epService, "EventA");

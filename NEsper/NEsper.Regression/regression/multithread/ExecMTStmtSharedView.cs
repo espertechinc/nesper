@@ -19,8 +19,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
@@ -36,7 +34,7 @@ namespace com.espertech.esper.regression.multithread
         private static readonly string[] SYMBOLS = {"IBM", "MSFT", "GE"};
     
         public override void Configure(Configuration configuration) {
-            configuration.EngineDefaults.Threading.InternalTimerEnabled = false;
+            configuration.EngineDefaults.Threading.IsInternalTimerEnabled = false;
             configuration.EngineDefaults.ViewResources.IsShareViews = true;
         }
     
@@ -53,7 +51,7 @@ namespace com.espertech.esper.regression.multithread
                         " select * " +
                                 " from " + typeof(SupportMarketDataBean).FullName + "#Groupwin(symbol)#Uni(price)");
                 listeners[i] = new SupportMTUpdateListener();
-                stmt[i].AddListener(listeners[i]);
+                stmt[i].Events += listeners[i].Update;
             }
     
             // Start send threads
@@ -70,19 +68,19 @@ namespace com.espertech.esper.regression.multithread
             threadPool.Shutdown();
             threadPool.AwaitTermination(10, TimeUnit.SECONDS);
             for (int i = 0; i < numThreads; i++) {
-                Assert.IsTrue((bool?) future[i].Get());
+                Assert.IsTrue(future[i].GetValueOrDefault());
             }
             long endTime = DateTimeHelper.CurrentTimeMillis;
             long delta = endTime - startTime;
-            Assert.IsTrue("delta=" + delta + " not less then 5 sec", delta < 5000);   // should take less then 5 seconds even for 100 statements as they need to share resources thread-safely
+            Assert.IsTrue(delta < 5000, "delta=" + delta + " not less then 5 sec");   // should take less then 5 seconds even for 100 statements as they need to share resources thread-safely
     
             // Assert results
             foreach (SupportMTUpdateListener listener in listeners) {
                 Assert.AreEqual(numRepeats * numThreads * SYMBOLS.Length, listener.NewDataList.Count);
-                EventBean[] newDataLast = listener.NewDataList.Get(listener.NewDataList.Count - 1);
+                EventBean[] newDataLast = listener.NewDataList[listener.NewDataList.Count - 1];
                 Assert.AreEqual(1, newDataLast.Length);
                 var result = newDataLast[0];
-                Assert.AreEqual(numRepeats * numThreads, ((long) result.Get("datapoints")).LongValue());
+                Assert.AreEqual(numRepeats * numThreads, result.Get("datapoints").AsLong());
                 Assert.IsTrue(Collections.List(SYMBOLS).Contains(result.Get("symbol")));
                 Assert.AreEqual(SumToN(numRepeats) * numThreads, result.Get("total"));
                 listener.Reset();

@@ -38,19 +38,19 @@ namespace com.espertech.esper.regression.pattern
             string[] fields = "a,b".Split(',');
             string pattern = "select a.theString as a, b.theString as b from pattern[every a=SupportBean -> b=SupportBean@consume]";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(pattern).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(pattern).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E2"});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 0));
             epService.EPRuntime.SendEvent(new SupportBean("E4", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3", "E4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3", "E4"});
     
             epService.EPRuntime.SendEvent(new SupportBean("E5", 0));
             epService.EPRuntime.SendEvent(new SupportBean("E6", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E5", "E6"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E5", "E6"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -59,23 +59,23 @@ namespace com.espertech.esper.regression.pattern
             string[] fields = "a,b".Split(',');
             string pattern = "select a.theString as a, b.theString as b from pattern[every (a=SupportBean and b=SupportBean)]";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(pattern).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(pattern).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E1"});
             epService.EPAdministrator.DestroyAllStatements();
     
             pattern = "select a.theString as a, b.theString as b from pattern [every (a=SupportBean and b=SupportBean(intPrimitive=10)@Consume(2))]";
-            epService.EPAdministrator.CreateEPL(pattern).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(pattern).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", "E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", "E1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E4", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E5", 10));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E3", "E5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E3", "E5"});
             epService.EPAdministrator.DestroyAllStatements();
     
             // test SODA
@@ -83,11 +83,11 @@ namespace com.espertech.esper.regression.pattern
             Assert.AreEqual(pattern, model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
             Assert.AreEqual(pattern, stmt.Text);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", "E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", "E1"});
     
             stmt.Dispose();
         }
@@ -95,47 +95,47 @@ namespace com.espertech.esper.regression.pattern
         private void RunAssertionOr(EPServiceProvider epService) {
             string[] fields = "a,b".Split(',');
             TryAssertion(epService, fields, "select a.theString as a, b.theString as b from pattern[every a=SupportBean or b=SupportBean] order by a asc",
-                    new Object[][]{new object[] {null, "E1"}, new object[] {"E1", null}});
+                    new object[][]{new object[] {null, "E1"}, new object[] {"E1", null}});
     
             TryAssertion(epService, fields, "select a.theString as a, b.theString as b from pattern[every a=SupportBean@Consume(1) or every b=SupportBean@Consume(1)] order by a asc",
-                    new Object[][]{new object[] {null, "E1"}, new object[] {"E1", null}});
+                    new object[][]{new object[] {null, "E1"}, new object[] {"E1", null}});
     
             TryAssertion(epService, fields, "select a.theString as a, b.theString as b from pattern[every a=SupportBean@Consume(2) or b=SupportBean@Consume(1)] order by a asc",
-                    new Object[]{"E1", null});
+                    new object[]{"E1", null});
     
             TryAssertion(epService, fields, "select a.theString as a, b.theString as b from pattern[every a=SupportBean@Consume(1) or b=SupportBean@Consume(2)] order by a asc",
-                    new Object[]{null, "E1"});
+                    new object[]{null, "E1"});
     
             TryAssertion(epService, fields, "select a.theString as a, b.theString as b from pattern[every a=SupportBean or b=SupportBean@Consume(2)] order by a asc",
-                    new Object[]{null, "E1"});
+                    new object[]{null, "E1"});
     
             TryAssertion(epService, fields, "select a.theString as a, b.theString as b from pattern[every a=SupportBean@Consume(1) or b=SupportBean] order by a asc",
-                    new Object[]{"E1", null});
+                    new object[]{"E1", null});
     
             TryAssertion(epService, fields, "select a.theString as a, b.theString as b from pattern[every a=SupportBean(intPrimitive=11)@Consume(1) or b=SupportBean] order by a asc",
-                    new Object[]{null, "E1"});
+                    new object[]{null, "E1"});
     
             TryAssertion(epService, fields, "select a.theString as a, b.theString as b from pattern[every a=SupportBean(intPrimitive=10)@Consume(1) or b=SupportBean] order by a asc",
-                    new Object[]{"E1", null});
+                    new object[]{"E1", null});
     
             fields = "a,b,c".Split(',');
             TryAssertion(epService, fields, "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@Consume(1) or b=SupportBean@Consume(2) or c=SupportBean@Consume(3)] order by a,b,c",
-                    new Object[][]{new object[] {null, null, "E1"}});
+                    new object[][]{new object[] {null, null, "E1"}});
     
             TryAssertion(epService, fields, "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@Consume(1) or every b=SupportBean@Consume(2) or every c=SupportBean@Consume(2)] order by a,b,c",
-                    new Object[][]{new object[] {null, null, "E1"}, new object[] {null, "E1", null}});
+                    new object[][]{new object[] {null, null, "E1"}, new object[] {null, "E1", null}});
     
             TryAssertion(epService, fields, "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@Consume(2) or every b=SupportBean@Consume(2) or every c=SupportBean@Consume(2)] order by a,b,c",
-                    new Object[][]{new object[] {null, null, "E1"}, new object[] {null, "E1", null}, new object[] {"E1", null, null}});
+                    new object[][]{new object[] {null, null, "E1"}, new object[] {null, "E1", null}, new object[] {"E1", null, null}});
     
             TryAssertion(epService, fields, "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@Consume(2) or every b=SupportBean@Consume(2) or every c=SupportBean@Consume(1)] order by a,b,c",
-                    new Object[][]{new object[] {null, "E1", null}, new object[] {"E1", null, null}});
+                    new object[][]{new object[] {null, "E1", null}, new object[] {"E1", null, null}});
     
             TryAssertion(epService, fields, "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@Consume(2) or every b=SupportBean@Consume(1) or every c=SupportBean@Consume(2)] order by a,b,c",
-                    new Object[][]{new object[] {null, null, "E1"}, new object[] {"E1", null, null}});
+                    new object[][]{new object[] {null, null, "E1"}, new object[] {"E1", null, null}});
     
             TryAssertion(epService, fields, "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@Consume(0) or every b=SupportBean or every c=SupportBean] order by a,b,c",
-                    new Object[][]{new object[] {null, null, "E1"}, new object[] {null, "E1", null}, new object[] {"E1", null, null}});
+                    new object[][]{new object[] {null, null, "E1"}, new object[] {null, "E1", null}, new object[] {"E1", null, null}});
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
@@ -149,13 +149,13 @@ namespace com.espertech.esper.regression.pattern
     
         private void TryAssertion(EPServiceProvider epService, string[] fields, string pattern, Object expected) {
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(pattern).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(pattern).Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
     
-            if (expected is Object[][]) {
-                EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, (Object[][]) expected);
+            if (expected is object[][]) {
+                EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, (object[][]) expected);
             } else {
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, (Object[]) expected);
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, (object[]) expected);
             }
             epService.EPAdministrator.DestroyAllStatements();
         }

@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static junit.framework.TestCase.*;
 
 using NUnit.Framework;
 
@@ -90,7 +89,7 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from ST2#lastevent st2, ST0#lastevent s0, ST1#lastevent s1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G", 21));
             epService.EPRuntime.SendEvent(new SupportBean("G", 13));
@@ -104,7 +103,7 @@ namespace com.espertech.esper.regression.epl.subselect
                     "select sum(intPrimitive) as sumi from SupportBean#keepall where theString = st2.key2 and s1.p11Long < intPrimitive) " +
                     "from ST2#lastevent st2, ST0#lastevent s0, ST1#lastevent s1";
             stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G", 21));
             epService.EPRuntime.SendEvent(new SupportBean("G", 13));
@@ -119,7 +118,7 @@ namespace com.espertech.esper.regression.epl.subselect
         private void TryAssertion3StreamKeyRangeCoercion(EPServiceProvider epService, string epl, bool isHasRangeReversal) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G", -1));
             epService.EPRuntime.SendEvent(new SupportBean("G", 9));
@@ -188,7 +187,7 @@ namespace com.espertech.esper.regression.epl.subselect
         private void TryAssertion2StreamRangeCoercion(EPServiceProvider epService, string epl, bool isHasRangeReversal) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_ST0("ST01", 10L));
             epService.EPRuntime.SendEvent(new SupportBean_ST1("ST11", 20L));
@@ -243,7 +242,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.Create(subquery);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             EventType type = stmt.EventType;
             Assert.AreEqual(typeof(SupportBean_S1), type.GetPropertyType("events1"));
@@ -272,7 +271,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             EventType type = stmt.EventType;
             Assert.AreEqual(typeof(SupportBean_S1), type.GetPropertyType("events1"));
@@ -290,7 +289,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             EventType type = stmt.EventType;
             Assert.AreEqual(typeof(SupportBean_S1), type.GetPropertyType("events1"));
@@ -308,7 +307,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             EventType type = stmt.EventType;
             Assert.AreEqual(typeof(SupportBean_S1), type.GetPropertyType("events1"));
@@ -327,7 +326,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             EventType type = stmt.EventType;
             Assert.AreEqual(typeof(SupportBean_S1), type.GetPropertyType("subselect_1"));
@@ -346,7 +345,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtText = "select (select id from S1#length(1000) where p10='X') as ids1 from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(-1, "Y"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
@@ -370,7 +369,7 @@ namespace com.espertech.esper.regression.epl.subselect
             // two-column constant
             stmtText = "select (select id from S1#length(1000) where p10='X' and p11='Y') as ids1 from S0";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(1, "X", "Y"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
@@ -380,7 +379,7 @@ namespace com.espertech.esper.regression.epl.subselect
             // single range
             stmtText = "select (select theString from SupportBean#lastevent where intPrimitive between 10 and 20) as ids1 from S0";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 15));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
@@ -393,7 +392,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtText = "select (select Prev(1, id) from S1#length(1000) where id=s0.id) as value from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             RunWherePrevious(epService, listener);
             stmt.Dispose();
         }
@@ -414,7 +413,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             RunWherePrevious(epService, listener);
     
             stmt.Dispose();
@@ -427,7 +426,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             RunWherePrevious(epService, listener);
     
             stmt.Dispose();
@@ -452,7 +451,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
             Assert.IsNull(listener.AssertOneGetNewAndReset().Get("ids1"));
@@ -481,7 +480,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(10, "s0_1"));
             epService.EPRuntime.SendEvent(new SupportBean_S2(10, "s0_1"));
@@ -501,7 +500,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(10, "s0_1"));
             epService.EPRuntime.SendEvent(new SupportBean_S2(10, "s0_1"));
@@ -539,7 +538,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(10, "s0_1"));
             epService.EPRuntime.SendEvent(new SupportBean_S2(10, "s0_1"));
@@ -638,7 +637,7 @@ namespace com.espertech.esper.regression.epl.subselect
         private void TrySelectWhereJoined4CoercionBack(EPServiceProvider epService, string stmtText) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendBean(epService, "A", 1, 10, 200, 3000);        // intPrimitive, intBoxed, longBoxed, doubleBoxed
             SendBean(epService, "B", 1, 10, 200, 3000);
@@ -675,7 +674,7 @@ namespace com.espertech.esper.regression.epl.subselect
         private void TrySelectWhereJoined4Coercion(EPServiceProvider epService, string stmtText) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendBean(epService, "A", 1, 10, 200, 3000);        // intPrimitive, intBoxed, longBoxed, doubleBoxed
             SendBean(epService, "B", 1, 10, 200, 3000);
@@ -715,7 +714,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
             Assert.IsFalse(listener.IsInvoked);
@@ -772,7 +771,7 @@ namespace com.espertech.esper.regression.epl.subselect
                     "  and b.id != coalesce((select b.id from PairDuplicatesRemoved#lastevent), -1)";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listener = new SupportUpdateListener();
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportSensorEvent(1, "Temperature", "A", 51, 94.5));
             Assert.IsFalse(listener.IsInvoked);
@@ -810,7 +809,7 @@ namespace com.espertech.esper.regression.epl.subselect
                             " from Sensor";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtTextOne);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportSensorEvent(1, "Temp", "Dev1", 68.0, 96.5));
             EventBean theEvent = listener.AssertOneGetNewAndReset();
@@ -833,7 +832,7 @@ namespace com.espertech.esper.regression.epl.subselect
         private void TryJoinFiltered(EPServiceProvider epService, string stmtText) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "X"));
             epService.EPRuntime.SendEvent(new SupportBean_S1(0, "Y"));
@@ -866,7 +865,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string epl = "select (select intPrimitive from SupportBean(intPrimitive < 20) #keepall where intPrimitive > 15 having theString = 'ID1') as c0 from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendS0AndAssert(epService, listener, null);
             SendSBAndS0Assert(epService, listener, "ID2", 10, null);
@@ -881,7 +880,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string epl = "select (select intPrimitive from SupportBean#keepall where intPrimitive > 15 having theString = 'ID1') as c0 from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendS0AndAssert(epService, listener, null);
             SendSBAndS0Assert(epService, listener, "ID2", 10, null);
@@ -895,7 +894,7 @@ namespace com.espertech.esper.regression.epl.subselect
             string epl = "select (select intPrimitive from SupportBean#keepall having theString = 'ID1') as c0 from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendS0AndAssert(epService, listener, null);
             SendSBAndS0Assert(epService, listener, "ID2", 10, null);

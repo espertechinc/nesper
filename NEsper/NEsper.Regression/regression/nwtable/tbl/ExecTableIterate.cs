@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -17,7 +17,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -25,7 +24,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
 {
     public class ExecTableIterate : RegressionExecution {
     
-        private static readonly string METHOD_NAME = "method:SupportStaticMethodLib.FetchTwoRows3Cols()";
+        private const string METHOD_NAME = "method:SupportStaticMethodLib.FetchTwoRows3Cols()";
     
         public override void Run(EPServiceProvider epService) {
             foreach (var clazz in new Type[]{typeof(SupportBean)}) {
@@ -55,7 +54,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
         private void RunUnaggregatedUngroupedSelectStar(EPServiceProvider epService, bool useTable) {
             string epl = "select * from " + (useTable ? "MyTable" : METHOD_NAME);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "pkey0,pkey1,c0".Split(','), new Object[][]{new object[] {"E1", 10, 100L}, new object[] {"E2", 20, 200L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "pkey0,pkey1,c0".Split(','), new object[][]{new object[] {"E1", 10, 100L}, new object[] {"E2", 20, 200L}});
         }
     
         private void RunFullyAggregatedAndUngrouped(EPServiceProvider epService, bool useTable) {
@@ -71,7 +70,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string epl = "select pkey0, count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             for (int i = 0; i < 2; i++) {
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "pkey0,thecnt".Split(','), new Object[][]{new object[] {"E1", 2L}, new object[] {"E2", 2L}});
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "pkey0,thecnt".Split(','), new object[][]{new object[] {"E1", 2L}, new object[] {"E2", 2L}});
             }
         }
     
@@ -79,7 +78,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string epl = "select pkey0, count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME) + " group by pkey0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             for (int i = 0; i < 2; i++) {
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "pkey0,thecnt".Split(','), new Object[][]{new object[] {"E1", 1L}, new object[] {"E2", 1L}});
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "pkey0,thecnt".Split(','), new object[][]{new object[] {"E1", 1L}, new object[] {"E2", 1L}});
             }
         }
     
@@ -87,7 +86,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string epl = "select pkey0, pkey1, count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME) + " group by pkey0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             for (int i = 0; i < 2; i++) {
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "pkey0,pkey1,thecnt".Split(','), new Object[][]{new object[] {"E1", 10, 1L}, new object[] {"E2", 20, 1L}});
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "pkey0,pkey1,thecnt".Split(','), new object[][]{new object[] {"E1", 10, 1L}, new object[] {"E2", 20, 1L}});
             }
         }
     
@@ -95,7 +94,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string epl = "select pkey0, pkey1, count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME) + " group by rollup (pkey0, pkey1)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             for (int i = 0; i < 2; i++) {
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "pkey0,pkey1,thecnt".Split(','), new Object[][]{
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "pkey0,pkey1,thecnt".Split(','), new object[][]{
                         new object[] {"E1", 10, 1L},
                         new object[] {"E2", 20, 1L},
                         new object[] {"E1", null, 1L},

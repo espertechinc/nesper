@@ -52,18 +52,18 @@ namespace com.espertech.esper.regression.expr.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{
                 typeof(long?), typeof(DateTimeOffset?), typeof(long?),
                 typeof(long?), typeof(DateTimeOffset?), typeof(long?)
             });
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null,
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null,
                     SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null});
     
-            Object[] expectedPlus = SupportDateTime.GetArrayCoerced(startTime, "long", "util", "long", "cal", "ldt", "zdt");
-            Object[] expectedMinus = SupportDateTime.GetArrayCoerced(startTime, "long", "util", "long", "cal", "ldt", "zdt");
+            object[] expectedPlus = SupportDateTime.GetArrayCoerced(startTime, "long", "util", "long", "cal", "ldt", "zdt");
+            object[] expectedMinus = SupportDateTime.GetArrayCoerced(startTime, "long", "util", "long", "cal", "ldt", "zdt");
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, EPAssertionUtil.ConcatenateArray(expectedPlus, expectedMinus));
     
@@ -99,15 +99,15 @@ namespace com.espertech.esper.regression.expr.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
                 typeof(long?), typeof(DateTimeOffset?), typeof(long?),
                 typeof(long?), typeof(DateTimeOffset?), typeof(long?)
             });
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            Object[] expectedPlus = SupportDateTime.GetArrayCoerced("2002-05-30T010:00:10.020", "long", "util", "long", "cal", "ldt", "zdt");
-            Object[] expectedMinus = SupportDateTime.GetArrayCoerced("2002-05-30T07:59:49.980", "long", "util", "long", "cal", "ldt", "zdt");
+            object[] expectedPlus = SupportDateTime.GetArrayCoerced("2002-05-30T010:00:10.020", "long", "util", "long", "cal", "ldt", "zdt");
+            object[] expectedMinus = SupportDateTime.GetArrayCoerced("2002-05-30T07:59:49.980", "long", "util", "long", "cal", "ldt", "zdt");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, EPAssertionUtil.ConcatenateArray(expectedPlus, expectedMinus));
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(null));

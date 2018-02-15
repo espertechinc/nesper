@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -36,7 +35,7 @@ namespace com.espertech.esper.regression.epl.join
         private void RunAssertionWhereNotNullIs(EPServiceProvider epService) {
             EPStatement stmt = SetupStatement(epService, "where s1.p11 is not null");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryWhereNotNull(epService, listener);
             stmt.Dispose();
         }
@@ -44,7 +43,7 @@ namespace com.espertech.esper.regression.epl.join
         private void RunAssertionWhereNotNullNE(EPServiceProvider epService) {
             EPStatement stmt = SetupStatement(epService, "where s1.p11 is not null");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryWhereNotNull(epService, listener);
             stmt.Dispose();
         }
@@ -52,7 +51,7 @@ namespace com.espertech.esper.regression.epl.join
         private void RunAssertionWhereNullIs(EPServiceProvider epService) {
             EPStatement stmt = SetupStatement(epService, "where s1.p11 is null");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryWhereNull(epService, listener);
             stmt.Dispose();
         }
@@ -60,7 +59,7 @@ namespace com.espertech.esper.regression.epl.join
         private void RunAssertionWhereNullEq(EPServiceProvider epService) {
             EPStatement stmt = SetupStatement(epService, "where s1.p11 is null");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             TryWhereNull(epService, listener);
             stmt.Dispose();
         }
@@ -68,7 +67,7 @@ namespace com.espertech.esper.regression.epl.join
         private void RunAssertionWhereJoinOrNull(EPServiceProvider epService) {
             EPStatement stmt = SetupStatement(epService, "where s0.p01 = s1.p11 or s1.p11 is null");
             var updateListener = new SupportUpdateListener();
-            stmt.AddListener(updateListener);
+            stmt.Events += updateListener.Update;
     
             var eventS0 = new SupportBean_S0(0, "0", "[a]");
             SendEvent(eventS0, epService);
@@ -80,7 +79,7 @@ namespace com.espertech.esper.regression.epl.join
             var s1_3 = new SupportBean_S1(1002, "5", "X");
             var s1_4 = new SupportBean_S1(1003, "5", null);
             var s0 = new SupportBean_S0(1, "5", "X");
-            SendEvent(epService, new Object[]{s1_1, s1_2, s1_3, s1_4, s0});
+            SendEvent(epService, new object[]{s1_1, s1_2, s1_3, s1_4, s0});
     
             Assert.AreEqual(3, updateListener.LastNewData.Length);
             var received = new Object[3];
@@ -88,7 +87,7 @@ namespace com.espertech.esper.regression.epl.join
                 Assert.AreSame(s0, updateListener.LastNewData[i].Get("s0"));
                 received[i] = updateListener.LastNewData[i].Get("s1");
             }
-            EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{s1_1, s1_3, s1_4}, received);
+            EPAssertionUtil.AssertEqualsAnyOrder(new object[]{s1_1, s1_3, s1_4}, received);
     
             stmt.Dispose();
         }
@@ -96,7 +95,7 @@ namespace com.espertech.esper.regression.epl.join
         private void RunAssertionWhereJoin(EPServiceProvider epService) {
             EPStatement stmt = SetupStatement(epService, "where s0.p01 = s1.p11");
             var updateListener = new SupportUpdateListener();
-            stmt.AddListener(updateListener);
+            stmt.Events += updateListener.Update;
     
             var eventsS0 = new SupportBean_S0[15];
             var eventsS1 = new SupportBean_S1[15];
@@ -150,7 +149,7 @@ namespace com.espertech.esper.regression.epl.join
                     " on s0.p00 = s1.p10 " +
                     whereClause;
     
-            return EpService.EPAdministrator.CreateEPL(joinStatement);
+            return epService.EPAdministrator.CreateEPL(joinStatement);
         }
     
         private void RunAssertionEventType(EPServiceProvider epService) {
@@ -164,7 +163,7 @@ namespace com.espertech.esper.regression.epl.join
             var s1_1 = new SupportBean_S1(1000, "5", "X");
             var s1_2 = new SupportBean_S1(1001, "5", null);
             var s1_3 = new SupportBean_S1(1002, "6", null);
-            SendEvent(epService, new Object[]{s1_1, s1_2, s1_3});
+            SendEvent(epService, new object[]{s1_1, s1_2, s1_3});
             Assert.IsFalse(updateListener.IsInvoked);
     
             var s0 = new SupportBean_S0(1, "5", "X");
@@ -176,7 +175,7 @@ namespace com.espertech.esper.regression.epl.join
             var s1_1 = new SupportBean_S1(1000, "5", "X");
             var s1_2 = new SupportBean_S1(1001, "5", null);
             var s1_3 = new SupportBean_S1(1002, "6", null);
-            SendEvent(epService, new Object[]{s1_1, s1_2, s1_3});
+            SendEvent(epService, new object[]{s1_1, s1_2, s1_3});
             Assert.IsFalse(updateListener.IsInvoked);
     
             var s0 = new SupportBean_S0(1, "5", "X");
@@ -189,7 +188,7 @@ namespace com.espertech.esper.regression.epl.join
             Assert.AreSame(expectedS1, receivedEvent.Get("s1"));
         }
     
-        private void SendEvent(EPServiceProvider epService, Object[] events) {
+        private void SendEvent(EPServiceProvider epService, object[] events) {
             for (int i = 0; i < events.Length; i++) {
                 SendEvent(events[i], epService);
             }

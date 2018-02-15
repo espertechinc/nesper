@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             SendEvent(epService, 1, 1, null);
             SendEvent(epService, 3, 2, 2);
             SendEvent(epService, 3, 2, 2);
-            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new Object[][]{new object[] {1, 2}, new object[] {2, 2}});
+            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new object[][]{new object[] {1, 2}, new object[] {2, 2}});
         }
     
         private void SendEvent(EPServiceProvider epService, int? ecid, int? priority, int? parent) {

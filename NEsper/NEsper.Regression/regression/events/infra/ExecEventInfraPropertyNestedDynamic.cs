@@ -31,6 +31,9 @@ using NEsper.Avro.Extensions;
 using static com.espertech.esper.supportregression.events.SupportEventInfra;
 using static com.espertech.esper.supportregression.events.ValueWithExistsFlag;
 
+using static NEsper.Avro.Extensions.TypeBuilder;
+
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.events.infra
@@ -153,7 +156,7 @@ namespace com.espertech.esper.regression.events.infra
                            "from " + typename;
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             Assert.AreEqual(expectedPropertyType, stmt.EventType.GetPropertyType("myid"));
             Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("exists_myid").GetBoxedType());
@@ -163,7 +166,7 @@ namespace com.espertech.esper.regression.events.infra
             {
                 send.Invoke(epService, pair.First);
                 var @event = listener.AssertOneGetNewAndReset();
-                SupportEventInfra.AssertValueMayConvert(
+                AssertValueMayConvert(
                     @event, "myid", (ValueWithExistsFlag) pair.Second, optionalValueConversion);
             }
 
@@ -208,23 +211,22 @@ namespace com.espertech.esper.regression.events.infra
         private void AddAvroEventType(EPServiceProvider epService)
         {
             epService.EPAdministrator.Configuration.AddEventTypeAvro(
-                SupportEventInfra.AVRO_TYPENAME, new ConfigurationEventTypeAvro(GetAvroSchema()));
+                AVRO_TYPENAME, new ConfigurationEventTypeAvro(GetAvroSchema()));
         }
 
-        private static RecordSchema GetAvroSchema()
-        {
-            var s1 = TypeBuilder.Record(
-                SupportEventInfra.AVRO_TYPENAME + "_1",
-                TypeBuilder.Field(
-                    (string) "id", TypeBuilder.Union(
-                        TypeBuilder.Int(),
-                        TypeBuilder.String(
-                            TypeBuilder.Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE)),
-                        TypeBuilder.Null())));
+        private static RecordSchema GetAvroSchema() {
+            var s1 = Record(
+                AVRO_TYPENAME + "_1",
+                Field(
+                    "id",
+                    Union(
+                        IntType(),
+                        StringType(Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE)),
+                        NullType())));
 
             return SchemaBuilder.Record(
-                SupportEventInfra.AVRO_TYPENAME,
-                TypeBuilder.Field("item", s1));
+                AVRO_TYPENAME,
+                Field("item", s1));
         }
     }
 } // end of namespace

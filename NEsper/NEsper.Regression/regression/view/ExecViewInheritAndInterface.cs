@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -34,7 +33,7 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
-            stmt.AddListener(testListener);
+            stmt.Events += testListener.Update;
     
             epService.EPRuntime.SendEvent(new SupportOverrideOneA("valA", "valOne", "valBase"));
             EventBean theEvent = testListener.GetAndResetLastNewData()[0];
@@ -78,7 +77,7 @@ namespace com.espertech.esper.regression.view
             for (int i = 0; i < epls.Length; i++) {
                 stmts[i] = epService.EPAdministrator.CreateEPL(epls[i]);
                 listeners[i] = new SupportUpdateListener();
-                stmts[i].AddListener(listeners[i]);
+                stmts[i].Events += listeners[i].Update;
             }
     
             epService.EPRuntime.SendEvent(new ISupportAImplSuperGImplPlus("g", "a", "baseAB", "b", "c"));

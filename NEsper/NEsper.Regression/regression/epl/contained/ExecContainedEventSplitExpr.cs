@@ -29,7 +29,6 @@ using NUnit.Framework;
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
 // using static org.apache.avro.SchemaBuilder.record;
-// using static org.junit.Assert.*;
 
 namespace com.espertech.esper.regression.epl.contained
 {
@@ -60,7 +59,7 @@ namespace com.espertech.esper.regression.epl.contained
 
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select MyGetScriptContext() as c0 from SupportBean")
-                .AddListener(listener);
+                .Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean());
             var context = (EPLScriptContext) listener.AssertOneGetNewAndReset().Get("c0");
             Assert.IsNotNull(context.EventBeanService);
@@ -112,7 +111,7 @@ namespace com.espertech.esper.regression.epl.contained
             var epl = "@Name('s0') select * from SplitEvent[" + functionOrScript + "(value) @Type(BaseEvent)]";
             var statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", "AE1,BE2,AE3"), "SplitEvent");
             var events = listener.GetAndResetLastNewData();
@@ -176,7 +175,7 @@ namespace com.espertech.esper.regression.epl.contained
             var stmtText = "select * from SentenceEvent[splitSentence" + "_" + eventRepresentationEnum.GetName() + "(sentence)@Type(WordEvent)]";
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual("WordEvent", stmt.EventType.Name);
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
 
@@ -201,7 +200,7 @@ namespace com.espertech.esper.regression.epl.contained
             Assert.AreEqual(stmtText, model.ToEPL());
             stmt = epService.EPAdministrator.Create(model);
             Assert.AreEqual(stmtText, stmt.Text);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendSentenceEvent(epService, eventRepresentationEnum, "the third event");
             EPAssertionUtil.AssertPropsPerRow(
@@ -225,7 +224,7 @@ namespace com.espertech.esper.regression.epl.contained
                            "select * from SentenceEvent[SplitSentenceJS(sentence)@Type(WordEvent)]";
 
                 stmt = epService.EPAdministrator.CreateEPL(stmtText);
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
                 Assert.AreEqual("WordEvent", stmt.EventType.Name);
 
                 epService.EPRuntime.SendEvent(Collections.EmptyDataMap, "SentenceEvent");
@@ -244,7 +243,7 @@ namespace com.espertech.esper.regression.epl.contained
                        "(sentence)@Type(WordEvent)][splitWord_" + eventRepresentationEnum.GetName() +
                        "(word)@Type(CharacterEvent)]";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual("CharacterEvent", stmt.EventType.Name);
 
             SendSentenceEvent(epService, eventRepresentationEnum, "I am");
@@ -258,7 +257,7 @@ namespace com.espertech.esper.regression.epl.contained
             stmtText = "select * from SentenceEvent[splitSentenceBean_" + eventRepresentationEnum.GetName() +
                        "(*)@Type(WordEvent)]";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual("WordEvent", stmt.EventType.Name);
 
             SendSentenceEvent(epService, eventRepresentationEnum, "another test sentence");
@@ -279,7 +278,7 @@ namespace com.espertech.esper.regression.epl.contained
                 stmtText = eventRepresentationEnum.GetAnnotationText() +
                            " select * from ObjectArrayEvent[someObjectArray@Type(WordEvent)]";
                 stmt = epService.EPAdministrator.CreateEPL(stmtText);
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
                 Assert.AreEqual("WordEvent", stmt.EventType.Name);
 
                 var rows = new[]
@@ -305,7 +304,7 @@ namespace com.espertech.esper.regression.epl.contained
                 stmtText = eventRepresentationEnum.GetAnnotationText() +
                            " select * from MyCollectionEvent[someCollection@Type(WordEvent)]";
                 stmt = epService.EPAdministrator.CreateEPL(stmtText);
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
                 Assert.AreEqual("WordEvent", stmt.EventType.Name);
 
                 var coll = new List<Map>();
@@ -330,7 +329,7 @@ namespace com.espertech.esper.regression.epl.contained
                 stmtText = eventRepresentationEnum.GetAnnotationText() +
                            " select * from AvroArrayEvent[someAvroArray@Type(WordEvent)]";
                 stmt = epService.EPAdministrator.CreateEPL(stmtText);
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
                 Assert.AreEqual("WordEvent", stmt.EventType.Name);
 
                 var rows = new GenericRecord[3];
@@ -375,7 +374,7 @@ namespace com.espertech.esper.regression.epl.contained
                 TryInvalid(
                     epService,
                     "select * from SentenceEvent[InvalidSentence(sentence)@type(WordEvent)]",
-                    "Event type 'WordEvent' underlying type System.Object[] cannot be assigned a value of type");
+                    "Event type 'WordEvent' underlying type System.object[] cannot be assigned a value of type");
             }
             else if (eventRepresentationEnum.IsMapEvent())
             {

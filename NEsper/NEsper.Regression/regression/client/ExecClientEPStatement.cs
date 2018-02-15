@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.client
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
             stmt.AddEventHandlerWithReplay(listener.Update);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, new string[]{"theString"}, new Object[][]{new object[] {"E1"}, new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, new string[]{"theString"}, new object[][]{new object[] {"E1"}, new object[] {"E2"}});
     
             // test stopped statement and destroyed statement
             listener.Reset();
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regression.client
             Assert.NotNull(stmt.Subscriber);
     
             try {
-                stmt.AddListener(listener);
+                stmt.Events += listener.Update;
                 Assert.Fail();
             } catch (IllegalStateException) {
                 //
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(true, stmt.IsStarted);
     
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             SendEvent(epService);
             listener.AssertOneGetNewAndReset();
     
@@ -155,7 +155,7 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(true, stmt.IsStarted);
             Assert.AreEqual(5000L, stmt.TimeLastStateChange);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             SendEvent(epService);
             listener.AssertOneGetNewAndReset();
     

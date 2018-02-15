@@ -44,12 +44,12 @@ namespace com.espertech.esper.regression.expr.datetime
                     " from SupportDateTime";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[]{typeof(int?), typeof(int?), typeof(int?), typeof(int?), typeof(int?)});
     
             string startTime = "2002-05-30T09:00:00.000";
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{4, 4, 4, 5, 5});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{4, 4, 4, 5, 5});
     
             // try event as input
             var configBean = new ConfigurationEventTypeLegacy();
@@ -60,16 +60,16 @@ namespace com.espertech.esper.regression.expr.datetime
             stmt.Dispose();
             epl = "select Abc.Get('month') as val0 from SupportTimeStartEndA as abc";
             stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("A0", startTime, 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0".Split(','), new Object[]{4});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0".Split(','), new object[]{4});
     
             // test "get" method on object is preferred
             epService.EPAdministrator.Configuration.AddEventType(typeof(MyEvent));
-            epService.EPAdministrator.CreateEPL("select E.Get() as c0, e.Get('abc') as c1 from MyEvent as e").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select E.Get() as c0, e.Get('abc') as c1 from MyEvent as e").Events += listener.Update;
             epService.EPRuntime.SendEvent(new MyEvent());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0,c1".Split(','), new Object[]{1, 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0,c1".Split(','), new object[]{1, 2});
     
             stmt.Dispose();
         }
@@ -89,12 +89,12 @@ namespace com.espertech.esper.regression.expr.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
-            stmtFragment.AddListener(listener);
+            stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(int?), typeof(int?), typeof(int?), typeof(int?), typeof(int?), typeof(int?), typeof(int?), typeof(int?)});
     
             string startTime = "2002-05-30T09:01:02.003";
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{3, 2, 1, 9, 30, 4, 2002, 22});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{3, 2, 1, 9, 30, 4, 2002, 22});
     
             stmtFragment.Dispose();
         }

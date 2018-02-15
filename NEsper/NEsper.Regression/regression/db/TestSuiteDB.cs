@@ -31,8 +31,8 @@ namespace com.espertech.esper.regression.db
         }
     
         [Test]
-        public void TestExecDatabaseDataSourceFactory() {
-            RegressionRunner.Run(new ExecDatabaseDataSourceFactory());
+        public void TestExecDatabaseDMConnFactory() {
+            RegressionRunner.Run(new ExecDatabaseDMConnFactory());
         }
     
         [Test]

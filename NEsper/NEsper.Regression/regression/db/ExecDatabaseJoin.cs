@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Data;
-
+using System.Data.Common;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.client.time;
+using com.espertech.esper.compat;
 using com.espertech.esper.core.service;
+using com.espertech.esper.epl.db.drivers;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
@@ -25,7 +27,7 @@ namespace com.espertech.esper.regression.db
 {
     public class ExecDatabaseJoin : RegressionExecution
     {
-        private static readonly string ALL_FIELDS = "mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal";
+        private const string ALL_FIELDS = "mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal";
     
         public override void Configure(Configuration configuration) {
             var configDB = new ConfigurationDBRef();
@@ -72,7 +74,7 @@ namespace com.espertech.esper.regression.db
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL(stmtText);
             Assert.IsFalse(statement.StatementContext.IsStatelessSelect);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanTwo("T1", 2));
             epService.EPRuntime.SendEvent(new SupportBean("T1", -1));
@@ -104,7 +106,7 @@ namespace com.espertech.esper.regression.db
                     " sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s2 ";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, null);
     
             SendSupportBeanEvent(epService, 6);
@@ -134,7 +136,7 @@ namespace com.espertech.esper.regression.db
                     " on s2.myvarchar=s0.theString ";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, null);
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -163,7 +165,7 @@ namespace com.espertech.esper.regression.db
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendSupportBeanEvent(epService, 5);
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
@@ -178,7 +180,7 @@ namespace com.espertech.esper.regression.db
     
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
             listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendSupportBeanEvent(epService, 6);
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
@@ -224,7 +226,7 @@ namespace com.espertech.esper.regression.db
         private void RuntestTimeBatch(EPServiceProvider epService, EPStatement statement) {
             var fields = new[]{"myint"};
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, null);
@@ -350,7 +352,7 @@ namespace com.espertech.esper.regression.db
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendEventS0(epService, 1);
             AssertReceived(listener, 1, 10, "A", "Z", true, 5000.0m, 100.0m, 1.2, 1.3);
@@ -365,7 +367,7 @@ namespace com.espertech.esper.regression.db
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             Assert.IsFalse(listener.IsInvoked);
     
@@ -397,7 +399,7 @@ namespace com.espertech.esper.regression.db
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
             AssertReceived(listener, 10, 100, "J", "P", true, null, 1000.0m, 10.2, 10.3);
@@ -412,7 +414,7 @@ namespace com.espertech.esper.regression.db
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendEventS0(epService, 1);
             AssertReceived(listener, 1, 10, "A", "Z", true, 5000.0m, 100.0m, 1.2, 1.3);
@@ -427,7 +429,7 @@ namespace com.espertech.esper.regression.db
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             // Too many connections unless the stop actually relieves them
             for (int i = 0; i < 100; i++) {
@@ -451,7 +453,7 @@ namespace com.espertech.esper.regression.db
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             EventType eventType = statement.EventType;
             Assert.AreEqual(typeof(long), eventType.GetPropertyType("mybigint"));
@@ -509,22 +511,31 @@ namespace com.espertech.esper.regression.db
             object r = theEvent.Get("myreal");
             Assert.AreEqual(myreal, theEvent.Get("myreal"));
         }
-    
-        private void RunAssertionMySQLDatabaseConnection(EPServiceProvider epService)
-        {
-            TypeHelper.ResolveType(SupportDatabaseService.DRIVER).NewInstance();
-            Connection conn = null;
-            try {
-                conn = DriverManager.GetConnection(SupportDatabaseService.FULLURL);
-            } catch (SQLException ex) {
-                // handle any errors
-                throw ex;
+
+        private void RunAssertionMySQLDatabaseConnection(EPServiceProvider epService) {
+            var dbProviderFactoryManager = ContainerExtensions.CurrentContainer
+                .Get<DbProviderFactoryManager>();
+            var dbProviderFactory = dbProviderFactoryManager.GetFactory(
+                SupportDatabaseService.MYSQLDB_PROVIDER_TYPE);
+
+            var properties = SupportDatabaseService.DefaultProperties;
+            var builder = dbProviderFactory.CreateConnectionStringBuilder();
+            foreach (var keyValuePair in properties) {
+                builder[keyValuePair.Key] = keyValuePair.Value;
             }
-            var stmt = conn.CreateStatement();
-            var rs = stmt.ExecuteQuery("SELECT * FROM mytesttable");
-            rs.Close();
-            stmt.Close();
-            conn.Close();
+            using (var connection = dbProviderFactory.CreateConnection()) {
+                connection.ConnectionString = builder.ConnectionString;
+                connection.Open();
+
+                using (var statement = connection.CreateCommand()) {
+                    statement.CommandText = "SELECT * FROM mytesttable";
+                    statement.CommandType = CommandType.Text;
+
+                    using (statement.ExecuteReader()) {
+                        ;
+                    }
+                }
+            }
         }
     
         private void SendEventS0(EPServiceProvider epService, int id) {

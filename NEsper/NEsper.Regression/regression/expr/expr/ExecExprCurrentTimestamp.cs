@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -42,7 +41,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("Current_timestamp()"));
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("t0"));
@@ -52,12 +51,12 @@ namespace com.espertech.esper.regression.expr.expr
             SendTimer(epService, 100);
             epService.EPRuntime.SendEvent(new SupportBean());
             EventBean theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new Object[]{100L, 100L, 101L});
+            AssertResults(theEvent, new object[]{100L, 100L, 101L});
     
             SendTimer(epService, 999);
             epService.EPRuntime.SendEvent(new SupportBean());
             theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new Object[]{999L, 999L, 1000L});
+            AssertResults(theEvent, new object[]{999L, 999L, 1000L});
             Assert.AreEqual(theEvent.Get("Current_timestamp()"), theEvent.Get("t0"));
     
             stmt.Dispose();
@@ -75,14 +74,14 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("t0"));
     
             SendTimer(epService, 777);
             epService.EPRuntime.SendEvent(new SupportBean());
             EventBean theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new Object[]{777L});
+            AssertResults(theEvent, new object[]{777L});
     
             stmt.Dispose();
         }
@@ -97,14 +96,14 @@ namespace com.espertech.esper.regression.expr.expr
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("t0"));
     
             SendTimer(epService, 777);
             epService.EPRuntime.SendEvent(new SupportBean());
             EventBean theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new Object[]{777L});
+            AssertResults(theEvent, new object[]{777L});
         }
     
         private void SendTimer(EPServiceProvider epService, long timeInMSec) {
@@ -113,7 +112,7 @@ namespace com.espertech.esper.regression.expr.expr
             runtime.SendEvent(theEvent);
         }
     
-        private void AssertResults(EventBean theEvent, Object[] result) {
+        private void AssertResults(EventBean theEvent, object[] result) {
             for (int i = 0; i < result.Length; i++) {
                 Assert.AreEqual(result[i], theEvent.Get("t" + i), "failed for index " + i);
             }

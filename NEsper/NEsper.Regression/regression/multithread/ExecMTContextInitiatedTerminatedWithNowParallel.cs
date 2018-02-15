@@ -31,7 +31,7 @@ namespace com.espertech.esper.regression.multithread
             epService.EPAdministrator.CreateEPL("create context MyCtx start @now end after 1 second");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context MyCtx select count(*) as cnt from SupportBean output last when terminated");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var latch = new AtomicBoolean(true);
             // With 0-sleep or 1-sleep the counts start to drop because the event is chasing the context partition.

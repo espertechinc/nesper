@@ -13,6 +13,7 @@ using com.espertech.esper.client.hook;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.supportregression.bean;
+using com.espertech.esper.supportregression.db;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 using Castle.MicroKernel.Registration;
@@ -46,13 +47,13 @@ namespace com.espertech.esper.regression.db
                     "select * from sql:MyDB ['select myint from mytesttable where myint = ${myvariableOCC}']";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("myint"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {false}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {false}});
     
             // assert contexts
-            SQLColumnTypeContext type = SupportSQLColumnTypeConversion.TypeContexts[0];
+            SQLColumnTypeContext type = SupportSQLColumnTypeConversion.GetTypeContexts()[0];
             Assert.AreEqual("Integer", type.ColumnSqlType);
             Assert.AreEqual("MyDB", type.Db);
             Assert.AreEqual("select myint from mytesttable where myint = ${myvariableOCC}", type.Sql);
@@ -60,13 +61,13 @@ namespace com.espertech.esper.regression.db
             Assert.AreEqual(1, type.ColumnNumber);
             Assert.AreEqual(typeof(int?), type.ColumnClassType);
     
-            SQLColumnValueContext val = SupportSQLColumnTypeConversion.ValueContexts[0];
+            SQLColumnValueContext val = SupportSQLColumnTypeConversion.GetValueContexts()[0];
             Assert.AreEqual(10, val.ColumnValue);
             Assert.AreEqual("myint", val.ColumnName);
             Assert.AreEqual(1, val.ColumnNumber);
     
             epService.EPRuntime.SetVariableValue("myvariableOCC", 60);    // greater 50 turns true
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {true}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {true}});
     
             stmt.Dispose();
         }
@@ -80,12 +81,12 @@ namespace com.espertech.esper.regression.db
                     "select * from sql:MyDB ['select myint from mytesttable where myint = ${myvariableIPC}']";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SetVariableValue("myvariableIPC", "x60");    // greater 50 turns true
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {true}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {true}});
     
-            SQLInputParameterContext param = SupportSQLColumnTypeConversion.ParamContexts[0];
+            SQLInputParameterContext param = SupportSQLColumnTypeConversion.GetParamContexts()[0];
             Assert.AreEqual(1, param.ParameterNumber);
             Assert.AreEqual("x60", param.ParameterValue);
     
@@ -101,10 +102,10 @@ namespace com.espertech.esper.regression.db
                     "select * from sql:MyDB ['select * from mytesttable where myint = ${myvariableORC}']";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             Assert.AreEqual(typeof(SupportBean), stmt.EventType.UnderlyingType);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {">10<", 99010}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {">10<", 99010}});
     
             SQLOutputRowTypeContext type = SupportSQLOutputRowConversion.TypeContexts[0];
             Assert.AreEqual("MyDB", type.Db);
@@ -115,7 +116,7 @@ namespace com.espertech.esper.regression.db
             Assert.AreEqual(10, val.Values.Get("myint"));
     
             epService.EPRuntime.SetVariableValue("myvariableORC", 60);    // greater 50 turns true
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {">60<", 99060}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {">60<", 99060}});
     
             epService.EPRuntime.SetVariableValue("myvariableORC", 90);    // greater 50 turns true
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);

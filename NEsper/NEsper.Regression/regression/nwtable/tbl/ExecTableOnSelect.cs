@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -35,7 +33,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("into table varagg " +
                     "select sum(intPrimitive) as total from SupportBean group by theString");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("on SupportBean_S0 select total as value from varagg where key = p00").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("on SupportBean_S0 select total as value from varagg where key = p00").Events += listener.Update;
     
             AssertValues(epService, listener, "G1,G2", new int?[]{null, null});
     
@@ -46,7 +44,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             AssertValues(epService, listener, "G1,G2", new int?[]{100, 200});
     
             epService.EPAdministrator.CreateEPL("on SupportBean_S1 insert into MyStream select total from varagg where key = p10");
-            epService.EPAdministrator.CreateEPL("select * from MyStream").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from MyStream").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G2", 300));
             epService.EPRuntime.SendEvent(new SupportBean_S1(0, "G2"));
@@ -61,7 +59,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     Assert.IsFalse(listener.IsInvoked);
                 } else {
                     EventBean @event = listener.AssertOneGetNewAndReset();
-                    Assert.AreEqual("Failed for key '" + keyarr[i] + "'", values[i], @event.Get("value"));
+                    Assert.AreEqual(values[i], @event.Get("value"), "Failed for key '" + keyarr[i] + "'");
                 }
             }
         }

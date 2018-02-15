@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -46,16 +44,16 @@ namespace com.espertech.esper.regression.epl.subselect
                             "from TradeEvent#Time(20 minutes) as tl " +
                             "where tl.securityID = 1000" +
                             "group by tl.securityID "
-            ).AddListener(listener);
+            ).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new TradeEvent(DateTimeHelper.CurrentTimeMillis, 1000, 50, 1));
-            Assert.AreEqual(1, ((Object[]) listener.AssertOneGetNew().Get("longItems")).Length);
-            Assert.AreEqual(1, ((Object[]) listener.AssertOneGetNew().Get("shortItems")).Length);
+            Assert.AreEqual(1, ((object[]) listener.AssertOneGetNew().Get("longItems")).Length);
+            Assert.AreEqual(1, ((object[]) listener.AssertOneGetNew().Get("shortItems")).Length);
             listener.Reset();
     
             epService.EPRuntime.SendEvent(new TradeEvent(DateTimeHelper.CurrentTimeMillis + 10, 1000, 50, 1));
-            Assert.AreEqual(2, ((Object[]) listener.AssertOneGetNew().Get("longItems")).Length);
-            Assert.AreEqual(2, ((Object[]) listener.AssertOneGetNew().Get("shortItems")).Length);
+            Assert.AreEqual(2, ((object[]) listener.AssertOneGetNew().Get("longItems")).Length);
+            Assert.AreEqual(2, ((object[]) listener.AssertOneGetNew().Get("shortItems")).Length);
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -66,7 +64,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             string epl = "select * from SupportBean(intPrimitive<10) where intPrimitive not in (select intPrimitive from SupportBean#unique(intPrimitive))";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(epl);
-            stmtOne.AddListener(listener);
+            stmtOne.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 5));
             Assert.IsFalse(listener.GetAndClearIsInvoked());
@@ -75,7 +73,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             string eplTwo = "select * from SupportBean where intPrimitive not in (select intPrimitive from SupportBean(intPrimitive<10)#unique(intPrimitive))";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(eplTwo);
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 5));
             Assert.IsFalse(listener.GetAndClearIsInvoked());

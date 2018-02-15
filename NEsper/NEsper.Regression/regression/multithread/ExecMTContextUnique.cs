@@ -71,7 +71,7 @@ namespace com.espertech.esper.regression.multithread
             threadPool.AwaitTermination(1, TimeUnit.SECONDS);
     
             // compare
-            List<Object> received = listener.Received;
+            List<object> received = listener.Received;
             foreach (Object item in received) {
                 Log.Info(item.ToString());
             }
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regression.multithread
                 }
             }
 
-            public List<object> Received { get; } = new List<Object>();
+            public List<object> Received { get; } = new List<object>();
         }
     
         public class SendEventRunnable

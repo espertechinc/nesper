@@ -7,7 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Reflection;
+using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -15,15 +16,15 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.multithread
 {
-    public class ExecMTContextOverlapDistinct : RegressionExecution {
-    
+    public class ExecMTContextOverlapDistinct : RegressionExecution
+    {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public override void Run(EPServiceProvider defaultEpService) {
             // Test uses system time
             //
@@ -40,7 +41,7 @@ namespace com.espertech.esper.regression.multithread
                     "select sum(value) as thesum, count(*) as thecnt " +
                     "from TestEvent output snapshot when terminated");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             int numLoops = 2000000;
             int numEvents = numLoops * 4;
@@ -63,10 +64,10 @@ namespace com.espertech.esper.regression.multithread
             int sum = 0;
             long count = 0;
             foreach (EventBean @event in listener.GetNewDataListFlattened()) {
-                int? sumBatch = (int?) @event.Get("thesum");
+                int? sumBatch = @event.Get("thesum").AsBoxedInt();
                 // Comment-Me-In: Log.Info(EventBeanUtility.Summarize(@event));
                 if (sumBatch != null) { // can be null when there is nothing to deliver
-                    sum += sumBatch;
+                    sum += sumBatch.Value;
                     count += (long) @event.Get("thecnt");
                 }
             }
@@ -74,25 +75,18 @@ namespace com.espertech.esper.regression.multithread
             Assert.AreEqual(numEvents, count);
             Assert.AreEqual(0, sum);
     
-            engine.Destroy();
+            engine.Dispose();
         }
     
         public class TestEvent {
-            private readonly string partitionKey;
-            private readonly int value;
-    
             public TestEvent(string partitionKey, int value) {
-                this.partitionKey = partitionKey;
-                this.value = value;
+                this.PartitionKey = partitionKey;
+                this.Value = value;
             }
-    
-            public string GetPartitionKey() {
-                return partitionKey;
-            }
-    
-            public int GetValue() {
-                return value;
-            }
+
+            public string PartitionKey { get; }
+
+            public int Value { get; }
         }
     }
 } // end of namespace

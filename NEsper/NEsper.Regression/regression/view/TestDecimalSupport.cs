@@ -171,7 +171,7 @@ namespace com.espertech.esper.regression.view
                 SendDecimalEvent(2);
                 EventBean theEvent = listener.AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(theEvent, "v1,v2,v3".Split(','),
-                                               new Object[] {2m, 4m, 5m});
+                                               new object[] {2m, 4m, 5m});
             }
 
             // test aggregation-sum, multiplication and division all together; test for ESPER-340
@@ -205,7 +205,7 @@ namespace com.espertech.esper.regression.view
             SendDecimalEvent(2);
             EventBean theEvent = listener.AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(theEvent, fieldList,
-                                           new Object[]
+                                           new object[]
                                            {
                                                2m, // sum
                                                2m, // avg
@@ -228,15 +228,15 @@ namespace com.espertech.esper.regression.view
     
             SendDecimalEvent(2);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldList,
-                    new Object[] {10m, 100m});
+                    new object[] {10m, 100m});
     
             SendDecimalEvent(300);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldList,
-                    new Object[] {300m, 300m});
+                    new object[] {300m, 300m});
     
             SendDecimalEvent(50);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldList,
-                    new Object[] {50m, 100m});
+                    new object[] {50m, 100m});
         }
 
         [Test]
@@ -252,7 +252,7 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
 
             SendDecimalEvent(4);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldList, new Object[] {4m});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldList, new object[] {4m});
 
             stmt.Dispose();
             stmt = epService.EPAdministrator.CreateEPL("select DecimalOne from SupportBeanNumeric(DecimalOne = 4d)");
@@ -263,7 +263,7 @@ namespace com.espertech.esper.regression.view
             listener.Reset();
 
             epService.EPRuntime.SendEvent(new SupportBeanNumeric(4m));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldList, new Object[] {4m});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldList, new object[] {4m});
 
             stmt.Dispose();
         }
@@ -282,7 +282,7 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBeanNumeric(3m));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldList, new Object[] {3m});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldList, new object[] {3m});
         }
     
         [Test]
@@ -295,7 +295,7 @@ namespace com.espertech.esper.regression.view
     
             String[] fieldList = "v2".Split(',');
             SendDecimalEvent(2);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldList, new Object[] {3.0m});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldList, new object[] {3.0m});
         }
 
         private void SendDecimalEvent(decimal decim1, decimal decim2)

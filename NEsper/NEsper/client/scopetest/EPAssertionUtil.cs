@@ -767,7 +767,7 @@ namespace com.espertech.esper.client.scopetest
         /// <param name="propertyNames">property names</param>
         /// <param name="received">provides events</param>
         /// <param name="expected">expected values</param>
-        public static void AssertPropsPONO(Object received, String[] propertyNames, params Object[] expected)
+        public static void AssertPropsPono(Object received, String[] propertyNames, params Object[] expected)
         {
             if (received == null)
             {
@@ -1314,7 +1314,7 @@ namespace com.espertech.esper.client.scopetest
             }
             else
             {
-                AssertPropsPONO(received, propertyNames, expected);
+                AssertPropsPono(received, propertyNames, expected);
             }
         }
 

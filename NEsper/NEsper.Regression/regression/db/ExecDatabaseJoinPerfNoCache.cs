@@ -20,7 +20,6 @@ using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.*;
 
 using NUnit.Framework;
 
@@ -83,7 +82,7 @@ namespace com.espertech.esper.regression.db
     
             var statement = epServiceRetained.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             // 1000 events should enter the window fast, no joins
             var startTime = DateTimeHelper.CurrentTimeMillis;
@@ -115,7 +114,7 @@ namespace com.espertech.esper.regression.db
     
             var statement = epServiceRetained.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             // Send 100 events which all fireStatementStopped a join
             for (var i = 0; i < 100; i++) {
@@ -144,14 +143,14 @@ namespace com.espertech.esper.regression.db
     
             var statement = epServiceRetained.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             for (var i = 0; i < 20; i++) {
                 var num = i + 1;
                 var col2 = Convert.ToString(Math.Round((float) num / 10));
                 var bean = new SupportBean_S0(num);
                 epServiceRetained.EPRuntime.SendEvent(bean);
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), new string[]{"id", "mycol3", "mycol2"}, new Object[]{num, num, col2});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), new string[]{"id", "mycol3", "mycol2"}, new object[]{num, num, col2});
             }
     
             statement.Dispose();
@@ -165,7 +164,7 @@ namespace com.espertech.esper.regression.db
     
             var statement = engine.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             for (var i = 0; i < 100; i++) {
                 var id = i % 10 + 1;

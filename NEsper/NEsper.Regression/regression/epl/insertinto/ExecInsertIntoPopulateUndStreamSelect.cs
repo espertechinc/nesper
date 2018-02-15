@@ -27,8 +27,6 @@ using NUnit.Framework;
 
 using static NEsper.Avro.Extensions.TypeBuilder;
 // using static org.apache.avro.SchemaBuilder.record;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.fail;
 
 namespace com.espertech.esper.regression.epl.insertinto
 {
@@ -130,7 +128,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPAdministrator.CreateEPL("create window MyWindow#Time(5 days) as C");
             var stmt = epService.EPAdministrator.CreateEPL("select * from MyWindow");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             // select underlying
             var stmtInsert = epService.EPAdministrator.CreateEPL("insert into MyWindow select mya.* from A as mya");
@@ -250,7 +248,7 @@ namespace com.espertech.esper.regression.epl.insertinto
         {
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             if (rep.IsMapEvent())
             {
                 epService.EPRuntime.SendEvent(MakeMap(123, "abc"), "Src");

@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -33,7 +31,7 @@ namespace com.espertech.esper.regression.expr.filter
             string stmtOneText = "every event1=SupportEvent(userId like '123%')";
             EPStatement statement = epService.EPAdministrator.CreatePattern(stmtOneText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportTradeEvent(1, null, 1001));
             Assert.IsFalse(listener.IsInvoked);

@@ -95,7 +95,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "@Name('Window') create table MyMergeInfra (theString string primary key, intPrimitive int, intBoxed int)";
             var createStmt = epService.EPAdministrator.CreateEPL(createEPL);
             var createListener = new SupportUpdateListener();
-            createStmt.AddListener(createListener);
+            createStmt.Events += createListener.Update;
     
             epService.EPAdministrator.CreateEPL("@Name('Insert') insert into MyMergeInfra select theString, intPrimitive, intBoxed from SupportBean(boolPrimitive)");
             epService.EPAdministrator.CreateEPL("@Name('Delete') on SupportBean_A delete from MyMergeInfra");
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "insert select " + (namedWindow ? "*" : "theString, intPrimitive, intBoxed");
             var merged = epService.EPAdministrator.CreateEPL(epl);
             var mergeListener = new SupportUpdateListener();
-            merged.AddListener(mergeListener);
+            merged.Events += mergeListener.Update;
     
             RunAssertionFlow(epService, namedWindow, createStmt, fields, createListener, mergeListener);
     
@@ -126,7 +126,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             Assert.AreEqual(epl, model.ToEPL().Trim());
             merged = epService.EPAdministrator.Create(model);
             Assert.AreEqual(merged.Text.Trim(), model.ToEPL().Trim());
-            merged.AddListener(mergeListener);
+            merged.Events += mergeListener.Update;
     
             RunAssertionFlow(epService, namedWindow, createStmt, fields, createListener, mergeListener);
     
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "when not matched then " +
                     "insert select " + (namedWindow ? "up.*" : "theString, intPrimitive, intBoxed");
             merged = epService.EPAdministrator.CreateEPL(epl);
-            merged.AddListener(mergeListener);
+            merged.Events += mergeListener.Update;
     
             SendSupportBeanEvent(epService, false, "E99", 2, 3); // insert via merge
             EPAssertionUtil.AssertPropsPerRowAnyOrder(createStmt.GetEnumerator(), fields, new object[][]{new object[] {"E99", 2, 3}});
@@ -282,7 +282,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "insert select \"x\"||in1||\"x\" as col1, in2*-1 as col2 ";
             var merged = epService.EPAdministrator.CreateEPL(epl);
             var mergeListener = new SupportUpdateListener();
-            merged.AddListener(mergeListener);
+            merged.Events += mergeListener.Update;
     
             SendMyEvent(epService, EventRepresentationChoiceExtensions.GetEngineDefault(epService), "E1", 0);
             Assert.IsFalse(mergeListener.IsInvoked);
@@ -451,7 +451,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "  delete";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var mergeListener = new SupportUpdateListener();
-            stmt.AddListener(mergeListener);
+            stmt.Events += mergeListener.Update;
             var fields = "c1,c2.in1,c2.in2".Split(',');
     
             SendMyInnerSchemaEvent(epService, eventRepresentationEnum, "X1", "Y1", 10);
@@ -513,7 +513,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "insert select me.a.theString as c1, me.b.theString as c2 ";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var mergeListener = new SupportUpdateListener();
-            stmt.AddListener(mergeListener);
+            stmt.Events += mergeListener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("A2", 1));
@@ -552,10 +552,10 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "then insert into WinOMIS select key0 as v1, p00 as v2";
             epService.EPAdministrator.CreateEPL(epl);
     
-            epService.EPAdministrator.CreateEPL("select * from StreamOne").AddListener(listenerOne);
-            epService.EPAdministrator.CreateEPL("select * from StreamTwo").AddListener(listenerTwo);
-            epService.EPAdministrator.CreateEPL("select * from StreamThree").AddListener(listenerThree);
-            epService.EPAdministrator.CreateEPL("select * from StreamFour").AddListener(listenerFour);
+            epService.EPAdministrator.CreateEPL("select * from StreamOne").Events += listenerOne.Update;
+            epService.EPAdministrator.CreateEPL("select * from StreamTwo").Events += listenerTwo.Update;
+            epService.EPAdministrator.CreateEPL("select * from StreamThree").Events += listenerThree.Update;
+            epService.EPAdministrator.CreateEPL("select * from StreamFour").Events += listenerFour.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_ST0("ID1", "K1", 1));
             EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), "id,key0".Split(','), new object[]{"ID1", "K1"});
@@ -682,7 +682,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "merge MyInfraUOF as mywin where mywin.theString = sb.p00 when matched then " +
                     "update set intPrimitive=id, intBoxed=mywin.intPrimitive, doublePrimitive=initial.intPrimitive");
             var mergeListener = new SupportUpdateListener();
-            stmt.AddListener(mergeListener);
+            stmt.Events += mergeListener.Update;
             var fields = "intPrimitive,intBoxed,doublePrimitive".Split(',');
     
             epService.EPRuntime.SendEvent(MakeSupportBean("E1", 1, 2));
@@ -718,7 +718,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     ";";
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl, null, null, null);
             var mergeListener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from OtherStreamOne").AddListener(mergeListener);
+            epService.EPAdministrator.CreateEPL("select * from OtherStreamOne").Events += mergeListener.Update;
     
             MakeSendNameValueEvent(epService, eventRepresentationEnum, "MyEvent", "name1", 10d);
             EPAssertionUtil.AssertProps(mergeListener.AssertOneGetNewAndReset(), "event_name,status".Split(','), new object[]{"name1", namedWindow ? 0d : 10d});

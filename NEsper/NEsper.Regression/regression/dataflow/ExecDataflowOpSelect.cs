@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.dataflow;
 using com.espertech.esper.client.scopetest;
@@ -22,8 +22,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.fail;
 
 using NUnit.Framework;
 
@@ -140,7 +138,7 @@ namespace com.espertech.esper.regression.dataflow
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             epService.EPAdministrator.CreateEPL(graph);
     
-            var capture = new DefaultSupportCaptureOp<>();
+            var capture = new DefaultSupportCaptureOp();
             IDictionary<string, Object> operators = CollectionUtil.PopulateNameValueMap("CaptureOp", capture);
     
             var options = new EPDataFlowInstantiationOptions().OperatorProvider(new DefaultSupportGraphOpProviderByOpName(operators));
@@ -154,10 +152,9 @@ namespace com.espertech.esper.regression.dataflow
             emitter.Submit(new SupportBean("E2", 2));
             emitter.Submit(new SupportBean("E1", 5));
             Assert.AreEqual(0, capture.Current.Length);
-    
-            emitter.SubmitSignal(new ProxyEPDataFlowSignalFinalMarker() {
-            });
-            EPAssertionUtil.AssertPropsPerRow(capture.Current, "theString,sumInt".Split(','), new Object[][]{new object[] {"E1", 6}, new object[] {"E2", 5}, new object[] {"E3", 4}});
+
+            emitter.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
+            EPAssertionUtil.AssertPropsPerRow(capture.Current, "theString,sumInt".Split(','), new object[][]{new object[] {"E1", 6}, new object[] {"E2", 5}, new object[] {"E3", 4}});
     
             instance.Cancel();
             epService.EPAdministrator.DestroyAllStatements();
@@ -175,7 +172,7 @@ namespace com.espertech.esper.regression.dataflow
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             epService.EPAdministrator.CreateEPL(graph);
     
-            var capture = new DefaultSupportCaptureOp<>();
+            var capture = new DefaultSupportCaptureOp();
             IDictionary<string, Object> operators = CollectionUtil.PopulateNameValueMap("CaptureOp", capture);
     
             var options = new EPDataFlowInstantiationOptions().OperatorProvider(new DefaultSupportGraphOpProviderByOpName(operators));
@@ -187,23 +184,23 @@ namespace com.espertech.esper.regression.dataflow
             emitter.Submit(new SupportBean("E1", 5));
             emitter.Submit(new SupportBean("E2", 3));
             emitter.Submit(new SupportBean("E3", 6));
-            Assert.AreEqual(0, capture.CurrentAndReset.Length);
+            Assert.AreEqual(0, capture.GetCurrentAndReset().Length);
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(60000 + 5000));
-            EPAssertionUtil.AssertProps(capture.CurrentAndReset[0], "sumInt".Split(','), new Object[]{14});
+            EPAssertionUtil.AssertProps(capture.GetCurrentAndReset()[0], "sumInt".Split(','), new object[]{14});
     
             emitter.Submit(new SupportBean("E4", 3));
             emitter.Submit(new SupportBean("E5", 6));
-            Assert.AreEqual(0, capture.CurrentAndReset.Length);
+            Assert.AreEqual(0, capture.GetCurrentAndReset().Length);
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(120000 + 5000));
-            EPAssertionUtil.AssertProps(capture.CurrentAndReset[0], "sumInt".Split(','), new Object[]{14 + 9});
+            EPAssertionUtil.AssertProps(capture.GetCurrentAndReset()[0], "sumInt".Split(','), new object[]{14 + 9});
     
             instance.Cancel();
     
             emitter.Submit(new SupportBean("E5", 6));
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(240000 + 5000));
-            Assert.AreEqual(0, capture.CurrentAndReset.Length);
+            Assert.AreEqual(0, capture.GetCurrentAndReset().Length);
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -220,7 +217,7 @@ namespace com.espertech.esper.regression.dataflow
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             epService.EPAdministrator.CreateEPL(graph);
     
-            var capture = new DefaultSupportCaptureOp<>();
+            var capture = new DefaultSupportCaptureOp();
             IDictionary<string, Object> operators = CollectionUtil.PopulateNameValueMap("CaptureOp", capture);
     
             var options = new EPDataFlowInstantiationOptions().OperatorProvider(new DefaultSupportGraphOpProviderByOpName(operators));
@@ -229,14 +226,14 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(5000));
             captive.Emitters.Get("emitterS0").Submit(new SupportBean("E1", 2));
-            EPAssertionUtil.AssertProps(capture.CurrentAndReset[0], "sumInt".Split(','), new Object[]{2});
+            EPAssertionUtil.AssertProps(capture.GetCurrentAndReset()[0], "sumInt".Split(','), new object[]{2});
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(10000));
             captive.Emitters.Get("emitterS0").Submit(new SupportBean("E2", 5));
-            EPAssertionUtil.AssertProps(capture.CurrentAndReset[0], "sumInt".Split(','), new Object[]{7});
+            EPAssertionUtil.AssertProps(capture.GetCurrentAndReset()[0], "sumInt".Split(','), new object[]{7});
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(65000));
-            EPAssertionUtil.AssertProps(capture.CurrentAndReset[0], "sumInt".Split(','), new Object[]{5});
+            EPAssertionUtil.AssertProps(capture.GetCurrentAndReset()[0], "sumInt".Split(','), new object[]{5});
     
             instance.Cancel();
             epService.EPAdministrator.DestroyAllStatements();
@@ -255,7 +252,7 @@ namespace com.espertech.esper.regression.dataflow
                     "CaptureOp(outstream) {}\n";
             epService.EPAdministrator.CreateEPL(graph);
     
-            var capture = new DefaultSupportCaptureOp<>();
+            var capture = new DefaultSupportCaptureOp();
             IDictionary<string, Object> operators = CollectionUtil.PopulateNameValueMap("CaptureOp", capture);
     
             var options = new EPDataFlowInstantiationOptions().OperatorProvider(new DefaultSupportGraphOpProviderByOpName(operators));
@@ -264,7 +261,7 @@ namespace com.espertech.esper.regression.dataflow
             EPDataFlowInstanceCaptive captive = instance.StartCaptive();
     
             captive.Emitters.Get("emitterS0").Submit(new SupportBean_S0(1, "S0_1"));
-            EPAssertionUtil.AssertProps(capture.CurrentAndReset[0], "p00,p11".Split(','), new Object[]{"S0_1", null});
+            EPAssertionUtil.AssertProps(capture.GetCurrentAndReset()[0], "p00,p11".Split(','), new object[]{"S0_1", null});
     
             instance.Cancel();
             epService.EPAdministrator.DestroyAllStatements();
@@ -291,7 +288,7 @@ namespace com.espertech.esper.regression.dataflow
                     "CaptureOp(outstream) {}\n";
             EPStatement stmtGraph = epService.EPAdministrator.CreateEPL(graph);
     
-            var capture = new DefaultSupportCaptureOp<>();
+            var capture = new DefaultSupportCaptureOp();
             IDictionary<string, Object> operators = CollectionUtil.PopulateNameValueMap("CaptureOp", capture);
     
             var options = new EPDataFlowInstantiationOptions().OperatorProvider(new DefaultSupportGraphOpProviderByOpName(operators));
@@ -304,7 +301,7 @@ namespace com.espertech.esper.regression.dataflow
     
             captive.Emitters.Get("emitterS2").Submit(new SupportBean_S2(100));
             Assert.AreEqual(1, capture.Current.Length);
-            EPAssertionUtil.AssertProps(capture.CurrentAndReset[0], "s0id,s1id,s2id".Split(','), new Object[]{1, 10, 100});
+            EPAssertionUtil.AssertProps(capture.GetCurrentAndReset()[0], "s0id,s1id,s2id".Split(','), new object[]{1, 10, 100});
     
             instance.Cancel();
     
@@ -320,10 +317,10 @@ namespace com.espertech.esper.regression.dataflow
             RunAssertionAllTypes(epService, "MyXMLEvent", DefaultSupportGraphEventUtil.XMLEvents);
             RunAssertionAllTypes(epService, "MyOAEvent", DefaultSupportGraphEventUtil.OAEvents);
             RunAssertionAllTypes(epService, "MyMapEvent", DefaultSupportGraphEventUtil.MapEvents);
-            RunAssertionAllTypes(epService, "MyEvent", DefaultSupportGraphEventUtil.POJOEvents);
+            RunAssertionAllTypes(epService, "MyEvent", DefaultSupportGraphEventUtil.PONOEvents);
         }
     
-        private void RunAssertionAllTypes(EPServiceProvider epService, string typeName, Object[] events) {
+        private void RunAssertionAllTypes(EPServiceProvider epService, string typeName, object[] events) {
             string graph = "create dataflow MySelect\n" +
                     "DefaultSupportSourceOp -> instream<" + typeName + ">{}\n" +
                     "Select(instream as ME) -> outstream {select: (select myString, sum(myInt) as total from ME)}\n" +
@@ -331,15 +328,15 @@ namespace com.espertech.esper.regression.dataflow
             EPStatement stmtGraph = epService.EPAdministrator.CreateEPL(graph);
     
             var source = new DefaultSupportSourceOp(events);
-            var capture = new DefaultSupportCaptureOp<>(2);
+            var capture = new DefaultSupportCaptureOp(2);
             var options = new EPDataFlowInstantiationOptions();
             options.OperatorProvider(new DefaultSupportGraphOpProvider(source, capture));
             EPDataFlowInstance instance = epService.EPRuntime.DataFlowRuntime.Instantiate("MySelect", options);
     
             instance.Run();
     
-            Object[] result = capture.GetAndReset()[0].ToArray();
-            EPAssertionUtil.AssertPropsPerRow(result, "myString,total".Split(','), new Object[][]{new object[] {"one", 1}, new object[] {"two", 3}});
+            object[] result = capture.GetAndReset()[0].ToArray();
+            EPAssertionUtil.AssertPropsPerRow(result, "myString,total".Split(','), new object[][]{new object[] {"one", 1}, new object[] {"two", 3}});
     
             instance.Cancel();
     
@@ -352,11 +349,11 @@ namespace com.espertech.esper.regression.dataflow
             /*
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select p0, sum(p1) from MyEvent");
     
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             for (int i = 0; i < 1000000; i++) {
-                epService.EPRuntime.SendEvent(new Object[] {"E1", 1L}, "MyEvent");
+                epService.EPRuntime.SendEvent(new object[] {"E1", 1L}, "MyEvent");
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             Log.Info("delta=" + (end - start) / 1000d);
             Log.Info(stmt.First().Get("sum(p1)"));
             */
@@ -366,11 +363,11 @@ namespace com.espertech.esper.regression.dataflow
                     "Select(instream as ME) -> astream {select: (select p0, sum(p1) from ME)}");
             EPDataFlowInstance df = epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlowOne");
             Emitter emitter = df.StartCaptive().Emitters.Get("E1");
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             for (int i = 0; i < 1; i++) {
-                emitter.Submit(new Object[]{"E1", 1L});
+                emitter.Submit(new object[]{"E1", 1L});
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             //Log.Info("delta=" + (end - start) / 1000d);
         }
     

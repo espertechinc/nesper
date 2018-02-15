@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -50,7 +49,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             string consumeEpl = "select (select intPrimitive from MyInfra where theString = s1.p10) as val from S0Bean#lastevent as s0, S1Bean#lastevent as s1";
             EPStatement consumeStmt = epService.EPAdministrator.CreateEPL(consumeEpl);
             var listener = new SupportUpdateListener();
-            consumeStmt.AddListener(listener);
+            consumeStmt.Events += listener.Update;
     
             string[] fields = "val".Split(',');
     
@@ -62,19 +61,19 @@ namespace com.espertech.esper.regression.nwtable.infra
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(1, "E2"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{20});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{20});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{20});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{20});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(1, "E1"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(1, "E3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{30});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{30});
     
             consumeStmt.Stop();
-            consumeStmt.Destroy();
+            consumeStmt.Dispose();
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfra", false);
         }

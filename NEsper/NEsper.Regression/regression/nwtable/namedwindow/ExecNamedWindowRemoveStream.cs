@@ -33,17 +33,17 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt1.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}, new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt1.GetEnumerator(), fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 1));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt1.GetEnumerator(), fields, new Object[][]{new object[] {"E2"}, new object[] {"E3"}});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt2.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt1.GetEnumerator(), fields, new object[][]{new object[] {"E2"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt2.GetEnumerator(), fields, new object[][]{new object[] {"E1"}});
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E5", 1));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt1.GetEnumerator(), fields, new Object[][]{new object[] {"E4"}, new object[] {"E5"}});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt2.GetEnumerator(), fields, new Object[][]{new object[] {"E2"}, new object[] {"E3"}});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt3.GetEnumerator(), fields, new Object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt1.GetEnumerator(), fields, new object[][]{new object[] {"E4"}, new object[] {"E5"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt2.GetEnumerator(), fields, new object[][]{new object[] {"E2"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt3.GetEnumerator(), fields, new object[][]{new object[] {"E1"}});
         }
     }
 } // end of namespace

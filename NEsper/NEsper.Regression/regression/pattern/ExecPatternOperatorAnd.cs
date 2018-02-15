@@ -187,7 +187,7 @@ namespace com.espertech.esper.regression.pattern
                             " (not CallFinished(id=call.id) and" +
                             " not CallPickedUp(id=call.id))]";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(pattern).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(pattern).Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             epService.EPRuntime.SendEvent(new SupportBean_B("B1"));
             epService.EPRuntime.SendEvent(new SupportBean_C("C1"));
@@ -211,9 +211,9 @@ namespace com.espertech.esper.regression.pattern
             }
     
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_B("B_last"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.id,b.id".Split(','), new Object[]{"A1", "B_last"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.id,b.id".Split(','), new object[]{"A1", "B_last"});
     
             stmt.Dispose();
         }

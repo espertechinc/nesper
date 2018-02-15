@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNull;
 
 using NUnit.Framework;
 
@@ -61,7 +59,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             // verify
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select varagg.theEvents as c0 from SupportBean_S0").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select varagg.theEvents as c0 from SupportBean_S0").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
             EventBean @event = listener.AssertOneGetNewAndReset();
             SupportBean[] window = (SupportBean[]) @event.Get("c0");

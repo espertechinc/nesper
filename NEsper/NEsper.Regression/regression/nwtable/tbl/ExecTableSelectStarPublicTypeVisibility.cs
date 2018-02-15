@@ -102,7 +102,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 "(select First(mt.*) from MyTable as mt) as c1" +
                 " from SupportBean_S2");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S2(0));
             var @event = listener.AssertOneGetNewAndReset();
             AssertEventUnd(((object[][]) @event.Get("c0"))[0], rowValues);
@@ -124,7 +124,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 "minby(p1) as c6" +
                 " from MyTable as win");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean_S2(0));
             var @event = listener.AssertOneGetNewAndReset();
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
         {
             var stmt = epService.EPAdministrator.CreateEPL("select * from MyTable output snapshot every 1 second");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             AssertEventType(stmt.EventType, expectedType);
 
             currentTime.Set(currentTime.Get() + 1000L);
@@ -185,7 +185,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                           "from SupportBean_S2, MyTable as mt";
             var stmtJoin = epService.EPAdministrator.CreateEPL(eplJoin);
             var listener = new SupportUpdateListener();
-            stmtJoin.AddListener(listener);
+            stmtJoin.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean_S2(0));
             var result = listener.AssertOneGetNewAndReset();
@@ -199,7 +199,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             var eplSubquery = "select (select PluginServiceEventBean(mt) from MyTable as mt) as c0 " +
                               "from SupportBean_S2";
             var stmtSubquery = epService.EPAdministrator.CreateEPL(eplSubquery);
-            stmtSubquery.AddListener(listener);
+            stmtSubquery.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean_S2(0));
             result = listener.AssertOneGetNewAndReset();
@@ -213,7 +213,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             var epl = "insert into MyBeanCtor select * from SupportBean_S2, MyTable";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean_S2(0));
             AssertEventUnd(listener.AssertOneGetNewAndReset().Get("arr"), rowValues);
@@ -226,7 +226,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             var epl = "select (select * from MyTable).Where(v=>v.key = 'G1') as mt from SupportBean_S2";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             Assert.AreEqual(typeof(Collection<>), stmt.EventType.GetPropertyType("mt"));
 
@@ -249,7 +249,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             var eplEventBean = "select (select * from MyTable) @eventbean as mt from SupportBean_S2";
             var stmt = epService.EPAdministrator.CreateEPL(eplEventBean);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(object[][]), stmt.EventType.GetPropertyType("mt"));
             Assert.AreSame(GetTablePublicType(epService, "MyTable"), stmt.EventType.GetFragmentType("mt").FragmentType);
 
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
         {
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             Assert.AreEqual(typeof(object[]), stmt.EventType.GetPropertyType("mt"));
 
@@ -285,7 +285,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             var stmt = epService.EPAdministrator.CreateEPL(joinEpl);
             var listener = new SupportUpdateListener();
             var subscriber = new SupportSubscriberMultirowObjectArrayNStmt();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             stmt.Subscriber = subscriber;
 
             AssertEventType(stmt.EventType, expectedType);
@@ -309,7 +309,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             var stmt = epService.EPAdministrator.CreateEPL(joinEpl);
             var listener = new SupportUpdateListener();
             var subscriber = new SupportSubscriberMultirowObjectArrayNStmt();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             stmt.Subscriber = subscriber;
 
             AssertEventType(stmt.EventType.GetFragmentType("mymt").FragmentType, expectedType);
@@ -334,7 +334,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             var joinEpl = "select mt from MyTable as mt, SupportBean_S2 where key = p20";
             var stmt = epService.EPAdministrator.CreateEPL(joinEpl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             AssertEventType(stmt.EventType.GetFragmentType("mt").FragmentType, expectedType);
 
@@ -354,7 +354,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             var stmt = epService.EPAdministrator.CreateEPL(joinEpl);
             var listener = new SupportUpdateListener();
             var subscriber = new SupportSubscriberMultirowObjectArrayNStmt();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             stmt.Subscriber = subscriber;
 
             AssertEventType(stmt.EventType.GetFragmentType("stream_0").FragmentType, expectedType);

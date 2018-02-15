@@ -29,7 +29,7 @@ namespace com.espertech.esper.regression.events.infra
     
         public override void Configure(Configuration configuration) {
             var avroSchema = SchemaBuilder.Record(AVRO_TYPENAME,
-                    TypeBuilder.Field("intPrimitive", TypeBuilder.Int()));
+                    TypeBuilder.Field("intPrimitive", TypeBuilder.IntType()));
             string avroSchemaText = avroSchema.ToString().Replace("\"", "&quot;");
     
             string xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regression.events.infra
             RunAssertion(epService, MAP_TYPENAME, FMAP, Collections.SingletonMap("intPrimitive", 10));
     
             // Object-Array
-            RunAssertion(epService, OA_TYPENAME, FOA, new Object[]{10});
+            RunAssertion(epService, OA_TYPENAME, FOA, new object[]{10});
     
             // XML
             RunAssertion(epService, XML_TYPENAME, FXML, "<myevent intPrimitive=\"10\"/>");
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regression.events.infra
             string stmtText = "select intPrimitive from " + typename;
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             fsend.Invoke(epService, underlying);
             var n = listener.AssertOneGetNewAndReset().Get("intPrimitive").AsInt();

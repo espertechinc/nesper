@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -73,17 +72,17 @@ namespace com.espertech.esper.regression.rowrecog
                     "\tB as B.temp >= 100)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(new Object[]{"E1", "1", 99}, "TemperatureSensorEvent");
-            epService.EPRuntime.SendEvent(new Object[]{"E2", "1", 100}, "TemperatureSensorEvent");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E1", "E2"});
+            epService.EPRuntime.SendEvent(new object[]{"E1", "1", 99}, "TemperatureSensorEvent");
+            epService.EPRuntime.SendEvent(new object[]{"E2", "1", 100}, "TemperatureSensorEvent");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E2"});
     
-            epService.EPRuntime.SendEvent(new Object[]{"E3", "1", 100}, "TemperatureSensorEvent");
-            epService.EPRuntime.SendEvent(new Object[]{"E4", "1", 99}, "TemperatureSensorEvent");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E4", "E3"});
+            epService.EPRuntime.SendEvent(new object[]{"E3", "1", 100}, "TemperatureSensorEvent");
+            epService.EPRuntime.SendEvent(new object[]{"E4", "1", 99}, "TemperatureSensorEvent");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E4", "E3"});
     
-            epService.EPRuntime.SendEvent(new Object[]{"E5", "1", 98}, "TemperatureSensorEvent");
+            epService.EPRuntime.SendEvent(new object[]{"E5", "1", 98}, "TemperatureSensorEvent");
             Assert.IsFalse(listener.IsInvoked);
     
             stmt.Dispose();
@@ -107,15 +106,14 @@ namespace com.espertech.esper.regression.rowrecog
                     ")";
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] prefixes = "A,B,C".Split(',');
             string[] fields = "a,b,c".Split(',');
-            var e = new PermutationEnumeration(3);
+            var e = PermutationEnumerator.Create(3);
             int count = 0;
     
-            while (e.HasMoreElements()) {
-                int[] indexes = e.NextElement();
+            foreach (var indexes in e) {
                 var expected = new Object[3];
                 for (int i = 0; i < 3; i++) {
                     expected[indexes[i]] = SendEvent(epService, prefixes[indexes[i]] + Convert.ToString(count), count);

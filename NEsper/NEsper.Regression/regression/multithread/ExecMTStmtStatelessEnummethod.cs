@@ -15,8 +15,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
 using NUnit.Framework;
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertTrue;
 
 namespace com.espertech.esper.regression.multithread
 {
@@ -49,7 +47,7 @@ namespace com.espertech.esper.regression.multithread
             var threadPool = Executors.NewFixedThreadPool(numThreads);
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var future = new Future<bool>[numThreads];
             for (var i = 0; i < numThreads; i++)

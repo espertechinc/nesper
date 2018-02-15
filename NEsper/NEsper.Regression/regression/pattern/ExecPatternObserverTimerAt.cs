@@ -229,7 +229,7 @@ namespace com.espertech.esper.regression.pattern
 
             var statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             if (!InstrumentationHelper.ENABLED) {
                 TryAssertion(epService, listener);
@@ -250,7 +250,7 @@ namespace com.espertech.esper.regression.pattern
             var statement = epService.EPAdministrator.Create(prepared);
     
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             if (InstrumentationHelper.ENABLED) {
                 InstrumentationHelper.EndTest();
@@ -271,7 +271,7 @@ namespace com.espertech.esper.regression.pattern
             var statement = epService.EPAdministrator.Create(prepared);
     
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             if (!InstrumentationHelper.ENABLED) {
                 TryAssertion(epService, listener);
@@ -290,7 +290,7 @@ namespace com.espertech.esper.regression.pattern
             var statement = epService.EPAdministrator.Create(prepared);
     
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             if (InstrumentationHelper.ENABLED) {
                 InstrumentationHelper.EndTest();
@@ -306,7 +306,7 @@ namespace com.espertech.esper.regression.pattern
             SendTimeEvent("2008-08-3T06:00:00.000", epService);
             var expression = "select * from pattern [a=SupportBean -> every timer:At(2*a.intPrimitive,*,*,*,*)]";
             var statement = epService.EPAdministrator.CreateEPL(expression);
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 20));
     
@@ -325,7 +325,7 @@ namespace com.espertech.esper.regression.pattern
             // test timezone
             if (TimeZoneInfo.Local.BaseUtcOffset == TimeSpan.FromHours(-5)) {    // asserting only in EST timezone, see schedule util tests
                 SendTimeEvent("2008-01-4T06:50:00.000", epService);
-                epService.EPAdministrator.CreateEPL("select * from pattern [timer:At(0, 5, 4, 1, *, 0, 'PST')]").AddListener(listener);
+                epService.EPAdministrator.CreateEPL("select * from pattern [timer:At(0, 5, 4, 1, *, 0, 'PST')]").Events += listener.Update;
     
                 SendTimeEvent("2008-01-4T07:59:59.999", epService);
                 Assert.IsFalse(listener.GetAndClearIsInvoked());
@@ -333,8 +333,8 @@ namespace com.espertech.esper.regression.pattern
                 SendTimeEvent("2008-01-4T08:00:00.000", epService);
                 Assert.IsTrue(listener.GetAndClearIsInvoked());
             }
-            epService.EPAdministrator.CreateEPL("select * from pattern [timer:At(0, 5, 4, 8, *, 0, 'xxx')]").AddListener(listener);
-            epService.EPAdministrator.CreateEPL("select * from pattern [timer:At(0, 5, 4, 8, *, 0, *)]").AddListener(listener);
+            epService.EPAdministrator.CreateEPL("select * from pattern [timer:At(0, 5, 4, 8, *, 0, 'xxx')]").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select * from pattern [timer:At(0, 5, 4, 8, *, 0, *)]").Events += listener.Update;
     
             epService.EPAdministrator.DestroyAllStatements();
         }

@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -56,18 +55,18 @@ namespace com.espertech.esper.regression.events.revision
     
             EPStatement consumerOne = epService.EPAdministrator.CreateEPL("select irstream * from RevQuote");
             var listenerOne = new SupportUpdateListener();
-            consumerOne.AddListener(listenerOne);
+            consumerOne.Events += listenerOne.Update;
     
             epService.EPRuntime.SendEvent(new SupportRevisionFull("a", "a10", "a50"));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{"a", "a10", "a50"});
-            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new Object[]{"a", "a10", "a50"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"a", "a10", "a50"});
+            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new object[]{"a", "a10", "a50"});
     
             SendTimer(epService, 1000);
     
             epService.EPRuntime.SendEvent(new SupportDeltaFive("a", "a11", "a51"));
-            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new Object[]{"a", "a11", "a51"});
-            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new Object[]{"a", "a10", "a50"});
-            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new Object[]{"a", "a11", "a51"});
+            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new object[]{"a", "a11", "a51"});
+            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new object[]{"a", "a10", "a50"});
+            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new object[]{"a", "a11", "a51"});
     
             SendTimer(epService, 2000);
     
@@ -85,16 +84,16 @@ namespace com.espertech.esper.regression.events.revision
             Assert.IsFalse(listenerOne.IsInvoked);
     
             SendTimer(epService, 11000);
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetOldAndReset(), fields, new Object[]{"a", "a11", "a51"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetOldAndReset(), fields, new object[]{"a", "a11", "a51"});
     
             SendTimer(epService, 12000);
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetOldAndReset(), fields, new Object[]{"b", "b10", "b50"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetOldAndReset(), fields, new object[]{"b", "b10", "b50"});
     
             SendTimer(epService, 13000);
             Assert.IsFalse(listenerOne.IsInvoked);
     
             SendTimer(epService, 18000);
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetOldAndReset(), fields, new Object[]{"c", "c12", "c52"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetOldAndReset(), fields, new object[]{"c", "c12", "c52"});
         }
     
         private void SendTimer(EPServiceProvider epService, long timeInMSec) {

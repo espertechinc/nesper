@@ -21,7 +21,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.regression.resultset.querytype
 {
     public class ExecQuerytypeRowPerEvent : RegressionExecution {
-        private static readonly string JOIN_KEY = "KEY";
+        private const string JOIN_KEY = "KEY";
     
         public override void Run(EPServiceProvider epService) {
             RunAssertionAggregatedSelectTriggerEvent(epService);
@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "from SupportBean#keepall as sb, SupportBean_S0#keepall as s0 " +
                     "where sb.theString = s0.p00";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "K1", "V1"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "K1", "V2"));
@@ -68,7 +68,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             string epl = "select max(intPrimitive) as val from SupportBean#Time(1) having max(intPrimitive) > intBoxed";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendEvent(epService, "E1", 10, 1);
             Assert.AreEqual(10, listener.AssertOneGetNewAndReset().Get("val"));
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "from " + typeof(SupportBean).FullName + "#length(3)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             TryAssert(epService, listener, stmt);
     
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanString(JOIN_KEY));
     
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "where symbol='IBM'";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             SendMarketDataEvent(epService, "GE", 10L);
             Assert.IsFalse(listener.IsInvoked);
@@ -164,31 +164,31 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             SendEvent(epService, eventCount, 10);
             Assert.AreEqual(10L, listener.GetAndResetLastNewData()[0].Get("mySum"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1L, 10L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {1L, 10L}});
     
             SendEvent(epService, eventCount, 15);
             Assert.AreEqual(25L, listener.GetAndResetLastNewData()[0].Get("mySum"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1L, 25L}, new object[] {2L, 25L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {1L, 25L}, new object[] {2L, 25L}});
     
             SendEvent(epService, eventCount, -5);
             Assert.AreEqual(20L, listener.GetAndResetLastNewData()[0].Get("mySum"));
             Assert.IsNull(listener.LastOldData);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {1L, 20L}, new object[] {2L, 20L}, new object[] {3L, 20L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {1L, 20L}, new object[] {2L, 20L}, new object[] {3L, 20L}});
     
             SendEvent(epService, eventCount, -2);
             Assert.AreEqual(8L, listener.LastOldData[0].Get("mySum"));
             Assert.AreEqual(8L, listener.GetAndResetLastNewData()[0].Get("mySum"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {4L, 8L}, new object[] {2L, 8L}, new object[] {3L, 8L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {4L, 8L}, new object[] {2L, 8L}, new object[] {3L, 8L}});
     
             SendEvent(epService, eventCount, 100);
             Assert.AreEqual(93L, listener.LastOldData[0].Get("mySum"));
             Assert.AreEqual(93L, listener.GetAndResetLastNewData()[0].Get("mySum"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {4L, 93L}, new object[] {5L, 93L}, new object[] {3L, 93L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {4L, 93L}, new object[] {5L, 93L}, new object[] {3L, 93L}});
     
             SendEvent(epService, eventCount, 1000);
             Assert.AreEqual(1098L, listener.LastOldData[0].Get("mySum"));
             Assert.AreEqual(1098L, listener.GetAndResetLastNewData()[0].Get("mySum"));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new Object[][]{new object[] {4L, 1098L}, new object[] {5L, 1098L}, new object[] {6L, 1098L}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {4L, 1098L}, new object[] {5L, 1098L}, new object[] {6L, 1098L}});
         }
     
         private void SendEvent(EPServiceProvider epService, long longBoxed, int intBoxed, short shortBoxed, AtomicLong eventCount) {

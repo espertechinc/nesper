@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
 
 using NUnit.Framework;
 
@@ -67,7 +66,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
             }
             EPStatement consumeStmt = epService.EPAdministrator.CreateEPL(consumeEpl);
-            consumeStmt.AddListener(listener);
+            consumeStmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "E1"));
             Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("val"));
@@ -88,9 +87,9 @@ namespace com.espertech.esper.regression.nwtable.infra
             if (indexStmt != null) {
                 indexStmt.Stop();
             }
-            consumeStmt.Destroy();
+            consumeStmt.Dispose();
             if (indexStmt != null) {
-                indexStmt.Destroy();
+                indexStmt.Dispose();
             }
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfra", false);

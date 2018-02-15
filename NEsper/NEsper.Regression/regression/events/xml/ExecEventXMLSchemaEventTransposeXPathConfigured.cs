@@ -27,10 +27,10 @@ namespace com.espertech.esper.regression.events.xml
 {
     public class ExecEventXMLSchemaEventTransposeXPathConfigured : RegressionExecution
     {
-        private static readonly string CLASSLOADER_SCHEMA_URI = "regression/simpleSchema.xsd";
+        private const string CLASSLOADER_SCHEMA_URI = "regression/simpleSchema.xsd";
     
         public override void Run(EPServiceProvider epService) {
-            string schemaURI = typeof(ExecEventXMLSchemaEventTransposeXPathConfigured).ClassLoader.GetResource(CLASSLOADER_SCHEMA_URI).ToString();
+            string schemaURI = ResourceManager.ResolveResourceURL(CLASSLOADER_SCHEMA_URI).ToString();
             RunAssertionXPathConfigured(schemaURI, epService);
             RunAssertionXPathExpression();
         }
@@ -100,8 +100,8 @@ namespace com.espertech.esper.regression.events.xml
             SupportXML.SendDefaultEvent(epService.EPRuntime, "ABC");
     
             EventBean received = stmtInsert.First();
-            EPAssertionUtil.AssertProps(received, "nested1simple.prop1,nested1simple.prop2,nested1simple.attr1,nested1simple.nested2.prop3[1]".Split(','), new Object[]{"SAMPLE_V1", true, "SAMPLE_ATTR1", 4});
-            EPAssertionUtil.AssertProps(received, "nested4array[0].id,nested4array[0].prop5[1],nested4array[1].id".Split(','), new Object[]{"a", "SAMPLE_V8", "b"});
+            EPAssertionUtil.AssertProps(received, "nested1simple.prop1,nested1simple.prop2,nested1simple.attr1,nested1simple.nested2.prop3[1]".Split(','), new object[]{"SAMPLE_V1", true, "SAMPLE_ATTR1", 4});
+            EPAssertionUtil.AssertProps(received, "nested4array[0].id,nested4array[0].prop5[1],nested4array[1].id".Split(','), new object[]{"a", "SAMPLE_V8", "b"});
     
             // assert event and fragments alone
             EventBean wildcardStmtEvent = stmtWildcard.First();
@@ -133,26 +133,36 @@ namespace com.espertech.esper.regression.events.xml
     
         private void RunAssertionXPathExpression() {
             var ctx = new XPathNamespaceContext();
-            ctx.AddPrefix("n0", "samples:schemas:simpleSchema");
+            ctx.AddNamespace("n0", "samples:schemas:simpleSchema");
     
             var node = SupportXML.GetDocument().DocumentElement;
-    
-            XPath pathOne = XPathFactory.NewInstance().NewXPath();
-            pathOne.NamespaceContext = ctx;
-            XPathExpression pathExprOne = pathOne.Compile("/n0:simpleEvent/n0:nested1");
-            Node result = (Node) pathExprOne.Evaluate(node, XPathConstants.NODE);
+            var nav = node.CreateNavigator();
+            
+            var pathExprOne = XPathExpression.Compile("/n0:simpleEvent/n0:nested1", ctx);
+            var iterator = (XPathNodeIterator) nav.Evaluate(pathExprOne);
+            Assert.AreEqual(iterator.Count, 1);
+            Assert.IsTrue(iterator.MoveNext());
+
+            var result = ((IHasXmlNode) iterator.Current).GetNode();
+                
             //Log.Info("Result:\n" + SchemaUtil.Serialize(result));
     
-            XPath pathTwo = XPathFactory.NewInstance().NewXPath();
-            pathTwo.NamespaceContext = ctx;
-            XPathExpression pathExprTwo = pathTwo.Compile("/n0:simpleEvent/n0:nested1/n0:prop1");
-            string resultTwo = (string) pathExprTwo.Evaluate(result, XPathResultType.String);
+            var pathExprTwo = XPathExpression.Compile("/n0:simpleEvent/n0:nested1/n0:prop1", ctx);
+            iterator = (XPathNodeIterator) nav.Evaluate(pathExprTwo);
+            Assert.AreEqual(iterator.Count, 1);
+            Assert.IsTrue(iterator.MoveNext());
+
+            string resultTwo = (string) iterator.Current.TypedValue;
+
             //Log.Info("Result 2: <" + resultTwo + ">");
-    
-            XPath pathThree = XPathFactory.NewInstance().NewXPath();
-            pathThree.NamespaceContext = ctx;
-            XPathExpression pathExprThree = pathThree.Compile("/n0:simpleEvent/n0:nested3");
-            string resultThress = (string) pathExprThree.Evaluate(result, XPathResultType.String);
+
+            var pathExprThree = XPathExpression.Compile("/n0:simpleEvent/n0:nested3", ctx);
+            iterator = (XPathNodeIterator)nav.Evaluate(pathExprThree);
+            Assert.AreEqual(iterator.Count, 1);
+            Assert.IsTrue(iterator.MoveNext());
+
+            string resultThress = (string) iterator.Current.TypedValue;
+
             //Log.Info("Result 3: <" + resultThress + ">");
         }
     }

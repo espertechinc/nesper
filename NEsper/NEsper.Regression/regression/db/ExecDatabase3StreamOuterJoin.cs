@@ -54,18 +54,18 @@ namespace com.espertech.esper.regression.db
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanTwo("T1", 2));
             epService.EPRuntime.SendEvent(new SupportBean("T1", -1));
     
             epService.EPRuntime.SendEvent(new SupportBeanTwo("T2", 30));
             epService.EPRuntime.SendEvent(new SupportBean("T2", -1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new Object[]{"T2", "T2", 30});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T2", "T2", 30});
     
             epService.EPRuntime.SendEvent(new SupportBean("T3", -1));
             epService.EPRuntime.SendEvent(new SupportBeanTwo("T3", 40));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new Object[]{"T3", "T3", 40});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T3", "T3", 40});
     
             statement.Dispose();
         }
@@ -83,21 +83,21 @@ namespace com.espertech.esper.regression.db
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanTwo("T1", 2));
             epService.EPRuntime.SendEvent(new SupportBean("T1", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new Object[]{"T1", "T1", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T1", "T1", null});
     
             epService.EPRuntime.SendEvent(new SupportBeanTwo("T2", 30));
             epService.EPRuntime.SendEvent(new SupportBean("T2", -2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new Object[]{"T2", "T2", 30});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T2", "T2", 30});
     
             epService.EPRuntime.SendEvent(new SupportBean("T3", -1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new Object[]{"T3", null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T3", null, null});
     
             epService.EPRuntime.SendEvent(new SupportBeanTwo("T3", 40));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new Object[]{"T3", "T3", 40});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T3", "T3", 40});
     
             statement.Dispose();
         }

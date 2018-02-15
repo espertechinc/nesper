@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.rowrecog
                     ")";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(eplOne);
             var listenerOne = new SupportUpdateListener();
-            stmtOne.AddListener(listenerOne);
+            stmtOne.Events += listenerOne.Update;
     
             string eplTwo = "@Name('S2') select * from SupportBean(theString='B') " +
                     "match_recognize (" +
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regression.rowrecog
                     ")";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(eplTwo);
             var listenerTwo = new SupportUpdateListener();
-            stmtTwo.AddListener(listenerTwo);
+            stmtTwo.Events += listenerTwo.Update;
     
             epService.EPRuntime.SendEvent(MakeBean("A", 1, 10)); // A(10):P1->P2
             epService.EPRuntime.SendEvent(MakeBean("B", 1, 11)); // A(10):P1->P2, B(11):P1->P2
@@ -87,7 +87,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             // terminate B
             epService.EPRuntime.SendEvent(MakeBean("B", 2, 11)); // we have no more B-state
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), fields, new Object[]{11L});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), fields, new object[]{11L});
     
             // should not overflow
             epService.EPRuntime.SendEvent(MakeBean("B", 1, 15));
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             // terminate A
             epService.EPRuntime.SendEvent(MakeBean("A", 2, 10)); // we have no more A-state
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{10L});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{10L});
     
             // should not overflow
             epService.EPRuntime.SendEvent(MakeBean("B", 1, 17));
@@ -113,11 +113,11 @@ namespace com.espertech.esper.regression.rowrecog
     
             // terminate B
             epService.EPRuntime.SendEvent(MakeBean("B", 2, 17));
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), fields, new Object[]{17L});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), fields, new object[]{17L});
     
             // terminate A
             epService.EPRuntime.SendEvent(MakeBean("A", 2, 19));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{19L});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{19L});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -137,7 +137,7 @@ namespace com.espertech.esper.regression.rowrecog
                     ")";
             var listener = new SupportUpdateListener();
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "A"));
             epService.EPRuntime.SendEvent(new SupportBean("A", 1));
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regression.rowrecog
             AssertContextEnginePool(epService, stmt, handler.GetAndResetContexts(), 3, GetExpectedCountMap("S1", 3));
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regression.rowrecog
                     ")";
             var listener = new SupportUpdateListener();
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeBean("A", 0, 1));
             epService.EPRuntime.SendEvent(MakeBean("B", 0, 2));
@@ -205,7 +205,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             // test matching
             epService.EPRuntime.SendEvent(MakeBean("B", 1, 6)); // now 2 states: C, D
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{2L, 6L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{2L, 6L});
     
             // no overflows
             epService.EPRuntime.SendEvent(MakeBean("E", 0, 7));
@@ -244,7 +244,7 @@ namespace com.espertech.esper.regression.rowrecog
                     ")";
             var listener = new SupportUpdateListener();
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeBean("A", 0, 1));
             epService.EPRuntime.SendEvent(MakeBean("A", 1, 2));
@@ -278,7 +278,7 @@ namespace com.espertech.esper.regression.rowrecog
             // assert match found for B
             epService.EPRuntime.SendEvent(MakeBean("B", 1, 12));
             epService.EPRuntime.SendEvent(MakeBean("B", 2, 13));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{3L, 12L, 13L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{3L, 12L, 13L});
     
             // no overflow
             epService.EPRuntime.SendEvent(MakeBean("F", 0, 14));

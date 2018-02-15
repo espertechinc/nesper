@@ -23,9 +23,9 @@ namespace com.espertech.esper.regression.events.map
 {
     public class ExecEventMapUpdate : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            IDictionary<string, Object> type = ExecEventMap.MakeMap(new Object[][]{
+            IDictionary<string, Object> type = ExecEventMap.MakeMap(new object[][]{
                     new object[] {"base1", typeof(string)},
-                    new object[] {"base2", ExecEventMap.MakeMap(new Object[][]{new object[] {"n1", typeof(int)}})}
+                    new object[] {"base2", ExecEventMap.MakeMap(new object[][]{new object[] {"n1", typeof(int)}})}
             });
             configuration.AddEventType("MyEvent", type);
         }
@@ -35,40 +35,40 @@ namespace com.espertech.esper.regression.events.map
             EPStatement statementOne = epService.EPAdministrator.CreateEPL(
                     "select base1 as v1, base2.n1 as v2, base3? as v3, base2.n2? as v4  from MyEvent");
             EPStatement statementOneSelectAll = epService.EPAdministrator.CreateEPL("select * from MyEvent");
-            Assert.AreEqual("[base1, base2]", Arrays.ToString(statementOneSelectAll.EventType.PropertyNames));
+            Assert.AreEqual("[base1, base2]", CompatExtensions.Render(statementOneSelectAll.EventType.PropertyNames));
             var listenerOne = new SupportUpdateListener();
-            statementOne.AddListener(listenerOne);
+            statementOne.Events += listenerOne.Update;
             string[] fields = "v1,v2,v3,v4".Split(',');
     
-            epService.EPRuntime.SendEvent(ExecEventMap.MakeMap(new Object[][]{
+            epService.EPRuntime.SendEvent(ExecEventMap.MakeMap(new object[][]{
                     new object[] {"base1", "abc"},
-                    new object[] {"base2", ExecEventMap.MakeMap(new Object[][]{new object[] {"n1", 10}})}
+                    new object[] {"base2", ExecEventMap.MakeMap(new object[][]{new object[] {"n1", 10}})}
             }), "MyEvent");
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{"abc", 10, null, null});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"abc", 10, null, null});
     
             // update type
-            IDictionary<string, Object> typeNew = ExecEventMap.MakeMap(new Object[][]{
+            IDictionary<string, Object> typeNew = ExecEventMap.MakeMap(new object[][]{
                     new object[] {"base3", typeof(long)},
-                    new object[] {"base2", ExecEventMap.MakeMap(new Object[][]{new object[] {"n2", typeof(string)}})}
+                    new object[] {"base2", ExecEventMap.MakeMap(new object[][]{new object[] {"n2", typeof(string)}})}
             });
             epService.EPAdministrator.Configuration.UpdateMapEventType("MyEvent", typeNew);
     
             EPStatement statementTwo = epService.EPAdministrator.CreateEPL("select base1 as v1, base2.n1 as v2, base3 as v3, base2.n2 as v4 from MyEvent");
             EPStatement statementTwoSelectAll = epService.EPAdministrator.CreateEPL("select * from MyEvent");
             var listenerTwo = new SupportUpdateListener();
-            statementTwo.AddListener(listenerTwo);
+            statementTwo.Events += listenerTwo.Update;
     
-            epService.EPRuntime.SendEvent(ExecEventMap.MakeMap(new Object[][]{
+            epService.EPRuntime.SendEvent(ExecEventMap.MakeMap(new object[][]{
                     new object[] {"base1", "def"},
-                    new object[] {"base2", ExecEventMap.MakeMap(new Object[][]{new object[] {"n1", 9}, new object[] {"n2", "xyz"}})},
+                    new object[] {"base2", ExecEventMap.MakeMap(new object[][]{new object[] {"n1", 9}, new object[] {"n2", "xyz"}})},
                     new object[] {"base3", 20L},
             }), "MyEvent");
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new Object[]{"def", 9, 20L, "xyz"});
-            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), fields, new Object[]{"def", 9, 20L, "xyz"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"def", 9, 20L, "xyz"});
+            EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), fields, new object[]{"def", 9, 20L, "xyz"});
     
             // assert event type
-            Assert.AreEqual("[base1, base2, base3]", Arrays.ToString(statementOneSelectAll.EventType.PropertyNames));
-            Assert.AreEqual("[base1, base2, base3]", Arrays.ToString(statementTwoSelectAll.EventType.PropertyNames));
+            Assert.AreEqual("[base1, base2, base3]", CompatExtensions.Render(statementOneSelectAll.EventType.PropertyNames));
+            Assert.AreEqual("[base1, base2, base3]", CompatExtensions.Render(statementTwoSelectAll.EventType.PropertyNames));
     
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
                     new EventPropertyDescriptor("base3", typeof(long), null, false, false, false, false, false),

@@ -228,7 +228,7 @@ namespace com.espertech.esper.regression.pattern
                             ") where timer:Within(1 days 2 hours 3 minutes 4 seconds 5 milliseconds)]");
     
             var testListener = new SupportUpdateListener();
-            statement.AddListener(testListener);
+            statement.Events += testListener.Update;
     
             TryAssertion(epService, testListener);
     
@@ -251,7 +251,7 @@ namespace com.espertech.esper.regression.pattern
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
     
             var testListener = new SupportUpdateListener();
-            statement.AddListener(testListener);
+            statement.Events += testListener.Update;
     
             TryAssertion(epService, testListener);
     
@@ -277,7 +277,7 @@ namespace com.espertech.esper.regression.pattern
             EPStatement statement = epService.EPAdministrator.Create(prepared);
     
             var testListener = new SupportUpdateListener();
-            statement.AddListener(testListener);
+            statement.Events += testListener.Update;
     
             TryAssertion(epService, testListener);
     
@@ -294,7 +294,7 @@ namespace com.espertech.esper.regression.pattern
             EPStatement statement = epService.EPAdministrator.CreateEPL("select b.theString as id from pattern[a=SupportBean -> (every b=SupportBean) where timer:Within(a.intPrimitive seconds)]");
     
             var testListener = new SupportUpdateListener();
-            statement.AddListener(testListener);
+            statement.Events += testListener.Update;
     
             // seed
             epService.EPRuntime.SendEvent(new SupportBean("E1", 3));
@@ -321,7 +321,7 @@ namespace com.espertech.esper.regression.pattern
             string stmtText = "select * from pattern [ Every(SB -> (MD where timer:Within(5 sec))) ]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
@@ -344,7 +344,7 @@ namespace com.espertech.esper.regression.pattern
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select * from pattern [(every SupportBean) where " +
                     (hasMax ? "timer:Withinmax(1 month, 10)" : "timer:Within(1 month)") +
-                    "]").AddListener(listener);
+                    "]").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             Assert.IsTrue(listener.GetAndClearIsInvoked());

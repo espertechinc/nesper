@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.context
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("expression getLabelThree { context.label } " +
                     "context MyCtx " +
-                    "select GetLabelOne() as c0, GetLabelTwo() as c1, GetLabelThree() as c2 from SupportBean").AddListener(listener);
+                    "select GetLabelOne() as c0, GetLabelTwo() as c1, GetLabelThree() as c2 from SupportBean").Events += listener.Update;
     
             TryAssertionExpression(epService, listener);
     
@@ -53,7 +53,7 @@ namespace com.espertech.esper.regression.context
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("expression getLabelThree alias for { context.label } " +
                     "context MyCtx " +
-                    "select getLabelOne as c0, getLabelTwo as c1, getLabelThree as c2 from SupportBean").AddListener(listener);
+                    "select getLabelOne as c0, getLabelTwo as c1, getLabelThree as c2 from SupportBean").Events += listener.Update;
     
             TryAssertionExpression(epService, listener);
     
@@ -69,11 +69,11 @@ namespace com.espertech.esper.regression.context
     
             var listener = new SupportUpdateListener();
             string statement = "context context2 select * from pattern[e1=SupportBean(THE_EXPRESSION) -> e2=SupportBean(theString='y')]";
-            epService.EPAdministrator.CreateEPL(statement).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(statement).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("x", 1));
             epService.EPRuntime.SendEvent(new SupportBean("y", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "e1.intPrimitive,e2.intPrimitive".Split(','), new Object[]{1, 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "e1.intPrimitive,e2.intPrimitive".Split(','), new object[]{1, 2});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -81,10 +81,10 @@ namespace com.espertech.esper.regression.context
         private void TryAssertionExpression(EPServiceProvider epService, SupportUpdateListener listener) {
             string[] fields = "c0,c1,c2".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean("E1", -2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"n", "xnx", "n"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"n", "xnx", "n"});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"p", "xpx", "p"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"p", "xpx", "p"});
         }
     }
 } // end of namespace

@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
+using System.Xml;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.expr.expr
             var listener = new SupportUpdateListener();
             var stmt = epService.EPAdministrator.CreateEPL(
                 "select Sb.Equals(MaxBy(intPrimitive)) as c0 from SupportBean as sb");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             SendAssertDotObjectEquals(epService, listener, 10, true);
             SendAssertDotObjectEquals(epService, listener, 9, false);
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regression.expr.expr
                 "SupportEnumTwo.ENUM_VALUE_2.CheckEventBeanPropInt(sb, 'intPrimitive') as c3, " +
                 "SupportEnumTwo.ENUM_VALUE_2.CheckEventBeanPropInt(*, 'intPrimitive') as c4 " +
                 "from SupportBean as sb");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("E1", 100));
             EPAssertionUtil.AssertProps(
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regression.expr.expr
                 "InnerTypesArray(subkey).GetIds(*, 'xyz') as c7\n" +
                 "from MyTypeErasure as s0");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             Assert.AreEqual(typeof(InnerType), stmt.EventType.GetPropertyType("c0"));
             Assert.AreEqual(typeof(InnerType), stmt.EventType.GetPropertyType("c1"));
             Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("c2"));
@@ -147,7 +147,7 @@ namespace com.espertech.esper.regression.expr.expr
                 "levelOne.levelTwo.GetCustomLevelTwo(20) as val1, " +
                 "levelOne.levelTwo.levelThree.GetCustomLevelThree(30) as val2 " +
                 "from LevelZero");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new LevelZero(new LevelOne(new LevelTwo(new LevelThree()))));
             EPAssertionUtil.AssertProps(
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regression.expr.expr
 
             stmt = epService.EPAdministrator.CreateEPL(
                 "select node.id, data.nodeId, data.value, node.Compute(data) from NodeWithDataWindow");
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new Node("1"));
             epService.EPRuntime.SendEvent(new Node("2"));
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regression.expr.expr
                       "from SupportBeanComplexProps";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var bean = SupportBeanComplexProps.MakeDefaultBean();
             var rows = new[]
@@ -224,7 +224,7 @@ namespace com.espertech.esper.regression.expr.expr
                       " from SupportChainTop as top";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             RunAssertionChainedParam(epService, stmt, listener, subexpr);
 
@@ -233,7 +233,7 @@ namespace com.espertech.esper.regression.expr.expr
             var model = epService.EPAdministrator.CompileEPL(epl);
             Assert.AreEqual(epl, model.ToEPL());
             stmt = epService.EPAdministrator.Create(model);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             RunAssertionChainedParam(epService, stmt, listener, subexpr);
 
@@ -254,7 +254,7 @@ namespace com.espertech.esper.regression.expr.expr
                       "from SupportBeanComplexProps";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var bean = SupportBeanComplexProps.MakeDefaultBean();
             var rows = new[]
@@ -294,7 +294,7 @@ namespace com.espertech.esper.regression.expr.expr
                       "from SupportBeanCombinedProps as abc";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
 
             var bean = SupportBeanCombinedProps.MakeDefaultBean();
             var rows = new[]

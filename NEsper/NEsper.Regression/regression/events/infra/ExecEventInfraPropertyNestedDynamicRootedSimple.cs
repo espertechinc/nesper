@@ -127,7 +127,7 @@ namespace com.espertech.esper.regression.events.infra
                     "from " + typename;
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             string[] propertyNames = "simple,nested,nestedNested".Split(',');
             foreach (string propertyName in propertyNames) {
@@ -185,13 +185,13 @@ namespace com.espertech.esper.regression.events.infra
             RecordSchema s2 = SchemaBuilder.Record(AVRO_TYPENAME + "_2",
                 TypeBuilder.OptionalInt("nestedValue"),
                 TypeBuilder.Field("nestedNested", TypeBuilder.Union(
-                    TypeBuilder.Int(), s3))
+                    TypeBuilder.IntType(), s3))
             );
             return SchemaBuilder.Record(AVRO_TYPENAME + "_1",
                 TypeBuilder.Field("simpleProperty", TypeBuilder.Union(
-                    TypeBuilder.Int(), TypeBuilder.String())),
+                    TypeBuilder.IntType(), TypeBuilder.StringType())),
                 TypeBuilder.Field("nested", TypeBuilder.Union(
-                    TypeBuilder.Int(), s2))
+                    TypeBuilder.IntType(), s2))
             );
         }
     }

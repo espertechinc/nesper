@@ -15,8 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
-// using static com.espertech.esper.regression.event.xml.ExecEventXMLNoSchemaNestedXMLDOMGetter.sendXMLEvent;
-// using static org.junit.Assert.assertEquals;
+using static com.espertech.esper.regression.events.xml.ExecEventXMLNoSchemaNestedXMLDOMGetter;
 
 using NUnit.Framework;
 
@@ -34,7 +33,7 @@ namespace com.espertech.esper.regression.events.xml
     
             string stmt = "select a\\.b.c\\.d as val from AEvent";
             EPStatement joinView = epService.EPAdministrator.CreateEPL(stmt);
-            joinView.AddListener(updateListener);
+            joinView.Events += updateListener.Update;
     
             SendXMLEvent(epService, "<myroot><a.b><c.d>value</c.d></a.b></myroot>");
             EventBean theEvent = updateListener.AssertOneGetNewAndReset();

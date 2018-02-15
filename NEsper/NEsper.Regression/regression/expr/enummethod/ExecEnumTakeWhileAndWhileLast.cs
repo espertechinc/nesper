@@ -45,8 +45,8 @@ namespace com.espertech.esper.regression.expr.enummethod
                     " from Bean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[]{typeof(Collection), typeof(Collection), typeof(Collection), typeof(Collection)});
+            stmt.Events += listener.Update;
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[]{typeof(ICollection<object>), typeof(ICollection<object>), typeof(ICollection<object>), typeof(ICollection<object>)});
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2", "E3,3"));
             LambdaAssertionUtil.AssertST0Id(listener, "val0", "E1,E2,E3");
@@ -109,8 +109,8 @@ namespace com.espertech.esper.regression.expr.enummethod
                     " from SupportCollection";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[]{typeof(Collection), typeof(Collection), typeof(Collection), typeof(Collection)});
+            stmt.Events += listener.Update;
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[]{typeof(ICollection<object>), typeof(ICollection<object>), typeof(ICollection<object>), typeof(ICollection<object>)});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2,E3,E4"));
             LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val0");

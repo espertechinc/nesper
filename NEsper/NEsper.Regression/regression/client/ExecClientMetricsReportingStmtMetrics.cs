@@ -53,17 +53,17 @@ namespace com.espertech.esper.regression.client
             var statements = new EPStatement[5];
             statements[0] = epService.EPAdministrator.CreateEPL("select * from " + typeof(StatementMetric).FullName, "stmt_metrics");
             var listener = new SupportUpdateListener();
-            statements[0].AddListener(listener);
+            statements[0].Events += listener.Update;
     
             statements[1] = epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive=1)#keepall where MyMetricFunctions.TakeCPUTime(longPrimitive)", "cpuStmtOne");
             var listenerTwo = new SupportUpdateListener();
-            statements[1].AddListener(listenerTwo);
+            statements[1].Events += listenerTwo.Update;
             statements[2] = epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive=2)#keepall where MyMetricFunctions.TakeCPUTime(longPrimitive)", "cpuStmtTwo");
-            statements[2].AddListener(listenerTwo);
+            statements[2].Events += listenerTwo.Update;
             statements[3] = epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive=3)#keepall where MyMetricFunctions.TakeWallTime(longPrimitive)", "wallStmtThree");
-            statements[3].AddListener(listenerTwo);
+            statements[3].Events += listenerTwo.Update;
             statements[4] = epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive=4)#keepall where MyMetricFunctions.TakeWallTime(longPrimitive)", "wallStmtFour");
-            statements[4].AddListener(listenerTwo);
+            statements[4].Events += listenerTwo.Update;
     
             SendEvent(epService, "E1", 1, CPU_GOAL_ONE_NANO);
             SendEvent(epService, "E2", 2, CPU_GOAL_TWO_NANO);
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regression.client
     
             // destroy all application stmts
             for (int i = 1; i < 5; i++) {
-                statements[i].Destroy();
+                statements[i].Dispose();
             }
             SendTimer(epService, 31000);
             Assert.IsFalse(listener.IsInvoked);
@@ -98,20 +98,20 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(4, listener.NewDataList.Count);
             EventBean[] received = listener.GetNewDataListFlattened();
     
-            EPAssertionUtil.AssertProps(received[0], fields, new Object[]{"default", "cpuStmtOne"});
-            EPAssertionUtil.AssertProps(received[1], fields, new Object[]{"default", "cpuStmtTwo"});
-            EPAssertionUtil.AssertProps(received[2], fields, new Object[]{"default", "wallStmtThree"});
-            EPAssertionUtil.AssertProps(received[3], fields, new Object[]{"default", "wallStmtFour"});
+            EPAssertionUtil.AssertProps(received[0], fields, new object[]{"default", "cpuStmtOne"});
+            EPAssertionUtil.AssertProps(received[1], fields, new object[]{"default", "cpuStmtTwo"});
+            EPAssertionUtil.AssertProps(received[2], fields, new object[]{"default", "wallStmtThree"});
+            EPAssertionUtil.AssertProps(received[3], fields, new object[]{"default", "wallStmtFour"});
     
             long cpuOne = (long) received[0].Get("cpuTime");
             long cpuTwo = (long) received[1].Get("cpuTime");
             long wallOne = (long) received[2].Get("wallTime");
             long wallTwo = (long) received[3].Get("wallTime");
     
-            Assert.IsTrue("cpuOne=" + cpuOne, cpuOne > CPU_GOAL_ONE_NANO);
-            Assert.IsTrue("cpuTwo=" + cpuTwo, cpuTwo > CPU_GOAL_TWO_NANO);
-            Assert.IsTrue("wallOne=" + wallOne, (wallOne + 50) > WALL_GOAL_ONE_MSEC);
-            Assert.IsTrue("wallTwo=" + wallTwo, (wallTwo + 50) > WALL_GOAL_TWO_MSEC);
+            Assert.IsTrue(cpuOne > CPU_GOAL_ONE_NANO, "cpuOne=" + cpuOne);
+            Assert.IsTrue(cpuTwo > CPU_GOAL_TWO_NANO, "cpuTwo=" + cpuTwo);
+            Assert.IsTrue((wallOne + 50) > WALL_GOAL_ONE_MSEC, "wallOne=" + wallOne);
+            Assert.IsTrue((wallTwo + 50) > WALL_GOAL_TWO_MSEC, "wallTwo=" + wallTwo);
     
             for (int i = 0; i < 4; i++) {
                 Assert.AreEqual(1L, received[i].Get("numOutputIStream"));

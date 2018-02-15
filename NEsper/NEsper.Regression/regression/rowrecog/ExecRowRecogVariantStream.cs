@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPAdministrator.CreateEPL("insert into MyVariantType select * from S0");
             epService.EPAdministrator.CreateEPL("insert into MyVariantType select * from S1");
@@ -47,9 +47,9 @@ namespace com.espertech.esper.regression.rowrecog
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "S0"));
             epService.EPRuntime.SendEvent(new SupportBean_S1(2, "S1"));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
-                    new Object[][]{new object[] {1, 2}});
+                    new object[][]{new object[] {1, 2}});
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                    new Object[][]{new object[] {1, 2}});
+                    new object[][]{new object[] {1, 2}});
     
             string epl = "// Declare one sample type\n" +
                     "create schema ST0 as (col string)\n;" +

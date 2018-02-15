@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
@@ -41,19 +42,19 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "minever(intPrimitive) as lowerever, " +
                     "maxever(intPrimitive) as upperever from NamedWindow5m");
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean(null, 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1, 1, 1, 1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1, 1, 1, 1});
     
             epService.EPRuntime.SendEvent(new SupportBean(null, 5));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1, 5, 1, 5});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1, 5, 1, 5});
     
             epService.EPRuntime.SendEvent(new SupportBean(null, 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{3, 5, 1, 5});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{3, 5, 1, 5});
     
             epService.EPRuntime.SendEvent(new SupportBean(null, 6));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{3, 6, 1, 6});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{3, 6, 1, 6});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -65,21 +66,21 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "(select max(id) from S0#lastevent) as max0, (select min(id) from S0#lastevent) as min0" +
                     " from SupportBean";
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{3, 3, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{3, 3, null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 4));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{4, 3, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{4, 3, null, null});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
             epService.EPRuntime.SendEvent(new SupportBean("E3", 4));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{4, 3, 2, 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{4, 3, 2, 2});
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
             epService.EPRuntime.SendEvent(new SupportBean("E4", 5));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{5, 3, 1, 1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{5, 3, 1, 1});
     
             epService.EPAdministrator.DestroyAllStatements();
             /// <summary>
@@ -101,7 +102,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             var random = new Random();
             // Change to perform a long-running tests, each loop is 1 second
@@ -114,7 +115,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                 // send events
                 long startTime = DateTimeHelper.CurrentTimeMillis;
                 for (int i = 0; i < 5000; i++) {
-                    double price = 50 + 49 * random.NextInt(100) / 100.0;
+                    double price = 50 + 49 * random.Next(100) / 100.0;
                     SendEvent(epService, price);
                 }
                 long endTime = DateTimeHelper.CurrentTimeMillis;
@@ -122,7 +123,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                 // sleep remainder of 1 second
                 long delta = startTime - endTime;
                 if (delta < 950) {
-                    Thread.Sleep(950 - delta);
+                    Thread.Sleep((int) (950 - delta));
                 }
     
                 listener.Reset();

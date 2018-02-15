@@ -16,7 +16,6 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -45,23 +44,23 @@ namespace com.espertech.esper.regression.context
                     "select count(*) as cnt from SupportBean output last when terminated";
             EPStatement stream = epService.EPAdministrator.CreateEPL(streamExpr);
             var listener = new SupportUpdateListener();
-            stream.AddListener(listener);
+            stream.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(8000));
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(10000));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{3L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{3L});
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(19999));
             Assert.IsFalse(listener.IsInvoked);
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(20000));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1L});
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(30000));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{0L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{0L});
     
             SupportModelHelper.CompileCreate(epService, streamExpr);
     
@@ -82,7 +81,7 @@ namespace com.espertech.esper.regression.context
                     "select count(*) as cnt from SupportBean output last when terminated";
             EPStatement stream = epService.EPAdministrator.CreateEPL(streamExpr);
             var listener = new SupportUpdateListener();
-            stream.AddListener(listener);
+            stream.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
@@ -92,7 +91,7 @@ namespace com.espertech.esper.regression.context
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(9999));
             Assert.IsFalse(listener.IsInvoked);
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(10000));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{3L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{3L});
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(10100));
@@ -101,15 +100,15 @@ namespace com.espertech.esper.regression.context
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(20000));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{2L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{2L});
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(30000));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{0L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{0L});
     
             epService.EPRuntime.SendEvent(new SupportBean("E6", 6));
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(40000));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{1L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1L});
     
             SupportModelHelper.CompileCreate(epService, streamExpr);
     

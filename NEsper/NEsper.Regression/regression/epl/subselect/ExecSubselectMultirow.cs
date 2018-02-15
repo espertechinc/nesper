@@ -10,14 +10,9 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertEquals;
-// using static org.junit.Assert.assertNull;
 
 using NUnit.Framework;
 
@@ -42,18 +37,18 @@ namespace com.espertech.esper.regression.epl.subselect
             string stmtText = "select p00, (select window(intPrimitive) from SupportBean#keepall sb) as val from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             string[] fields = "p00,val".Split(',');
     
-            var rows = new Object[][]{
-                    {"p00", typeof(string)},
-                    {"val", typeof(int[])}
+            var rows = new object[][]{
+                new object[] {"p00", typeof(string)},
+                new object[] {"val", typeof(int[])}
             };
             for (int i = 0; i < rows.Length; i++) {
                 string message = "Failed assertion for " + rows[i][0];
                 EventPropertyDescriptor prop = stmt.EventType.PropertyDescriptors[i];
-                Assert.AreEqual(message, rows[i][0], prop.PropertyName);
-                Assert.AreEqual(message, rows[i][1], prop.PropertyType);
+                Assert.AreEqual(rows[i][0], prop.PropertyName, message);
+                Assert.AreEqual(rows[i][1], prop.PropertyType, message);
             }
     
             epService.EPRuntime.SendEvent(new SupportBean("T1", 5));
@@ -61,21 +56,21 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPRuntime.SendEvent(new SupportBean("T3", 15));
             epService.EPRuntime.SendEvent(new SupportBean("T1", 6));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, new int[]{5, 10, 15, 6}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, new int[]{5, 10, 15, 6}});
     
             // test named window and late start
             stmt.Dispose();
     
             stmtText = "select p00, (select window(intPrimitive) from SupportWindow) as val from S0 as s0";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, new int[]{10, 15, 6}});   // length window 3
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, new int[]{10, 15, 6}});   // length window 3
     
             epService.EPRuntime.SendEvent(new SupportBean("T1", 5));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{null, new int[]{15, 6, 5}});   // length window 3
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, new int[]{15, 6, 5}});   // length window 3
     
             stmt.Dispose();
         }
@@ -86,17 +81,17 @@ namespace com.espertech.esper.regression.epl.subselect
                     "from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            var rows = new Object[][]{
-                    {"p00", typeof(string)},
-                    {"val", typeof(SupportBean[])}
+            var rows = new object[][]{
+                new object[] {"p00", typeof(string)},
+                new object[] {"val", typeof(SupportBean[])}
             };
             for (int i = 0; i < rows.Length; i++) {
                 string message = "Failed assertion for " + rows[i][0];
                 EventPropertyDescriptor prop = stmt.EventType.PropertyDescriptors[i];
-                Assert.AreEqual(message, rows[i][0], prop.PropertyName);
-                Assert.AreEqual(message, rows[i][1], prop.PropertyType);
+                Assert.AreEqual(rows[i][0], prop.PropertyName, message);
+                Assert.AreEqual(rows[i][1], prop.PropertyType, message);
             }
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "T1"));
@@ -107,8 +102,8 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "T1"));
     
             EventBean received = listener.AssertOneGetNewAndReset();
-            Assert.AreEqual(typeof(SupportBean[]), received.Get("val").Class);
-            EPAssertionUtil.AssertEqualsAnyOrder((Object[]) received.Get("val"), new Object[]{sb1});
+            Assert.AreEqual(typeof(SupportBean[]), received.Get("val").GetType());
+            EPAssertionUtil.AssertEqualsAnyOrder((object[]) received.Get("val"), new object[]{sb1});
     
             var sb2 = new SupportBean("T2", 20);
             epService.EPRuntime.SendEvent(sb2);
@@ -117,7 +112,7 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPRuntime.SendEvent(new SupportBean_S0(3, "T2"));
     
             received = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertEqualsAnyOrder((Object[]) received.Get("val"), new Object[]{sb2, sb3});
+            EPAssertionUtil.AssertEqualsAnyOrder((object[]) received.Get("val"), new object[]{sb2, sb3});
     
             stmt.Dispose();
         }

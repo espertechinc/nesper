@@ -13,7 +13,7 @@ namespace com.espertech.esper.supportregression.bean
     [Serializable]
     public class SupportSpatialPoint
     {
-        public SupportSpatialPoint(string id, double px, double py)
+        public SupportSpatialPoint(string id, double? px, double? py)
         {
             Id = id;
             Px = px;
@@ -30,9 +30,9 @@ namespace com.espertech.esper.supportregression.bean
 
         public string Id { get; }
 
-        public double Px { get; }
+        public double? Px { get; }
 
-        public double Py { get; }
+        public double? Py { get; }
 
         public string Category { get; }
     }

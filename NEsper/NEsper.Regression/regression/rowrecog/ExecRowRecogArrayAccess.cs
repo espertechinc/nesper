@@ -16,8 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertFalse;
-// using static org.junit.Assert.assertNotNull;
 
 using NUnit.Framework;
 
@@ -50,20 +48,20 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             listener.Reset();
     
-            SendEvents(epService, new Object[][]{new object[] {"A1", 100}, new object[] {"B1", 50}, new object[] {"B2", 49}, new object[] {"C1", 49}, new object[] {"D1", 2}, new object[] {"D2", 2}, new object[] {"E1", 2}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A1", "B1", "C1", "D1", "E1"});
+            SendEvents(epService, new object[][]{new object[] {"A1", 100}, new object[] {"B1", 50}, new object[] {"B2", 49}, new object[] {"C1", 49}, new object[] {"D1", 2}, new object[] {"D2", 2}, new object[] {"E1", 2}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A1", "B1", "C1", "D1", "E1"});
     
-            SendEvents(epService, new Object[][]{new object[] {"A1", 100}, new object[] {"B1", 50}, new object[] {"C1", 49}, new object[] {"D1", 2}, new object[] {"D2", 2}, new object[] {"E1", 2}});
+            SendEvents(epService, new object[][]{new object[] {"A1", 100}, new object[] {"B1", 50}, new object[] {"C1", 49}, new object[] {"D1", 2}, new object[] {"D2", 2}, new object[] {"E1", 2}});
             Assert.IsFalse(listener.IsInvoked);
     
-            SendEvents(epService, new Object[][]{new object[] {"A1", 100}, new object[] {"B1", 50}, new object[] {"B2", 49}, new object[] {"C1", 49}, new object[] {"D1", 2}, new object[] {"D2", 3}, new object[] {"E1", 2}});
+            SendEvents(epService, new object[][]{new object[] {"A1", 100}, new object[] {"B1", 50}, new object[] {"B2", 49}, new object[] {"C1", 49}, new object[] {"D1", 2}, new object[] {"D2", 3}, new object[] {"E1", 2}});
             Assert.IsFalse(listener.IsInvoked);
     
-            SendEvents(epService, new Object[][]{new object[] {"A1", 100}, new object[] {"B1", 50}, new object[] {"B2", 49}, new object[] {"C1", 49}, new object[] {"D1", 2}, new object[] {"D2", 2}, new object[] {"D3", 99}, new object[] {"E1", 2}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A1", "B1", "C1", "D1", "E1"});
+            SendEvents(epService, new object[][]{new object[] {"A1", 100}, new object[] {"B1", 50}, new object[] {"B2", 49}, new object[] {"C1", 49}, new object[] {"D1", 2}, new object[] {"D2", 2}, new object[] {"D3", 99}, new object[] {"E1", 2}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A1", "B1", "C1", "D1", "E1"});
     
             stmt.Dispose();
         }
@@ -92,23 +90,23 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(eplOne);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             listener.Reset();
     
-            SendEvents(epService, new Object[][]{new object[] {"E1", 50}, new object[] {"E2", 49}});
+            SendEvents(epService, new object[][]{new object[] {"E1", 50}, new object[] {"E2", 49}});
             Assert.IsFalse(listener.IsInvoked);
     
-            SendEvents(epService, new Object[][]{new object[] {"E3", 2}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsOne, new Object[]{"E1", "E2", null, "E3"});
+            SendEvents(epService, new object[][]{new object[] {"E3", 2}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsOne, new object[]{"E1", "E2", null, "E3"});
     
-            SendEvents(epService, new Object[][]{new object[] {"E4", 101}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsOne, new Object[]{null, null, null, "E4"});
+            SendEvents(epService, new object[][]{new object[] {"E4", 101}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsOne, new object[]{null, null, null, "E4"});
     
-            SendEvents(epService, new Object[][]{new object[] {"E5", 50}, new object[] {"E6", 51}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsOne, new Object[]{"E5", null, null, "E6"});
+            SendEvents(epService, new object[][]{new object[] {"E5", 50}, new object[] {"E6", 51}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsOne, new object[]{"E5", null, null, "E6"});
     
-            SendEvents(epService, new Object[][]{new object[] {"E7", 10}, new object[] {"E8", 10}, new object[] {"E9", 79}, new object[] {"E10", 1}, new object[] {"E11", 1}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsOne, new Object[]{"E7", "E8", "E9", "E11"});
+            SendEvents(epService, new object[][]{new object[] {"E7", 10}, new object[] {"E8", 10}, new object[] {"E9", 79}, new object[] {"E10", 1}, new object[] {"E11", 1}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsOne, new object[]{"E7", "E8", "E9", "E11"});
             stmt.Dispose();
     
             string[] fieldsTwo = "a[0].theString,a[1].theString,b.theString".Split(',');
@@ -122,32 +120,32 @@ namespace com.espertech.esper.regression.rowrecog
                     ")";
     
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(eplTwo);
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
             listener.Reset();
     
-            SendEvents(epService, new Object[][]{new object[] {"A1", 1}, new object[] {"A2", 2}, new object[] {"B1", 3}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTwo, new Object[]{"A2", null, "B1"});
+            SendEvents(epService, new object[][]{new object[] {"A1", 1}, new object[] {"A2", 2}, new object[] {"B1", 3}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTwo, new object[]{"A2", null, "B1"});
     
-            SendEvents(epService, new Object[][]{new object[] {"A3", 1}, new object[] {"A4", 2}, new object[] {"B2", 4}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTwo, new Object[]{"A3", "A4", "B2"});
+            SendEvents(epService, new object[][]{new object[] {"A3", 1}, new object[] {"A4", 2}, new object[] {"B2", 4}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTwo, new object[]{"A3", "A4", "B2"});
     
-            SendEvents(epService, new Object[][]{new object[] {"A5", -1}, new object[] {"B3", 0}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTwo, new Object[]{"A5", null, "B3"});
+            SendEvents(epService, new object[][]{new object[] {"A5", -1}, new object[] {"B3", 0}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTwo, new object[]{"A5", null, "B3"});
     
-            SendEvents(epService, new Object[][]{new object[] {"A6", 10}, new object[] {"B3", 9}, new object[] {"B4", 11}});
-            SendEvents(epService, new Object[][]{new object[] {"A7", 10}, new object[] {"A8", 9}, new object[] {"A9", 8}});
+            SendEvents(epService, new object[][]{new object[] {"A6", 10}, new object[] {"B3", 9}, new object[] {"B4", 11}});
+            SendEvents(epService, new object[][]{new object[] {"A7", 10}, new object[] {"A8", 9}, new object[] {"A9", 8}});
             Assert.IsFalse(listener.IsInvoked);
     
-            SendEvents(epService, new Object[][]{new object[] {"B5", 18}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTwo, new Object[]{"A8", "A9", "B5"});
+            SendEvents(epService, new object[][]{new object[] {"B5", 18}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTwo, new object[]{"A8", "A9", "B5"});
     
-            SendEvents(epService, new Object[][]{new object[] {"A0", 10}, new object[] {"A11", 9}, new object[] {"A12", 8}, new object[] {"B6", 8}});
+            SendEvents(epService, new object[][]{new object[] {"A0", 10}, new object[] {"A11", 9}, new object[] {"A12", 8}, new object[] {"B6", 8}});
             Assert.IsFalse(listener.IsInvoked);
     
-            SendEvents(epService, new Object[][]{new object[] {"A13", 1}, new object[] {"A14", 1}, new object[] {"A15", 1}, new object[] {"A16", 1}, new object[] {"B7", 5}});
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTwo, new Object[]{"A13", "A14", "B7"});
+            SendEvents(epService, new object[][]{new object[] {"A13", 1}, new object[] {"A14", 1}, new object[] {"A15", 1}, new object[] {"A16", 1}, new object[] {"B7", 5}});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsTwo, new object[]{"A13", "A14", "B7"});
     
-            SendEvents(epService, new Object[][]{new object[] {"A17", 1}, new object[] {"A18", 1}, new object[] {"B8", 1}});
+            SendEvents(epService, new object[][]{new object[] {"A17", 1}, new object[] {"A18", 1}, new object[] {"B8", 1}});
             Assert.IsFalse(listener.IsInvoked);
     
             stmtTwo.Dispose();
@@ -165,18 +163,18 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
     
-            SendEvents(epService, new Object[][]{new object[] {"A", 1}, new object[] {"A", 0}});
+            SendEvents(epService, new object[][]{new object[] {"A", 1}, new object[] {"A", 0}});
             Assert.IsFalse(listener.IsInvoked);
     
-            SendEvents(epService, new Object[][]{new object[] {"B", 1}, new object[] {"B", 1}});
+            SendEvents(epService, new object[][]{new object[] {"B", 1}, new object[] {"B", 1}});
             Assert.IsNotNull(listener.AssertOneGetNewAndReset());
     
-            SendEvents(epService, new Object[][]{new object[] {"A", 2}, new object[] {"A", 3}});
+            SendEvents(epService, new object[][]{new object[] {"A", 2}, new object[] {"A", 3}});
             Assert.IsFalse(listener.IsInvoked);
     
-            SendEvents(epService, new Object[][]{new object[] {"B", 2}, new object[] {"B", 2}});
+            SendEvents(epService, new object[][]{new object[] {"B", 2}, new object[] {"B", 2}});
             Assert.IsNotNull(listener.AssertOneGetNewAndReset());
     
             stmt.Dispose();
@@ -200,24 +198,24 @@ namespace com.espertech.esper.regression.rowrecog
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            stmt.AddListener(listener);
+            stmt.Events += listener.Update;
             listener.Reset();
     
-            SendEvents(epService, new Object[][]{new object[] {"A1", 1}, new object[] {"B1", 1}, new object[] {"A2", 1}, new object[] {"B2", 1}});
+            SendEvents(epService, new object[][]{new object[] {"A1", 1}, new object[] {"B1", 1}, new object[] {"A2", 1}, new object[] {"B2", 1}});
             epService.EPRuntime.SendEvent(new SupportBean("C1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"A1", "A2", "B1", "B2", "C1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A1", "A2", "B1", "B2", "C1"});
     
-            SendEvents(epService, new Object[][]{new object[] {"A10", 1}, new object[] {"B10", 1}, new object[] {"A11", 1}, new object[] {"B11", 2}, new object[] {"C2", 2}});
+            SendEvents(epService, new object[][]{new object[] {"A10", 1}, new object[] {"B10", 1}, new object[] {"A11", 1}, new object[] {"B11", 2}, new object[] {"C2", 2}});
             Assert.IsFalse(listener.IsInvoked);
     
-            SendEvents(epService, new Object[][]{new object[] {"A20", 2}, new object[] {"B20", 2}, new object[] {"A21", 1}, new object[] {"B21", 2}, new object[] {"C3", 2}});
+            SendEvents(epService, new object[][]{new object[] {"A20", 2}, new object[] {"B20", 2}, new object[] {"A21", 1}, new object[] {"B21", 2}, new object[] {"C3", 2}});
             Assert.IsFalse(listener.IsInvoked);
     
             stmt.Dispose();
         }
     
-        private void SendEvents(EPServiceProvider epService, Object[][] objects) {
-            foreach (Object[] @object in objects) {
+        private void SendEvents(EPServiceProvider epService, object[][] objects) {
+            foreach (object[] @object in objects) {
                 epService.EPRuntime.SendEvent(new SupportBean((string) @object[0], (int) @object[1]));
             }
         }

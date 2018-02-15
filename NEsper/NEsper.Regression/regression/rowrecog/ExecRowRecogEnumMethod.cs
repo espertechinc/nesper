@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-// using static org.junit.Assert.assertFalse;
 
 using NUnit.Framework;
 
@@ -39,7 +38,7 @@ namespace com.espertech.esper.regression.rowrecog
                     + "C as C.doublePrimitive > B.FirstOf().intPrimitive)";
             // can also be expressed as: B[0].intPrimitive
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL(epl).AddListener(listener);
+            epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             SendEvent(epService, "E1", 10, 0);
             SendEvent(epService, "E1", 11, 50);
@@ -49,7 +48,7 @@ namespace com.espertech.esper.regression.rowrecog
             SendEvent(epService, "E2", 10, 0);
             SendEvent(epService, "E2", 11, 50);
             SendEvent(epService, "E2", 12, 12);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2", 12});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", 12});
         }
     
         private void SendEvent(EPServiceProvider epService, string theString, int intPrimitive, double doublePrimitive) {

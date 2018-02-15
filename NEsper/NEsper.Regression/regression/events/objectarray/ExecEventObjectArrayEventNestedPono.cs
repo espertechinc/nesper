@@ -44,7 +44,7 @@ namespace com.espertech.esper.regression.events.objectarray
                     " from NestedObjectArr";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             object[] testdata = GetTestData();
             epService.EPRuntime.SendEvent(testdata, "NestedObjectArr");
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regression.events.objectarray
             listener.Reset();
             epService.EPAdministrator.Configuration.AddEventType("MyNested", new[]{"bean"}, new object[]{typeof(MyNested)});
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select * from MyNested(bean.insides.AnyOf(i=>id = 'A'))");
-            stmtTwo.AddListener(listener);
+            stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new object[]{new MyNested(Collections.List(new MyInside("A")))}, "MyNested");
             Assert.IsTrue(listener.IsInvoked);

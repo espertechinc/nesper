@@ -19,14 +19,16 @@ using com.espertech.esper.util;
 
 using NUnit.Framework;
 
+using static com.espertech.esper.supportregression.bean.SupportBeanConstants;
+
 namespace com.espertech.esper.regression.pattern
 {
-    public class ExecPatternOperatorNot : SupportBeanConstants, IRegressionExecution
+    public class ExecPatternOperatorNot : RegressionExecution
     {
-        public void Configure(Configuration configuration) {
+        public override void Configure(Configuration configuration) {
         }
 
-        public bool ExcludeWhenInstrumented() {
+        public override bool ExcludeWhenInstrumented() {
             return false;
         }
 
@@ -144,7 +146,7 @@ namespace com.espertech.esper.regression.pattern
                     "[every A=BBB(intPrimitive=123) -> (timer:Interval(30 seconds) and not AAA(volume=123, symbol=A.theString))]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             SendTimer(0, epService);
             epService.EPRuntime.SendEvent(new SupportBean("E1", 123));
@@ -161,7 +163,7 @@ namespace com.espertech.esper.regression.pattern
     
             SendTimer(40000, epService);
             var fields = new string[]{"theString"};
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2"});
     
             statement.Stop();
         }
@@ -173,7 +175,7 @@ namespace com.espertech.esper.regression.pattern
             string stmtText = "select * from pattern [ Every( SB(intPrimitive>0) -> (MD and not SB(intPrimitive=0) ) ) ]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.Events += listener.Update;
     
             // A(a=1) A(a=2) A(a=0) A(a=3) ...
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));

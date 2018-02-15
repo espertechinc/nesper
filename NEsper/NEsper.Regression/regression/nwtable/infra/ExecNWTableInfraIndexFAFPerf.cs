@@ -86,14 +86,14 @@ namespace com.espertech.esper.regression.nwtable.infra
         }
     
         private void RunFAFAssertion(EPServiceProvider epService, string epl, int? expected) {
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             int loops = 500;
     
             EPOnDemandPreparedQuery query = epService.EPRuntime.PrepareQuery(epl);
             for (int i = 0; i < loops; i++) {
                 RunFAFQuery(query, expected);
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             long delta = end - start;
             Assert.IsTrue(delta < 1500, "delta=" + delta);
         }
@@ -197,7 +197,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             }
     
             // fire N queries each returning 1 row
-            long start = DateTimeHelper.CurrentTimeMillis;
+            long start = PerformanceObserver.MilliTime;
             string queryText = "select * from MyInfraOne where f1='K10'";
             EPOnDemandPreparedQuery query = epService.EPRuntime.PrepareQuery(queryText);
             int loops = 10000;
@@ -207,7 +207,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 Assert.AreEqual(1, resultX.Array.Length);
                 Assert.AreEqual("K10", resultX.Array[0].Get("f1"));
             }
-            long end = DateTimeHelper.CurrentTimeMillis;
+            long end = PerformanceObserver.MilliTime;
             long delta = end - start;
             Assert.IsTrue(delta < 500, "delta=" + delta);
     
