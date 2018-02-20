@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
@@ -99,26 +100,35 @@ namespace com.espertech.esper.filter
         {
             var evaluatorContextStmt = new ExprEvaluatorContextStatement(stmtContext, false);
 
-            return BuildNoStmtCtx(validatedNodes, eventType, eventTypeName, optionalPropertyEvalSpec, taggedEventTypes, arrayEventTypes, streamTypeService,
-                    optionalStreamName, assignedTypeNumberStack,
-                    evaluatorContextStmt,
-                    stmtContext.StatementId,
-                    stmtContext.StatementName,
-                    stmtContext.Annotations,
-                    stmtContext.ContextDescriptor,
-                    stmtContext.EngineImportService,
-                    stmtContext.EventAdapterService,
-                    stmtContext.FilterBooleanExpressionFactory,
-                    stmtContext.TimeProvider,
-                    stmtContext.VariableService,
-                    stmtContext.ScriptingService,
-                    stmtContext.TableService,
-                    stmtContext.ConfigSnapshot,
-                    stmtContext.NamedWindowMgmtService,
-                    stmtContext.StatementExtensionServicesContext);
+            return BuildNoStmtCtx(
+                stmtContext.Container,
+                validatedNodes,
+                eventType,
+                eventTypeName,
+                optionalPropertyEvalSpec,
+                taggedEventTypes,
+                arrayEventTypes,
+                streamTypeService,
+                optionalStreamName, assignedTypeNumberStack,
+                evaluatorContextStmt,
+                stmtContext.StatementId,
+                stmtContext.StatementName,
+                stmtContext.Annotations,
+                stmtContext.ContextDescriptor,
+                stmtContext.EngineImportService,
+                stmtContext.EventAdapterService,
+                stmtContext.FilterBooleanExpressionFactory,
+                stmtContext.TimeProvider,
+                stmtContext.VariableService,
+                stmtContext.ScriptingService,
+                stmtContext.TableService,
+                stmtContext.ConfigSnapshot,
+                stmtContext.NamedWindowMgmtService,
+                stmtContext.StatementExtensionServicesContext);
         }
 
         public static FilterSpecCompiled BuildNoStmtCtx(
+            IContainer container,
             IList<ExprNode> validatedFilterNodes,
             EventType eventType,
             string eventTypeName,
@@ -145,6 +155,7 @@ namespace com.espertech.esper.filter
             StatementExtensionSvcContext statementExtensionSvcContext)
         {
             var args = new FilterSpecCompilerArgs(
+                container,
                 taggedEventTypes,
                 arrayEventTypes,
                 exprEvaluatorContext,
@@ -168,6 +179,7 @@ namespace com.espertech.esper.filter
             if (optionalPropertyEvalSpec != null)
             {
                 optionalPropertyEvaluator = PropertyEvaluatorFactory.MakeEvaluator(
+                    container,
                     optionalPropertyEvalSpec,
                     eventType,
                     optionalStreamName,
@@ -227,6 +239,7 @@ namespace com.espertech.esper.filter
 
             var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
             var validationContext = new ExprValidationContext(
+                statementContext.Container,
                 streamTypeService,
                 statementContext.EngineImportService,
                 statementContext.StatementExtensionServicesContext, null,
@@ -387,6 +400,7 @@ namespace com.espertech.esper.filter
                     var selectExpression = compiled.SelectExpression;
                     var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
                     var validationContext = new ExprValidationContext(
+                        statementContext.Container,
                         subselectTypeService,
                         statementContext.EngineImportService,
                         statementContext.StatementExtensionServicesContext,

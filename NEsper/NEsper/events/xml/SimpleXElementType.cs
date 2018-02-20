@@ -14,6 +14,7 @@ using System.Xml.XPath;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.events.property;
 
 namespace com.espertech.esper.events.xml
@@ -33,11 +34,13 @@ namespace com.espertech.esper.events.xml
         /// <param name="eventTypeId">The event type id.</param>
         /// <param name="configurationEventTypeXMLDOM">configures the event type</param>
         /// <param name="eventAdapterService">for type looking and registration</param>
-        public SimpleXElementType(EventTypeMetadata eventTypeMetadata,
-                                  int eventTypeId,
-                                  ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM,
-                                  EventAdapterService eventAdapterService)
-            : base(eventTypeMetadata, eventTypeId, configurationEventTypeXMLDOM, eventAdapterService)
+        public SimpleXElementType(
+            EventTypeMetadata eventTypeMetadata,
+            int eventTypeId,
+            ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM,
+            EventAdapterService eventAdapterService,
+            ILockManager lockManager)
+            : base(eventTypeMetadata, eventTypeId, configurationEventTypeXMLDOM, eventAdapterService, lockManager)
         {
             _isResolvePropertiesAbsolute = configurationEventTypeXMLDOM.IsXPathResolvePropertiesAbsolute;
 

@@ -51,7 +51,7 @@ namespace com.espertech.esper.epl.expression.ops
             }
             else
             {
-                _evaluator = new ExprConcatNodeEvalThreadLocal(this, evaluators);
+                _evaluator = new ExprConcatNodeEvalThreadLocal(this, evaluators, validationContext.ThreadLocalManager);
             }
 
             return null;

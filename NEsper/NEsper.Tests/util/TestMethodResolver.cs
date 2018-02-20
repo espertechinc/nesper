@@ -9,18 +9,28 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.supportunit.bean;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.util
 {
     [TestFixture]
     public class TestMethodResolver 
-    {		
+    {
+        private IContainer _container;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _container = SupportContainer.Instance;
+        }
+
         [Test]
     	public void TestResolveMethodStaticOnly()
     	{
@@ -145,7 +155,8 @@ namespace com.espertech.esper.util
                 null,
                 false,
                 null,
-                null);
+                null,
+                _container.Resolve<ClassLoaderProvider>());
 
             var targetType = typeof(SupportBean);
             var targetMethod = "GetNameExtended";

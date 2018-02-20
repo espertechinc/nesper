@@ -15,14 +15,14 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.dataflow.annotations;
 using com.espertech.esper.dataflow.interfaces;
 using com.espertech.esper.dataflow.ops;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.execution;
-
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.dataflow
@@ -46,7 +46,7 @@ namespace com.espertech.esper.regression.dataflow
             epService.EPAdministrator.CreateEPL(epl);
     
             // prepare test
-            var capture = new DefaultSupportCaptureOp();
+            var capture = new DefaultSupportCaptureOp(SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions();
             options.OperatorProvider(new DefaultSupportGraphOpProvider(capture));
     

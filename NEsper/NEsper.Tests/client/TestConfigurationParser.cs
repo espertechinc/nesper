@@ -20,6 +20,8 @@ using com.espertech.esper.client.util;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.type;
 
 using NUnit.Framework;
@@ -30,17 +32,19 @@ namespace com.espertech.esper.client
     public class TestConfigurationParser 
     {
         private Configuration _config;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            _config = new Configuration();
+            _container = SupportContainer.Instance;
+            _config = new Configuration(_container);
         }
     
         [Test]
         public void TestConfigureFromStream()
         {
-            var uri = ResourceManager.ResolveResourceURL(TestConfiguration.ESPER_TEST_CONFIG);
+            var uri = _container.Resolve<IResourceManager>().ResolveResourceURL(TestConfiguration.ESPER_TEST_CONFIG);
             var client = new WebClient();
             using (var stream = client.OpenRead(uri))
             {
@@ -117,7 +121,7 @@ namespace com.espertech.esper.client
             Assert.AreEqual(1, config.EventTypesMapEvents.Count);
             Assert.IsTrue(config.EventTypesMapEvents.Keys.Contains("MyMapEvent"));
 
-            Properties expectedProps = new Properties();
+            var expectedProps = new Properties();
             expectedProps.Put("myInt", "int");
             expectedProps.Put("myString", "string");
 
@@ -148,13 +152,13 @@ namespace com.espertech.esper.client
 
             // assert avro events
             Assert.AreEqual(2, config.EventTypesAvro.Count);
-            ConfigurationEventTypeAvro avroOne = config.EventTypesAvro.Get("MyAvroEvent");
+            var avroOne = config.EventTypesAvro.Get("MyAvroEvent");
             Assert.AreEqual("{\"type\":\"record\",\"name\":\"typename\",\"fields\":[{\"name\":\"num\",\"type\":\"int\"}]}", avroOne.AvroSchemaText);
             Assert.IsNull(avroOne.AvroSchema);
             Assert.IsNull(avroOne.StartTimestampPropertyName);
             Assert.IsNull(avroOne.EndTimestampPropertyName);
             Assert.IsTrue(avroOne.SuperTypes.IsEmpty());
-            ConfigurationEventTypeAvro avroTwo = config.EventTypesAvro.Get("MyAvroEventTwo");
+            var avroTwo = config.EventTypesAvro.Get("MyAvroEventTwo");
             Assert.AreEqual("{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}", avroTwo.AvroSchemaText);
             Assert.AreEqual("startts", avroTwo.StartTimestampPropertyName);
             Assert.AreEqual("endts", avroTwo.EndTimestampPropertyName);
@@ -179,8 +183,8 @@ namespace com.espertech.esper.client
     
             // assert database reference - data source config
             Assert.AreEqual(2, config.DatabaseReferences.Count);
-            ConfigurationDBRef configDBRef = config.DatabaseReferences.Get("mydb1");
-            DbDriverFactoryConnection dsDef = (DbDriverFactoryConnection)configDBRef.ConnectionFactoryDesc;
+            var configDBRef = config.DatabaseReferences.Get("mydb1");
+            var dsDef = (DbDriverFactoryConnection)configDBRef.ConnectionFactoryDesc;
 
             Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverMySQL", dsDef.Driver.GetType().FullName);
             Assert.AreEqual("Server=mysql-server;Database=tempdb;Uid=esper;Pwd=3sp3rP@ssw0rd;", dsDef.Driver.ConnectionString);
@@ -201,7 +205,7 @@ namespace com.espertech.esper.client
             // assert database reference - driver manager config
             configDBRef = config.DatabaseReferences.Get("mydb2");
 
-            DbDriverFactoryConnection dmDef = (DbDriverFactoryConnection)configDBRef.ConnectionFactoryDesc;
+            var dmDef = (DbDriverFactoryConnection)configDBRef.ConnectionFactoryDesc;
             Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverODBC", dmDef.Driver.GetType().FullName);
             Assert.AreEqual(
                "Driver={MySQL ODBC 5.3 Unicode Driver};Server=mysql-server;Database=test;User=esper;Password=3sp3rP@ssw0rd;Option=3",
@@ -211,7 +215,7 @@ namespace com.espertech.esper.client
             Assert.AreEqual(false, configDBRef.ConnectionSettings.AutoCommit);
             Assert.AreEqual("test", configDBRef.ConnectionSettings.Catalog);
             Assert.AreEqual(IsolationLevel.ReadCommitted, configDBRef.ConnectionSettings.TransactionIsolation);
-            ConfigurationExpiryTimeCache expCache = (ConfigurationExpiryTimeCache)configDBRef.DataCacheDesc;
+            var expCache = (ConfigurationExpiryTimeCache)configDBRef.DataCacheDesc;
 
             Assert.AreEqual(60.5, expCache.MaxAgeSeconds);
             Assert.AreEqual(120.1, expCache.PurgeIntervalSeconds);
@@ -498,9 +502,9 @@ namespace com.espertech.esper.client
         [Test]
         public void TestRegressionFileConfig() 
         {
-            Configuration config = new Configuration();
+            var config = new Configuration(_container);
 
-            var uri = ResourceManager.ResolveResourceURL(TestConfiguration.ESPER_TEST_CONFIG);
+            var uri = _container.Resolve<IResourceManager>().ResolveResourceURL(TestConfiguration.ESPER_TEST_CONFIG);
             var client = new WebClient();
             using (var stream = client.OpenRead(uri))
             {
@@ -512,7 +516,7 @@ namespace com.espertech.esper.client
         [Test]
         public void TestEngineDefaults()
         {
-            Configuration config = new Configuration();
+            var config = new Configuration(_container);
 
             Assert.IsTrue(config.EngineDefaults.Threading.IsInsertIntoDispatchPreserveOrder);
             Assert.AreEqual(100, config.EngineDefaults.Threading.InsertIntoDispatchTimeout);
@@ -588,7 +592,7 @@ namespace com.espertech.esper.client
             Assert.IsNull(config.EngineDefaults.ConditionHandling.HandlerFactories);
             Assert.AreEqual("jscript", config.EngineDefaults.Scripts.DefaultDialect);
 
-            ConfigurationEventTypeXMLDOM domType = new ConfigurationEventTypeXMLDOM();
+            var domType = new ConfigurationEventTypeXMLDOM();
             Assert.IsFalse(domType.IsXPathPropertyExpr);
             Assert.IsTrue(domType.IsXPathResolvePropertiesAbsolute);
             Assert.IsTrue(domType.IsEventSenderValidatesRoot);

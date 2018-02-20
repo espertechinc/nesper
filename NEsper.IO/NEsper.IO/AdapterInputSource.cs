@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 
 namespace com.espertech.esperio
 {
@@ -90,7 +90,7 @@ namespace com.espertech.esperio
 		/// resource. If the source cannot be converted to a stream, return null.
 		/// </summary>
 		/// <returns>a stream from the resource</returns>
-		public Stream GetAsStream()
+		public Stream GetAsStream(IContainer container)
 		{
 			if(_reader != null)
 			{
@@ -125,7 +125,7 @@ namespace com.espertech.esperio
 			}
 			else 
 			{
-				return ResolvePathAsStream(_resource);
+				return ResolvePathAsStream(container, _resource);
 			}
 		}
 		
@@ -153,9 +153,9 @@ namespace com.espertech.esperio
 			get { return _inputStream == null && _reader == null; }
 		}
 		
-		private static Stream ResolvePathAsStream(String path)
+		private static Stream ResolvePathAsStream(IContainer container, String path)
 	    {
-            var stream = ResourceManager.GetResourceAsStream(path ) ;
+            var stream = container.ResourceManager().GetResourceAsStream(path ) ;
             if (stream == null)
             {
                 throw new EPException(path + " not found");

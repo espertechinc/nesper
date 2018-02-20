@@ -9,11 +9,12 @@
 using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.multithread
@@ -37,7 +38,7 @@ namespace com.espertech.esper.regression.multithread
             // execute
             var threadPool = Executors.NewFixedThreadPool(numThreads);
             var future = new Future<bool>[numThreads];
-            var sharedStartLock = ReaderWriterLockManager.CreateDefaultLock();
+            var sharedStartLock = SupportContainer.Instance.RWLockManager().CreateDefaultLock();
             using (sharedStartLock.WriteLock.Acquire())
             {
                 for (int i = 0; i < numThreads; i++)

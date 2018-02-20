@@ -16,8 +16,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.plugin;
-
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.client
@@ -41,7 +40,8 @@ namespace com.espertech.esper.regression.client
             props.Put("name2", "val2");
             config.AddPluginLoader("MyLoader2", typeof(SupportPluginLoader).Name, props);
     
-            EPServiceProvider service = EPServiceProviderManager.GetProvider("ExecClientAdapterLoader", config);
+            EPServiceProvider service = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, "ExecClientAdapterLoader", config);
             Assert.AreEqual(2, SupportPluginLoader.Names.Count);
             Assert.AreEqual(2, SupportPluginLoader.PostInitializes.Count);
             Assert.AreEqual("MyLoader", SupportPluginLoader.Names[0]);
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regression.client
     
             Configuration cf = SupportConfigFactory.GetConfiguration();
             cf.AddPluginLoader("AP", typeof(SupportPluginLoader).Name, null);
-            EPServiceProviderManager.GetProvider("ExecClientAdapterLoader", cf);
+            EPServiceProviderManager.GetProvider(SupportContainer.Instance, "ExecClientAdapterLoader", cf);
             EPServiceProvider ep = EPServiceProviderManager.GetProvider("ExecClientAdapterLoader");
             ep.Dispose();
             Assert.AreEqual(1, SupportPluginLoader.Destroys.Count);

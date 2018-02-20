@@ -13,10 +13,11 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.events.xml
@@ -27,7 +28,7 @@ namespace com.espertech.esper.regression.events.xml
         public override void Configure(Configuration configuration) {
             var eventTypeMeta = new ConfigurationEventTypeXMLDOM();
             eventTypeMeta.RootElementName = "event-page-visit";
-            string schemaUri = ResourceManager.ResolveResourceURL(CLASSLOADER_SCHEMA_WITH_ALL_URI).ToString();
+            string schemaUri = SupportContainer.Instance.ResourceManager().ResolveResourceURL(CLASSLOADER_SCHEMA_WITH_ALL_URI).ToString();
             eventTypeMeta.SchemaResource = schemaUri;
             eventTypeMeta.AddNamespacePrefix("ss", "samples:schemas:simpleSchemaWithAll");
             eventTypeMeta.AddXPathProperty("url", "/ss:event-page-visit/ss:url", XPathResultType.String);

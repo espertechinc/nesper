@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.filter;
 using com.espertech.esper.supportunit.util;
@@ -30,11 +31,12 @@ namespace com.espertech.esper.supportunit.filter
         private readonly IList<FilterSpecCompiled> _testFilterSpecs;
         private readonly IList<EventBean> _matchedEvents;
         private readonly IList<EventBean> _unmatchedEvents;
-        private FilterServiceGranularLockFactory _lockFactory = 
-            new FilterServiceGranularLockFactoryReentrant();
+        private readonly FilterServiceGranularLockFactory _lockFactory;
 
         public IndexTreeBuilderRunnable(EventType eventType, FilterHandleSetNode topNode, IList<FilterSpecCompiled> testFilterSpecs, IList<EventBean> matchedEvents, IList<EventBean> unmatchedEvents)
         {
+            _lockFactory = new FilterServiceGranularLockFactoryReentrant(
+                SupportContainer.Instance.RWLockManager());
             _eventType = eventType;
             _topNode = topNode;
             _testFilterSpecs = testFilterSpecs;

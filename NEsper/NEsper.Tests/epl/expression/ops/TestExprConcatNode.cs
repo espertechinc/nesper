@@ -10,9 +10,11 @@ using System.Collections.Generic;
 using System.Threading;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.type;
 using com.espertech.esper.util.support;
 
@@ -24,10 +26,12 @@ namespace com.espertech.esper.epl.expression.ops
     public class TestExprConcatNode 
     {
         private ExprConcatNode _concatNode;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Instance;
             _concatNode = new ExprConcatNode();
         }
     
@@ -48,7 +52,7 @@ namespace com.espertech.esper.epl.expression.ops
             // Must have 2 or more String subnodes
             try
             {
-                _concatNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _concatNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -61,7 +65,7 @@ namespace com.espertech.esper.epl.expression.ops
             _concatNode.AddChildNode(new SupportExprNode(typeof(int)));
             try
             {
-                _concatNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _concatNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -107,7 +111,7 @@ namespace com.espertech.esper.epl.expression.ops
             foreach (var text in new[]{ textA, textB, textC }) {
                 _concatNode.AddChildNode(new ExprConstantNodeImpl(text));
             }
-            _concatNode.Validate(SupportExprValidationContextFactory.MakeEmpty(threadingProfile));
+            _concatNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container, threadingProfile));
 
             var numThreads = 4;
             var numLoop = 10000;

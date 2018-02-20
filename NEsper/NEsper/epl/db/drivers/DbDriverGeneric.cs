@@ -9,6 +9,8 @@
 
 using System;
 using System.Data.Common;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 
 namespace com.espertech.esper.epl.db.drivers
 {
@@ -18,18 +20,18 @@ namespace com.espertech.esper.epl.db.drivers
     [Serializable]
     public class DbDriverGeneric : BaseDbDriver
     {
-        private readonly DbProviderFactory dbProviderFactory;
-        private readonly bool isPositional;
-        private readonly String paramPrefix;
+        private readonly DbProviderFactory _dbProviderFactory;
+        private readonly bool _isPositional;
+        private readonly String _paramPrefix;
 
         /// <summary>
         /// Initializes the <see cref="DbDriverGeneric"/> class.
         /// </summary>
-        public DbDriverGeneric()
+        public DbDriverGeneric(DbProviderFactoryManager dbProviderFactoryManager)
         {
-            dbProviderFactory = DbProviderFactories.GetFactory("MySql.Data.MySqlClient");
-            isPositional = false;
-            paramPrefix = "@";
+            _dbProviderFactory = dbProviderFactoryManager.GetFactory("MySql.Data.MySqlClient");
+            _isPositional = false;
+            _paramPrefix = "@";
         }
 
         /// <summary>
@@ -40,7 +42,7 @@ namespace com.espertech.esper.epl.db.drivers
         {
             try
             {
-                DbConnection dbConnection = dbProviderFactory.CreateConnection();
+                DbConnection dbConnection = _dbProviderFactory.CreateConnection();
                 dbConnection.ConnectionString = ConnectionString;
                 dbConnection.Open();
                 return dbConnection;
@@ -62,7 +64,7 @@ namespace com.espertech.esper.epl.db.drivers
         /// </value>
         protected override bool UsePositionalParameters
         {
-            get { return isPositional; }
+            get { return _isPositional; }
         }
 
         /// <summary>
@@ -71,7 +73,7 @@ namespace com.espertech.esper.epl.db.drivers
         /// <value>The param prefix.</value>
         protected override string ParamPrefix
         {
-            get { return paramPrefix; }
+            get { return _paramPrefix; }
         }
 
         /// <summary>
@@ -80,7 +82,7 @@ namespace com.espertech.esper.epl.db.drivers
         /// <returns></returns>
         protected override DbConnectionStringBuilder CreateConnectionStringBuilder()
         {
-            return dbProviderFactory.CreateConnectionStringBuilder();
+            return _dbProviderFactory.CreateConnectionStringBuilder();
         }
     }
 }

@@ -11,8 +11,10 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
+using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util.support;
 
 
@@ -26,7 +28,7 @@ namespace com.espertech.esper.regression.events.xml
         public override void Configure(Configuration configuration) {
             var eventTypeMeta = new ConfigurationEventTypeXMLDOM();
             eventTypeMeta.RootElementName = "typesEvent";
-            string schemaUri = ResourceManager.ResolveResourceURL(CLASSLOADER_SCHEMA_URI).ToString();
+            string schemaUri = SupportContainer.Instance.ResourceManager().ResolveResourceURL(CLASSLOADER_SCHEMA_URI).ToString();
             eventTypeMeta.SchemaResource = schemaUri;
             configuration.AddEventType("TestTypesEvent", eventTypeMeta);
         }

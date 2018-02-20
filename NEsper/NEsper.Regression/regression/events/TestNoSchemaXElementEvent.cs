@@ -10,14 +10,15 @@ using System;
 using System.Reflection;
 using System.Xml.Linq;
 using System.Xml.XPath;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.events;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.xml;
-
 
 using NUnit.Framework;
 
@@ -26,9 +27,6 @@ namespace com.espertech.esper.regression.events
     [TestFixture]
     public class TestNoSchemaXElementEvent
     {
-        private EPServiceProvider _epService;
-        private SupportUpdateListener _updateListener;
-
         private const string XML = "<myevent>\n" +
                                    "  <element1>VAL1</element1>\n" +
                                    "  <element2>\n" +
@@ -38,6 +36,17 @@ namespace com.espertech.esper.regression.events
                                    "  <element3 attrString=\"VAL3\" attrNum=\"5\" attrBool=\"true\"/>\n" +
                                    "  <element4><element41>VAL4-1</element41></element4>\n" +
                                    "</myevent>";
+        
+        private EPServiceProvider _epService;
+        private SupportUpdateListener _updateListener;
+
+        private IContainer _container;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _container = ContainerExtensions.CreateDefaultContainer();
+        }
 
         private void AssertDataSimpleXPath(String element1)
         {
@@ -98,7 +107,7 @@ namespace com.espertech.esper.regression.events
             xmlDOMEventTypeDesc.RootElementName = "myevent";
             configuration.AddEventType("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
 
-            _epService = EPServiceProviderManager.GetProvider("TestNoSchemaXML", configuration);
+            _epService = EPServiceProviderManager.GetProvider(_container, "TestNoSchemaXML", configuration);
             _epService.Initialize();
             _updateListener = new SupportUpdateListener();
 
@@ -329,7 +338,7 @@ namespace com.espertech.esper.regression.events
             xmlDOMEventTypeDesc.IsXPathPropertyExpr = false; // <== DOM getter
             configuration.AddEventType("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
 
-            _epService = EPServiceProviderManager.GetProvider("TestNoSchemaXML", configuration);
+            _epService = EPServiceProviderManager.GetProvider(_container, "TestNoSchemaXML", configuration);
             _epService.Initialize();
             _updateListener = new SupportUpdateListener();
 
@@ -362,7 +371,7 @@ namespace com.espertech.esper.regression.events
             xmlDOMEventTypeDesc.IsXPathPropertyExpr = true; // <== XPath getter
             configuration.AddEventType("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
 
-            _epService = EPServiceProviderManager.GetProvider("TestNoSchemaXML", configuration);
+            _epService = EPServiceProviderManager.GetProvider(_container, "TestNoSchemaXML", configuration);
             _epService.Initialize();
             _updateListener = new SupportUpdateListener();
 
@@ -408,7 +417,7 @@ namespace com.espertech.esper.regression.events
             xmlDOMEventTypeDesc.RootElementName = "my.event2";
             configuration.AddEventType("TestXMLWithDots", xmlDOMEventTypeDesc);
 
-            _epService = EPServiceProviderManager.GetProvider("TestNoSchemaXML", configuration);
+            _epService = EPServiceProviderManager.GetProvider(_container, "TestNoSchemaXML", configuration);
             _epService.Initialize();
             _updateListener = new SupportUpdateListener();
 

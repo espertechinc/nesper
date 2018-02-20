@@ -586,7 +586,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             try {
                 SendBeanEvent(epService, "E1");
                 Assert.Fail(); // default test configuration rethrows this exception
-            } catch (EPException ex) {
+            } catch (EPException) {
                 // fine
             }
         }

@@ -13,6 +13,7 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.client.time;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.db.drivers;
 using com.espertech.esper.supportregression.bean;
@@ -513,8 +514,8 @@ namespace com.espertech.esper.regression.db
         }
 
         private void RunAssertionMySQLDatabaseConnection(EPServiceProvider epService) {
-            var dbProviderFactoryManager = ContainerExtensions.CurrentContainer
-                .Get<DbProviderFactoryManager>();
+            var dbProviderFactoryManager = SupportContainer.Instance
+                .Resolve<DbProviderFactoryManager>();
             var dbProviderFactory = dbProviderFactoryManager.GetFactory(
                 SupportDatabaseService.MYSQLDB_PROVIDER_TYPE);
 

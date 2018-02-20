@@ -15,7 +15,7 @@ namespace com.espertech.esper.compat.threading
     public sealed class XperThreadLocal<T> : IThreadLocal<T>
     {
         private readonly SlimLock _wLock;
-        private readonly FactoryDelegate<T> _valueFactory;
+        private readonly Func<T> _valueFactory;
 
         private int _primeIndex;
 
@@ -220,7 +220,7 @@ namespace com.espertech.esper.compat.threading
         /// Initializes a new instance of the <see cref="XperThreadLocal{T}"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
-        public XperThreadLocal(FactoryDelegate<T> factory)
+        public XperThreadLocal(Func<T> factory)
         {
             _primeIndex = 0;
 
@@ -273,7 +273,7 @@ namespace com.espertech.esper.compat.threading
     /// <summary>
     /// Creates slim thread local objects.
     /// </summary>
-    public class XperThreadLocalFactory : ThreadLocalFactory
+    public class XperThreadLocalFactory : IThreadLocalFactory
     {
         #region ThreadLocalFactory Members
 
@@ -283,7 +283,7 @@ namespace com.espertech.esper.compat.threading
         /// <typeparam name="T"></typeparam>
         /// <param name="factory"></param>
         /// <returns></returns>
-        public IThreadLocal<T> CreateThreadLocal<T>(FactoryDelegate<T> factory) where T : class
+        public IThreadLocal<T> CreateThreadLocal<T>(Func<T> factory) where T : class
         {
             return new XperThreadLocal<T>(factory);
         }

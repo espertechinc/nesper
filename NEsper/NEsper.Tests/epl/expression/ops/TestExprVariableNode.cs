@@ -6,11 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.epl.variable;
 using com.espertech.esper.supportunit.epl;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.epl.expression.ops
@@ -20,11 +21,15 @@ namespace com.espertech.esper.epl.expression.ops
     {
         private ExprVariableNodeImpl _varNode;
         private VariableService _variableService;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            _variableService = new VariableServiceImpl(100, null, null, null);
+            _container = SupportContainer.Instance;
+
+            _variableService = new VariableServiceImpl(
+                100, null, null, null, _container.RWLockManager(), _container.ThreadLocalManager());
             _variableService.CreateNewVariable(null, "var1", "string", true, false, false, null, null);
             _variableService.CreateNewVariable(null, "dummy", "string", true, false, false, null, null);
             _variableService.CreateNewVariable(null, "IntPrimitive", "int", true, false, false, null, null);

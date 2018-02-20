@@ -92,7 +92,8 @@ namespace com.espertech.esper.core.start
                 statementContext.StatementName, isPrioritized, isEnableSubqueryIndexShare, isBatchingDataWindow,
                 virtualDataWindowFactory != null, optionalUniqueKeyProps,
                 _statementSpec.CreateWindowDesc.AsEventTypeName,
-                statementContext, services.NamedWindowDispatchService);
+                statementContext, services.NamedWindowDispatchService,
+                services.LockManager);
 
             Viewable finalViewable;
             EPStatementStopMethod stopStatementMethod;

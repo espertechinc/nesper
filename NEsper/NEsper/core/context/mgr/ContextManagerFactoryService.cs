@@ -6,13 +6,18 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.spec;
 
 namespace com.espertech.esper.core.context.mgr
 {
 	public interface ContextManagerFactoryService
 	{
-	    ContextManager Make(ContextDetail contextDetail, ContextControllerFactoryServiceContext factoryServiceContext);
-        bool IsSupportsExtract { get; }
+	    ContextManager Make(
+	        ILockManager lockManager, 
+	        ContextDetail contextDetail, 
+	        ContextControllerFactoryServiceContext factoryServiceContext);
+
+	    bool IsSupportsExtract { get; }
 	}
 } // end of namespace

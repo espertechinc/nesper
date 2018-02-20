@@ -13,12 +13,12 @@ using com.espertech.esper.client.dataflow;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.dataflow.ops;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.execution;
-
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.dataflow
@@ -35,7 +35,7 @@ namespace com.espertech.esper.regression.dataflow
                     "Emitter -> outstream<MyOAEventType> {name:'src1'}" +
                     "DefaultSupportCaptureOp(outstream) {}");
     
-            var captureOp = new DefaultSupportCaptureOp<object>();
+            var captureOp = new DefaultSupportCaptureOp<object>(SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions();
             options.OperatorProvider(new DefaultSupportGraphOpProvider(captureOp));
     

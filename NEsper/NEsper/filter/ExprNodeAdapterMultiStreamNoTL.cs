@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.variable;
@@ -17,8 +18,15 @@ namespace com.espertech.esper.filter
 {
     public class ExprNodeAdapterMultiStreamNoTL : ExprNodeAdapterMultiStream
     {
-        public ExprNodeAdapterMultiStreamNoTL(int filterSpecId, int filterSpecParamPathNum, ExprNode exprNode, ExprEvaluatorContext evaluatorContext, VariableService variableService, EventBean[] prototype)
-            : base(filterSpecId, filterSpecParamPathNum, exprNode, evaluatorContext, variableService, prototype)
+        public ExprNodeAdapterMultiStreamNoTL(
+            int filterSpecId, 
+            int filterSpecParamPathNum, 
+            ExprNode exprNode,
+            ExprEvaluatorContext evaluatorContext,
+            VariableService variableService,
+            EventBean[] prototype,
+            IThreadLocalManager threadLocalManager)
+            : base(filterSpecId, filterSpecParamPathNum, exprNode, evaluatorContext, variableService, prototype, threadLocalManager)
         {
         }
     

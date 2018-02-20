@@ -11,7 +11,9 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 
@@ -48,13 +50,19 @@ namespace com.espertech.esper.events
         /// <summary>
         /// Ctor.
         /// </summary>
+        /// <param name="lockManager">The lock manager.</param>
         /// <param name="eventAdapterService">for dynamic event type creation</param>
         /// <param name="metadata">event type metadata</param>
         /// <param name="eventTypeId">The event type id.</param>
         /// <param name="underlyngType">is the underlying type returned by the event type</param>
-        protected BaseConfigurableEventType(EventAdapterService eventAdapterService, EventTypeMetadata metadata, int eventTypeId, Type underlyngType)
+        protected BaseConfigurableEventType(
+            ILockManager lockManager,
+            EventAdapterService eventAdapterService,
+            EventTypeMetadata metadata, 
+            int eventTypeId,
+            Type underlyngType)
         {
-            _iLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            _iLock = lockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             _eventTypeId = eventTypeId;
             _eventAdapterService = eventAdapterService;
             _metadata = metadata;

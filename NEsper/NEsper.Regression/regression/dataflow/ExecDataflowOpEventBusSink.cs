@@ -15,6 +15,7 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.core.service;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.dataflow;
 using com.espertech.esper.supportregression.execution;
@@ -32,7 +33,7 @@ namespace com.espertech.esper.regression.dataflow
         }
     
         private void RunAssertionAllTypes(EPServiceProvider epService) {
-            DefaultSupportGraphEventUtil.AddTypeConfiguration(epService);
+            DefaultSupportGraphEventUtil.AddTypeConfiguration((EPServiceProviderSPI) epService);
     
             RunAssertionAllTypes(epService, "MyXMLEvent", DefaultSupportGraphEventUtil.XMLEvents);
             RunAssertionAllTypes(epService, "MyOAEvent", DefaultSupportGraphEventUtil.OAEvents);

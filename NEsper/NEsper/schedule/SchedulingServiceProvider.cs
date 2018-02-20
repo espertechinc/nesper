@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.timer;
 
 namespace com.espertech.esper.schedule
@@ -21,9 +22,11 @@ namespace com.espertech.esper.schedule
         /// </summary>
         /// <param name="timeSourceService">time source provider</param>
         /// <returns>implementation</returns>
-        public static SchedulingServiceSPI NewService(TimeSourceService timeSourceService)
+        public static SchedulingServiceSPI NewService(
+            TimeSourceService timeSourceService,
+            ILockManager lockManager)
         {
-            return new SchedulingServiceImpl(timeSourceService);
+            return new SchedulingServiceImpl(timeSourceService, lockManager);
         }
 	}
 }

@@ -18,8 +18,7 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
-
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.multithread
@@ -44,7 +43,8 @@ namespace com.espertech.esper.regression.multithread
         private void RunAssertionIteratorMultiStmtNoViewShare() {
             Configuration config = SupportConfigFactory.GetConfiguration();
             config.EngineDefaults.ViewResources.IsShareViews = false;
-            EPServiceProvider engine = EPServiceProviderManager.GetProvider(typeof(ExecMTStmtIterate).Name, config);
+            EPServiceProvider engine = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, typeof(ExecMTStmtIterate).Name, config);
     
             var stmt = new EPStatement[3];
             for (int i = 0; i < stmt.Length; i++) {
@@ -61,7 +61,8 @@ namespace com.espertech.esper.regression.multithread
         private void RunAssertionIteratorMultiStmtViewShare() {
             Configuration config = SupportConfigFactory.GetConfiguration();
             config.EngineDefaults.ViewResources.IsShareViews = true;
-            EPServiceProvider engine = EPServiceProviderManager.GetProvider(typeof(ExecMTStmtIterate).Name, config);
+            EPServiceProvider engine = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, typeof(ExecMTStmtIterate).Name, config);
     
             var stmt = new EPStatement[3];
             for (int i = 0; i < stmt.Length; i++) {

@@ -14,8 +14,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
-
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.multithread
@@ -24,8 +23,9 @@ namespace com.espertech.esper.regression.multithread
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public override void Run(EPServiceProvider defaultEpService) {
-            var configuration = new Configuration();
-            EPServiceProvider epService = EPServiceProviderManager.GetProvider(this.GetType().Name, configuration);
+            var configuration = new Configuration(SupportContainer.Instance);
+            EPServiceProvider epService = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, this.GetType().Name, configuration);
             epService.Initialize();
             Thread.Sleep(100); // allow time for start up
     

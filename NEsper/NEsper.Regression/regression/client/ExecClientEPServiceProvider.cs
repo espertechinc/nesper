@@ -6,19 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.supportregression.util;
 
 using NUnit.Framework;
 
@@ -51,7 +46,9 @@ namespace com.espertech.esper.regression.client
             engine = EPServiceProviderManager.GetProvider(null);
             Assert.AreSame(engineDefault, engine);
     
-            engine = EPServiceProviderManager.GetProvider(null, SupportConfigFactory.GetConfiguration());
+            engine = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, null, 
+                SupportConfigFactory.GetConfiguration());
             Assert.AreSame(engineDefault, engine);
     
             string[] uris = EPServiceProviderManager.ProviderURIs;
@@ -63,9 +60,11 @@ namespace com.espertech.esper.regression.client
             // test destroy
             Configuration config = SupportConfigFactory.GetConfiguration();
             string uriOne = GetType().FullName + "_1";
-            EPServiceProvider engineOne = EPServiceProviderManager.GetProvider(uriOne, config);
+            EPServiceProvider engineOne = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, uriOne, config);
             string uriTwo = GetType().FullName + "_2";
-            EPServiceProvider engineTwo = EPServiceProviderManager.GetProvider(uriTwo, config);
+            EPServiceProvider engineTwo = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, uriTwo, config);
             EPAssertionUtil.AssertContains(EPServiceProviderManager.ProviderURIs, uriOne, uriTwo);
             Assert.IsNotNull(EPServiceProviderManager.GetExistingProvider(uriOne));
             Assert.IsNotNull(EPServiceProviderManager.GetExistingProvider(uriTwo));
@@ -82,13 +81,13 @@ namespace com.espertech.esper.regression.client
             try {
                 Assert.NotNull(engineTwo.EPRuntime);
                 Assert.Fail();
-            } catch (EPServiceDestroyedException ex) {
+            } catch (EPServiceDestroyedException) {
                 // expected
             }
             try {
                 Assert.NotNull(engineTwo.EPAdministrator);
                 Assert.Fail();
-            } catch (EPServiceDestroyedException ex) {
+            } catch (EPServiceDestroyedException) {
                 // expected
             }
             EPAssertionUtil.AssertNotContains(EPServiceProviderManager.ProviderURIs, uriTwo);
@@ -97,7 +96,8 @@ namespace com.espertech.esper.regression.client
         private void RunAssertionListenerStateChange() {
             var listener = new SupportServiceStateListener();
             Configuration configuration = SupportConfigFactory.GetConfiguration();
-            EPServiceProvider epService = EPServiceProviderManager.GetProvider(this.GetType().Name + "__listenerstatechange", configuration);
+            EPServiceProvider epService = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, this.GetType().Name + "__listenerstatechange", configuration);
             epService.ServiceInitialized += listener.OnEPServiceInitialized;
             epService.ServiceDestroyRequested += listener.OnEPServiceDestroyRequested;
             epService.Dispose();
@@ -129,7 +129,9 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionStatementStateChange() {
-            EPServiceProvider stateChangeEngine = EPServiceProviderManager.GetProvider(this.GetType().Name + "_statechange", SupportConfigFactory.GetConfiguration());
+            EPServiceProvider stateChangeEngine = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, this.GetType().Name + "_statechange",
+                SupportConfigFactory.GetConfiguration());
             EPServiceProviderSPI spi = (EPServiceProviderSPI) stateChangeEngine;
     
             var observer = new SupportStmtLifecycleObserver();

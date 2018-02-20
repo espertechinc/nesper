@@ -6,8 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.service;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.client
@@ -15,10 +16,19 @@ namespace com.espertech.esper.client
     [TestFixture]
     public class TestEPServiceProviderManager 
     {
+        private IContainer _container;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _container = SupportContainer.Instance;
+        }
+
+
         [Test]
         public void TestGetInstance()
         {
-            Configuration configuration = new Configuration();
+            Configuration configuration = new Configuration(_container);
             configuration.EngineDefaults.Threading.IsInternalTimerEnabled = true;
 
             EPServiceProvider runtimeDef1 = EPServiceProviderManager.GetDefaultProvider();
@@ -26,7 +36,7 @@ namespace com.espertech.esper.client
             EPServiceProvider runtimeB = EPServiceProviderManager.GetProvider("B");
             EPServiceProvider runtimeA2 = EPServiceProviderManager.GetProvider("A");
             EPServiceProvider runtimeDef2 = EPServiceProviderManager.GetDefaultProvider(configuration);
-            EPServiceProvider runtimeA3 = EPServiceProviderManager.GetProvider("A", configuration);
+            EPServiceProvider runtimeA3 = EPServiceProviderManager.GetProvider(_container, "A", configuration);
     
             Assert.NotNull(runtimeDef1);
             Assert.NotNull(runtimeA1);
@@ -54,13 +64,13 @@ namespace com.espertech.esper.client
         [Test]
         public void TestInvalid()
         {
-            Configuration configuration = new Configuration();
+            Configuration configuration = new Configuration(_container);
             configuration.EngineDefaults.Threading.IsInternalTimerEnabled = false;
             configuration.AddEventType("x", "xxx.noclass");
     
             try
             {
-                EPServiceProviderManager.GetProvider("someURI", configuration);
+                EPServiceProviderManager.GetProvider(_container, "someURI", configuration);
                 Assert.Fail();
             }
             catch (ConfigurationException ex)

@@ -7,11 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.funcs;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.type;
 using com.espertech.esper.util.support;
 
@@ -23,10 +24,12 @@ namespace com.espertech.esper.epl.expression.ops
     public class TestExprMinMaxRowNode 
     {
         private ExprMinMaxRowNode _minMaxNode;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Instance;
             _minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
         }
     
@@ -35,11 +38,11 @@ namespace com.espertech.esper.epl.expression.ops
         {
             _minMaxNode.AddChildNode(new SupportExprNode(typeof(double?)));
             _minMaxNode.AddChildNode(new SupportExprNode(typeof(int)));
-            _minMaxNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _minMaxNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             Assert.AreEqual(typeof(double?), _minMaxNode.ReturnType);
     
             _minMaxNode.AddChildNode(new SupportExprNode(typeof(double?)));
-            _minMaxNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _minMaxNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             Assert.AreEqual(typeof(double?), _minMaxNode.ReturnType);
         }
     
@@ -59,7 +62,7 @@ namespace com.espertech.esper.epl.expression.ops
             // Must have 2 or more subnodes
             try
             {
-                _minMaxNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _minMaxNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -72,7 +75,7 @@ namespace com.espertech.esper.epl.expression.ops
             _minMaxNode.AddChildNode(new SupportExprNode(typeof(int)));
             try
             {
-                _minMaxNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _minMaxNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -124,7 +127,7 @@ namespace com.espertech.esper.epl.expression.ops
             Assert.IsFalse(_minMaxNode.EqualsNode(new ExprOrNode(), false));
         }
     
-        private static void SetupNode(ExprMinMaxRowNode nodeMin, int intValue, double doubleValue, float? floatValue)
+        private void SetupNode(ExprMinMaxRowNode nodeMin, int intValue, double doubleValue, float? floatValue)
         {
             nodeMin.AddChildNode(new SupportExprNode(intValue));
             nodeMin.AddChildNode(new SupportExprNode(doubleValue));
@@ -132,7 +135,7 @@ namespace com.espertech.esper.epl.expression.ops
             {
                 nodeMin.AddChildNode(new SupportExprNode(floatValue));
             }
-            nodeMin.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            nodeMin.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
         }
     
         private ExprMinMaxRowNode MakeNode(Object valueOne, Type typeOne,
@@ -143,7 +146,7 @@ namespace com.espertech.esper.epl.expression.ops
             maxNode.AddChildNode(new SupportExprNode(valueOne, typeOne));
             maxNode.AddChildNode(new SupportExprNode(valueTwo, typeTwo));
             maxNode.AddChildNode(new SupportExprNode(valueThree, typeThree));
-            maxNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            maxNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             return maxNode;
         }
     

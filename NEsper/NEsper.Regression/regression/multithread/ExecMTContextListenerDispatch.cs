@@ -13,11 +13,13 @@ using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.multithread
@@ -98,7 +100,7 @@ namespace com.espertech.esper.regression.multithread
         public class MyListener
         {
             private readonly List<SupportBean> _beans = new List<SupportBean>();
-            private readonly ILockable _lock = LockManager.CreateDefaultLock();
+            private readonly ILockable _lock = SupportContainer.Instance.LockManager().CreateDefaultLock();
 
             public void Update(Object sender, UpdateEventArgs args)
             {

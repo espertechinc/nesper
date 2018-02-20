@@ -23,7 +23,6 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.events;
 using com.espertech.esper.filter;
-using com.espertech.esper.type;
 
 namespace com.espertech.esper.core.context.mgr
 {
@@ -33,11 +32,9 @@ namespace com.espertech.esper.core.context.mgr
         , ContextEnumeratorHandler
         , FilterFaultHandler
     {
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly ILockable _iLock =
-            LockManager.CreateLock(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly ILockable _iLock;
 
         private readonly String _contextName;
         private readonly EPServicesContext _servicesContext;
@@ -64,8 +61,11 @@ namespace com.espertech.esper.core.context.mgr
 
         private readonly ContextPartitionIdManager _contextPartitionIdManager;
 
-        public ContextManagerNested(ContextControllerFactoryServiceContext factoryServiceContext)
+        public ContextManagerNested(
+            ILockManager lockManager,
+            ContextControllerFactoryServiceContext factoryServiceContext)
         {
+            _iLock = lockManager.CreateLock(GetType());
             _contextName = factoryServiceContext.ContextName;
             _servicesContext = factoryServiceContext.ServicesContext;
             _contextPartitionIdManager = factoryServiceContext.AgentInstanceContextCreate.StatementContext.ContextControllerFactoryService.AllocatePartitionIdMgr(

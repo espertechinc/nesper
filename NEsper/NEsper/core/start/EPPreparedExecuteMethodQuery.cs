@@ -118,6 +118,7 @@ namespace com.espertech.esper.core.start
                     {
                         ExprEvaluatorContextStatement evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
                         ExprValidationContext validationContext = new ExprValidationContext(
+                            statementContext.Container,
                             types, 
                             statementContext.EngineImportService, 
                             statementContext.StatementExtensionServicesContext, null, 

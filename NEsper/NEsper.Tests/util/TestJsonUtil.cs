@@ -10,7 +10,9 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -21,11 +23,13 @@ namespace com.espertech.esper.util
     public class TestJsonUtil
     {
         private ExprValidationContext _exprValidationContext;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            _exprValidationContext = SupportExprValidationContextFactory.MakeEmpty();
+            _container = SupportContainer.Instance;
+            _exprValidationContext = SupportExprValidationContextFactory.MakeEmpty(_container);
         }
     
         [TearDown]

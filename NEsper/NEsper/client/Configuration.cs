@@ -18,6 +18,7 @@ using com.espertech.esper.client.hook;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.dataflow.ops;
 using com.espertech.esper.events;
@@ -182,14 +183,25 @@ namespace com.espertech.esper.client
 
         [NonSerialized] private IDictionary<string, Object> _transientConfiguration;
 
+        private IResourceManager _resourceManager;
+
         /// <summary>
         /// Constructs an empty configuration. The auto import values
         /// are set by default to System, System.Collections and
         /// System.Text.
         /// </summary>
-        public Configuration()
+        public Configuration(IResourceManager resourceManager)
         {
+            _resourceManager = resourceManager;
             Reset();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Configuration"/> class.
+        /// </summary>
+        /// <param name="container">The container.</param>
+        public Configuration(IContainer container) : this(container.Resolve<IResourceManager>())
+        {
         }
 
         /// <summary>
@@ -203,7 +215,7 @@ namespace com.espertech.esper.client
         /// <param name="resource">is the resource name</param>
         /// <exception cref="EPException">thrown to indicate error reading configuration</exception>
         /// <returns>input stream for resource</returns>
-        internal static Stream GetConfigurationInputStream(string resource)
+        internal Stream GetConfigurationInputStream(string resource)
         {
             return GetResourceAsStream(resource);
         }
@@ -235,11 +247,12 @@ namespace com.espertech.esper.client
         /// </summary>
         /// <param name="resource">to get input stream for</param>
         /// <returns>input stream for resource</returns>
-        internal static Stream GetResourceAsStream(String resource)
+        internal Stream GetResourceAsStream(String resource)
         {
-            String stripped = resource.StartsWith("/", StringComparison.CurrentCultureIgnoreCase) ? resource.Substring(1) : resource;
-            Stream stream = ResourceManager.GetResourceAsStream(resource) ??
-                            ResourceManager.GetResourceAsStream(stripped);
+            String stripped = resource.StartsWith("/", StringComparison.CurrentCultureIgnoreCase)
+                ? resource.Substring(1) : resource;
+            Stream stream = _resourceManager.GetResourceAsStream(resource) ??
+                            _resourceManager.GetResourceAsStream(stripped);
             if (stream == null)
             {
                 throw new EPException(resource + " not found");
@@ -1021,9 +1034,9 @@ namespace com.espertech.esper.client
             _plugInPatternObjects.Add(entry);
         }
 
-        public void AddEventTypeAutoName(string packageName)
+        public void AddEventTypeAutoName(string @namespace)
         {
-            _eventTypeAutoNamePackages.Add(packageName);
+            _eventTypeAutoNamePackages.Add(@namespace);
         }
 
         public void AddVariable<TValue>(string variableName, TValue initializationValue)

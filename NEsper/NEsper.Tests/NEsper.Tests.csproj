@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net46</TargetFrameworks>
+    <TargetFrameworks>net46;net471;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -32,18 +32,27 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
-    <DefineConstants>$(DefineConstants);NETFULL;NET40;</DefineConstants>
+    <NetFramework>true</NetFramework>
+    <DefineConstants>$(DefineConstants);NETFRAMEWORK;NET40;</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'=='net46'">
-    <DefineConstants>$(DefineConstants);NETFULL;NET46;</DefineConstants>
+    <NetFramework>true</NetFramework>
+    <DefineConstants>$(DefineConstants);NETFRAMEWORK;NET46;</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net471'">
+    <NetFramework>true</NetFramework>
+    <DefineConstants>$(DefineConstants);NETFRAMEWORK;NET471;</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <NetCore>true</NetCore>
     <DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Castle.Windsor" Version="4.1.0" />
     <PackageReference Include="Common.Logging" Version="3.4.1" />
     <PackageReference Include="Common.Logging.Log4Net208" Version="3.4.1" />
     <PackageReference Include="Microsoft.NETCore.Platforms" Version="2.0.1" />

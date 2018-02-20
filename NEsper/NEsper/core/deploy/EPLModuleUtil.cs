@@ -18,6 +18,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.deploy;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
@@ -405,7 +406,10 @@ namespace com.espertech.esper.core.deploy
             }
         }
 
-        public static Module ReadResource(String resource, EngineImportService engineImportService)
+        public static Module ReadResource(
+            String resource, 
+            EngineImportService engineImportService, 
+            IResourceManager resourceManager)
         {
             Stream stream = null;
 
@@ -417,7 +421,7 @@ namespace com.espertech.esper.core.deploy
             }
             if (stream == null)
             {
-                stream = ResourceManager.GetResourceAsStream(stripped);
+                stream = resourceManager.GetResourceAsStream(stripped);
             }
             if (stream == null)
             {

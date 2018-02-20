@@ -14,6 +14,7 @@ using com.espertech.esper.client.metric;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 
 namespace com.espertech.esper.epl.metric
@@ -48,13 +49,15 @@ namespace com.espertech.esper.epl.metric
         /// <summary>Ctor. </summary>
         /// <param name="specification">configuration</param>
         /// <param name="engineUri">engine URI</param>
-        public MetricReportingServiceImpl(ConfigurationMetricsReporting specification, String engineUri)
+        public MetricReportingServiceImpl(
+            ConfigurationMetricsReporting specification, String engineUri,
+            IReaderWriterLockManager rwLockManager)
         {
             _specification = specification;
             _engineUri = engineUri;
             _schedule = new MetricScheduleService();
 
-            _stmtMetricRepository = new StatementMetricRepository(engineUri, specification);
+            _stmtMetricRepository = new StatementMetricRepository(engineUri, specification, rwLockManager);
             _statementGroupExecutions = new LinkedHashMap<String, MetricExecStatement>();
             _statementMetricHandles = new Dictionary<String, StatementMetricHandle>();
             StatementOutputHooks = new CopyOnWriteArraySet<StatementResultListener>();

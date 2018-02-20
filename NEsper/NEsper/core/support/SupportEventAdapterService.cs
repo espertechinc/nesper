@@ -7,6 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client.util;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.events.avro;
 using com.espertech.esper.events;
 using com.espertech.esper.util;
@@ -19,12 +21,19 @@ namespace com.espertech.esper.core.support
 
         static SupportEventAdapterService()
         {
-            _eventAdapterService = Allocate();
+            _eventAdapterService = Allocate(
+                new DefaultLockManager(timeout => new MonitorLock(timeout)),
+                new ClassLoaderProviderDefault(
+                    new ClassLoaderDefault(
+                        new DefaultResourceManager(null, true)
+                    )));
         }
 
-        public static void Reset()
+        public static void Reset(
+            ILockManager lockManager,
+            ClassLoaderProvider classLoaderProvider)
         {
-            _eventAdapterService = Allocate();
+            _eventAdapterService = Allocate(lockManager, classLoaderProvider);
         }
 
         public static EventAdapterService Service
@@ -32,21 +41,24 @@ namespace com.espertech.esper.core.support
             get { return _eventAdapterService; }
         }
 
-        private static EventAdapterService Allocate()
+        private static EventAdapterService Allocate(
+            ILockManager lockManager,
+            ClassLoaderProvider classLoaderProvider)
         {
             EventAdapterAvroHandler avroHandler = EventAdapterAvroHandlerUnsupported.INSTANCE;
             try
             {
-                avroHandler =
-                    TypeHelper.Instantiate<EventAdapterAvroHandler>(
-                        EventAdapterAvroHandlerConstants.HANDLER_IMPL, ClassForNameProviderDefault.INSTANCE);
+                avroHandler = TypeHelper.Instantiate<EventAdapterAvroHandler>(
+                    EventAdapterAvroHandlerConstants.HANDLER_IMPL, ClassForNameProviderDefault.INSTANCE);
             }
             catch
             {
             }
 
             return new EventAdapterServiceImpl(
-                new EventTypeIdGeneratorImpl(), 5, avroHandler, SupportEngineImportServiceFactory.Make());
+                new EventTypeIdGeneratorImpl(), 5, avroHandler, 
+                SupportEngineImportServiceFactory.Make(classLoaderProvider),
+                lockManager);
         }
     }
 } // end of namespace

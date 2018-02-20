@@ -11,10 +11,11 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.epl.core
@@ -22,12 +23,19 @@ namespace com.espertech.esper.epl.core
     [TestFixture]
     public class TestStreamTypeServiceImpl
     {
-        #region Setup/Teardown
+        private StreamTypeServiceImpl _serviceRegular;
+        private StreamTypeServiceImpl _serviceStreamZeroUnambigous;
+        private StreamTypeServiceImpl _serviceRequireStreamName;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
-            SupportEventAdapterService.Reset();
+            _container = SupportContainer.Instance;
+
+            SupportEventAdapterService.Reset(
+                _container.LockManager(),
+                _container.ClassLoaderProvider());
 
             // Prepare regualar test service
             var eventTypes = new EventType[]
@@ -35,21 +43,17 @@ namespace com.espertech.esper.epl.core
                 SupportEventTypeFactory.CreateBeanType(typeof (SupportBean)),
                 SupportEventTypeFactory.CreateBeanType(typeof (SupportBean)),
                 SupportEventTypeFactory.CreateBeanType(typeof (SupportBean_A)),
-                SupportEventTypeFactory.CreateBeanType(typeof (SupportMarketDataBean),
-                                                       "SupportMarketDataBean")
-            }
-                ;
+                SupportEventTypeFactory.CreateBeanType(typeof (SupportMarketDataBean), "SupportMarketDataBean")
+            };
             var eventTypeName = new String[]
             {
                 "SupportBean", "SupportBean", "SupportBean_A",
                 "SupportMarketDataBean"
-            }
-                ;
+            };
             var streamNames = new String[]
             {
                 "s1", null, "s3", "s4"
-            }
-                ;
+            };
 
             _serviceRegular = new StreamTypeServiceImpl(eventTypes, streamNames,
                                                        new bool[10], "default", false);
@@ -70,12 +74,7 @@ namespace com.espertech.esper.epl.core
                                                                  "default", true, true);
         }
 
-        #endregion
-
-        private StreamTypeServiceImpl _serviceRegular;
-        private StreamTypeServiceImpl _serviceStreamZeroUnambigous;
-        private StreamTypeServiceImpl _serviceRequireStreamName;
-
+        
         private static void TryResolveByStreamAndPropNameBoth(StreamTypeService service)
         {
             // Test lookup by stream name and prop name

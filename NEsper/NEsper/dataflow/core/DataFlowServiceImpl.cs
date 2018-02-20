@@ -17,6 +17,7 @@ using com.espertech.esper.client.annotation;
 using com.espertech.esper.client.dataflow;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
@@ -47,12 +48,16 @@ namespace com.espertech.esper.dataflow.core
         private readonly EPServiceProvider _epService;
         private readonly DataFlowConfigurationStateService _configurationState;
 
-        private readonly ILockable _iLock = LockManager.CreateLock(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly ILockable _iLock;
 
-        public DataFlowServiceImpl(EPServiceProvider epService, DataFlowConfigurationStateService configurationState)
+        public DataFlowServiceImpl(
+            EPServiceProvider epService, 
+            DataFlowConfigurationStateService configurationState,
+            ILockManager lockManager)
         {
             _epService = epService;
             _configurationState = configurationState;
+            _iLock = lockManager.CreateLock(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public EPDataFlowDescriptor GetDataFlow(String dataFlowName)

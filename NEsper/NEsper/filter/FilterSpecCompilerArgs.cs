@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
@@ -43,8 +45,10 @@ namespace com.espertech.esper.filter
         public readonly TimeProvider TimeProvider;
         public readonly VariableService VariableService;
         public readonly StatementExtensionSvcContext StatementExtensionSvcContext;
+        public readonly IContainer Container;
 
         public FilterSpecCompilerArgs(
+            IContainer container,
             IDictionary<string, Pair<EventType, string>> taggedEventTypes,
             IDictionary<string, Pair<EventType, string>> arrayEventTypes,
             ExprEvaluatorContext exprEvaluatorContext,
@@ -63,6 +67,7 @@ namespace com.espertech.esper.filter
             ConfigurationInformation configurationInformation,
             StatementExtensionSvcContext statementExtensionSvcContext)
         {
+            Container = container;
             TaggedEventTypes = taggedEventTypes;
             ArrayEventTypes = arrayEventTypes;
             ExprEvaluatorContext = exprEvaluatorContext;

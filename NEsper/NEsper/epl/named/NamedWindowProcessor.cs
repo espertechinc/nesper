@@ -11,7 +11,9 @@ using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
@@ -44,7 +46,7 @@ namespace com.espertech.esper.epl.named
         private readonly EventTableIndexMetadata _eventTableIndexMetadataRepo = new EventTableIndexMetadata();
         private readonly StatementContext _statementContextCreateWindow;
 
-        private readonly ILockable _lock = LockManager.CreateLock(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly ILockable _lock;
 
         /// <summary>
         /// Ctor.
@@ -67,6 +69,7 @@ namespace com.espertech.esper.epl.named
         /// <param name="optionalUniqueKeyProps">The optional unique key props.</param>
         /// <param name="eventTypeAsName">Name of the event type as.</param>
         /// <param name="statementContextCreateWindow">The statement context create window.</param>
+        /// <param name="lockManager">The lock manager.</param>
         public NamedWindowProcessor(
             string namedWindowName,
             NamedWindowMgmtService namedWindowMgmtService,
@@ -85,7 +88,7 @@ namespace com.espertech.esper.epl.named
             bool isVirtualDataWindow,
             ICollection<string> optionalUniqueKeyProps,
             string eventTypeAsName,
-            StatementContext statementContextCreateWindow)
+            StatementContext statementContextCreateWindow, ILockManager lockManager)
         {
             _namedWindowName = namedWindowName;
             _contextName = contextName;
@@ -103,6 +106,7 @@ namespace com.espertech.esper.epl.named
                 eventType, namedWindowMgmtService, namedWindowDispatchService, statementResultService, revisionProcessor,
                 isPrioritized, isBatchingDataWindow, contextName, statementContextCreateWindow.TimeSourceService,
                 statementContextCreateWindow.ConfigSnapshot.EngineDefaults.Threading);
+            _lock = lockManager.CreateLock(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public string EventTypeAsName => _eventTypeAsName;

@@ -104,7 +104,7 @@ namespace com.espertech.esper.regression.client
             try {
                 epService.EPAdministrator.CreateEPL(stmt, "s1");
                 Assert.Fail();
-            } catch (Exception ex) {
+            } catch (Exception) {
                 // expected
             }
     
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regression.client
             try {
                 epService.EPAdministrator.CreatePattern(stmt, "s1");
                 Assert.Fail();
-            } catch (Exception ex) {
+            } catch (Exception) {
                 // expected
             }
     

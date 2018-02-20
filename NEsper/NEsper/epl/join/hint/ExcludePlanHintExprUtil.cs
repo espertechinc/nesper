@@ -13,6 +13,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
@@ -26,8 +27,8 @@ using com.espertech.esper.pattern;
 
 namespace com.espertech.esper.epl.join.hint
 {
-    public class ExcludePlanHintExprUtil {
-    
+    public class ExcludePlanHintExprUtil
+    {
         internal static readonly ObjectArrayEventType OAEXPRESSIONTYPE;
     
         static ExcludePlanHintExprUtil()
@@ -59,14 +60,24 @@ namespace com.espertech.esper.epl.join.hint
             return new ObjectArrayEventBean(@event, OAEXPRESSIONTYPE);
         }
     
-        public static ExprEvaluator ToExpression(string hint, StatementContext statementContext) {
+        public static ExprEvaluator ToExpression(
+            string hint,
+            StatementContext statementContext)
+        {
             var toCompile = "select * from com.esper.espertech.compat.DateTimeOffsetHelper#TimeInMillis(" + hint + ")";
-            var raw = EPAdministratorHelper.CompileEPL(toCompile, hint, false, null,
-                    SelectClauseStreamSelectorEnum.ISTREAM_ONLY, statementContext.EngineImportService,
-                    statementContext.VariableService, statementContext.SchedulingService,
-                    statementContext.EngineURI, statementContext.ConfigSnapshot,
-                    new PatternNodeFactoryImpl(), new ContextManagementServiceImpl(),
-                    new ExprDeclaredServiceImpl(), new TableServiceImpl());
+            var raw = EPAdministratorHelper.CompileEPL(
+                statementContext.Container,
+                toCompile, hint, false, null,
+                SelectClauseStreamSelectorEnum.ISTREAM_ONLY, statementContext.EngineImportService,
+                statementContext.VariableService,
+                statementContext.SchedulingService,
+                statementContext.EngineURI,
+                statementContext.ConfigSnapshot,
+                new PatternNodeFactoryImpl(),
+                new ContextManagementServiceImpl(),
+                new ExprDeclaredServiceImpl(statementContext.EngineServices.LockManager),
+                new TableServiceImpl(statementContext.RWLockManager, statementContext.ThreadLocalManager)
+            );
             var expr = raw.StreamSpecs[0].ViewSpecs[0].ObjectParameters[0];
             var validated = ExprNodeUtility.ValidateSimpleGetSubtree(ExprNodeOrigin.HINT, expr, statementContext, OAEXPRESSIONTYPE, false);
             return validated.ExprEvaluator;

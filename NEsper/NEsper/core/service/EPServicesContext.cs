@@ -9,6 +9,8 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.activator;
 using com.espertech.esper.core.context.mgr;
@@ -51,6 +53,7 @@ namespace com.espertech.esper.core.service
         /// <summary>
         /// Constructor - sets up new set of services.
         /// </summary>
+        /// <param name="container"></param>
         /// <param name="engineURI">is the engine URI</param>
         /// <param name="schedulingService">service to get time and schedule callbacks</param>
         /// <param name="eventAdapterService">service to resolve event types</param>
@@ -108,6 +111,7 @@ namespace com.espertech.esper.core.service
         /// <param name="aggregationFactoryFactory"></param>
         /// <param name="scriptingService">The scripting service.</param>
         public EPServicesContext(
+            IContainer container,
             string engineURI,
             SchedulingServiceSPI schedulingService,
             EventAdapterService eventAdapterService,
@@ -165,6 +169,7 @@ namespace com.espertech.esper.core.service
             AggregationFactoryFactory aggregationFactoryFactory,
             ScriptingService scriptingService)
         {
+            Container = container;
             EngineURI = engineURI;
             SchedulingService = schedulingService;
             EventAdapterService = eventAdapterService;
@@ -173,7 +178,7 @@ namespace com.espertech.esper.core.service
             DatabaseRefService = databaseConfigService;
             FilterService = filterService;
             TimerService = timerService;
-            DispatchService = DispatchServiceProvider.NewService();
+            DispatchService = DispatchServiceProvider.NewService(container.Resolve<IThreadLocalManager>());
             ViewService = ViewServiceProvider.NewService();
             StreamService = streamFactoryService;
             PlugInViews = plugInViews;
@@ -207,7 +212,9 @@ namespace com.espertech.esper.core.service
             MatchRecognizeStatePoolEngineSvc = matchRecognizeStatePoolEngineSvc;
             DataFlowService = dataFlowService;
             ExprDeclaredService = exprDeclaredService;
-            ExpressionResultCacheSharable = new ExpressionResultCacheService(configSnapshot.EngineDefaults.Execution.DeclaredExprValueCacheSize);
+            ExpressionResultCacheSharable = new ExpressionResultCacheService(
+                configSnapshot.EngineDefaults.Execution.DeclaredExprValueCacheSize, 
+                container.Resolve<IThreadLocalManager>());
             ContextControllerFactoryFactorySvc = contextControllerFactoryFactorySvc;
             ContextManagerFactoryService = contextManagerFactoryService;
             EpStatementFactory = epStatementFactory;
@@ -225,6 +232,11 @@ namespace com.espertech.esper.core.service
             AggregationFactoryFactory = aggregationFactoryFactory;
             ScriptingService = scriptingService;
         }
+
+        /// <summary>
+        /// Returns the service container.
+        /// </summary>
+        public IContainer Container { get; set; }
 
         public PatternNodeFactory PatternNodeFactory { get; private set; }
 
@@ -414,6 +426,22 @@ namespace com.espertech.esper.core.service
 
         public AggregationFactoryFactory AggregationFactoryFactory { get; private set; }
 
+        public IThreadLocalManager ThreadLocalManager {
+            get => Container.Resolve<IThreadLocalManager>();
+        }
+
+        public ILockManager LockManager {
+            get => Container.Resolve<ILockManager>();
+        }
+
+        public IReaderWriterLockManager RWLockManager {
+            get => Container.Resolve<IReaderWriterLockManager>();
+        }
+
+        public IResourceManager ResourceManager {
+            get => Container.Resolve<IResourceManager>();
+        }
+
         /// <summary>Sets the service dealing with starting and stopping statements. </summary>
         /// <param name="statementLifecycleSvc">statement lifycycle svc</param>
         public void SetStatementLifecycleSvc(StatementLifecycleSvc statementLifecycleSvc)
@@ -518,6 +546,7 @@ namespace com.espertech.esper.core.service
             StatementEventTypeRefService = null;
             ThreadingService = null;
             ExpressionResultCacheSharable = null;
+            Container = null;
         }
     }
 }

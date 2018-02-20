@@ -35,7 +35,8 @@ namespace com.espertech.esper.regression.multithread
             Configuration config = SupportConfigFactory.GetConfiguration();
             config.AddEventType("S0", typeof(SupportBean_S0));
             string engineUri = this.GetType().Name + "_" + profile;
-            EPServiceProvider epService = EPServiceProviderManager.GetProvider(engineUri, config);
+            EPServiceProvider epService = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, engineUri, config);
             epService.Initialize();
     
             string[] epls = {

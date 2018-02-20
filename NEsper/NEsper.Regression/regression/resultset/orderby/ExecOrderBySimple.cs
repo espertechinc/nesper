@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
@@ -427,7 +426,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             try {
                 CreateAndSend(epService, statementString, listener);
                 Assert.Fail();
-            } catch (EPStatementException ex) {
+            } catch (EPStatementException) {
                 // expected
             }
     
@@ -438,7 +437,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             try {
                 CreateAndSend(epService, statementString, listener);
                 Assert.Fail();
-            } catch (EPStatementException ex) {
+            } catch (EPStatementException) {
                 // expected
             }
     
@@ -449,7 +448,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             try {
                 CreateAndSend(epService, statementString, listener);
                 Assert.Fail();
-            } catch (EPStatementException ex) {
+            } catch (EPStatementException) {
                 // expected
             }
         }
@@ -465,7 +464,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             try {
                 CreateAndSend(epService, statementString, listener);
                 Assert.Fail();
-            } catch (EPStatementException ex) {
+            } catch (EPStatementException) {
                 // expected
             }
     
@@ -478,7 +477,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             try {
                 CreateAndSend(epService, statementString, listener);
                 Assert.Fail();
-            } catch (EPStatementException ex) {
+            } catch (EPStatementException) {
                 // expected
             }
     
@@ -491,7 +490,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             try {
                 CreateAndSend(epService, statementString, listener);
                 Assert.Fail();
-            } catch (EPStatementException ex) {
+            } catch (EPStatementException) {
                 // expected
             }
         }

@@ -22,11 +22,11 @@ namespace com.espertech.esper.core.deploy
     public class DeploymentStateServiceImpl : DeploymentStateService
     {
         private readonly IDictionary<String, DeploymentInformation> _deployments;
-        private readonly ILockable _lock = 
-            LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly ILockable _lock; 
     
-        public DeploymentStateServiceImpl()
+        public DeploymentStateServiceImpl(ILockManager lockManager)
         {
+            _lock = lockManager.CreateLock(GetType());
             _deployments = new ConcurrentDictionary<String, DeploymentInformation>();
         }
 

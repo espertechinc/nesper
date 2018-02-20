@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.expression.core;
@@ -32,8 +33,11 @@ namespace com.espertech.esper.epl.table.mgmt
 	        new Dictionary<object, ObjectArrayBackedEventBean>().WithNullSupport();
 	    private readonly IndexMultiKey _primaryIndexKey;
 
-	    public TableStateInstanceGroupedImpl(TableMetadata tableMetadata, AgentInstanceContext agentInstanceContext)
-            : base(tableMetadata, agentInstanceContext)
+	    public TableStateInstanceGroupedImpl(
+	        TableMetadata tableMetadata, 
+	        AgentInstanceContext agentInstanceContext,
+	        IReaderWriterLockManager rwLockManager)
+            : base(tableMetadata, agentInstanceContext, rwLockManager)
         {
 	        IList<EventPropertyGetter> indexGetters = new List<EventPropertyGetter>();
 	        IList<string> keyNames = new List<string>();

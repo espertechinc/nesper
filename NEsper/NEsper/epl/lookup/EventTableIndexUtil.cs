@@ -399,6 +399,7 @@ namespace com.espertech.esper.epl.lookup
         {
             var streamTypeService = new StreamTypeServiceImpl(eventType, null, false, statementContext.EngineURI);
             return new ExprValidationContext(
+                statementContext.Container,
                 streamTypeService,
                 statementContext.EngineImportService,
                 statementContext.StatementExtensionServicesContext, null, 

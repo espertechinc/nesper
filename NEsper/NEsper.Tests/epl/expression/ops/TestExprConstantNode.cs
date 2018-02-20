@@ -6,8 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -18,10 +20,12 @@ namespace com.espertech.esper.epl.expression.ops
     public class TestExprConstantNode 
     {
         private ExprConstantNode _constantNode;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Instance;
             _constantNode = new ExprConstantNodeImpl("5");
         }
     
@@ -37,7 +41,7 @@ namespace com.espertech.esper.epl.expression.ops
         [Test]
         public void TestValidate()
         {
-            _constantNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _constantNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
         }
     
         [Test]

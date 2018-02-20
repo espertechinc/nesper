@@ -16,6 +16,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.parse;
 using com.espertech.esper.events.property;
 
@@ -47,8 +48,15 @@ namespace com.espertech.esper.events.xml
         /// <param name="config">configuration for type</param>
         /// <param name="schemaModel">the schema representation</param>
         /// <param name="eventAdapterService">type lookup and registration</param>
-        public SchemaXMLEventType(EventTypeMetadata eventTypeMetadata, int eventTypeId, ConfigurationEventTypeXMLDOM config, SchemaModel schemaModel, EventAdapterService eventAdapterService)
-            : base(eventTypeMetadata, eventTypeId, config, eventAdapterService)
+        /// <param name="lockManager"></param>
+        public SchemaXMLEventType(
+            EventTypeMetadata eventTypeMetadata,
+            int eventTypeId,
+            ConfigurationEventTypeXMLDOM config,
+            SchemaModel schemaModel,
+            EventAdapterService eventAdapterService,
+            ILockManager lockManager)
+            : base(eventTypeMetadata, eventTypeId, config, eventAdapterService, lockManager)
         {
             _propertyGetterCache = new Dictionary<String, EventPropertyGetterSPI>();
             _schemaModel = schemaModel;
@@ -287,7 +295,7 @@ namespace com.espertech.esper.events.xml
                         }
                         var indexedProp = (IndexedProperty)property;
                         getter = PropertyGetters.Get(indexedProp.PropertyNameAtomic);
-                        if (null == getter)
+                        if (getter == null)
                         {
                             return null;
                         }

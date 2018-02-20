@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
@@ -16,12 +15,15 @@ namespace com.espertech.esper.filter
 {
     public sealed class FilterServiceLockFine : FilterServiceBase
     {
-        private readonly IReaderWriterLock _iLock =
-            ReaderWriterLockManager.CreateDefaultLock();
+        private readonly IReaderWriterLock _iLock;
 
-        public FilterServiceLockFine(bool allowIsolation)
-            : base(new FilterServiceGranularLockFactoryReentrant(), allowIsolation)
+        public FilterServiceLockFine(
+            ILockManager lockManager,
+            IReaderWriterLockManager rwLockManager,
+            bool allowIsolation)
+            : base(lockManager, new FilterServiceGranularLockFactoryReentrant(rwLockManager), allowIsolation)
         {
+            _iLock = rwLockManager.CreateLock(GetType());
         }
 
         public override ILockable WriteLock

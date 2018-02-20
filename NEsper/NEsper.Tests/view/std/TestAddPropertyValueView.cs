@@ -11,8 +11,10 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
@@ -26,10 +28,13 @@ namespace com.espertech.esper.view.std
         private SupportMapView _parentView;
         private SupportSchemaNeutralView _childView;
         private EventType _parentEventType;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Instance;
+
             var schema = new Dictionary<String, Object>();
             schema["STDDEV"] = typeof(double?);
             _parentEventType = SupportEventTypeFactory.CreateMapType(schema);
@@ -42,7 +47,7 @@ namespace com.espertech.esper.view.std
     
             // Set up length window view and a test child view
             _myView = new AddPropertyValueOptionalView(
-                SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(),
+                SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container),
                 new String[] { "Symbol" }, "IBM", mergeEventType);
     
             _parentView = new SupportMapView(schema);

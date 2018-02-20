@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esperio.csv;
 using com.espertech.esperio.support.util;
 
@@ -22,19 +23,22 @@ namespace com.espertech.esperio.regression.adapter
     public class TestCSVAdapterUseCasesBean
     {
         private readonly TestCSVAdapterUseCases _baseUseCase;
+        private readonly IContainer _container;
 
-    	public TestCSVAdapterUseCasesBean()
+        public TestCSVAdapterUseCasesBean()
     	{
+	        _container = SupportContainer.Instance;
     	    _baseUseCase = new TestCSVAdapterUseCases(true);
     	}
     
         [Test]
         public void TestReadWritePropsBean()
         {
-            Configuration configuration = new Configuration();
+            Configuration configuration = new Configuration(_container);
             configuration.AddEventType("ReadWrite", typeof(ExampleMarketDataBeanReadWrite));
 
-            _baseUseCase.EPService = EPServiceProviderManager.GetProvider("testExistingTypeNoOptions", configuration);
+            _baseUseCase.EPService = EPServiceProviderManager.GetProvider(
+                _container, "testExistingTypeNoOptions", configuration);
             _baseUseCase.EPService.Initialize();
 
             EPStatement stmt = _baseUseCase.EPService.EPAdministrator.CreateEPL("select * from ReadWrite#length(100)");

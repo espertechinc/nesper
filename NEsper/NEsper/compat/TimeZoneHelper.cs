@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -18,8 +17,7 @@ namespace com.espertech.esper.compat
 {
     public class TimeZoneHelper
     {
-        private static readonly ILockable TimeZoneInfoLock =
-            LockManager.CreateLock(typeof (TimeZoneHelper));
+        private static readonly ILockable TimeZoneInfoLock = new MonitorLock(60000);
         private static readonly IDictionary<string, TimeZoneInfo> TimeZoneInfoDictionary =
             new Dictionary<string, TimeZoneInfo>();
 

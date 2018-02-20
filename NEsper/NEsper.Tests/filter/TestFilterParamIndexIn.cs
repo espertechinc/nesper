@@ -11,11 +11,13 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.filter;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.filter
@@ -28,10 +30,13 @@ namespace com.espertech.esper.filter
         private EventBean _testEventBean;
         private EventType _testEventType;
         private List<FilterHandle> _matchesList;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Instance;
+
             _testEvaluator = new SupportEventEvaluator();
             _testBean = new SupportBean();
             _testEventBean = SupportEventBeanFactory.CreateObject(_testBean);
@@ -42,7 +47,7 @@ namespace com.espertech.esper.filter
         [Test]
         public void TestIndex()
         {
-            FilterParamIndexIn index = new FilterParamIndexIn(MakeLookupable("LongBoxed"), ReaderWriterLockManager.CreateDefaultLock());
+            FilterParamIndexIn index = new FilterParamIndexIn(MakeLookupable("LongBoxed"), _container.RWLockManager().CreateDefaultLock());
             Assert.AreEqual(FilterOperator.IN_LIST_OF_VALUES, index.FilterOperator);
     
             MultiKeyUntyped inList = new MultiKeyUntyped(new Object[] {2L, 5L});

@@ -9,9 +9,11 @@
 using System;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -22,10 +24,12 @@ namespace com.espertech.esper.epl.expression.ops
     public class TestExprAndNode 
     {
         private ExprAndNode _andNode;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Instance;
             _andNode = new ExprAndNodeImpl();
         }
     
@@ -41,13 +45,13 @@ namespace com.espertech.esper.epl.expression.ops
             // test success
             _andNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
             _andNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
-            _andNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _andNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
     
             // test failure, type mismatch
             _andNode.AddChildNode(new SupportExprNode(typeof(string)));
             try
             {
-                _andNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _andNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -60,7 +64,7 @@ namespace com.espertech.esper.epl.expression.ops
             _andNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
             try
             {
-                _andNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _andNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)

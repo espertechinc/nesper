@@ -683,12 +683,22 @@ namespace com.espertech.esper.core.start
 
             var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
             var validationContext = new ExprValidationContext(
-                subselectTypeService, statementContext.EngineImportService,
-                statementContext.StatementExtensionServicesContext, viewResourceDelegateSubselect,
-                statementContext.SchedulingService, statementContext.VariableService, statementContext.TableService,
-                evaluatorContextStmt, statementContext.EventAdapterService, statementContext.StatementName,
-                statementContext.StatementId, statementContext.Annotations, statementContext.ContextDescriptor,
-                statementContext.ScriptingService, false, false, true, false, null, false);
+                statementContext.Container,
+                subselectTypeService,
+                statementContext.EngineImportService,
+                statementContext.StatementExtensionServicesContext, 
+                viewResourceDelegateSubselect,
+                statementContext.SchedulingService,
+                statementContext.VariableService, 
+                statementContext.TableService,
+                evaluatorContextStmt,
+                statementContext.EventAdapterService, 
+                statementContext.StatementName,
+                statementContext.StatementId,
+                statementContext.Annotations, 
+                statementContext.ContextDescriptor,
+                statementContext.ScriptingService,
+                false, false, true, false, null, false);
             var aggExprNodesSelect = new List<ExprAggregateNode>(2);
 
             for (var i = 0; i < selectClauseSpec.SelectExprList.Length; i++)

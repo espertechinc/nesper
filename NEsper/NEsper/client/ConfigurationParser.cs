@@ -21,6 +21,7 @@ using com.espertech.esper.client.util;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.type;
 using com.espertech.esper.util;
@@ -37,6 +38,8 @@ namespace com.espertech.esper.client
 
         private static readonly XslCompiledTransform InitializerTransform;
 
+        private IResourceManager _resourceManager;
+
         /// <summary>
         /// Initializes the <see cref="ConfigurationParser"/> class.
         /// </summary>
@@ -52,6 +55,15 @@ namespace com.espertech.esper.client
 
             InitializerTransform = new XslCompiledTransform(false);
             InitializerTransform.Load(new XmlNodeReader(transformDocument));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationParser"/> class.
+        /// </summary>
+        /// <param name="resourceManager">The resource manager.</param>
+        public ConfigurationParser(IResourceManager resourceManager)
+        {
+            _resourceManager = resourceManager;
         }
 
         /// <summary>
@@ -1840,11 +1852,11 @@ namespace com.espertech.esper.client
         /// </summary>
         /// <param name="resource">to get input stream for</param>
         /// <returns>input stream for resource</returns>
-        public static Stream GetResourceAsStream(String resource)
+        public Stream GetResourceAsStream(String resource)
         {
             var stripped = resource.StartsWith("/") ? resource.Substring(1) : resource;
-            var stream = ResourceManager.GetResourceAsStream(resource) ??
-                         ResourceManager.GetResourceAsStream(stripped);
+            var stream = _resourceManager.GetResourceAsStream(resource) ??
+                         _resourceManager.GetResourceAsStream(stripped);
             if (stream == null)
             {
                 throw new EPException(resource + " not found");

@@ -13,6 +13,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events;
@@ -29,7 +30,10 @@ namespace com.espertech.esper.epl.join.hint
         private readonly ExprEvaluatorContext _exprEvaluatorContext;
         private readonly bool _queryPlanLogging;
 
-        public ExcludePlanHint(String[] streamNames, IList<ExprEvaluator> evaluators, StatementContext statementContext)
+        public ExcludePlanHint(
+            String[] streamNames, 
+            IList<ExprEvaluator> evaluators, 
+            StatementContext statementContext)
         {
             _streamNames = streamNames;
             _evaluators = evaluators;
@@ -37,7 +41,9 @@ namespace com.espertech.esper.epl.join.hint
             _queryPlanLogging = statementContext.ConfigSnapshot.EngineDefaults.Logging.IsEnableQueryPlan;
         }
 
-        public static ExcludePlanHint GetHint(String[] streamNames, StatementContext statementContext)
+        public static ExcludePlanHint GetHint(
+            String[] streamNames, 
+            StatementContext statementContext)
         {
             IList<String> hints = HintEnum.EXCLUDE_PLAN.GetHintAssignedValues(statementContext.Annotations);
             if (hints == null)
@@ -51,7 +57,7 @@ namespace com.espertech.esper.epl.join.hint
                 {
                     continue;
                 }
-                ExprEvaluator evaluator = ExcludePlanHintExprUtil.ToExpression(hint, statementContext);
+                var evaluator = ExcludePlanHintExprUtil.ToExpression(hint, statementContext);
                 if (TypeHelper.GetBoxedType(evaluator.ReturnType) != typeof(bool?))
                 {
                     throw new ExprValidationException("Expression provided for hint " + HintEnum.EXCLUDE_PLAN.GetValue() + " must return a boolean value");

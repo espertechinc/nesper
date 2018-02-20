@@ -13,13 +13,14 @@ using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.client.deploy;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
 using NUnit.Framework;
-using ResourceManager = com.espertech.esper.compat.ResourceManager;
 
 namespace com.espertech.esper.regression.client
 {
@@ -311,7 +312,7 @@ namespace com.espertech.esper.regression.client
         private void RunAssertionShortcutReadDeploy(EPServiceProvider epService)
         {
             var resource = "regression/test_module_12.epl";
-            var input = ResourceManager.GetResourceAsStream(resource);
+            var input = SupportContainer.Instance.ResourceManager().GetResourceAsStream(resource);
             Assert.IsNotNull(input);
             var resultOne = epService.EPAdministrator.DeploymentAdmin.ReadDeploy(input, null, null, null);
             epService.EPAdministrator.DeploymentAdmin.UndeployRemove(resultOne.DeploymentId);

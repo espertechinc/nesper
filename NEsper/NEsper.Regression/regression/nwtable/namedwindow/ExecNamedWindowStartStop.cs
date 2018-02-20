@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             try {
                 epService.EPAdministrator.CreateEPL("select a from MyWindowEventType");
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 // expected
             }
     
@@ -68,7 +68,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             try {
                 epService.EPAdministrator.CreateEPL("select a from MyWindowEventType");
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 // expected
             }
     
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             try {
                 epService.EPAdministrator.CreateEPL("select c from MyWindowEventType");
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 // expected
             }
         }

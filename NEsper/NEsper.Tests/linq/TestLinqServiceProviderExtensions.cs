@@ -9,8 +9,9 @@
 using com.espertech.esper.client;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportunit.bean;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.linq
@@ -19,11 +20,14 @@ namespace com.espertech.esper.linq
     public class TestLinqServiceProviderExtensions
     {
         private EPServiceProvider _serviceProvider;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
-            var configuration = new Configuration();
+            _container = SupportContainer.Instance;
+
+            var configuration = new Configuration(_container);
             _serviceProvider = EPServiceProviderManager.GetDefaultProvider(configuration);
             _serviceProvider.Initialize();
         }

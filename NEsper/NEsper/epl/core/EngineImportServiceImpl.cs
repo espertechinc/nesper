@@ -60,6 +60,8 @@ namespace com.espertech.esper.epl.core
         private readonly IDictionary<string, EngineImportSingleRowDesc> _singleRowFunctions;
         private readonly IDictionary<string, object> _transientConfiguration;
 
+        private readonly ClassLoaderProvider _classLoaderProvider;
+
         private ICodegenContext _context;
 
         public EngineImportServiceImpl(
@@ -75,7 +77,8 @@ namespace com.espertech.esper.epl.core
             AggregationFactoryFactory aggregationFactoryFactory,
             bool isCodegenEventPropertyGetters,
             string engineURI,
-            ICodegenContext context)
+            ICodegenContext context,
+            ClassLoaderProvider classLoaderProvider)
         {
             _imports = new List<AutoImportDesc>();
             _annotationImports = new List<AutoImportDesc>(2);
@@ -99,6 +102,7 @@ namespace com.espertech.esper.epl.core
             IsCodegenEventPropertyGetters = isCodegenEventPropertyGetters;
             _engineURI = engineURI;
             _context = context;
+            _classLoaderProvider = classLoaderProvider;
         }
 
         /// <summary>
@@ -129,7 +133,9 @@ namespace com.espertech.esper.epl.core
 
         public ClassLoader GetClassLoader()
         {
-            return TransientConfigurationResolver.ResolveClassLoader(_transientConfiguration).GetClassLoader();
+            return TransientConfigurationResolver
+                .ResolveClassLoader(_classLoaderProvider, _transientConfiguration)
+                .GetClassLoader();
         }
 
         public void AddImport(string namespaceOrType)

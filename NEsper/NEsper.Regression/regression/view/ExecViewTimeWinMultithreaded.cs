@@ -12,11 +12,12 @@ using System.Threading;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.view
@@ -112,7 +113,7 @@ namespace com.espertech.esper.regression.view
 
             // Create threads to send events
             var runnables = new TimeWinRunnable[_threads.Length];
-            var rlock = LockManager.CreateDefaultLock();
+            var rlock = SupportContainer.Instance.LockManager().CreateDefaultLock();
             for (var i = 0; i < _threads.Length; i++)
             {
                 runnables[i] = new TimeWinRunnable(i, epService.EPRuntime, rlock, symbols, numEvents);

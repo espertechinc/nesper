@@ -10,6 +10,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.dispatch;
 using com.espertech.esper.timer;
 
@@ -30,8 +31,8 @@ namespace com.espertech.esper.core.service
         /// <param name="msecTimeout">timeout for preserving dispatch order through blocking</param>
         /// <param name="statementResultService">handles result delivery</param>
         /// <param name="timeSourceService">time source provider</param>
-        public UpdateDispatchViewBlockingSpin(StatementResultService statementResultService, DispatchService dispatchService, long msecTimeout, TimeSourceService timeSourceService)
-            : base(statementResultService, dispatchService)
+        public UpdateDispatchViewBlockingSpin(StatementResultService statementResultService, DispatchService dispatchService, long msecTimeout, TimeSourceService timeSourceService, IThreadLocalManager threadLocalManager)
+            : base(statementResultService, dispatchService, threadLocalManager)
         {
             _currentFutureSpin = new UpdateDispatchFutureSpin(timeSourceService); // use a completed future as a start
             _msecTimeout = msecTimeout;

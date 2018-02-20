@@ -152,6 +152,7 @@ namespace com.espertech.esper.util
                 exprNode = ExprNodeUtility.GetValidatedSubtree(
                     ExprNodeOrigin.SCRIPTPARAMS, exprNode,
                     new ExprValidationContext(
+                        engine.Container,
                         streamTypeService,
                         engine.EngineImportService,
                         null, null,

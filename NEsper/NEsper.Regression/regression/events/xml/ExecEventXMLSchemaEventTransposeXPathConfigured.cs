@@ -15,10 +15,12 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.events.xml;
 using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
+using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -30,7 +32,7 @@ namespace com.espertech.esper.regression.events.xml
         private const string CLASSLOADER_SCHEMA_URI = "regression/simpleSchema.xsd";
     
         public override void Run(EPServiceProvider epService) {
-            string schemaURI = ResourceManager.ResolveResourceURL(CLASSLOADER_SCHEMA_URI).ToString();
+            string schemaURI = SupportContainer.Instance.ResourceManager().ResolveResourceURL(CLASSLOADER_SCHEMA_URI).ToString();
             RunAssertionXPathConfigured(schemaURI, epService);
             RunAssertionXPathExpression();
         }

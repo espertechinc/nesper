@@ -21,7 +21,7 @@ namespace com.espertech.esper.compat.threading
         /// <summary>
         /// Initializes a new instance of the <see cref="FairReaderWriterLock"/> class.
         /// </summary>
-        public FifoReaderWriterLock()
+        public FifoReaderWriterLock(int lockTimeout)
         {
 #if STATISTICS
 			_id = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
@@ -33,8 +33,8 @@ namespace com.espertech.esper.compat.threading
 			_wnode.LockId = _id;
 #endif
             
-            ReadLock = new CommonReadLock<Node>(this);
-            WriteLock = new CommonWriteLock<Node>(this);
+            ReadLock = new CommonReadLock<Node>(this, lockTimeout);
+            WriteLock = new CommonWriteLock<Node>(this, lockTimeout);
         }
 
         /// <summary>

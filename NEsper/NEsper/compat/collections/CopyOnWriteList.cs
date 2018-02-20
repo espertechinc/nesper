@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.compat.collections
@@ -23,7 +24,7 @@ namespace com.espertech.esper.compat.collections
         public CopyOnWriteList()
         {
             _arrayList = new T[0];
-            _writerLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            _writerLock = new MonitorSlimLock(60000);
         }
 
         /// <summary>

@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using NUnit.Framework;
 
@@ -28,7 +30,8 @@ namespace com.espertech.esper.supportregression.util
         public SupportMTUpdateListener(string name)
         {
             _id = name;
-            _oLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            _oLock = SupportContainer.Instance.LockManager()
+                .CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             _newDataList = new List<EventBean[]>();
             _oldDataList = new List<EventBean[]>();
         }
@@ -36,7 +39,8 @@ namespace com.espertech.esper.supportregression.util
         public SupportMTUpdateListener()
         {
             _id = string.Empty;
-            _oLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            _oLock = SupportContainer.Instance.LockManager()
+                .CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             _newDataList = new List<EventBean[]>();
             _oldDataList = new List<EventBean[]>();
         }

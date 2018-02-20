@@ -49,22 +49,26 @@ namespace com.espertech.esper.core.service
         private readonly MatchRecognizeStatePoolEngineSvc _matchRecognizeStatePoolEngineSvc;
         private readonly TableService _tableService;
         private readonly IDictionary<string, Object> _transientConfiguration;
-    
-        public ConfigurationOperationsImpl(EventAdapterService eventAdapterService,
-                                           EventTypeIdGenerator eventTypeIdGenerator,
-                                           EngineImportService engineImportService,
-                                           VariableService variableService,
-                                           EngineSettingsService engineSettingsService,
-                                           ValueAddEventService valueAddEventService,
-                                           MetricReportingService metricReportingService,
-                                           StatementEventTypeRef statementEventTypeRef,
-                                           StatementVariableRef statementVariableRef,
-                                           PluggableObjectCollection plugInViews,
-                                           FilterService filterService,
-                                           PatternSubexpressionPoolEngineSvc patternSubexpressionPoolSvc,
-                                           MatchRecognizeStatePoolEngineSvc matchRecognizeStatePoolEngineSvc,
-                                           TableService tableService,
-                                           IDictionary<string, Object> transientConfiguration) {
+        private readonly IResourceManager _resourceManager;
+
+        public ConfigurationOperationsImpl(
+            EventAdapterService eventAdapterService,
+            EventTypeIdGenerator eventTypeIdGenerator,
+            EngineImportService engineImportService,
+            VariableService variableService,
+            EngineSettingsService engineSettingsService,
+            ValueAddEventService valueAddEventService,
+            MetricReportingService metricReportingService,
+            StatementEventTypeRef statementEventTypeRef,
+            StatementVariableRef statementVariableRef,
+            PluggableObjectCollection plugInViews,
+            FilterService filterService,
+            PatternSubexpressionPoolEngineSvc patternSubexpressionPoolSvc,
+            MatchRecognizeStatePoolEngineSvc matchRecognizeStatePoolEngineSvc,
+            TableService tableService,
+            IResourceManager resourceManager,
+            IDictionary<string, object> transientConfiguration)
+        {
             _eventAdapterService = eventAdapterService;
             _eventTypeIdGenerator = eventTypeIdGenerator;
             _engineImportService = engineImportService;
@@ -80,10 +84,11 @@ namespace com.espertech.esper.core.service
             _matchRecognizeStatePoolEngineSvc = matchRecognizeStatePoolEngineSvc;
             _tableService = tableService;
             _transientConfiguration = transientConfiguration;
+            _resourceManager = resourceManager;
         }
     
-        public void AddEventTypeAutoName(string javaPackageName) {
-            _eventAdapterService.AddAutoNamePackage(javaPackageName);
+        public void AddEventTypeAutoName(string @namespace) {
+            _eventAdapterService.AddAutoNamePackage(@namespace);
         }
     
         public void AddPlugInView(string @namespace, string name, string viewFactoryClass) {
@@ -341,7 +346,11 @@ namespace com.espertech.esper.core.service
     
             if ((xmlDOMEventTypeDesc.SchemaResource != null) || (xmlDOMEventTypeDesc.SchemaText != null)) {
                 try {
-                    schemaModel = XSDSchemaMapper.LoadAndMap(xmlDOMEventTypeDesc.SchemaResource, xmlDOMEventTypeDesc.SchemaText, _engineImportService);
+                    schemaModel = XSDSchemaMapper.LoadAndMap(
+                        xmlDOMEventTypeDesc.SchemaResource, 
+                        xmlDOMEventTypeDesc.SchemaText, 
+                        _engineImportService,
+                        _resourceManager);
                 } catch (Exception ex) {
                     throw new ConfigurationException(ex.Message, ex);
                 }
@@ -435,7 +444,11 @@ namespace com.espertech.esper.core.service
             SchemaModel schemaModel = null;
             if (config.SchemaResource != null || config.SchemaText != null) {
                 try {
-                    schemaModel = XSDSchemaMapper.LoadAndMap(config.SchemaResource, config.SchemaText, _engineImportService);
+                    schemaModel = XSDSchemaMapper.LoadAndMap(
+                        config.SchemaResource, 
+                        config.SchemaText, 
+                        _engineImportService,
+                        _resourceManager);
                 } catch (Exception ex) {
                     throw new ConfigurationException(ex.Message, ex);
                 }

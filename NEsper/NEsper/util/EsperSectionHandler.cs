@@ -11,6 +11,7 @@ using System.Configuration;
 using System.Xml;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using Configuration = com.espertech.esper.client.Configuration;
 
 namespace com.espertech.esper.util
@@ -21,6 +22,25 @@ namespace com.espertech.esper.util
 
     public class EsperSectionHandler : IConfigurationSectionHandler
     {
+        private readonly IResourceManager _resourceManager;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EsperSectionHandler"/> class.
+        /// </summary>
+        /// <param name="resourceManager">The resource manager.</param>
+        public EsperSectionHandler(IResourceManager resourceManager)
+        {
+            _resourceManager = resourceManager;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EsperSectionHandler" /> class.
+        /// </summary>
+        public EsperSectionHandler()
+        {
+            _resourceManager = new DefaultResourceManager(null, true);
+        }
+
         #region IConfigurationSectionHandler Members
 
         /// <summary>
@@ -32,7 +52,7 @@ namespace com.espertech.esper.util
         /// <returns>The created section handler object.</returns>
         public object Create(object parent, object configContext, XmlNode section)
         {
-            Configuration configuration = new Configuration();
+            Configuration configuration = new Configuration(_resourceManager);
             ConfigurationParser.DoConfigure(configuration, (XmlElement) section);
             return configuration;
         }

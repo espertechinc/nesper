@@ -40,10 +40,14 @@ namespace com.espertech.esper.util
                 typeof (FastClassClassLoaderProvider));
         }
 
-        public static ClassLoaderProvider ResolveClassLoader(IDictionary<string, object> transientConfiguration)
+        public static ClassLoaderProvider ResolveClassLoader(
+            ClassLoaderProvider classLoaderProvider,
+            IDictionary<string, object> transientConfiguration)
         {
             return Resolve<ClassLoaderProvider>(
-                transientConfiguration, ClassLoaderProviderDefault.INSTANCE, ClassLoaderProviderDefault.NAME,
+                transientConfiguration, 
+                classLoaderProvider,
+                ClassLoaderProviderDefault.NAME,
                 typeof (ClassLoaderProvider));
         }
 
@@ -57,7 +61,7 @@ namespace com.espertech.esper.util
             {
                 return defaultProvider;
             }
-            object value = transientConfiguration.Get(name);
+            var value = transientConfiguration.Get(name);
             if (value == null)
             {
                 return defaultProvider;

@@ -7,10 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.type;
 using com.espertech.esper.util.support;
 
@@ -22,10 +23,12 @@ namespace com.espertech.esper.epl.expression.ops
     public class TestExprMathNode 
     {
         private ExprMathNode _arithNode;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Instance;
             _arithNode = new ExprMathNode(MathArithTypeEnum.ADD, false, false);
         }
     
@@ -34,7 +37,7 @@ namespace com.espertech.esper.epl.expression.ops
         {
             _arithNode.AddChildNode(new SupportExprNode(typeof(double?)));
             _arithNode.AddChildNode(new SupportExprNode(typeof(int)));
-            _arithNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _arithNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             Assert.AreEqual(typeof(double?), _arithNode.ReturnType);
         }
     
@@ -59,7 +62,7 @@ namespace com.espertech.esper.epl.expression.ops
             // Must have exactly 2 subnodes
             try
             {
-                _arithNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _arithNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException)
@@ -72,7 +75,7 @@ namespace com.espertech.esper.epl.expression.ops
             _arithNode.AddChildNode(new SupportExprNode(typeof(int)));
             try
             {
-                _arithNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _arithNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException)
@@ -86,7 +89,7 @@ namespace com.espertech.esper.epl.expression.ops
         {
             _arithNode.AddChildNode(new SupportExprNode(10));
             _arithNode.AddChildNode(new SupportExprNode(1.5));
-            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, _arithNode, SupportExprValidationContextFactory.MakeEmpty());
+            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, _arithNode, SupportExprValidationContextFactory.MakeEmpty(_container));
             Assert.AreEqual(11.5d, _arithNode.Evaluate(new EvaluateParams(null, false, null)));
     
             _arithNode = MakeNode(null, typeof(int), 5d, typeof(double?));

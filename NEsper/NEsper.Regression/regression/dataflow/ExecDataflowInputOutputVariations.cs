@@ -14,13 +14,13 @@ using com.espertech.esper.client.dataflow;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.dataflow.annotations;
 using com.espertech.esper.dataflow.interfaces;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.execution;
-
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.dataflow
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regression.dataflow
                     "SupportOpCountFutureOneA(out_17) {}\n";
             epService.EPAdministrator.CreateEPL(epl);
     
-            var futureOneA = new DefaultSupportCaptureOp<object>(1);
+            var futureOneA = new DefaultSupportCaptureOp<object>(1, SupportContainer.Instance.LockManager());
             var operators = new Dictionary<string, Object>();
             operators.Put("SupportOpCountFutureOneA", futureOneA);
     
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regression.dataflow
             epService.EPRuntime.DataFlowRuntime.Instantiate("MyGraph", options).Start();
     
             object[] result = futureOneA.GetValue(3, TimeUnit.SECONDS);
-            EPAssertionUtil.AssertEqualsAnyOrder(new object[][]{new object[] {"A1"}}, result);
+            EPAssertionUtil.AssertEqualsAnyOrder(new[] {new object[] {"A1"}}, result);
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -96,10 +96,10 @@ namespace com.espertech.esper.regression.dataflow
                     "SupportOpCountFutureTwoB(OutTwo) {}\n";
             epService.EPAdministrator.CreateEPL(epl);
     
-            var futureOneA = new DefaultSupportCaptureOp<object>(2);
-            var futureOneB = new DefaultSupportCaptureOp<object>(2);
-            var futureTwoA = new DefaultSupportCaptureOp<object>(2);
-            var futureTwoB = new DefaultSupportCaptureOp<object>(2);
+            var futureOneA = new DefaultSupportCaptureOp<object>(2, SupportContainer.Instance.LockManager());
+            var futureOneB = new DefaultSupportCaptureOp<object>(2, SupportContainer.Instance.LockManager());
+            var futureTwoA = new DefaultSupportCaptureOp<object>(2, SupportContainer.Instance.LockManager());
+            var futureTwoB = new DefaultSupportCaptureOp<object>(2, SupportContainer.Instance.LockManager());
     
             var operators = new Dictionary<string, Object>();
             operators.Put("SupportOpCountFutureOneA", futureOneA);
@@ -112,10 +112,10 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.DataFlowRuntime.Instantiate("MultiInMultiOutGraph", options).Start();
     
-            EPAssertionUtil.AssertEqualsAnyOrder(new object[][]{new object[] {"S1-10"}, new object[] {"S1-20"}}, futureOneA.GetValue(3, TimeUnit.SECONDS));
-            EPAssertionUtil.AssertEqualsAnyOrder(new object[][]{new object[] {"S1-10"}, new object[] {"S1-20"}}, futureOneB.GetValue(3, TimeUnit.SECONDS));
-            EPAssertionUtil.AssertEqualsAnyOrder(new object[][]{new object[] {"S0-A1"}, new object[] {"S0-A2"}}, futureTwoA.GetValue(3, TimeUnit.SECONDS));
-            EPAssertionUtil.AssertEqualsAnyOrder(new object[][]{new object[] {"S0-A1"}, new object[] {"S0-A2"}}, futureTwoB.GetValue(3, TimeUnit.SECONDS));
+            EPAssertionUtil.AssertEqualsAnyOrder(new[] {new object[] {"S1-10"}, new object[] {"S1-20"}}, futureOneA.GetValue(3, TimeUnit.SECONDS));
+            EPAssertionUtil.AssertEqualsAnyOrder(new[] {new object[] {"S1-10"}, new object[] {"S1-20"}}, futureOneB.GetValue(3, TimeUnit.SECONDS));
+            EPAssertionUtil.AssertEqualsAnyOrder(new[] {new object[] {"S0-A1"}, new object[] {"S0-A2"}}, futureTwoA.GetValue(3, TimeUnit.SECONDS));
+            EPAssertionUtil.AssertEqualsAnyOrder(new[] {new object[] {"S0-A1"}, new object[] {"S0-A2"}}, futureTwoB.GetValue(3, TimeUnit.SECONDS));
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regression.dataflow
                     "DefaultSupportCaptureOp(FinalResult) {}\n";
             epService.EPAdministrator.CreateEPL(epl);
     
-            var future = new DefaultSupportCaptureOp<object>(1);
+            var future = new DefaultSupportCaptureOp<object>(1, SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions()
                     .OperatorProvider(new DefaultSupportGraphOpProvider(future));
     

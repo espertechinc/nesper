@@ -10,11 +10,13 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -26,10 +28,12 @@ namespace com.espertech.esper.epl.expression.ops
     {
         private ExprRegexpNode _regexpNodeNormal;
         private ExprRegexpNode _regexpNodeNot;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Instance;
             _regexpNodeNormal = SupportExprNodeFactory.MakeRegexpNode(false);
             _regexpNodeNot = SupportExprNodeFactory.MakeRegexpNode(true);
         }
@@ -95,10 +99,10 @@ namespace com.espertech.esper.epl.expression.ops
             return new[] {SupportEventBeanFactory.CreateObject(theEvent)};
         }
     
-        private static void TryInvalidValidate(ExprRegexpNode exprLikeRegexpNode)
+        private void TryInvalidValidate(ExprRegexpNode exprLikeRegexpNode)
         {
             try {
-                exprLikeRegexpNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                exprLikeRegexpNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)

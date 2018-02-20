@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.prior;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 using com.espertech.esper.view.internals;
 
@@ -23,10 +25,12 @@ namespace com.espertech.esper.epl.expression.ops
     public class TestExprPriorNode 
     {
         private ExprPriorNode _priorNode;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Instance;
             _priorNode = SupportExprNodeFactory.MakePriorNode();
         }
     
@@ -83,7 +87,7 @@ namespace com.espertech.esper.epl.expression.ops
         private void TryInvalidValidate(ExprPriorNode exprPriorNode)
         {
             try {
-                exprPriorNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                exprPriorNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)

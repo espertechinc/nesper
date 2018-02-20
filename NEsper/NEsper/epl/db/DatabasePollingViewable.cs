@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
@@ -42,7 +43,7 @@ namespace com.espertech.esper.epl.db
         private readonly DataCache _dataCache;
         private readonly EventType _eventType;
 
-        private readonly IThreadLocal<DataCache> _dataCacheThreadLocal = ThreadLocalManager.Create<DataCache>(() => null);
+        private readonly IThreadLocal<DataCache> _dataCacheThreadLocal;
 
         private ExprEvaluator[] _evaluators;
         private ICollection<int> _subordinateStreams;
@@ -56,6 +57,8 @@ namespace com.espertech.esper.epl.db
             NULL_ROWS = new EventBean[1][];
             NULL_ROWS[0] = new EventBean[1];
         }
+
+
 
         private class IteratorIndexingStrategy : PollResultIndexingStrategy
         {
@@ -136,8 +139,10 @@ namespace com.espertech.esper.epl.db
             IList<String> inputParameters,
             PollExecStrategy pollExecStrategy,
             DataCache dataCache,
-            EventType eventType)
+            EventType eventType,
+            IThreadLocalManager threadLocalManager)
         {
+            _dataCacheThreadLocal = threadLocalManager.Create<DataCache>(() => null);
             _myStreamNumber = myStreamNumber;
             _inputParameters = inputParameters;
             _pollExecStrategy = pollExecStrategy;
@@ -180,6 +185,7 @@ namespace com.espertech.esper.epl.db
 
             var count = 0;
             var validationContext = new ExprValidationContext(
+                statementContext.Container,
                 streamTypeService, engineImportService,
                 statementContext.StatementExtensionServicesContext, null,
                 timeProvider, variableService, tableService,
@@ -187,7 +193,8 @@ namespace com.espertech.esper.epl.db
                 statementContext.StatementName,
                 statementContext.StatementId,
                 statementContext.Annotations, null,
-                scriptingService, false, false, true, false, null, false);
+                scriptingService,
+                false, false, true, false, null, false);
 
             foreach (var inputParam in _inputParameters)
             {

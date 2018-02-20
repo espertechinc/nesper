@@ -108,7 +108,23 @@ namespace com.espertech.esper.epl.named
             RemoveProcessor(namedWindowName);
         }
 
-        public NamedWindowProcessor AddProcessor(string name, string contextName, EventType eventType, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, string eplExpression, string statementName, bool isPrioritized, bool isEnableSubqueryIndexShare, bool isBatchingDataWindow, bool isVirtualDataWindow, ICollection<string> optionalUniqueKeyProps, string eventTypeAsName, StatementContext statementContextCreateWindow, NamedWindowDispatchService namedWindowDispatchService)
+        public NamedWindowProcessor AddProcessor(
+            string name,
+            string contextName,
+            EventType eventType,
+            StatementResultService statementResultService,
+            ValueAddEventProcessor revisionProcessor,
+            string eplExpression,
+            string statementName,
+            bool isPrioritized,
+            bool isEnableSubqueryIndexShare,
+            bool isBatchingDataWindow,
+            bool isVirtualDataWindow,
+            ICollection<string> optionalUniqueKeyProps,
+            string eventTypeAsName,
+            StatementContext statementContextCreateWindow,
+            NamedWindowDispatchService namedWindowDispatchService,
+            ILockManager lockManager)
         {
             if (_processors.ContainsKey(name))
             {
@@ -116,10 +132,24 @@ namespace com.espertech.esper.epl.named
             }
 
             var processor = namedWindowDispatchService.CreateProcessor(
-                name, this, namedWindowDispatchService, contextName, eventType, statementResultService, revisionProcessor,
-                eplExpression, statementName, isPrioritized, isEnableSubqueryIndexShare, _enableQueryPlanLog,
-                _metricReportingService, isBatchingDataWindow, isVirtualDataWindow, optionalUniqueKeyProps, eventTypeAsName,
-                statementContextCreateWindow);
+                name, this, 
+                namedWindowDispatchService, 
+                contextName, 
+                eventType, 
+                statementResultService, 
+                revisionProcessor,
+                eplExpression, 
+                statementName, 
+                isPrioritized, 
+                isEnableSubqueryIndexShare, 
+                _enableQueryPlanLog,
+                _metricReportingService, 
+                isBatchingDataWindow, 
+                isVirtualDataWindow, 
+                optionalUniqueKeyProps, 
+                eventTypeAsName,
+                statementContextCreateWindow,
+                lockManager);
             _processors.Put(name, processor);
 
             if (!_observers.IsEmpty())

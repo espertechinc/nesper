@@ -86,20 +86,23 @@ namespace com.espertech.esper.core.service
                     _dispatchChildView = new UpdateDispatchViewBlockingSpin(
                         statementContext.StatementResultService,
                         dispatchService, msecBlockingTimeout,
-                        timeSourceService);
+                        timeSourceService,
+                        statementContext.ThreadLocalManager);
                 }
                 else
                 {
                     _dispatchChildView = new UpdateDispatchViewBlockingWait(
                         statementContext.StatementResultService,
-                        dispatchService, msecBlockingTimeout);
+                        dispatchService, msecBlockingTimeout,
+                        statementContext.ThreadLocalManager);
                 }
             }
             else
             {
                 _dispatchChildView = new UpdateDispatchViewNonBlocking(
                     statementContext.StatementResultService,
-                    dispatchService);
+                    dispatchService,
+                    statementContext.ThreadLocalManager);
             }
 
             State = !isFailed ? EPStatementState.STOPPED : EPStatementState.FAILED;

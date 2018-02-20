@@ -33,7 +33,8 @@ namespace com.espertech.esper.regression.multithread {
                 config.EngineDefaults.Threading.NamedWindowConsumerDispatchLocking = locking.GetValueOrDefault();
             }
 
-            var epService = EPServiceProviderManager.GetProvider(GetType().FullName + "_" + engineNum, config);
+            var epService = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, GetType().FullName + "_" + engineNum, config);
             epService.Initialize();
             epService.EPAdministrator.Configuration.AddEventType(typeof(EventOne));
             epService.EPAdministrator.Configuration.AddEventType(typeof(EventTwo));

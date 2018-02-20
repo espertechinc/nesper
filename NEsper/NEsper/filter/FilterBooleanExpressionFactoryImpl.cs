@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.variable;
@@ -15,7 +16,12 @@ namespace com.espertech.esper.filter
 {
     public class FilterBooleanExpressionFactoryImpl : FilterBooleanExpressionFactory {
     
-        public ExprNodeAdapterBase Make(FilterSpecParamExprNode node, EventBean[] events, ExprEvaluatorContext exprEvaluatorContext, StatementContext statementContext, int agentInstanceId) {
+        public ExprNodeAdapterBase Make(
+            FilterSpecParamExprNode node, 
+            EventBean[] events,
+            ExprEvaluatorContext exprEvaluatorContext, 
+            StatementContext statementContext,
+            int agentInstanceId) {
     
             int filterSpecId = node.FilterSpecId;
             int filterSpecParamPathNum = node.FilterSpecParamPathNum;
@@ -50,14 +56,28 @@ namespace com.espertech.esper.filter
                     if (node.HasFilterStreamSubquery) {
                         adapter = GetLockableMultiStreamNoTL(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
                     } else {
-                        adapter = new ExprNodeAdapterMultiStreamNoTL(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
+                        adapter = new ExprNodeAdapterMultiStreamNoTL(
+                            filterSpecId,
+                            filterSpecParamPathNum,
+                            exprNode, 
+                            exprEvaluatorContext, 
+                            variableServiceToUse,
+                            events,
+                            statementContext.ThreadLocalManager);
                     }
                 } else {
                     if (node.HasFilterStreamSubquery) {
-                        adapter = GetLockableMultiStream(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
+                        adapter = GetLockableMultiStream(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events, statementContext.ThreadLocalManager);
                     } else {
                         // evaluation with threadlocal cache
-                        adapter = new ExprNodeAdapterMultiStream(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
+                        adapter = new ExprNodeAdapterMultiStream(
+                            filterSpecId,
+                            filterSpecParamPathNum,
+                            exprNode,
+                            exprEvaluatorContext,
+                            variableServiceToUse,
+                            events,
+                            statementContext.ThreadLocalManager);
                     }
                 }
             }
@@ -75,11 +95,18 @@ namespace com.espertech.esper.filter
         }
     
         protected ExprNodeAdapterBase GetLockableMultiStreamNoTL(int filterSpecId, int filterSpecParamPathNum, ExprNode exprNode, ExprEvaluatorContext exprEvaluatorContext, VariableService variableServiceToUse, EventBean[] events) {
-            return new ExprNodeAdapterMultiStreamNoTLStmtLock(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
+            return new ExprNodeAdapterMultiStreamNoTLStmtLock(
+                filterSpecId, 
+                filterSpecParamPathNum, 
+                exprNode, 
+                exprEvaluatorContext, 
+                variableServiceToUse, 
+                events,
+                exprEvaluatorContext.Container.Resolve<IThreadLocalManager>());
         }
     
-        protected ExprNodeAdapterBase GetLockableMultiStream(int filterSpecId, int filterSpecParamPathNum, ExprNode exprNode, ExprEvaluatorContext exprEvaluatorContext, VariableService variableServiceToUse, EventBean[] events) {
-            return new ExprNodeAdapterMultiStreamStmtLock(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
+        protected ExprNodeAdapterBase GetLockableMultiStream(int filterSpecId, int filterSpecParamPathNum, ExprNode exprNode, ExprEvaluatorContext exprEvaluatorContext, VariableService variableServiceToUse, EventBean[] events, IThreadLocalManager threadLocalManager) {
+            return new ExprNodeAdapterMultiStreamStmtLock(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events, threadLocalManager);
         }
     }
 } // end of namespace

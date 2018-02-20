@@ -44,7 +44,8 @@ namespace com.espertech.esper.regression.multithread
             config.EngineDefaults.Threading.IsListenerDispatchPreserveOrder = isPreserveOrder;
             config.EngineDefaults.Threading.ListenerDispatchLocking = locking.GetValueOrDefault();
     
-            EPServiceProvider engine = EPServiceProviderManager.GetProvider(this.GetType().Name, config);
+            EPServiceProvider engine = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, this.GetType().Name, config);
             engine.Initialize();
     
             // setup statements

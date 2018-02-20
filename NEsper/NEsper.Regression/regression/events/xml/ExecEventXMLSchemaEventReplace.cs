@@ -12,8 +12,10 @@ using System.Xml.XPath;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
+using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util.support;
 
 namespace com.espertech.esper.regression.events.xml
@@ -29,7 +31,7 @@ namespace com.espertech.esper.regression.events.xml
             _eventTypeMeta = new ConfigurationEventTypeXMLDOM();
             _eventTypeMeta.RootElementName = "simpleEvent";
 
-            _eventTypeMeta.SchemaResource = ResourceManager.ResolveResourceURL(CLASSLOADER_SCHEMA_URI).ToString();
+            _eventTypeMeta.SchemaResource = SupportContainer.Instance.ResourceManager().ResolveResourceURL(CLASSLOADER_SCHEMA_URI).ToString();
             _eventTypeMeta.AddNamespacePrefix("ss", "samples:schemas:simpleSchema");
             _eventTypeMeta.AddXPathProperty("customProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathResultType.Number);
             configuration.AddEventType("TestXMLSchemaType", _eventTypeMeta);
@@ -53,7 +55,7 @@ namespace com.espertech.esper.regression.events.xml
             }, type.PropertyDescriptors);
 
             // update type and replace
-            _eventTypeMeta.SchemaResource = ResourceManager.ResolveResourceURL(CLASSLOADER_SCHEMA_VERSION2_URI).ToString();
+            _eventTypeMeta.SchemaResource = SupportContainer.Instance.ResourceManager().ResolveResourceURL(CLASSLOADER_SCHEMA_VERSION2_URI).ToString();
             _eventTypeMeta.AddXPathProperty("countProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathResultType.Number);
             epService.EPAdministrator.Configuration.ReplaceXMLEventType("TestXMLSchemaType", _eventTypeMeta);
     

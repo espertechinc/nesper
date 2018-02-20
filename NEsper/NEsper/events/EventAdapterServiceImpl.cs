@@ -19,6 +19,7 @@ using com.espertech.esper.client.util;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
@@ -70,21 +71,27 @@ namespace com.espertech.esper.events
         private readonly ICollection<String> _namespaces;
         private readonly IDictionary<Uri, PlugInEventRepresentation> _plugInRepresentations;
 
-        private readonly ILockable _syncLock = LockManager.CreateLock(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly ILockable _syncLock;
         private readonly IDictionary<Type, BeanEventType> _typesPerBean;
         private readonly IDictionary<String, EventType> _xmldomRootElementNames;
         private readonly IDictionary<String, EventType> _xelementRootElementNames;
+
+        private readonly ILockManager _lockManager;
 
         /// <summary>Ctor. </summary>
         public EventAdapterServiceImpl(
             EventTypeIdGenerator eventTypeIdGenerator,
             int anonymousTypeCacheSize,
             EventAdapterAvroHandler avroHandler,
-            EngineImportService engineImportService)
+            EngineImportService engineImportService,
+            ILockManager lockManager)
         {
             _eventTypeIdGenerator = eventTypeIdGenerator;
             _avroHandler = avroHandler;
             _engineImportService = engineImportService;
+            _lockManager = lockManager;
+
+            _syncLock = lockManager.CreateLock(GetType());
 
             _nameToTypeMap = new Dictionary<String, EventType>();
             _xmldomRootElementNames = new Dictionary<String, EventType>();
@@ -94,7 +101,7 @@ namespace com.espertech.esper.events
 
             // Share the mapping of class to type with the type creation for thread safety
             _typesPerBean = new ConcurrentDictionary<Type, BeanEventType>();
-            _beanEventAdapter = new BeanEventAdapter(_typesPerBean, this, eventTypeIdGenerator);
+            _beanEventAdapter = new BeanEventAdapter(_typesPerBean, this, eventTypeIdGenerator, lockManager);
             _plugInRepresentations = new Dictionary<Uri, PlugInEventRepresentation>();
             _anonymousTypeCache = new EventAdapterServiceAnonymousTypeCache(anonymousTypeCacheSize);
         }
@@ -245,7 +252,8 @@ namespace com.espertech.esper.events
         public EventSender GetStaticTypeEventSender(
             EPRuntimeEventSender runtimeEventSender,
             String eventTypeName,
-            ThreadingService threadingService)
+            ThreadingService threadingService,
+            ILockManager lockManager)
         {
             var eventType = _nameToTypeMap.Get(eventTypeName);
             if (eventType == null)
@@ -256,7 +264,8 @@ namespace com.espertech.esper.events
             // handle built-in types
             if (eventType is BeanEventType)
             {
-                return new EventSenderBean(runtimeEventSender, (BeanEventType) eventType, this, threadingService);
+                return new EventSenderBean(
+                    runtimeEventSender, (BeanEventType) eventType, this, threadingService, lockManager);
             }
             else if (eventType is MapEventType)
             {
@@ -1165,7 +1174,7 @@ namespace com.espertech.esper.events
                         metadata,
                         _eventTypeIdGenerator.GetTypeId(eventTypeName),
                         configurationEventTypeXMLDOM,
-                        this);
+                        this, _lockManager);
                 }
                 else
                 {
@@ -1174,15 +1183,18 @@ namespace com.espertech.esper.events
                         throw new EPException("Schema model has not been provided");
                     }
                     type = new SchemaXMLEventType(
-                        metadata, _eventTypeIdGenerator.GetTypeId(eventTypeName),
-                        configurationEventTypeXMLDOM, optionalSchemaModel, this);
+                        metadata, 
+                        _eventTypeIdGenerator.GetTypeId(eventTypeName),
+                        configurationEventTypeXMLDOM, 
+                        optionalSchemaModel, 
+                        this, _lockManager);
                 }
 
                 EventType xelementType = new SimpleXElementType(
                     metadata,
                     _eventTypeIdGenerator.GetTypeId(eventTypeName),
                     configurationEventTypeXMLDOM,
-                    this);
+                    this, _lockManager);
 
                 _nameToTypeMap.Put(eventTypeName, type);
                 _xmldomRootElementNames.Put(configurationEventTypeXMLDOM.RootElementName, type);

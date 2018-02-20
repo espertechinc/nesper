@@ -17,6 +17,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
@@ -107,7 +108,7 @@ namespace com.espertech.esper.epl.variable
         private readonly IReaderWriterLock _readWriteLock;
 
         // Thread-local for the visible version per thread
-        private VariableVersionThreadLocal _versionThreadLocal = new VariableVersionThreadLocal();
+        private VariableVersionThreadLocal _versionThreadLocal;
 
         // Number of milliseconds that old versions of a variable are allowed to live
         private readonly long _millisecondLifetimeOldVersions;
@@ -117,17 +118,26 @@ namespace com.espertech.esper.epl.variable
 
         private volatile int _currentVersionNumber;
         private int _currentVariableNumber;
-
+        
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="millisecondLifetimeOldVersions">number of milliseconds a version may hang around before expiry</param>
         /// <param name="timeProvider">provides the current time</param>
-        /// <param name="optionalStateHandler">a optional plug-in that may store variable state and retrieve state upon creation</param>
         /// <param name="eventAdapterService">event adapters</param>
-        public VariableServiceImpl(long millisecondLifetimeOldVersions, TimeProvider timeProvider, EventAdapterService eventAdapterService, VariableStateHandler optionalStateHandler)
-            : this(0, millisecondLifetimeOldVersions, timeProvider, eventAdapterService, optionalStateHandler)
+        /// <param name="optionalStateHandler">a optional plug-in that may store variable state and retrieve state upon creation</param>
+        /// <param name="rwLockManager">The rw lock manager.</param>
+        /// <param name="threadLocalManager">The thread local manager.</param>
+        public VariableServiceImpl(
+            long millisecondLifetimeOldVersions, 
+            TimeProvider timeProvider, 
+            EventAdapterService eventAdapterService,
+            VariableStateHandler optionalStateHandler,
+            IReaderWriterLockManager rwLockManager,
+            IThreadLocalManager threadLocalManager)
+            : this(0, millisecondLifetimeOldVersions, timeProvider, eventAdapterService, optionalStateHandler, rwLockManager)
         {
+            _versionThreadLocal = new VariableVersionThreadLocal(threadLocalManager);
         }
 
         /// <summary>
@@ -136,16 +146,23 @@ namespace com.espertech.esper.epl.variable
         /// <param name="startVersion">the first version number to start from</param>
         /// <param name="millisecondLifetimeOldVersions">number of milliseconds a version may hang around before expiry</param>
         /// <param name="timeProvider">provides the current time</param>
-        /// <param name="optionalStateHandler">a optional plug-in that may store variable state and retrieve state upon creation</param>
         /// <param name="eventAdapterService">for finding event types</param>
-        public VariableServiceImpl(int startVersion, long millisecondLifetimeOldVersions, TimeProvider timeProvider, EventAdapterService eventAdapterService, VariableStateHandler optionalStateHandler)
+        /// <param name="optionalStateHandler">a optional plug-in that may store variable state and retrieve state upon creation</param>
+        /// <param name="rwLockManager">The rw lock manager.</param>
+        public VariableServiceImpl(
+            int startVersion, 
+            long millisecondLifetimeOldVersions, 
+            TimeProvider timeProvider,
+            EventAdapterService eventAdapterService,
+            VariableStateHandler optionalStateHandler,
+            IReaderWriterLockManager rwLockManager)
         {
             _millisecondLifetimeOldVersions = millisecondLifetimeOldVersions;
             _timeProvider = timeProvider;
             _eventAdapterService = eventAdapterService;
             _optionalStateHandler = optionalStateHandler;
             _variables = new Dictionary<String, VariableMetaData>().WithNullSupport();
-            _readWriteLock = ReaderWriterLockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            _readWriteLock = rwLockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             _variableVersionsPerCP = new List<ConcurrentDictionary<int, VariableReader>>();
             _changeCallbacksPerCP = new List<IDictionary<int, ICollection<VariableChangeCallback>>>();
             _currentVersionNumber = startVersion;
@@ -153,7 +170,7 @@ namespace com.espertech.esper.epl.variable
 
         public void Dispose()
         {
-            _versionThreadLocal = new VariableVersionThreadLocal();
+            _versionThreadLocal = new VariableVersionThreadLocal(null);
         }
 
         public void RemoveVariableIfFound(String name)

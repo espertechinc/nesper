@@ -13,9 +13,11 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
+using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -32,7 +34,7 @@ namespace com.espertech.esper.regression.events.xml
         internal static ConfigurationEventTypeXMLDOM GetConfigTestType(string additionalXPathProperty, bool isUseXPathPropertyExpression) {
             var eventTypeMeta = new ConfigurationEventTypeXMLDOM();
             eventTypeMeta.RootElementName = "simpleEvent";
-            eventTypeMeta.SchemaResource = ResourceManager.ResolveResourceURL(CLASSLOADER_SCHEMA_URI).ToString();
+            eventTypeMeta.SchemaResource = SupportContainer.Instance.ResourceManager().ResolveResourceURL(CLASSLOADER_SCHEMA_URI).ToString();
             eventTypeMeta.AddNamespacePrefix("ss", "samples:schemas:simpleSchema");
             eventTypeMeta.AddXPathProperty("customProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathResultType.Number);
             eventTypeMeta.IsXPathPropertyExpr = isUseXPathPropertyExpression;

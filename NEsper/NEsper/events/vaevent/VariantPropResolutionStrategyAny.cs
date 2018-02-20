@@ -8,6 +8,7 @@
 
 using System;
 using com.espertech.esper.client;
+using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.events.vaevent
 {
@@ -22,9 +23,10 @@ namespace com.espertech.esper.events.vaevent
     
         /// <summary>Ctor. </summary>
         /// <param name="variantSpec">specified the preconfigured types</param>
-        public VariantPropResolutionStrategyAny(VariantSpec variantSpec)
+        public VariantPropResolutionStrategyAny(ILockManager lockManager, VariantSpec variantSpec)
         {
-            _propertyGetterCache = new VariantPropertyGetterCache(variantSpec.EventTypes);
+            _propertyGetterCache = new VariantPropertyGetterCache(
+                lockManager, variantSpec.EventTypes);
         }
     
         public VariantPropertyDesc ResolveProperty(String propertyName, EventType[] variants)

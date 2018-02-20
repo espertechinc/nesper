@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.start;
@@ -40,71 +41,37 @@ namespace com.espertech.esper.core.context.util
             _priorViewUpdatedCollection = priorViewUpdatedCollection;
         }
 
-        public IReaderWriterLock AgentInstanceLock
-        {
-            get { return _agentInstanceContext.AgentInstanceLock; }
-        }
+        public IContainer Container => _agentInstanceContext.Container;
 
-        public AgentInstanceContext AgentInstanceContext
-        {
-            get { return _agentInstanceContext; }
-        }
+        public IReaderWriterLock AgentInstanceLock => _agentInstanceContext.AgentInstanceLock;
 
-        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext
-        {
-            get { return _agentInstanceContext.AllocateAgentInstanceScriptContext; }
-        }
+        public AgentInstanceContext AgentInstanceContext => _agentInstanceContext;
+
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext => _agentInstanceContext.AllocateAgentInstanceScriptContext;
 
         public bool IsRemoveStream
         {
-            get { return _isRemoveStream; }
+            get => _isRemoveStream;
             set { _isRemoveStream = value; }
         }
 
-        public object PreviousNodeGetter
-        {
-            get { return _previousNodeGetter; }
-        }
+        public object PreviousNodeGetter => _previousNodeGetter;
 
-        public ViewUpdatedCollection PriorViewUpdatedCollection
-        {
-            get { return _priorViewUpdatedCollection; }
-        }
+        public ViewUpdatedCollection PriorViewUpdatedCollection => _priorViewUpdatedCollection;
 
-        public StatementContext StatementContext
-        {
-            get { return _agentInstanceContext.StatementContext; }
-        }
+        public StatementContext StatementContext => _agentInstanceContext.StatementContext;
 
-        public TimeProvider TimeProvider
-        {
-            get { return _agentInstanceContext.TimeProvider; }
-        }
+        public TimeProvider TimeProvider => _agentInstanceContext.TimeProvider;
 
-        public ExpressionResultCacheService ExpressionResultCacheService
-        {
-            get { return _agentInstanceContext.ExpressionResultCacheService; }
-        }
+        public ExpressionResultCacheService ExpressionResultCacheService => _agentInstanceContext.ExpressionResultCacheService;
 
-        public int AgentInstanceId
-        {
-            get { return _agentInstanceContext.AgentInstanceId; }
-        }
+        public int AgentInstanceId => _agentInstanceContext.AgentInstanceId;
 
-        public EventBean ContextProperties
-        {
-            get { return _agentInstanceContext.ContextProperties; }
-        }
+        public EventBean ContextProperties => _agentInstanceContext.ContextProperties;
 
-        public EPStatementAgentInstanceHandle EpStatementAgentInstanceHandle
-        {
-            get { return _agentInstanceContext.EpStatementAgentInstanceHandle; }
-        }
+        public EPStatementAgentInstanceHandle EpStatementAgentInstanceHandle => _agentInstanceContext.EpStatementAgentInstanceHandle;
 
-        public ICollection<StopCallback> TerminationCallbacksRO
-        {
-            get { return _agentInstanceContext.TerminationCallbackRO; }
-        }
+        public ICollection<StopCallback> TerminationCallbacksRO => _agentInstanceContext.TerminationCallbackRO;
 
         public void AddTerminationCallback(Action action)
         {
@@ -126,10 +93,7 @@ namespace com.espertech.esper.core.context.util
             _agentInstanceContext.RemoveTerminationCallback(callback);
         }
 
-        public TableExprEvaluatorContext TableExprEvaluatorContext
-        {
-            get { return _agentInstanceContext.TableExprEvaluatorContext; }
-        }
+        public TableExprEvaluatorContext TableExprEvaluatorContext => _agentInstanceContext.TableExprEvaluatorContext;
 
         public static AgentInstanceViewFactoryChainContext Create(IList<ViewFactory> viewFactoryChain, AgentInstanceContext agentInstanceContext, ViewResourceDelegateVerifiedStream viewResourceDelegate)
         {
@@ -166,29 +130,14 @@ namespace com.espertech.esper.core.context.util
             return new AgentInstanceViewFactoryChainContext(agentInstanceContext, removedStream, previousNodeGetter, priorViewUpdatedCollection);
         }
 
-        public string StatementName
-        {
-            get { return _agentInstanceContext.StatementName; }
-        }
+        public string StatementName => _agentInstanceContext.StatementName;
 
-        public string EngineURI
-        {
-            get { return _agentInstanceContext.EngineURI; }
-        }
+        public string EngineURI => _agentInstanceContext.EngineURI;
 
-        public int StatementId
-        {
-            get { return _agentInstanceContext.StatementId; }
-        }
+        public int StatementId => _agentInstanceContext.StatementId;
 
-        public StatementType? StatementType
-        {
-            get { return _agentInstanceContext.StatementType; }
-        }
+        public StatementType? StatementType => _agentInstanceContext.StatementType;
 
-        public Object StatementUserObject
-        {
-            get { return _agentInstanceContext.StatementUserObject; }
-        }
+        public Object StatementUserObject => _agentInstanceContext.StatementUserObject;
     }
 }

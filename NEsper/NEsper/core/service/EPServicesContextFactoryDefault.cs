@@ -12,8 +12,10 @@ using System.Reflection;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
+using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.activator;
@@ -49,6 +51,7 @@ using com.espertech.esper.timer;
 using com.espertech.esper.util;
 using com.espertech.esper.view;
 using com.espertech.esper.view.stream;
+using Castle.MicroKernel.Registration;
 
 namespace com.espertech.esper.core.service
 {
@@ -191,10 +194,49 @@ namespace com.espertech.esper.core.service
         /// <param name="eventAdapterService">is events adapter</param>
         /// <param name="configSnapshot">is the config snapshot</param>
         /// <param name="engineImportService">engine import service</param>
+        /// <param name="resourceManager">The resource manager.</param>
+        /// <exception cref="ConfigurationException">
+        /// Error configuring engine: " + ex.Message
+        /// or
+        /// Error configuring engine: " + ex.Message
+        /// or
+        /// or
+        /// Error configuring engine: " + ex.Message
+        /// or
+        /// Error configuring engine, dependency graph between map type names is circular: " + e.Message
+        /// or
+        /// Error configuring engine: " + ex.Message
+        /// or
+        /// Error configuring engine, dependency graph between object array type names is circular: " +
+        ///                     e.Message
+        /// or
+        /// Error configuring engine: " + ex.Message
+        /// or
+        /// Failed to load plug-in event representation class '" + className + "'
+        /// or
+        /// Failed to instantiate plug-in event representation class '" + className +
+        ///                         "' via default constructor
+        /// or
+        /// Failed to instantiate plug-in event representation class '" + className +
+        ///                         "' via default constructor
+        /// or
+        /// Illegal access to instantiate plug-in event representation class '" + className +
+        ///                         "' via default constructor
+        /// or
+        /// Illegal access to instantiate plug-in event representation class '" + className +
+        ///                         "' via default constructor
+        /// or
+        /// Plug-in event representation class '" + className +
+        ///                         "' does not implement the required interface " + typeof (PlugInEventRepresentation).Name
+        /// or
+        /// Plug-in event representation class '" + className + "' and URI '" + eventRepURI +
+        ///                         "' did not initialize correctly : " + e.Message
+        /// </exception>
         internal static void Init(
             EventAdapterService eventAdapterService,
             ConfigurationInformation configSnapshot,
-            EngineImportService engineImportService)
+            EngineImportService engineImportService,
+            IResourceManager resourceManager)
         {
             // Extract legacy event type definitions for each event type name, if supplied.
             //
@@ -262,7 +304,10 @@ namespace com.espertech.esper.core.service
                     try
                     {
                         schemaModel = XSDSchemaMapper.LoadAndMap(
-                            entry.Value.SchemaResource, entry.Value.SchemaText, engineImportService);
+                            entry.Value.SchemaResource, 
+                            entry.Value.SchemaText, 
+                            engineImportService,
+                            resourceManager);
                     }
                     catch (Exception ex)
                     {
@@ -459,18 +504,18 @@ namespace com.espertech.esper.core.service
         /// <summary>
         /// Constructs the auto import service.
         /// </summary>
+        /// <param name="classLoaderProvider">The class loader provider.</param>
         /// <param name="configSnapshot">config INFO</param>
         /// <param name="aggregationFactoryFactory">factory of aggregation service provider</param>
         /// <param name="engineURI">The engine URI.</param>
         /// <returns>
         /// service
         /// </returns>
-        /// <exception cref="ConfigurationException">
-        /// Invalid time-source time unit of " + timeUnit + ", expected millis or micros
+        /// <exception cref="ConfigurationException">Invalid time-source time unit of " + timeUnit + ", expected millis or micros
         /// or
-        /// Error configuring engine: " + ex.Message
-        /// </exception>
+        /// Error configuring engine: " + ex.Message</exception>
         internal static EngineImportService MakeEngineImportService(
+            ClassLoaderProvider classLoaderProvider,
             ConfigurationInformation configSnapshot,
             AggregationFactoryFactory aggregationFactoryFactory,
             String engineURI)
@@ -512,7 +557,9 @@ namespace com.espertech.esper.core.service
                 aggregationFactoryFactory,
                 codegenGetters,
                 engineURI,
-                null);
+                null,
+                classLoaderProvider);
+
             engineImportService.AddMethodRefs(configSnapshot.MethodInvocationReferences);
 
             // Add auto-imports
@@ -652,14 +699,25 @@ namespace com.espertech.esper.core.service
         }
 
         public EPServicesContext CreateServicesContext(
+            IContainer container,
             EPServiceProvider epServiceProvider,
             ConfigurationInformation configSnapshot)
         {
-            // Directory for binding resources
-            var resourceDirectory = new SimpleServiceDirectory();
+            var lockManager = container.Resolve<ILockManager>();
+            var readerWriterLockManager = container.Resolve<IReaderWriterLockManager>();
+            var threadLocalManager = container.Resolve<IThreadLocalManager>();
 
+            var resourceManager = container.Resolve<IResourceManager>();
+
+            // Directory for binding resources
+            var resourceDirectory = container.Resolve<Directory>();
+            
             // Engine import service
-            var engineImportService = MakeEngineImportService(configSnapshot, AggregationFactoryFactoryDefault.INSTANCE, epServiceProvider.URI);
+            var engineImportService = MakeEngineImportService(
+                container.Resolve<ClassLoaderProvider>(),
+                configSnapshot,
+                AggregationFactoryFactoryDefault.INSTANCE,
+                epServiceProvider.URI);
 
             // Event Type Id Generation
             EventTypeIdGenerator eventTypeIdGenerator;
@@ -702,16 +760,21 @@ namespace com.espertech.esper.core.service
                 }
             }
             var eventAdapterService = new EventAdapterServiceImpl(
-                eventTypeIdGenerator, configSnapshot.EngineDefaults.EventMeta.AnonymousCacheSize, avroHandler,
-                engineImportService);
-            Init(eventAdapterService, configSnapshot, engineImportService);
+                eventTypeIdGenerator,
+                configSnapshot.EngineDefaults.EventMeta.AnonymousCacheSize, 
+                avroHandler,
+                engineImportService,
+                lockManager);
+            Init(eventAdapterService, configSnapshot, engineImportService, resourceManager);
 
             // New read-write lock for concurrent event processing
-            var eventProcessingRwLock = ReaderWriterLockManager.CreateLock(
-                MethodBase.GetCurrentMethod().DeclaringType);
+            var eventProcessingRwLock = readerWriterLockManager.CreateLock(GetType());
 
             var timeSourceService = MakeTimeSource(configSnapshot);
-            var schedulingService = SchedulingServiceProvider.NewService(timeSourceService);
+            container.RegisterSingleton<TimeSourceService>(timeSourceService);
+
+            var schedulingService = container.Resolve<SchedulingServiceSPI>();
+            //var schedulingService = SchedulingServiceProvider.NewService(timeSourceService);
             var schedulingMgmtService = new SchedulingMgmtServiceImpl();
             var engineSettingsService = new EngineSettingsService(
                 configSnapshot.EngineDefaults, configSnapshot.PlugInEventTypeResolutionURIs);
@@ -745,7 +808,7 @@ namespace com.espertech.esper.core.service
                             typeof (VirtualDataWindowFactory).Name);
                     }
                 }
-                catch (TypeLoadException e)
+                catch (TypeLoadException)
                 {
                     throw new ConfigurationException("Failed to look up class " + systemVirtualDWViewFactory);
                 }
@@ -761,39 +824,53 @@ namespace com.espertech.esper.core.service
             }
             var timerService = new TimerServiceImpl(epServiceProvider.URI, msecTimerResolution);
 
-            var variableService = new VariableServiceImpl(
-                configSnapshot.EngineDefaults.Variables.MsecVersionRelease, schedulingService, eventAdapterService, null);
+            var variableService = container.Resolve<VariableService>(new {
+                millisecondLifetimeOldVersions = configSnapshot.EngineDefaults.Variables.MsecVersionRelease, 
+                schedulingService, 
+                eventAdapterService,
+                variableStateHandler = (VariableStateHandler) null
+            });
+
             InitVariables(variableService, configSnapshot.Variables, engineImportService);
 
-            var tableService = new TableServiceImpl();
+            var tableService = container.Resolve<TableService>();
 
-            var statementLockFactory = new StatementLockFactoryImpl(
-                configSnapshot.EngineDefaults.Execution.IsFairlock,
-                configSnapshot.EngineDefaults.Execution.IsDisableLocking);
+            var statementLockFactory = container.Resolve<StatementLockFactory>(new {
+                fairLocks = configSnapshot.EngineDefaults.Execution.IsFairlock,
+                disableLocking = configSnapshot.EngineDefaults.Execution.IsDisableLocking
+            });
+
             var streamFactoryService = StreamFactoryServiceProvider.NewService(
                 epServiceProvider.URI, configSnapshot.EngineDefaults.ViewResources.IsShareViews);
-            var filterService =
-                FilterServiceProvider.NewService(
-                    configSnapshot.EngineDefaults.Execution.FilterServiceProfile,
-                    configSnapshot.EngineDefaults.Execution.IsAllowIsolatedService);
+            var filterService = FilterServiceProvider.NewService(
+                lockManager,
+                readerWriterLockManager,
+                configSnapshot.EngineDefaults.Execution.FilterServiceProfile,
+                configSnapshot.EngineDefaults.Execution.IsAllowIsolatedService);
             var metricsReporting = new MetricReportingServiceImpl(
-                configSnapshot.EngineDefaults.MetricsReporting, epServiceProvider.URI);
-            var namedWindowMgmtService =
-                new NamedWindowMgmtServiceImpl(
-                    configSnapshot.EngineDefaults.Logging.IsEnableQueryPlan, metricsReporting);
+                configSnapshot.EngineDefaults.MetricsReporting,
+                epServiceProvider.URI,
+                readerWriterLockManager);
+            var namedWindowMgmtService = new NamedWindowMgmtServiceImpl(
+                configSnapshot.EngineDefaults.Logging.IsEnableQueryPlan,
+                metricsReporting);
             var namedWindowDispatchService = new NamedWindowDispatchServiceImpl(
                 schedulingService, variableService, tableService,
                 engineSettingsService.EngineSettings.Execution.IsPrioritized, eventProcessingRwLock,
-                exceptionHandlingService, metricsReporting);
+                exceptionHandlingService, metricsReporting, threadLocalManager);
 
-            var valueAddEventService = new ValueAddEventServiceImpl();
+            var valueAddEventService = new ValueAddEventServiceImpl(lockManager);
             valueAddEventService.Init(
                 configSnapshot.RevisionEventTypes, configSnapshot.VariantStreams, eventAdapterService,
                 eventTypeIdGenerator);
 
-            var statementEventTypeRef = new StatementEventTypeRefImpl();
-            var statementVariableRef = new StatementVariableRefImpl(
-                variableService, tableService, namedWindowMgmtService);
+            var statementEventTypeRef = container.Resolve<StatementEventTypeRef>();
+            var statementVariableRef = container.Resolve<StatementVariableRef>(
+                new {
+                    variableService,
+                    tableService,
+                    namedWindowMgmtService
+                });
 
             var threadingService = new ThreadingServiceImpl(configSnapshot.EngineDefaults.Threading);
 
@@ -801,7 +878,7 @@ namespace com.espertech.esper.core.service
 
             var statementIsolationService = new StatementIsolationServiceImpl();
 
-            var deploymentStateService = new DeploymentStateServiceImpl();
+            var deploymentStateService = new DeploymentStateServiceImpl(lockManager);
 
             StatementMetadataFactory stmtMetadataFactory;
             if (configSnapshot.EngineDefaults.AlternativeContext.StatementMetadataFactory == null)
@@ -810,7 +887,7 @@ namespace com.espertech.esper.core.service
             }
             else
             {
-                stmtMetadataFactory = (StatementMetadataFactory) TypeHelper.Instantiate<StatementMetadataFactory>(
+                stmtMetadataFactory = TypeHelper.Instantiate<StatementMetadataFactory>(
                     configSnapshot.EngineDefaults.AlternativeContext.StatementMetadataFactory,
                     engineImportService.GetClassForNameProvider());
             }
@@ -839,23 +916,49 @@ namespace com.espertech.esper.core.service
             scriptingService.DiscoverEngines();
 
             // New services context
+            // NOTE: AJ - we need to convert this to dependency injection.
+
             var services = new EPServicesContext(
-                epServiceProvider.URI, schedulingService,
-                eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
-                statementLockFactory, eventProcessingRwLock, null, resourceDirectory, statementContextFactory,
-                plugInPatternObj, timerService, filterService, streamFactoryService,
-                namedWindowMgmtService, namedWindowDispatchService, variableService, tableService, timeSourceService,
-                valueAddEventService, metricsReporting, statementEventTypeRef,
-                statementVariableRef, configSnapshot, threadingService, internalEventRouterImpl,
-                statementIsolationService, schedulingMgmtService,
-                deploymentStateService, exceptionHandlingService,
-                new PatternNodeFactoryImpl(), eventTypeIdGenerator,
+                container, epServiceProvider.URI,
+                schedulingService,
+                eventAdapterService,
+                engineImportService,
+                engineSettingsService,
+                databaseConfigService, 
+                plugInViews,
+                statementLockFactory,
+                eventProcessingRwLock, 
+                null,
+                resourceDirectory,
+                statementContextFactory,
+                plugInPatternObj,
+                timerService,
+                filterService,
+                streamFactoryService,
+                namedWindowMgmtService,
+                namedWindowDispatchService,
+                variableService,
+                tableService,
+                timeSourceService,
+                valueAddEventService,
+                metricsReporting,
+                statementEventTypeRef,
+                statementVariableRef, 
+                configSnapshot, 
+                threadingService, 
+                internalEventRouterImpl,
+                statementIsolationService, 
+                schedulingMgmtService,
+                deploymentStateService,
+                exceptionHandlingService,
+                new PatternNodeFactoryImpl(),
+                eventTypeIdGenerator,
                 stmtMetadataFactory,
-                contextManagementService, patternSubexpressionPoolSvc, matchRecognizeStatePoolEngineSvc,
-                new DataFlowServiceImpl(
-                    epServiceProvider,
-                    new DataFlowConfigurationStateServiceImpl()),
-                new ExprDeclaredServiceImpl(),
+                contextManagementService,
+                patternSubexpressionPoolSvc,
+                matchRecognizeStatePoolEngineSvc,
+                new DataFlowServiceImpl(epServiceProvider, new DataFlowConfigurationStateServiceImpl(), lockManager),
+                new ExprDeclaredServiceImpl(lockManager),
                 new ContextControllerFactoryFactorySvcImpl(),
                 new ContextManagerFactoryServiceImpl(),
                 new EPStatementFactoryDefault(),

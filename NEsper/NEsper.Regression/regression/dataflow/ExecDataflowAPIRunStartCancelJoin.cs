@@ -14,10 +14,11 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.dataflow;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.dataflow
@@ -52,7 +53,7 @@ namespace com.espertech.esper.regression.dataflow
 
             var latchOne = new CountDownLatch(1);
             var src = new DefaultSupportSourceOp(new object[] {latchOne});
-            var output = new DefaultSupportCaptureOp<object>();
+            var output = new DefaultSupportCaptureOp<object>(SupportContainer.Instance.LockManager());
             var options =
                 new EPDataFlowInstantiationOptions().OperatorProvider(new DefaultSupportGraphOpProvider(src, output));
             var dfOne = epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlowOne", options);
@@ -91,7 +92,7 @@ namespace com.espertech.esper.regression.dataflow
 
             var latchOne = new CountDownLatch(1);
             var src = new DefaultSupportSourceOp(new object[] {latchOne, new MyRuntimeException("TestException")});
-            var output = new DefaultSupportCaptureOp<object>();
+            var output = new DefaultSupportCaptureOp<object>(SupportContainer.Instance.LockManager());
             var options =
                 new EPDataFlowInstantiationOptions().OperatorProvider(new DefaultSupportGraphOpProvider(src, output));
             var dfOne = epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlowOne", options);
@@ -128,7 +129,7 @@ namespace com.espertech.esper.regression.dataflow
                 "DefaultSupportCaptureOp(outstream) {}");
 
             var src = new DefaultSupportSourceOp(new object[] {new MyRuntimeException("TestException")});
-            var output = new DefaultSupportCaptureOp<object>();
+            var output = new DefaultSupportCaptureOp<object>(SupportContainer.Instance.LockManager());
             var options =
                 new EPDataFlowInstantiationOptions().OperatorProvider(new DefaultSupportGraphOpProvider(src, output));
             var dfOne = epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlowOne", options);
@@ -149,7 +150,7 @@ namespace com.espertech.esper.regression.dataflow
                 "DefaultSupportCaptureOp(outstream) {}");
 
             var src = new DefaultSupportSourceOp(new object[] {new MyRuntimeException("TestException")});
-            var output = new DefaultSupportCaptureOp<object>();
+            var output = new DefaultSupportCaptureOp<object>(SupportContainer.Instance.LockManager());
             var options =
                 new EPDataFlowInstantiationOptions().OperatorProvider(new DefaultSupportGraphOpProvider(src, output));
             var dfOne = epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlowOne", options);
@@ -183,7 +184,7 @@ namespace com.espertech.esper.regression.dataflow
             var latchOne = new CountDownLatch(1);
             var ops = new Dictionary<string, object>();
             ops.Put("SourceOne", new DefaultSupportSourceOp(new object[] {latchOne, new object[] {1}}));
-            var output = new DefaultSupportCaptureOp<object>();
+            var output = new DefaultSupportCaptureOp<object>(SupportContainer.Instance.LockManager());
             ops.Put("OutputOp", output);
 
             var options =
@@ -233,7 +234,7 @@ namespace com.espertech.esper.regression.dataflow
             var latchOne = new CountDownLatch(1);
             var ops = new Dictionary<string, object>();
             ops.Put("SourceOne", new DefaultSupportSourceOp(new object[] {latchOne, new object[] {1}}));
-            var output = new DefaultSupportCaptureOp<object>();
+            var output = new DefaultSupportCaptureOp<object>(SupportContainer.Instance.LockManager());
             ops.Put("OutputOp", output);
 
             var options =
@@ -323,7 +324,7 @@ namespace com.espertech.esper.regression.dataflow
             var ops = new Dictionary<string, object>();
             ops.Put("SourceOne", new DefaultSupportSourceOp(new object[] {latchOne, new object[] {1}}));
             ops.Put("SourceTwo", new DefaultSupportSourceOp(new object[] {latchTwo, new object[] {1}}));
-            var future = new DefaultSupportCaptureOp<object>(2);
+            var future = new DefaultSupportCaptureOp<object>(2, SupportContainer.Instance.LockManager());
             ops.Put("Future", future);
 
             var options =
@@ -361,7 +362,7 @@ namespace com.espertech.esper.regression.dataflow
             var ops = new Dictionary<string, object>();
             ops.Put("SourceOne", new DefaultSupportSourceOp(new object[] {latchOne, new object[] {1}}));
             ops.Put("SourceTwo", new DefaultSupportSourceOp(new object[] {latchTwo, new object[] {1}}));
-            var future = new DefaultSupportCaptureOp<object>(2);
+            var future = new DefaultSupportCaptureOp<object>(2, SupportContainer.Instance.LockManager());
             ops.Put("Future", future);
 
             var options =
@@ -402,7 +403,7 @@ namespace com.espertech.esper.regression.dataflow
             // instantiate
             var latch = new CountDownLatch(1);
             var source = new DefaultSupportSourceOp(new object[] {latch, new object[] {1}});
-            var future = new DefaultSupportCaptureOp<object>(1);
+            var future = new DefaultSupportCaptureOp<object>(1, SupportContainer.Instance.LockManager());
             var options =
                 new EPDataFlowInstantiationOptions().OperatorProvider(
                     new DefaultSupportGraphOpProvider(source, future));
@@ -437,7 +438,7 @@ namespace com.espertech.esper.regression.dataflow
             // instantiate
             var latch = new CountDownLatch(1);
             var source = new DefaultSupportSourceOp(new object[] {latch, new object[] {1}});
-            var future = new DefaultSupportCaptureOp<object>(1);
+            var future = new DefaultSupportCaptureOp<object>(1, SupportContainer.Instance.LockManager());
             var options =
                 new EPDataFlowInstantiationOptions().OperatorProvider(
                     new DefaultSupportGraphOpProvider(source, future));
@@ -491,7 +492,7 @@ namespace com.espertech.esper.regression.dataflow
                 "DefaultSupportCaptureOp(BeaconStream) {}");
 
             // instantiate
-            var future = new DefaultSupportCaptureOp<object>(1);
+            var future = new DefaultSupportCaptureOp<object>(1, SupportContainer.Instance.LockManager());
             var options =
                 new EPDataFlowInstantiationOptions().OperatorProvider(new DefaultSupportGraphOpProvider(future));
             var dfOne = epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlowOne", options);
@@ -525,7 +526,7 @@ namespace com.espertech.esper.regression.dataflow
             // instantiate
             var latch = new CountDownLatch(1);
             var source = new DefaultSupportSourceOp(new object[] {latch, new object[] {1}});
-            var future = new DefaultSupportCaptureOp<object>(1);
+            var future = new DefaultSupportCaptureOp<object>(1, SupportContainer.Instance.LockManager());
             var options =
                 new EPDataFlowInstantiationOptions().OperatorProvider(
                     new DefaultSupportGraphOpProvider(future, source));
@@ -571,7 +572,7 @@ namespace com.espertech.esper.regression.dataflow
                 "DefaultSupportCaptureOp(BeaconStream) {}");
 
             // instantiate
-            var future = new DefaultSupportCaptureOp<object>(1);
+            var future = new DefaultSupportCaptureOp<object>(1, SupportContainer.Instance.LockManager());
             var options =
                 new EPDataFlowInstantiationOptions().OperatorProvider(new DefaultSupportGraphOpProvider(future));
             var dfOne = epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlowOne", options);

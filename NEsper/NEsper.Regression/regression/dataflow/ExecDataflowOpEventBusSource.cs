@@ -14,13 +14,14 @@ using com.espertech.esper.client.dataflow;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.core.service;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.events;
 using com.espertech.esper.supportregression.dataflow;
 using com.espertech.esper.supportregression.execution;
-
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.dataflow
@@ -33,7 +34,7 @@ namespace com.espertech.esper.regression.dataflow
         }
     
         private void RunAssertionAllTypes(EPServiceProvider epService) {
-            DefaultSupportGraphEventUtil.AddTypeConfiguration(epService);
+            DefaultSupportGraphEventUtil.AddTypeConfiguration((EPServiceProviderSPI) epService);
     
             RunAssertionAllTypes(epService, "MyMapEvent", DefaultSupportGraphEventUtil.MapEventsSendable);
             RunAssertionAllTypes(epService, "MyXMLEvent", DefaultSupportGraphEventUtil.XMLEventsSendable);
@@ -80,7 +81,7 @@ namespace com.espertech.esper.regression.dataflow
                     "EventBusSource -> ReceivedStream<" + typeName + "> {} " +
                     "DefaultSupportCaptureOp(ReceivedStream) {}");
     
-            var future = new DefaultSupportCaptureOp();
+            var future = new DefaultSupportCaptureOp(SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions()
                     .OperatorProvider(new DefaultSupportGraphOpProvider(future));
     
@@ -128,7 +129,7 @@ namespace com.espertech.esper.regression.dataflow
                     "DefaultSupportCaptureOp(ReceivedStream) {}");
     
             var collector = new MyCollector();
-            var future = new DefaultSupportCaptureOp();
+            var future = new DefaultSupportCaptureOp(SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions()
                 .OperatorProvider(new DefaultSupportGraphOpProvider(future))
                 .ParameterProvider(new DefaultSupportGraphParamProvider(
@@ -155,7 +156,7 @@ namespace com.espertech.esper.regression.dataflow
                     "EventBusSource -> ReceivedStream<" + (underlying ? "MyEventOA" : "EventBean<MyEventOA>") + "> {} " +
                     "DefaultSupportCaptureOp(ReceivedStream) {}");
     
-            var future = new DefaultSupportCaptureOp(1);
+            var future = new DefaultSupportCaptureOp(1, SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions()
                     .OperatorProvider(new DefaultSupportGraphOpProvider(future));
     

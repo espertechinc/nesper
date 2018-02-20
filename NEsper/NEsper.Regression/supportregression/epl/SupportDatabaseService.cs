@@ -15,6 +15,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.db;
+using com.espertech.esper.supportregression.util;
 
 namespace com.espertech.esper.supportregression.epl
 {
@@ -73,7 +74,9 @@ namespace com.espertech.esper.supportregression.epl
             configs.Put(DBNAME_FULL, DbConfigReferenceNative);
             configs.Put(DBNAME_PART, DbConfigReferenceODBC);
 
-            return new DatabaseConfigServiceImpl(configs, new SupportSchedulingServiceImpl(), null, SupportEngineImportServiceFactory.Make() );
+            return new DatabaseConfigServiceImpl(
+                configs, new SupportSchedulingServiceImpl(), null, 
+                SupportEngineImportServiceFactory.Make(SupportContainer.Instance));
 		}
 
         public static Properties DefaultProperties

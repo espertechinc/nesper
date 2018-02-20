@@ -16,21 +16,21 @@ namespace com.espertech.esper.compat.threading
         /// Registers the category lock.
         /// </summary>
         /// <param name="lockFactory">The lock factory.</param>
-        void RegisterCategoryLock<T>(Func<IReaderWriterLock> lockFactory);
+        void RegisterCategoryLock<T>(Func<int, IReaderWriterLock> lockFactory);
 
         /// <summary>
         /// Registers the category lock.
         /// </summary>
         /// <param name="typeCategory">The type category.</param>
         /// <param name="lockFactory">The lock factory.</param>
-        void RegisterCategoryLock(Type typeCategory, Func<IReaderWriterLock> lockFactory);
+        void RegisterCategoryLock(Type typeCategory, Func<int, IReaderWriterLock> lockFactory);
 
         /// <summary>
         /// Registers the category lock.
         /// </summary>
         /// <param name="category">The category.</param>
         /// <param name="lockFactory">The lock factory.</param>
-        void RegisterCategoryLock(string category, Func<IReaderWriterLock> lockFactory);
+        void RegisterCategoryLock(string category, Func<int, IReaderWriterLock> lockFactory);
 
         /// <summary>
         /// Creates a lock for the category defined by the type.
@@ -45,6 +45,13 @@ namespace com.espertech.esper.compat.threading
         /// <param name="category">The category.</param>
         /// <returns></returns>
         IReaderWriterLock CreateLock(string category);
+
+        /// <summary>
+        /// Creates a specific type of lock.
+        /// </summary>
+        /// <param name="lockFactory">The lock factory.</param>
+        /// <returns></returns>
+        IReaderWriterLock CreateLock(Func<int, IReaderWriterLock> lockFactory);
 
         /// <summary>
         /// Creates the default lock.

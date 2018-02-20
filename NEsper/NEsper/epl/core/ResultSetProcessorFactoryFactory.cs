@@ -138,6 +138,7 @@ namespace com.espertech.esper.epl.core
             var resettableAggs = isUnidirectional || statementSpec.OnTriggerDesc != null;
             var intoTableName = statementSpec.IntoTableSpec == null ? null : statementSpec.IntoTableSpec.Name;
             var validationContext = new ExprValidationContext(
+                stmtContext.Container,
                 typeService,
                 stmtContext.EngineImportService,
                 stmtContext.StatementExtensionServicesContext,
@@ -364,32 +365,32 @@ namespace com.espertech.esper.epl.core
 
             // Construct the processor for evaluating the select clause
             var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(stmtContext.StatementName, stmtContext.StatementEventTypeRef);
-            var selectExprProcessor =
-                SelectExprProcessorFactory.GetProcessor(
-                    Collections.GetEmptyList<int>(),
-                    selectClauseSpec.SelectExprList, isUsingWildcard, insertIntoDesc, null,
-                    statementSpec.ForClauseSpec, typeService,
-                    stmtContext.EventAdapterService,
-                    stmtContext.StatementResultService,
-                    stmtContext.ValueAddEventService,
-                    selectExprEventTypeRegistry,
-                    stmtContext.EngineImportService,
-                    evaluatorContextStmt,
-                    stmtContext.VariableService,
-                    stmtContext.ScriptingService,
-                    stmtContext.TableService,
-                    stmtContext.TimeProvider,
-                    stmtContext.EngineURI,
-                    stmtContext.StatementId,
-                    stmtContext.StatementName,
-                    stmtContext.Annotations,
-                    stmtContext.ContextDescriptor,
-                    stmtContext.ConfigSnapshot,
-                    selectExprProcessorCallback,
-                    stmtContext.NamedWindowMgmtService,
-                    statementSpec.IntoTableSpec,
-                    groupByRollupInfo,
-                    stmtContext.StatementExtensionServicesContext);
+            var selectExprProcessor = SelectExprProcessorFactory.GetProcessor(
+                stmtContext.Container,
+                Collections.GetEmptyList<int>(),
+                selectClauseSpec.SelectExprList, isUsingWildcard, insertIntoDesc, null,
+                statementSpec.ForClauseSpec, typeService,
+                stmtContext.EventAdapterService,
+                stmtContext.StatementResultService,
+                stmtContext.ValueAddEventService,
+                selectExprEventTypeRegistry,
+                stmtContext.EngineImportService,
+                evaluatorContextStmt,
+                stmtContext.VariableService,
+                stmtContext.ScriptingService,
+                stmtContext.TableService,
+                stmtContext.TimeProvider,
+                stmtContext.EngineURI,
+                stmtContext.StatementId,
+                stmtContext.StatementName,
+                stmtContext.Annotations,
+                stmtContext.ContextDescriptor,
+                stmtContext.ConfigSnapshot,
+                selectExprProcessorCallback,
+                stmtContext.NamedWindowMgmtService,
+                statementSpec.IntoTableSpec,
+                groupByRollupInfo,
+                stmtContext.StatementExtensionServicesContext);
 
             // Get a list of event properties being aggregated in the select clause, if any
             var propertiesGroupBy = ExprNodeUtility.GetGroupByPropertiesValidateHasOne(groupByNodesValidated);
@@ -571,6 +572,7 @@ namespace com.espertech.esper.epl.core
             }
             var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
             var validationContext = new ExprValidationContext(
+                statementContext.Container,
                 new StreamTypeServiceImpl(statementContext.EngineURI, false),
                 statementContext.EngineImportService,
                 statementContext.StatementExtensionServicesContext, null,
@@ -717,6 +719,7 @@ namespace com.espertech.esper.epl.core
                 var selectClauseLevel = groupByExpressions.SelectClausePerLevel[i];
                 var selectClause = GetRollUpSelectClause(statementSpec.SelectClauseSpec, selectClauseLevel, level, rolledupProps, groupByNodesValidated, validationContext);
                 processors[i] = SelectExprProcessorFactory.GetProcessor(
+                    stmtContext.Container,
                     Collections.GetEmptyList<int>(), selectClause, false, insertIntoDesc, null,
                     statementSpec.ForClauseSpec,
                     typeService,

@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.epl.variable
@@ -30,9 +32,9 @@ namespace com.espertech.esper.epl.variable
         /// <summary>
         /// Ctor.
         /// </summary>
-	    public VariableVersionThreadLocal()
+	    public VariableVersionThreadLocal(IThreadLocalManager threadLocalManager)
         {
-            _vThreadLocal = ThreadLocalManager.Create<VariableVersionThreadEntry>(CreateEntry);
+            _vThreadLocal = threadLocalManager.Create<VariableVersionThreadEntry>(CreateEntry);
 	    }
 
         /// <summary>

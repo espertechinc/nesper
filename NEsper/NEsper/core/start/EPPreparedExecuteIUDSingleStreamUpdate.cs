@@ -42,11 +42,20 @@ namespace com.espertech.esper.core.start
             assignmentTypeService.IsStreamZeroUnambigous = true;
             var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, true);
             var validationContext = new ExprValidationContext(
-                assignmentTypeService, statementContext.EngineImportService,
-                statementContext.StatementExtensionServicesContext, null, statementContext.SchedulingService,
-                statementContext.VariableService, statementContext.TableService, evaluatorContextStmt,
-                statementContext.EventAdapterService, statementContext.StatementName, statementContext.StatementId,
-                statementContext.Annotations, statementContext.ContextDescriptor, statementContext.ScriptingService,
+                statementContext.Container,
+                assignmentTypeService,
+                statementContext.EngineImportService,
+                statementContext.StatementExtensionServicesContext, null,
+                statementContext.SchedulingService,
+                statementContext.VariableService,
+                statementContext.TableService,
+                evaluatorContextStmt,
+                statementContext.EventAdapterService,
+                statementContext.StatementName,
+                statementContext.StatementId,
+                statementContext.Annotations, 
+                statementContext.ContextDescriptor,
+                statementContext.ScriptingService,
                 false, false, true, false, null, false);
     
             // validate update expressions

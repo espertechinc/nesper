@@ -7,38 +7,37 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.IO;
 using System.Xml;
-using Avro.IO;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.regression.events;
-using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.supportregression.util;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.epl.contained
 {
     public class ExecContainedEventExample : RegressionExecution {
-        public override void Run(EPServiceProvider epService) {
+        public override void Run(EPServiceProvider epService)
+        {
+            var container = SupportContainer.Instance;
+
             var config = new ConfigurationEventTypeXMLDOM();
-            string schemaUri = ResourceManager.ResolveResourceURL("regression/mediaOrderSchema.xsd").ToString();
+            string schemaUri = container.ResourceManager().ResolveResourceURL("regression/mediaOrderSchema.xsd").ToString();
             config.SchemaResource = schemaUri;
             config.RootElementName = "mediaorder";
     
             epService.EPAdministrator.Configuration.AddEventType("MediaOrder", config);
             epService.EPAdministrator.Configuration.AddEventType("Cancel", config);
     
-            var xmlStreamOne = ResourceManager.GetResourceAsStream("regression/mediaOrderOne.xml");
+            var xmlStreamOne = container.ResourceManager().GetResourceAsStream("regression/mediaOrderOne.xml");
             var eventDocOne = SupportXML.GetDocument(xmlStreamOne);
     
-            var xmlStreamTwo = ResourceManager.GetResourceAsStream("regression/mediaOrderTwo.xml");
+            var xmlStreamTwo = container.ResourceManager().GetResourceAsStream("regression/mediaOrderTwo.xml");
             var eventDocTwo = SupportXML.GetDocument(xmlStreamTwo);
     
             RunAssertionExample(epService, eventDocOne);

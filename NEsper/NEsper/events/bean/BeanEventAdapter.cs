@@ -11,7 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.events.bean
@@ -37,12 +39,14 @@ namespace com.espertech.esper.events.bean
         /// <param name="typesPerObject">shareable collection that this adapter writes tofor caching bean types per class</param>
         /// <param name="eventAdapterService">factory for event beans and event types</param>
         /// <param name="eventTypeIdGenerator">The event type id generator.</param>
-        public BeanEventAdapter(IDictionary<Type, BeanEventType> typesPerObject,
-                                EventAdapterService eventAdapterService,
-                                EventTypeIdGenerator eventTypeIdGenerator)
+        public BeanEventAdapter(
+            IDictionary<Type, BeanEventType> typesPerObject,
+            EventAdapterService eventAdapterService,
+            EventTypeIdGenerator eventTypeIdGenerator,
+            ILockManager lockManager)
         {
             _typesPerObject = typesPerObject;
-            _typesPerObjectLock = LockManager.CreateLock(GetType());
+            _typesPerObjectLock = lockManager.CreateLock(GetType());
             _typeToLegacyConfigs = new Dictionary<String, ConfigurationEventTypeLegacy>();
             _defaultPropertyResolutionStyle = PropertyResolutionStyle.DEFAULT;
             _eventAdapterService = eventAdapterService;

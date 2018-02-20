@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////////////
+﻿
 // Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -7,8 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
+#if NETFRAMEWORK
 using System.CodeDom;
 using System.CodeDom.Compiler;
+#endif
+
 using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
@@ -112,6 +116,7 @@ namespace com.espertech.esper.script.codedom
         {
         }
 
+#if NETFRAMEWORK
         /// <summary>
         /// Compiles the code.
         /// </summary>
@@ -353,23 +358,8 @@ namespace com.espertech.esper.script.codedom
                     scriptMainMember.Statements.Add(variableDeclarationStatement);
                 }
 
-#if false
-                scriptMainMember.Statements.Add(
-                    new CodeVariableDeclarationStatement(
-                        typeof (object),
-                        "__rvalue",
-                        new CodeSnippetExpression(script.Expression)
-                        )
-                    );
-                scriptMainMember.Statements.Add(
-                    new CodeMethodReturnStatement(
-                        new CodeVariableReferenceExpression("__rvalue")
-                        )
-                    );
-#else
                 scriptMainMember.Statements.Add(
                     new CodeSnippetExpression(script.Expression));
-#endif
 
                 typeDecl.Members.Add(scriptMainMember);
 
@@ -391,6 +381,15 @@ namespace com.espertech.esper.script.codedom
                 return compileUnit;
             }
         }
+#else
+        public Func<ScriptArgs, object> Compile(ExpressionScriptProvided expressionScript) {
+            throw new NotSupportedException();
+        }
+
+        public static void CreateCodeProvider(string dialect) {
+            throw new NotSupportedException();
+        }
+#endif
 
         public static void VerifyCompilerScript(ExpressionScriptProvided script, string dialect)
         {

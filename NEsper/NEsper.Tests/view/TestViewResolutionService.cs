@@ -6,14 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.spec;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.supportunit.view;
 using com.espertech.esper.view.stat;
 
@@ -25,21 +26,26 @@ namespace com.espertech.esper.view
     public class TestViewResolutionService 
     {
         private ViewResolutionService _service;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            PluggableObjectRegistryImpl registry = new PluggableObjectRegistryImpl(new PluggableObjectCollection[] {ViewEnumHelper.BuiltinViews});
+            _container = SupportContainer.Instance;
+
+            var registry = new PluggableObjectRegistryImpl(new[] {ViewEnumHelper.BuiltinViews});
             _service = new ViewResolutionServiceImpl(registry, null, null);
         }
     
         [Test]
         public void TestInitializeFromConfig()
         {
-            _service = CreateService(new String[] {"a", "b"}, new String[] {"v1", "v2"},
-                    new String[] {typeof(SupportViewFactoryOne).FullName, typeof(SupportViewFactoryTwo).FullName});
+            _service = CreateService(
+                new[] {"a", "b"},
+                new[] {"v1", "v2"},
+                new[] {typeof(SupportViewFactoryOne).FullName, typeof(SupportViewFactoryTwo).FullName});
     
-            ViewFactory factory = _service.Create("a", "v1");
+            var factory = _service.Create("a", "v1");
             Assert.IsTrue(factory is SupportViewFactoryOne);
     
             factory = _service.Create("b", "v2");
@@ -50,7 +56,7 @@ namespace com.espertech.esper.view
     
             try
             {
-                _service = CreateService(new String[] {"a"}, new String[] {"v1"}, new String[] {"abc"});
+                _service = CreateService(new[] {"a"}, new[] {"v1"}, new[] {"abc"});
                 Assert.Fail();
             }
             catch (ConfigurationException ex)
@@ -59,7 +65,7 @@ namespace com.espertech.esper.view
             }
         }
     
-        private void TryInvalid(String @namespace, String name)
+        private void TryInvalid(string @namespace, string name)
         {
             try
             {
@@ -75,7 +81,7 @@ namespace com.espertech.esper.view
         [Test]
         public void TestCreate()
         {
-            ViewFactory viewFactory = _service.Create(ViewEnum.UNIVARIATE_STATISTICS.GetNamespace(), ViewEnum.UNIVARIATE_STATISTICS.GetName());
+            var viewFactory = _service.Create(ViewEnum.UNIVARIATE_STATISTICS.GetNamespace(), ViewEnum.UNIVARIATE_STATISTICS.GetName());
             Assert.IsTrue(viewFactory is UnivariateStatisticsViewFactory);
         }
     
@@ -93,21 +99,23 @@ namespace com.espertech.esper.view
             }
         }
     
-        private ViewResolutionService CreateService(String[] namespaces, String[] names, String[] classNames)
+        private ViewResolutionService CreateService(string[] namespaces, string[] names, string[] classNames)
         {
-            List<ConfigurationPlugInView> configs = new List<ConfigurationPlugInView>();
-            for (int i = 0; i < namespaces.Length; i++)
+            var configs = new List<ConfigurationPlugInView>();
+            for (var i = 0; i < namespaces.Length; i++)
             {
-                ConfigurationPlugInView config = new ConfigurationPlugInView();
+                var config = new ConfigurationPlugInView();
                 config.Namespace = namespaces[i];
                 config.Name = names[i];
                 config.FactoryClassName = classNames[i];
                 configs.Add(config);
             }
     
-            PluggableObjectCollection desc = new PluggableObjectCollection();
-            desc.AddViews(configs, Collections.GetEmptyList<ConfigurationPlugInVirtualDataWindow>(), SupportEngineImportServiceFactory.Make());
-            PluggableObjectRegistryImpl registry = new PluggableObjectRegistryImpl(new PluggableObjectCollection[]{desc});
+            var desc = new PluggableObjectCollection();
+            desc.AddViews(configs,
+                Collections.GetEmptyList<ConfigurationPlugInVirtualDataWindow>(), 
+                SupportEngineImportServiceFactory.Make(_container));
+            var registry = new PluggableObjectRegistryImpl(new[]{desc});
             return new ViewResolutionServiceImpl(registry, null, null);
         }
     

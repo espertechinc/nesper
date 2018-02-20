@@ -14,6 +14,8 @@ using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
@@ -72,6 +74,7 @@ namespace com.espertech.esper.epl.property
         /// <exception cref="IllegalStateException">Unknown select clause item: + raw</exception>
         /// <throws>ExprValidationException if any expressions could not be verified</throws>
         public static PropertyEvaluator MakeEvaluator(
+            IContainer container,
             PropertyEvalSpec spec,
             EventType sourceEventType,
             string optionalSourceStreamName,
@@ -100,7 +103,7 @@ namespace com.espertech.esper.epl.property
             var streamNames = new List<string>();
             var streamNameAndNumber = new Dictionary<string, int>().WithNullSupport();
             var expressionTexts = new List<string>();
-            var validateContext = new ExprEvaluatorContextTimeOnly(timeProvider);
+            var validateContext = new ExprEvaluatorContextTimeOnly(container, timeProvider);
 
             streamEventTypes.Add(sourceEventType);
             streamNames.Add(optionalSourceStreamName);
@@ -145,8 +148,19 @@ namespace com.espertech.esper.epl.property
                     StreamTypeService streamTypeService = new StreamTypeServiceImpl(
                         availableTypes, availableStreamNames, isIStreamOnly, engineURI, false);
                     var validationContext = new ExprValidationContext(
-                        streamTypeService, engineImportService, statementExtensionSvcContext, null, timeProvider, variableService, tableService,
-                        validateContext, eventAdapterService, statementName, statementId, annotations, null, scriptingService,
+                        container,
+                        streamTypeService,
+                        engineImportService,
+                        statementExtensionSvcContext, null,
+                        timeProvider, 
+                        variableService,
+                        tableService,
+                        validateContext, 
+                        eventAdapterService, 
+                        statementName, 
+                        statementId, 
+                        annotations, null, 
+                        scriptingService,
                         false, false, true, false, null, false);
                     var validatedExprNode = ExprNodeUtility.GetValidatedSubtree(
                         ExprNodeOrigin.CONTAINEDEVENT, atom.SplitterExpression, validationContext);
@@ -249,8 +263,19 @@ namespace com.espertech.esper.epl.property
                     StreamTypeService streamTypeService = new StreamTypeServiceImpl(
                         whereTypes, whereStreamNames, isIStreamOnly, engineURI, false);
                     var validationContext = new ExprValidationContext(
-                        streamTypeService, engineImportService, statementExtensionSvcContext, null, timeProvider, variableService, tableService,
-                        validateContext, eventAdapterService, statementName, statementId, annotations, null, scriptingService,
+                        container,
+                        streamTypeService, 
+                        engineImportService, 
+                        statementExtensionSvcContext, null, 
+                        timeProvider, 
+                        variableService,
+                        tableService,
+                        validateContext,
+                        eventAdapterService, 
+                        statementName, 
+                        statementId, 
+                        annotations, null, 
+                        scriptingService,
                         false, false, true, false, null, false);
                     whereClauses[i] =
                         ExprNodeUtility.GetValidatedSubtree(
@@ -267,8 +292,19 @@ namespace com.espertech.esper.epl.property
                     StreamTypeService streamTypeService = new StreamTypeServiceImpl(
                         whereTypes, whereStreamNames, isIStreamOnly, engineURI, false);
                     var validationContext = new ExprValidationContext(
-                        streamTypeService, engineImportService, statementExtensionSvcContext, null, timeProvider, variableService, tableService,
-                        validateContext, eventAdapterService, statementName, statementId, annotations, null, scriptingService,
+                        container,
+                        streamTypeService,
+                        engineImportService, 
+                        statementExtensionSvcContext, null,
+                        timeProvider,
+                        variableService, 
+                        tableService,
+                        validateContext, 
+                        eventAdapterService, 
+                        statementName, 
+                        statementId, 
+                        annotations, null,
+                        scriptingService,
                         false, false, true, false, null, false);
 
                     foreach (var raw in atom.OptionalSelectClause.SelectExprList)
@@ -360,7 +396,9 @@ namespace com.espertech.esper.epl.property
 
                 var cumulativeSelectArr = cumulativeSelectClause.ToArray();
                 var selectExpr = SelectExprProcessorFactory.GetProcessor(
-                    assignedTypeNumberStack, cumulativeSelectArr, false, null, null, null, streamTypeService,
+                    container,
+                    assignedTypeNumberStack, 
+                    cumulativeSelectArr, false, null, null, null, streamTypeService,
                     eventAdapterService, null, null, null, engineImportService, validateContext, variableService,
                     scriptingService,
                     tableService, timeProvider, engineURI, statementId, statementName, annotations, null, configuration, null,

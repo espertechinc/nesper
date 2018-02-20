@@ -17,6 +17,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.core.service;
 using com.espertech.esper.events;
@@ -49,6 +50,7 @@ namespace com.espertech.esperio.csv
         private String[] _firstRow;
         private Type _beanType;
         private int _rowCount = 0;
+        private IContainer _container;
 
         /// <summary>Ctor.</summary>
         /// <param name="epService">provides the engine runtime and services</param>
@@ -61,6 +63,7 @@ namespace com.espertech.esperio.csv
             _adapterSpec = spec;
             _eventTypeName = _adapterSpec.EventTypeName;
             _eventsPerSec = spec.EventsPerSec;
+            _container = ((EPServiceProviderSPI) epService).Container;
 
             if (epService != null)
             {
@@ -200,7 +203,7 @@ namespace com.espertech.esperio.csv
 
             ScheduleSlot = spi.SchedulingMgmtService.AllocateBucket().AllocateSlot();
 
-            _reader = new CSVReader(spec.AdapterInputSource);
+            _reader = new CSVReader(_container, spec.AdapterInputSource);
             _reader.Looping = spec.IsLooping;
 
             var firstRow = FirstRow;

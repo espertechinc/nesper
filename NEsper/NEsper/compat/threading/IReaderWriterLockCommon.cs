@@ -5,12 +5,12 @@
 	/// </summary>
 	public interface IReaderWriterLockCommon
 	{
-	    /// <summary>
-	    /// Acquires the reader lock.
-	    /// </summary>
-	    /// <param name="timeout">The timeout.</param>
-	    void AcquireReaderLock(long timeout);
-
+        /// <summary>
+        /// Acquires the reader lock.
+        /// </summary>
+        /// <param name="timeout">The timeout.</param>
+        void AcquireReaderLock(long timeout);
+        
 	    /// <summary>
 	    /// Acquires the writer lock.
 	    /// </summary>

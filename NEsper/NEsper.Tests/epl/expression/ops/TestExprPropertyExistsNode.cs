@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.funcs;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -21,11 +23,12 @@ namespace com.espertech.esper.epl.expression.ops
     public class TestExprPropertyExistsNode 
     {
         private ExprPropertyExistsNode[] _existsNodes;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            _existsNodes = new ExprPropertyExistsNode[2];
+            _container = SupportContainer.Instance; _existsNodes = new ExprPropertyExistsNode[2];
     
             _existsNodes[0] = new ExprPropertyExistsNode();
             _existsNodes[0].AddChildNode(SupportExprNodeFactory.MakeIdentNode("dummy?", "s0"));
@@ -39,7 +42,7 @@ namespace com.espertech.esper.epl.expression.ops
         {
             for (int i = 0; i < _existsNodes.Length; i++)
             {
-                _existsNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _existsNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.AreEqual(typeof(bool?), _existsNodes[i].ReturnType);
             }
         }
@@ -52,7 +55,7 @@ namespace com.espertech.esper.epl.expression.ops
             // Test too few nodes under this node
             try
             {
-                castNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                castNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -63,7 +66,7 @@ namespace com.espertech.esper.epl.expression.ops
             castNode.AddChildNode(new SupportExprNode(1));
             try
             {
-                castNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                castNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -77,7 +80,7 @@ namespace com.espertech.esper.epl.expression.ops
         {
             for (int i = 0; i < _existsNodes.Length; i++)
             {
-                _existsNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _existsNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             }
     
             Assert.AreEqual(false, _existsNodes[0].Evaluate(new EvaluateParams(new EventBean[3], false, null)));
@@ -98,7 +101,7 @@ namespace com.espertech.esper.epl.expression.ops
         [Test]
         public void TestToExpressionString()
         {
-            _existsNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _existsNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             Assert.AreEqual("exists(s0.dummy?)", _existsNodes[0].ToExpressionStringMinPrecedenceSafe());
         }
     }

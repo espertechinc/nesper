@@ -14,9 +14,11 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
+using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util.support;
 
 using static com.espertech.esper.regression.events.xml.ExecEventXMLSchemaEventObservationDOM;
@@ -31,7 +33,7 @@ namespace com.espertech.esper.regression.events.xml
     
         public override void Configure(Configuration configuration)
         {
-            _schemaUri = ResourceManager.ResolveResourceURL(CLASSLOADER_SCHEMA_URI).ToString();
+            _schemaUri = SupportContainer.Instance.ResourceManager().ResolveResourceURL(CLASSLOADER_SCHEMA_URI).ToString();
     
             var sensorcfg = new ConfigurationEventTypeXMLDOM();
             sensorcfg.RootElementName = "Sensor";

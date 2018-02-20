@@ -18,7 +18,9 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
@@ -125,7 +127,10 @@ namespace com.espertech.esper.epl.parse
         private IList<OnTriggerMergeAction> _mergeActions;
         private ContextDescriptor _contextDescriptor;
 
+        private readonly IContainer _container;
+
         public EPLTreeWalkerListener(
+            IContainer container,
             CommonTokenStream tokenStream,
             EngineImportService engineImportService,
             VariableService variableService,
@@ -139,12 +144,13 @@ namespace com.espertech.esper.epl.parse
             ExprDeclaredService exprDeclaredService,
             TableService tableService)
         {
+            _container = container;
             _tokenStream = tokenStream;
             _engineImportService = engineImportService;
             _variableService = variableService;
             _timeProvider = schedulingService;
             _patternNodeFactory = patternNodeFactory;
-            _exprEvaluatorContext = new ExprEvaluatorContextTimeOnly(_timeProvider);
+            _exprEvaluatorContext = new ExprEvaluatorContextTimeOnly(container, _timeProvider);
             _engineURI = engineURI;
             _configurationInformation = configurationInformation;
             _schedulingService = schedulingService;
@@ -152,7 +158,7 @@ namespace com.espertech.esper.epl.parse
             _scriptBodies = scriptBodies;
             _exprDeclaredService = exprDeclaredService;
             _tableService = tableService;
-    
+
             if (defaultStreamSelector == null) {
                 throw ASTWalkException.From("Default stream selector is null");
             }
@@ -397,8 +403,16 @@ namespace com.espertech.esper.epl.parse
             ASTExprHelper.ExprCollectAddSubNodesAddParentNode(or, ctx, _astExprNodeMap);
         }
     
-        public void ExitTimePeriod(EsperEPL2GrammarParser.TimePeriodContext ctx) {
-            var timeNode = ASTExprHelper.TimePeriodGetExprAllParams(ctx, _astExprNodeMap, _variableService, _statementSpec, _configurationInformation, _engineImportService.TimeAbacus);
+        public void ExitTimePeriod(EsperEPL2GrammarParser.TimePeriodContext ctx)
+        {
+            var timeNode = ASTExprHelper.TimePeriodGetExprAllParams(
+                ctx,
+                _astExprNodeMap,
+                _variableService,
+                _statementSpec,
+                _configurationInformation,
+                _engineImportService.TimeAbacus,
+                _container.Resolve<ILockManager>());
             ASTExprHelper.ExprCollectAddSubNodesAddParentNode(timeNode, ctx, _astExprNodeMap);
         }
     
@@ -761,7 +775,11 @@ namespace com.espertech.esper.epl.parse
             }
             if (ctx.s != null) {
                 ExprNode node = ASTExprHelper.TimePeriodGetExprJustSeconds(
-                    ctx.expression(), _astExprNodeMap, _configurationInformation, _engineImportService.TimeAbacus);
+                    ctx.expression(), 
+                    _astExprNodeMap, 
+                    _configurationInformation, 
+                    _engineImportService.TimeAbacus,
+                    _container.Resolve<ILockManager>());
                 _astExprNodeMap.Put(ctx, node);
             } else if (ctx.a != null || ctx.d != null) {
                 var isDescending = ctx.d != null;
@@ -903,8 +921,17 @@ namespace com.espertech.esper.epl.parse
                             throw ASTWalkException.From("Missing expression within ${...} in SQL statement");
                         }
                         var toCompile = "select * from System.Object where " + expression;
-                        var raw = EPAdministratorHelper.CompileEPL(toCompile, expression, false, null, SelectClauseStreamSelectorEnum.ISTREAM_ONLY,
-                                _engineImportService, _variableService, _schedulingService, _engineURI, _configurationInformation, _patternNodeFactory, _contextManagementService, _exprDeclaredService, _tableService);
+                        var raw = EPAdministratorHelper.CompileEPL(
+                            _container,
+                            toCompile, expression, false, null,
+                            SelectClauseStreamSelectorEnum.ISTREAM_ONLY,
+                            _engineImportService, _variableService,
+                            _schedulingService, _engineURI,
+                            _configurationInformation,
+                            _patternNodeFactory,
+                            _contextManagementService,
+                            _exprDeclaredService,
+                            _tableService);
     
                         if ((raw.SubstitutionParameters != null) && (raw.SubstitutionParameters.Count > 0)) {
                             throw ASTWalkException.From("EPL substitution parameters are not allowed in SQL ${...} expressions, consider using a variable instead");
@@ -1732,7 +1759,7 @@ namespace com.espertech.esper.epl.parse
             }
     
             string[] idents = classes.ToArray();
-            var instanceofNode = new ExprInstanceofNode(idents);
+            var instanceofNode = new ExprInstanceofNode(idents, _container.Resolve<ILockManager>());
             ASTExprHelper.ExprCollectAddSubNodesAddParentNode(instanceofNode, ctx, _astExprNodeMap);
         }
     

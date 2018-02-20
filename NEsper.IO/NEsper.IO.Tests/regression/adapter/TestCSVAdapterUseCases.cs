@@ -17,6 +17,7 @@ using com.espertech.esper.client.annotation;
 using com.espertech.esper.client.time;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esperio.csv;
 using com.espertech.esperio.support.util;
 
@@ -37,6 +38,14 @@ namespace com.espertech.esperio.regression.adapter
 
         private readonly bool _useBean;
 
+        private IContainer _container;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _container = SupportContainer.Instance;
+        }
+
         public EPServiceProvider EPService { get; set; }
 
         public TestCSVAdapterUseCases() : this(false)
@@ -55,7 +64,7 @@ namespace com.espertech.esperio.regression.adapter
 
         private Configuration MakeConfig(String typeName, bool useBean)
         {
-            var configuration = new Configuration();
+            var configuration = new Configuration(_container);
             if (useBean) {
                 configuration.AddEventType(typeName, typeof (ExampleMarketDataBean));
             }
@@ -74,7 +83,8 @@ namespace com.espertech.esperio.regression.adapter
         {
             var spec = new CSVInputAdapterSpec(source, "TypeC");
 
-            EPService = EPServiceProviderManager.GetProvider("testPlayFromInputStream", MakeConfig("TypeC"));
+            EPService = EPServiceProviderManager.GetProvider(_container, 
+                "testPlayFromInputStream", MakeConfig("TypeC"));
             EPService.Initialize();
             InputAdapter feed = new CSVInputAdapter(EPService, spec);
 
@@ -105,15 +115,15 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestAppThread()
         {
-            EPService = EPServiceProviderManager.GetProvider("testExistingTypeNoOptions", MakeConfig("TypeA"));
+            EPService = EPServiceProviderManager.GetProvider(_container,
+                "testExistingTypeNoOptions", MakeConfig("TypeA"));
             EPService.Initialize();
 
             EPStatement stmt = EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeA#length(100)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
-            var spec = new CSVInputAdapterSpec(new AdapterInputSource(CSV_FILENAME_ONELINE_TRADE),
-                                               "TypeA");
+            var spec = new CSVInputAdapterSpec(new AdapterInputSource(CSV_FILENAME_ONELINE_TRADE), "TypeA");
             spec.EventsPerSec = 1000;
 
             InputAdapter inputAdapter = new CSVInputAdapter(EPService, spec);
@@ -135,11 +145,11 @@ namespace com.espertech.esperio.regression.adapter
             tradeProps.Put("symbol", typeof (String));
             tradeProps.Put("notional", typeof (double?));
 
-            var config = new Configuration();
+            var config = new Configuration(_container);
             config.AddEventType("TradeEvent", tradeProps);
             config.AddEventType("PriceEvent", priceProps);
 
-            EPService = EPServiceProviderManager.GetProvider("testCoordinated", config);
+            EPService = EPServiceProviderManager.GetProvider(_container, "testCoordinated", config);
             EPService.Initialize();
             EPService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
             EPService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
@@ -202,10 +212,10 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestDynamicType()
         {
-            var spec = new CSVInputAdapterSpec(new AdapterInputSource(CSV_FILENAME_ONELINE_TRADE),
-                                               "TypeB");
+            var spec = new CSVInputAdapterSpec(
+                new AdapterInputSource(CSV_FILENAME_ONELINE_TRADE), "TypeB");
 
-            var config = new Configuration();
+            var config = new Configuration(_container);
             config.EngineDefaults.Threading.IsInternalTimerEnabled = false;
             EPService = EPServiceProviderManager.GetDefaultProvider(config);
             EPService.Initialize();
@@ -231,7 +241,8 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestEngineThread1000PerSec()
         {
-            EPService = EPServiceProviderManager.GetProvider("testExistingTypeNoOptions", MakeConfig("TypeA"));
+            EPService = EPServiceProviderManager.GetProvider(
+                _container, "testExistingTypeNoOptions", MakeConfig("TypeA"));
             EPService.Initialize();
 
             EPStatement stmt =
@@ -239,8 +250,8 @@ namespace com.espertech.esperio.regression.adapter
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
-            var spec = new CSVInputAdapterSpec(new AdapterInputSource(CSV_FILENAME_ONELINE_TRADE),
-                                               "TypeA");
+            var spec = new CSVInputAdapterSpec(
+                new AdapterInputSource(CSV_FILENAME_ONELINE_TRADE), "TypeA");
             spec.EventsPerSec = 1000;
             spec.IsUsingEngineThread = true;
 
@@ -257,7 +268,8 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestEngineThread1PerSec()
         {
-            EPService = EPServiceProviderManager.GetProvider("testExistingTypeNoOptions", MakeConfig("TypeA"));
+            EPService = EPServiceProviderManager.GetProvider(
+                _container, "testExistingTypeNoOptions", MakeConfig("TypeA"));
             EPService.Initialize();
 
             EPStatement stmt = EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeA#length(100)");
@@ -288,7 +300,8 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestExistingTypeNoOptions()
         {
-            EPService = EPServiceProviderManager.GetProvider("testExistingTypeNoOptions", MakeConfig("TypeA", _useBean));
+            EPService = EPServiceProviderManager.GetProvider(
+                _container, "testExistingTypeNoOptions", MakeConfig("TypeA", _useBean));
             EPService.Initialize();
 
             EPStatement stmt = EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeA#length(100)");

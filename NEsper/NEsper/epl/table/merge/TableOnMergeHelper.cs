@@ -118,6 +118,7 @@ namespace com.espertech.esper.epl.table.merge
             var exprEvaluatorContext = new ExprEvaluatorContextStatement(statementContext, false);
             var insertHelper =
                 SelectExprProcessorFactory.GetProcessor(
+                    statementContext.Container,
                     Collections.SingletonList(selectClauseNumber),
                     selectNoWildcard.ToArray(), false, insertIntoDesc, insertIntoTargetType, null, streamTypeService,
                     statementContext.EventAdapterService, statementContext.StatementResultService,

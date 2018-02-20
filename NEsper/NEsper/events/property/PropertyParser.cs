@@ -14,6 +14,8 @@ using System.Linq;
 using Antlr4.Runtime;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.generated;
@@ -30,9 +32,8 @@ namespace com.espertech.esper.events.property
     {
         private static readonly ILog Log =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private static readonly ILockable StaticLock =
-            LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private static readonly ILockable StaticLock = new MonitorSlimLock(60000);
         private static ISet<string> _keywordCache;
 
         public static Property ParseAndWalk(string property, bool isRootedDynamic)

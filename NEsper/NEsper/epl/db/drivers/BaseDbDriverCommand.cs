@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.OleDb;
 using System.Text;
 
 using com.espertech.esper.client;
@@ -449,7 +448,7 @@ namespace com.espertech.esper.epl.db.drivers
         protected virtual String GetColumnSqlType( DataRow schemaDataRow )
         {
             var providerType = (Int32)schemaDataRow["ProviderType"];
-            var providerTypeAsEnum = (OleDbType) providerType;
+            var providerTypeAsEnum = (DbType) providerType;
             var sqlTypeName = EnumHelper.GetName(providerTypeAsEnum);
             return sqlTypeName;
         }

@@ -9,6 +9,8 @@
 
 using System;
 using System.Data.Common;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 
 namespace com.espertech.esper.epl.db.drivers
 {
@@ -19,18 +21,18 @@ namespace com.espertech.esper.epl.db.drivers
     [Serializable]
     public class DbDriverMySQL : BaseDbDriver
     {
-        private static readonly DbProviderFactory dbProviderFactory;
+        private readonly DbProviderFactory _dbProviderFactory;
         
         /// <summary>
         /// Initializes the <see cref="DbDriverMySQL"/> class.
         /// </summary>
-        static DbDriverMySQL()
+        public DbDriverMySQL(DbProviderFactoryManager dbProviderFactoryManager)
         {
             // MySQL needs to be installed on the host box in order for us
             // to make use of it.  Additionally we don't want to bind anything
             // to the library that does not need to artifically be bound.
 
-            dbProviderFactory = DbProviderFactories.GetFactory("MySql.Data.MySqlClient");
+            _dbProviderFactory = dbProviderFactoryManager.GetFactory("MySql.Data.MySqlClient");
         }
 
         /// <summary>
@@ -39,7 +41,7 @@ namespace com.espertech.esper.epl.db.drivers
         /// <returns></returns>
         public override DbConnection CreateConnection()
         {
-            DbConnection dbConnection = dbProviderFactory.CreateConnection();
+            DbConnection dbConnection = _dbProviderFactory.CreateConnection();
             dbConnection.ConnectionString = ConnectionString;
             dbConnection.Open();
             return dbConnection;
@@ -71,7 +73,7 @@ namespace com.espertech.esper.epl.db.drivers
         /// <returns></returns>
         protected override DbConnectionStringBuilder CreateConnectionStringBuilder()
         {
-            return dbProviderFactory.CreateConnectionStringBuilder();
+            return _dbProviderFactory.CreateConnectionStringBuilder();
         }
     }
 }

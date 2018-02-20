@@ -155,7 +155,7 @@ namespace com.espertech.esper.regression.epl.other
             try {
                 epService.EPAdministrator.CreateEPL(eplInvalidEPL);
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 // Expected exception
             }
         }

@@ -16,6 +16,7 @@ using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.util;
@@ -33,8 +34,6 @@ namespace com.espertech.esper.epl.expression.time
         , ExprTimePeriod
         , ExprEvaluator
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         private readonly TimeZoneInfo _timeZone;
         private readonly bool _hasYear;
         private readonly bool _hasMonth;
@@ -47,10 +46,10 @@ namespace com.espertech.esper.epl.expression.time
         private readonly bool _hasMicrosecond;
         private readonly TimeAbacus _timeAbacus;
         private bool _hasVariable;
-        [NonSerialized]
-        private ExprEvaluator[] _evaluators;
-        [NonSerialized]
-        private TimePeriodAdder[] _adders;
+
+        [NonSerialized] private ExprEvaluator[] _evaluators;
+        [NonSerialized] private TimePeriodAdder[] _adders;
+        [NonSerialized] private ILockManager _lockManager;
 
         /// <summary>
         /// Ctor.
@@ -77,8 +76,10 @@ namespace com.espertech.esper.epl.expression.time
             bool hasSecond,
             bool hasMillisecond,
             bool hasMicrosecond,
-            TimeAbacus timeAbacus)
+            TimeAbacus timeAbacus,
+            ILockManager lockManager)
         {
+            _lockManager = lockManager;
             _timeZone = timeZone;
             _hasYear = hasYear;
             _hasMonth = hasMonth;
@@ -108,7 +109,8 @@ namespace com.espertech.esper.epl.expression.time
                 {
                     values[i] = _evaluators[i].Evaluate(evaluateParams).AsInt();
                 }
-                return new ExprTimePeriodEvalDeltaConstGivenDtxAdd(_adders, values, _timeZone, _timeAbacus);
+                return new ExprTimePeriodEvalDeltaConstGivenDtxAdd(
+                    _lockManager, _adders, values, _timeZone, _timeAbacus);
             }
         }
 

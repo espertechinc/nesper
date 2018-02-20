@@ -141,26 +141,29 @@ namespace com.espertech.esper.epl.named
             // Get select expr processor
             var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(statementContext.StatementName, statementContext.StatementEventTypeRef);
             var exprEvaluatorContext = new ExprEvaluatorContextStatement(statementContext, false);
-            var insertHelper = SelectExprProcessorFactory.GetProcessor(Collections.SingletonList(selectClauseNumber),
-                    selectNoWildcard.ToArray(), false, insertIntoDesc, null, null, streamTypeService,
-                    statementContext.EventAdapterService,
-                    statementContext.StatementResultService, 
-                    statementContext.ValueAddEventService, 
-                    selectExprEventTypeRegistry,
-                    statementContext.EngineImportService,
-                    exprEvaluatorContext, 
-                    statementContext.VariableService,
-                    statementContext.ScriptingService,
-                    statementContext.TableService,
-                    statementContext.TimeProvider, 
-                    statementContext.EngineURI, 
-                    statementContext.StatementId, 
-                    statementContext.StatementName, 
-                    statementContext.Annotations,
-                    statementContext.ContextDescriptor, 
-                    statementContext.ConfigSnapshot, null, 
-                    statementContext.NamedWindowMgmtService, null, null,
-                    statementContext.StatementExtensionServicesContext);
+                    var insertHelper = SelectExprProcessorFactory.GetProcessor(
+                        statementContext.Container,
+                        Collections.SingletonList(selectClauseNumber),
+                        selectNoWildcard.ToArray(), false,
+                        insertIntoDesc, null, null, streamTypeService,
+                        statementContext.EventAdapterService,
+                        statementContext.StatementResultService,
+                        statementContext.ValueAddEventService,
+                        selectExprEventTypeRegistry,
+                        statementContext.EngineImportService,
+                        exprEvaluatorContext,
+                        statementContext.VariableService,
+                        statementContext.ScriptingService,
+                        statementContext.TableService,
+                        statementContext.TimeProvider,
+                        statementContext.EngineURI,
+                        statementContext.StatementId,
+                        statementContext.StatementName,
+                        statementContext.Annotations,
+                        statementContext.ContextDescriptor,
+                        statementContext.ConfigSnapshot, null,
+                        statementContext.NamedWindowMgmtService, null, null,
+                        statementContext.StatementExtensionServicesContext);
             var filterEval = desc.OptionalWhereClause == null ? null : desc.OptionalWhereClause.ExprEvaluator;
     
             var routerToUser = streamName.Equals(namedWindowName) ? null : internalEventRouter;

@@ -7,13 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.funcs;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
-
-using com.espertech.esper.compat.logging;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -23,6 +23,14 @@ namespace com.espertech.esper.epl.expression.ops
     [TestFixture]
     public class TestExprCaseNode 
     {
+        private IContainer _container;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _container = SupportContainer.Instance;
+        }
+
         [Test]
         public void TestGetType()
         {
@@ -41,10 +49,10 @@ namespace com.espertech.esper.epl.expression.ops
         public void TestValidate()
         {
             ExprCaseNode caseNode = SupportExprNodeFactory.MakeCaseSyntax1Node();
-            caseNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            caseNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
     
             caseNode = SupportExprNodeFactory.MakeCaseSyntax2Node();
-            caseNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            caseNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
     
             // No subnodes: Exception is thrown.
             TryInvalidValidate(new ExprCaseNode(false));
@@ -71,14 +79,14 @@ namespace com.espertech.esper.epl.expression.ops
         public void TestEvaluate()
         {
             ExprCaseNode caseNode = SupportExprNodeFactory.MakeCaseSyntax1Node();
-            caseNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            caseNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
     
             Assert.AreEqual("a", caseNode.Evaluate(new EvaluateParams(MakeEvent(1), false, null)));
             Assert.AreEqual("b", caseNode.Evaluate(new EvaluateParams(MakeEvent(2), false, null)));
             Assert.AreEqual("c", caseNode.Evaluate(new EvaluateParams(MakeEvent(3), false, null)));
     
             caseNode = SupportExprNodeFactory.MakeCaseSyntax2Node();
-            caseNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            caseNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
     
             Assert.AreEqual("a", caseNode.Evaluate(new EvaluateParams(MakeEvent(1), false, null)));
             Assert.AreEqual("b", caseNode.Evaluate(new EvaluateParams(MakeEvent(2), false, null)));
@@ -113,7 +121,7 @@ namespace com.espertech.esper.epl.expression.ops
         private void TryInvalidValidate(ExprCaseNode exprCaseNode)
         {
             try {
-                exprCaseNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                exprCaseNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -128,7 +136,5 @@ namespace com.espertech.esper.epl.expression.ops
             theEvent.IntPrimitive = intPrimitive;
             return new EventBean[] {SupportEventBeanFactory.CreateObject(theEvent)};
         }
-    
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

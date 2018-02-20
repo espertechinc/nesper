@@ -16,7 +16,10 @@ namespace com.espertech.esper.metrics.instrumentation
 {
     public class InstrumentationHelper
     {
-        public const bool ENABLED = true;
+        //public const bool ENABLED = true;
+
+        public static bool ENABLED { get; set; }
+
         public const bool ASSERTIONENABLED = false;
 
         private const string PROVIDER_PROPERTY = "instrumentation_provider";

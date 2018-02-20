@@ -10,8 +10,9 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportunit.bean;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.linq
@@ -20,11 +21,14 @@ namespace com.espertech.esper.linq
     public class TestLinqWinViews
     {
         private EPServiceProvider _serviceProvider;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
-            Configuration configuration = new Configuration();
+            _container = SupportContainer.Instance;
+
+            Configuration configuration = new Configuration(_container);
             configuration.AddEventType<SupportBean>();
             configuration.AddEventType<SupportPriceEvent>();
             configuration.AddEventType<SupportTradeEvent>();

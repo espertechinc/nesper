@@ -7,10 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -20,11 +21,13 @@ namespace com.espertech.esper.epl.expression.ops
     [TestFixture]
     public class TestExprArrayNode
     {
-        #region Setup/Teardown
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Instance;
+
             _arrayNodes = new ExprArrayNode[4];
             _arrayNodes[0] = new ExprArrayNode();
 
@@ -45,12 +48,10 @@ namespace com.espertech.esper.epl.expression.ops
 
             for (int i = 0; i < _arrayNodes.Length; i++)
             {
-                _arrayNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _arrayNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             }
         }
-
-        #endregion
-
+        
         private ExprArrayNode[] _arrayNodes;
 
         [Test]

@@ -14,12 +14,12 @@ using com.espertech.esper.client.dataflow;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.dataflow;
 using com.espertech.esper.supportregression.execution;
-
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.dataflow
@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.dataflow
                     "DefaultSupportCaptureOp(WordCountStream) {}";
             epService.EPAdministrator.CreateEPL(epl);
     
-            var future = new DefaultSupportCaptureOp<object>(1);
+            var future = new DefaultSupportCaptureOp<object>(1, SupportContainer.Instance.LockManager());
             var source = new MyLineFeedSource(Collections.List("Test this code", "Test line two").GetEnumerator());
     
             var options = new EPDataFlowInstantiationOptions()

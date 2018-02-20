@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFrameworks>net46;net471;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -33,16 +32,30 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
-    <DefineConstants>$(DefineConstants);NETFULL;NET40;</DefineConstants>
+    <NetFramework>true</NetFramework>
+    <DefineConstants>$(DefineConstants);NETFRAMEWORK;NET40;</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'=='net46'">
-    <DefineConstants>$(DefineConstants);NETFULL;NET46;</DefineConstants>
+    <NetFramework>true</NetFramework>
+    <DefineConstants>$(DefineConstants);NETFRAMEWORK;NET46;</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net471'">
+    <NetFramework>true</NetFramework>
+    <DefineConstants>$(DefineConstants);NETFRAMEWORK;NET471;</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <NetCore>true</NetCore>
     <DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(NetFramework)'!='true'">
+    <Compile Remove="epl\db\drivers\DbDriverODBC.cs" />
+    <Compile Remove="epl\db\drivers\DbDriverOleDb.cs" />
+    <Compile Remove="esper\util\EsperSectionHandler.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="client\InitializerTransform.xslt" />
@@ -59,5 +72,15 @@
     <PackageReference Include="XLR8.CGLib" Version="1.1.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.6.1" />
   </ItemGroup>
-
+  
+  <ItemGroup Condition="'$(NetCore)'=='true'">
+    <PackageReference Include="System.Data.Common" Version="4.3.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.2" />
+    <PackageReference Include="System.Configuration.Abstractions">
+      <Version>2.0.2.37</Version>
+    </PackageReference>
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(NetFramework)' == 'net471'">
+  </ItemGroup>
 </Project>

@@ -13,6 +13,7 @@ using System.Linq;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression.baseagg;
 using com.espertech.esper.epl.expression.core;
@@ -29,6 +30,7 @@ using com.espertech.esper.schedule;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl.parse;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.timer;
 using com.espertech.esper.type;
 using com.espertech.esper.util.support;
@@ -44,7 +46,15 @@ namespace com.espertech.esper.epl.parse
         private static string EXPRESSION = "select * from " +
                         CLASSNAME + "(string='a')#length(10)#lastevent() as win1," +
                         CLASSNAME + "(string='b')#length(10)#lastevent() as win2 ";
-    
+
+        private IContainer _container;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _container = SupportContainer.Instance;
+        }
+
         [Test]
         public void TestWalkGraph() {
             var expression = "create dataflow MyGraph MyOp((s0, s1) as ST1, s2) -> out1, out2 {}";
@@ -239,7 +249,12 @@ namespace com.espertech.esper.epl.parse
         [Test]
         public void TestWalkOnSet() 
         {
-            VariableService variableService = new VariableServiceImpl(0, new SchedulingServiceImpl(new TimeSourceServiceImpl()), SupportEventAdapterService.Service, null);
+            VariableService variableService = new VariableServiceImpl(
+                0, 
+                new SchedulingServiceImpl(new TimeSourceServiceImpl(), _container),
+                SupportEventAdapterService.Service, null,
+                _container.RWLockManager(),
+                _container.ThreadLocalManager());
             variableService.CreateNewVariable(null, "var1", typeof(long?).FullName, false, false, false, 100L, null);
             variableService.AllocateVariableState("var1", 0, null, false);
     
@@ -828,7 +843,7 @@ namespace com.espertech.esper.epl.parse
     
             var viewSpecs = walker.StatementSpec.StreamSpecs[0].ViewSpecs;
             var node = viewSpecs[0].ObjectParameters[0];
-            node.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            node.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             var intParams = (int?[])((ExprArrayNode)node).Evaluate(new EvaluateParams(null, true, null));
             Assert.AreEqual(10, intParams[0]);
             Assert.AreEqual(11, intParams[1]);
@@ -839,7 +854,7 @@ namespace com.espertech.esper.epl.parse
             walker = SupportParserHelper.ParseAndWalkEPL(text);
             viewSpecs = walker.StatementSpec.StreamSpecs[0].ViewSpecs;
             var param = viewSpecs[0].ObjectParameters[0];
-            param.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            param.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             var objParams = (object[])((ExprArrayNode)param).Evaluate(new EvaluateParams(null, true, null));
             Assert.AreEqual(false, objParams[0]);
             Assert.AreEqual(11.2, objParams[1]);
@@ -1415,7 +1430,7 @@ namespace com.espertech.esper.epl.parse
             Assert.AreEqual("time", viewSpec.ObjectName);
             Assert.AreEqual(1, viewSpec.ObjectParameters.Count);
             var exprNode = (ExprTimePeriod) viewSpec.ObjectParameters[0];
-            exprNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            exprNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             return exprNode.EvaluateAsSeconds(null, true, null);
         }
     
@@ -1440,7 +1455,7 @@ namespace com.espertech.esper.epl.parse
             var walker = SupportParserHelper.ParseAndWalkEPL(expression);
             var exprNode = walker.StatementSpec.FilterRootNode.ChildNodes[0];
             var bitWiseNode = (ExprBitWiseNode) (exprNode);
-            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, bitWiseNode, SupportExprValidationContextFactory.MakeEmpty());
+            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, bitWiseNode, SupportExprValidationContextFactory.MakeEmpty(_container));
             return bitWiseNode.Evaluate(new EvaluateParams(null, false, null));
         }
     
@@ -1450,7 +1465,7 @@ namespace com.espertech.esper.epl.parse
     
             var walker = SupportParserHelper.ParseAndWalkEPL(expression);
             var exprNode = (walker.StatementSpec.FilterRootNode.ChildNodes[0]);
-            exprNode = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, exprNode, SupportExprValidationContextFactory.MakeEmpty());
+            exprNode = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, exprNode, SupportExprValidationContextFactory.MakeEmpty(_container));
             return exprNode.ExprEvaluator.Evaluate(new EvaluateParams(null, false, null));
         }
     
@@ -1460,7 +1475,7 @@ namespace com.espertech.esper.epl.parse
     
             var walker = SupportParserHelper.ParseAndWalkEPL(expression);
             var filterExprNode = walker.StatementSpec.FilterRootNode;
-            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, filterExprNode, SupportExprValidationContextFactory.MakeEmpty());
+            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, filterExprNode, SupportExprValidationContextFactory.MakeEmpty(_container));
             return filterExprNode.ExprEvaluator.Evaluate(new EvaluateParams(null, false, null));
         }
     

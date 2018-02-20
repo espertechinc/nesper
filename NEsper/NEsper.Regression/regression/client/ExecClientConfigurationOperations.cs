@@ -6,16 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Xml;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
@@ -105,10 +102,10 @@ namespace com.espertech.esper.regression.client
                 domConfig.RootElementName = "RootAddedDOMXXX";
                 epService.EPAdministrator.Configuration.AddEventType("AddedDOMSecond", domConfig);
                 Assert.Fail();
-            } catch (ConfigurationException ex) {
+            } catch (ConfigurationException) {
                 // expected
             }
-    
+
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("AddedMapNameSecond", true);
         }
@@ -154,7 +151,7 @@ namespace com.espertech.esper.regression.client
                 mapProps.Put("XX", typeof(int));
                 epService.EPAdministrator.Configuration.AddEventType("AddedNameSecond", mapProps);
                 Assert.Fail();
-            } catch (ConfigurationException ex) {
+            } catch (ConfigurationException) {
                 // expected
             }
     
@@ -206,7 +203,7 @@ namespace com.espertech.esper.regression.client
                 mapProps.Put("XX", typeof(int).Name);
                 epService.EPAdministrator.Configuration.AddEventType("AddedNameSecond", mapProps);
                 Assert.Fail();
-            } catch (ConfigurationException ex) {
+            } catch (ConfigurationException) {
                 // expected
             }
     
@@ -250,7 +247,7 @@ namespace com.espertech.esper.regression.client
             try {
                 epService.EPAdministrator.Configuration.AddEventType("AddedNameSecond", typeof(SupportBean_A).Name);
                 Assert.Fail();
-            } catch (ConfigurationException ex) {
+            } catch (ConfigurationException) {
                 // expected
             }
     
@@ -293,7 +290,7 @@ namespace com.espertech.esper.regression.client
             try {
                 epService.EPAdministrator.Configuration.AddEventType("AddedNameSecond", typeof(SupportBean_A));
                 Assert.Fail();
-            } catch (ConfigurationException ex) {
+            } catch (ConfigurationException) {
                 // expected
             }
     
@@ -305,7 +302,7 @@ namespace com.espertech.esper.regression.client
             try {
                 epService.EPAdministrator.CreateEPL("select * from " + name);
                 Assert.Fail();
-            } catch (EPStatementException ex) {
+            } catch (EPStatementException) {
                 // expected
             }
         }

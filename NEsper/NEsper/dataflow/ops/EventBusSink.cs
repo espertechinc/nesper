@@ -13,7 +13,9 @@ using System.Xml.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.dataflow;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.dataflow.annotations;
@@ -34,8 +36,12 @@ namespace com.espertech.esper.dataflow.ops
         private EventBusCollector _eventBusCollector;
         private EventBeanAdapterFactory[] _adapterFactories;
 
-        private readonly IThreadLocal<EPDataFlowEventCollectorContext> _collectorDataTL =
-            ThreadLocalManager.Create<EPDataFlowEventCollectorContext>(() => null);
+        private readonly IThreadLocal<EPDataFlowEventCollectorContext> _collectorDataTL;
+
+        public EventBusSink(IThreadLocalManager threadLocalManager)
+        {
+            _collectorDataTL = threadLocalManager.Create<EPDataFlowEventCollectorContext>(() => null);
+        }
 
         public DataFlowOpInitializeResult Initialize(DataFlowOpInitializateContext context)
         {

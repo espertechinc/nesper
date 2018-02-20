@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 
@@ -22,20 +23,24 @@ namespace com.espertech.esper.regression.db
     public class TestDatabaseTimeout
     {
         private EPServiceProvider _epService;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
+            _container = ContainerExtensions.CreateDefaultContainer();
+
             var configDB = new ConfigurationDBRef();
             configDB.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative);
             configDB.ConnectionLifecycle = ConnectionLifecycleEnum.RETAIN;
 
-            Configuration configuration = new Configuration();
+            Configuration configuration = new Configuration(_container);
             configuration.AddDatabaseReference("MyDB", configDB);
             configuration.EngineDefaults.Threading.IsInternalTimerEnabled = false;
             configuration.EngineDefaults.ExceptionHandling.AddClass<MyExceptionHandlerFactory>();
 
-            _epService = EPServiceProviderManager.GetProvider("TestDatabaseTimeout", configuration);
+            _epService = EPServiceProviderManager.GetProvider(
+                _container, "TestDatabaseTimeout", configuration);
             _epService.Initialize();
         }
 

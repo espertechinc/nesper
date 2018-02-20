@@ -153,7 +153,8 @@ namespace com.espertech.esper.epl.db
                 invocationInputParameters,
                 dbPollStrategy,
                 dataCache,
-                eventType);
+                eventType,
+                statementContext.ThreadLocalManager);
         }
 
         /// <summary>

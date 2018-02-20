@@ -14,6 +14,8 @@ using System.Xml;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.core.service;
 using com.espertech.esper.events;
 using com.espertech.esper.events.arr;
 using com.espertech.esper.events.bean;
@@ -26,7 +28,7 @@ namespace com.espertech.esper.dataflow.util
     {
         public static readonly String CLASSLOADER_SCHEMA_URI = "regression/threeProperties.xsd";
 
-        public static void AddTypeConfiguration(EPServiceProvider epService)
+        public static void AddTypeConfiguration(EPServiceProviderSPI epService)
         {
             var propertyTypes = new LinkedHashMap<String, Object>();
             propertyTypes.Put("myDouble", typeof(Double));
@@ -35,7 +37,8 @@ namespace com.espertech.esper.dataflow.util
             epService.EPAdministrator.Configuration.AddEventType("MyMapEvent", propertyTypes);
             epService.EPAdministrator.Configuration.AddEventType("MyOAEvent", "myDouble,myInt,myString".Split(','), new Object[] { typeof(double), typeof(int), typeof(string) });
             epService.EPAdministrator.Configuration.AddEventType(typeof(MyEvent));
-            epService.EPAdministrator.Configuration.AddEventType("MyXMLEvent", GetConfig());
+            epService.EPAdministrator.Configuration.AddEventType("MyXMLEvent", GetConfig(
+                epService.ServicesContext.ResourceManager));
         }
 
         public static SendableEvent[] XMLEventsSendable
@@ -114,11 +117,11 @@ namespace com.espertech.esper.dataflow.util
             get { return new Object[] {new MyEvent(1.1d, 1, "one"), new MyEvent(2.2d, 2, "two")}; }
         }
 
-        private static ConfigurationEventTypeXMLDOM GetConfig()
+        private static ConfigurationEventTypeXMLDOM GetConfig(IResourceManager resourceManager)
         {
             ConfigurationEventTypeXMLDOM eventTypeMeta = new ConfigurationEventTypeXMLDOM();
             eventTypeMeta.RootElementName = "rootelement";
-            var schemaStream = ResourceManager.GetResourceAsStream(CLASSLOADER_SCHEMA_URI);
+            var schemaStream = resourceManager.GetResourceAsStream(CLASSLOADER_SCHEMA_URI);
             if (schemaStream == null)
             {
                 throw new IllegalStateException("Failed to load schema '" + CLASSLOADER_SCHEMA_URI + "'");

@@ -9,9 +9,11 @@
 using System;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.type;
 using com.espertech.esper.util.support;
 
@@ -23,10 +25,12 @@ namespace com.espertech.esper.epl.expression.ops
     public class TestExprRelationalOpNode 
     {
         private ExprRelationalOpNode _opNode;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Instance;
             _opNode = new ExprRelationalOpNodeImpl(RelationalOpEnum.GE);
         }
     
@@ -44,14 +48,14 @@ namespace com.espertech.esper.epl.expression.ops
             // Test success
             _opNode.AddChildNode(new SupportExprNode(typeof(String)));
             _opNode.AddChildNode(new SupportExprNode(typeof(String)));
-            _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
     
             _opNode.SetChildNodes(new SupportExprNode(typeof(String)));
     
             // Test too few nodes under this node
             try
             {
-                _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (IllegalStateException ex)
@@ -63,7 +67,7 @@ namespace com.espertech.esper.epl.expression.ops
             _opNode.AddChildNode(new SupportExprNode(typeof(int)));
             try
             {
-                _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -96,7 +100,7 @@ namespace com.espertech.esper.epl.expression.ops
             SupportExprNode childTwo = new SupportExprNode("c");
             _opNode.AddChildNode(childOne);
             _opNode.AddChildNode(childTwo);
-            _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty());       // Type initialization
+            _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));       // Type initialization
 
             var eparams = new EvaluateParams(null, false, null);
 

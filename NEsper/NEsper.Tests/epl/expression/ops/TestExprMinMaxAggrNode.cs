@@ -7,11 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.methodagg;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.type;
 using com.espertech.esper.util.support;
 
@@ -23,10 +24,13 @@ namespace com.espertech.esper.epl.expression.ops
     {
         private ExprMinMaxAggrNode _maxNode;
         private ExprMinMaxAggrNode _minNode;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Instance;
+
             _maxNode = new ExprMinMaxAggrNode(false, MinMaxTypeEnum.MAX, false, false);
             _minNode = new ExprMinMaxAggrNode(false, MinMaxTypeEnum.MIN, false, false);
     
@@ -70,7 +74,7 @@ namespace com.espertech.esper.epl.expression.ops
             // Must have exactly 1 subnodes
             try
             {
-                _minNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _minNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -84,7 +88,8 @@ namespace com.espertech.esper.epl.expression.ops
             _minNode.AddChildNode(new SupportExprNode(typeof(int)));
             try
             {
-                _minNode.Validate(SupportExprValidationContextFactory.Make(new SupportStreamTypeSvc3Stream()));
+                _minNode.Validate(SupportExprValidationContextFactory.Make(
+                    _container, new SupportStreamTypeSvc3Stream()));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)

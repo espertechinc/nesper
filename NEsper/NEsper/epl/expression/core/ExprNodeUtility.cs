@@ -1009,6 +1009,7 @@ namespace com.espertech.esper.epl.expression.core
             }
 
             var validationContext = new ExprValidationContext(
+                statementContext.Container,
                 streamTypes, statementContext.EngineImportService, statementContext.StatementExtensionServicesContext,
                 null, statementContext.SchedulingService, statementContext.VariableService,
                 statementContext.TableService, new ExprEvaluatorContextStatement(statementContext, false),
@@ -1022,12 +1023,14 @@ namespace com.espertech.esper.epl.expression.core
         public static ExprValidationContext GetExprValidationContextStatementOnly(StatementContext statementContext)
         {
             return new ExprValidationContext(
+                statementContext.Container, 
                 new StreamTypeServiceImpl(statementContext.EngineURI, false), statementContext.EngineImportService,
                 statementContext.StatementExtensionServicesContext, null, statementContext.SchedulingService,
                 statementContext.VariableService, statementContext.TableService,
                 new ExprEvaluatorContextStatement(statementContext, false), statementContext.EventAdapterService,
                 statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,
-                statementContext.ContextDescriptor, statementContext.ScriptingService, false, false, false, false, null, false);
+                statementContext.ContextDescriptor, statementContext.ScriptingService,
+                false, false, false, false, null, false);
         }
 
         public static ISet<string> GetPropertyNamesIfAllProps(ExprNode[] expressions)
@@ -1273,7 +1276,9 @@ namespace com.espertech.esper.epl.expression.core
             try
             {
                 ExprEvaluatorContextStatement evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
-                ExprValidationContext validationContext = new ExprValidationContext(typeService, 
+                ExprValidationContext validationContext = new ExprValidationContext(
+                    statementContext.Container,
+                    typeService, 
                     statementContext.EngineImportService, 
                     statementContext.StatementExtensionServicesContext, null, 
                     statementContext.TimeProvider, 
@@ -1752,10 +1757,19 @@ namespace com.espertech.esper.epl.expression.core
             foreach (var parameters in scheduleSpecExpressionList)
             {
                 var validationContext = new ExprValidationContext(
+                    context.Container,
                     new StreamTypeServiceImpl(context.EngineURI, false), context.EngineImportService,
-                    context.StatementExtensionServicesContext, null, context.SchedulingService, context.VariableService,
-                    context.TableService, evaluatorContextStmt, context.EventAdapterService, context.StatementName,
-                    context.StatementId, context.Annotations, context.ContextDescriptor, context.ScriptingService,
+                    context.StatementExtensionServicesContext, null, 
+                    context.SchedulingService,
+                    context.VariableService,
+                    context.TableService,
+                    evaluatorContextStmt,
+                    context.EventAdapterService,
+                    context.StatementName,
+                    context.StatementId, 
+                    context.Annotations,
+                    context.ContextDescriptor, 
+                    context.ScriptingService,
                     false, false, allowBindingConsumption, false, null, false);
                 var node = GetValidatedSubtree(origin, parameters, validationContext);
                 expressions[count++] = node.ExprEvaluator;

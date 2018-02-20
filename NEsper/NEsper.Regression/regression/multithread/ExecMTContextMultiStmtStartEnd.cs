@@ -12,7 +12,7 @@ using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.multithread
@@ -25,24 +25,25 @@ namespace com.espertech.esper.regression.multithread
         }
     
         private void RunAssertion(ConfigurationEngineDefaults.FilterServiceProfile profile) {
-            var configuration = new Configuration();
+            var configuration = new Configuration(SupportContainer.Instance);
             configuration.EngineDefaults.Execution.FilterServiceProfile = profile;
-            string engineURI = this.GetType().Name + "_" + profile;
-            EPServiceProvider engine = EPServiceProviderManager.GetProvider(engineURI, configuration);
+            var engineURI = this.GetType().Name + "_" + profile;
+            var engine = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, engineURI, configuration);
             engine.EPAdministrator.Configuration.AddEventType(typeof(MyEvent));
     
             engine.EPAdministrator.CreateEPL("create context MyContext start @now end after 100 milliseconds");
             var listeners = new SupportUpdateListener[100];
-            for (int i = 0; i < 100; i++) {
+            for (var i = 0; i < 100; i++) {
                 listeners[i] = new SupportUpdateListener();
-                EPStatement stmt = engine.EPAdministrator.CreateEPL("context MyContext select fieldOne, count(*) as cnt from MyEvent " +
+                var stmt = engine.EPAdministrator.CreateEPL("context MyContext select fieldOne, count(*) as cnt from MyEvent " +
                         "group by fieldOne output last when terminated");
                 stmt.Events += listeners[i].Update;
             }
     
-            int eventCount = 100000; // keep this divisible by 1000
-            for (int i = 0; i < eventCount; i++) {
-                string group = Convert.ToString(eventCount % 1000);
+            var eventCount = 100000; // keep this divisible by 1000
+            for (var i = 0; i < eventCount; i++) {
+                var group = Convert.ToString(eventCount % 1000);
                 engine.EPRuntime.SendEvent(new MyEvent(Convert.ToString(i), group));
             }
     
@@ -53,12 +54,12 @@ namespace com.espertech.esper.regression.multithread
         }
     
         private void AssertReceived(int eventCount, SupportUpdateListener[] listeners) {
-            foreach (SupportUpdateListener listener in listeners) {
-                EventBean[] outputEvents = listener.GetNewDataListFlattened();
+            foreach (var listener in listeners) {
+                var outputEvents = listener.GetNewDataListFlattened();
                 long total = 0;
     
-                foreach (EventBean @out in outputEvents) {
-                    long cnt = (long) @out.Get("cnt");
+                foreach (var @out in outputEvents) {
+                    var cnt = (long) @out.Get("cnt");
                     total += cnt;
                 }
     

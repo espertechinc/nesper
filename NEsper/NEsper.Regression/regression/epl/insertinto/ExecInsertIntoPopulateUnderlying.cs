@@ -9,23 +9,24 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
+
 using Avro.Generic;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util;
-using NEsper.Avro.Extensions;
-using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
-// using static org.apache.avro.SchemaBuilder.record;
+using NEsper.Avro.Extensions;
+
+using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
 using NUnit.Framework;
 
@@ -297,7 +298,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             try {
                 epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
                 Assert.Fail(); // rethrowing handler registered
-            } catch (Exception ex) {
+            } catch (Exception) {
                 // expected
             }
     
@@ -540,18 +541,18 @@ namespace com.espertech.esper.regression.epl.insertinto
             try {
                 Activator.CreateInstance(typeof(SupportBeanString));
                 Assert.Fail();
-            } catch (MissingMethodException ex) {
+            } catch (MissingMethodException) {
                 // expected
-            } catch (Exception ex) {
+            } catch (Exception) {
                 Assert.Fail();
             }
     
             try {
                 Activator.CreateInstance(typeof(SupportSensorEvent));
                 Assert.Fail();
-            } catch (MissingMethodException ex) {
+            } catch (MissingMethodException) {
                 // expected
-            } catch (Exception e) {
+            } catch (Exception) {
                 Assert.Fail();
             }
     

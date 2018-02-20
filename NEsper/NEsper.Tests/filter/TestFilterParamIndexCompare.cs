@@ -10,11 +10,13 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.filter;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.filter
@@ -27,10 +29,13 @@ namespace com.espertech.esper.filter
         private EventBean _testEventBean;
         private EventType _testEventType;
         private List<FilterHandle> _matchesList;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Instance;
+
             _testEvaluator = new SupportEventEvaluator();
             _testBean = new SupportBean();
             _testEventBean = SupportEventBeanFactory.CreateObject(_testBean);
@@ -142,7 +147,7 @@ namespace com.espertech.esper.filter
         }
     
         private FilterParamIndexCompare MakeOne(String field, FilterOperator op) {
-            return new FilterParamIndexCompare(MakeLookupable(field), ReaderWriterLockManager.CreateDefaultLock(), op);
+            return new FilterParamIndexCompare(MakeLookupable(field), _container.RWLockManager().CreateDefaultLock(), op);
         }
     
         private void VerifyDoublePrimitive(FilterParamIndexBase index, double testValue, int numExpected)

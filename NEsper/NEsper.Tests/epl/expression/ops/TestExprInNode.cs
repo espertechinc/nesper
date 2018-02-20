@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -23,10 +25,12 @@ namespace com.espertech.esper.epl.expression.ops
     {
         private ExprInNode _inNodeNormal;
         private ExprInNode _inNodeNotIn;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Instance;
             _inNodeNormal = SupportExprNodeFactory.MakeInSetNode(false);
             _inNodeNotIn = SupportExprNodeFactory.MakeInSetNode(true);
         }
@@ -42,7 +46,7 @@ namespace com.espertech.esper.epl.expression.ops
         public void TestValidate()
         {
             _inNodeNormal = SupportExprNodeFactory.MakeInSetNode(true);
-            _inNodeNormal.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _inNodeNormal.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
     
             // No subnodes: Exception is thrown.
             TryInvalidValidate(new ExprInNodeImpl(true));
@@ -105,7 +109,7 @@ namespace com.espertech.esper.epl.expression.ops
         private void TryInvalidValidate(ExprInNode exprInNode)
         {
             try {
-                exprInNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                exprInNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)

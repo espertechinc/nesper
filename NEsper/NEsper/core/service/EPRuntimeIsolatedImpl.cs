@@ -17,6 +17,7 @@ using com.espertech.esper.client.time;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
@@ -128,13 +129,13 @@ namespace com.espertech.esper.core.service
         {
             _services = svc;
             _unisolatedServices = unisolatedSvc;
-            _threadWorkQueue = new ThreadWorkQueue();
+            _threadWorkQueue = new ThreadWorkQueue(unisolatedSvc.ThreadLocalManager);
 
             _isSubselectPreeval = unisolatedSvc.EngineSettingsService.EngineSettings.Expression.IsSelfSubselectPreeval;
             _isPrioritized = unisolatedSvc.EngineSettingsService.EngineSettings.Execution.IsPrioritized;
             _isLatchStatementInsertStream = unisolatedSvc.EngineSettingsService.EngineSettings.Threading.IsInsertIntoDispatchPreserveOrder;
 
-            _threadLocalData = ThreadLocalManager.Create(CreateLocalData);
+            _threadLocalData = unisolatedSvc.ThreadLocalManager.Create(CreateLocalData);
         }
 
         public void SendEvent(Object theEvent)
@@ -858,12 +859,16 @@ namespace com.espertech.esper.core.service
 
         public EventSender GetEventSender(String eventTypeName)
         {
-            return _unisolatedServices.EventAdapterService.GetStaticTypeEventSender(this, eventTypeName, _unisolatedServices.ThreadingService);
+            return _unisolatedServices.EventAdapterService.GetStaticTypeEventSender(
+                this, eventTypeName,
+                _unisolatedServices.ThreadingService,
+                _unisolatedServices.LockManager);
         }
 
         public EventSender GetEventSender(Uri[] uri)
         {
-            return _unisolatedServices.EventAdapterService.GetDynamicTypeEventSender(this, uri, _unisolatedServices.ThreadingService);
+            return _unisolatedServices.EventAdapterService.GetDynamicTypeEventSender(
+                this, uri, _unisolatedServices.ThreadingService);
         }
 
         public void RouteEventBean(EventBean theEvent)

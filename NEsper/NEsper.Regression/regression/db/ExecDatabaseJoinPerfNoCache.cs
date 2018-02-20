@@ -19,8 +19,7 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
-
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.db
@@ -35,7 +34,8 @@ namespace com.espertech.esper.regression.db
             var configuration = SupportConfigFactory.GetConfiguration();
             configuration.AddDatabaseReference("MyDB", configDB);
     
-            var epServiceRetained = EPServiceProviderManager.GetProvider("TestDatabaseJoinRetained", configuration);
+            var epServiceRetained = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, "TestDatabaseJoinRetained", configuration);
             epServiceRetained.Initialize();
     
             configDB = new ConfigurationDBRef();
@@ -43,7 +43,8 @@ namespace com.espertech.esper.regression.db
             configDB.ConnectionLifecycle = ConnectionLifecycleEnum.POOLED;
             configuration = SupportConfigFactory.GetConfiguration();
             configuration.AddDatabaseReference("MyDB", configDB);
-            var epServicePooled = EPServiceProviderManager.GetProvider("TestDatabaseJoinPooled", configuration);
+            var epServicePooled = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, "TestDatabaseJoinPooled", configuration);
             epServicePooled.Initialize();
     
             RunAssertion100EventsRetained(epServiceRetained);

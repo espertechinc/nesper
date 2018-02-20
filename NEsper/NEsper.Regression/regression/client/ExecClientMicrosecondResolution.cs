@@ -31,14 +31,17 @@ namespace com.espertech.esper.regression.client
             config.EngineDefaults.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
     
             try {
-                EPServiceProviderManager.GetProvider(this.GetType().Name, config).Initialize();
+                EPServiceProviderManager
+                    .GetProvider(SupportContainer.Instance, this.GetType().Name, config)
+                    .Initialize();
                 Assert.Fail();
             } catch (ConfigurationException ex) {
                 SupportMessageAssertUtil.AssertMessage(ex, "Internal timer requires millisecond time resolution");
             }
     
             config.EngineDefaults.Threading.IsInternalTimerEnabled = false;
-            EPServiceProvider epService = EPServiceProviderManager.GetProvider(this.GetType().Name, config);
+            EPServiceProvider epService = EPServiceProviderManager
+                .GetProvider(SupportContainer.Instance, this.GetType().Name, config);
     
             try {
                 epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_INTERNAL));

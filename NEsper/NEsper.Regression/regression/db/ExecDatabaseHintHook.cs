@@ -9,6 +9,7 @@
 using System;
 using System.Data;
 using com.espertech.esper.client;
+
 using com.espertech.esper.client.hook;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
@@ -16,7 +17,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.db;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
-using Castle.MicroKernel.Registration;
 
 using NUnit.Framework;
 

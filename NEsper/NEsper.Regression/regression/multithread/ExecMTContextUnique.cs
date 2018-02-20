@@ -13,10 +13,11 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.multithread
@@ -89,7 +90,7 @@ namespace com.espertech.esper.regression.multithread
     
         public class MyUpdateListener
         {
-            private readonly ILockable _lock = LockManager.CreateDefaultLock();
+            private readonly ILockable _lock = SupportContainer.Instance.LockManager().CreateDefaultLock();
 
             public void Update(object sender, UpdateEventArgs args) 
             {

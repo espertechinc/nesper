@@ -12,13 +12,14 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.dataflow;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.core.service;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.dataflow;
 using com.espertech.esper.supportregression.execution;
-
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.dataflow
@@ -56,7 +57,7 @@ namespace com.espertech.esper.regression.dataflow
         }
     
         private void RunAssertionAllTypes(EPServiceProvider epService) {
-            DefaultSupportGraphEventUtil.AddTypeConfiguration(epService);
+            DefaultSupportGraphEventUtil.AddTypeConfiguration((EPServiceProviderSPI) epService);
     
             RunAssertionAllTypes(epService, "MyXMLEvent", DefaultSupportGraphEventUtil.XMLEvents);
             RunAssertionAllTypes(epService, "MyOAEvent", DefaultSupportGraphEventUtil.OAEvents);
@@ -124,7 +125,7 @@ namespace com.espertech.esper.regression.dataflow
             EPStatement stmtGraph = epService.EPAdministrator.CreateEPL(graph);
     
             var source = new DefaultSupportSourceOp(events);
-            var capture = new DefaultSupportCaptureOp(2);
+            var capture = new DefaultSupportCaptureOp(2, SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions();
             options.SetDataFlowInstanceUserObject("myuserobject");
             options.SetDataFlowInstanceId("myinstanceid");

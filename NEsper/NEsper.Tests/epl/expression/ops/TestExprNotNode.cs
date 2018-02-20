@@ -9,9 +9,11 @@
 using System;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.funcs;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.type;
 using com.espertech.esper.util.support;
 
@@ -23,10 +25,12 @@ namespace com.espertech.esper.epl.expression.ops
     public class TestExprNotNode 
     {
         private ExprNotNode _notNode;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Instance;
             _notNode = new ExprNotNode();
         }
     
@@ -42,7 +46,7 @@ namespace com.espertech.esper.epl.expression.ops
             // fails with zero expressions
             try
             {
-                _notNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _notNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -55,7 +59,7 @@ namespace com.espertech.esper.epl.expression.ops
             _notNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
             try
             {
-                _notNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _notNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -68,7 +72,7 @@ namespace com.espertech.esper.epl.expression.ops
             _notNode.AddChildNode(new SupportExprNode(typeof(string)));
             try
             {
-                _notNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _notNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -79,7 +83,7 @@ namespace com.espertech.esper.epl.expression.ops
             // validates
             _notNode = new ExprNotNode();
             _notNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
-            _notNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _notNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
         }
     
         [Test]

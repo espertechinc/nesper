@@ -39,11 +39,12 @@ namespace com.espertech.esper.regression.multithread
             _executorService = Executors.NewCachedThreadPool();
             _noActionUpdateListener = new NoActionUpdateListener();
     
-            var epConfig = new Configuration();
+            var epConfig = new Configuration(SupportContainer.Instance);
             epConfig.AddEventType<SupportBean>();
             epConfig.EngineDefaults.Threading.InsertIntoDispatchLocking = ConfigurationEngineDefaults.ThreadingConfig.Locking.SUSPEND;
     
-            EPServiceProvider epServiceProvider = EPServiceProviderManager.GetProvider(this.GetType().Name, epConfig);
+            EPServiceProvider epServiceProvider = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, this.GetType().Name, epConfig);
             epServiceProvider.Initialize();
     
             _epAdministrator = epServiceProvider.EPAdministrator;

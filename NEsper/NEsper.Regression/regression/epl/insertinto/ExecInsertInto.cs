@@ -182,7 +182,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             try {
                 epService.EPAdministrator.CreateEPL(stmtText);
                 Assert.Fail();
-            } catch (EPStatementException ex) {
+            } catch (EPStatementException) {
                 // Expected
             }
     
@@ -226,7 +226,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             try {
                 epService.EPAdministrator.CreateEPL(stmtText);
                 Assert.Fail();
-            } catch (EPStatementException ex) {
+            } catch (EPStatementException) {
                 // Expected
             }
         }

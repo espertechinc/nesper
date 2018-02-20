@@ -8,6 +8,7 @@
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
@@ -17,7 +18,7 @@ using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.epl.core
@@ -28,18 +29,29 @@ namespace com.espertech.esper.epl.core
         private ResultSetProcessorRowPerGroup _processor;
         private SupportAggregationService _supportAggregationService;
         private AgentInstanceContext _agentInstanceContext;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            _agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
+            _container = SupportContainer.Instance;
+            _agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext(_container);
     
-            var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry("abc", new StatementEventTypeRefImpl());
+            var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(
+                "abc", new StatementEventTypeRefImpl(_container.RWLockManager()));
             var factory = new SelectExprProcessorHelper(
-                Collections.GetEmptyList<int>(), SupportSelectExprFactory.MakeSelectListFromIdent("TheString", "s0"),
-                Collections.GetEmptyList<SelectExprStreamDesc>(), null, null, false, new SupportStreamTypeSvc1Stream(),
-                SupportEventAdapterService.Service, null, selectExprEventTypeRegistry, _agentInstanceContext.StatementContext.EngineImportService,
-                1, "stmtname", null, new Configuration(), null, new TableServiceImpl(), null);
+                Collections.GetEmptyList<int>(),
+                SupportSelectExprFactory.MakeSelectListFromIdent("TheString", "s0"),
+                Collections.GetEmptyList<SelectExprStreamDesc>(), 
+                null, null, false,
+                new SupportStreamTypeSvc1Stream(),
+                SupportEventAdapterService.Service, null, 
+                selectExprEventTypeRegistry, 
+                _agentInstanceContext.StatementContext.EngineImportService,
+                1, "stmtname", null, 
+                new Configuration(_container), null, 
+                new TableServiceImpl(_container),
+                null);
             var selectProcessor = factory.Evaluator;
             _supportAggregationService = new SupportAggregationService();
     

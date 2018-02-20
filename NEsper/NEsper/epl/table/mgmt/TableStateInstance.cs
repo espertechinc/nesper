@@ -9,6 +9,8 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.access;
@@ -28,7 +30,7 @@ namespace com.espertech.esper.epl.table.mgmt
 	    protected readonly TableMetadata _tableMetadata;
 	    private readonly AgentInstanceContext _agentInstanceContext;
 
-	    private readonly IReaderWriterLock _tableLevelRWLock = ReaderWriterLockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly IReaderWriterLock _tableLevelRWLock;
 	    protected readonly EventTableIndexRepository _indexRepository;
 
 	    public abstract IEnumerable<EventBean> IterableTableScan { get; }
@@ -60,9 +62,13 @@ namespace com.espertech.esper.epl.table.mgmt
 	        AddEvent(oa);
 	    }
 
-	    protected TableStateInstance(TableMetadata tableMetadata, AgentInstanceContext agentInstanceContext)
+	    protected TableStateInstance(
+	        TableMetadata tableMetadata, 
+	        AgentInstanceContext agentInstanceContext,
+	        IReaderWriterLockManager rwLockManager)
         {
-	        this._tableMetadata = tableMetadata;
+            this._tableLevelRWLock = rwLockManager.CreateLock(GetType());
+            this._tableMetadata = tableMetadata;
 	        this._agentInstanceContext = agentInstanceContext;
             this._indexRepository = new EventTableIndexRepository(tableMetadata.EventTableIndexMetadataRepo);
         }

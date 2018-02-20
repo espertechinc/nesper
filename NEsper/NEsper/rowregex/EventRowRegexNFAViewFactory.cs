@@ -162,6 +162,7 @@ namespace com.espertech.esper.rowregex
 
 	            var exprNodeResult = HandlePreviousFunctions(defineItem.Expression);
 	            var validationContext = new ExprValidationContext(
+	                statementContext.Container,
 	                typeServiceDefines,
                     statementContext.EngineImportService, 
                     statementContext.StatementExtensionServicesContext, null, 
@@ -260,6 +261,7 @@ namespace com.espertech.esper.rowregex
 	                var visitor = new ExprNodeIdentifierVisitor(true);
 
 	                var validationContext = new ExprValidationContext(
+	                    statementContext.Container,
 	                    typeServiceAggregateMeasure,
                         statementContext.EngineImportService, 
                         statementContext.StatementExtensionServicesContext, null,
@@ -282,6 +284,7 @@ namespace com.espertech.esper.rowregex
 	                    aggregateNode.SetChildNode(count++, new ExprNodeValidated(validated));
 	                }
 	                validationContext = new ExprValidationContext(
+                        statementContext.Container,
 	                    typeServiceMeasure,
                         statementContext.EngineImportService,
                         statementContext.StatementExtensionServicesContext, null,
@@ -394,13 +397,20 @@ namespace com.espertech.esper.rowregex
 	            var typeServicePartition = new StreamTypeServiceImpl(parentViewType, "MATCH_RECOGNIZE_PARTITION", true, statementContext.EngineURI);
 	            var validated = new List<ExprNode>();
 	            var validationContext = new ExprValidationContext(
+	                statementContext.Container,
 	                typeServicePartition,
                     statementContext.EngineImportService,
                     statementContext.StatementExtensionServicesContext, null,
-	                statementContext.SchedulingService, statementContext.VariableService, statementContext.TableService,
-	                exprEvaluatorContext, statementContext.EventAdapterService, statementContext.StatementName,
-	                statementContext.StatementId, statementContext.Annotations, statementContext.ContextDescriptor,
-                    statementContext.ScriptingService,
+	                statementContext.SchedulingService,
+	                statementContext.VariableService,
+	                statementContext.TableService,
+	                exprEvaluatorContext, 
+	                statementContext.EventAdapterService, 
+	                statementContext.StatementName,
+	                statementContext.StatementId,
+	                statementContext.Annotations,
+	                statementContext.ContextDescriptor,
+                    statementContext.ScriptingService, 
                     false, false, true, false, null, false);
 	            foreach (var partitionExpr in matchRecognizeSpec.PartitionByExpressions)
 	            {
@@ -414,13 +424,19 @@ namespace com.espertech.esper.rowregex
 	        {
 	            var validationContext =
 	                new ExprValidationContext(
+	                    statementContext.Container,
 	                    new StreamTypeServiceImpl(statementContext.EngineURI, false),
                         statementContext.EngineImportService,
                         statementContext.StatementExtensionServicesContext, null,
                         statementContext.SchedulingService,
-	                    statementContext.VariableService, statementContext.TableService, exprEvaluatorContext,
-	                    statementContext.EventAdapterService, statementContext.StatementName, statementContext.StatementId,
-	                    statementContext.Annotations, statementContext.ContextDescriptor, statementContext.ScriptingService,
+	                    statementContext.VariableService, 
+	                    statementContext.TableService, exprEvaluatorContext,
+	                    statementContext.EventAdapterService, 
+	                    statementContext.StatementName,
+	                    statementContext.StatementId,
+	                    statementContext.Annotations, 
+	                    statementContext.ContextDescriptor,
+	                    statementContext.ScriptingService,
                         false, false, true, false, null, false);
 	            matchRecognizeSpec.Interval.Validate(validationContext);
 	        }
@@ -437,13 +453,19 @@ namespace com.espertech.esper.rowregex
 	        {
 	            var exprEvaluatorContext = new ExprEvaluatorContextStatement(statementContext, false);
 	            var validationContext = new ExprValidationContext(
+	                statementContext.Container,
 	                typeServiceMeasure,
                     statementContext.EngineImportService,
                     statementContext.StatementExtensionServicesContext, null,
                     statementContext.SchedulingService,
-	                statementContext.VariableService, statementContext.TableService, exprEvaluatorContext,
-	                statementContext.EventAdapterService, statementContext.StatementName, statementContext.StatementId,
-	                statementContext.Annotations, statementContext.ContextDescriptor, statementContext.ScriptingService,
+	                statementContext.VariableService, 
+	                statementContext.TableService, exprEvaluatorContext,
+	                statementContext.EventAdapterService,
+	                statementContext.StatementName,
+	                statementContext.StatementId,
+	                statementContext.Annotations,
+	                statementContext.ContextDescriptor,
+	                statementContext.ScriptingService,
                     false, false, true, false, null, false);
 	            return ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.MATCHRECOGMEASURE, measureNode, validationContext);
 	        }

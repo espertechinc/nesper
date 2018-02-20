@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.script;
@@ -24,73 +25,41 @@ namespace com.espertech.esper.epl.expression.core
     {
         private readonly TimeProvider _timeProvider;
         private readonly ExpressionResultCacheService _expressionResultCacheService;
+        private readonly IContainer _container;
 
-        public ExprEvaluatorContextTimeOnly(TimeProvider timeProvider)
+        public ExprEvaluatorContextTimeOnly(IContainer container, TimeProvider timeProvider)
         {
+            _container = container;
             _timeProvider = timeProvider;
-            _expressionResultCacheService = new ExpressionResultCacheService(1);
+            _expressionResultCacheService = new ExpressionResultCacheService(1, _container.Resolve<IThreadLocalManager>());
         }
+
+        public IContainer Container => _container;
 
         /// <summary>Returns the time provider. </summary>
         /// <value>time provider</value>
-        public TimeProvider TimeProvider
-        {
-            get { return _timeProvider; }
-        }
+        public TimeProvider TimeProvider => _timeProvider;
 
-        public ExpressionResultCacheService ExpressionResultCacheService
-        {
-            get { return _expressionResultCacheService; }
-        }
+        public ExpressionResultCacheService ExpressionResultCacheService => _expressionResultCacheService;
 
-        public int AgentInstanceId
-        {
-            get { return -1; }
-        }
+        public int AgentInstanceId => -1;
 
-        public EventBean ContextProperties
-        {
-            get { return null; }
-        }
+        public EventBean ContextProperties => null;
 
-        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext
-        {
-            get { return null; }
-        }
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext => null;
 
-        public String StatementName
-        {
-            get { return null; }
-        }
+        public String StatementName => null;
 
-        public String EngineURI
-        {
-            get { return null; }
-        }
+        public String EngineURI => null;
 
-        public int StatementId
-        {
-            get { return -1; }
-        }
+        public int StatementId => -1;
 
-        public IReaderWriterLock AgentInstanceLock
-        {
-            get { return null; }
-        }
+        public IReaderWriterLock AgentInstanceLock => null;
 
-        public StatementType? StatementType
-        {
-            get { return null; }
-        }
+        public StatementType? StatementType => null;
 
-        public TableExprEvaluatorContext TableExprEvaluatorContext
-        {
-            get { throw new EPException("Access to tables is not allowed"); }
-        }
+        public TableExprEvaluatorContext TableExprEvaluatorContext => throw new EPException("Access to tables is not allowed");
 
-        public object StatementUserObject
-        {
-            get { return null; }
-        }
+        public object StatementUserObject => null;
     }
 }

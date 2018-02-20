@@ -8,7 +8,6 @@
 
 using System;
 using System.IO;
-using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -29,7 +28,9 @@ namespace com.espertech.esper.util
             // Create the formatter
             var formatter = new BinaryFormatter();
             formatter.FilterLevel = TypeFilterLevel.Full;
-            formatter.AssemblyFormat = FormatterAssemblyStyle.Full;
+#if NETFRAMEWORK
+            formatter.AssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full;
+#endif
 
             using (MemoryStream stream = new MemoryStream())
             {

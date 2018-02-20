@@ -15,9 +15,10 @@ using com.espertech.esper.core.support;
 using XLR8.CGLib;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.bean
@@ -30,11 +31,18 @@ namespace com.espertech.esper.events.bean
         private EventBean _theEvent;
         private SupportBeanCombinedProps _bean;
         private BeanEventTypeFactory _beanEventTypeFactory;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            _beanEventTypeFactory = new BeanEventAdapter(new ConcurrentDictionary<Type, BeanEventType>(), SupportEventAdapterService.Service, new EventTypeIdGeneratorImpl());
+            _container = SupportContainer.Instance;
+
+            _beanEventTypeFactory = new BeanEventAdapter(
+                new ConcurrentDictionary<Type, BeanEventType>(), 
+                SupportEventAdapterService.Service,
+                new EventTypeIdGeneratorImpl(),
+                _container.LockManager());
             _bean = SupportBeanCombinedProps.MakeDefaultBean();
             _theEvent = SupportEventBeanFactory.CreateObject(_bean);
     

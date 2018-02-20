@@ -187,14 +187,21 @@ namespace com.espertech.esper.core.start
 
             var streamTypeService = new StreamTypeServiceImpl(types, streamNames, istreamOnly, services.EngineURI, false);
             var validationContext = new ExprValidationContext(
+                statementContext.Container,
                 streamTypeService,
                 statementContext.EngineImportService,
                 statementContext.StatementExtensionServicesContext, null,
                 statementContext.SchedulingService,
-                statementContext.VariableService, statementContext.TableService,
-                new ExprEvaluatorContextStatement(statementContext, false), statementContext.EventAdapterService,
-                statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,
-                statementContext.ContextDescriptor, statementContext.ScriptingService, false, false, false, false, null, false);
+                statementContext.VariableService,
+                statementContext.TableService,
+                new ExprEvaluatorContextStatement(statementContext, false),
+                statementContext.EventAdapterService,
+                statementContext.StatementName,
+                statementContext.StatementId, 
+                statementContext.Annotations,
+                statementContext.ContextDescriptor, 
+                statementContext.ScriptingService,
+                false, false, false, false, null, false);
 
             // substitute parameter nodes
             foreach (var childNode in columnExpressionType.ChildNodes.ToArray())

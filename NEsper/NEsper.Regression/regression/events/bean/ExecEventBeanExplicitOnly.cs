@@ -74,7 +74,7 @@ namespace com.espertech.esper.regression.events.bean
                 // invalid statement, JavaBean-style getters not exposed
                 statementText = "select intPrimitive from MySupportBean#length(5)";
                 epService.EPAdministrator.CreateEPL(statementText);
-            } catch (EPStatementException ex) {
+            } catch (EPStatementException) {
                 // expected
             }
         }

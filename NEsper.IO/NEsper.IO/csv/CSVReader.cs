@@ -5,6 +5,7 @@ using System.Text;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.util;
 
@@ -25,17 +26,21 @@ namespace com.espertech.esperio.csv
 		private bool _atEof = false;
 		private bool _isReset = true;
 
-		/// <summary>Ctor.</summary>
-		/// <param name="adapterInputSource">the source of the CSV file</param>
-		/// <throws>EPException in case of errors in reading the CSV file</throws>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="container">The container.</param>
+        /// <param name="adapterInputSource">the source of the CSV file</param>
+        /// <exception cref="ArgumentException">AdapterInputSource cannot be null</exception>
+        /// <throws>EPException in case of errors in reading the CSV file</throws>
 
-		public CSVReader(AdapterInputSource adapterInputSource)
+        public CSVReader(IContainer container, AdapterInputSource adapterInputSource)
 		{
 			if(adapterInputSource == null)
 			{
 				throw new ArgumentException("AdapterInputSource cannot be null");
 			}
-			_source = new CSVSource(adapterInputSource);
+			_source = new CSVSource(container, adapterInputSource);
 		}
 
 		/// <summary>Close the source and release the input source.</summary>

@@ -13,13 +13,15 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.join.pollindex;
 using com.espertech.esper.epl.join.table;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.epl.db
@@ -29,10 +31,13 @@ namespace com.espertech.esper.epl.db
     {
         private DatabasePollingViewable _pollingViewable;
         private PollResultIndexingStrategy _indexingStrategy;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Instance;
+
             var inputProperties = new[] {"s0.IntPrimitive"};
     
             var dataCache = new DataCacheLRUImpl(100);
@@ -45,12 +50,24 @@ namespace com.espertech.esper.epl.db
             pollResults.Put(new MultiKey<Object>(new Object[] {-1}), new List<EventBean>());
             pollResults.Put(new MultiKey<Object>(new Object[] {500}), new List<EventBean>());
             var supportPollingStrategy = new SupportPollingStrategy(pollResults);
-    
-            _pollingViewable = new DatabasePollingViewable(1, inputProperties, supportPollingStrategy, dataCache, resultEventType);
+
+            _pollingViewable = new DatabasePollingViewable(
+                1,
+                inputProperties,
+                supportPollingStrategy,
+                dataCache,
+                resultEventType,
+                _container.Resolve<IThreadLocalManager>());
     
             var sqlParameters = new Dictionary<int, IList<ExprNode>>();
             sqlParameters.Put(1, ((ExprNode) new ExprIdentNodeImpl("IntPrimitive", "s0")).AsSingleton());
-            _pollingViewable.Validate(null, new SupportStreamTypeSvc3Stream(), null, null, null, null, null, null, null, null, sqlParameters, null, SupportStatementContextFactory.MakeContext());
+            _pollingViewable.Validate(
+                null,
+                new SupportStreamTypeSvc3Stream(), 
+                null, null, null,
+                null, null, null, 
+                null, null, sqlParameters, null,
+                SupportStatementContextFactory.MakeContext(_container));
     
             _indexingStrategy = new ProxyPollResultIndexingStrategy
             {

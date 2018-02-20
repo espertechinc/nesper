@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.events.vaevent
@@ -26,10 +27,11 @@ namespace com.espertech.esper.events.vaevent
         /// <summary>
         /// Ctor.
         /// </summary>
+        /// <param name="lockManager">The lock manager.</param>
         /// <param name="variantSpec">specified the preconfigured types</param>
-        public VariantPropResolutionStrategyDefault(VariantSpec variantSpec)
+        public VariantPropResolutionStrategyDefault(ILockManager lockManager, VariantSpec variantSpec)
         {
-            propertyGetterCache = new VariantPropertyGetterCache(variantSpec.EventTypes);
+            propertyGetterCache = new VariantPropertyGetterCache(lockManager, variantSpec.EventTypes);
         }
 
         public VariantPropertyDesc ResolveProperty(String propertyName, EventType[] variants)

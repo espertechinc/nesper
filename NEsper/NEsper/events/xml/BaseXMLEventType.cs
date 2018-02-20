@@ -16,6 +16,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.xml;
 using com.espertech.esper.util;
 
@@ -41,11 +42,14 @@ namespace com.espertech.esper.events.xml
         /// <param name="eventTypeId">The event type id.</param>
         /// <param name="configurationEventTypeXMLDOM">is the XML DOM configuration such as root element and schema names</param>
         /// <param name="eventAdapterService">for registration and lookup of types</param>
-        protected BaseXMLEventType(EventTypeMetadata metadata,
-                                   int eventTypeId,
-                                   ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM,
-                                   EventAdapterService eventAdapterService)
-            : base(eventAdapterService, metadata, eventTypeId, typeof(XmlNode))
+        /// <param name="lockManager"></param>
+        protected BaseXMLEventType(
+            EventTypeMetadata metadata,
+            int eventTypeId,
+            ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM,
+            EventAdapterService eventAdapterService,
+            ILockManager lockManager)
+            : base(lockManager, eventAdapterService, metadata, eventTypeId, typeof(XmlNode))
         {
             RootElementName = configurationEventTypeXMLDOM.RootElementName;
             ConfigurationEventTypeXMLDOM = configurationEventTypeXMLDOM;

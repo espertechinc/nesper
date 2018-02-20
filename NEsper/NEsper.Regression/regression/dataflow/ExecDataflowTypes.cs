@@ -12,12 +12,15 @@ using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.dataflow;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.graph;
+using com.espertech.esper.supportregression.util;
 
 namespace com.espertech.esper.regression.dataflow
 {
@@ -69,7 +72,7 @@ namespace com.espertech.esper.regression.dataflow
 
             var source = new DefaultSupportSourceOp(new object[] {MakeMap("E1", 1)});
             var outputOne = new MyMapOutputOp();
-            var outputTwo = new DefaultSupportCaptureOp<SupportBean>();
+            var outputTwo = new DefaultSupportCaptureOp<SupportBean>(SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions().OperatorProvider(
                 new DefaultSupportGraphOpProvider(source, outputOne, outputTwo));
             var dfOne = epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlowOne", options);
@@ -93,7 +96,7 @@ namespace com.espertech.esper.regression.dataflow
 
         public class MySupportBeanOutputOp
         {
-            private readonly ILockable _lock = LockManager.CreateDefaultLock();
+            private readonly ILockable _lock = SupportContainer.Instance.LockManager().CreateDefaultLock();
             private List<SupportBean> _received = new List<SupportBean>();
 
             public void OnInput(SupportBean @event)
@@ -117,7 +120,7 @@ namespace com.espertech.esper.regression.dataflow
 
         public class MyMapOutputOp
         {
-            private readonly ILockable _lock = LockManager.CreateDefaultLock();
+            private readonly ILockable _lock = SupportContainer.Instance.LockManager().CreateDefaultLock();
             private List<IDictionary<string, object>> _received = new List<IDictionary<string, object>>();
 
             public void OnInput(IDictionary<string, object> @event)

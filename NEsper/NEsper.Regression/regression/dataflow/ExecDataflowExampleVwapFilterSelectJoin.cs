@@ -15,12 +15,12 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.dataflow;
 using com.espertech.esper.supportregression.execution;
-
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.dataflow
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regression.dataflow
     
         private void RunAssertion(EPServiceProvider epService) {
     
-            var future = new DefaultSupportCaptureOp<object>(1);
+            var future = new DefaultSupportCaptureOp<object>(1, SupportContainer.Instance.LockManager());
             var source = new MyObjectArrayGraphSource(Collections.List(
                     new object[]{"trade", "GE", 100d, 1000L, null, null}, // vwap = 100, minPrice=100
                     new object[]{"quote", "GE", null, null, 99.5d, 2000L}  //

@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.script;
@@ -45,6 +46,8 @@ namespace com.espertech.esper.epl.expression.core
         IReaderWriterLock AgentInstanceLock { get; }
 
         TableExprEvaluatorContext TableExprEvaluatorContext { get; }
+
+        IContainer Container { get; }
     }
 
     public class ProxyExprEvaluatorContext : ExprEvaluatorContext
@@ -61,6 +64,7 @@ namespace com.espertech.esper.epl.expression.core
         public Func<AgentInstanceScriptContext> ProcAllocateAgentInstanceScriptContext { get; set; }
         public Func<IReaderWriterLock> ProcAgentInstanceLock { get; set; }
         public Func<TableExprEvaluatorContext> ProcTableExprEvaluatorContext { get; set; }
+        public Func<IContainer> ProcContainer { get; set; }
 
         public ProxyExprEvaluatorContext()
         {
@@ -77,65 +81,30 @@ namespace com.espertech.esper.epl.expression.core
             ProcTableExprEvaluatorContext = () => null;
         }
 
-        public object StatementUserObject
-        {
-            get { return ProcStatementUserObject(); }
-        }
+        public object StatementUserObject => ProcStatementUserObject();
 
-        public TimeProvider TimeProvider
-        {
-            get { return ProcTimeProvider(); }
-        }
+        public TimeProvider TimeProvider => ProcTimeProvider();
 
-        public ExpressionResultCacheService ExpressionResultCacheService
-        {
-            get { return ProcExpressionResultCacheService(); }
-        }
+        public ExpressionResultCacheService ExpressionResultCacheService => ProcExpressionResultCacheService();
 
-        public int AgentInstanceId
-        {
-            get { return ProcAgentInstanceId(); }
-        }
+        public int AgentInstanceId => ProcAgentInstanceId();
 
-        public EventBean ContextProperties
-        {
-            get { return ProcContextProperties(); }
-        }
+        public EventBean ContextProperties => ProcContextProperties();
 
-        public string StatementName
-        {
-            get { return ProcStatementName(); }
-        }
+        public string StatementName => ProcStatementName();
 
-        public string EngineURI
-        {
-            get { return ProcEngineURI(); }
-        }
+        public string EngineURI => ProcEngineURI();
 
-        public int StatementId
-        {
-            get { return ProcStatementId(); }
-        }
+        public int StatementId => ProcStatementId();
 
-        public StatementType? StatementType
-        {
-            get { return ProcStatementType(); }
-        }
+        public StatementType? StatementType => ProcStatementType();
 
-        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext
-        {
-            get { return ProcAllocateAgentInstanceScriptContext(); }
-        }
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext => ProcAllocateAgentInstanceScriptContext();
 
-        public IReaderWriterLock AgentInstanceLock
-        {
-            get { return ProcAgentInstanceLock(); }
-        }
+        public IReaderWriterLock AgentInstanceLock => ProcAgentInstanceLock();
 
-        public TableExprEvaluatorContext TableExprEvaluatorContext
-        {
-            get { return ProcTableExprEvaluatorContext(); }
-        }
+        public TableExprEvaluatorContext TableExprEvaluatorContext => ProcTableExprEvaluatorContext();
 
+        public IContainer Container => ProcContainer();
     }
 }

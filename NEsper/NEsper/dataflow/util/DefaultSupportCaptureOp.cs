@@ -23,11 +23,13 @@ namespace com.espertech.esper.dataflow.util
     [DataFlowOperator]
     public class DefaultSupportCaptureOp : DefaultSupportCaptureOp<object>
     {
-        public DefaultSupportCaptureOp()
+        public DefaultSupportCaptureOp(ILockManager lockManager)
+            : base(lockManager)
         {
         }
 
-        public DefaultSupportCaptureOp(int latchedNumRows) : base(latchedNumRows)
+        public DefaultSupportCaptureOp(int latchedNumRows, ILockManager lockManager)
+            : base(latchedNumRows, lockManager)
         {
         }
     }
@@ -42,17 +44,17 @@ namespace com.espertech.esper.dataflow.util
 
         private readonly CountDownLatch _numRowLatch;
 
-        private readonly ILockable _iLock =
-            LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly ILockable _iLock;
 
-        public DefaultSupportCaptureOp()
-            : this(0)
+        public DefaultSupportCaptureOp(ILockManager lockManager)
+            : this(0, lockManager)
         {
         }
 
-        public DefaultSupportCaptureOp(int latchedNumRows)
+        public DefaultSupportCaptureOp(int latchedNumRows, ILockManager lockManager)
         {
             _numRowLatch = new CountDownLatch(latchedNumRows);
+            _iLock = lockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public void OnInput(T theEvent)
