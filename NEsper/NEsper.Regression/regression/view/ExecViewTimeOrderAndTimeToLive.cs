@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.view
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
             string[] fields = "id".Split(',');
-            string epl = "select irstream * from SupportBeanTimestamp#Timetolive(timestamp)";
+            string epl = "select irstream * from SupportBeanTimestamp#timetolive(timestamp)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regression.view
         private void RunAssertionMonthScoped(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBeanTimestamp));
             SendCurrentTime(epService, "2002-02-01T09:00:00.000");
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select rstream * from SupportBeanTimestamp#Time_order(timestamp, 1 month)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select rstream * from SupportBeanTimestamp#time_order(timestamp, 1 month)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, 1000);
             epService.EPAdministrator.CreateEPL(
                     "insert rstream into OrderedStream select rstream * from " + typeof(SupportBeanTimestamp).FullName +
-                            "#Time_order(timestamp, 10 sec)");
+                            "#time_order(timestamp, 10 sec)");
     
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(
                     "select * from OrderedStream");
@@ -214,7 +214,7 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, 1000);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select irstream * from " + typeof(SupportBeanTimestamp).FullName +
-                            "#Time_order(timestamp, 10 sec)");
+                            "#time_order(timestamp, 10 sec)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new string[]{"id"}, null);
@@ -378,7 +378,7 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, 20000);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select irstream * from " + typeof(SupportBeanTimestamp).FullName +
-                            "#Groupwin(groupId)#Time_order(timestamp, 10 sec)");
+                            "#groupwin(groupId)#time_order(timestamp, 10 sec)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -441,13 +441,13 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from " + typeof(SupportBeanTimestamp).FullName + "#Time_order(bump, 10 sec)",
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from " + typeof(SupportBeanTimestamp).FullName + "#time_order(bump, 10 sec)",
                     "Error starting statement: Error attaching view to event stream: Invalid parameter expression 0 for Time-Order view: Failed to validate view parameter expression 'bump': Property named 'bump' is not valid in any stream [");
     
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from " + typeof(SupportBeanTimestamp).FullName + "#Time_order(10 sec)",
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from " + typeof(SupportBeanTimestamp).FullName + "#time_order(10 sec)",
                     "Error starting statement: Error attaching view to event stream: Time-Order view requires the expression supplying timestamp values, and a numeric or time period parameter for interval size [");
     
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from " + typeof(SupportBeanTimestamp).FullName + "#Time_order(timestamp, abc)",
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from " + typeof(SupportBeanTimestamp).FullName + "#time_order(timestamp, abc)",
                     "Error starting statement: Error attaching view to event stream: Invalid parameter expression 1 for Time-Order view: Failed to validate view parameter expression 'abc': Property named 'abc' is not valid in any stream (did you mean 'id'?) [");
         }
     
@@ -455,15 +455,15 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, 1000);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select irstream id, " +
-                            " Prev(0, id) as prevIdZero, " +
-                            " Prev(1, id) as prevIdOne, " +
-                            " Prior(1, id) as priorIdOne," +
-                            " Prevtail(0, id) as prevTailIdZero, " +
-                            " Prevtail(1, id) as prevTailIdOne, " +
-                            " Prevcount(id) as prevCountId, " +
-                            " Prevwindow(id) as prevWindowId " +
+                            " prev(0, id) as prevIdZero, " +
+                            " prev(1, id) as prevIdOne, " +
+                            " prior(1, id) as priorIdOne," +
+                            " prevtail(0, id) as prevTailIdZero, " +
+                            " prevtail(1, id) as prevTailIdOne, " +
+                            " prevcount(id) as prevCountId, " +
+                            " prevwindow(id) as prevWindowId " +
                             " from " + typeof(SupportBeanTimestamp).FullName +
-                            "#Time_order(timestamp, 10 sec)");
+                            "#time_order(timestamp, 10 sec)");
             var fields = new string[]{"id", "prevIdZero", "prevIdOne", "priorIdOne", "prevTailIdZero", "prevTailIdOne", "prevCountId"};
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

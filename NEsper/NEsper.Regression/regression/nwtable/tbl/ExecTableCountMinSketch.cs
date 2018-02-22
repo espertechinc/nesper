@@ -51,7 +51,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "}))");
             epService.EPAdministrator.CreateEPL("into table WordCountTable select CountMinSketchAdd(word) as wordcms from WordEvent");
             epService.EPAdministrator.CreateEPL("select WordCountTable.wordcms.CountMinSketchFrequency(word) from EstimateWordCountEvent");
-            epService.EPAdministrator.CreateEPL("select WordCountTable.wordcms.CountMinSketchTopk() from pattern[every timer:Interval(10 sec)]");
+            epService.EPAdministrator.CreateEPL("select WordCountTable.wordcms.CountMinSketchTopk() from pattern[every timer:interval(10 sec)]");
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -150,11 +150,11 @@ namespace com.espertech.esper.regression.nwtable.tbl
             TryInvalid(epService, "create table MyTable(cms CountMinSketch({xxx:3}))",
                     "Error starting statement: Failed to validate table-column expression 'CountMinSketch({xxx=3})': Unrecognized parameter 'xxx' [");
             TryInvalid(epService, "create table MyTable(cms CountMinSketch({epsOfTotalCount:'a'}))",
-                    "Error starting statement: Failed to validate table-column expression 'CountMinSketch({epsOfTotalCount=a})': Property 'epsOfTotalCount' expects an java.lang.double? but receives a value of type java.lang.string [");
+                    "Error starting statement: Failed to validate table-column expression 'CountMinSketch({epsOfTotalCount=a})': Property 'epsOfTotalCount' expects an java.lang.double? but receives a value of type System.String [");
             TryInvalid(epService, "create table MyTable(cms CountMinSketch({agent:'a'}))",
                     "Error starting statement: Failed to validate table-column expression 'CountMinSketch({agent=a})': Failed to instantiate agent provider: Could not load class by name 'a', please check imports [");
-            TryInvalid(epService, "create table MyTable(cms CountMinSketch({agent:'java.lang.string'}))",
-                    "Error starting statement: Failed to validate table-column expression 'CountMinSketch({agent=java.lang.string})': Failed to instantiate agent provider: Type 'java.lang.string' does not implement interface 'com.espertech.esper.client.util.CountMinSketchAgent' [");
+            TryInvalid(epService, "create table MyTable(cms CountMinSketch({agent:'System.String'}))",
+                    "Error starting statement: Failed to validate table-column expression 'CountMinSketch({agent=System.String})': Failed to instantiate agent provider: Type 'System.String' does not implement interface 'com.espertech.esper.client.util.CountMinSketchAgent' [");
     
             // invalid "countMinSketchAdd" declarations
             //
@@ -163,7 +163,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             TryInvalid(epService, "into table MyCMS select CountMinSketchAdd() as wordcms from SupportBean",
                     "Error starting statement: Failed to validate select-clause expression 'CountMinSketchAdd()': Count-min-sketch aggregation function 'countMinSketchAdd' requires a single parameter expression");
             TryInvalid(epService, "into table MyCMS select CountMinSketchAdd(data) as wordcms from MyByteArrayEventCount",
-                    "Error starting statement: Incompatible aggregation function for table 'MyCMS' column 'wordcms', expecting 'CountMinSketch()' and received 'CountMinSketchAdd(data)': Mismatching parameter return type, expected any of [class java.lang.string] but received Byte(Array) [");
+                    "Error starting statement: Incompatible aggregation function for table 'MyCMS' column 'wordcms', expecting 'CountMinSketch()' and received 'CountMinSketchAdd(data)': Mismatching parameter return type, expected any of [class System.String] but received Byte(Array) [");
             TryInvalid(epService, "into table MyCMS select CountMinSketchAdd(distinct 'abc') as wordcms from MyByteArrayEventCount",
                     "Error starting statement: Failed to validate select-clause expression 'CountMinSketchAdd(distinct \"abc\")': Count-min-sketch aggregation function 'countMinSketchAdd' is not supported with distinct [");
     

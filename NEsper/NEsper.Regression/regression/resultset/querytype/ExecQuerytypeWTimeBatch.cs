@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionTimeBatchRowForAllNoJoin(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string stmtText = "select irstream sum(price) as sumPrice from MarketData#Time_batch(1 sec)";
+            string stmtText = "select irstream sum(price) as sumPrice from MarketData#time_batch(1 sec)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionTimeBatchRowForAllJoin(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string stmtText = "select irstream sum(price) as sumPrice from MarketData#Time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.symbol = S1.theString";
+            string stmtText = "select irstream sum(price) as sumPrice from MarketData#time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.symbol = S1.theString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionTimeBatchAggregateAllNoJoin(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData#Time_batch(1 sec)";
+            string stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData#time_batch(1 sec)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionTimeBatchAggregateAllJoin(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData#Time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.symbol = S1.theString";
+            string stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData#time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.symbol = S1.theString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -183,7 +183,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionTimeBatchRowPerGroupNoJoin(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData#Time_batch(1 sec) group by symbol order by symbol asc";
+            string stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData#time_batch(1 sec) group by symbol order by symbol asc";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -219,7 +219,7 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionTimeBatchRowPerGroupJoin(EPServiceProvider epService) {
             SendTimer(epService, 0);
             string stmtText = "select irstream symbol, sum(price) as sumPrice " +
-                    " from MarketData#Time_batch(1 sec) as S0, SupportBean#keepall as S1" +
+                    " from MarketData#time_batch(1 sec) as S0, SupportBean#keepall as S1" +
                     " where S0.symbol = S1.theString " +
                     " group by symbol";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
@@ -250,7 +250,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionTimeBatchAggrGroupedNoJoin(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string stmtText = "select irstream symbol, sum(price) as sumPrice, volume from MarketData#Time_batch(1 sec) group by symbol";
+            string stmtText = "select irstream symbol, sum(price) as sumPrice, volume from MarketData#time_batch(1 sec) group by symbol";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -283,7 +283,7 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionTimeBatchAggrGroupedJoin(EPServiceProvider epService) {
             SendTimer(epService, 0);
             string stmtText = "select irstream symbol, sum(price) as sumPrice, volume " +
-                    "from MarketData#Time_batch(1 sec) as S0, SupportBean#keepall as S1" +
+                    "from MarketData#time_batch(1 sec) as S0, SupportBean#keepall as S1" +
                     " where S0.symbol = S1.theString " +
                     " group by symbol";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);

@@ -40,7 +40,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionTimeWindowPreparedStmt(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string text = "select rstream theString from SupportBean#Time(?)";
+            string text = "select rstream theString from SupportBean#time(?)";
             EPPreparedStatement prepared = epService.EPAdministrator.PrepareEPL(text);
     
             prepared.SetObject(1, 4);
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionTimeWindowVariableStmt(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string text = "select rstream theString from SupportBean#Time(TIME_WIN_ONE)";
+            string text = "select rstream theString from SupportBean#time(TIME_WIN_ONE)";
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             epService.EPAdministrator.Configuration.AddVariable("TIME_WIN_ONE", typeof(int), 4);
@@ -83,12 +83,12 @@ namespace com.espertech.esper.regression.view
         private void RunAssertionTimeWindowTimePeriod(EPServiceProvider epService) {
             SendTimer(epService, 0);
     
-            string text = "select rstream theString from SupportBean#Time(4 sec)";
+            string text = "select rstream theString from SupportBean#time(4 sec)";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(text);
             var listenerOne = new SupportUpdateListener();
             stmtOne.Events += listenerOne.Update;
     
-            text = "select rstream theString from SupportBean#Time(3000 milliseconds)";
+            text = "select rstream theString from SupportBean#time(3000 milliseconds)";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(text);
             var listenerTwo = new SupportUpdateListener();
             stmtTwo.Events += listenerTwo.Update;
@@ -103,14 +103,14 @@ namespace com.espertech.esper.regression.view
             epService.EPAdministrator.Configuration.AddVariable("TIME_WIN_TWO", typeof(double), 4000);
             SendTimer(epService, 0);
     
-            string text = "select rstream theString from SupportBean#Time(TIME_WIN_TWO milliseconds)";
+            string text = "select rstream theString from SupportBean#time(TIME_WIN_TWO milliseconds)";
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(text);
             var listenerOne = new SupportUpdateListener();
             stmtOne.Events += listenerOne.Update;
     
-            text = "select rstream theString from SupportBean#Time(TIME_WIN_TWO minutes)";
+            text = "select rstream theString from SupportBean#time(TIME_WIN_TWO minutes)";
             epService.EPRuntime.SetVariableValue("TIME_WIN_TWO", 0.05);
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(text);
             var listenerTwo = new SupportUpdateListener();
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regression.view
             // Set up a time window with a unique view attached
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select * from " + typeof(SupportBean).FullName +
-                            "#Time_batch(10 minutes)");
+                            "#time_batch(10 minutes)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -155,7 +155,7 @@ namespace com.espertech.esper.regression.view
             // Set up a time window with a unique view attached
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select * from " + typeof(SupportBean).FullName +
-                            "#Time_batch(10 minutes, 10L)");
+                            "#time_batch(10 minutes, 10L)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regression.view
         private void RunAssertionExternallyTimedMonthScoped(EPServiceProvider epService) {
             var testListener = new SupportUpdateListener();
             epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBeanTimestamp));
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select rstream * from SupportBean#Ext_timed(longPrimitive, 1 month)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select rstream * from SupportBean#ext_timed(longPrimitive, 1 month)");
             stmt.Events += testListener.Update;
     
             SendExtTimeEvent(epService, DateTimeParser.ParseDefaultMSec("2002-02-01T09:00:00.000"), "E1");
@@ -189,7 +189,7 @@ namespace com.espertech.esper.regression.view
         private void RunAssertionExternallyTimedBatchMonthScoped(EPServiceProvider epService) {
             var testListener = new SupportUpdateListener();
             epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBeanTimestamp));
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#Ext_timed_batch(longPrimitive, 1 month)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#ext_timed_batch(longPrimitive, 1 month)");
             stmt.Events += testListener.Update;
     
             SendExtTimeEvent(epService, DateTimeParser.ParseDefaultMSec("2002-02-01T09:00:00.000"), "E1");
@@ -206,7 +206,7 @@ namespace com.espertech.esper.regression.view
             // Set up a time window with a unique view attached
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select irstream * from " + typeof(SupportBean).FullName +
-                            "#Ext_timed(longPrimitive, 10 minutes)");
+                            "#ext_timed(longPrimitive, 10 minutes)");
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
     
@@ -227,7 +227,7 @@ namespace com.espertech.esper.regression.view
             // Set up a time window with a unique view attached
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select irstream * from " + typeof(SupportBean).FullName +
-                            "#Time(" + intervalSpec + ")");
+                            "#time(" + intervalSpec + ")");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     

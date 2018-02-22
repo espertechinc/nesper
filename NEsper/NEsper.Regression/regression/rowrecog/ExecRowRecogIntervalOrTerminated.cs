@@ -143,7 +143,7 @@ namespace com.espertech.esper.regression.rowrecog
             string text = "select * from TemperatureSensorEvent\n" +
                     "match_recognize (\n" +
                     "  partition by device\n" +
-                    "  measures A.id as a_id, count(B.id) as count_b, First(B.id) as first_b, last(B.id) as last_b\n" +
+                    "  measures A.id as a_id, count(B.id) as count_b, first(B.id) as first_b, last(B.id) as last_b\n" +
                     "  pattern (A B*)\n" +
                     "  interval 5 seconds or terminated\n" +
                     "  define\n" +

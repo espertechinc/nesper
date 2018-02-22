@@ -202,15 +202,15 @@ namespace com.espertech.esper.regression.view
     
             // mismatched type on coalesce columns
             exception = GetStatementExceptionView(epService, "select coalesce(boolBoxed, theString) from " + typeof(SupportBean).FullName + "#length(1) as aStr");
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'coalesce(boolBoxed,theString)': Implicit conversion not allowed: Cannot coerce to bool? type java.lang.string [");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'coalesce(boolBoxed,theString)': Implicit conversion not allowed: Cannot coerce to bool? type System.String [");
     
             // mismatched case compare type
             exception = GetStatementExceptionView(epService, "select case boolPrimitive when 1 then true end from " + typeof(SupportBean).FullName + "#length(1) as aStr");
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'case boolPrimitive when 1 then true end': Implicit conversion not allowed: Cannot coerce to bool? type java.lang.int? [");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'case boolPrimitive when 1 then true end': Implicit conversion not allowed: Cannot coerce to bool? type " + Name.Of<int>() + " [");
     
             // mismatched case result type
             exception = GetStatementExceptionView(epService, "select case when 1=2 then 1 when 1=3 then true end from " + typeof(SupportBean).FullName + "#length(1) as aStr");
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'case when 1=2 then 1 when 1=3 then ...(43 chars)': Implicit conversion not allowed: Cannot coerce types java.lang.int? and java.lang.bool? [");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'case when 1=2 then 1 when 1=3 then ...(43 chars)': Implicit conversion not allowed: Cannot coerce types " + Name.Of<int>() + " and java.lang.bool? [");
     
             // case expression not returning bool
             exception = GetStatementExceptionView(epService, "select case when 3 then 1 end from " + typeof(SupportBean).FullName + "#length(1) as aStr");
@@ -221,7 +221,7 @@ namespace com.espertech.esper.regression.view
             AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'Gogglex(1)': Unknown single-row function, aggregation function or mapped or indexed property named 'gogglex' could not be resolved [");
     
             // insert into column name incorrect
-            epService.EPAdministrator.CreateEPL("insert into Xyz select 1 as dodi from java.lang.string");
+            epService.EPAdministrator.CreateEPL("insert into Xyz select 1 as dodi from System.String");
             exception = GetStatementExceptionView(epService, "select pox from pattern[Xyz(yodo=4)]");
             AssertMessage(exception, "Failed to validate filter expression 'yodo=4': Property named 'yodo' is not valid in any stream (did you mean 'dodi'?) [select pox from pattern[Xyz(yodo=4)]]");
         }

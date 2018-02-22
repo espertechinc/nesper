@@ -45,10 +45,10 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(new SupportBean("E1", 100));
     
             try {
-                epService.EPAdministrator.CreatePattern("timer:Interval((select waitTime from WaitWindow))");
+                epService.EPAdministrator.CreatePattern("timer:interval((select waitTime from WaitWindow))");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Subselects are not allowed within pattern observer parameters, please consider using a variable instead [timer:Interval((select waitTime from WaitWindow))]",
+                Assert.AreEqual("Subselects are not allowed within pattern observer parameters, please consider using a variable instead [timer:interval((select waitTime from WaitWindow))]",
                         ex.Message);
             }
     
@@ -58,23 +58,23 @@ namespace com.espertech.esper.regression.pattern
         private void RunAssertionStatementException(EPServiceProvider epService) {
             EPStatementException exception;
     
-            exception = GetStatementExceptionPattern(epService, "timer:At(2,3,4,4,4)");
-            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern observer 'timer:At(2,3,4,4,4)': Error computing crontab schedule specification: Invalid combination between days of week and days of month fields for timer:at [");
+            exception = GetStatementExceptionPattern(epService, "timer:at(2,3,4,4,4)");
+            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern observer 'timer:at(2,3,4,4,4)': Error computing crontab schedule specification: Invalid combination between days of week and days of month fields for timer:at [");
     
-            exception = GetStatementExceptionPattern(epService, "timer:At(*,*,*,*,*,0,-1)");
-            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern observer 'timer:At(*,*,*,*,*,0,-1)': Error computing crontab schedule specification: Invalid timezone parameter '-1' for timer:at, expected a string-type value [");
+            exception = GetStatementExceptionPattern(epService, "timer:at(*,*,*,*,*,0,-1)");
+            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern observer 'timer:at(*,*,*,*,*,0,-1)': Error computing crontab schedule specification: Invalid timezone parameter '-1' for timer:at, expected a string-type value [");
     
-            exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + " -> timer:Within()");
-            SupportMessageAssertUtil.AssertMessage(exception, "Failed to resolve pattern observer 'timer:Within()': Pattern guard function 'within' cannot be used as a pattern observer [");
+            exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + " -> timer:within()");
+            SupportMessageAssertUtil.AssertMessage(exception, "Failed to resolve pattern observer 'timer:within()': Pattern guard function 'within' cannot be used as a pattern observer [");
     
-            exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + " where timer:Interval(100)");
-            SupportMessageAssertUtil.AssertMessage(exception, "Failed to resolve pattern guard '" + typeof(SupportBean).FullName + " where timer:Interval(100)': Pattern observer function 'interval' cannot be used as a pattern guard [");
+            exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + " where timer:interval(100)");
+            SupportMessageAssertUtil.AssertMessage(exception, "Failed to resolve pattern guard '" + typeof(SupportBean).FullName + " where timer:interval(100)': Pattern observer function 'interval' cannot be used as a pattern guard [");
     
-            exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + " -> timer:Interval()");
-            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern observer 'timer:Interval()': Timer-interval observer requires a single numeric or time period parameter [");
+            exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + " -> timer:interval()");
+            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern observer 'timer:interval()': Timer-interval observer requires a single numeric or time period parameter [");
     
-            exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + " where timer:Within()");
-            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern guard '" + typeof(SupportBean).FullName + " where timer:Within()': Timer-within guard requires a single numeric or time period parameter [");
+            exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + " where timer:within()");
+            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern guard '" + typeof(SupportBean).FullName + " where timer:within()': Timer-within guard requires a single numeric or time period parameter [");
     
             // class not found
             exception = GetStatementExceptionPattern(epService, "dummypkg.Dummy()");
@@ -109,22 +109,22 @@ namespace com.espertech.esper.regression.pattern
             SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'doubleBoxed between \"a\" and 2': Implicit conversion from datatype 'string' to numeric is not allowed [");
     
             // invalid observer arg
-            exception = GetStatementExceptionPattern(epService, "timer:At(9l)");
-            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern observer 'timer:At(9)': Invalid number of parameters for timer:at [timer:At(9l)]");
+            exception = GetStatementExceptionPattern(epService, "timer:at(9l)");
+            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern observer 'timer:at(9)': Invalid number of parameters for timer:at [timer:at(9l)]");
     
             // invalid guard arg
-            exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + " where timer:Within('s')");
-            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern guard '" + typeof(SupportBean).FullName + " where timer:Within(\"s\")': Timer-within guard requires a single numeric or time period parameter [");
+            exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + " where timer:within('s')");
+            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern guard '" + typeof(SupportBean).FullName + " where timer:within(\"s\")': Timer-within guard requires a single numeric or time period parameter [");
     
             // use-result property is wrong type
             exception = GetStatementExceptionPattern(epService, "x=" + EVENT_ALLTYPES + " -> " + EVENT_ALLTYPES + "(doublePrimitive=x.boolBoxed)");
             SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'doublePrimitive=x.boolBoxed': Implicit conversion from datatype 'bool?' to 'double?' is not allowed [");
     
             // named-parameter for timer:at or timer:interval
-            exception = GetStatementExceptionPattern(epService, "timer:Interval(interval:10)");
-            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern observer 'timer:Interval(interval:10)': Timer-interval observer does not allow named parameters [timer:Interval(interval:10)]");
-            exception = GetStatementExceptionPattern(epService, "timer:At(perhaps:10)");
-            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern observer 'timer:At(perhaps:10)': timer:at does not allow named parameters [timer:At(perhaps:10)]");
+            exception = GetStatementExceptionPattern(epService, "timer:interval(interval:10)");
+            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern observer 'timer:interval(interval:10)': Timer-interval observer does not allow named parameters [timer:interval(interval:10)]");
+            exception = GetStatementExceptionPattern(epService, "timer:at(perhaps:10)");
+            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern observer 'timer:at(perhaps:10)': timer:at does not allow named parameters [timer:at(perhaps:10)]");
         }
     
         private void RunAssertionUseResult(EPServiceProvider epService) {

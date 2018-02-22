@@ -24,7 +24,7 @@ namespace com.espertech.esper.dispatch
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _service = new DispatchServiceImpl(_container.ThreadLocalManager());
         }
     

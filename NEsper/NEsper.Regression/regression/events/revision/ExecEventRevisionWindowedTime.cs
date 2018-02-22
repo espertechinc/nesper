@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.events.revision
     
         private void RunAssertionTimeWindow(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            EPStatement stmtCreateWin = epService.EPAdministrator.CreateEPL("create window RevQuote#Time(10 sec) as select * from RevisableQuote");
+            EPStatement stmtCreateWin = epService.EPAdministrator.CreateEPL("create window RevQuote#time(10 sec) as select * from RevisableQuote");
             epService.EPAdministrator.CreateEPL("insert into RevQuote select * from FullEvent");
             epService.EPAdministrator.CreateEPL("insert into RevQuote select * from D1");
             epService.EPAdministrator.CreateEPL("insert into RevQuote select * from D5");

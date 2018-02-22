@@ -109,7 +109,7 @@ namespace com.espertech.esper.regression.context
     
             // test initiated-by pattern with immediate start
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(120000));
-            var contextExprTwo = "create context CtxPerId initiated by pattern [timer:Interval(0) or every timer:Interval(1 min)] terminated after 60 sec";
+            var contextExprTwo = "create context CtxPerId initiated by pattern [timer:interval(0) or every timer:interval(1 min)] terminated after 60 sec";
             epService.EPAdministrator.CreateEPL(contextExprTwo);
             var streamTwo = epService.EPAdministrator.CreateEPL("context CtxPerId select theString as c0, sum(intPrimitive) as c1 from SupportBean");
             var listener = new SupportUpdateListener();
@@ -357,7 +357,7 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionScheduleFilterResources(EPServiceProvider epService) {
             // test no-context statement
-            var stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#Time(30)");
+            var stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#time(30)");
             var spi = (EPServiceProviderSPI) epService;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -375,7 +375,7 @@ namespace com.espertech.esper.regression.context
                     "terminated after 1 minutes";
             epService.EPAdministrator.CreateEPL(eplCtx);
     
-            epService.EPAdministrator.CreateEPL("context EverySupportBean select * from SupportBean_S0#Time(2 min) sb0");
+            epService.EPAdministrator.CreateEPL("context EverySupportBean select * from SupportBean_S0#time(2 min) sb0");
             Assert.AreEqual(0, spi.SchedulingService.ScheduleHandleCount);
             Assert.AreEqual(1, filterServiceSPI.FilterCountApprox);
     
@@ -644,7 +644,7 @@ namespace com.espertech.esper.regression.context
         private void RunAssertionOutputSnapshotWhenTerminated(EPServiceProvider epService) {
             SendTimeEvent(epService, "2002-05-1T08:00:00.000");
             epService.EPAdministrator.CreateEPL("create context EveryMinute as " +
-                    "initiated by pattern[every timer:At(*, *, *, *, *)] " +
+                    "initiated by pattern[every timer:at(*, *, *, *, *)] " +
                     "terminated after 1 min");
     
             // test when-terminated and snapshot
@@ -708,7 +708,7 @@ namespace com.espertech.esper.regression.context
         private void RunAssertionOutputAllEvery2AndTerminated(EPServiceProvider epService) {
             SendTimeEvent(epService, "2002-05-1T08:00:00.000");
             epService.EPAdministrator.CreateEPL("create context EveryMinute as " +
-                    "initiated by pattern[every timer:At(*, *, *, *, *)] " +
+                    "initiated by pattern[every timer:at(*, *, *, *, *)] " +
                     "terminated after 1 min");
     
             // test when-terminated and every 2 events output all with group by
@@ -758,7 +758,7 @@ namespace com.espertech.esper.regression.context
         private void RunAssertionOutputWhenExprWhenTerminatedCondition(EPServiceProvider epService) {
             SendTimeEvent(epService, "2002-05-1T08:00:00.000");
             epService.EPAdministrator.CreateEPL("create context EveryMinute as " +
-                    "initiated by pattern[every timer:At(*, *, *, *, *)] " +
+                    "initiated by pattern[every timer:at(*, *, *, *, *)] " +
                     "terminated after 1 min");
     
             // test when-terminated and every 2 events output all with group by
@@ -803,7 +803,7 @@ namespace com.espertech.esper.regression.context
     
             SendTimeEvent(epService, "2002-05-1T08:00:00.000");
             epService.EPAdministrator.CreateEPL("create context EveryMinute as " +
-                    "initiated by pattern[every timer:At(*, *, *, *, *)] " +
+                    "initiated by pattern[every timer:at(*, *, *, *, *)] " +
                     "terminated after 1 min");
     
             // test when-terminated and every 2 events output all with group by
@@ -834,7 +834,7 @@ namespace com.espertech.esper.regression.context
     
             SendTimeEvent(epService, "2002-05-1T08:00:00.000");
             epService.EPAdministrator.CreateEPL("create context EveryMinute as " +
-                    "initiated by pattern[every timer:At(*, *, *, *, *)] " +
+                    "initiated by pattern[every timer:at(*, *, *, *, *)] " +
                     "terminated after 1 min");
     
             // include then-set and both real-time and terminated output
@@ -899,7 +899,7 @@ namespace com.espertech.esper.regression.context
             var filterSPI = (FilterServiceSPI) ((EPServiceProviderSPI) epService).FilterService;
             SendTimeEvent(epService, "2002-05-1T08:00:00.000");
             epService.EPAdministrator.CreateEPL("create context EveryMinute as " +
-                    "initiated by pattern[every timer:At(*, *, *, *, *)] " +
+                    "initiated by pattern[every timer:at(*, *, *, *, *)] " +
                     "terminated after 3 min");
     
             var fields = "c1,c2".Split(',');

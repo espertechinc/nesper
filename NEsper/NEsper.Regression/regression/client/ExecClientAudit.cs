@@ -93,7 +93,7 @@ namespace com.espertech.esper.regression.client
     
             AUDITLOG.Info("*** Schedule: ");
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
-            EPStatement stmtSchedule = epService.EPAdministrator.CreateEPL("@Name('ABC') @Audit('schedule') select irstream * from SupportBean#Time(1 sec)");
+            EPStatement stmtSchedule = epService.EPAdministrator.CreateEPL("@Name('ABC') @Audit('schedule') select irstream * from SupportBean#time(1 sec)");
             var listener = new SupportUpdateListener();
             stmtSchedule.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -145,13 +145,13 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(50, listener.AssertOneGetNewAndReset().Get("intPrimitive"));
             stmtView.Dispose();
     
-            EPStatement stmtGroupedView = epService.EPAdministrator.CreateEPL("@Audit Select * From SupportBean#Groupwin(theString)#length(2)");
+            EPStatement stmtGroupedView = epService.EPAdministrator.CreateEPL("@Audit Select * From SupportBean#groupwin(theString)#length(2)");
             stmtGroupedView.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 50));
             listener.Reset();
             stmtGroupedView.Dispose();
     
-            EPStatement stmtGroupedWIntersectionView = epService.EPAdministrator.CreateEPL("@Audit Select * From SupportBean#Groupwin(theString)#length(2)#unique(intPrimitive)");
+            EPStatement stmtGroupedWIntersectionView = epService.EPAdministrator.CreateEPL("@Audit Select * From SupportBean#groupwin(theString)#length(2)#unique(intPrimitive)");
             stmtGroupedWIntersectionView.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 50));
             listener.Reset();

@@ -179,7 +179,7 @@ namespace com.espertech.esper.regression.context
                     "from SupportBean";
             epService.EPAdministrator.CreateEPL(eplCtx);
     
-            var eplStmt = "context CategorizedContext select context.name as c0, context.label as c1, Prior(1,intPrimitive) as c2 from SupportBean";
+            var eplStmt = "context CategorizedContext select context.name as c0, context.label as c1, prior(1,intPrimitive) as c2 from SupportBean";
             var statementOne = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplStmt);
             var listener = new SupportUpdateListener();
     

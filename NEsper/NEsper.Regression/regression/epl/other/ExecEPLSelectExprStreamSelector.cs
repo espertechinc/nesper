@@ -100,7 +100,7 @@ namespace com.espertech.esper.regression.epl.other
             stmtOne.Events += listenerOne.Update;
 
             string stmtTwoText = "insert into streamA select a.* from pattern [every a=" +
-                                 typeof(SupportBean).FullName + " where timer:Within(30 sec)]";
+                                 typeof(SupportBean).FullName + " where timer:within(30 sec)]";
             var listenerTwo = new SupportUpdateListener();
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTwoText);
             stmtTwo.Events += listenerTwo.Update;
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regression.epl.other
             Assert.AreSame(theEvent, listenerTwo.AssertOneGetNewAndReset().Underlying);
 
             string stmtThreeText = "insert into streamB select a.*, 'abc' as abc from pattern [every a=" +
-                                   typeof(SupportBean).FullName + " where timer:Within(30 sec)]";
+                                   typeof(SupportBean).FullName + " where timer:within(30 sec)]";
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL(stmtThreeText);
             Assert.AreEqual(typeof(Pair<object, Map>), stmtThree.EventType.UnderlyingType);
             Assert.AreEqual(typeof(string), stmtThree.EventType.GetPropertyType("abc"));

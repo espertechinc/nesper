@@ -189,10 +189,10 @@ namespace com.espertech.esper.regression.pattern
     
         private void RunAssertionTimerWithinOverDistinct(EPServiceProvider epService) {
             // for 10 seconds, look for every distinct A
-            string expression = "select * from pattern [(every-Distinct(a.intPrimitive) a=SupportBean) where timer:Within(10 sec)]";
+            string expression = "select * from pattern [(every-Distinct(a.intPrimitive) a=SupportBean) where timer:within(10 sec)]";
             RunTimerWithinOverDistinct(epService, expression);
     
-            expression = "select * from pattern [(every-Distinct(a.intPrimitive, 2 days 2 minutes) a=SupportBean) where timer:Within(10 sec)]";
+            expression = "select * from pattern [(every-Distinct(a.intPrimitive, 2 days 2 minutes) a=SupportBean) where timer:within(10 sec)]";
             RunTimerWithinOverDistinct(epService, expression);
         }
     
@@ -223,10 +223,10 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionEveryDistinctOverTimerWithin(EPServiceProvider epService) {
-            string expression = "select * from pattern [every-Distinct(a.intPrimitive) (a=SupportBean where timer:Within(10 sec))]";
+            string expression = "select * from pattern [every-Distinct(a.intPrimitive) (a=SupportBean where timer:within(10 sec))]";
             RunEveryDistinctOverTimerWithin(epService, expression);
     
-            expression = "select * from pattern [every-Distinct(a.intPrimitive, 1 hour) (a=SupportBean where timer:Within(10 sec))]";
+            expression = "select * from pattern [every-Distinct(a.intPrimitive, 1 hour) (a=SupportBean where timer:within(10 sec))]";
             RunEveryDistinctOverTimerWithin(epService, expression);
         }
     

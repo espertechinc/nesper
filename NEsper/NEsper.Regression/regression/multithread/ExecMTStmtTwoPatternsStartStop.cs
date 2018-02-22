@@ -29,9 +29,9 @@ namespace com.espertech.esper.regression.multithread
     /// ( every event1=SupportEvent(userID in ('100','101')) ->
     /// (SupportEvent(userID in ('100','101'), direction = event1.direction ) ->
     /// SupportEvent(userID in ('100','101'), direction = event1.direction )
-    /// ) where timer:Within(8 hours)
+    /// ) where timer:within(8 hours)
     /// and not eventNC=SupportEvent(userID in ('100','101'), direction!= event1.direction )
-    /// ) -> eventFinal=SupportEvent(userID in ('100','101'), direction != event1.direction ) where timer:Within(1 hour)
+    /// ) -> eventFinal=SupportEvent(userID in ('100','101'), direction != event1.direction ) where timer:within(1 hour)
     /// 4. Main thread waits for 2 seconds and stops all threads
     /// </summary>
     public class ExecMTStmtTwoPatternsStartStop : RegressionExecution {
@@ -41,9 +41,9 @@ namespace com.espertech.esper.regression.multithread
             string statementTwo = "( every event1=SupportEvent(userId in ('100','101')) ->\n" +
                     "         (SupportEvent(userId in ('100','101'), direction = event1.direction ) ->\n" +
                     "          SupportEvent(userId in ('100','101'), direction = event1.direction )\n" +
-                    "         ) where timer:Within(8 hours)\n" +
+                    "         ) where timer:within(8 hours)\n" +
                     "         and not eventNC=SupportEvent(userId in ('100','101'), direction!= event1.direction )\n" +
-                    "        ) -> eventFinal=SupportEvent(userId in ('100','101'), direction != event1.direction ) where timer:Within(1 hour)";
+                    "        ) -> eventFinal=SupportEvent(userId in ('100','101'), direction != event1.direction ) where timer:within(1 hour)";
     
             var runnable = new TwoPatternRunnable(epService);
             var t = new Thread(runnable.Run);

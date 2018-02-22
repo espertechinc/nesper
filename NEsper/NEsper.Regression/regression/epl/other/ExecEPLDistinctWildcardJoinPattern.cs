@@ -35,8 +35,8 @@ namespace com.espertech.esper.regression.epl.other
                     "every-Distinct(fooA.theString) fooA=SupportBean(intPrimitive=1)" +
                     "->" +
                     "every-Distinct(wooA.theString) wooA=SupportBean(intPrimitive=2)" +
-                    " where timer:Within(1 hour)" +
-                    "]#Time(1 hour) as fooWooPair " +
+                    " where timer:within(1 hour)" +
+                    "]#time(1 hour) as fooWooPair " +
                     "on fooB.longPrimitive = fooWooPair.fooA.longPrimitive" +
                     " order by fooWooPair.wooA.theString asc";
     

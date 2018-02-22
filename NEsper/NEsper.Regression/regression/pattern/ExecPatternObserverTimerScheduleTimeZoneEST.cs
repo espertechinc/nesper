@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.pattern
             EPServiceProviderIsolated iso = epService.GetEPServiceIsolated("E1");
             SendCurrentTime(iso, "2012-10-01T08:59:00.000GMT-04:00");
     
-            string epl = "select * from pattern[timer:Schedule(date: current_timestamp.WithTime(9, 0, 0, 0))]";
+            string epl = "select * from pattern[timer:schedule(date: current_timestamp.WithTime(9, 0, 0, 0))]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     

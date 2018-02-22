@@ -142,7 +142,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             // test "prev" and "prior"
             string[] fields = "c0,c1,c2,c3".Split(',');
-            string eplTwo = "select Prev(1, name) as c0, Prior(1, name) as c1, name as c2, sum(count) as c3 from CarEvent#keepall ce group by Rollup(name)";
+            string eplTwo = "select prev(1, name) as c0, prior(1, name) as c1, name as c2, sum(count) as c3 from CarEvent#keepall ce group by Rollup(name)";
             epService.EPAdministrator.CreateEPL(eplTwo).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new CarEvent("skoda", "france", 10));

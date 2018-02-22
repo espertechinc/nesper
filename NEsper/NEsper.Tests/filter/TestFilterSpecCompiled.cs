@@ -12,10 +12,12 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.support;
+using com.espertech.esper.events;
 using com.espertech.esper.pattern;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.filter;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util;
 
 using NUnit.Framework;
@@ -32,7 +34,8 @@ namespace com.espertech.esper.filter
         public void SetUp()
         {
             _eventTypeName = typeof(SupportBean).FullName;
-            _eventType = SupportEventAdapterService.Service.AddBeanType(_eventTypeName, typeof(SupportBean), true, true, true);
+            _eventType = SupportContainer.Instance.Resolve<EventAdapterService>()
+                .AddBeanType(_eventTypeName, typeof(SupportBean), true, true, true);
         }
     
         [Test]

@@ -35,7 +35,7 @@ namespace com.espertech.esper.view.window
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             // Set up timed window view and a test child view, set the time window size to 1 second
             ExprNode node = SupportExprNodeFactory.MakeIdentNodeBean("LongPrimitive");
             _myView = new ExternallyTimedWindowView(

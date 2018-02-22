@@ -139,7 +139,7 @@ namespace com.espertech.esper.regression.expr.enummethod
     
         private void RunAssertionAccessAggWindow(EPServiceProvider epService) {
             string epl = "select window(*).Where(p => Distance(0, 0, p.location.x, p.location.y) < 20) as centeritems " +
-                    "from Item(type='P')#Time(10) group by assetId";
+                    "from Item(type='P')#time(10) group by assetId";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -157,8 +157,8 @@ namespace com.espertech.esper.regression.expr.enummethod
         }
     
         private void RunAssertionPrevWindow(EPServiceProvider epService) {
-            string epl = "select Prevwindow(items).Where(p => Distance(0, 0, p.location.x, p.location.y) < 20) as centeritems " +
-                    "from Item(type='P')#Time(10) as items";
+            string epl = "select prevwindow(items).Where(p => Distance(0, 0, p.location.x, p.location.y) < 20) as centeritems " +
+                    "from Item(type='P')#time(10) as items";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -250,12 +250,12 @@ namespace com.espertech.esper.regression.expr.enummethod
             AssertStmt(epService, "select Items.Take(5) as first5Items, items.TakeLast(5) as last5Items from LocationReport");
             AssertStmt(epService, "select Items.ToMap(k => k.assetId,v => Distance(v.location.x,v.location.y,0,0)) as assetDistance from LocationReport");
             AssertStmt(epService, "select Items.Where(i => i.assetId=\"L001\").Union(items.Where(i => i.type=\"P\")) as itemsUnion from LocationReport");
-            AssertStmt(epService, "select (select name from Zone#unique(name)).OrderBy() as orderedZones from pattern [every timer:Interval(30)]");
+            AssertStmt(epService, "select (select name from Zone#unique(name)).OrderBy() as orderedZones from pattern [every timer:interval(30)]");
             epService.EPAdministrator.CreateEPL("create schema MyEvent as (seqone string[], seqtwo string[])");
             AssertStmt(epService, "select Seqone.SequenceEqual(seqtwo) from MyEvent");
-            AssertStmt(epService, "select window(assetId).OrderBy() as orderedAssetIds from Item#Time(10) group by assetId");
-            AssertStmt(epService, "select Prevwindow(assetId).OrderBy() as orderedAssetIds from Item#Time(10) as items");
-            AssertStmt(epService, "select GetZoneNames().Where(z => z!=\"Z1\") from pattern [every timer:Interval(30)]");
+            AssertStmt(epService, "select window(assetId).OrderBy() as orderedAssetIds from Item#time(10) group by assetId");
+            AssertStmt(epService, "select prevwindow(assetId).OrderBy() as orderedAssetIds from Item#time(10) as items");
+            AssertStmt(epService, "select GetZoneNames().Where(z => z!=\"Z1\") from pattern [every timer:interval(30)]");
             AssertStmt(epService, "select Items.SelectFrom(i => new{assetId,distanceCenter=Distance(i.location.x,i.location.y,0,0)}) as itemInfo from LocationReport");
             AssertStmt(epService, "select Items.LeastFrequent(i => type) as leastFreqType from LocationReport");
     

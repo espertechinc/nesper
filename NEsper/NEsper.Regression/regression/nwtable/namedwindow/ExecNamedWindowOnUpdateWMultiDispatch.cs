@@ -46,8 +46,8 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             // ESPER-568
             epService.EPAdministrator.CreateEPL("create schema S2 ( company string, value double, total double)");
-            EPStatement stmtWin = epService.EPAdministrator.CreateEPL("create window S2Win#Time(25 hour)#Firstunique(company) as S2");
-            epService.EPAdministrator.CreateEPL("insert into S2Win select * from S2#Firstunique(company)");
+            EPStatement stmtWin = epService.EPAdministrator.CreateEPL("create window S2Win#time(25 hour)#firstunique(company) as S2");
+            epService.EPAdministrator.CreateEPL("insert into S2Win select * from S2#firstunique(company)");
             epService.EPAdministrator.CreateEPL("on S2 as a update S2Win as b set total = b.value + a.value");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select count(*) as cnt from S2Win");
             stmt.Events += listener.Update;

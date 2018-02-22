@@ -56,7 +56,7 @@ namespace com.espertech.esper.regression.epl.join
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
     
             string stmtTextLO = "select sum(intPrimitive) as c0, count(*) as c1 " +
-                    "from pattern [every timer:Interval(1 seconds)] unidirectional " +
+                    "from pattern [every timer:interval(1 seconds)] unidirectional " +
                     "left outer join " +
                     "SupportBean#keepall";
             EPStatement stmtLO = epService.EPAdministrator.CreateEPL(stmtTextLO);
@@ -355,7 +355,7 @@ namespace com.espertech.esper.regression.epl.join
     
             // no iterator allowed
             string stmtText = "select count(*) as num " +
-                    "from pattern [every timer:At(*/1,*,*,*,*)] unidirectional,\n" +
+                    "from pattern [every timer:at(*/1,*,*,*,*)] unidirectional,\n" +
                     "SupportBean(intPrimitive=1)#unique(theString) a,\n" +
                     "SupportBean(intPrimitive=2)#unique(theString) b\n" +
                     "where a.theString = b.theString";
@@ -382,7 +382,7 @@ namespace com.espertech.esper.regression.epl.join
     
             // no iterator allowed
             string stmtText = "select count(*) as num " +
-                    "from pattern [every timer:At(*/1,*,*,*,*)] unidirectional,\n" +
+                    "from pattern [every timer:at(*/1,*,*,*,*)] unidirectional,\n" +
                     "SupportBean(intPrimitive=1)#unique(theString) a,\n" +
                     "SupportBean(intPrimitive=2)#unique(theString) b\n" +
                     "where a.theString = b.theString output every 2 minutes";

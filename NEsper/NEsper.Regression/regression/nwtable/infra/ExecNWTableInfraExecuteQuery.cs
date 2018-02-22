@@ -147,23 +147,23 @@ namespace com.espertech.esper.regression.nwtable.infra
                 epService, epl,
                 "Error executing statement: Output rate limiting is not a supported feature of on-demand queries [select * from MyInfra output every 10 seconds]");
 
-            epl = "select Prev(1, theString) from MyInfra";
+            epl = "select prev(1, theString) from MyInfra";
             TryInvalidFAF(
                 epService, epl,
-                "Error executing statement: Failed to validate select-clause expression 'Prev(1,theString)': Previous function cannot be used in this context [select Prev(1, theString) from MyInfra]");
+                "Error executing statement: Failed to validate select-clause expression 'Prev(1,theString)': Previous function cannot be used in this context [select prev(1, theString) from MyInfra]");
 
             epl = "insert into MyInfra(intPrimitive) select 'a'";
             if (isNamedWindow)
             {
                 TryInvalidFAF(
                     epService, epl,
-                    "Error executing statement: Invalid assignment of column 'intPrimitive' of type 'java.lang.string' to event property 'intPrimitive' typed as 'int', column and parameter types mismatch [insert into MyInfra(intPrimitive) select 'a']");
+                    "Error executing statement: Invalid assignment of column 'intPrimitive' of type 'System.String' to event property 'intPrimitive' typed as 'int', column and parameter types mismatch [insert into MyInfra(intPrimitive) select 'a']");
             }
             else
             {
                 TryInvalidFAF(
                     epService, epl,
-                    "Error executing statement: Invalid assignment of column 'intPrimitive' of type 'java.lang.string' to event property 'intPrimitive' typed as 'java.lang.int?', column and parameter types mismatch [insert into MyInfra(intPrimitive) select 'a']");
+                    "Error executing statement: Invalid assignment of column 'intPrimitive' of type 'System.String' to event property 'intPrimitive' typed as '" + Name.Of<int>() + "', column and parameter types mismatch [insert into MyInfra(intPrimitive) select 'a']");
             }
 
             epl = "insert into MyInfra(intPrimitive, theString) select 1";
@@ -188,10 +188,10 @@ namespace com.espertech.esper.regression.nwtable.infra
                     epService, epl,
                     "Error executing statement: On-demand queries require tables or named windows and do not allow event streams or patterns [select * from pattern [every MyInfra]]");
 
-                epl = "select * from MyInfra#Uni(intPrimitive)";
+                epl = "select * from MyInfra#uni(intPrimitive)";
                 TryInvalidFAF(
                     epService, epl,
-                    "Error executing statement: Views are not a supported feature of on-demand queries [select * from MyInfra#Uni(intPrimitive)]");
+                    "Error executing statement: Views are not a supported feature of on-demand queries [select * from MyInfra#uni(intPrimitive)]");
             }
 
             DestroyInfra(epService);

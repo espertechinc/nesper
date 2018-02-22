@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.view
         private void RunAssertionMonthScoped(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             SendCurrentTime(epService, "2002-02-01T09:00:00.000");
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select rstream * from SupportBean#Time_accum(1 month)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select rstream * from SupportBean#time_accum(1 month)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -62,7 +62,7 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select irstream * from " + typeof(SupportMarketDataBean).FullName +
-                            "#Time_accum(10 sec)");
+                            "#time_accum(10 sec)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
@@ -145,7 +145,7 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select rstream * from " + typeof(SupportMarketDataBean).FullName +
-                            "#Time_accum(10 sec)");
+                            "#time_accum(10 sec)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
@@ -172,8 +172,8 @@ namespace com.espertech.esper.regression.view
             long startTime = 1000;
             SendTimer(epService, startTime);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
-                    "select irstream price, Prev(1, price) as prevPrice, Prior(1, price) as priorPrice from " + typeof(SupportMarketDataBean).FullName +
-                            "#Time_accum(10 sec)");
+                    "select irstream price, prev(1, price) as prevPrice, prior(1, price) as priorPrice from " + typeof(SupportMarketDataBean).FullName +
+                            "#time_accum(10 sec)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
@@ -213,7 +213,7 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select irstream sum(price) as sumPrice from " + typeof(SupportMarketDataBean).FullName +
-                            "#Time_accum(10 sec)");
+                            "#time_accum(10 sec)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select irstream * from " + typeof(SupportMarketDataBean).FullName +
-                            "#Groupwin(symbol)#Time_accum(10 sec)");
+                            "#groupwin(symbol)#time_accum(10 sec)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;

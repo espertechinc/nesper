@@ -34,7 +34,7 @@ namespace com.espertech.esper.view.std
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _factory = new GroupByViewFactory();
             _viewFactoryContext = new ViewFactoryContext(
                 SupportStatementContextFactory.MakeContext(_container), 1, null, null, false, -1, false);

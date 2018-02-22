@@ -319,7 +319,7 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionJoin(EPServiceProvider epService) {
             string[] fieldList = "bigint,bigdec".Split(',');
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select bigint,bigdec from SupportBeanNumeric#Keepall(), SupportBean#keepall " +
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select bigint,bigdec from SupportBeanNumeric#keepall(), SupportBean#keepall " +
                     "where intPrimitive = bigint and doublePrimitive = bigdec");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

@@ -79,7 +79,7 @@ namespace com.espertech.esper.regression.dataflow
     
             // inject properties: property invalid type
             SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "MyGraph", "create dataflow MyGraph MyTestOp {theString: 1}",
-                    "Failed to instantiate data flow 'MyGraph': Property 'theString' of class com.espertech.esper.regression.dataflow.ExecDataflowInvalidGraph$MyTestOp expects an java.lang.string but receives a value of type java.lang.int?");
+                    "Failed to instantiate data flow 'MyGraph': Property 'theString' of class com.espertech.esper.regression.dataflow.ExecDataflowInvalidGraph$MyTestOp expects an System.String but receives a value of type " + Name.Of<int>() + "");
     
             // two incompatible input streams: different types
             epl = "create dataflow MyGraph " +

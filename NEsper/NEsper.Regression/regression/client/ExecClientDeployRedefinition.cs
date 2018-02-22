@@ -112,11 +112,11 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionNamedWindow(EPServiceProvider epService) {
-            DeploymentResult result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy("create window MyWindow#Time(30) as (col1 int, col2 string)",
+            DeploymentResult result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy("create window MyWindow#time(30) as (col1 int, col2 string)",
                     null, null, null);
             epService.EPAdministrator.DeploymentAdmin.UndeployRemove(result.DeploymentId);
     
-            result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy("create window MyWindow#Time(30) as (col1 short, col2 long)");
+            result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy("create window MyWindow#time(30) as (col1 short, col2 long)");
             epService.EPAdministrator.DeploymentAdmin.UndeployRemove(result.DeploymentId);
         }
     

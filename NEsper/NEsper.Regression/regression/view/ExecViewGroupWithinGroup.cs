@@ -33,7 +33,7 @@ namespace com.espertech.esper.regression.view
             // Listen to all ticks
             EPStatement viewGrouped = epService.EPAdministrator.CreateEPL(
                     "select irstream datapoints as size, symbol, feed, volume from " + typeof(SupportMarketDataBean).FullName +
-                            "#Groupwin(symbol)#Groupwin(feed)#Groupwin(volume)#Uni(price) order by symbol, feed, volume");
+                            "#groupwin(symbol)#groupwin(feed)#groupwin(volume)#uni(price) order by symbol, feed, volume");
             var listener = new SupportUpdateListener();
     
             // Counts per symbol, feed and volume the events

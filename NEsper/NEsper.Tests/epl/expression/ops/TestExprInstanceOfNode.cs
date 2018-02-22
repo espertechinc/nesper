@@ -29,7 +29,7 @@ namespace com.espertech.esper.epl.expression.ops
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _isNodes = new ExprInstanceofNode[5];
     
             _isNodes[0] = new ExprInstanceofNode(new String[] {"long"}, _container);

@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.rowrecog
         private void RunAssertionTimeWindowUnpartitioned(EPServiceProvider epService) {
             SendTimer(0, epService);
             string[] fields = "a_string,b_string".Split(',');
-            string text = "select * from MyEvent#Time(5) " +
+            string text = "select * from MyEvent#time(5) " +
                     "match_recognize (" +
                     "  measures A.theString as a_string, B.theString as b_string" +
                     "  all matches pattern (A B) " +
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regression.rowrecog
         private void RunAssertionTimeWindowPartitioned(EPServiceProvider epService) {
             SendTimer(0, epService);
             string[] fields = "cat,a_string,b_string".Split(',');
-            string text = "select * from MyEvent#Time(5) " +
+            string text = "select * from MyEvent#time(5) " +
                     "match_recognize (" +
                     "  partition by cat" +
                     "  measures A.cat as cat, A.theString as a_string, B.theString as b_string" +
@@ -184,7 +184,7 @@ namespace com.espertech.esper.regression.rowrecog
         private void RunAssertionTimeWindowPartitionedSimple(EPServiceProvider epService) {
             SendTimer(0, epService);
             string[] fields = "a_string".Split(',');
-            string text = "select * from MyEvent#Time(5 sec) " +
+            string text = "select * from MyEvent#time(5 sec) " +
                     "match_recognize (" +
                     "  partition by cat " +
                     "  measures A.cat as cat, A.theString as a_string" +

@@ -30,7 +30,7 @@ namespace com.espertech.esper.regression.view
             // Testing the two forms of the case expression
             // Furthermore the test checks the different when clauses and actions related.
             string caseExpr = "select volume " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#unique(symbol)#Time(10)";
+                    "from " + typeof(SupportMarketDataBean).FullName + "#unique(symbol)#time(10)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();

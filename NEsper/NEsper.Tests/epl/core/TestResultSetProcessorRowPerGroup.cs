@@ -15,6 +15,7 @@ using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core.eval;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.table.mgmt;
+using com.espertech.esper.events;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
@@ -34,7 +35,7 @@ namespace com.espertech.esper.epl.core
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext(_container);
     
             var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(
@@ -45,7 +46,7 @@ namespace com.espertech.esper.epl.core
                 Collections.GetEmptyList<SelectExprStreamDesc>(), 
                 null, null, false,
                 new SupportStreamTypeSvc1Stream(),
-                SupportEventAdapterService.Service, null, 
+                _container.Resolve<EventAdapterService>(), null, 
                 selectExprEventTypeRegistry, 
                 _agentInstanceContext.StatementContext.EngineImportService,
                 1, "stmtname", null, 

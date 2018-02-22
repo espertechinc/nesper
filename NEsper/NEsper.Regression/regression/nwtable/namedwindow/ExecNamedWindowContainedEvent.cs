@@ -31,7 +31,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPAdministrator.Configuration.AddEventType(typeof(OrderBean));
     
             epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
-            epService.EPAdministrator.CreateEPL("create window OrderWindow#Time(30) as OrderBean");
+            epService.EPAdministrator.CreateEPL("create window OrderWindow#time(30) as OrderBean");
     
             try {
                 string epl = "select * from SupportBean unidirectional, OrderWindow[books]";

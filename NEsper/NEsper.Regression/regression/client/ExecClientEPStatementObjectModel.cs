@@ -70,7 +70,7 @@ namespace com.espertech.esper.regression.client
             model.OutputLimitClause = OutputLimitClause.Create(Expressions.TimePeriod(null, null, null, 10, null));
             model.OrderByClause = OrderByClause.Create("line");
     
-            Assert.AreEqual("insert into ReadyStreamAvg(line, avgAge) select line, avg(age) as avgAge from " + typeof(SupportBean).FullName + "(line in (1,8,10))#Time(10) as RS where waverId is not null group by line having avg(age)<0 output every 10 seconds order by line", model.ToEPL());
+            Assert.AreEqual("insert into ReadyStreamAvg(line, avgAge) select line, avg(age) as avgAge from " + typeof(SupportBean).FullName + "(line in (1,8,10))#time(10) as RS where waverId is not null group by line having avg(age)<0 output every 10 seconds order by line", model.ToEPL());
             SerializableObjectCopier.Copy(model);
         }
     
@@ -156,9 +156,9 @@ namespace com.espertech.esper.regression.client
                     new[] {"every A and not B", null, "PatternAndExpr"},
                     new[] {"every A and not B", null, "PatternAndExpr"},
                     new[] {"every A -> B", null, "PatternFollowedByExpr"},
-                    new[] {"A where timer:Within(10)", null, "PatternGuardExpr"},
+                    new[] {"A where timer:within(10)", null, "PatternGuardExpr"},
                     new[] {"every (A and B)", null, "PatternEveryExpr"},
-                    new[] {"every A where timer:Within(10)", null, "PatternEveryExpr"},
+                    new[] {"every A where timer:within(10)", null, "PatternEveryExpr"},
                     new[] {"A or B until C", null, "PatternOrExpr"},
                     new[] {"A or (B until C)", "A or B until C", "PatternOrExpr"},
                     new[] {"every (every A)", null, "PatternEveryExpr"},

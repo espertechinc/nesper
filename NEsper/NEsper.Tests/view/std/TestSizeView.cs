@@ -32,7 +32,7 @@ namespace com.espertech.esper.view.std
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             // Set up length window view and a test child view
             EventType type = SizeView.CreateEventType(SupportStatementContextFactory.MakeContext(_container), null, 1);

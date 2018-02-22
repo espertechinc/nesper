@@ -58,7 +58,7 @@ namespace com.espertech.esper.regression.pattern
         }
 
         private void RunAssertionEvery15thMonth(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("select * from pattern[every timer:At(*,*,*,*/15,*)]").Dispose();
+            epService.EPAdministrator.CreateEPL("select * from pattern[every timer:at(*,*,*,*/15,*)]").Dispose();
         }
     
         private void RunAssertionOp(EPServiceProvider epService) {
@@ -83,120 +83,120 @@ namespace com.espertech.esper.regression.pattern
             var testCaseList = new CaseList();
             EventExpressionCase testCase = null;
     
-            testCase = new EventExpressionCase("timer:At(10, 8, *, *, *)");
+            testCase = new EventExpressionCase("timer:at(10, 8, *, *, *)");
             testCase.Add("A1");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(10, 8, *, *, *, 1)");
+            testCase = new EventExpressionCase("timer:at(10, 8, *, *, *, 1)");
             testCase.Add("B1");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(5, 8, *, *, *)");
+            testCase = new EventExpressionCase("timer:at(5, 8, *, *, *)");
             testCase.Add("A1");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(10, 8, *, *, *, *)");
+            testCase = new EventExpressionCase("timer:at(10, 8, *, *, *, *)");
             testCase.Add("A1");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(25, 9, *, *, *)");
+            testCase = new EventExpressionCase("timer:at(25, 9, *, *, *)");
             testCase.Add("D2");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(11, 8, *, *, *)");
+            testCase = new EventExpressionCase("timer:at(11, 8, *, *, *)");
             testCase.Add("B1");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(19, 8, *, *, *, 59)");
+            testCase = new EventExpressionCase("timer:at(19, 8, *, *, *, 59)");
             testCase.Add("B1");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every timer:At(* / 5, *, *, *, *, *)");
+            testCase = new EventExpressionCase("every timer:at(* / 5, *, *, *, *, *)");
             AddAll(testCase);
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every timer:At(*, *, *, *, *, * / 10)");
+            testCase = new EventExpressionCase("every timer:at(*, *, *, *, *, * / 10)");
             AddAll(testCase);
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(20, 8, *, *, *, 20)");
+            testCase = new EventExpressionCase("timer:at(20, 8, *, *, *, 20)");
             testCase.Add("C1");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every timer:At(*, *, *, *, *)");
+            testCase = new EventExpressionCase("every timer:at(*, *, *, *, *)");
             AddAll(testCase);
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every timer:At(*, *, *, *, *, *)");
+            testCase = new EventExpressionCase("every timer:at(*, *, *, *, *, *)");
             AddAll(testCase);
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every timer:At(* / 9, *, *, *, *, *)");
+            testCase = new EventExpressionCase("every timer:at(* / 9, *, *, *, *, *)");
             AddAll(testCase);
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every timer:At(* / 10, *, *, *, *, *)");
+            testCase = new EventExpressionCase("every timer:at(* / 10, *, *, *, *, *)");
             AddAll(testCase);
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every timer:At(* / 30, *, *, *, *)");
+            testCase = new EventExpressionCase("every timer:at(* / 30, *, *, *, *)");
             testCase.Add("C1");
             testCase.Add("D1");
             testCase.Add("D2");
             testCase.Add("D3");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(10, 9, *, *, *, 10) or timer:At(30, 9, *, *, *, *)");
+            testCase = new EventExpressionCase("timer:at(10, 9, *, *, *, 10) or timer:at(30, 9, *, *, *, *)");
             testCase.Add("F1");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id='B3') -> timer:At(20, 9, *, *, *, *)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id='B3') -> timer:at(20, 9, *, *, *, *)");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id='B3') -> timer:At(45, 9, *, *, *, *)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id='B3') -> timer:at(45, 9, *, *, *, *)");
             testCase.Add("G1", "b", testData.GetEvent("B3"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(59, 8, *, *, *, 59) -> d=" + EVENT_D_CLASS);
+            testCase = new EventExpressionCase("timer:at(59, 8, *, *, *, 59) -> d=" + EVENT_D_CLASS);
             testCase.Add("D1", "d", testData.GetEvent("D1"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(*, 9, *, *, *, 59) -> d=" + EVENT_D_CLASS);
+            testCase = new EventExpressionCase("timer:at(*, 9, *, *, *, 59) -> d=" + EVENT_D_CLASS);
             testCase.Add("D2", "d", testData.GetEvent("D2"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(22, 8, *, *, *) -> b=" + EVENT_B_CLASS + "(id='B3') -> timer:At(55, *, *, *, *)");
+            testCase = new EventExpressionCase("timer:at(22, 8, *, *, *) -> b=" + EVENT_B_CLASS + "(id='B3') -> timer:at(55, *, *, *, *)");
             testCase.Add("D3", "b", testData.GetEvent("B3"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(40, *, *, *, *, 1) and b=" + EVENT_B_CLASS);
+            testCase = new EventExpressionCase("timer:at(40, *, *, *, *, 1) and b=" + EVENT_B_CLASS);
             testCase.Add("A2", "b", testData.GetEvent("B1"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(40, 9, *, *, *, 1) or d=" + EVENT_D_CLASS + "(id=\"D3\")");
+            testCase = new EventExpressionCase("timer:at(40, 9, *, *, *, 1) or d=" + EVENT_D_CLASS + "(id=\"D3\")");
             testCase.Add("G1");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(22, 8, *, *, *) -> b=" + EVENT_B_CLASS + "() -> timer:At(55, 8, *, *, *)");
+            testCase = new EventExpressionCase("timer:at(22, 8, *, *, *) -> b=" + EVENT_B_CLASS + "() -> timer:at(55, 8, *, *, *)");
             testCase.Add("D1", "b", testData.GetEvent("B2"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(22, 8, *, *, *, 1) where timer:Within(1 second)");
+            testCase = new EventExpressionCase("timer:at(22, 8, *, *, *, 1) where timer:within(1 second)");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(22, 8, *, *, *, 1) where timer:Within(31 minutes)");
+            testCase = new EventExpressionCase("timer:at(22, 8, *, *, *, 1) where timer:within(31 minutes)");
             testCase.Add("C1");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(*, 9, *, *, *) and timer:At(55, *, *, *, *)");
+            testCase = new EventExpressionCase("timer:at(*, 9, *, *, *) and timer:at(55, *, *, *, *)");
             testCase.Add("D1");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:At(40, 8, *, *, *, 1) and b=" + EVENT_B_CLASS);
+            testCase = new EventExpressionCase("timer:at(40, 8, *, *, *, 1) and b=" + EVENT_B_CLASS);
             testCase.Add("A2", "b", testData.GetEvent("B1"));
             testCaseList.AddTest(testCase);
     
-            var text = "select * from pattern [timer:At(10,8,*,*,*,*)]";
+            var text = "select * from pattern [timer:at(10,8,*,*,*,*)]";
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.CreateWildcard();
             PatternExpr pattern = Patterns.TimerAt(10, 8, null, null, null, null);
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regression.pattern
             // ZeroDepthEventStream looses the event.
             // There should be no use case requiring this
             // 
-            //          testCase = new EventExpressionCase("not timer:At(22, 8, *, *, *, 1)");
+            //          testCase = new EventExpressionCase("not timer:at(22, 8, *, *, *, 1)");
             //          testCase.Add(EventCollection.ON_START_EVENT_ID);
             //          testCaseList.AddTest(testCase);
     
@@ -222,7 +222,7 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionAtWeekdays(EPServiceProvider epService) {
-            const string expression = "select * from pattern [every timer:At(0,8,*,*,[1,2,3,4,5])]";
+            const string expression = "select * from pattern [every timer:at(0,8,*,*,[1,2,3,4,5])]";
 
             var dateTime = MakeDateTime(2008, 7, 3, 10, 0, 0, 0); // start on a Sunday at 6am, August 3 2008
             SendTimer(dateTime.TimeInMillis(), epService);
@@ -239,7 +239,7 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionAtWeekdaysPrepared(EPServiceProvider epService) {
-            var expression = "select * from pattern [every timer:At(?,?,*,*,[1,2,3,4,5])]";
+            var expression = "select * from pattern [every timer:at(?,?,*,*,[1,2,3,4,5])]";
 
             var cal = MakeDateTime(2008, 7, 3, 10, 0, 0, 0); // start on a Sunday at 6am, August 3 2008
             SendTimer(cal.TimeInMillis(), epService);
@@ -262,7 +262,7 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionAtWeekdaysVariable(EPServiceProvider epService) {
-            var expression = "select * from pattern [every timer:At(VMIN,VHOUR,*,*,[1,2,3,4,5])]";
+            var expression = "select * from pattern [every timer:at(VMIN,VHOUR,*,*,[1,2,3,4,5])]";
 
             var cal = MakeDateTime(2008, 7, 3, 10, 0, 0, 0); // start on a Sunday at 6am, August 3 2008
             SendTimer(cal.TimeInMillis(), epService);
@@ -281,7 +281,7 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionExpression(EPServiceProvider epService) {
-            var expression = "select * from pattern [every timer:At(7+1-8,4+4,*,*,[1,2,3,4,5])]";
+            var expression = "select * from pattern [every timer:at(7+1-8,4+4,*,*,[1,2,3,4,5])]";
 
             var cal = MakeDateTime(2008, 7, 3, 10, 0, 0, 0); // start on a Sunday at 6am, August 3 2008
             SendTimer(cal.TimeInMillis(), epService);
@@ -304,7 +304,7 @@ namespace com.espertech.esper.regression.pattern
         private void RunAssertionPropertyAndSODAAndTimezone(EPServiceProvider epService) {
             var listener = new SupportUpdateListener();
             SendTimeEvent("2008-08-3T06:00:00.000", epService);
-            var expression = "select * from pattern [a=SupportBean -> every timer:At(2*a.intPrimitive,*,*,*,*)]";
+            var expression = "select * from pattern [a=SupportBean -> every timer:at(2*a.intPrimitive,*,*,*,*)]";
             var statement = epService.EPAdministrator.CreateEPL(expression);
             statement.Events += listener.Update;
     
@@ -318,14 +318,14 @@ namespace com.espertech.esper.regression.pattern
             statement.Dispose();
     
             // test SODA
-            var epl = "select * from pattern [every timer:At(*/VFREQ,VMIN:VMAX,1 last,*,[8,2:VMAX,*/VREQ])]";
+            var epl = "select * from pattern [every timer:at(*/VFREQ,VMIN:VMAX,1 last,*,[8,2:VMAX,*/VREQ])]";
             var model = epService.EPAdministrator.CompileEPL(epl);
             Assert.AreEqual(epl, model.ToEPL());
 
             // test timezone
             if (TimeZoneInfo.Local.BaseUtcOffset == TimeSpan.FromHours(-5)) {    // asserting only in EST timezone, see schedule util tests
                 SendTimeEvent("2008-01-4T06:50:00.000", epService);
-                epService.EPAdministrator.CreateEPL("select * from pattern [timer:At(0, 5, 4, 1, *, 0, 'PST')]").Events += listener.Update;
+                epService.EPAdministrator.CreateEPL("select * from pattern [timer:at(0, 5, 4, 1, *, 0, 'PST')]").Events += listener.Update;
     
                 SendTimeEvent("2008-01-4T07:59:59.999", epService);
                 Assert.IsFalse(listener.GetAndClearIsInvoked());
@@ -333,8 +333,8 @@ namespace com.espertech.esper.regression.pattern
                 SendTimeEvent("2008-01-4T08:00:00.000", epService);
                 Assert.IsTrue(listener.GetAndClearIsInvoked());
             }
-            epService.EPAdministrator.CreateEPL("select * from pattern [timer:At(0, 5, 4, 8, *, 0, 'xxx')]").Events += listener.Update;
-            epService.EPAdministrator.CreateEPL("select * from pattern [timer:At(0, 5, 4, 8, *, 0, *)]").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select * from pattern [timer:at(0, 5, 4, 8, *, 0, 'xxx')]").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select * from pattern [timer:at(0, 5, 4, 8, *, 0, *)]").Events += listener.Update;
     
             epService.EPAdministrator.DestroyAllStatements();
         }

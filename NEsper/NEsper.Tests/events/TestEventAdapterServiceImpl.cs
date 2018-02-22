@@ -32,7 +32,7 @@ namespace com.espertech.esper.events
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _adapterService = new EventAdapterServiceImpl(
                 new EventTypeIdGeneratorImpl(), 5, null,
                 SupportEngineImportServiceFactory.Make(_container),

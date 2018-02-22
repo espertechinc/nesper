@@ -31,7 +31,7 @@ namespace com.espertech.esper.view.stat
 	    [SetUp]
 	    public void SetUp()
 	    {
-	        _container = SupportContainer.Instance;
+	        _container = SupportContainer.Reset();
 	        _factory = new CorrelationViewFactory();
 	    }
 

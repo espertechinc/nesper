@@ -338,7 +338,7 @@ namespace com.espertech.esper.regression.epl.insertinto
         private void RunAssertionWithOutputLimitAndSort(EPServiceProvider epService) {
             // NOTICE: we are inserting the RSTREAM (removed events)
             string stmtText = "insert rstream into StockTicks(mySymbol, myPrice) " +
-                    "select symbol, price from " + typeof(SupportMarketDataBean).FullName + "#Time(60) " +
+                    "select symbol, price from " + typeof(SupportMarketDataBean).FullName + "#time(60) " +
                     "output every 5 seconds " +
                     "order by symbol asc";
             epService.EPAdministrator.CreateEPL(stmtText);
@@ -449,7 +449,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             stmtTwo.Events += listenerTwo.Update;
     
             string stmtThreeTxt = "select 111 as eventSpecId, A.locationReportId as locationReportId " +
-                    " from pattern [every A=InZone -> (timer:Interval(1 sec) and not OutOfZone(mac=A.mac))]";
+                    " from pattern [every A=InZone -> (timer:interval(1 sec) and not OutOfZone(mac=A.mac))]";
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL(stmtThreeTxt);
             var listener = new SupportUpdateListener();
             stmtThree.Events += listener.Update;
@@ -481,7 +481,7 @@ namespace com.espertech.esper.regression.epl.insertinto
         }
     
         private void RunAssertionNullType(EPServiceProvider epService) {
-            string stmtOneTxt = "insert into InZoneTwo select null as dummy from java.lang.string";
+            string stmtOneTxt = "insert into InZoneTwo select null as dummy from System.String";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtOneTxt);
             Assert.IsTrue(stmtOne.EventType.IsProperty("dummy"));
     
@@ -532,14 +532,14 @@ namespace com.espertech.esper.regression.epl.insertinto
     
             // Attach delta statement to statement and add listener
             stmtText = "select MIN(delta) as minD, max(delta) as maxD " +
-                    "from " + typeName + "#Time(60)";
+                    "from " + typeName + "#time(60)";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtText);
             var resultListenerDelta = new SupportUpdateListener();
             stmtTwo.Events += resultListenerDelta.Update;
     
             // Attach prodict statement to statement and add listener
             stmtText = "select min(product) as minP, max(product) as maxP " +
-                    "from " + typeName + "#Time(60)";
+                    "from " + typeName + "#time(60)";
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL(stmtText);
             var resultListenerProduct = new SupportUpdateListener();
             stmtThree.Events += resultListenerProduct.Update;

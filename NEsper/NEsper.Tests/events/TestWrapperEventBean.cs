@@ -10,10 +10,11 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events
@@ -27,11 +28,14 @@ namespace com.espertech.esper.events
     	private EventType _eventTypeSimple;
     	private EventType _eventTypeCombined;
     	private EventAdapterService _eventService;
-    	
+        private IContainer _container;
+
         [SetUp]
-    	public void SetUp()
-    	{
-    		_eventService = SupportEventAdapterService.Service;
+        public void SetUp()
+        {
+            _container = SupportContainer.Reset();
+
+            _eventService = _container.Resolve<EventAdapterService>();
     		EventType underlyingEventTypeSimple = _eventService.AddBeanType("UnderlyingSimpleBean", typeof(SupportBeanSimple), true, true, true);
     		EventType underlyingEventTypeCombined = _eventService.AddBeanType("UnderlyingCombinedBean", typeof(SupportBeanCombinedProps), true, true, true);
     		

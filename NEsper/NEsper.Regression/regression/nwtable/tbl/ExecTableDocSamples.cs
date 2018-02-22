@@ -115,18 +115,18 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     ")");
             epService.EPAdministrator.CreateEPL("into table IntrusionCountTable\n" +
                     "select count(*) as countIntrusion10Sec\n" +
-                    "from IntrusionEvent#Time(10)\n" +
+                    "from IntrusionEvent#time(10)\n" +
                     "group by fromAddress, toAddress");
             epService.EPAdministrator.CreateEPL("into table IntrusionCountTable\n" +
                     "select count(*) as countIntrusion60Sec\n" +
-                    "from IntrusionEvent#Time(60)\n" +
+                    "from IntrusionEvent#time(60)\n" +
                     "group by fromAddress, toAddress");
     
             epService.EPAdministrator.CreateEPL("create table TotalIntrusionCountTable (totalIntrusions count(*))");
             epService.EPAdministrator.CreateEPL("into table TotalIntrusionCountTable select count(*) as totalIntrusions from IntrusionEvent");
             epService.EPAdministrator.CreateEPL("expression alias totalIntrusions {count(*)}\n" +
                     "select totalIntrusions from IntrusionEvent");
-            epService.EPAdministrator.CreateEPL("select TotalIntrusionCountTable.totalIntrusions from pattern[every timer:Interval(60 sec)]");
+            epService.EPAdministrator.CreateEPL("select TotalIntrusionCountTable.totalIntrusions from pattern[every timer:interval(60 sec)]");
     
             epService.EPAdministrator.CreateEPL("create table MyTable (\n" +
                     "theWindow window(*) @Type(MyEvent),\n" +

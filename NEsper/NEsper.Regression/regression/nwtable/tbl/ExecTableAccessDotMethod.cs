@@ -114,7 +114,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplDeclare);
     
             string eplInto = "into table varaggWDE " +
-                    "select lastever(longPrimitive) as a1, window(*) as a2 from SupportBean#Time(10 seconds)" +
+                    "select lastever(longPrimitive) as a1, window(*) as a2 from SupportBean#time(10 seconds)" +
                     (grouped ? " group by theString" : "");
             EPStatement stmtInto = SupportModelHelper.CreateByCompileOrParse(epService, soda, eplInto);
             var expectedAggType = new object[][]{new object[] {"a1", typeof(long)}, new object[] {"a2", typeof(SupportBean[])}};

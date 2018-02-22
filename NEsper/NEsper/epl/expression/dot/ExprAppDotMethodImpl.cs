@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.IO;
 
 using com.espertech.esper.epl.core;
@@ -15,6 +16,7 @@ using com.espertech.esper.filter;
 
 namespace com.espertech.esper.epl.expression.dot
 {
+    [Serializable]
     public class ExprAppDotMethodImpl : ExprNodeBase
         , FilterSpecCompilerAdvIndexDescProvider
         , FilterExprAnalyzerAffectorProvider

@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.multithread
     
             _epAdministrator.StartAllStatements();
     
-            string epl = "insert into Stream1 select count(*) as cnt from SupportBean#Time(7 sec)";
+            string epl = "insert into Stream1 select count(*) as cnt from SupportBean#time(7 sec)";
             CreateEPL(epl, _noActionUpdateListener.Update);
             epl = epl + " output every 10 seconds";
             CreateEPL(epl, _noActionUpdateListener.Update);

@@ -25,7 +25,7 @@ namespace com.espertech.esper.epl.spec.util
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             var config = new Configuration(_container);
             config.EngineDefaults.Threading.IsInternalTimerEnabled = false;

@@ -26,7 +26,7 @@ namespace com.espertech.esper.epl.expression.ops
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             _variableService = new VariableServiceImpl(
                 100, null, null, null, _container.RWLockManager(), _container.ThreadLocalManager());

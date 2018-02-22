@@ -30,7 +30,7 @@ namespace com.espertech.esper.regression.dataflow
             epService.EPAdministrator.Configuration.AddImport(typeof(MyTokenizerCounter).Namespace + ".*");
             epService.EPAdministrator.Configuration.AddImport(typeof(DefaultSupportCaptureOp).Namespace + ".*");
     
-            string epl = "create dataflow WordCount " +
+            var epl = "create dataflow WordCount " +
                     "MyLineFeedSource -> LineOfTextStream {} " +
                     "MyTokenizerCounter(LineOfTextStream) -> SingleLineCountStream {}" +
                     "MyWordCountAggregator(SingleLineCountStream) -> WordCountStream {}" +
@@ -45,10 +45,11 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.DataFlowRuntime.Instantiate("WordCount", options).Start();
     
-            object[] received = future.GetValue(3, TimeUnit.SECONDS);
+            var received = future.GetValue(3, TimeUnit.SECONDS);
             Assert.AreEqual(1, received.Length);
-            MyWordCountStats stats = (MyWordCountStats) received[0];
-            EPAssertionUtil.AssertProps(stats, "lines,words,chars".Split(','), new object[]{2, 6, 23});
+            var stats = (MyWordCountStats) received[0];
+            EPAssertionUtil.AssertProps(
+                epService.Container, stats, "lines,words,chars".Split(','), new object[]{2, 6, 23});
         }
     }
 } // end of namespace

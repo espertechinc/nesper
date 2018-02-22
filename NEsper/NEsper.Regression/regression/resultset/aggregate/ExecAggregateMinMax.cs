@@ -97,7 +97,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
         private void RunAssertionMemoryMinHaving(EPServiceProvider epService) {
             string statementText = "select price, min(price) as minPrice " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Time(30)" +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#time(30)" +
                     "having price >= min(price) * (1.02)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);

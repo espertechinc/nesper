@@ -15,6 +15,7 @@ using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core.eval;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
+using com.espertech.esper.events;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
@@ -33,9 +34,9 @@ namespace com.espertech.esper.epl.core
 	    [SetUp]
 	    public void SetUp()
 	    {
-	        _container = SupportContainer.Instance;
+	        _container = SupportContainer.Reset();
             var selectList = SupportSelectExprFactory.MakeNoAggregateSelectList();
-	        var eventAdapterService = SupportEventAdapterService.Service;
+	        var eventAdapterService = _container.Resolve<EventAdapterService>();
 	        var vaeService = new SupportValueAddEventService();
 	        var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(
 	            "abc", new StatementEventTypeRefImpl(_container.RWLockManager()));

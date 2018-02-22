@@ -33,15 +33,15 @@ namespace com.espertech.esper.events.bean
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
         }
 
         [TearDown]
         public void TearDown()
         {
-            SupportEventAdapterService.Reset(
-                _container.LockManager(),
-                _container.ClassLoaderProvider());
+            //SupportEventAdapterService.Reset(
+            //    _container.LockManager(),
+            //    _container.ClassLoaderProvider());
         }
     
         [Test]

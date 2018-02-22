@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.view
             // Set up a 2 second time window
             EPStatement timeBatchMean = epService.EPAdministrator.CreateEPL(
                     "select * from " + typeof(SupportMarketDataBean).FullName +
-                            "(symbol='" + SYMBOL + "')#Time_batch(2)#Uni(volume)");
+                            "(symbol='" + SYMBOL + "')#time_batch(2)#uni(volume)");
             var listener = new SupportUpdateListener();
             timeBatchMean.Events += listener.Update;
     
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regression.view
             CheckMeanListener(listener, 1200);
     
             // try to compile with flow control, these are tested elsewhere
-            epService.EPAdministrator.CreateEPL("select * from SupportBean#Time_batch(10 sec, 'FORCE_UPDATE, START_EAGER')");
+            epService.EPAdministrator.CreateEPL("select * from SupportBean#time_batch(10 sec, 'FORCE_UPDATE, START_EAGER')");
         }
     
         private void SendEvent(EPServiceProvider epService, string symbol, long volume) {

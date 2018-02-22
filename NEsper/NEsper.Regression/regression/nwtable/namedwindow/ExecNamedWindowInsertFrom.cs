@@ -244,8 +244,8 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                     "Create window where-clause may not have a subselect [create window MyWindowTwo#keepall as MyWindowINV insert where (select intPrimitive from SupportBean#lastevent)]");
             TryInvalid(epService, "create window MyWindowTwo#keepall as MyWindowINV insert where sum(intPrimitive) > 2",
                     "Create window where-clause may not have an aggregation function [create window MyWindowTwo#keepall as MyWindowINV insert where sum(intPrimitive) > 2]");
-            TryInvalid(epService, "create window MyWindowTwo#keepall as MyWindowINV insert where Prev(1, intPrimitive) = 1",
-                    "Create window where-clause may not have a function that requires view resources (prior, prev) [create window MyWindowTwo#keepall as MyWindowINV insert where Prev(1, intPrimitive) = 1]");
+            TryInvalid(epService, "create window MyWindowTwo#keepall as MyWindowINV insert where prev(1, intPrimitive) = 1",
+                    "Create window where-clause may not have a function that requires view resources (prior, prev) [create window MyWindowTwo#keepall as MyWindowINV insert where prev(1, intPrimitive) = 1]");
         }
     
         private IDictionary<string, object> MakeMap(object[][] entries) {

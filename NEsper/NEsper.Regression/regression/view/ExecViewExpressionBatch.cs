@@ -44,7 +44,7 @@ namespace com.espertech.esper.regression.view
     
             // try with include-trigger-event
             var fields = new string[]{"theString"};
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#Expr_batch(newest_event.intPrimitive != oldest_event.intPrimitive, false)");
+            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#expr_batch(newest_event.intPrimitive != oldest_event.intPrimitive, false)");
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regression.view
             stmtOne.Dispose();
     
             // try with include-trigger-event
-            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#Expr_batch(newest_event.intPrimitive != oldest_event.intPrimitive, true)");
+            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#expr_batch(newest_event.intPrimitive != oldest_event.intPrimitive, true)");
             stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionLengthBatch(EPServiceProvider epService) {
             var fields = new string[]{"theString"};
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#Expr_batch(current_count >= 3, true)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#expr_batch(current_count >= 3, true)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regression.view
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
             var fields = new string[]{"theString"};
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#Expr_batch(newest_timestamp - oldest_timestamp > 2000)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#expr_batch(newest_timestamp - oldest_timestamp > 2000)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regression.view
             epService.EPAdministrator.CreateEPL("create variable bool POST = false");
     
             var fields = new string[]{"theString"};
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#Expr_batch(POST)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#expr_batch(POST)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -203,7 +203,7 @@ namespace com.espertech.esper.regression.view
             epService.EPAdministrator.CreateEPL("create variable long SIZE = 1000");
     
             var fields = new string[]{"theString"};
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#Expr_batch(newest_timestamp - oldest_timestamp > SIZE)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#expr_batch(newest_timestamp - oldest_timestamp > SIZE)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -244,7 +244,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionUDFBuiltin(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("udf", typeof(ExecViewExpressionWindow.LocalUDF).Name, "evaluateExpiryUDF");
-            epService.EPAdministrator.CreateEPL("select * from SupportBean#Expr_batch(Udf(theString, view_reference, expired_count))");
+            epService.EPAdministrator.CreateEPL("select * from SupportBean#expr_batch(Udf(theString, view_reference, expired_count))");
     
             ExecViewExpressionWindow.LocalUDF.Result = true;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
@@ -264,18 +264,18 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            TryInvalid(epService, "select * from SupportBean#Expr_batch(1)",
-                    "Error starting statement: Error attaching view to event stream: Invalid return value for expiry expression, expected a bool return value but received int? [select * from SupportBean#Expr_batch(1)]");
+            TryInvalid(epService, "select * from SupportBean#expr_batch(1)",
+                    "Error starting statement: Error attaching view to event stream: Invalid return value for expiry expression, expected a bool return value but received int? [select * from SupportBean#expr_batch(1)]");
     
-            TryInvalid(epService, "select * from SupportBean#Expr_batch((select * from SupportBean#lastevent))",
-                    "Error starting statement: Error attaching view to event stream: Invalid expiry expression: Sub-select, previous or prior functions are not supported in this context [select * from SupportBean#Expr_batch((select * from SupportBean#lastevent))]");
+            TryInvalid(epService, "select * from SupportBean#expr_batch((select * from SupportBean#lastevent))",
+                    "Error starting statement: Error attaching view to event stream: Invalid expiry expression: Sub-select, previous or prior functions are not supported in this context [select * from SupportBean#expr_batch((select * from SupportBean#lastevent))]");
         }
     
         private void RunAssertionNamedWindowDelete(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
     
             var fields = new string[]{"theString"};
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("create window NW#Expr_batch(current_count > 3) as SupportBean");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("create window NW#expr_batch(current_count > 3) as SupportBean");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -301,7 +301,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionPrev(EPServiceProvider epService) {
             var fields = new string[]{"val0"};
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select Prev(1, theString) as val0 from SupportBean#Expr_batch(current_count > 2)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select prev(1, theString) as val0 from SupportBean#expr_batch(current_count > 2)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -317,7 +317,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionEventPropBatch(EPServiceProvider epService) {
             var fields = new string[]{"val0"};
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString as val0 from SupportBean#Expr_batch(intPrimitive > 0)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString as val0 from SupportBean#expr_batch(intPrimitive > 0)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -340,7 +340,7 @@ namespace com.espertech.esper.regression.view
             var fields = new string[]{"theString"};
     
             // Test un-grouped
-            EPStatement stmtUngrouped = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#Expr_batch(sum(intPrimitive) > 100)");
+            EPStatement stmtUngrouped = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#expr_batch(sum(intPrimitive) > 100)");
             var listener = new SupportUpdateListener();
             stmtUngrouped.Events += listener.Update;
     
@@ -363,7 +363,7 @@ namespace com.espertech.esper.regression.view
             stmtUngrouped.Dispose();
     
             // Test grouped
-            EPStatement stmtGrouped = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#Groupwin(intPrimitive)#Expr_batch(sum(longPrimitive) > 100)");
+            EPStatement stmtGrouped = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#groupwin(intPrimitive)#expr_batch(sum(longPrimitive) > 100)");
             stmtGrouped.Events += listener.Update;
     
             SendEvent(epService, "E1", 1, 10);
@@ -395,7 +395,7 @@ namespace com.espertech.esper.regression.view
     
             // Test on-delete
             epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("create window NW#Expr_batch(sum(intPrimitive) >= 10) as SupportBean");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("create window NW#expr_batch(sum(intPrimitive) >= 10) as SupportBean");
             stmt.Events += listener.Update;
             epService.EPAdministrator.CreateEPL("insert into NW select * from SupportBean");
     

@@ -54,7 +54,7 @@ namespace com.espertech.esper.events.xml
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             var simpleDoc = new XmlDocument();
             simpleDoc.LoadXml(Xml);
@@ -63,7 +63,7 @@ namespace com.espertech.esper.events.xml
             config.RootElementName = "simpleEvent";
             config.AddXPathProperty("customProp", "count(/simpleEvent/nested3/nested4)", XPathResultType.Number);
 
-            var eventType = new SimpleXMLEventType(null, 1, config, SupportEventAdapterService.Service, _container.LockManager());
+            var eventType = new SimpleXMLEventType(null, 1, config, _container.Resolve<EventAdapterService>(), _container.LockManager());
             _theEvent = new XMLEventBean(simpleDoc.DocumentElement, eventType);
         }
 

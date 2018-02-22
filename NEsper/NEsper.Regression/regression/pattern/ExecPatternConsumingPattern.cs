@@ -114,7 +114,7 @@ namespace com.espertech.esper.regression.pattern
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " + TargetEnum.DISCARD_ONLY.GetText() + " [" +
-                "every a=A -> b=B -> timer:Interval(a.mysec)]").Events += listener.Update;
+                "every a=A -> b=B -> timer:interval(a.mysec)]").Events += listener.Update;
             SendAEvent(epService, "A1", 5); // 5 seconds for this one
             SendAEvent(epService, "A2", 1); // 1 seconds for this one
             SendBEvent(epService, "B1");
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regression.pattern
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " + TargetEnum.DISCARD_ONLY.GetText() + " [" +
-                "every a=A -> timer:Interval(a.mysec) and not (B -> C)]").Events += listener.Update;
+                "every a=A -> timer:interval(a.mysec) and not (B -> C)]").Events += listener.Update;
             SendAEvent(epService, "A1", 5); // 5 sec
             SendAEvent(epService, "A2", 1); // 1 sec
             SendBEvent(epService, "B1");
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regression.pattern
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " + TargetEnum.DISCARD_ONLY.GetText() + " [" +
-                "every a=A -> (b=B -> c=C(pc=a.pa)) or timer:Interval(1000)]").Events += listener.Update;
+                "every a=A -> (b=B -> c=C(pc=a.pa)) or timer:interval(1000)]").Events += listener.Update;
             SendAEvent(epService, "A1", "x");
             SendAEvent(epService, "A2", "y");
             SendBEvent(epService, "B1");
@@ -393,7 +393,7 @@ namespace com.espertech.esper.regression.pattern
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " + TargetEnum.DISCARD_ONLY.GetText() + "[" +
-                "every a1=A -> ([:100] aarr=A until (timer:Interval(10 sec) and not b=B))]").Events += listener.Update;
+                "every a1=A -> ([:100] aarr=A until (timer:interval(10 sec) and not b=B))]").Events += listener.Update;
 
             SendAEvent(epService, "A1");
             SendTime(epService, 1000);
@@ -507,7 +507,7 @@ namespace com.espertech.esper.regression.pattern
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " +
                 (matchDiscard ? TargetEnum.DISCARD_ONLY.GetText() : "") + "[" +
-                "every a=A -> b=B -> c=C(pc=a.pa) where timer:Within(1)]").Events += listener.Update;
+                "every a=A -> b=B -> c=C(pc=a.pa) where timer:within(1)]").Events += listener.Update;
             SendAEvent(epService, "A1", "x");
             SendAEvent(epService, "A2", "y");
             SendBEvent(epService, "B1");
@@ -535,7 +535,7 @@ namespace com.espertech.esper.regression.pattern
             epService.EPAdministrator.CreateEPL(
                 "select * from pattern " +
                 (matchDiscard ? TargetEnum.DISCARD_ONLY.GetText() : "") + " [" +
-                "every a=A -> (b=B -> c=C(pc=a.pa)) where timer:Within(1)]").Events += listener.Update;
+                "every a=A -> (b=B -> c=C(pc=a.pa)) where timer:within(1)]").Events += listener.Update;
             SendAEvent(epService, "A1", "x");
             SendAEvent(epService, "A2", "y");
             SendBEvent(epService, "B1");

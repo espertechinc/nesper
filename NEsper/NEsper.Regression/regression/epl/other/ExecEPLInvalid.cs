@@ -47,7 +47,7 @@ namespace com.espertech.esper.regression.epl.other
             exceptionText = GetSyntaxExceptionEPL(epService, "select * from SupportBean a where a.intPrimitive between r.start and r.end");
             Assert.AreEqual("Incorrect syntax near 'start' (a reserved keyword) at line 1 column 59, please check the where clause [select * from SupportBean a where a.intPrimitive between r.start and r.end]", exceptionText);
     
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from Java.lang.Object(1=2=3)",
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from System.Object(1=2=3)",
                     "Failed to validate filter expression '1=2': Invalid use of equals, expecting left-hand side and right-hand side but received 3 expressions");
         }
     

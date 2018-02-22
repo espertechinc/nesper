@@ -91,11 +91,11 @@ namespace com.espertech.esper.regression.resultset.aggregate
                 epService, "select rate(longPrimitive) as myrate from SupportBean",
                 "Error starting statement: Failed to validate select-clause expression 'rate(longPrimitive)': The rate aggregation function in the timestamp-property notation requires data windows [select rate(longPrimitive) as myrate from SupportBean]");
             TryInvalid(
-                epService, "select rate(current_timestamp) as myrate from SupportBean#Time(20)",
-                "Error starting statement: Failed to validate select-clause expression 'rate(Current_timestamp())': The rate aggregation function does not allow the current engine timestamp as a parameter [select rate(current_timestamp) as myrate from SupportBean#Time(20)]");
+                epService, "select rate(current_timestamp) as myrate from SupportBean#time(20)",
+                "Error starting statement: Failed to validate select-clause expression 'rate(Current_timestamp())': The rate aggregation function does not allow the current engine timestamp as a parameter [select rate(current_timestamp) as myrate from SupportBean#time(20)]");
             TryInvalid(
-                epService, "select rate(theString) as myrate from SupportBean#Time(20)",
-                "Error starting statement: Failed to validate select-clause expression 'rate(theString)': The rate aggregation function requires a property or expression returning a non-constant long-type value as the first parameter in the timestamp-property notation [select rate(theString) as myrate from SupportBean#Time(20)]");
+                epService, "select rate(theString) as myrate from SupportBean#time(20)",
+                "Error starting statement: Failed to validate select-clause expression 'rate(theString)': The rate aggregation function requires a property or expression returning a non-constant long-type value as the first parameter in the timestamp-property notation [select rate(theString) as myrate from SupportBean#time(20)]");
 
             stmt.Dispose();
         }
@@ -149,8 +149,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {0.7});
         }
 
-        /// <summary>Comment-in for rate testing with threading</summary>
-        /*
+#if DEPRECATED
         [Test]
         public void TestRateThreaded() {
     
@@ -162,21 +161,18 @@ namespace com.espertech.esper.regression.resultset.aggregate
             var runnable = new RateSendRunnable(epService.EPRuntime);
             var timer = new ScheduledThreadPoolExecutor(1);
     
-            //string viewExpr = "select RATE(longPrimitive) as myrate from SupportBean#Time(10) output every 1 sec";
-            string viewExpr = "select RATE(10) as myrate from SupportBean output snapshot every 1 sec";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(viewExpr);
-            stmt.AddListener(new ProxyUpdateListener() {
-                public void Update(EventBean[] newEvents, EventBean[] oldEvents) {
-                    Log.Info(newEvents[0].Get("myrate"));
-                }
-            });
+            //string viewExpr = "select RATE(longPrimitive) as myrate from SupportBean#time(10) output every 1 sec";
+            var viewExpr = "select RATE(10) as myrate from SupportBean output snapshot every 1 sec";
+            var stmt = epService.EPAdministrator.CreateEPL(viewExpr);
+            stmt.Events += (sender, args) => Log.Info(newEvents[0].Get("myrate"));
     
-            long rateDelay = 133;   // <== change here
-            ScheduledFuture<?> future = timer.ScheduleAtFixedRate(runnable, 0, rateDelay, TimeUnit.MILLISECONDS);
-            Thread.Sleep(2 * 60 * 1000);
+            var rateDelay = 133;   // <== change here
+            var future = timer.ScheduleAtFixedRate(runnable, 0, rateDelay, TimeUnit.MILLISECONDS);
+            System.Threading.Thread.Sleep(2 * 60 * 1000);
             future.Cancel(true);
         }
-        */
+#endif
+
         private void SendTimer(EPServiceProvider epService, long timeInMSec)
         {
             var theEvent = new CurrentTimeEvent(timeInMSec);

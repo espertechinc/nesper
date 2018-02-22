@@ -315,8 +315,8 @@ namespace com.espertech.esper.regression.epl.contained
             TryInvalid(epService, "select bookId from OrderEvent[select bookId, (select abc from review#lastevent) from books]",
                     "Expression in a property-selection may not utilize a subselect [select bookId from OrderEvent[select bookId, (select abc from review#lastevent) from books]]");
     
-            TryInvalid(epService, "select bookId from OrderEvent[select Prev(1, bookId) from books]",
-                    "Failed to validate contained-event expression 'Prev(1,bookId)': Previous function cannot be used in this context [select bookId from OrderEvent[select Prev(1, bookId) from books]]");
+            TryInvalid(epService, "select bookId from OrderEvent[select prev(1, bookId) from books]",
+                    "Failed to validate contained-event expression 'Prev(1,bookId)': Previous function cannot be used in this context [select bookId from OrderEvent[select prev(1, bookId) from books]]");
     
             TryInvalid(epService, "select bookId from OrderEvent[select * from books][select * from reviews]",
                     "A column name must be supplied for all but one stream if multiple streams are selected via the stream.* notation [select bookId from OrderEvent[select * from books][select * from reviews]]");

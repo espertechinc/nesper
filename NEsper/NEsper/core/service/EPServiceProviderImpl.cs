@@ -1009,6 +1009,7 @@ namespace com.espertech.esper.core.service
 
                 var copy = (Configuration) SerializableObjectCopier.Copy(configuration);
                 copy.TransientConfiguration = configuration.TransientConfiguration;
+                copy.Container = _container; // transition to this container??
 
                 // Restore variable with initial values
                 if (variableInitialValues != null && !variableInitialValues.IsEmpty())

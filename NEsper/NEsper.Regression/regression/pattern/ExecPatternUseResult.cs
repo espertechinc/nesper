@@ -207,7 +207,7 @@ namespace com.espertech.esper.regression.pattern
                     "  userId != tradeevent2.userId and " +
                     "  ccypair = tradeevent1.ccypair and " +
                     "  direction = tradeevent1.direction)" +
-                    ") where timer:Within(600 sec)";
+                    ") where timer:within(600 sec)";
     
             EPStatement statement = epService.EPAdministrator.CreatePattern(expression);
             var listener = new MyUpdateListener();

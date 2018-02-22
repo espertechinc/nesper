@@ -31,14 +31,14 @@ namespace com.espertech.esper.regression.view
             var listener = new SupportUpdateListener();
             if (useGroup) {
                 // 0.69 sec for 100k
-                string stmtString = "select * from Sensor#Groupwin(type)#length(10000000)#Weighted_avg(measurement, confidence)";
-                //string stmtString = "SELECT * FROM Sensor#Groupwin(type)#length(1000)#Weighted_avg('measurement','confidence')";
+                string stmtString = "select * from Sensor#groupwin(type)#length(10000000)#weighted_avg(measurement, confidence)";
+                //string stmtString = "SELECT * FROM Sensor#groupwin(type)#length(1000)#weighted_avg('measurement','confidence')";
                 EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtString);
                 stmt.Events += listener.Update;
             } else {
                 // 0.53 sec for 100k
                 for (int i = 0; i < 10; i++) {
-                    string stmtString = "SELECT * FROM Sensor(type='A" + i + "')#length(1000000)#Weighted_avg(measurement,confidence)";
+                    string stmtString = "SELECT * FROM Sensor(type='A" + i + "')#length(1000000)#weighted_avg(measurement,confidence)";
                     EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtString);
                     stmt.Events += listener.Update;
                 }

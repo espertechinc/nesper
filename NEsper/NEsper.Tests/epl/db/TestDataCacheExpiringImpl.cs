@@ -30,7 +30,7 @@ namespace com.espertech.esper.epl.db
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             for (var i = 0; i < _lists.Length; i++)
             {

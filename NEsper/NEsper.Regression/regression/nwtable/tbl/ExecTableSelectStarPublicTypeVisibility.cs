@@ -99,7 +99,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             var stmt = epService.EPAdministrator.CreateEPL(
                 "select " +
                 "(select window(mt.*) from MyTable as mt) as c0," +
-                "(select First(mt.*) from MyTable as mt) as c1" +
+                "(select first(mt.*) from MyTable as mt) as c1" +
                 " from SupportBean_S2");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -117,8 +117,8 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 "on SupportBean_S2 select " +
                 "window(win.*) as c0," +
                 "last(win.*) as c1, " +
-                "First(win.*) as c2, " +
-                "First(p1) as c3," +
+                "first(win.*) as c2, " +
+                "first(p1) as c3," +
                 "window(p1) as c4," +
                 "sorted(p1) as c5," +
                 "minby(p1) as c6" +

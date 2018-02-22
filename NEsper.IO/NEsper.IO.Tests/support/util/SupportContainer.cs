@@ -12,11 +12,6 @@ namespace com.espertech.esperio.support.util
 {
     public class SupportContainer
     {
-        public static IContainer Instance;
-
-        SupportContainer()
-        {
-            Instance = ContainerExtensions.CreateDefaultContainer();
-        }
+        public static IContainer Instance = ContainerExtensions.CreateDefaultContainer();
     }
 }

@@ -303,13 +303,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             // Test for ESPER-187 Join of two or more named windows on late start may not return correct aggregation state on iterate
     
             // create window for Leave events
-            string stmtTextCreate = "create window WindowLeave#Time(6000) as select timeLeave, id, location from " + typeof(SupportQueueLeave).FullName;
+            string stmtTextCreate = "create window WindowLeave#time(6000) as select timeLeave, id, location from " + typeof(SupportQueueLeave).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextCreate);
             string stmtTextInsert = "insert into WindowLeave select timeLeave, id, location from " + typeof(SupportQueueLeave).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsert);
     
             // create second window for enter events
-            stmtTextCreate = "create window WindowEnter#Time(6000) as select location, sku, timeEnter, id from " + typeof(SupportQueueEnter).FullName;
+            stmtTextCreate = "create window WindowEnter#time(6000) as select location, sku, timeEnter, id from " + typeof(SupportQueueEnter).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextCreate);
             stmtTextInsert = "insert into WindowEnter select location, sku, timeEnter, id from " + typeof(SupportQueueEnter).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsert);
@@ -368,7 +368,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionFullOuterJoinNamedAggregationLateStart(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindowFO#Groupwin(theString, intPrimitive)#length(3) as select theString, intPrimitive, boolPrimitive from " + typeof(SupportBean).FullName;
+            string stmtTextCreate = "create window MyWindowFO#groupwin(theString, intPrimitive)#length(3) as select theString, intPrimitive, boolPrimitive from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
     
             // create insert into

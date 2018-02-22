@@ -33,7 +33,7 @@ namespace com.espertech.esper.view.ext
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _factory = new SortWindowViewFactory();
         }
     

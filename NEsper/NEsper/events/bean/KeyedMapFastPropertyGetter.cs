@@ -80,9 +80,11 @@ namespace com.espertech.esper.events.bean
                 {
                     return ((Map) result).Get(key);
                 }
-                if (result.GetType().IsGenericDictionary())
-                {
-                    return MagicMarker.NewMagicDictionary<object, object>(result).Get(key);
+                if (result.GetType().IsGenericDictionary()) {
+                    return MagicMarker
+                        .GetDictionaryFactory(result.GetType())
+                        .Invoke(result)
+                        .Get(key);
                 }
 
                 return null;

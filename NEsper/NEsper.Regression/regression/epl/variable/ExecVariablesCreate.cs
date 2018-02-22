@@ -233,7 +233,7 @@ namespace com.espertech.esper.regression.epl.variable
             SupportMessageAssertUtil.TryInvalid(epService, stmt, "Error starting statement: Cannot create variable: Cannot create variable 'myvar', type 'somedummy' is not a recognized type [create variable somedummy myvar = 10]");
     
             stmt = "create variable string myvar = 5";
-            SupportMessageAssertUtil.TryInvalid(epService, stmt, "Error starting statement: Cannot create variable: Variable 'myvar' of declared type java.lang.string cannot be initialized by a value of type java.lang.int? [create variable string myvar = 5]");
+            SupportMessageAssertUtil.TryInvalid(epService, stmt, "Error starting statement: Cannot create variable: Variable 'myvar' of declared type System.String cannot be initialized by a value of type " + Name.Of<int>() + " [create variable string myvar = 5]");
     
             stmt = "create variable string myvar = 'a'";
             epService.EPAdministrator.CreateEPL("create variable string myvar = 'a'");

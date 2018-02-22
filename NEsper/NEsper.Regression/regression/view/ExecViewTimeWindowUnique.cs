@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.view
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             SendCurrentTime(epService, "2002-02-01T09:00:00.000");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select rstream * from SupportBean#Time(1 month)").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select rstream * from SupportBean#time(1 month)").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
     
@@ -64,7 +64,7 @@ namespace com.espertech.esper.regression.view
             // Set up a time window with a unique view attached
             EPStatement windowUniqueView = epService.EPAdministrator.CreateEPL(
                     "select irstream * from " + typeof(SupportMarketDataBean).FullName +
-                            "#Time(3.0)#unique(symbol)");
+                            "#time(3.0)#unique(symbol)");
             var listener = new SupportUpdateListener();
             windowUniqueView.Events += listener.Update;
     
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regression.view
             // Set up a time window with a unique view attached
             EPStatement windowUniqueView = epService.EPAdministrator.CreateEPL(
                     "select irstream * from " + typeof(SupportMarketDataBean).FullName +
-                            "#Time(3.0)#unique(symbol, price)");
+                            "#time(3.0)#unique(symbol, price)");
             var listener = new SupportUpdateListener();
             windowUniqueView.Events += listener.Update;
             var fields = new string[]{"symbol", "price", "volume"};

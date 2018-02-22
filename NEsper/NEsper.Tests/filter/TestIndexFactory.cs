@@ -28,7 +28,7 @@ namespace com.espertech.esper.filter
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             _lockFactory = new FilterServiceGranularLockFactoryReentrant(_container.RWLockManager());
         }

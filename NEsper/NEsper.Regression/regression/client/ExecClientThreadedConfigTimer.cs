@@ -45,7 +45,7 @@ namespace com.espertech.esper.regression.client
             int countStatements = 100;
             var listener = new SupportListenerTimerHRes();
             for (int i = 0; i < countStatements; i++) {
-                EPStatement stmt = epService.EPAdministrator.CreateEPL("select SupportStaticMethodLib.Sleep(10) from pattern[every MyMap -> timer:Interval(1)]");
+                EPStatement stmt = epService.EPAdministrator.CreateEPL("select SupportStaticMethodLib.Sleep(10) from pattern[every MyMap -> timer:interval(1)]");
                 stmt.Events += listener.Update;
             }
     

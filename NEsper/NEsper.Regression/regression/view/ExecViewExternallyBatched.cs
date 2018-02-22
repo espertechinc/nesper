@@ -35,7 +35,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionExtBatchedNoReference(EPServiceProvider epService) {
             string[] fields = "id".Split(',');
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from MyEvent#Ext_timed_batch(mytimestamp, 1 minute)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from MyEvent#ext_timed_batch(mytimestamp, 1 minute)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -81,10 +81,10 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionExtBatchedWithRefTime(EPServiceProvider epService) {
     
-            string epl = "select irstream * from MyEvent#Ext_timed_batch(mytimestamp, 1 minute, 5000)";
+            string epl = "select irstream * from MyEvent#ext_timed_batch(mytimestamp, 1 minute, 5000)";
             TryAssertionWithRefTime(epService, epl);
     
-            epl = "select irstream * from MyEvent#Ext_timed_batch(mytimestamp, 1 minute, 65000)";
+            epl = "select irstream * from MyEvent#ext_timed_batch(mytimestamp, 1 minute, 65000)";
             TryAssertionWithRefTime(epService, epl);
         }
     

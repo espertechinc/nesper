@@ -101,8 +101,8 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPAdministrator.Configuration.AddEventType("SupportBean_ST0", typeof(SupportBean_ST0));
             epService.EPAdministrator.Configuration.AddEventType("SupportBean_ST1", typeof(SupportBean_ST1));
     
-            string eplOne = "insert into SupportBeanCtorOne select theString, intBoxed, intPrimitive, boolPrimitive from SupportBean";
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL(eplOne);
+            var eplOne = "insert into SupportBeanCtorOne select theString, intBoxed, intPrimitive, boolPrimitive from SupportBean";
+            var stmtOne = epService.EPAdministrator.CreateEPL(eplOne);
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     
@@ -112,30 +112,30 @@ namespace com.espertech.esper.regression.epl.insertinto
             stmtOne.Dispose();
     
             // boxable type and null values
-            string eplTwo = "insert into SupportBeanCtorOne select theString, null, intBoxed from SupportBean";
-            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(eplTwo);
+            var eplTwo = "insert into SupportBeanCtorOne select theString, null, intBoxed from SupportBean";
+            var stmtTwo = epService.EPAdministrator.CreateEPL(eplTwo);
             stmtTwo.Events += listener.Update;
             SendReceiveTwo(epService, listener, "E1", 100);
             stmtTwo.Dispose();
     
             // test join wildcard
-            string eplThree = "insert into SupportBeanCtorTwo select * from SupportBean_ST0#lastevent, SupportBean_ST1#lastevent";
-            EPStatement stmtThree = epService.EPAdministrator.CreateEPL(eplThree);
+            var eplThree = "insert into SupportBeanCtorTwo select * from SupportBean_ST0#lastevent, SupportBean_ST1#lastevent";
+            var stmtThree = epService.EPAdministrator.CreateEPL(eplThree);
             stmtThree.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_ST0("ST0", 1));
             epService.EPRuntime.SendEvent(new SupportBean_ST1("ST1", 2));
-            SupportBeanCtorTwo theEvent = (SupportBeanCtorTwo) listener.AssertOneGetNewAndReset().Underlying;
+            var theEvent = (SupportBeanCtorTwo) listener.AssertOneGetNewAndReset().Underlying;
             Assert.IsNotNull(theEvent.St0);
             Assert.IsNotNull(theEvent.St1);
             stmtThree.Dispose();
     
             // test (should not use column names)
-            string eplFour = "insert into SupportBeanCtorOne(theString, intPrimitive) select 'E1', 5 from SupportBean";
-            EPStatement stmtFour = epService.EPAdministrator.CreateEPL(eplFour);
+            var eplFour = "insert into SupportBeanCtorOne(theString, intPrimitive) select 'E1', 5 from SupportBean";
+            var stmtFour = epService.EPAdministrator.CreateEPL(eplFour);
             stmtFour.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("x", -1));
-            SupportBeanCtorOne eventOne = (SupportBeanCtorOne) listener.AssertOneGetNewAndReset().Underlying;
+            var eventOne = (SupportBeanCtorOne) listener.AssertOneGetNewAndReset().Underlying;
             Assert.AreEqual("E1", eventOne.TheString);
             Assert.AreEqual(99, eventOne.IntPrimitive);
             Assert.AreEqual((int?) 5, eventOne.IntBoxed);
@@ -143,12 +143,12 @@ namespace com.espertech.esper.regression.epl.insertinto
             // test Ctor accepting same types
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.AddEventType(typeof(MyEventWithCtorSameType));
-            string epl = "insert into MyEventWithCtorSameType select c1,c2 from SupportBean(theString='b1')#lastevent as c1, SupportBean(theString='b2')#lastevent as c2";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
+            var epl = "insert into MyEventWithCtorSameType select c1,c2 from SupportBean(theString='b1')#lastevent as c1, SupportBean(theString='b2')#lastevent as c2";
+            var stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("b1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("b2", 2));
-            MyEventWithCtorSameType result = (MyEventWithCtorSameType) listener.AssertOneGetNewAndReset().Underlying;
+            var result = (MyEventWithCtorSameType) listener.AssertOneGetNewAndReset().Underlying;
             Assert.AreEqual(1, result.B1.IntPrimitive);
             Assert.AreEqual(2, result.B2.IntPrimitive);
         }
@@ -161,16 +161,16 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPAdministrator.Configuration.AddEventType("SupportBean_ST1", typeof(SupportBean_ST1));
     
             // Test valid case of array insert
-            string epl = "insert into SupportBeanCtorThree select s, e FROM PATTERN [" +
+            var epl = "insert into SupportBeanCtorThree select s, e FROM PATTERN [" +
                     "every s=SupportBean_ST0 -> [2] e=SupportBean_ST1]";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
+            var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_ST0("E0", 1));
             epService.EPRuntime.SendEvent(new SupportBean_ST1("E1", 2));
             epService.EPRuntime.SendEvent(new SupportBean_ST1("E2", 3));
-            SupportBeanCtorThree three = (SupportBeanCtorThree) listener.AssertOneGetNewAndReset().Underlying;
+            var three = (SupportBeanCtorThree) listener.AssertOneGetNewAndReset().Underlying;
             Assert.AreEqual("E0", three.St0.Id);
             Assert.AreEqual(2, three.St1.Length);
             Assert.AreEqual("E1", three.St1[0].Id);
@@ -179,8 +179,8 @@ namespace com.espertech.esper.regression.epl.insertinto
     
         private void RunAssertionBeanJoin(EPServiceProvider epService) {
             // test wildcard
-            string stmtTextOne = "insert into SupportBeanObject select * from SupportBean_N#lastevent as one, SupportBean_S0#lastevent as two";
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
+            var stmtTextOne = "insert into SupportBeanObject select * from SupportBean_N#lastevent as one, SupportBean_S0#lastevent as two";
+            var stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     
@@ -188,7 +188,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPRuntime.SendEvent(n1);
             var s01 = new SupportBean_S0(1);
             epService.EPRuntime.SendEvent(s01);
-            SupportBeanObject theEvent = (SupportBeanObject) listener.AssertOneGetNewAndReset().Underlying;
+            var theEvent = (SupportBeanObject) listener.AssertOneGetNewAndReset().Underlying;
             Assert.AreSame(n1, theEvent.One);
             Assert.AreSame(s01, theEvent.Two);
     
@@ -222,7 +222,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
             stmtOne.Events += listener.Update;
             epService.EPRuntime.SendEvent(n1);
-            MyLocalTarget eventLocal = (MyLocalTarget) listener.AssertOneGetNewAndReset().Underlying;
+            var eventLocal = (MyLocalTarget) listener.AssertOneGetNewAndReset().Underlying;
             Assert.AreEqual(1, eventLocal.Value);
             stmtOne.Dispose();
         }
@@ -230,7 +230,7 @@ namespace com.espertech.esper.regression.epl.insertinto
         private void RunAssertionInvalid(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType("SupportBeanCtorOne", typeof(SupportBeanCtorOne));
     
-            string text = "insert into SupportBeanCtorOne select 1 from SupportBean";
+            var text = "insert into SupportBeanCtorOne select 1 from SupportBean";
             TryInvalid(epService, text, "Error starting statement: Failed to find a suitable constructor for class '" + typeof(SupportBeanCtorOne).Name + "': Could not find constructor in class '" + typeof(SupportBeanCtorOne).Name + "' with matching parameter number and expected parameter Type(s) 'int?' (nearest matching constructor taking Type(s) 'string, int?, int, bool') [insert into SupportBeanCtorOne select 1 from SupportBean]");
     
             text = "insert into SupportBean(intPrimitive) select 1L from SupportBean";
@@ -271,12 +271,12 @@ namespace com.espertech.esper.regression.epl.insertinto
             TryInvalid(epService, text, "Error starting statement: Event type named 'MyMap' has already been declared with differing column name or type information: Type by name 'MyMap' expects 10 properties but receives 1 properties [insert into MyMap(dummy) select 1 from SupportBean]");
     
             // setter throws exception
-            string stmtTextOne = "insert into SupportBeanErrorTestingTwo(value) select 'E1' from MyMap";
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
+            var stmtTextOne = "insert into SupportBeanErrorTestingTwo(value) select 'E1' from MyMap";
+            var stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
             epService.EPRuntime.SendEvent(new Dictionary<string, object>(), "MyMap");
-            SupportBeanErrorTestingTwo underlying = (SupportBeanErrorTestingTwo) listener.AssertOneGetNewAndReset().Underlying;
+            var underlying = (SupportBeanErrorTestingTwo) listener.AssertOneGetNewAndReset().Underlying;
             Assert.AreEqual("default", underlying.Value);
             stmtOne.Dispose();
     
@@ -292,8 +292,8 @@ namespace com.espertech.esper.regression.epl.insertinto
     
             // ctor throws exception
             epService.EPAdministrator.DestroyAllStatements();
-            string stmtTextThree = "insert into SupportBeanCtorOne select 'E1' from SupportBean";
-            EPStatement stmtThree = epService.EPAdministrator.CreateEPL(stmtTextThree);
+            var stmtTextThree = "insert into SupportBeanCtorOne select 'E1' from SupportBean";
+            var stmtThree = epService.EPAdministrator.CreateEPL(stmtTextThree);
             stmtThree.Events += listener.Update;
             try {
                 epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -308,28 +308,32 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPAdministrator.CreateEPL("insert into MapOne select * from MapTwo");
         }
     
-        private void RunAssertionPopulateBeanSimple(EPServiceProvider epService) {
+        private void RunAssertionPopulateBeanSimple(EPServiceProvider epService)
+        {
+            var container = epService.Container;
+
             // test select column names
-            string stmtTextOne = "insert into SupportBean select " +
+            var stmtTextOne = "insert into SupportBean select " +
                     "'E1' as theString, 1 as intPrimitive, 2 as intBoxed, 3L as longPrimitive," +
                     "null as longBoxed, true as boolPrimitive, " +
                     "'x' as charPrimitive, 0xA as bytePrimitive, " +
                     "8.0f as floatPrimitive, 9.0d as doublePrimitive, " +
                     "0x05 as shortPrimitive, SupportEnum.ENUM_VALUE_2 as enumValue " +
                     " from MyMap";
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
+            var stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
     
-            string stmtTextTwo = "select * from SupportBean";
-            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTextTwo);
+            var stmtTextTwo = "select * from SupportBean";
+            var stmtTwo = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listener = new SupportUpdateListener();
             stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new Dictionary<string, object>(), "MyMap");
-            SupportBean received = (SupportBean) listener.AssertOneGetNewAndReset().Underlying;
+            var received = (SupportBean) listener.AssertOneGetNewAndReset().Underlying;
             Assert.AreEqual("E1", received.TheString);
-            EPAssertionUtil.AssertPropsPono(received,
-                    "intPrimitive,intBoxed,longPrimitive,longBoxed,boolPrimitive,charPrimitive,bytePrimitive,floatPrimitive,doublePrimitive,shortPrimitive,enumValue".Split(','),
-                    new object[]{1, 2, 3L, null, true, 'x', (byte) 10, 8f, 9d, (short) 5, SupportEnum.ENUM_VALUE_2});
+            EPAssertionUtil.AssertPropsPono(
+                container, received,
+                "intPrimitive,intBoxed,longPrimitive,longBoxed,boolPrimitive,charPrimitive,bytePrimitive,floatPrimitive,doublePrimitive,shortPrimitive,enumValue".Split(','),
+                new object[]{1, 2, 3L, null, true, 'x', (byte) 10, 8f, 9d, (short) 5, SupportEnum.ENUM_VALUE_2});
     
             // test insert-into column names
             stmtOne.Dispose();
@@ -350,9 +354,10 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPRuntime.SendEvent(new Dictionary<string, object>(), "MyMap");
             received = (SupportBean) listener.AssertOneGetNewAndReset().Underlying;
             Assert.AreEqual("E1", received.TheString);
-            EPAssertionUtil.AssertPropsPono(received,
-                    "intPrimitive,intBoxed,longPrimitive,longBoxed,boolPrimitive,charPrimitive,bytePrimitive,floatPrimitive,doublePrimitive,shortPrimitive,enumValue".Split(','),
-                    new object[]{1, 2, 3L, null, true, 'x', (byte) 10, 8f, 9d, (short) 5, SupportEnum.ENUM_VALUE_2});
+            EPAssertionUtil.AssertPropsPono(
+                container, received,
+                "intPrimitive,intBoxed,longPrimitive,longBoxed,boolPrimitive,charPrimitive,bytePrimitive,floatPrimitive,doublePrimitive,shortPrimitive,enumValue".Split(','),
+                new object[]{1, 2, 3L, null, true, 'x', (byte) 10, 8f, 9d, (short) 5, SupportEnum.ENUM_VALUE_2});
     
             // test convert int? boxed to long boxed
             stmtOne.Dispose();
@@ -370,7 +375,7 @@ namespace com.espertech.esper.regression.epl.insertinto
     
             // test new-to-map conversion
             epService.EPAdministrator.Configuration.AddEventType(typeof(MyEventWithMapFieldSetter));
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("insert into MyEventWithMapFieldSetter(id, themap) " +
+            var stmt = epService.EPAdministrator.CreateEPL("insert into MyEventWithMapFieldSetter(id, themap) " +
                     "select 'test' as id, new {somefield = theString} as themap from SupportBean");
             stmt.Events += listener.Update;
     
@@ -388,8 +393,8 @@ namespace com.espertech.esper.regression.epl.insertinto
             mapDef.Put("boolPrimitive", typeof(bool?));
             epService.EPAdministrator.Configuration.AddEventType("MySupportMap", mapDef);
     
-            string stmtTextOne = "insert into SupportBean select * from MySupportMap";
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
+            var stmtTextOne = "insert into SupportBean select * from MySupportMap";
+            var stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     
@@ -409,10 +414,10 @@ namespace com.espertech.esper.regression.epl.insertinto
     
         private void RunAssertionPopulateBeanObjects(EPServiceProvider epService) {
             // arrays and maps
-            string stmtTextOne = "insert into SupportBeanComplexProps(arrayProperty,objectArray,mapProperty) select " +
+            var stmtTextOne = "insert into SupportBeanComplexProps(arrayProperty,objectArray,mapProperty) select " +
                     "intArr,{10,20,30},mapProp" +
                     " from MyMap as m";
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
+            var stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     
@@ -422,7 +427,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             inner.Put("mykey", "myval");
             mymapVals.Put("mapProp", inner);
             epService.EPRuntime.SendEvent(mymapVals, "MyMap");
-            SupportBeanComplexProps theEvent = (SupportBeanComplexProps) listener.AssertOneGetNewAndReset().Underlying;
+            var theEvent = (SupportBeanComplexProps) listener.AssertOneGetNewAndReset().Underlying;
             Assert.AreEqual(-2, theEvent.ArrayProperty[1]);
             Assert.AreEqual(20, theEvent.ObjectArray[1]);
             Assert.AreEqual("myval", theEvent.MapProperty.Get("mykey"));
@@ -450,7 +455,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             mymapVals = new Dictionary<string, object>();
             mymapVals.Put("nested", new SupportBeanComplexProps.SupportBeanSpecialGetterNested("111", "222"));
             epService.EPRuntime.SendEvent(mymapVals, "MyMap");
-            SupportBeanComplexProps eventThree = (SupportBeanComplexProps) listener.AssertOneGetNewAndReset().Underlying;
+            var eventThree = (SupportBeanComplexProps) listener.AssertOneGetNewAndReset().Underlying;
             Assert.AreEqual("111", eventThree.Nested.NestedValue);
     
             // object to Object
@@ -460,16 +465,16 @@ namespace com.espertech.esper.regression.epl.insertinto
             stmtOne.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
-            SupportBeanArrayCollMap eventFour = (SupportBeanArrayCollMap) listener.AssertOneGetNewAndReset().Underlying;
+            var eventFour = (SupportBeanArrayCollMap) listener.AssertOneGetNewAndReset().Underlying;
             Assert.AreEqual("nestedValue", ((SupportBeanComplexProps.SupportBeanSpecialGetterNested) eventFour.AnyObject).NestedValue);
     
             // test null value
-            string stmtTextThree = "insert into SupportBean select 'B' as theString, intBoxed as intPrimitive from SupportBean(theString='A')";
-            EPStatement stmtThree = epService.EPAdministrator.CreateEPL(stmtTextThree);
+            var stmtTextThree = "insert into SupportBean select 'B' as theString, intBoxed as intPrimitive from SupportBean(theString='A')";
+            var stmtThree = epService.EPAdministrator.CreateEPL(stmtTextThree);
             stmtThree.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 0));
-            SupportBean received = (SupportBean) listener.AssertOneGetNewAndReset().Underlying;
+            var received = (SupportBean) listener.AssertOneGetNewAndReset().Underlying;
             Assert.AreEqual(0, received.IntPrimitive);
     
             var bean = new SupportBean("A", 1);
@@ -507,7 +512,7 @@ namespace com.espertech.esper.regression.epl.insertinto
         }
     
         private void RunAssertionCharSequenceCompat(EPServiceProvider epService) {
-            foreach (EventRepresentationChoice rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+            foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                 epService.EPAdministrator.CreateEPL("create " + rep.GetOutputTypeCreateSchemaName() + " schema ConcreteType as (value java.lang.CharSequence)");
                 epService.EPAdministrator.CreateEPL("insert into ConcreteType select \"Test\" as value from SupportBean");
                 epService.EPAdministrator.DestroyAllStatements();
@@ -517,8 +522,8 @@ namespace com.espertech.esper.regression.epl.insertinto
     
         private void RunAssertionBeanFactoryMethod(EPServiceProvider epService) {
             // test factory method on the same event class
-            string stmtTextOne = "insert into SupportBeanString select 'abc' as theString from MyMap";
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
+            var stmtTextOne = "insert into SupportBeanString select 'abc' as theString from MyMap";
+            var stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
             var subscriber = new SupportSubscriber();
@@ -568,9 +573,9 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
             // Test valid case of array insert
-            string validEpl = "INSERT INTO FinalEventValid SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                    "every s=SupportBean_S0 -> e=SupportBean(theString=s.p00) until timer:Interval(10 sec)]";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(validEpl);
+            var validEpl = "INSERT INTO FinalEventValid SELECT s as startEvent, e as endEvent FROM PATTERN [" +
+                    "every s=SupportBean_S0 -> e=SupportBean(theString=s.p00) until timer:interval(10 sec)]";
+            var stmt = epService.EPAdministrator.CreateEPL(validEpl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -579,7 +584,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPRuntime.SendEvent(new SupportBean("G1", 3));
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(10000));
     
-            FinalEventValid outEvent = (FinalEventValid) listener.AssertOneGetNewAndReset().Underlying;
+            var outEvent = (FinalEventValid) listener.AssertOneGetNewAndReset().Underlying;
             Assert.AreEqual(1, outEvent.StartEvent.Id);
             Assert.AreEqual("G1", outEvent.StartEvent.P00);
             Assert.AreEqual(2, outEvent.EndEvent.Length);
@@ -587,33 +592,33 @@ namespace com.espertech.esper.regression.epl.insertinto
             Assert.AreEqual(3, outEvent.EndEvent[1].IntPrimitive);
     
             // Test invalid case of non-array destination insert
-            string invalidEpl = "INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                    "every s=SupportBean_S0 -> e=SupportBean(theString=s.p00) until timer:Interval(10 sec)]";
+            var invalidEpl = "INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
+                    "every s=SupportBean_S0 -> e=SupportBean(theString=s.p00) until timer:interval(10 sec)]";
             try {
                 epService.EPAdministrator.CreateEPL(invalidEpl);
                 Assert.Fail();
             } catch (EPException ex) {
-                Assert.AreEqual("Error starting statement: Invalid assignment of column 'endEvent' of type '" + typeof(SupportBean).FullName + "[]' to event property 'endEvent' typed as '" + typeof(SupportBean).FullName + "', column and parameter types mismatch [INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [every s=SupportBean_S0 -> e=SupportBean(theString=s.p00) until timer:Interval(10 sec)]]", ex.Message);
+                Assert.AreEqual("Error starting statement: Invalid assignment of column 'endEvent' of type '" + typeof(SupportBean).FullName + "[]' to event property 'endEvent' typed as '" + typeof(SupportBean).FullName + "', column and parameter types mismatch [INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [every s=SupportBean_S0 -> e=SupportBean(theString=s.p00) until timer:interval(10 sec)]]", ex.Message);
             }
     
             // Test invalid case of array destination insert from non-array var
-            string invalidEplTwo = "INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                    "every s=SupportBean_S0 -> e=SupportBean(theString=s.p00) until timer:Interval(10 sec)]";
+            var invalidEplTwo = "INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
+                    "every s=SupportBean_S0 -> e=SupportBean(theString=s.p00) until timer:interval(10 sec)]";
             try {
                 epService.EPAdministrator.CreateEPL(invalidEplTwo);
                 Assert.Fail();
             } catch (EPException ex) {
-                Assert.AreEqual("Error starting statement: Invalid assignment of column 'startEvent' of type '" + typeof(SupportBean_S0).Name + "' to event property 'startEvent' typed as '" + typeof(SupportBean_S0).Name + "[]', column and parameter types mismatch [INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [every s=SupportBean_S0 -> e=SupportBean(theString=s.p00) until timer:Interval(10 sec)]]", ex.Message);
+                Assert.AreEqual("Error starting statement: Invalid assignment of column 'startEvent' of type '" + typeof(SupportBean_S0).Name + "' to event property 'startEvent' typed as '" + typeof(SupportBean_S0).Name + "[]', column and parameter types mismatch [INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [every s=SupportBean_S0 -> e=SupportBean(theString=s.p00) until timer:interval(10 sec)]]", ex.Message);
             }
     
             stmt.Dispose();
-            foreach (string name in "FinalEventValid,FinalEventInvalidNonArray,FinalEventInvalidArray".Split(',')) {
+            foreach (var name in "FinalEventValid,FinalEventInvalidNonArray,FinalEventInvalidArray".Split(',')) {
                 epService.EPAdministrator.Configuration.RemoveEventType(name, true);
             }
         }
     
         private void RunAssertionArrayMapInsert(EPServiceProvider epService) {
-            foreach (EventRepresentationChoice rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+            foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                 TryAssertionArrayMapInsert(epService, rep);
             }
         }
@@ -629,9 +634,9 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
             // Test valid case of array insert
-            string validEpl = "INSERT INTO FinalEventValid SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                    "every s=EventOne -> e=EventTwo(id=s.id) until timer:Interval(10 sec)]";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(validEpl);
+            var validEpl = "INSERT INTO FinalEventValid SELECT s as startEvent, e as endEvent FROM PATTERN [" +
+                    "every s=EventOne -> e=EventTwo(id=s.id) until timer:interval(10 sec)]";
+            var stmt = epService.EPAdministrator.CreateEPL(validEpl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -644,19 +649,19 @@ namespace com.espertech.esper.regression.epl.insertinto
             EventBean endEventOne;
             EventBean endEventTwo;
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                object[] outArray = (object[]) listener.AssertOneGetNewAndReset().Underlying;
+                var outArray = (object[]) listener.AssertOneGetNewAndReset().Underlying;
                 startEventOne = (EventBean) outArray[0];
                 endEventOne = ((EventBean[]) outArray[1])[0];
                 endEventTwo = ((EventBean[]) outArray[1])[1];
             } else if (eventRepresentationEnum.IsMapEvent()) {
-                Map outMap = (Map) listener.AssertOneGetNewAndReset().Underlying;
+                var outMap = (Map) listener.AssertOneGetNewAndReset().Underlying;
                 startEventOne = (EventBean) outMap.Get("startEvent");
                 endEventOne = ((EventBean[]) outMap.Get("endEvent"))[0];
                 endEventTwo = ((EventBean[]) outMap.Get("endEvent"))[1];
             } else if (eventRepresentationEnum.IsAvroEvent()) {
-                EventBean received = listener.AssertOneGetNewAndReset();
+                var received = listener.AssertOneGetNewAndReset();
                 startEventOne = (EventBean) received.GetFragment("startEvent");
-                EventBean[] endEvents = (EventBean[]) received.GetFragment("endEvent");
+                var endEvents = (EventBean[]) received.GetFragment("endEvent");
                 endEventOne = endEvents[0];
                 endEventTwo = endEvents[1];
             } else {
@@ -667,8 +672,8 @@ namespace com.espertech.esper.regression.epl.insertinto
             Assert.AreEqual(3, endEventTwo.Get("val"));
     
             // Test invalid case of non-array destination insert
-            string invalidEpl = "INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                    "every s=EventOne -> e=EventTwo(id=s.id) until timer:Interval(10 sec)]";
+            var invalidEpl = "INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
+                    "every s=EventOne -> e=EventTwo(id=s.id) until timer:interval(10 sec)]";
             try {
                 epService.EPAdministrator.CreateEPL(invalidEpl);
                 Assert.Fail();
@@ -684,7 +689,7 @@ namespace com.espertech.esper.regression.epl.insertinto
     
             // Test invalid case of array destination insert from non-array var
             invalidEpl = "INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                    "every s=EventOne -> e=EventTwo(id=s.id) until timer:Interval(10 sec)]";
+                    "every s=EventOne -> e=EventTwo(id=s.id) until timer:interval(10 sec)]";
             try {
                 epService.EPAdministrator.CreateEPL(invalidEpl);
                 Assert.Fail();
@@ -699,7 +704,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             }
     
             epService.EPAdministrator.DestroyAllStatements();
-            foreach (string name in "EventOne,EventTwo,FinalEventValid,FinalEventInvalidNonArray,FinalEventInvalidArray".Split(',')) {
+            foreach (var name in "EventOne,EventTwo,FinalEventValid,FinalEventInvalidNonArray,FinalEventInvalidArray".Split(',')) {
                 epService.EPAdministrator.Configuration.RemoveEventType(name, true);
             }
         }
@@ -777,7 +782,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             var bean = new SupportBean(theString, -1);
             bean.IntBoxed = intBoxed;
             epService.EPRuntime.SendEvent(bean);
-            SupportBeanCtorOne theEvent = (SupportBeanCtorOne) listener.AssertOneGetNewAndReset().Underlying;
+            var theEvent = (SupportBeanCtorOne) listener.AssertOneGetNewAndReset().Underlying;
             Assert.AreEqual(theString, theEvent.TheString);
             Assert.AreEqual(null, theEvent.IntBoxed);
             Assert.AreEqual(intBoxed, (int?) theEvent.IntPrimitive);
@@ -795,7 +800,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             bean.BoolPrimitive = boolPrimitive;
             bean.IntBoxed = intBoxed;
             epService.EPRuntime.SendEvent(bean);
-            SupportBeanCtorOne theEvent = (SupportBeanCtorOne) listener.AssertOneGetNewAndReset().Underlying;
+            var theEvent = (SupportBeanCtorOne) listener.AssertOneGetNewAndReset().Underlying;
             Assert.AreEqual(theString, theEvent.TheString);
             Assert.AreEqual(intBoxed, theEvent.IntBoxed);
             Assert.AreEqual(boolPrimitive, theEvent.IsBoolPrimitive);
@@ -806,10 +811,10 @@ namespace com.espertech.esper.regression.epl.insertinto
             EPServiceProvider epService, 
             string typeName)
         {
-            EPStatement stmtOrig = epService.EPAdministrator.CreateEPL("select * from " + typeName);
+            var stmtOrig = epService.EPAdministrator.CreateEPL("select * from " + typeName);
     
-            string stmtTextOne = "insert into " + typeName + " select intPrimitive as intVal, theString as stringVal, doubleBoxed as doubleVal from SupportBean";
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
+            var stmtTextOne = "insert into " + typeName + " select intPrimitive as intVal, theString as stringVal, doubleBoxed as doubleVal from SupportBean";
+            var stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
             Assert.AreSame(stmtOrig.EventType, stmtOne.EventType);

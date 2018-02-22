@@ -639,7 +639,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                     "Error starting statement: Could not find getter method for method invocation, expected a method by name 'readRowNoMetadataMetadata' accepting no parameters [select * from method:SupportMethodInvocationJoinInvalid.ReadRowNoMetadata()]");
     
             TryInvalid(epService, "select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()",
-                    "Error starting statement: Getter method 'readRowWrongMetadataMetadata' does not return java.util.Map [select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()]");
+                    "Error starting statement: Getter method 'readRowWrongMetadataMetadata' does not return Map [select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()]");
     
             TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".InvalidOverloadForJoin(null)",
                     "Error starting statement: Method by name 'invalidOverloadForJoin' is overloaded in class '" + typeof(SupportStaticMethodLib).FullName + "' and overloaded methods do not return the same type");

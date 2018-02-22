@@ -12,6 +12,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
+using com.espertech.esper.compat;
 using com.espertech.esper.epl.agg.aggregator;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.supportregression.bean;
@@ -278,13 +279,13 @@ namespace com.espertech.esper.regression.client
                 string text = "select Concat(1) from " + typeof(SupportBean).FullName;
                 epService.EPAdministrator.CreateEPL(text);
             } catch (EPStatementException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex, "Error starting statement: Failed to validate select-clause expression 'Concat(1)': Plug-in aggregation function 'concat' failed validation: Invalid parameter type 'java.lang.int?', expecting string [");
+                SupportMessageAssertUtil.AssertMessage(ex, "Error starting statement: Failed to validate select-clause expression 'Concat(1)': Plug-in aggregation function 'concat' failed validation: Invalid parameter type '" + Name.Of<int>() + "', expecting string [");
             }
         }
     
         private void RunAssertionInvalidUse(EPServiceProvider epService) {
             SupportMessageAssertUtil.TryInvalid(epService, "select * from " + typeof(SupportBean).FullName + " group by Xxx(1)",
-                    "Error in expression: Error resolving aggregation: Aggregation class by name 'java.lang.string' does not implement AggregationFunctionFactory");
+                    "Error in expression: Error resolving aggregation: Aggregation class by name 'System.String' does not implement AggregationFunctionFactory");
     
             SupportMessageAssertUtil.TryInvalid(epService, "select * from " + typeof(SupportBean).FullName + " group by Yyy(1)",
                     "Error in expression: Error resolving aggregation: Could not load aggregation factory class by name 'com.NoSuchClass'");

@@ -26,7 +26,7 @@ namespace com.espertech.esper.epl.expression.ops
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             _castNodes = new ExprCastNode[2];
     

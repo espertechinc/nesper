@@ -47,7 +47,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "minby(intPrimitive) as c4, " +
                     "maxbyever(intPrimitive) as c5, " +
                     "minbyever(intPrimitive) as c6 " +
-                    "from SupportBean#Groupwin(longPrimitive)#length(3) " +
+                    "from SupportBean#groupwin(longPrimitive)#length(3) " +
                     "group by longPrimitive";
             var stmtPlain = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "minby(intPrimitive) as c4, " +
                     "maxbyever(intPrimitive) as c5, " +
                     "minbyever(intPrimitive) as c6 " +
-                    "from S0#lastevent, SupportBean#Groupwin(longPrimitive)#length(3) as sb " +
+                    "from S0#lastevent, SupportBean#groupwin(longPrimitive)#length(3) as sb " +
                     "group by longPrimitive";
             var stmtJoin = epService.EPAdministrator.CreateEPL(eplJoin);
             stmtJoin.Events += listener.Update;
@@ -249,7 +249,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "maxbyever(intPrimitive).theString, " +
                     "minbyever(intPrimitive)," +
                     "sorted(intPrimitive asc, theString desc)" +
-                    " from SupportBean#Time(10)");
+                    " from SupportBean#time(10)");
     
             var props = stmt.EventType.PropertyDescriptors;
             Assert.AreEqual("maxby(intPrimitive).TheString()", props[0].PropertyName);

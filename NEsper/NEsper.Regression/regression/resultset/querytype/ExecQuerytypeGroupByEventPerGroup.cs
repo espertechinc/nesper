@@ -500,12 +500,12 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionUniqueInBatch(EPServiceProvider epService) {
             string stmtOne = "insert into MyStream select symbol, price from " +
-                    typeof(SupportMarketDataBean).Name + "#Time_batch(1 sec)";
+                    typeof(SupportMarketDataBean).Name + "#time_batch(1 sec)";
             epService.EPAdministrator.CreateEPL(stmtOne);
             SendTimer(epService, 0);
     
             string epl = "select symbol " +
-                    "from MyStream#Time_batch(1 sec)#unique(symbol) " +
+                    "from MyStream#time_batch(1 sec)#unique(symbol) " +
                     "group by symbol";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);

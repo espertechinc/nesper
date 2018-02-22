@@ -17,6 +17,7 @@ using com.espertech.esper.epl.parse;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.epl.variable;
+using com.espertech.esper.events;
 using com.espertech.esper.pattern;
 using com.espertech.esper.supportunit.util;
 
@@ -45,7 +46,7 @@ namespace com.espertech.esper.supportunit.epl.parse
             return MakeWalker(
                 tokenStream,
                 SupportEngineImportServiceFactory.Make(container),
-                new VariableServiceImpl(0, null, SupportEventAdapterService.Service, null, 
+                new VariableServiceImpl(0, null, container.Resolve<EventAdapterService>(), null, 
                     container.RWLockManager(), 
                     container.ThreadLocalManager()));
         }

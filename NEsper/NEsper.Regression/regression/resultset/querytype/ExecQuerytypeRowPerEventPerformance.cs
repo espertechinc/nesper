@@ -35,7 +35,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                 int id = i % 5;
     
                 string text = "select symbol, min(price) " +
-                        "from MD(id='${id}')#Time(${secondsWindowSpan})\n" +
+                        "from MD(id='${id}')#time(${secondsWindowSpan})\n" +
                         "having price >= min(price) * ${percent}";
     
                 text = text.Replace("${id}", Convert.ToString(id));

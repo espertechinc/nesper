@@ -40,8 +40,8 @@ namespace com.espertech.esper.regression.epl.subselect
     
             epService.EPAdministrator.CreateEPL(
                     "select window(tl.*) as longItems, " +
-                            "       (SELECT window(ts.*) AS shortItems FROM TradeEvent#Time(20 minutes) as ts WHERE ts.securityID=tl.securityID) " +
-                            "from TradeEvent#Time(20 minutes) as tl " +
+                            "       (SELECT window(ts.*) AS shortItems FROM TradeEvent#time(20 minutes) as ts WHERE ts.securityID=tl.securityID) " +
+                            "from TradeEvent#time(20 minutes) as tl " +
                             "where tl.securityID = 1000" +
                             "group by tl.securityID "
             ).Events += listener.Update;

@@ -29,10 +29,10 @@ namespace com.espertech.esper.events.bean
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _beanEventTypeFactory = new BeanEventAdapter(
                 new ConcurrentDictionary<Type, BeanEventType>(), 
-                SupportEventAdapterService.Service, 
+                _container.Resolve<EventAdapterService>(), 
                 new EventTypeIdGeneratorImpl(),
                 _container.LockManager());
         }

@@ -147,7 +147,7 @@ namespace com.espertech.esper.regression.pattern
             stmt.Dispose();
     
             // guard
-            string expressionTwo = "select a.id as a, b.id as b from pattern [every a=SupportBean_A -[2]> (b=SupportBean_B where timer:Within(1))]";
+            string expressionTwo = "select a.id as a, b.id as b from pattern [every a=SupportBean_A -[2]> (b=SupportBean_B where timer:within(1))]";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(expressionTwo);
             stmtTwo.Events += listener.Update;
     

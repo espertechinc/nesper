@@ -57,7 +57,7 @@ namespace com.espertech.esper.regression.epl.variable
                     "Error starting statement: Error in variable assignment: Variable 'vars1_A' of declared event type '" + typeof(SupportBean_S1).Name + "' underlying type '" + typeof(SupportBean_S1).Name + "' cannot be assigned a value of type '" + typeof(SupportBean_S0).Name + "'");
     
             TryInvalid(epService, "on TypeS0 arrival set vars0_A = 1",
-                    "Error starting statement: Error in variable assignment: Variable 'vars0_A' of declared event type 'TypeS0' underlying type '" + typeof(SupportBean_S0).Name + "' cannot be assigned a value of type 'java.lang.int?'");
+                    "Error starting statement: Error in variable assignment: Variable 'vars0_A' of declared event type 'TypeS0' underlying type '" + typeof(SupportBean_S0).Name + "' cannot be assigned a value of type '" + Name.Of<int>() + "'");
         }
     
         private void RunAssertionConfig(EPServiceProvider epService) {

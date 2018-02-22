@@ -15,6 +15,7 @@ using com.espertech.esper.core.thread;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
+using com.espertech.esper.events;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util;
@@ -33,7 +34,7 @@ namespace com.espertech.esper.epl.core
 	    [SetUp]
 	    public void SetUp()
 	    {
-	        _container = SupportContainer.Instance;
+	        _container = SupportContainer.Reset();
 	        _statementResultService = new StatementResultServiceImpl(
 	            "name", null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.ThreadingConfig()),
 	            _container.ThreadLocalManager());
@@ -81,7 +82,7 @@ namespace com.espertech.esper.epl.core
                 Collections.GetEmptyList<int>(), selectionList,
                 false, null, null, null,
                 new SupportStreamTypeSvc3Stream(),
-                SupportEventAdapterService.Service,
+                _container.Resolve<EventAdapterService>(),
                 _statementResultService, null,
                 _selectExprEventTypeRegistry, null, null, null, null,
                 new TableServiceImpl(_container), null, null, 1, null, null, null,
@@ -101,7 +102,7 @@ namespace com.espertech.esper.epl.core
                 Collections.GetEmptyList<int>(), selectionList, 
                 false, null, null, null,
                 new SupportStreamTypeSvc3Stream(), 
-                SupportEventAdapterService.Service, 
+                _container.Resolve<EventAdapterService>(), 
                 _statementResultService, null,
                 _selectExprEventTypeRegistry,
                 statementContext.EngineImportService, 

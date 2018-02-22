@@ -703,11 +703,10 @@ namespace com.espertech.esper.core.service
             EPServiceProvider epServiceProvider,
             ConfigurationInformation configSnapshot)
         {
-            var lockManager = container.Resolve<ILockManager>();
-            var readerWriterLockManager = container.Resolve<IReaderWriterLockManager>();
-            var threadLocalManager = container.Resolve<IThreadLocalManager>();
-
-            var resourceManager = container.Resolve<IResourceManager>();
+            var lockManager = container.LockManager();
+            var rwLockManager = container.RWLockManager();
+            var threadLocalManager = container.ThreadLocalManager();
+            var resourceManager = container.ResourceManager();
 
             // Directory for binding resources
             var resourceDirectory = container.Resolve<Directory>();
@@ -768,13 +767,10 @@ namespace com.espertech.esper.core.service
             Init(eventAdapterService, configSnapshot, engineImportService, resourceManager);
 
             // New read-write lock for concurrent event processing
-            var eventProcessingRwLock = readerWriterLockManager.CreateLock(GetType());
+            var eventProcessingRwLock = rwLockManager.CreateLock(GetType());
 
             var timeSourceService = MakeTimeSource(configSnapshot);
-            container.RegisterSingleton<TimeSourceService>(timeSourceService);
-
-            var schedulingService = container.Resolve<SchedulingServiceSPI>();
-            //var schedulingService = SchedulingServiceProvider.NewService(timeSourceService);
+            var schedulingService = SchedulingServiceProvider.NewService(timeSourceService, lockManager);
             var schedulingMgmtService = new SchedulingMgmtServiceImpl();
             var engineSettingsService = new EngineSettingsService(
                 configSnapshot.EngineDefaults, configSnapshot.PlugInEventTypeResolutionURIs);
@@ -824,33 +820,35 @@ namespace com.espertech.esper.core.service
             }
             var timerService = new TimerServiceImpl(epServiceProvider.URI, msecTimerResolution);
 
-            var variableService = container.Resolve<VariableService>(new {
-                millisecondLifetimeOldVersions = configSnapshot.EngineDefaults.Variables.MsecVersionRelease, 
-                schedulingService, 
+            var variableService = new VariableServiceImpl(
+                configSnapshot.EngineDefaults.Variables.MsecVersionRelease,
+                schedulingService,
                 eventAdapterService,
-                variableStateHandler = (VariableStateHandler) null
-            });
+                null,
+                rwLockManager,
+                threadLocalManager);
 
             InitVariables(variableService, configSnapshot.Variables, engineImportService);
 
-            var tableService = container.Resolve<TableService>();
+            var tableService = new TableServiceImpl(container);
 
-            var statementLockFactory = container.Resolve<StatementLockFactory>(new {
-                fairLocks = configSnapshot.EngineDefaults.Execution.IsFairlock,
-                disableLocking = configSnapshot.EngineDefaults.Execution.IsDisableLocking
-            });
+            var statementLockFactory = new StatementLockFactoryImpl(
+                rwLockManager,
+                configSnapshot.EngineDefaults.Execution.IsFairlock,
+                configSnapshot.EngineDefaults.Execution.IsDisableLocking
+            );
 
             var streamFactoryService = StreamFactoryServiceProvider.NewService(
                 epServiceProvider.URI, configSnapshot.EngineDefaults.ViewResources.IsShareViews);
             var filterService = FilterServiceProvider.NewService(
                 lockManager,
-                readerWriterLockManager,
+                rwLockManager,
                 configSnapshot.EngineDefaults.Execution.FilterServiceProfile,
                 configSnapshot.EngineDefaults.Execution.IsAllowIsolatedService);
             var metricsReporting = new MetricReportingServiceImpl(
                 configSnapshot.EngineDefaults.MetricsReporting,
                 epServiceProvider.URI,
-                readerWriterLockManager);
+                rwLockManager);
             var namedWindowMgmtService = new NamedWindowMgmtServiceImpl(
                 configSnapshot.EngineDefaults.Logging.IsEnableQueryPlan,
                 metricsReporting);
@@ -864,13 +862,9 @@ namespace com.espertech.esper.core.service
                 configSnapshot.RevisionEventTypes, configSnapshot.VariantStreams, eventAdapterService,
                 eventTypeIdGenerator);
 
-            var statementEventTypeRef = container.Resolve<StatementEventTypeRef>();
-            var statementVariableRef = container.Resolve<StatementVariableRef>(
-                new {
-                    variableService,
-                    tableService,
-                    namedWindowMgmtService
-                });
+            var statementEventTypeRef = new StatementEventTypeRefImpl(rwLockManager);
+            var statementVariableRef = new StatementVariableRefImpl(
+                variableService, tableService, namedWindowMgmtService, rwLockManager);
 
             var threadingService = new ThreadingServiceImpl(configSnapshot.EngineDefaults.Threading);
 
@@ -916,7 +910,6 @@ namespace com.espertech.esper.core.service
             scriptingService.DiscoverEngines();
 
             // New services context
-            // NOTE: AJ - we need to convert this to dependency injection.
 
             var services = new EPServicesContext(
                 container, epServiceProvider.URI,

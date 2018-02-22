@@ -71,7 +71,7 @@ namespace com.espertech.esper.regression.epl.other
             // test update-istream with map
             epService.EPAdministrator.CreateEPL(
                 eventRepresentationEnum.GetAnnotationText() +
-                " create schema MyInfraType(simple string, myarray int[], mymap java.util.Map)");
+                " create schema MyInfraType(simple string, myarray int[], mymap Map)");
             EPStatement stmtUpdTwo = epService.EPAdministrator.CreateEPL(
                 "update istream MyInfraType set simple='A', Mymap('abc') = 1, myarray[2] = 10");
             var listener = new SupportUpdateListener();
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.CreateEPL(
                 eventRepresentationEnum.GetAnnotationText() +
-                " create schema MyNWInfraType(simple string, myarray int[], mymap java.util.Map)");
+                " create schema MyNWInfraType(simple string, myarray int[], mymap Map)");
             EPStatement stmtWin =
                 epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as MyNWInfraType");
             epService.EPAdministrator.CreateEPL(

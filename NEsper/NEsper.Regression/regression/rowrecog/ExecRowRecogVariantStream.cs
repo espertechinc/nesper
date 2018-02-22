@@ -62,7 +62,7 @@ namespace com.espertech.esper.regression.rowrecog
                     "// Populate variant stream\n" +
                     "insert into MyVariantStream select * from ST1\n;" +
                     "// Simple pattern to match ST0 ST1 pairs\n" +
-                    "select * from MyVariantType#Time(1 min)\n" +
+                    "select * from MyVariantType#time(1 min)\n" +
                     "match_recognize (\n" +
                     "measures A.id? as a, B.id? as b\n" +
                     "pattern (A B)\n" +

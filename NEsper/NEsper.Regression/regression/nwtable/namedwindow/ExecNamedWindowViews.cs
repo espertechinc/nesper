@@ -386,7 +386,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var fields = new[]{"key", "value"};
     
             // create window
-            string stmtTextCreate = "create window MyWindowTW#Time(10 sec) as MyMap";
+            string stmtTextCreate = "create window MyWindowTW#time(10 sec) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
@@ -479,7 +479,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             SendTimer(epService, 1000);
     
             // create window
-            string stmtTextCreate = "create window MyWindowTFW#Firsttime(10 sec) as MyMap";
+            string stmtTextCreate = "create window MyWindowTFW#firsttime(10 sec) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
@@ -547,7 +547,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var fields = new[]{"key", "value"};
     
             // create window
-            string stmtTextCreate = "create window MyWindowETW#Ext_timed(value, 10 sec) as MyMap";
+            string stmtTextCreate = "create window MyWindowETW#ext_timed(value, 10 sec) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
@@ -612,7 +612,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var fields = new[]{"key", "value"};
     
             // create window
-            string stmtTextCreate = "create window MyWindowTOW#Time_order(value, 10 sec) as MyMap";
+            string stmtTextCreate = "create window MyWindowTOW#time_order(value, 10 sec) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
@@ -753,7 +753,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var fields = new[]{"key", "value"};
     
             // create window
-            string stmtTextCreate = "create window MyWindowLFW#Firstlength(2) as MyMap";
+            string stmtTextCreate = "create window MyWindowLFW#firstlength(2) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
@@ -809,7 +809,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var fields = new[]{"key", "value"};
     
             // create window
-            string stmtTextCreate = "create window MyWindowTA#Time_accum(10 sec) as MyMap";
+            string stmtTextCreate = "create window MyWindowTA#time_accum(10 sec) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
@@ -937,7 +937,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var fields = new[]{"key", "value"};
     
             // create window
-            string stmtTextCreate = "create window MyWindowTB#Time_batch(10 sec) as MyMap";
+            string stmtTextCreate = "create window MyWindowTB#time_batch(10 sec) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
@@ -1014,7 +1014,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             SendTimer(epService, 0);
     
             // create window
-            string stmtTextCreate = "create window MyWindowTBLC#Time_batch(10 sec) as MyMap";
+            string stmtTextCreate = "create window MyWindowTBLC#time_batch(10 sec) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
@@ -1144,7 +1144,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var fields = new[]{"key", "value"};
     
             // create window
-            string stmtTextCreate = "create window MyWindowSW#Sort(3, value asc) as MyMap";
+            string stmtTextCreate = "create window MyWindowSW#sort(3, value asc) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
@@ -1227,7 +1227,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var fields = new[]{"key", "value"};
     
             // create window
-            string stmtTextCreate = "create window MyWindowTLB#Time_length_batch(10 sec, 3) as MyMap";
+            string stmtTextCreate = "create window MyWindowTLB#time_length_batch(10 sec, 3) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
@@ -1310,7 +1310,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var fields = new[]{"key", "value"};
     
             // create window
-            string stmtTextCreate = "create window MyWindowWPG#Groupwin(value)#length(2) as MyMap";
+            string stmtTextCreate = "create window MyWindowWPG#groupwin(value)#length(2) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
@@ -1391,7 +1391,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             // create window
             SendTimer(epService, 0);
-            string stmtTextCreate = "create window MyWindowTBPG#Groupwin(value)#Time_batch(10 sec) as MyMap";
+            string stmtTextCreate = "create window MyWindowTBPG#groupwin(value)#time_batch(10 sec) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
@@ -1672,7 +1672,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var fields = new[]{"key", "value"};
     
             // create window
-            string stmtTextCreate = "create window MyWindowFU#Firstunique(key) as MyMap";
+            string stmtTextCreate = "create window MyWindowFU#firstunique(key) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
@@ -1797,7 +1797,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionSelectGroupedViewLateStart(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindowSGVS#Groupwin(theString, intPrimitive)#length(9) as select theString, intPrimitive from " + typeof(SupportBean).FullName;
+            string stmtTextCreate = "create window MyWindowSGVS#groupwin(theString, intPrimitive)#length(9) as select theString, intPrimitive from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
     
             // create insert into
@@ -1844,7 +1844,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionSelectGroupedViewLateStartVariableIterate(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindowSGVLS#Groupwin(theString, intPrimitive)#length(9) as select theString, intPrimitive, longPrimitive, boolPrimitive from " + typeof(SupportBean).FullName;
+            string stmtTextCreate = "create window MyWindowSGVLS#groupwin(theString, intPrimitive)#length(9) as select theString, intPrimitive, longPrimitive, boolPrimitive from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
     
             // create insert into
@@ -1970,8 +1970,8 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            Assert.AreEqual("Error starting statement: Named windows require one or more child views that are data window views [create window MyWindowI1#Groupwin(value)#Uni(value) as MyMap]",
-                    TryInvalid(epService, "create window MyWindowI1#Groupwin(value)#Uni(value) as MyMap"));
+            Assert.AreEqual("Error starting statement: Named windows require one or more child views that are data window views [create window MyWindowI1#groupwin(value)#uni(value) as MyMap]",
+                    TryInvalid(epService, "create window MyWindowI1#groupwin(value)#uni(value) as MyMap"));
     
             Assert.AreEqual("Named windows require one or more child views that are data window views [create window MyWindowI2 as MyMap]",
                     TryInvalid(epService, "create window MyWindowI2 as MyMap"));
@@ -2013,10 +2013,10 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
         private void RunAssertionConsumerDataWindow(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create window MyWindowCDW#keepall as MyMap");
             try {
-                epService.EPAdministrator.CreateEPL("select key, value as value from MyWindowCDW#Time(10 sec)");
+                epService.EPAdministrator.CreateEPL("select key, value as value from MyWindowCDW#time(10 sec)");
                 Assert.Fail();
             } catch (EPException ex) {
-                Assert.AreEqual("Error starting statement: Consuming statements to a named window cannot declare a data window view onto the named window [select key, value as value from MyWindowCDW#Time(10 sec)]", ex.Message);
+                Assert.AreEqual("Error starting statement: Consuming statements to a named window cannot declare a data window view onto the named window [select key, value as value from MyWindowCDW#time(10 sec)]", ex.Message);
             }
         }
     
@@ -2045,12 +2045,12 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             string stmtTextInsert = "insert into MyWindowPS select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL(stmtTextInsert);
     
-            string stmtTextSelectOne = "select Prior(1, key) as priorKeyOne, Prior(2, key) as priorKeyTwo from MyWindowPS";
+            string stmtTextSelectOne = "select prior(1, key) as priorKeyOne, prior(2, key) as priorKeyTwo from MyWindowPS";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
             stmtSelectOne.Events += listenerStmtOne.Update;
     
-            string stmtTextSelectThree = "select average from MyWindowPS#Uni(value)";
+            string stmtTextSelectThree = "select average from MyWindowPS#uni(value)";
             EPStatement stmtSelectThree = epService.EPAdministrator.CreateEPL(stmtTextSelectThree);
             var listenerStmtThree = new SupportUpdateListener();
             stmtSelectThree.Events += listenerStmtThree.Update;
@@ -2102,7 +2102,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             SendSupportBean(epService, "E2", 2L);
             EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fieldsWin, new object[]{"E2", 2L});
     
-            string stmtTextSelectOne = "select irstream average from MyWindowLCL#Uni(value)";
+            string stmtTextSelectOne = "select irstream average from MyWindowLCL#uni(value)";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
             stmtSelectOne.Events += listenerStmtOne.Update;
@@ -2226,7 +2226,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var fields = new[]{"key", "value"};
     
             // create window
-            string stmtTextCreate = "create window MyWindowETB#Ext_timed_batch(value, 10 sec, 0L) as MyMap";
+            string stmtTextCreate = "create window MyWindowETB#ext_timed_batch(value, 10 sec, 0L) as MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;

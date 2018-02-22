@@ -36,10 +36,10 @@ namespace com.espertech.esper.regression.dataflow
                     "create objectarray schema WordEvent (word string),\n" +
                     "Emitter -> wordstream<WordEvent> {name:'a'} // Produces word stream\n" +
                     "Select(wordstream) -> wordcount { // Sliding time window count per word\n" +
-                    "  select: (select word, count(*) as wordcount from wordstream#Time(30) group by word)\n" +
+                    "  select: (select word, count(*) as wordcount from wordstream#time(30) group by word)\n" +
                     "}\n" +
                     "Select(wordcount) -> wordranks { // Rank of words\n" +
-                    "  select: (select window(*) as rankedWords from wordcount#Sort(3, wordcount desc) output snapshot every 2 seconds)\n" +
+                    "  select: (select window(*) as rankedWords from wordcount#sort(3, wordcount desc) output snapshot every 2 seconds)\n" +
                     "}\n" +
                     "DefaultSupportCaptureOp(wordranks) {}";
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
@@ -63,6 +63,7 @@ namespace com.espertech.esper.regression.dataflow
             var map = (IDictionary<string, object>) capture.Current[0];
             var rows = map.Get("rankedWords").UnwrapIntoList<object[]>();
             EPAssertionUtil.AssertPropsPerRow(
+                epService.Container,
                 rows,
                 "word,count".Split(','),
                 new object[][] {
@@ -85,10 +86,10 @@ namespace com.espertech.esper.regression.dataflow
         /// "create objectarray schema WordEvent (word string);\n" +
         /// "MyWordTestSource -> wordstream<WordEvent> {} // Produces word stream\n" +
         /// "Select(wordstream) -> wordcount { // Sliding time window count per word\n" +
-        /// "  select: select word, count(*) as wordcount from wordstream#Time(30) group by word;\n" +
+        /// "  select: select word, count(*) as wordcount from wordstream#time(30) group by word;\n" +
         /// "}\n" +
         /// "Select(wordcount) -> wordranks { // Rank of words\n" +
-        /// "  select: select Prevwindow(wc) from wordcount#Rank(word, 3, wordcount desc) as wc output snapshot every 2 seconds limit 1;\n" +
+        /// "  select: select prevwindow(wc) from wordcount#rank(word, 3, wordcount desc) as wc output snapshot every 2 seconds limit 1;\n" +
         /// "}\n" +
         /// "LogSink(wordranks) {format:'json';}";
         /// epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));

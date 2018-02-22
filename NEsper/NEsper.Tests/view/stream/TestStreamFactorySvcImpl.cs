@@ -37,7 +37,7 @@ namespace com.espertech.esper.view.stream
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _handle = new EPStatementHandle(1, "name", "text", StatementType.SELECT, "text", false, null, 1, false, false, new MultiMatchHandlerFactoryImpl().GetDefaultHandler());
             _agentHandle = new EPStatementAgentInstanceHandle(_handle, _container.RWLockManager().CreateDefaultLock(), -1, null, null);
 

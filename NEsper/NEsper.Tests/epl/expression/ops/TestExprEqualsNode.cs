@@ -29,7 +29,7 @@ namespace com.espertech.esper.epl.expression.ops
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             _equalsNodes = new ExprEqualsNode[4];
             _equalsNodes[0] = new ExprEqualsNodeImpl(false, false);

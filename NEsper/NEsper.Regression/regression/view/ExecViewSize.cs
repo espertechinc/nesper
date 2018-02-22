@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.view
             AssertSize(listener, 2, 1);
     
             stmt.Dispose();
-            statementText = "select size, symbol, feed from " + typeof(SupportMarketDataBean).FullName + "#Size(symbol, feed)";
+            statementText = "select size, symbol, feed from " + typeof(SupportMarketDataBean).FullName + "#size(symbol, feed)";
             stmt = epService.EPAdministrator.CreateEPL(statementText);
             stmt.Events += listener.Update;
             string[] fields = "size,symbol,feed".Split(',');

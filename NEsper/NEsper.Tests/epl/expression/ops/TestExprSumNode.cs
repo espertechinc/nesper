@@ -28,7 +28,7 @@ namespace com.espertech.esper.epl.expression.ops
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _sumNode = new ExprSumNode(false);
     
             ValidatedNodeToTest= MakeNode(5, typeof(int));

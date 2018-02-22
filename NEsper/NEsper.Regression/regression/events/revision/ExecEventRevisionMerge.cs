@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.events.revision
             revEvent.KeyPropertyNames = new string[]{"p1"};
             epService.EPAdministrator.Configuration.AddRevisionEventType("MyExistsRevisionOne", revEvent);
     
-            epService.EPAdministrator.CreateEPL("create window MyWinOne#Time(10 sec) as select * from MyExistsRevisionOne");
+            epService.EPAdministrator.CreateEPL("create window MyWinOne#time(10 sec) as select * from MyExistsRevisionOne");
             epService.EPAdministrator.CreateEPL("insert into MyWinOne select * from FullTypeOne");
             epService.EPAdministrator.CreateEPL("insert into MyWinOne select * from DeltaTypeOne");
     
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regression.events.revision
             revEvent.KeyPropertyNames = new string[]{"p1"};
             epService.EPAdministrator.Configuration.AddRevisionEventType("MyExistsRevisionTwo", revEvent);
     
-            epService.EPAdministrator.CreateEPL("create window MyWinTwo#Time(10 sec) as select * from MyExistsRevisionTwo");
+            epService.EPAdministrator.CreateEPL("create window MyWinTwo#time(10 sec) as select * from MyExistsRevisionTwo");
             epService.EPAdministrator.CreateEPL("insert into MyWinTwo select * from FullTypeTwo");
             epService.EPAdministrator.CreateEPL("insert into MyWinTwo select * from DeltaTypeTwo");
     
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regression.events.revision
             revEvent.KeyPropertyNames = new string[]{"p1"};
             epService.EPAdministrator.Configuration.AddRevisionEventType("MyExistsRevisionThree", revEvent);
     
-            epService.EPAdministrator.CreateEPL("create window MyWinThree#Time(10 sec) as select * from MyExistsRevisionThree");
+            epService.EPAdministrator.CreateEPL("create window MyWinThree#time(10 sec) as select * from MyExistsRevisionThree");
             epService.EPAdministrator.CreateEPL("insert into MyWinThree select * from FullTypeThree");
             epService.EPAdministrator.CreateEPL("insert into MyWinThree select * from DeltaTypeThree");
     
@@ -261,7 +261,7 @@ namespace com.espertech.esper.regression.events.revision
             revEvent.KeyPropertyNames = new string[]{"simpleProperty"};
             epService.EPAdministrator.Configuration.AddRevisionEventType("NestedRevision", revEvent);
     
-            epService.EPAdministrator.CreateEPL("create window MyWinFour#Time(10 sec) as select * from NestedRevision");
+            epService.EPAdministrator.CreateEPL("create window MyWinFour#time(10 sec) as select * from NestedRevision");
             epService.EPAdministrator.CreateEPL("insert into MyWinFour select * from Nested");
     
             string[] fields = "key,f1".Split(',');

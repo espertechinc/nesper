@@ -105,7 +105,7 @@ namespace com.espertech.esper.regression.view
                 symbols[i] = "S" + i;
                 var epl = "select symbol, sum(volume) as sumVol " +
                           "from " + typeof(SupportMarketDataBean).FullName +
-                          "(symbol='" + symbols[i] + "')#Time(" + timeWindowSize + ")";
+                          "(symbol='" + symbols[i] + "')#time(" + timeWindowSize + ")";
                 var testStmt = epService.EPAdministrator.CreateEPL(epl);
                 _listeners[i] = new ResultUpdateListener();
                 testStmt.Events += _listeners[i].Update;

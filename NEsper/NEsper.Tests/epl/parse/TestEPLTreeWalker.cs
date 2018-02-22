@@ -24,6 +24,7 @@ using com.espertech.esper.epl.expression.subquery;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.variable;
+using com.espertech.esper.events;
 using com.espertech.esper.pattern;
 using com.espertech.esper.rowregex;
 using com.espertech.esper.schedule;
@@ -52,7 +53,7 @@ namespace com.espertech.esper.epl.parse
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
         }
 
         [Test]
@@ -252,7 +253,7 @@ namespace com.espertech.esper.epl.parse
             VariableService variableService = new VariableServiceImpl(
                 0, 
                 new SchedulingServiceImpl(new TimeSourceServiceImpl(), _container),
-                SupportEventAdapterService.Service, null,
+                _container.Resolve<EventAdapterService>(), null,
                 _container.RWLockManager(),
                 _container.ThreadLocalManager());
             variableService.CreateNewVariable(null, "var1", typeof(long?).FullName, false, false, false, 100L, null);
@@ -1254,7 +1255,7 @@ namespace com.espertech.esper.epl.parse
         [Test]
         public void TestWalkPatternNoPackage() 
         {
-            SupportEventAdapterService.Service.AddBeanType("SupportBean_N", typeof(SupportBean_N), true, true, true);
+            _container.Resolve<EventAdapterService>().AddBeanType("SupportBean_N", typeof(SupportBean_N), true, true, true);
             var text = "na=SupportBean_N()";
             SupportParserHelper.ParseAndWalkPattern(text);
         }

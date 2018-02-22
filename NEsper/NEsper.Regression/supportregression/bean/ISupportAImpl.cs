@@ -14,12 +14,12 @@ namespace com.espertech.esper.supportregression.bean
     [Serializable]
     public class ISupportAImpl : ISupportA
     {
-        virtual public String A
+        public virtual String A
         {
             get { return valueA; }
         }
 
-        virtual public String BaseAB
+        public virtual String BaseAB
         {
             get { return valueBaseAB; }
         }

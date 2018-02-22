@@ -72,7 +72,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionWindowStats(EPServiceProvider epService) {
             string epl = "select irstream * from " + typeof(SupportMarketDataBean).FullName +
-                    "(symbol='" + SYMBOL + "')#length(3)#Uni(price, symbol, feed)";
+                    "(symbol='" + SYMBOL + "')#length(3)#uni(price, symbol, feed)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regression.view
     
             // Test copying all properties
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            string eplWildcard = "select * from SupportBean#length(3)#Uni(intPrimitive, *)";
+            string eplWildcard = "select * from SupportBean#length(3)#uni(intPrimitive, *)";
             statement = epService.EPAdministrator.CreateEPL(eplWildcard);
             statement.Events += listener.Update;
     

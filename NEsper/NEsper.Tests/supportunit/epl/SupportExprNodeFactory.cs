@@ -21,6 +21,7 @@ using com.espertech.esper.epl.expression.prev;
 using com.espertech.esper.epl.expression.prior;
 using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.variable;
+using com.espertech.esper.events;
 using com.espertech.esper.schedule;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
@@ -410,7 +411,7 @@ namespace com.espertech.esper.supportunit.epl
 
 	        VariableService variableService = new VariableServiceImpl(
 	            0, new SchedulingServiceImpl(new TimeSourceServiceImpl(), container),
-	            SupportEventAdapterService.Service, null,
+	            container.Resolve<EventAdapterService>(), null,
 	            container.RWLockManager(),
 	            container.ThreadLocalManager());
 	        variableService.CreateNewVariable(null, "IntPrimitive", typeof(int?).FullName, false, false, false, 10, engineImportService);

@@ -25,7 +25,7 @@ namespace com.espertech.esper.epl.variable
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             var rLock = _container.LockManager().CreateLock(GetType());
             _list = new VersionedValueList<String>("abc", 2, "a", 1000, 10000, rLock, 10, true);
         }

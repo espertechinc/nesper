@@ -22,7 +22,7 @@ namespace com.espertech.esper.epl.metric
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
         }
 
         [Test]

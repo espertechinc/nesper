@@ -9,11 +9,12 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.bean
@@ -21,11 +22,14 @@ namespace com.espertech.esper.events.bean
     [TestFixture]
     public class TestReflectionPropMethodGetter 
     {
-        EventBean _unitTestBean;
-    
+        private EventBean _unitTestBean;
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             SupportBean testEvent = new SupportBean();
             testEvent.IntPrimitive = 10;
             testEvent.TheString = "a";
@@ -81,7 +85,7 @@ namespace com.espertech.esper.events.bean
             //MethodInfo method = clazz.GetMethod(PropertyName, new Type[] {});
             var getter = new ReflectionPropMethodGetter(
                 property.GetGetMethod(),
-                SupportEventAdapterService.Service);
+                _container.Resolve<EventAdapterService>());
     
             return getter;
         }

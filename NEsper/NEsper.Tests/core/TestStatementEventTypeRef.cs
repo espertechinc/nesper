@@ -28,7 +28,7 @@ namespace com.espertech.esper.core
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _service = new StatementEventTypeRefImpl(_container.RWLockManager());
         }
     

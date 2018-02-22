@@ -339,8 +339,8 @@ namespace com.espertech.esper.regression.resultset.aggregate
         {
             var fields = "c0,c1,c2,c3".Split(',');
             var epl = "select " +
-                      "First(intPrimitive, 0, filter:theString like 'A%') as c0," +
-                      "First(intPrimitive, 1, filter:theString like 'A%') as c1," +
+                      "first(intPrimitive, 0, filter:theString like 'A%') as c0," +
+                      "first(intPrimitive, 1, filter:theString like 'A%') as c1," +
                       "last(intPrimitive, 0, filter:theString like 'A%') as c2," +
                       "last(intPrimitive, 1, filter:theString like 'A%') as c3" +
                       " from SupportBean#length(3)";
@@ -480,10 +480,10 @@ namespace com.espertech.esper.regression.resultset.aggregate
         {
             var fields = "aFirst,aLast,aWindow,bFirst,bLast,bWindow".Split(',');
             var epl = "select " +
-                      "First(intPrimitive, filter:theString like 'A%') as aFirst," +
+                      "first(intPrimitive, filter:theString like 'A%') as aFirst," +
                       "last(intPrimitive, filter:theString like 'A%') as aLast," +
                       "window(intPrimitive, filter:theString like 'A%') as aWindow," +
-                      "First(intPrimitive, filter:theString like 'B%') as bFirst," +
+                      "first(intPrimitive, filter:theString like 'B%') as bFirst," +
                       "last(intPrimitive, filter:theString like 'B%') as bLast," +
                       "window(intPrimitive, filter:theString like 'B%') as bWindow" +
                       " from " + (join ? "SupportBean_S1#lastevent, SupportBean#length(5)" : "SupportBean#length(5)");
@@ -515,7 +515,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
         {
             var fields = "aFirst,aFirstever,aLast,aLastever,aCountever".Split(',');
             var epl = "select " +
-                      "First(intPrimitive, filter:theString like 'A%') as aFirst," +
+                      "first(intPrimitive, filter:theString like 'A%') as aFirst," +
                       "firstever(intPrimitive, filter:theString like 'A%') as aFirstever," +
                       "last(intPrimitive, filter:theString like 'A%') as aLast," +
                       "lastever(intPrimitive, filter:theString like 'A%') as aLastever," +
@@ -628,8 +628,8 @@ namespace com.espertech.esper.regression.resultset.aggregate
         {
             var fields = "c0,c1".Split(',');
             var epl = "select " +
-                      "First(*,filter:intPrimitive=1).theString as c0, " +
-                      "First(*,filter:intPrimitive=2).theString as c1" +
+                      "first(*,filter:intPrimitive=1).theString as c0, " +
+                      "first(*,filter:intPrimitive=2).theString as c1" +
                       " from SupportBean#length(3)";
             var stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();

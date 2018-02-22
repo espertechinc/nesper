@@ -11,10 +11,11 @@ using System;
 using System.Reflection;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 
 using NUnit.Framework;
 
@@ -25,20 +26,22 @@ namespace com.espertech.esper.events.bean
     [TestFixture]
     public class TestReflectionPropFieldGetter 
     {
-        EventBean unitTestBean;
-    
+        private EventBean _unitTestBean;
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             SupportLegacyBean testEvent = new SupportLegacyBean("a");
-            unitTestBean = SupportEventBeanFactory.CreateObject(testEvent);
+            _unitTestBean = SupportEventBeanFactory.CreateObject(testEvent);
         }
     
         [Test]
         public void TestGetter()
         {
             ReflectionPropFieldGetter getter = MakeGetter(typeof(SupportLegacyBean), "fieldLegacyVal");
-            Assert.AreEqual("a", getter.Get(unitTestBean));
+            Assert.AreEqual("a", getter.Get(_unitTestBean));
     
             try
             {
@@ -56,7 +59,7 @@ namespace com.espertech.esper.events.bean
         private ReflectionPropFieldGetter MakeGetter(Type clazz, String fieldName)
         {
             FieldInfo field = clazz.GetField(fieldName);
-            ReflectionPropFieldGetter getter = new ReflectionPropFieldGetter(field, SupportEventAdapterService.Service);
+            ReflectionPropFieldGetter getter = new ReflectionPropFieldGetter(field, _container.Resolve<EventAdapterService>());
             return getter;
         }
     

@@ -35,7 +35,7 @@ namespace com.espertech.esper.pattern.guard
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             var stmtContext = SupportStatementContextFactory.MakeContext(
                 _container, new SchedulingServiceImpl(new TimeSourceServiceImpl(), _container));

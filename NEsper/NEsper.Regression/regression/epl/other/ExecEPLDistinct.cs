@@ -53,8 +53,8 @@ namespace com.espertech.esper.regression.epl.other
                     "every-Distinct(fooA.theString) fooA=SupportBean(intPrimitive=1)" +
                     "->" +
                     "every-Distinct(wooA.theString) wooA=SupportBean(intPrimitive=2)" +
-                    " where timer:Within(1 hour)" +
-                    "]#Time(1 hour) as fooWooPair " +
+                    " where timer:within(1 hour)" +
+                    "]#time(1 hour) as fooWooPair " +
                     "on fooB.longPrimitive = fooWooPair.fooA.longPrimitive";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -309,7 +309,7 @@ namespace com.espertech.esper.regression.epl.other
             // test batch window with aggregation
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             var fieldsTwo = new string[]{"c1", "c2"};
-            string epl = "insert into ABC select distinct theString as c1, First(intPrimitive) as c2 from SupportBean#Time_batch(1 second)";
+            string epl = "insert into ABC select distinct theString as c1, first(intPrimitive) as c2 from SupportBean#time_batch(1 second)";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(epl);
             stmtTwo.Events += listener.Update;
     

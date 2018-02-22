@@ -29,7 +29,7 @@ namespace com.espertech.esper.client
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _config = new Configuration(_container);
             _config.EngineDefaults.Logging.IsEnableExecutionDebug = true;
         }

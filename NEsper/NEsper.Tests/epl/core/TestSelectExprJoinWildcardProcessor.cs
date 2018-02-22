@@ -12,6 +12,7 @@ using com.espertech.esper.compat.container;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.table.mgmt;
+using com.espertech.esper.events;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
@@ -29,7 +30,7 @@ namespace com.espertech.esper.epl.core
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(
                 "abc", new StatementEventTypeRefImpl(_container.RWLockManager()));
@@ -39,7 +40,7 @@ namespace com.espertech.esper.epl.core
                 Collections.GetEmptyList<int>(), 1, "stmtname", 
                 supportTypes.StreamNames, 
                 supportTypes.EventTypes,
-                SupportEventAdapterService.Service, null, 
+                _container.Resolve<EventAdapterService>(), null, 
                 selectExprEventTypeRegistry, null, null, 
                 new Configuration(_container), 
                 new TableServiceImpl(_container),

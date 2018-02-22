@@ -76,7 +76,7 @@ namespace com.espertech.esper.regression.rowrecog
         private void RunAssertionTimeWindow(EPServiceProvider epService) {
             SendTimer(0, epService);
             string[] fields = "a_string,b_string,c_string".Split(',');
-            string text = "select * from MyEvent#Time(5 sec) " +
+            string text = "select * from MyEvent#time(5 sec) " +
                     "match_recognize (" +
                     "  measures A.theString as a_string, B.theString as b_string, C.theString as c_string" +
                     "  all matches pattern ( A B C ) " +
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regression.rowrecog
         private void RunAssertionTimeBatchWindow(EPServiceProvider epService) {
             SendTimer(0, epService);
             string[] fields = "a_string,b_string,c_string".Split(',');
-            string text = "select * from MyEvent#Time_batch(5 sec) " +
+            string text = "select * from MyEvent#time_batch(5 sec) " +
                     "match_recognize (" +
                     "  partition by cat " +
                     "  measures A.theString as a_string, B.theString as b_string, C.theString as c_string" +

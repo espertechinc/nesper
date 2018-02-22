@@ -32,13 +32,13 @@ namespace com.espertech.esper.regression.multithread
             epService.EPAdministrator.CreateEPL(
                     "insert into XStream " +
                             " select theString as key, count(*) as mycount\n" +
-                            " from " + typeof(SupportBean).FullName + "#Time(5 min)" +
+                            " from " + typeof(SupportBean).FullName + "#time(5 min)" +
                             " group by theString"
             );
             epService.EPAdministrator.CreateEPL(
                     "insert into XStream " +
                             " select symbol as key, count(*) as mycount\n" +
-                            " from " + typeof(SupportMarketDataBean).FullName + "#Time(5 min)" +
+                            " from " + typeof(SupportMarketDataBean).FullName + "#time(5 min)" +
                             " group by symbol"
             );
     

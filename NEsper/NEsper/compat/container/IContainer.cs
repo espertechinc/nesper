@@ -21,6 +21,14 @@ namespace com.espertech.esper.compat.container
         T Resolve<T>();
 
         /// <summary>
+        /// Resolves a named object within a container.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
+        T Resolve<T>(string name);
+
+        /// <summary>
         /// Resolves the specified arguments as anonymous type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -41,7 +49,9 @@ namespace com.espertech.esper.compat.container
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <typeparam name="TImpl">The type of the implementation.</typeparam>
-        void RegisterSingleton<T, TImpl>()
+        /// <param name="lifespan">The lifespan.</param>
+        /// <param name="name">The name.</param>
+        IContainer Register<T, TImpl>(Lifespan lifespan, string name = null)
             where T : class
             where TImpl : T;
 
@@ -50,7 +60,9 @@ namespace com.espertech.esper.compat.container
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value">The value.</param>
-        void RegisterSingleton<T>(T value)
+        /// <param name="lifespan">The lifespan.</param>
+        /// <param name="name">The name.</param>
+        IContainer Register<T>(T value, Lifespan lifespan, string name = null)
             where T : class;
 
         /// <summary>
@@ -58,8 +70,15 @@ namespace com.espertech.esper.compat.container
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="factory">The factory.</param>
-        void RegisterSingleton<T>(Func<IContainer, T> factory)
+        /// <param name="lifespan">The lifespan.</param>
+        /// <param name="name">The name.</param>
+        IContainer Register<T>(Func<IContainer, T> factory, Lifespan lifespan, string name = null)
             where T : class;
 
+        bool Has(string name);
+
+        bool Has<T>();
+
+        bool DoesNotHave<T>();
     }
 }

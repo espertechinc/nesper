@@ -161,7 +161,7 @@ namespace com.espertech.esper.regression.rowrecog
                     "  measures A as a" +
                     "  pattern (A{3}) " +
                     "  define " +
-                    "    A as A.intPrimitive > Prev(A.intPrimitive)" +
+                    "    A as A.intPrimitive > prev(A.intPrimitive)" +
                     ")";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);

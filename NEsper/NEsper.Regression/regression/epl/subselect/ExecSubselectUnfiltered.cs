@@ -229,7 +229,7 @@ namespace com.espertech.esper.regression.epl.subselect
             model.FromClause = FromClause.Create(FilterStream.Create("S0"));
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
     
-            string stmtText = "select (select Prior(0,id) from S1#length(1000)) as idS1 from S0";
+            string stmtText = "select (select prior(0,id) from S1#length(1000)) as idS1 from S0";
             Assert.AreEqual(stmtText, model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
             RunUnfilteredStreamPrior(epService, stmt);
@@ -237,7 +237,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionUnfilteredStreamPrior_Compile(EPServiceProvider epService) {
-            string stmtText = "select (select Prior(0,id) from S1#length(1000)) as idS1 from S0";
+            string stmtText = "select (select prior(0,id) from S1#length(1000)) as idS1 from S0";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
             Assert.AreEqual(stmtText, model.ToEPL());

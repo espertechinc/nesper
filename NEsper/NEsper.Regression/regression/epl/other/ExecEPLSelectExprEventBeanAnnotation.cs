@@ -44,7 +44,7 @@ namespace com.espertech.esper.regression.epl.other
             string eplInsert = "insert into DStream select " +
                     "last(*) @eventbean as c0, " +
                     "window(*) @eventbean as c1, " +
-                    "Prevwindow(s0) @eventbean as c2 " +
+                    "prevwindow(s0) @eventbean as c2 " +
                     "from MyEvent#length(2) as s0";
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL(eplInsert);
             stmtInsert.Events += listenerInsert.Update;

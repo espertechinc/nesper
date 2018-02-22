@@ -206,7 +206,7 @@ namespace com.espertech.esper.regression.context
     
             string[] fieldsOne = "intPrimitive,col1,col2,col3".Split(',');
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
-                    "select intPrimitive, count(*) as col1, ToArray(window(*).SelectFrom(v=>v.longPrimitive)) as col2, First().longPrimitive as col3 " +
+                    "select intPrimitive, count(*) as col1, ToArray(window(*).SelectFrom(v=>v.longPrimitive)) as col2, first().longPrimitive as col3 " +
                     "from SupportBean#keepall as sb " +
                     "group by intPrimitive order by intPrimitive asc");
             var listener = new SupportUpdateListener();

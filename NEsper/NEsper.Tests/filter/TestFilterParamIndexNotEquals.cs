@@ -33,7 +33,7 @@ namespace com.espertech.esper.filter
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _lockFactory = new FilterServiceGranularLockFactoryReentrant(_container.RWLockManager());
             _testEvaluator = new SupportEventEvaluator();
             _testBean = new SupportBean();

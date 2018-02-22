@@ -35,7 +35,7 @@ namespace com.espertech.esper.regression.view
         private void RunAssertionWinTimeSum(EPServiceProvider epService) {
             // Every event generates a new row, this time we sum the price by symbol and output volume
             string sumTimeExpr = "select symbol, volume, sum(price) as mySum " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Time(30)";
+                    "from " + typeof(SupportMarketDataBean).FullName + "#time(30)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(sumTimeExpr);
             var testListener = new SupportUpdateListener();
@@ -50,7 +50,7 @@ namespace com.espertech.esper.regression.view
             // Every event generates a new row, this time we sum the price by symbol and output volume
             string sumTimeUniExpr = "select symbol, volume, sum(price) as mySum " +
                     "from " + typeof(SupportMarketDataBean).FullName +
-                    "#Time(30) group by symbol";
+                    "#time(30) group by symbol";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(sumTimeUniExpr);
             var testListener = new SupportUpdateListener();
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regression.view
             // Every event generates a new row, this time we sum the price by symbol and output volume
             string sumTimeUniExpr = "select symbol, volume, sum(price) as mySum " +
                     "from " + typeof(SupportMarketDataBean).FullName +
-                    "(symbol = 'IBM')#Time(30)";
+                    "(symbol = 'IBM')#time(30)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(sumTimeUniExpr);
             var testListener = new SupportUpdateListener();

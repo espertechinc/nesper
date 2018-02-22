@@ -31,7 +31,7 @@ namespace com.espertech.esper.view.std
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             // Set up length window view and a test child view
             _myView = new MergeView(

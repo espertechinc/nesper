@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.dataflow
                     "filter: type=\"quote\"\r\n" +
                     "}\r\n" +
                     "Select(TradeStream) -> VwapTrades {\r\n" +
-                    "select: (select ticker, sum(price*volume)/sum(volume) as vwap, min(price) as minprice from TradeStream#Groupwin(ticker)#length(4) group by ticker)\r\n" +
+                    "select: (select ticker, sum(price*volume)/sum(volume) as vwap, min(price) as minprice from TradeStream#groupwin(ticker)#length(4) group by ticker)\r\n" +
                     "}\r\n" +
                     "Select(VwapTrades as T, QuoteStream as Q) -> BargainIndex {\r\n" +
                     "select: " +
@@ -78,7 +78,8 @@ namespace com.espertech.esper.regression.dataflow
     
             object[] received = future.GetValue(5, TimeUnit.SECONDS);
             Assert.AreEqual(1, received.Length);
-            EPAssertionUtil.AssertProps(received[0], "index".Split(','), new object[]{2000 * Math.Exp(100 - 99.5)});
+            EPAssertionUtil.AssertProps(
+                epService.Container, received[0], "index".Split(','), new object[]{2000 * Math.Exp(100 - 99.5)});
         }
     
         private string RemoveNewlines(string text) {

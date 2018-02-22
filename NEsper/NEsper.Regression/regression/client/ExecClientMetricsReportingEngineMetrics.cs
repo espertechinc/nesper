@@ -40,7 +40,7 @@ namespace com.espertech.esper.regression.client
             SendTimer(epService, 10999);
             Assert.IsFalse(listener.IsInvoked);
     
-            epService.EPAdministrator.CreateEPL("select * from pattern[timer:Interval(5 sec)]");
+            epService.EPAdministrator.CreateEPL("select * from pattern[timer:interval(5 sec)]");
     
             SendTimer(epService, 11000);
             EventBean theEvent = listener.AssertOneGetNewAndReset();

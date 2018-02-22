@@ -32,7 +32,7 @@ namespace com.espertech.esper.regression.multithread
         public override void Run(EPServiceProvider epService) {
             var stmt = epService.EPAdministrator.CreateEPL(
                     " select irstream intPrimitive, theString as key " +
-                            " from " + typeof(SupportBean).FullName + "#Time(1 sec)");
+                            " from " + typeof(SupportBean).FullName + "#time(1 sec)");
     
             var listener = new SupportMTUpdateListener();
             stmt.Events += listener.Update;

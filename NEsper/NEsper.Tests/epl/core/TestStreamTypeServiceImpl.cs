@@ -31,13 +31,13 @@ namespace com.espertech.esper.epl.core
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
-            SupportEventAdapterService.Reset(
-                _container.LockManager(),
-                _container.ClassLoaderProvider());
+            //SupportEventAdapterService.Reset(
+            //    _container.LockManager(),
+            //    _container.ClassLoaderProvider());
 
-            // Prepare regualar test service
+            // Prepare regular test service
             var eventTypes = new EventType[]
             {
                 SupportEventTypeFactory.CreateBeanType(typeof (SupportBean)),

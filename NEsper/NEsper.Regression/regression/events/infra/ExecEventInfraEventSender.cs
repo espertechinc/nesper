@@ -49,7 +49,7 @@ namespace com.espertech.esper.regression.events.infra
             // Map
             RunAssertionSuccess(epService, MAP_TYPENAME, new Dictionary<string, object>());
             RunAssertionInvalid(epService, MAP_TYPENAME, new SupportBean(),
-                    "Unexpected event object of type " + typeof(SupportBean).FullName + ", expected java.util.Map");
+                    "Unexpected event object of type " + typeof(SupportBean).FullName + ", expected Map");
     
             // Object-Array
             RunAssertionSuccess(epService, OA_TYPENAME, new object[]{});

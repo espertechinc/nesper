@@ -35,7 +35,7 @@ namespace com.espertech.esper.regression.view
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             SendCurrentTime(epService, "2002-02-01T09:00:00.000");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from SupportBean#Time_batch(1 month)").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean#time_batch(1 month)").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             SendCurrentTimeWithMinus(epService, "2002-03-01T09:00:00.000", 1);
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.view
         private void RunAssertionStartEagerForceUpdate(EPServiceProvider epService) {
             SendTimer(epService, 1000);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#Time_batch(1, \"START_EAGER,FORCE_UPDATE\")");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#time_batch(1, \"START_EAGER,FORCE_UPDATE\")");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     

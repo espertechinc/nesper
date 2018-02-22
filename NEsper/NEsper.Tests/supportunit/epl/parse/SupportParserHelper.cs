@@ -32,17 +32,19 @@ namespace com.espertech.esper.supportunit.epl.parse
             var container = SupportContainer.Instance;
             return ParseAndWalkEPL(expression, 
                 SupportEngineImportServiceFactory.Make(container),
-                new VariableServiceImpl(0, null, SupportEventAdapterService.Service, null, container.RWLockManager(), container.ThreadLocalManager()));
+                new VariableServiceImpl(0, null, container.Resolve<EventAdapterService>(), null, container.RWLockManager(), container.ThreadLocalManager()));
         }
 
         public static EPLTreeWalkerListener ParseAndWalkEPL(String expression, EngineImportService engineImportService, VariableService variableService)
         {
+            var container = SupportContainer.Instance;
+
             Log.Debug(".parseAndWalk Trying text=" + expression);
             Pair<ITree, CommonTokenStream> ast = SupportParserHelper.ParseEPL(expression);
             Log.Debug(".parseAndWalk success, tree walking...");
             SupportParserHelper.DisplayAST(ast.First);
 
-            EventAdapterService eventAdapterService = SupportEventAdapterService.Service;
+            EventAdapterService eventAdapterService = container.Resolve<EventAdapterService>();
             eventAdapterService.AddBeanType("SupportBean_N", typeof(SupportBean_N), true, true, true);
 
             EPLTreeWalkerListener listener = SupportEPLTreeWalkerFactory.MakeWalker(ast.Second, engineImportService, variableService);

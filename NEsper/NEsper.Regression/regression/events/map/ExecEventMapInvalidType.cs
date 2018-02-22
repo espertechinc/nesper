@@ -24,10 +24,10 @@ namespace com.espertech.esper.regression.events.map
     public class ExecEventMapInvalidType : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
             IDictionary<string, Object> invalid = ExecEventMap.MakeMap(new object[][]{new object[] {new SupportBean(), null}});
-            TryInvalid(epService, invalid, typeof(SupportBean).FullName + " cannot be cast to java.lang.string");
+            TryInvalid(epService, invalid, typeof(SupportBean).FullName + " cannot be cast to System.String");
     
             invalid = ExecEventMap.MakeMap(new object[][]{new object[] {"abc", new SupportBean()}});
-            TryInvalid(epService, invalid, "Nestable type configuration encountered an unexpected property type of 'SupportBean' for property 'abc', expected java.lang.Type or java.util.Map or the name of a previously-declared Map or ObjectArray type");
+            TryInvalid(epService, invalid, "Nestable type configuration encountered an unexpected property type of 'SupportBean' for property 'abc', expected Type or Map or the name of a previously-declared Map or ObjectArray type");
         }
     
         private void TryInvalid(EPServiceProvider epService, IDictionary<string, Object> config, string message) {

@@ -26,7 +26,7 @@ namespace com.espertech.esper.linq
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             Configuration configuration = new Configuration(_container);
             configuration.AddEventType<SupportBean>();

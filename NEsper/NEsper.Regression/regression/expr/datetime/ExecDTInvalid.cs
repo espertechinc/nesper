@@ -60,11 +60,11 @@ namespace com.espertech.esper.regression.expr.datetime
     
             // invalid wrong parameter
             epl = "select Utildate.Between('a', 'b') from SupportDateTime";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'utildate.Between(\"a\",\"b\")': Error validating date-time method 'between', expected a long-typed, Date-typed or Calendar-typed result for expression parameter 0 but received java.lang.string");
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'utildate.Between(\"a\",\"b\")': Error validating date-time method 'between', expected a long-typed, Date-typed or Calendar-typed result for expression parameter 0 but received System.String");
     
             // invalid wrong parameter
             epl = "select Utildate.Between(utildate, utildate, 1, true) from SupportDateTime";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'utildate.Between(utildate,utildate,...(42 chars)': Error validating date-time method 'between', expected a bool-type result for expression parameter 2 but received java.lang.int?");
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'utildate.Between(utildate,utildate,...(42 chars)': Error validating date-time method 'between', expected a bool-type result for expression parameter 2 but received " + Name.Of<int>() + "");
     
             // mispatch parameter to input
             epl = "select Utildate.Format(java.time.format.DateTimeFormatter.ISO_ORDINAL_DATE) from SupportDateTime";

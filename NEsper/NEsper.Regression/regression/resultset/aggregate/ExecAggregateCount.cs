@@ -54,7 +54,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
         }
     
         private void RunAssertionCount(EPServiceProvider epService) {
-            string statementText = "select count(*) as cnt from " + typeof(SupportMarketDataBean).FullName + "#Time(1)";
+            string statementText = "select count(*) as cnt from " + typeof(SupportMarketDataBean).FullName + "#time(1)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

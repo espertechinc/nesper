@@ -32,7 +32,7 @@ namespace com.espertech.esper.pattern
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             IList<ConfigurationPlugInPatternObject> init = new List<ConfigurationPlugInPatternObject>();
             init.Add(MakeGuardSpec("g", "h", typeof(SupportGuardFactory).FullName));

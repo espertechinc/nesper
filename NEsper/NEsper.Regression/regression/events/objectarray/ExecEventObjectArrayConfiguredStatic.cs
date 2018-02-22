@@ -29,7 +29,7 @@ namespace com.espertech.esper.regression.events.objectarray
     public class ExecEventObjectArrayConfiguredStatic : RegressionExecution {
         public override void Configure(Configuration configuration) {
             configuration.EngineDefaults.EventMeta.DefaultEventRepresentation = EventUnderlyingType.OBJECTARRAY;
-            configuration.AddEventType("MyOAType", "bean,theString,map".Split(','), new object[]{typeof(SupportBean).FullName, "string", "java.util.Map"});
+            configuration.AddEventType("MyOAType", "bean,theString,map".Split(','), new object[]{typeof(SupportBean).FullName, "string", "Map"});
         }
     
         public override void Run(EPServiceProvider epService) {

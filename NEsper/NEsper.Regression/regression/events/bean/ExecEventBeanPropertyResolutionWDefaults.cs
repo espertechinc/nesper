@@ -118,9 +118,9 @@ namespace com.espertech.esper.regression.events.bean
             epService.EPAdministrator.CreateEPL("create schema MyEvent as (customer string, `from` string)");
             epService.EPAdministrator.CreateEPL("insert into DerivedStream select customer,`from` from MyEvent");
             epService.EPAdministrator.CreateEPL(
-                "create window TheWindow#Firstunique(customer,`from`) as DerivedStream");
+                "create window TheWindow#firstunique(customer,`from`) as DerivedStream");
             epService.EPAdministrator.CreateEPL(
-                "on pattern [a=TheWindow -> timer:Interval(12 hours)] as s0 delete from TheWindow as s1 where s0.a.`from`=s1.`from`");
+                "on pattern [a=TheWindow -> timer:interval(12 hours)] as s0 delete from TheWindow as s1 where s0.a.`from`=s1.`from`");
 
             // test escape in column name
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();

@@ -32,7 +32,7 @@ namespace com.espertech.esper.epl.db.drivers
             // to make use of it.  Additionally we don't want to bind anything
             // to the library that does not need to artifically be bound.
 
-            _dbProviderFactory = dbProviderFactoryManager.GetFactory("MySql.Data.MySqlClient");
+            _dbProviderFactory = dbProviderFactoryManager.GetFactory("MySql.Data.MySqlClient.MySqlClientFactory");
         }
 
         /// <summary>

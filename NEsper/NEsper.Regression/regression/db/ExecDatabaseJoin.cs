@@ -94,7 +94,7 @@ namespace com.espertech.esper.regression.db
         private void RunAssertionTimeBatchEPL(EPServiceProvider epService) {
             string stmtText = "select " + ALL_FIELDS + " from " +
                     " sql:MyDB ['select " + ALL_FIELDS + " from mytesttable \n\r where ${intPrimitive} = mytesttable.mybigint'] as s0," +
-                    typeof(SupportBean).FullName + "#Time_batch(10 sec) as s1";
+                    typeof(SupportBean).FullName + "#time_batch(10 sec) as s1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             RuntestTimeBatch(epService, stmt);
         }
@@ -205,7 +205,7 @@ namespace com.espertech.esper.regression.db
             model.FromClause = fromClause;
             SerializableObjectCopier.Copy(model);
     
-            Assert.AreEqual("select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from sql:MyDB[\"select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from mytesttable where ${intPrimitive} = mytesttable.mybigint\"] as s0, " + typeof(SupportBean).FullName + "#Time_batch(10) as s1",
+            Assert.AreEqual("select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from sql:MyDB[\"select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from mytesttable where ${intPrimitive} = mytesttable.mybigint\"] as s0, " + typeof(SupportBean).FullName + "#time_batch(10) as s1",
                     model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regression.db
         private void RunAssertionTimeBatchCompile(EPServiceProvider epService) {
             string stmtText = "select " + ALL_FIELDS + " from " +
                     " sql:MyDB ['select " + ALL_FIELDS + " from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s0," +
-                    typeof(SupportBean).FullName + "#Time_batch(10 sec) as s1";
+                    typeof(SupportBean).FullName + "#time_batch(10 sec) as s1";
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
             SerializableObjectCopier.Copy(model);
@@ -322,7 +322,7 @@ namespace com.espertech.esper.regression.db
         }
     
         private void RunAssertionInvalidSubviews(EPServiceProvider epService) {
-            string sql = "sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} = mytesttable.myint']#Time(30 sec)";
+            string sql = "sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} = mytesttable.myint']#time(30 sec)";
             string stmtText = "select myvarchar as s0Name from " +
                     sql + " as s0, " + typeof(SupportBean).FullName + " as s1";
             SupportMessageAssertUtil.TryInvalid(epService, stmtText,
@@ -364,7 +364,7 @@ namespace com.espertech.esper.regression.db
     
             string stmtText = "select mychar from " +
                     " sql:MyDB ['select mychar from mytesttable where mytesttable.mybigint = 2'] as s0," +
-                    " pattern [every timer:Interval(5 sec) ]";
+                    " pattern [every timer:interval(5 sec) ]";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -384,7 +384,7 @@ namespace com.espertech.esper.regression.db
             // with variable
             epService.EPAdministrator.CreateEPL("create variable long VarLastTimestamp = 0");
             string epl = "@Name('Poll every 5 seconds') insert into PollStream" +
-                    " select * from pattern[every timer:Interval(5 sec)]," +
+                    " select * from pattern[every timer:interval(5 sec)]," +
                     " sql:MyDB ['select mychar from mytesttable where mytesttable.mybigint > ${VarLastTimestamp}'] as s0";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
             epService.EPAdministrator.Create(model);

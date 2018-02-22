@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.view
             string[] fields = "p1,sp2".Split(',');
             epService.EPAdministrator.Configuration.AddEventType("MyOAEvent", new string[]{"p1", "p2"}, new object[]{typeof(string), typeof(int)});
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select p1,sum(p2) as sp2 from MyOAEvent#Groupwin(p1)#length(2)").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select p1,sum(p2) as sp2 from MyOAEvent#groupwin(p1)#length(2)").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new object[]{"A", 10}, "MyOAEvent");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"A", 10});
@@ -76,7 +76,7 @@ namespace com.espertech.esper.regression.view
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             string query =
                     " @Hint('reclaim_group_aged=1,reclaim_group_freq=1') select Product.product as product, Product.productsize as productsize from Product unidirectional" +
-                            " left outer join Product#Time(3 seconds)#Groupwin(product,productsize)#size PrevProduct on Product.product=PrevProduct.product and Product.productsize=PrevProduct.productsize" +
+                            " left outer join Product#time(3 seconds)#groupwin(product,productsize)#size PrevProduct on Product.product=PrevProduct.product and Product.productsize=PrevProduct.productsize" +
                             " having PrevProduct.size<2";
             epService.EPAdministrator.CreateEPL(query);
     
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regression.view
     
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.CreateEPL("@Hint('reclaim_group_aged=30,reclaim_group_freq=5') " +
-                    "select longPrimitive, count(*) from SupportBean#Groupwin(theString)#Time(3000000)");
+                    "select longPrimitive, count(*) from SupportBean#groupwin(theString)#time(3000000)");
     
             for (int i = 0; i < 10; i++) {
                 var theEvent = new SupportBean(Convert.ToString(i), i);
@@ -121,7 +121,7 @@ namespace com.espertech.esper.regression.view
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             string epl = "@Hint('reclaim_group_aged=5,reclaim_group_freq=1') " +
-                    "select * from SupportBean#Groupwin(theString)#keepall";
+                    "select * from SupportBean#groupwin(theString)#keepall";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
     
             int maxSlots = 10;
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionInvalidGroupByNoChild(EPServiceProvider epService) {
-            string stmtText = "select avg(price), symbol from " + typeof(SupportMarketDataBean).FullName + "#length(100)#Groupwin(symbol)";
+            string stmtText = "select avg(price), symbol from " + typeof(SupportMarketDataBean).FullName + "#length(100)#groupwin(symbol)";
     
             try {
                 epService.EPAdministrator.CreateEPL(stmtText);
@@ -153,19 +153,19 @@ namespace com.espertech.esper.regression.view
             EPAdministrator epAdmin = epService.EPAdministrator;
             string filter = "select * from " + typeof(SupportMarketDataBean).FullName;
     
-            EPStatement priceLast3Stats = epAdmin.CreateEPL(filter + "#Groupwin(symbol)#length(3)#Uni(price) order by symbol asc");
+            EPStatement priceLast3Stats = epAdmin.CreateEPL(filter + "#groupwin(symbol)#length(3)#uni(price) order by symbol asc");
             var priceLast3StatsListener = new SupportUpdateListener();
             priceLast3Stats.Events += priceLast3StatsListener.Update;
     
-            EPStatement volumeLast3Stats = epAdmin.CreateEPL(filter + "#Groupwin(symbol)#length(3)#Uni(volume) order by symbol asc");
+            EPStatement volumeLast3Stats = epAdmin.CreateEPL(filter + "#groupwin(symbol)#length(3)#uni(volume) order by symbol asc");
             var volumeLast3StatsListener = new SupportUpdateListener();
             volumeLast3Stats.Events += volumeLast3StatsListener.Update;
     
-            EPStatement priceAllStats = epAdmin.CreateEPL(filter + "#Groupwin(symbol)#Uni(price) order by symbol asc");
+            EPStatement priceAllStats = epAdmin.CreateEPL(filter + "#groupwin(symbol)#uni(price) order by symbol asc");
             var priceAllStatsListener = new SupportUpdateListener();
             priceAllStats.Events += priceAllStatsListener.Update;
     
-            EPStatement volumeAllStats = epAdmin.CreateEPL(filter + "#Groupwin(symbol)#Uni(volume) order by symbol asc");
+            EPStatement volumeAllStats = epAdmin.CreateEPL(filter + "#groupwin(symbol)#uni(volume) order by symbol asc");
             var volumeAllStatsListener = new SupportUpdateListener();
             volumeAllStats.Events += volumeAllStatsListener.Update;
     
@@ -234,7 +234,7 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionLengthWindowGrouped(EPServiceProvider epService) {
-            string stmtText = "select symbol, price from " + typeof(SupportMarketDataBean).FullName + "#Groupwin(symbol)#length(2)";
+            string stmtText = "select symbol, price from " + typeof(SupportMarketDataBean).FullName + "#groupwin(symbol)#length(2)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -246,7 +246,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionExpressionGrouped(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBeanTimestamp));
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBeanTimestamp#Groupwin(timestamp.DayOfWeek)#length(2)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBeanTimestamp#groupwin(timestamp.DayOfWeek)#length(2)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -262,7 +262,7 @@ namespace com.espertech.esper.regression.view
             // further math tests can be found in the view unit test
             EPAdministrator admin = epService.EPAdministrator;
             admin.Configuration.AddEventType("Market", typeof(SupportMarketDataBean));
-            EPStatement statement = admin.CreateEPL("select * from Market#Groupwin(symbol)#length(1000000)#Correl(price, volume, feed)");
+            EPStatement statement = admin.CreateEPL("select * from Market#groupwin(symbol)#length(1000000)#correl(price, volume, feed)");
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
     
@@ -289,7 +289,7 @@ namespace com.espertech.esper.regression.view
             // further math tests can be found in the view unit test
             EPAdministrator admin = epService.EPAdministrator;
             admin.Configuration.AddEventType("Market", typeof(SupportMarketDataBean));
-            EPStatement statement = admin.CreateEPL("select * from Market#Groupwin(symbol)#length(1000000)#Linest(price, volume, feed)");
+            EPStatement statement = admin.CreateEPL("select * from Market#groupwin(symbol)#length(1000000)#linest(price, volume, feed)");
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
     

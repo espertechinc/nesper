@@ -6,7 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.container;
+using com.espertech.esper.core.support;
+using com.espertech.esper.events;
 
 namespace com.espertech.esper.supportregression.util
 {
@@ -14,9 +17,42 @@ namespace com.espertech.esper.supportregression.util
     {
         public static IContainer Instance;
 
-        SupportContainer()
+        static SupportContainer()
         {
-            Instance = ContainerExtensions.CreateDefaultContainer();
+            var driverType = typeof(MySql.Data.MySqlClient.MySqlClientFactory);
+            Instance = CreateContainer();
+        }
+
+        public static T Resolve<T>()
+        {
+            return Instance.Resolve<T>();
+        }
+
+        public static IContainer Reset()
+        {
+            return Instance = CreateContainer();
+        }
+
+        private static IContainer CreateContainer()
+        {
+            var container = ContainerExtensions.CreateDefaultContainer(false);
+            container.Register<IResourceManager>(
+                xx => new DefaultResourceManager(true,
+                    @"..\..\..\etc",
+                    @"..\..\..\..\etc",
+                    @"..\..\..\..\..\etc"),
+                Lifespan.Singleton);
+
+            container.Register<EventAdapterService>(
+                xx => SupportEventAdapterService.Allocate(
+                    container.LockManager(), container.ClassLoaderProvider()),
+                Lifespan.Singleton);
+
+            container
+                .InitializeDefaultServices()
+                .InitializeDatabaseDrivers();
+
+            return container;
         }
     }
 }

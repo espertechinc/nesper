@@ -57,7 +57,7 @@ namespace com.espertech.esper.regression.client
     
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
-            string epl = "select Java.lang.System.Exit(-1) from SupportBean";
+            string epl = "select System.Environment.Exit(-1) from SupportBean";
     
             epService.EPAdministrator.Configuration.TransientConfiguration.Put(ClassForNameProviderConstants.NAME, new MyClassForNameProvider());
             SupportMessageAssertUtil.TryInvalid(epService, epl,

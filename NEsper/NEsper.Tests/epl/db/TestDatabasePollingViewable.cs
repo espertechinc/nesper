@@ -19,6 +19,7 @@ using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.join.pollindex;
 using com.espertech.esper.epl.join.table;
+using com.espertech.esper.events;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.util;
@@ -36,7 +37,7 @@ namespace com.espertech.esper.epl.db
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             var inputProperties = new[] {"s0.IntPrimitive"};
     
@@ -44,7 +45,7 @@ namespace com.espertech.esper.epl.db
     
             var resultProperties = new Dictionary<String, Object>();
             resultProperties["myvarchar"] = typeof(string);
-            var resultEventType = SupportEventAdapterService.Service.CreateAnonymousMapType("test", resultProperties, true);
+            var resultEventType = _container.Resolve<EventAdapterService>().CreateAnonymousMapType("test", resultProperties, true);
     
             var pollResults = new Dictionary<MultiKey<Object>, IList<EventBean>>();
             pollResults.Put(new MultiKey<Object>(new Object[] {-1}), new List<EventBean>());
@@ -93,7 +94,7 @@ namespace com.espertech.esper.epl.db
         private static EventBean MakeEvent(int intPrimitive)
         {
             var bean = new SupportBean {IntPrimitive = intPrimitive};
-            return SupportEventAdapterService.Service.AdapterForObject(bean);
+            return SupportContainer.Instance.Resolve<EventAdapterService>().AdapterForObject(bean);
         }
     }
 }

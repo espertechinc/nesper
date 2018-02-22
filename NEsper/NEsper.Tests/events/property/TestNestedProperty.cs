@@ -33,10 +33,10 @@ namespace com.espertech.esper.events.property
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _beanEventTypeFactory = new BeanEventAdapter(
                 new ConcurrentDictionary<Type, BeanEventType>(),
-                SupportEventAdapterService.Service,
+                _container.Resolve<EventAdapterService>(),
                 new EventTypeIdGeneratorImpl(),
                 _container.LockManager());
 
@@ -56,10 +56,10 @@ namespace com.espertech.esper.events.property
         [Test]
         public void TestGetGetter()
         {
-            EventPropertyGetter getter = _nested[0].GetGetter((BeanEventType) _event.EventType, SupportEventAdapterService.Service);
+            EventPropertyGetter getter = _nested[0].GetGetter((BeanEventType) _event.EventType, _container.Resolve<EventAdapterService>());
             Assert.AreEqual("NestedValue", getter.Get(_event));
 
-            getter = _nested[1].GetGetter((BeanEventType) _event.EventType, SupportEventAdapterService.Service);
+            getter = _nested[1].GetGetter((BeanEventType) _event.EventType, _container.Resolve<EventAdapterService>());
             Assert.AreEqual("NestedNestedValue", getter.Get(_event));
         }
 
@@ -68,10 +68,10 @@ namespace com.espertech.esper.events.property
         {
             Assert.AreEqual(typeof(string),
                             _nested[0].GetPropertyType((BeanEventType) _event.EventType,
-                                                      SupportEventAdapterService.Service));
+                                                      _container.Resolve<EventAdapterService>()));
             Assert.AreEqual(typeof(string),
                             _nested[1].GetPropertyType((BeanEventType) _event.EventType,
-                                                      SupportEventAdapterService.Service));
+                                                      _container.Resolve<EventAdapterService>()));
         }
     }
 }

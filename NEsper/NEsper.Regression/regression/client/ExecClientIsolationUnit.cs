@@ -53,7 +53,7 @@ namespace com.espertech.esper.regression.client
     
         private void RunAssertionMovePattern(EPServiceProvider epService) {
             EPServiceProviderIsolated isolatedService = epService.GetEPServiceIsolated("Isolated");
-            EPStatement stmt = isolatedService.EPAdministrator.CreateEPL("select * from pattern [every (a=SupportBean -> b=SupportBean(theString=a.theString)) where timer:Within(1 day)]", "TestStatement", null);
+            EPStatement stmt = isolatedService.EPAdministrator.CreateEPL("select * from pattern [every (a=SupportBean -> b=SupportBean(theString=a.theString)) where timer:within(1 day)]", "TestStatement", null);
             isolatedService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.CurrentTimeMillis + 1000));
             isolatedService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             var listener = new SupportUpdateListener();
@@ -205,7 +205,7 @@ namespace com.espertech.esper.regression.client
             }
     
             SendTimerUnisolated(epService, 100000);
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from pattern [every a=SupportBean -> timer:Interval(10)]");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from pattern [every a=SupportBean -> timer:interval(10)]");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -300,7 +300,7 @@ namespace com.espertech.esper.regression.client
             int count = 4;
             var listeners = new SupportUpdateListener[count];
             for (int i = 0; i < count; i++) {
-                string epl = "@Name('S" + i + "') select theString, sum(intPrimitive) as sumi from SupportBean(theString='" + i + "')#Time(10)";
+                string epl = "@Name('S" + i + "') select theString, sum(intPrimitive) as sumi from SupportBean(theString='" + i + "')#time(10)";
                 listeners[i] = new SupportUpdateListener();
                 epService.EPAdministrator.CreateEPL(epl).Events += listeners[i].Update;
             }
@@ -361,7 +361,7 @@ namespace com.espertech.esper.regression.client
             }
     
             var fields = new string[]{"theString"};
-            string epl = "select theString from SupportBean#Time(60)";
+            string epl = "select theString from SupportBean#time(60)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -462,7 +462,7 @@ namespace com.espertech.esper.regression.client
     
             SendTimerUnisolated(epService, 100000);
             var fields = new string[]{"theString"};
-            EPStatement stmtCreate = epService.EPAdministrator.CreateEPL("@Name('create') create window MyWindow#Time(10) as SupportBean");
+            EPStatement stmtCreate = epService.EPAdministrator.CreateEPL("@Name('create') create window MyWindow#time(10) as SupportBean");
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL("@Name('insert') insert into MyWindow select * from SupportBean");
     
             EPServiceProviderIsolated unit = epService.GetEPServiceIsolated("i1");
@@ -608,7 +608,7 @@ namespace com.espertech.esper.regression.client
     
             SendTimerUnisolated(epService, 1000);
             var fields = new string[]{"theString"};
-            string epl = "select irstream theString from SupportBean#Time(10)";
+            string epl = "select irstream theString from SupportBean#time(10)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -623,7 +623,7 @@ namespace com.espertech.esper.regression.client
             epService.EPRuntime.SendEvent(new SupportBean("E3", 0));
     
             SendTimerUnisolated(epService, 8000);
-            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select 'x' as theString from pattern [timer:Interval(10)]");
+            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select 'x' as theString from pattern [timer:interval(10)]");
             stmtTwo.Events += listener.Update;
     
             EPServiceProviderIsolated unit = epService.GetEPServiceIsolated("i1");
@@ -676,7 +676,7 @@ namespace com.espertech.esper.regression.client
             SendTimerIso(1000, unit);
     
             var fields = new string[]{"ct"};
-            EPStatement stmt = unit.EPAdministrator.CreateEPL("select Current_timestamp() as ct from pattern[every timer:Interval(10)]", null, null);
+            EPStatement stmt = unit.EPAdministrator.CreateEPL("select Current_timestamp() as ct from pattern[every timer:interval(10)]", null, null);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     

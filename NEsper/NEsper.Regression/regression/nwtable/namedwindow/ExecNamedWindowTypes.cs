@@ -324,7 +324,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionCreateTableArray(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create schema SecurityData (name string, roles string[])");
-            epService.EPAdministrator.CreateEPL("create window SecurityEvent#Time(30 sec) (ipAddress string, userId string, secData SecurityData, historySecData SecurityData[])");
+            epService.EPAdministrator.CreateEPL("create window SecurityEvent#time(30 sec) (ipAddress string, userId string, secData SecurityData, historySecData SecurityData[])");
     
             // create window
             string stmtTextCreate = "create window MyWindowCTA#keepall (myvalue string[])";

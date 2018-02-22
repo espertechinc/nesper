@@ -14,10 +14,11 @@ using com.espertech.esper.core.support;
 using XLR8.CGLib;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.bean
@@ -25,11 +26,14 @@ namespace com.espertech.esper.events.bean
     [TestFixture]
     public class TestHighPerformancePropertyGetter 
     {
-        EventBean unitTestBean;
-    
+        private EventBean unitTestBean;
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             SupportBean testEvent = new SupportBean();
             testEvent.IntPrimitive = 10;
             testEvent.TheString = "a";
@@ -82,7 +86,7 @@ namespace com.espertech.esper.events.bean
         private LambdaPropertyGetter MakeLambdaGetter(Type clazz, String methodName)
         {
             MethodInfo method = clazz.GetMethod(methodName, new Type[] {});
-            LambdaPropertyGetter getter = new LambdaPropertyGetter(method, SupportEventAdapterService.Service);
+            LambdaPropertyGetter getter = new LambdaPropertyGetter(method, _container.Resolve<EventAdapterService>());
             return getter;
         }
 
@@ -92,7 +96,7 @@ namespace com.espertech.esper.events.bean
             PropertyInfo propertyInfo = clazz.GetProperty(propertyName);
             FastProperty fastProp = fastClass.GetProperty(propertyInfo);
     
-            CGLibPropertyGetter getter = new CGLibPropertyGetter(propertyInfo, fastProp, SupportEventAdapterService.Service);
+            CGLibPropertyGetter getter = new CGLibPropertyGetter(propertyInfo, fastProp, _container.Resolve<EventAdapterService>());
     
             return getter;
         }

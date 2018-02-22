@@ -35,7 +35,7 @@ namespace com.espertech.esper.filter
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             SupportBean testBean = new SupportBean();
             _testEventBean = SupportEventBeanFactory.CreateObject(testBean);

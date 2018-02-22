@@ -76,7 +76,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             // test table access expression
             epService.EPAdministrator.CreateEPL("create table MyTableUnkeyed(theWindow window(*) @Type(SupportBean))");
             epService.EPAdministrator.CreateEPL(
-                "into table MyTableUnkeyed select window(*) as theWindow from SupportBean#Time(30)");
+                "into table MyTableUnkeyed select window(*) as theWindow from SupportBean#time(30)");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
 
@@ -252,8 +252,8 @@ namespace com.espertech.esper.regression.expr.enummethod
         private void RunAssertionPrevWindowSorted(EPServiceProvider epService)
         {
             var stmt = epService.EPAdministrator.CreateEPL(
-                "select Prevwindow(st0) as val0, Prevwindow(st0).EsperInternalNoop() as val1 " +
-                "from SupportBean_ST0#Sort(3, p00 asc) as st0");
+                "select prevwindow(st0) as val0, prevwindow(st0).EsperInternalNoop() as val1 " +
+                "from SupportBean_ST0#sort(3, p00 asc) as st0");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(
@@ -279,7 +279,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             // Scalar version
             var fields = new[] {"val0"};
             var stmtScalar = epService.EPAdministrator.CreateEPL(
-                "select Prevwindow(id).Where(x => x not like '%ignore%') as val0 " +
+                "select prevwindow(id).Where(x => x not like '%ignore%') as val0 " +
                 "from SupportBean_ST0#keepall as st0");
             stmtScalar.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtScalar.EventType, fields, new[] {typeof(ICollection<object>)});
@@ -453,11 +453,11 @@ namespace com.espertech.esper.regression.expr.enummethod
         {
             var fields = new[] {"val0", "val1", "val2", "val3", "val4"};
 
-            // test window(*) and First(*)
+            // test window(*) and first(*)
             var eplWindowAgg = "select " +
                                "window(*).AllOf(x => x.intPrimitive < 5) as val0," +
-                               "First(*).AllOf(x => x.intPrimitive < 5) as val1," +
-                               "First(*, 1).AllOf(x => x.intPrimitive < 5) as val2," +
+                               "first(*).AllOf(x => x.intPrimitive < 5) as val1," +
+                               "first(*, 1).AllOf(x => x.intPrimitive < 5) as val2," +
                                "last(*).AllOf(x => x.intPrimitive < 5) as val3," +
                                "last(*, 1).AllOf(x => x.intPrimitive < 5) as val4" +
                                " from SupportBean#length(2)";
@@ -479,11 +479,11 @@ namespace com.espertech.esper.regression.expr.enummethod
 
             stmtWindowAgg.Dispose();
 
-            // test scalar: window(*) and First(*)
+            // test scalar: window(*) and first(*)
             var eplWindowAggScalar = "select " +
                                      "window(intPrimitive).AllOf(x => x < 5) as val0," +
-                                     "First(intPrimitive).AllOf(x => x < 5) as val1," +
-                                     "First(intPrimitive, 1).AllOf(x => x < 5) as val2," +
+                                     "first(intPrimitive).AllOf(x => x < 5) as val1," +
+                                     "first(intPrimitive, 1).AllOf(x => x < 5) as val2," +
                                      "last(intPrimitive).AllOf(x => x < 5) as val3," +
                                      "last(intPrimitive, 1).AllOf(x => x < 5) as val4" +
                                      " from SupportBean#length(2)";
@@ -583,12 +583,12 @@ namespace com.espertech.esper.regression.expr.enummethod
 
         private void RunAssertionPrevFuncs(EPServiceProvider epService)
         {
-            // test Prevwindow(*) etc
+            // test prevwindow(*) etc
             var fields = new[] {"val0", "val1", "val2"};
             var epl = "select " +
-                      "Prevwindow(sb).AllOf(x => x.intPrimitive < 5) as val0," +
-                      "Prev(sb,1).AllOf(x => x.intPrimitive < 5) as val1," +
-                      "Prevtail(sb,1).AllOf(x => x.intPrimitive < 5) as val2" +
+                      "prevwindow(sb).AllOf(x => x.intPrimitive < 5) as val0," +
+                      "prev(sb,1).AllOf(x => x.intPrimitive < 5) as val1," +
+                      "prevtail(sb,1).AllOf(x => x.intPrimitive < 5) as val2" +
                       " from SupportBean#length(2) as sb";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -607,11 +607,11 @@ namespace com.espertech.esper.regression.expr.enummethod
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {true, true, true});
             stmt.Dispose();
 
-            // test scalar Prevwindow(property) etc
+            // test scalar prevwindow(property) etc
             var eplScalar = "select " +
-                            "Prevwindow(intPrimitive).AllOf(x => x < 5) as val0," +
-                            "Prev(intPrimitive,1).AllOf(x => x < 5) as val1," +
-                            "Prevtail(intPrimitive,1).AllOf(x => x < 5) as val2" +
+                            "prevwindow(intPrimitive).AllOf(x => x < 5) as val0," +
+                            "prev(intPrimitive,1).AllOf(x => x < 5) as val1," +
+                            "prevtail(intPrimitive,1).AllOf(x => x < 5) as val2" +
                             " from SupportBean#length(2) as sb";
             var stmtScalar = epService.EPAdministrator.CreateEPL(eplScalar);
             stmtScalar.Events += listener.Update;

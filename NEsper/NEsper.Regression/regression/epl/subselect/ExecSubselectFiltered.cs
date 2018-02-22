@@ -389,7 +389,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionWherePrevious(EPServiceProvider epService) {
-            string stmtText = "select (select Prev(1, id) from S1#length(1000) where id=s0.id) as value from S0 as s0";
+            string stmtText = "select (select prev(1, id) from S1#length(1000) where id=s0.id) as value from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -408,7 +408,7 @@ namespace com.espertech.esper.regression.epl.subselect
             model.SelectClause = SelectClause.Create().Add(Expressions.Subquery(subquery), "value");
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
     
-            string stmtText = "select (select Prev(1,id) from S1#length(1000) where id=s0.id) as value from S0 as s0";
+            string stmtText = "select (select prev(1,id) from S1#length(1000) where id=s0.id) as value from S0 as s0";
             Assert.AreEqual(stmtText, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -420,7 +420,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionWherePreviousCompile(EPServiceProvider epService) {
-            string stmtText = "select (select Prev(1,id) from S1#length(1000) where id=s0.id) as value from S0 as s0";
+            string stmtText = "select (select prev(1,id) from S1#length(1000) where id=s0.id) as value from S0 as s0";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
             Assert.AreEqual(stmtText, model.ToEPL());
     
@@ -740,8 +740,8 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionJoinFilteredOne(EPServiceProvider epService) {
             string stmtText = "select s0.id as s0id, s1.id as s1id, " +
                     "(select p20 from S2#length(1000) where id=s0.id) as s2p20, " +
-                    "(select Prior(1, p20) from S2#length(1000) where id=s0.id) as s2p20Prior, " +
-                    "(select Prev(1, p20) from S2#length(10) where id=s0.id) as s2p20Prev " +
+                    "(select prior(1, p20) from S2#length(1000) where id=s0.id) as s2p20Prior, " +
+                    "(select prev(1, p20) from S2#length(10) where id=s0.id) as s2p20Prev " +
                     "from S0#keepall as s0, S1#keepall as s1 " +
                     "where s0.id = s1.id and p00||p10 = (select p20 from S2#length(1000) where id=s0.id)";
             TryJoinFiltered(epService, stmtText);
@@ -750,8 +750,8 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionJoinFilteredTwo(EPServiceProvider epService) {
             string stmtText = "select s0.id as s0id, s1.id as s1id, " +
                     "(select p20 from S2#length(1000) where id=s0.id) as s2p20, " +
-                    "(select Prior(1, p20) from S2#length(1000) where id=s0.id) as s2p20Prior, " +
-                    "(select Prev(1, p20) from S2#length(10) where id=s0.id) as s2p20Prev " +
+                    "(select prior(1, p20) from S2#length(1000) where id=s0.id) as s2p20Prior, " +
+                    "(select prev(1, p20) from S2#length(10) where id=s0.id) as s2p20Prev " +
                     "from S0#keepall as s0, S1#keepall as s1 " +
                     "where s0.id = s1.id and (select s0.p00||s1.p10 = p20 from S2#length(1000) where id=s0.id)";
             TryJoinFiltered(epService, stmtText);
@@ -804,8 +804,8 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionSubselectMixMax(EPServiceProvider epService) {
             string stmtTextOne =
                     "select " +
-                            " (select * from Sensor#Sort(1, measurement desc)) as high, " +
-                            " (select * from Sensor#Sort(1, measurement asc)) as low " +
+                            " (select * from Sensor#sort(1, measurement desc)) as high, " +
+                            " (select * from Sensor#sort(1, measurement asc)) as low " +
                             " from Sensor";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtTextOne);
             var listener = new SupportUpdateListener();

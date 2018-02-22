@@ -90,7 +90,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             });
     
             // try grouped time window
-            string stmtTextTwo = "select rstream theString from SupportBean#Groupwin(theString)#Time(10) order by theString desc";
+            string stmtTextTwo = "select rstream theString from SupportBean#groupwin(theString)#time(10) order by theString desc";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listenerTwo = new SupportUpdateListener();
             stmtTwo.Events += listenerTwo.Update;
@@ -859,7 +859,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             SendTimeEvent(epService, 0);
     
             statementString = "select symbol from " +
-                    typeof(SupportMarketDataBean).FullName + "#Time_batch(1 sec) " +
+                    typeof(SupportMarketDataBean).FullName + "#time_batch(1 sec) " +
                     "order by price";
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPrice(spv);
@@ -891,7 +891,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             SendTimeEvent(epService, 0);
     
             statementString = "select symbol from " +
-                    typeof(SupportMarketDataBean).FullName + "#Time_batch(1) as one, " +
+                    typeof(SupportMarketDataBean).FullName + "#time_batch(1) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
                     "where one.symbol = two.theString " +
                     "order by price, symbol";

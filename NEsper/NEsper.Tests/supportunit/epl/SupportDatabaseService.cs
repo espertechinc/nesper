@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-
+using System.IO;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -33,7 +33,9 @@ namespace com.espertech.esper.supportunit.epl
 
         static SupportDatabaseService()
         {
-            var configuration = ConfigurationManager.GetSection("esper-configuration") as Configuration;
+            var configurationFile = new FileInfo("NEsperConfig.xml");
+            var configuration = new Configuration(SupportContainer.Instance);
+            configuration.Configure(configurationFile);
 
             var dbTable = configuration.DatabaseReferences;
 

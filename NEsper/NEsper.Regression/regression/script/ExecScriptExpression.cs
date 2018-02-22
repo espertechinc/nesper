@@ -620,7 +620,7 @@ namespace com.espertech.esper.regression.script
             epService.EPAdministrator.CreateEPL(
                 "create expression change(open, close) [ return (open - close) / close; ]");
             var stmt = epService.EPAdministrator.CreateEPL(
-                "select change(First(intPrimitive), last(intPrimitive)) as ch from SupportBean#Time(1 day)");
+                "select change(First(intPrimitive), last(intPrimitive)) as ch from SupportBean#time(1 day)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));

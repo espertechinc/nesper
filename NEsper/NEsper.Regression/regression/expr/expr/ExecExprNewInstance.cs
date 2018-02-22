@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.expr.expr
             RunAssertionStreamAlias(epService);
     
             // try variable
-            epService.EPAdministrator.CreateEPL("create constant variable var cnt = new Java.util.concurrent.atomic.AtomicInteger(1)");
+            epService.EPAdministrator.CreateEPL("create constant variable var cnt = new com.espertech.esper.compat.AtomicLong(1)");
     
             // try shallow invalid cases
             SupportMessageAssertUtil.TryInvalid(epService, "select new Dummy() from SupportBean",
@@ -56,31 +56,33 @@ namespace com.espertech.esper.regression.expr.expr
     
             var sb = new SupportBean();
             epService.EPRuntime.SendEvent(sb);
-            EventBean @event = listener.AssertOneGetNewAndReset();
+            var @event = listener.AssertOneGetNewAndReset();
             Assert.AreSame(sb, ((MyClassObjectCtor) @event.Get("c0")).Value);
         }
     
         private void RunAssertionNewInstance(EPServiceProvider epService, bool soda) {
             epService.EPAdministrator.Configuration.AddImport(typeof(SupportBean));
-    
-            string epl = "select " +
+
+            var container = epService.Container;
+
+            var epl = "select " +
                     "new SupportBean(\"A\",intPrimitive) as c0, " +
                     "new SupportBean(\"B\",intPrimitive+10), " +
                     "new SupportBean() as c2, " +
                     "new SupportBean(\"ABC\",0).TheString as c3 " +
                     "from SupportBean";
-            EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
+            var stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             var expectedAggType = new object[][]{new object[] {"c0", typeof(SupportBean)}, new object[] {"new SupportBean(\"B\",intPrimitive+10)", typeof(SupportBean)}};
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedAggType, stmt.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
-            string[] fields = "theString,intPrimitive".Split(',');
+            var fields = "theString,intPrimitive".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
-            EventBean @event = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertPropsPono(@event.Get("c0"), fields, new object[]{"A", 10});
-            EPAssertionUtil.AssertPropsPono(((Map) @event.Underlying).Get("new SupportBean(\"B\",intPrimitive+10)"), fields, new object[]{"B", 20});
-            EPAssertionUtil.AssertPropsPono(@event.Get("c2"), fields, new object[]{null, 0});
+            var @event = listener.AssertOneGetNewAndReset();
+            EPAssertionUtil.AssertPropsPono(container, @event.Get("c0"), fields, new object[]{"A", 10});
+            EPAssertionUtil.AssertPropsPono(container, ((Map) @event.Underlying).Get("new SupportBean(\"B\",intPrimitive+10)"), fields, new object[]{"B", 20});
+            EPAssertionUtil.AssertPropsPono(container, @event.Get("c2"), fields, new object[]{null, 0});
             Assert.AreEqual("ABC", @event.Get("c3"));
     
             epService.EPAdministrator.DestroyAllStatements();

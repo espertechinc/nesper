@@ -46,7 +46,7 @@ namespace com.espertech.esper.regression.context
             Create(
                 epService, "context SegmentedByCustomer\n" +
                            "select * from pattern [\n" +
-                           "every a=BankTxn(amount > 400) -> b=BankTxn(amount > 400) where timer:Within(10 minutes)\n" +
+                           "every a=BankTxn(amount > 400) -> b=BankTxn(amount > 400) where timer:within(10 minutes)\n" +
                            "]");
             epService.EPAdministrator.DestroyAllStatements();
             Create(
@@ -66,11 +66,11 @@ namespace com.espertech.esper.regression.context
             Create(epService, "create context ByCust partition by custId from BankTxn");
             Create(
                 epService, "context ByCust\n" +
-                           "select * from BankTxn as t1 unidirectional, BankTxn#Time(30) t2\n" +
+                           "select * from BankTxn as t1 unidirectional, BankTxn#time(30) t2\n" +
                            "where t1.amount = t2.amount");
             Create(
                 epService, "context ByCust\n" +
-                           "select * from SecurityEvent as t1 unidirectional, BankTxn#Time(30) t2\n" +
+                           "select * from SecurityEvent as t1 unidirectional, BankTxn#time(30) t2\n" +
                            "where t1.customerName = t2.customerName");
             epService.EPAdministrator.DestroyAllStatements();
             Create(
@@ -98,10 +98,10 @@ namespace com.espertech.esper.regression.context
             Create(
                 epService, "context CtxTrainEnter\n" +
                            "select t1 from pattern [\n" +
-                           "t1=TrainEnterEvent -> timer:Interval(5 min) and not TrainLeaveEvent(trainId = context.te.trainId)]");
+                           "t1=TrainEnterEvent -> timer:interval(5 min) and not TrainLeaveEvent(trainId = context.te.trainId)]");
             Create(
                 epService, "create context CtxEachMinute\n" +
-                           "initiated by pattern [every timer:Interval(1 minute)]\n" +
+                           "initiated by pattern [every timer:interval(1 minute)]\n" +
                            "terminated after 1 minutes");
             Create(epService, "context CtxEachMinute select avg(temp) from SensorEvent");
             Create(
@@ -180,7 +180,7 @@ namespace com.espertech.esper.regression.context
                 "create context MyContext5 start pattern [StartEventOne or StartEventTwo] end after 5 seconds");
             Create(
                 epService,
-                "create context MyContext6 initiated by pattern [every MyInitEvent -> MyOtherEvent where timer:Within(5)] terminated by MyTermEvent");
+                "create context MyContext6 initiated by pattern [every MyInitEvent -> MyOtherEvent where timer:within(5)] terminated by MyTermEvent");
             Create(
                 epService, "create context MyContext7 \n" +
                            "  start pattern [a=StartEventOne or  b=StartEventTwo]\n" +
@@ -201,7 +201,7 @@ namespace com.espertech.esper.regression.context
                            "  group by amount < 100 as small, \n" +
                            "  group by amount between 100 and 1000 as medium, \n" +
                            "  group by amount > 1000 as large from BankTxn");
-            var stmt = Create(epService, "context TxnCategoryContext select * from BankTxn#Time(1 minute)");
+            var stmt = Create(epService, "context TxnCategoryContext select * from BankTxn#time(1 minute)");
             var categorySmall = new ProxyContextPartitionSelectorCategory(() => Collections.SingletonList("small"));
 
             stmt.GetEnumerator(categorySmall);
@@ -209,7 +209,7 @@ namespace com.espertech.esper.regression.context
             var categorySmallMed = new ProxyContextPartitionSelectorCategory(
                 () => new HashSet<string>(Collections.List("small", "medium")));
 
-            Create(epService, "context TxnCategoryContext create window BankTxnWindow#Time(1 min) as BankTxn");
+            Create(epService, "context TxnCategoryContext create window BankTxnWindow#time(1 min) as BankTxn");
             epService.EPRuntime.ExecuteQuery(
                 "select count(*) from BankTxnWindow", new ContextPartitionSelector[] {categorySmallMed});
 

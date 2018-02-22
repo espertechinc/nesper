@@ -156,7 +156,10 @@ namespace com.espertech.esper.regression.dataflow
             Assert.AreEqual(0, capture.Current.Length);
 
             emitter.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
-            EPAssertionUtil.AssertPropsPerRow(capture.Current, "theString,sumInt".Split(','), new[] {new object[] {"E1", 6}, new object[] {"E2", 5}, new object[] {"E3", 4}});
+            EPAssertionUtil.AssertPropsPerRow(
+                epService.Container, capture.Current, 
+                "theString,sumInt".Split(','), 
+                new[] {new object[] {"E1", 6}, new object[] {"E2", 5}, new object[] {"E3", 4}});
     
             instance.Cancel();
             epService.EPAdministrator.DestroyAllStatements();
@@ -189,14 +192,16 @@ namespace com.espertech.esper.regression.dataflow
             Assert.AreEqual(0, capture.GetCurrentAndReset().Length);
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(60000 + 5000));
-            EPAssertionUtil.AssertProps(capture.GetCurrentAndReset()[0], "sumInt".Split(','), new object[]{14});
+            EPAssertionUtil.AssertProps(
+                epService.Container, capture.GetCurrentAndReset()[0], "sumInt".Split(','), new object[]{14});
     
             emitter.Submit(new SupportBean("E4", 3));
             emitter.Submit(new SupportBean("E5", 6));
             Assert.AreEqual(0, capture.GetCurrentAndReset().Length);
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(120000 + 5000));
-            EPAssertionUtil.AssertProps(capture.GetCurrentAndReset()[0], "sumInt".Split(','), new object[]{14 + 9});
+            EPAssertionUtil.AssertProps(
+                epService.Container, capture.GetCurrentAndReset()[0], "sumInt".Split(','), new object[]{14 + 9});
     
             instance.Cancel();
     
@@ -213,7 +218,7 @@ namespace com.espertech.esper.regression.dataflow
             string graph = "create dataflow MySelect\n" +
                     "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
                     "Select(instream_s0) -> outstream {\n" +
-                    "  select: (select sum(intPrimitive) as sumInt from instream_s0#Time(1 minute))\n" +
+                    "  select: (select sum(intPrimitive) as sumInt from instream_s0#time(1 minute))\n" +
                     "}\n" +
                     "CaptureOp(outstream) {}\n";
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
@@ -228,14 +233,17 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(5000));
             captive.Emitters.Get("emitterS0").Submit(new SupportBean("E1", 2));
-            EPAssertionUtil.AssertProps(capture.GetCurrentAndReset()[0], "sumInt".Split(','), new object[]{2});
+            EPAssertionUtil.AssertProps(
+                epService.Container, capture.GetCurrentAndReset()[0], "sumInt".Split(','), new object[]{2});
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(10000));
             captive.Emitters.Get("emitterS0").Submit(new SupportBean("E2", 5));
-            EPAssertionUtil.AssertProps(capture.GetCurrentAndReset()[0], "sumInt".Split(','), new object[]{7});
+            EPAssertionUtil.AssertProps(
+                epService.Container, capture.GetCurrentAndReset()[0], "sumInt".Split(','), new object[]{7});
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(65000));
-            EPAssertionUtil.AssertProps(capture.GetCurrentAndReset()[0], "sumInt".Split(','), new object[]{5});
+            EPAssertionUtil.AssertProps(
+                epService.Container, capture.GetCurrentAndReset()[0], "sumInt".Split(','), new object[]{5});
     
             instance.Cancel();
             epService.EPAdministrator.DestroyAllStatements();
@@ -263,7 +271,8 @@ namespace com.espertech.esper.regression.dataflow
             EPDataFlowInstanceCaptive captive = instance.StartCaptive();
     
             captive.Emitters.Get("emitterS0").Submit(new SupportBean_S0(1, "S0_1"));
-            EPAssertionUtil.AssertProps(capture.GetCurrentAndReset()[0], "p00,p11".Split(','), new object[]{"S0_1", null});
+            EPAssertionUtil.AssertProps(
+                epService.Container, capture.GetCurrentAndReset()[0], "p00,p11".Split(','), new object[]{"S0_1", null});
     
             instance.Cancel();
             epService.EPAdministrator.DestroyAllStatements();
@@ -303,7 +312,8 @@ namespace com.espertech.esper.regression.dataflow
     
             captive.Emitters.Get("emitterS2").Submit(new SupportBean_S2(100));
             Assert.AreEqual(1, capture.Current.Length);
-            EPAssertionUtil.AssertProps(capture.GetCurrentAndReset()[0], "s0id,s1id,s2id".Split(','), new object[]{1, 10, 100});
+            EPAssertionUtil.AssertProps(
+                epService.Container, capture.GetCurrentAndReset()[0], "s0id,s1id,s2id".Split(','), new object[]{1, 10, 100});
     
             instance.Cancel();
     
@@ -338,7 +348,8 @@ namespace com.espertech.esper.regression.dataflow
             instance.Run();
     
             object[] result = capture.GetAndReset()[0].ToArray();
-            EPAssertionUtil.AssertPropsPerRow(result, "myString,total".Split(','), new object[][]{new object[] {"one", 1}, new object[] {"two", 3}});
+            EPAssertionUtil.AssertPropsPerRow(
+                epService.Container, result, "myString,total".Split(','), new object[][]{new object[] {"one", 1}, new object[] {"two", 3}});
     
             instance.Cancel();
     

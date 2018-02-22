@@ -15,6 +15,7 @@ using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.start;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core;
+using com.espertech.esper.events;
 using com.espertech.esper.schedule;
 using com.espertech.esper.supportunit.util;
 using com.espertech.esper.timer;
@@ -32,12 +33,12 @@ namespace com.espertech.esper.epl.variable
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _service = new VariableServiceImpl(10000, 
                 new SchedulingServiceImpl(
                     new TimeSourceServiceImpl(),
                     _container.Resolve<ILockManager>()),
-                SupportEventAdapterService.Service, null,
+                _container.Resolve<EventAdapterService>(), null,
                 _container.Resolve<IReaderWriterLockManager>(),
                 _container.Resolve<IThreadLocalManager>());
             _engineImportService = SupportEngineImportServiceFactory.Make(
@@ -162,13 +163,13 @@ namespace com.espertech.esper.epl.variable
         [Test]
         public void TestRollover()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _service = new VariableServiceImpl(
                 VariableServiceImpl.ROLLOVER_READER_BOUNDARY - 100, 
                 10000,
                 new SchedulingServiceImpl(
                     new TimeSourceServiceImpl(), _container.Resolve<ILockManager>()), 
-                SupportEventAdapterService.Service,
+                _container.Resolve<EventAdapterService>(),
                 null,
                 _container.Resolve<IReaderWriterLockManager>());
 

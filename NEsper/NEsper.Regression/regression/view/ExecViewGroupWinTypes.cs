@@ -23,7 +23,7 @@ namespace com.espertech.esper.regression.view
     public class ExecViewGroupWinTypes : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
             string viewStmt = "select * from " + typeof(SupportBean).FullName +
-                    "#Groupwin(intPrimitive)#length(4)#Groupwin(longBoxed)#Uni(doubleBoxed)";
+                    "#groupwin(intPrimitive)#length(4)#groupwin(longBoxed)#uni(doubleBoxed)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(viewStmt);
     
             Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("intPrimitive"));

@@ -37,7 +37,7 @@ namespace com.espertech.esper.view.window
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             // Set the scheduling service to use
             _schedulingServiceStub = new SupportSchedulingServiceImpl();

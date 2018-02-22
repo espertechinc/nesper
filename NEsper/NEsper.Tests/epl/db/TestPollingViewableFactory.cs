@@ -11,6 +11,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.spec;
+using com.espertech.esper.events;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.util;
 using com.espertech.esper.view;
@@ -32,7 +33,7 @@ namespace com.espertech.esper.epl.db
             EventCollection eventCollection = DatabasePollingViewableFactory.CreateDBStatementView(
                 1, 1, spec,
                 SupportDatabaseService.MakeService(),
-                SupportEventAdapterService.Service,
+                container.Resolve<EventAdapterService>(),
                 null, null, null, null, true, new DataCacheFactory(),
                 SupportStatementContextFactory.MakeContext(container));
             

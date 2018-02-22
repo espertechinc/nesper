@@ -10,15 +10,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-using com.espertech.esper.core.support;
-
 using XLR8.CGLib;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 
 using NUnit.Framework;
 
@@ -27,8 +26,14 @@ namespace com.espertech.esper.events.bean
     [TestFixture]
     public class TestPropertyHelper
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private IContainer _container;
 
+        [SetUp]
+        public void SetUp()
+        {
+            _container = SupportContainer.Reset();
+        }
+        
         [Test]
         public void TestMagicProperties()
         {
@@ -67,7 +72,7 @@ namespace com.espertech.esper.events.bean
             FastClass fastClass = FastClass.Create(typeof(SupportBeanPropertyNames));
             EventBean bean = SupportEventBeanFactory.CreateObject(new SupportBeanPropertyNames());
             MethodInfo method = typeof(SupportBeanPropertyNames).GetProperty("A").GetGetMethod();
-            EventPropertyGetter getter = PropertyHelper.GetGetter("A", method, fastClass, SupportEventAdapterService.Service);
+            EventPropertyGetter getter = PropertyHelper.GetGetter("A", method, fastClass, _container.Resolve<EventAdapterService>());
             Assert.AreEqual("", getter.Get(bean));
         }
 

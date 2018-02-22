@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.client
         private void RunAssertionSendTimeSpan(EPServiceProvider epService) {
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select Current_timestamp() as ct from pattern[every timer:Interval(1.5 sec)]");
+            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select Current_timestamp() as ct from pattern[every timer:interval(1.5 sec)]");
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regression.client
             EPServiceProviderIsolated isolated = epService.GetEPServiceIsolated("I1");
             isolated.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
-            EPStatement stmtOne = isolated.EPAdministrator.CreateEPL("select Current_timestamp() as ct from pattern[every timer:Interval(1.5 sec)]", null, null);
+            EPStatement stmtOne = isolated.EPAdministrator.CreateEPL("select Current_timestamp() as ct from pattern[every timer:interval(1.5 sec)]", null, null);
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     
@@ -144,11 +144,11 @@ namespace com.espertech.esper.regression.client
             Assert.IsNull(epService.EPRuntime.NextScheduledTime);
             AssertSchedules(runtimeSPI.StatementNearestSchedules, new Object[0][]);
     
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select * from pattern[timer:Interval(2 sec)]");
+            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select * from pattern[timer:interval(2 sec)]");
             Assert.AreEqual(2000L, (long) epService.EPRuntime.NextScheduledTime);
             AssertSchedules(runtimeSPI.StatementNearestSchedules, new object[][]{new object[] {stmtOne.Name, 2000L}});
     
-            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("@Name('s2') select * from pattern[timer:Interval(150 msec)]");
+            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("@Name('s2') select * from pattern[timer:interval(150 msec)]");
             Assert.AreEqual(150L, (long) epService.EPRuntime.NextScheduledTime);
             AssertSchedules(runtimeSPI.StatementNearestSchedules, new object[][]{new object[] {"s2", 150L}, new object[] {stmtOne.Name, 2000L}});
     
@@ -156,7 +156,7 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(2000L, (long) epService.EPRuntime.NextScheduledTime);
             AssertSchedules(runtimeSPI.StatementNearestSchedules, new object[][]{new object[] {stmtOne.Name, 2000L}});
     
-            EPStatement stmtThree = epService.EPAdministrator.CreateEPL("select * from pattern[timer:Interval(3 sec) and timer:Interval(4 sec)]");
+            EPStatement stmtThree = epService.EPAdministrator.CreateEPL("select * from pattern[timer:interval(3 sec) and timer:interval(4 sec)]");
             Assert.AreEqual(2000L, (long) epService.EPRuntime.NextScheduledTime);
             AssertSchedules(runtimeSPI.StatementNearestSchedules, new object[][]{new object[] {stmtOne.Name, 2000L}, new object[] {stmtThree.Name, 3000L}});
     
@@ -180,7 +180,7 @@ namespace com.espertech.esper.regression.client
             Assert.IsNull(isolated.EPRuntime.NextScheduledTime);
             AssertSchedules(isolatedSPI.StatementNearestSchedules, new Object[0][]);
     
-            EPStatement stmtFour = isolated.EPAdministrator.CreateEPL("select * from pattern[timer:Interval(2 sec)]", null, null);
+            EPStatement stmtFour = isolated.EPAdministrator.CreateEPL("select * from pattern[timer:interval(2 sec)]", null, null);
             Assert.AreEqual(2000L, (long) isolatedSPI.NextScheduledTime);
             AssertSchedules(isolatedSPI.StatementNearestSchedules, new object[][]{new object[] {stmtFour.Name, 2000L}});
     

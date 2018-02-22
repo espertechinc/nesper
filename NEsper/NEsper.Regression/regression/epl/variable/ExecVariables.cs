@@ -14,6 +14,7 @@ using System.Xml;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
@@ -320,21 +321,21 @@ namespace com.espertech.esper.regression.epl.variable
                 Assert.Fail();
             } catch (VariableValueException ex) {
                 // expected
-                Assert.AreEqual("Variable 'dummy' of declared type java.lang.int? cannot be assigned a value of type java.lang.string", ex.Message);
+                Assert.AreEqual("Variable 'dummy' of declared type " + Name.Of<int>() + " cannot be assigned a value of type System.String", ex.Message);
             }
             try {
                 epService.EPRuntime.SetVariableValue("dummy", 100L);
                 Assert.Fail();
             } catch (VariableValueException ex) {
                 // expected
-                Assert.AreEqual("Variable 'dummy' of declared type java.lang.int? cannot be assigned a value of type java.lang.long", ex.Message);
+                Assert.AreEqual("Variable 'dummy' of declared type " + Name.Of<int>() + " cannot be assigned a value of type java.lang.long", ex.Message);
             }
             try {
                 epService.EPRuntime.SetVariableValue("var2", 0);
                 Assert.Fail();
             } catch (VariableValueException ex) {
                 // expected
-                Assert.AreEqual("Variable 'var2' of declared type java.lang.string cannot be assigned a value of type java.lang.int?", ex.Message);
+                Assert.AreEqual("Variable 'var2' of declared type System.String cannot be assigned a value of type " + Name.Of<int>() + "", ex.Message);
             }
     
             // coercion
@@ -855,13 +856,13 @@ namespace com.espertech.esper.regression.epl.variable
                     "Error starting statement: Variable by name 'dummy' has not been created or configured");
     
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var1IS = 1",
-                    "Error starting statement: Variable 'var1IS' of declared type java.lang.string cannot be assigned a value of type java.lang.int?");
+                    "Error starting statement: Variable 'var1IS' of declared type System.String cannot be assigned a value of type " + Name.Of<int>() + "");
     
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var3IS = 'abc'",
-                    "Error starting statement: Variable 'var3IS' of declared type java.lang.int? cannot be assigned a value of type java.lang.string");
+                    "Error starting statement: Variable 'var3IS' of declared type " + Name.Of<int>() + " cannot be assigned a value of type System.String");
     
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var3IS = doublePrimitive",
-                    "Error starting statement: Variable 'var3IS' of declared type java.lang.int? cannot be assigned a value of type double");
+                    "Error starting statement: Variable 'var3IS' of declared type " + Name.Of<int>() + " cannot be assigned a value of type double");
     
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var2IS = 'false'", null);
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var3IS = 1.1", null);
@@ -882,10 +883,10 @@ namespace com.espertech.esper.regression.epl.variable
     
         private void RunAssertionInvalidInitialization(EPServiceProvider epService) {
             TryInvalid(epService, typeof(int?), "abcdef",
-                    "Error creating variable: Variable 'invalidvar1' of declared type java.lang.int? cannot be initialized by value 'abcdef': java.lang.NumberFormatException: For input string: \"abcdef\"");
+                    "Error creating variable: Variable 'invalidvar1' of declared type " + Name.Of<int>() + " cannot be initialized by value 'abcdef': java.lang.NumberFormatException: For input string: \"abcdef\"");
     
             TryInvalid(epService, typeof(int?), new double?(11.1),
-                    "Error creating variable: Variable 'invalidvar1' of declared type java.lang.int? cannot be initialized by a value of type java.lang.double?");
+                    "Error creating variable: Variable 'invalidvar1' of declared type " + Name.Of<int>() + " cannot be initialized by a value of type java.lang.double?");
     
             TryInvalid(epService, typeof(int), new double?(11.1), null);
             TryInvalid(epService, typeof(string), true, null);

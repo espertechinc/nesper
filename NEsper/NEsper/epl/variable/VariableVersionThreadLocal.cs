@@ -29,15 +29,20 @@ namespace com.espertech.esper.epl.variable
             return new VariableVersionThreadEntry(0, null);
         }
 
-        /// <summary>
-        /// Ctor.
-        /// </summary>
+	    /// <summary>
+	    /// Ctor.
+	    /// </summary>
 	    public VariableVersionThreadLocal(IThreadLocalManager threadLocalManager)
-        {
-            _vThreadLocal = threadLocalManager.Create<VariableVersionThreadEntry>(CreateEntry);
+	    {
+	        if (threadLocalManager != null) {
+	            _vThreadLocal = threadLocalManager.Create<VariableVersionThreadEntry>(CreateEntry);
+	        }
+	        else {
+	            _vThreadLocal = null;
+	        }
 	    }
 
-        /// <summary>
+	    /// <summary>
         /// Returns the version and uncommitted values for the current thread.
         /// </summary>
         /// <returns>entry for current thread</returns>

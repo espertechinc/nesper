@@ -103,10 +103,10 @@ namespace com.espertech.esper.regression.client
             Assert.IsTrue(listenerOne.GetAndClearIsInvoked());
     
             statement.Dispose();
-            prepared = epService.EPAdministrator.PrepareEPL("create window MyWindow#Time(?) as " + typeof(SupportBean).FullName);
+            prepared = epService.EPAdministrator.PrepareEPL("create window MyWindow#time(?) as " + typeof(SupportBean).FullName);
             prepared.SetObject(1, 300);
             statement = epService.EPAdministrator.Create(prepared);
-            Assert.AreEqual("create window MyWindow#Time(300) as select * from " + typeof(SupportBean).FullName, statement.Text);
+            Assert.AreEqual("create window MyWindow#time(300) as select * from " + typeof(SupportBean).FullName, statement.Text);
         }
     
         private void RunAssertionSubselect(EPServiceProvider epService) {

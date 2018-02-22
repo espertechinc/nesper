@@ -24,10 +24,10 @@ namespace com.espertech.esper.regression.view
     
             epService.EPAdministrator.CreateEPL("create objectarray schema MyEvent(SubscriberName string, ValueInt float)");
             string query = "select SubscriberName, avg(ValueInt) "
-                    + "from MyEvent#Groupwin(SubscriberName)#length(4)"
+                    + "from MyEvent#groupwin(SubscriberName)#length(4)"
                     + "group by SubscriberName output snapshot every 1 events";
             string query2 = "select SubscriberName, avedev(ValueInt) "
-                    + "from MyEvent#Groupwin(SubscriberName)#length(3) "
+                    + "from MyEvent#groupwin(SubscriberName)#length(3) "
                     + "group by SubscriberName output snapshot every 1 events";
     
             string[] groups = {

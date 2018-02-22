@@ -142,7 +142,7 @@ namespace com.espertech.esper.regression.epl.join
             string epl = "select theString, intPrimitive, symbol, volume " +
                     "from " + typeof(SupportMarketDataBean).FullName + "#keepall " +
                     "full outer join " +
-                    typeof(SupportBean).FullName + "#Groupwin(theString, intPrimitive)#length(2) " +
+                    typeof(SupportBean).FullName + "#groupwin(theString, intPrimitive)#length(2) " +
                     "on theString = symbol " +
                     "group by theString, intPrimitive, symbol " +
                     "order by theString, intPrimitive, symbol, volume";

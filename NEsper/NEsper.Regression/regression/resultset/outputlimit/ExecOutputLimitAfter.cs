@@ -232,7 +232,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             epService.EPAdministrator.CreateEPL("create variable bool myvar2 = false");
     
             string epl = "@Name(\"select-streamstar+outputvar\")\n" +
-                    "select a.* from SupportBean#Time(10) a output after 3 events when myvar0=true then set myvar1=true, myvar2=true";
+                    "select a.* from SupportBean#time(10) a output after 3 events when myvar0=true then set myvar1=true, myvar2=true";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();

@@ -39,17 +39,17 @@ namespace com.espertech.esper.regression.pattern
             var testCaseList = new CaseList();
             EventExpressionCase testCase = null;
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:Within(2 sec)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(2 sec)");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:Within(2001 msec)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(2001 msec)");
             testCase.Add("B1", "b", events.GetEvent("B1"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:Within(1999 msec)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(1999 msec)");
             testCaseList.AddTest(testCase);
     
-            string text = "select * from pattern [b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:Within(10.001d)]";
+            string text = "select * from pattern [b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:within(10.001d)]";
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.CreateWildcard();
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
@@ -61,48 +61,38 @@ namespace com.espertech.esper.regression.pattern
             testCase.Add("B3", "b", events.GetEvent("B3"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:Within(10001 msec)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:within(10001 msec)");
             testCase.Add("B3", "b", events.GetEvent("B3"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:Within(10 sec)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:within(10 sec)");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:Within(9.999)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:within(9.999)");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:Within(2.001)");
+            testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:within(2.001)");
             testCase.Add("B1", "b", events.GetEvent("B1"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:Within(4.001)");
+            testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:within(4.001)");
             testCase.Add("B1", "b", events.GetEvent("B1"));
             testCase.Add("B2", "b", events.GetEvent("B2"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + " where timer:Within(2.001)");
-            testCase.Add("B1", "b", events.GetEvent("B1"));
-            testCase.Add("B2", "b", events.GetEvent("B2"));
-            testCase.Add("B3", "b", events.GetEvent("B3"));
-            testCaseList.AddTest(testCase);
-    
-            testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + " where timer:Within(2001 msec))");
+            testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + " where timer:within(2.001)");
             testCase.Add("B1", "b", events.GetEvent("B1"));
             testCase.Add("B2", "b", events.GetEvent("B2"));
             testCase.Add("B3", "b", events.GetEvent("B3"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every ((every b=" + EVENT_B_CLASS + ") where timer:Within(2.001))");
+            testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + " where timer:within(2001 msec))");
             testCase.Add("B1", "b", events.GetEvent("B1"));
             testCase.Add("B2", "b", events.GetEvent("B2"));
-            testCase.Add("B2", "b", events.GetEvent("B2"));
-            testCase.Add("B3", "b", events.GetEvent("B3"));
-            testCase.Add("B3", "b", events.GetEvent("B3"));
-            testCase.Add("B3", "b", events.GetEvent("B3"));
             testCase.Add("B3", "b", events.GetEvent("B3"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every ((every b=" + EVENT_B_CLASS + ") where timer:Within(6.001))");
+            testCase = new EventExpressionCase("every ((every b=" + EVENT_B_CLASS + ") where timer:within(2.001))");
             testCase.Add("B1", "b", events.GetEvent("B1"));
             testCase.Add("B2", "b", events.GetEvent("B2"));
             testCase.Add("B2", "b", events.GetEvent("B2"));
@@ -112,51 +102,61 @@ namespace com.espertech.esper.regression.pattern
             testCase.Add("B3", "b", events.GetEvent("B3"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:Within(11.001)");
+            testCase = new EventExpressionCase("every ((every b=" + EVENT_B_CLASS + ") where timer:within(6.001))");
+            testCase.Add("B1", "b", events.GetEvent("B1"));
+            testCase.Add("B2", "b", events.GetEvent("B2"));
+            testCase.Add("B2", "b", events.GetEvent("B2"));
+            testCase.Add("B3", "b", events.GetEvent("B3"));
+            testCase.Add("B3", "b", events.GetEvent("B3"));
+            testCase.Add("B3", "b", events.GetEvent("B3"));
+            testCase.Add("B3", "b", events.GetEvent("B3"));
+            testCaseList.AddTest(testCase);
+    
+            testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:within(11.001)");
             testCase.Add("B1", "b", events.GetEvent("B1"));
             testCase.Add("B2", "b", events.GetEvent("B2"));
             testCase.Add("B3", "b", events.GetEvent("B3"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:Within(4001 milliseconds)");
+            testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:within(4001 milliseconds)");
             testCase.Add("B1", "b", events.GetEvent("B1"));
             testCase.Add("B2", "b", events.GetEvent("B2"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + ") where timer:Within(6.001)");
+            testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + ") where timer:within(6.001)");
             testCase.Add("B1", "b", events.GetEvent("B1"));
             testCase.Add("B2", "b", events.GetEvent("B2"));
             testCase.Add("B3", "b", events.GetEvent("B3"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + " -> d=" + EVENT_D_CLASS + " where timer:Within(4001 milliseconds)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + " -> d=" + EVENT_D_CLASS + " where timer:within(4001 milliseconds)");
             testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() -> d=" + EVENT_D_CLASS + "() where timer:Within(4 sec)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() -> d=" + EVENT_D_CLASS + "() where timer:within(4 sec)");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + "() where timer:within (4.001) and d=" + EVENT_D_CLASS + "() where timer:Within(6.001))");
+            testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + "() where timer:within (4.001) and d=" + EVENT_D_CLASS + "() where timer:within(6.001))");
             testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
             testCase.Add("B3", "b", events.GetEvent("B3"), "d", events.GetEvent("D2"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2001 msec) and d=" + EVENT_D_CLASS + "() where timer:Within(6001 msec)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2001 msec) and d=" + EVENT_D_CLASS + "() where timer:within(6001 msec)");
             testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2001 msec) and d=" + EVENT_D_CLASS + "() where timer:Within(6000 msec)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2001 msec) and d=" + EVENT_D_CLASS + "() where timer:within(6000 msec)");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2000 msec) and d=" + EVENT_D_CLASS + "() where timer:Within(6001 msec)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2000 msec) and d=" + EVENT_D_CLASS + "() where timer:within(6001 msec)");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + " -> d=" + EVENT_D_CLASS + " where timer:Within(4000 msec)");
+            testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + " -> d=" + EVENT_D_CLASS + " where timer:within(4000 msec)");
             testCase.Add("D1", "b", events.GetEvent("B2"), "d", events.GetEvent("D1"));
             testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() -> every d=" + EVENT_D_CLASS + " where timer:Within(4000 msec)");
+            testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() -> every d=" + EVENT_D_CLASS + " where timer:within(4000 msec)");
             testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
             testCase.Add("D1", "b", events.GetEvent("B2"), "d", events.GetEvent("D1"));
             testCase.Add("D2", "b", events.GetEvent("B1"), "d", events.GetEvent("D2"));
@@ -166,39 +166,39 @@ namespace com.espertech.esper.regression.pattern
             testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() -> d=" + EVENT_D_CLASS + "() where timer:Within(3999 msec)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() -> d=" + EVENT_D_CLASS + "() where timer:within(3999 msec)");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() -> (every d=" + EVENT_D_CLASS + ") where timer:Within(2001 msec)");
+            testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() -> (every d=" + EVENT_D_CLASS + ") where timer:within(2001 msec)");
             testCase.Add("D1", "b", events.GetEvent("B2"), "d", events.GetEvent("D1"));
             testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + "() -> d=" + EVENT_D_CLASS + "()) where timer:Within(6001 msec)");
+            testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + "() -> d=" + EVENT_D_CLASS + "()) where timer:within(6001 msec)");
             testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
             testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2000 msec) or d=" + EVENT_D_CLASS + "() where timer:Within(6000 msec)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2000 msec) or d=" + EVENT_D_CLASS + "() where timer:within(6000 msec)");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("(b=" + EVENT_B_CLASS + "() where timer:within (2000 msec) or d=" + EVENT_D_CLASS + "() where timer:Within(6000 msec)) where timer:within (1999 msec)");
+            testCase = new EventExpressionCase("(b=" + EVENT_B_CLASS + "() where timer:within (2000 msec) or d=" + EVENT_D_CLASS + "() where timer:within(6000 msec)) where timer:within (1999 msec)");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + "() where timer:within (2001 msec) and d=" + EVENT_D_CLASS + "() where timer:Within(6001 msec))");
+            testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + "() where timer:within (2001 msec) and d=" + EVENT_D_CLASS + "() where timer:within(6001 msec))");
             testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
             testCase.Add("B3", "b", events.GetEvent("B3"), "d", events.GetEvent("D2"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2001 msec) or d=" + EVENT_D_CLASS + "() where timer:Within(6001 msec)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2001 msec) or d=" + EVENT_D_CLASS + "() where timer:within(6001 msec)");
             testCase.Add("B1", "b", events.GetEvent("B1"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2000 msec) or d=" + EVENT_D_CLASS + "() where timer:Within(6001 msec)");
+            testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2000 msec) or d=" + EVENT_D_CLASS + "() where timer:within(6001 msec)");
             testCase.Add("D1", "d", events.GetEvent("D1"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() where timer:within (2001 msec) and every d=" + EVENT_D_CLASS + "() where timer:Within(6001 msec)");
+            testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() where timer:within (2001 msec) and every d=" + EVENT_D_CLASS + "() where timer:within(6001 msec)");
             testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
             testCase.Add("D1", "b", events.GetEvent("B2"), "d", events.GetEvent("D1"));
             testCase.Add("D2", "b", events.GetEvent("B1"), "d", events.GetEvent("D2"));
@@ -210,7 +210,7 @@ namespace com.espertech.esper.regression.pattern
             testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:within (2000 msec) and every d=" + EVENT_D_CLASS + "() where timer:Within(6001 msec)");
+            testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:within (2000 msec) and every d=" + EVENT_D_CLASS + "() where timer:within(6001 msec)");
             testCaseList.AddTest(testCase);
     
             var util = new PatternTestHarness(events, testCaseList, this.GetType());
@@ -225,7 +225,7 @@ namespace com.espertech.esper.regression.pattern
             // Set up a timer:within
             EPStatement statement = epService.EPAdministrator.CreateEPL(
                     "select * from pattern [(every " + typeof(SupportBean).FullName +
-                            ") where timer:Within(1 days 2 hours 3 minutes 4 seconds 5 milliseconds)]");
+                            ") where timer:within(1 days 2 hours 3 minutes 4 seconds 5 milliseconds)]");
     
             var testListener = new SupportUpdateListener();
             statement.Events += testListener.Update;
@@ -247,7 +247,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Set up a timer:within
             string stmtText = "select * from pattern [(every " + typeof(SupportBean).FullName +
-                    ") where timer:Within(D days H hours M minutes S seconds MS milliseconds)]";
+                    ") where timer:within(D days H hours M minutes S seconds MS milliseconds)]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
     
             var testListener = new SupportUpdateListener();
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regression.pattern
             // Set up a timer:within
             EPPreparedStatement prepared = epService.EPAdministrator.PrepareEPL(
                     "select * from pattern [(every " + typeof(SupportBean).FullName +
-                            ") where timer:Within(? days ? hours ? minutes ? seconds ? milliseconds)]");
+                            ") where timer:within(? days ? hours ? minutes ? seconds ? milliseconds)]");
             prepared.SetObject(1, 1);
             prepared.SetObject(2, 2);
             prepared.SetObject(3, 3);
@@ -291,7 +291,7 @@ namespace com.espertech.esper.regression.pattern
             SendTimer(0, epService);
     
             // Set up a timer:within
-            EPStatement statement = epService.EPAdministrator.CreateEPL("select b.theString as id from pattern[a=SupportBean -> (every b=SupportBean) where timer:Within(a.intPrimitive seconds)]");
+            EPStatement statement = epService.EPAdministrator.CreateEPL("select b.theString as id from pattern[a=SupportBean -> (every b=SupportBean) where timer:within(a.intPrimitive seconds)]");
     
             var testListener = new SupportUpdateListener();
             statement.Events += testListener.Update;
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regression.pattern
             epService.EPAdministrator.Configuration.AddEventType("MD", typeof(SupportMarketDataBean));
             SendTimer(0, epService);
     
-            string stmtText = "select * from pattern [ Every(SB -> (MD where timer:Within(5 sec))) ]";
+            string stmtText = "select * from pattern [ Every(SB -> (MD where timer:within(5 sec))) ]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
@@ -343,7 +343,7 @@ namespace com.espertech.esper.regression.pattern
             SendCurrentTime(epService, "2002-02-01T09:00:00.000");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select * from pattern [(every SupportBean) where " +
-                    (hasMax ? "timer:Withinmax(1 month, 10)" : "timer:Within(1 month)") +
+                    (hasMax ? "timer:withinmax(1 month, 10)" : "timer:within(1 month)") +
                     "]").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));

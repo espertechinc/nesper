@@ -133,7 +133,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
         }
     
         private void RunAssertionMinNoGroupHaving(EPServiceProvider epService) {
-            string stmtText = "select symbol from " + typeof(SupportMarketDataBean).FullName + "#Time(5 sec) " +
+            string stmtText = "select symbol from " + typeof(SupportMarketDataBean).FullName + "#time(5 sec) " +
                     "having volume > min(volume) * 1.3";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);

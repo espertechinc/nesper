@@ -49,7 +49,7 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionPriorTimewindowStats(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
-            string epl = "SELECT Prior(1, average) as value FROM SupportBean()#Time(5 minutes)#Uni(intPrimitive)";
+            string epl = "SELECT prior(1, average) as value FROM SupportBean()#time(5 minutes)#uni(intPrimitive)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void TryAssertionPriorStreamAndVariable(EPServiceProvider epService, string priorIndex) {
             epService.EPAdministrator.Configuration.AddEventType("S0", typeof(SupportBean_S0));
-            string text = "select Prior(" + priorIndex + ", s0) as result from S0#length(2) as s0";
+            string text = "select prior(" + priorIndex + ", s0) as result from S0#length(2) as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -103,9 +103,9 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPriorTimeWindow(EPServiceProvider epService) {
             string epl = "select irstream symbol as currSymbol, " +
-                    " Prior(2, symbol) as priorSymbol, " +
-                    " Prior(2, price) as priorPrice " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Time(1 min) ";
+                    " prior(2, symbol) as priorSymbol, " +
+                    " prior(2, price) as priorPrice " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#time(1 min) ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -188,9 +188,9 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPriorExtTimedWindow(EPServiceProvider epService) {
             string epl = "select irstream symbol as currSymbol, " +
-                    " Prior(2, symbol) as priorSymbol, " +
-                    " Prior(3, price) as priorPrice " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Ext_timed(volume, 1 min) ";
+                    " prior(2, symbol) as priorSymbol, " +
+                    " prior(3, price) as priorPrice " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#ext_timed(volume, 1 min) ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -248,9 +248,9 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPriorTimeBatchWindow(EPServiceProvider epService) {
             string epl = "select irstream symbol as currSymbol, " +
-                    " Prior(3, symbol) as priorSymbol, " +
-                    " Prior(2, price) as priorPrice " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Time_batch(1 min) ";
+                    " prior(3, symbol) as priorSymbol, " +
+                    " prior(2, price) as priorPrice " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#time_batch(1 min) ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -302,8 +302,8 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPriorUnbound(EPServiceProvider epService) {
             string epl = "select symbol as currSymbol, " +
-                    " Prior(3, symbol) as priorSymbol, " +
-                    " Prior(2, price) as priorPrice " +
+                    " prior(3, symbol) as priorSymbol, " +
+                    " prior(2, price) as priorPrice " +
                     "from " + typeof(SupportMarketDataBean).FullName;
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -334,7 +334,7 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPriorNoDataWindowWhere(EPServiceProvider epService) {
             string text = "select * from " + typeof(SupportMarketDataBean).FullName +
-                    " where Prior(1, price) = 100";
+                    " where prior(1, price) = 100";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -357,8 +357,8 @@ namespace com.espertech.esper.regression.expr.expr
             } // excluded from instrumentation, too much data
     
             string epl = "select symbol as currSymbol, " +
-                    " Prior(3, symbol) as prior0Symbol " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Sort(3, symbol)";
+                    " prior(3, symbol) as prior0Symbol " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#sort(3, symbol)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -387,7 +387,7 @@ namespace com.espertech.esper.regression.expr.expr
             } // excluded from instrumentation, too much data
     
             string epl = "select symbol as currSymbol, " +
-                    " Prior(3, symbol) as prior0Symbol " +
+                    " prior(3, symbol) as prior0Symbol " +
                     "from " + typeof(SupportMarketDataBean).FullName;
     
             EPStatementSPI stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(epl);
@@ -415,15 +415,15 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionLongRunningMultiple(EPServiceProvider epService) {
     
             string epl = "select symbol as currSymbol, " +
-                    " Prior(3, symbol) as prior0Symbol, " +
-                    " Prior(2, symbol) as prior1Symbol, " +
-                    " Prior(1, symbol) as prior2Symbol, " +
-                    " Prior(0, symbol) as prior3Symbol, " +
-                    " Prior(0, price) as prior0Price, " +
-                    " Prior(1, price) as prior1Price, " +
-                    " Prior(2, price) as prior2Price, " +
-                    " Prior(3, price) as prior3Price " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Sort(3, symbol)";
+                    " prior(3, symbol) as prior0Symbol, " +
+                    " prior(2, symbol) as prior1Symbol, " +
+                    " prior(1, symbol) as prior2Symbol, " +
+                    " prior(0, symbol) as prior3Symbol, " +
+                    " prior(0, price) as prior0Price, " +
+                    " prior(1, price) as prior1Price, " +
+                    " prior(2, price) as prior2Price, " +
+                    " prior(3, price) as prior3Price " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#sort(3, symbol)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -448,14 +448,14 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPriorLengthWindow(EPServiceProvider epService) {
             string epl = "select irstream symbol as currSymbol, " +
-                    "Prior(0, symbol) as prior0Symbol, " +
-                    "Prior(1, symbol) as prior1Symbol, " +
-                    "Prior(2, symbol) as prior2Symbol, " +
-                    "Prior(3, symbol) as prior3Symbol, " +
-                    "Prior(0, price) as prior0Price, " +
-                    "Prior(1, price) as prior1Price, " +
-                    "Prior(2, price) as prior2Price, " +
-                    "Prior(3, price) as prior3Price " +
+                    "prior(0, symbol) as prior0Symbol, " +
+                    "prior(1, symbol) as prior1Symbol, " +
+                    "prior(2, symbol) as prior2Symbol, " +
+                    "prior(3, symbol) as prior3Symbol, " +
+                    "prior(0, price) as prior0Price, " +
+                    "prior(1, price) as prior1Price, " +
+                    "prior(2, price) as prior2Price, " +
+                    "prior(3, price) as prior3Price " +
                     "from " + typeof(SupportMarketDataBean).FullName + "#length(3) ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -505,9 +505,9 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionPriorLengthWindowWhere(EPServiceProvider epService) {
-            string epl = "select Prior(2, symbol) as currSymbol " +
+            string epl = "select prior(2, symbol) as currSymbol " +
                     "from " + typeof(SupportMarketDataBean).FullName + "#length(1) " +
-                    "where Prior(2, price) > 100";
+                    "where prior(2, price) > 100";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -525,36 +525,36 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPriorSortWindow(EPServiceProvider epService) {
             string epl = "select irstream symbol as currSymbol, " +
-                    " Prior(0, symbol) as prior0Symbol, " +
-                    " Prior(1, symbol) as prior1Symbol, " +
-                    " Prior(2, symbol) as prior2Symbol, " +
-                    " Prior(3, symbol) as prior3Symbol, " +
-                    " Prior(0, price) as prior0Price, " +
-                    " Prior(1, price) as prior1Price, " +
-                    " Prior(2, price) as prior2Price, " +
-                    " Prior(3, price) as prior3Price " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Sort(3, symbol)";
+                    " prior(0, symbol) as prior0Symbol, " +
+                    " prior(1, symbol) as prior1Symbol, " +
+                    " prior(2, symbol) as prior2Symbol, " +
+                    " prior(3, symbol) as prior3Symbol, " +
+                    " prior(0, price) as prior0Price, " +
+                    " prior(1, price) as prior1Price, " +
+                    " prior(2, price) as prior2Price, " +
+                    " prior(3, price) as prior3Price " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#sort(3, symbol)";
             TryPriorSortWindow(epService, epl);
     
             epl = "select irstream symbol as currSymbol, " +
-                    " Prior(3, symbol) as prior3Symbol, " +
-                    " Prior(1, symbol) as prior1Symbol, " +
-                    " Prior(2, symbol) as prior2Symbol, " +
-                    " Prior(0, symbol) as prior0Symbol, " +
-                    " Prior(2, price) as prior2Price, " +
-                    " Prior(1, price) as prior1Price, " +
-                    " Prior(0, price) as prior0Price, " +
-                    " Prior(3, price) as prior3Price " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Sort(3, symbol)";
+                    " prior(3, symbol) as prior3Symbol, " +
+                    " prior(1, symbol) as prior1Symbol, " +
+                    " prior(2, symbol) as prior2Symbol, " +
+                    " prior(0, symbol) as prior0Symbol, " +
+                    " prior(2, price) as prior2Price, " +
+                    " prior(1, price) as prior1Price, " +
+                    " prior(0, price) as prior0Price, " +
+                    " prior(3, price) as prior3Price " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#sort(3, symbol)";
             TryPriorSortWindow(epService, epl);
         }
     
         private void RunAssertionPriorTimeBatchWindowJoin(EPServiceProvider epService) {
             string epl = "select theString as currSymbol, " +
-                    "Prior(2, symbol) as priorSymbol, " +
-                    "Prior(1, price) as priorPrice " +
+                    "prior(2, symbol) as priorSymbol, " +
+                    "prior(1, price) as priorPrice " +
                     "from " + typeof(SupportBean).FullName + "#keepall, " +
-                    typeof(SupportMarketDataBean).Name + "#Time_batch(1 min)";
+                    typeof(SupportMarketDataBean).Name + "#time_batch(1 min)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();

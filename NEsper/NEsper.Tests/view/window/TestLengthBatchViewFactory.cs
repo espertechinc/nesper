@@ -27,7 +27,7 @@ namespace com.espertech.esper.view.window
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _factory = new LengthBatchViewFactory();
         }
     

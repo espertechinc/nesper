@@ -24,6 +24,7 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
+using com.espertech.esper.events;
 using com.espertech.esper.events.vaevent;
 using com.espertech.esper.filter;
 using com.espertech.esper.pattern;
@@ -96,20 +97,19 @@ namespace com.espertech.esper.core.support
             var lockManager = container.Resolve<ILockManager>();
             var rwLockManager = container.Resolve<IReaderWriterLockManager>();
             var threadLocalManager = container.Resolve<IThreadLocalManager>();
-            var resourceManager = container.Resolve<IResourceManager>();
             var classLoaderProvider = container.Resolve<ClassLoaderProvider>();
 
-            var config = new Configuration(resourceManager);
+            var config = new Configuration(container);
             config.EngineDefaults.ViewResources.IsAllowMultipleExpiryPolicies = true;
     
             var timeSourceService = new TimeSourceServiceImpl();
             var stmtEngineServices = new StatementContextEngineServices(
                 container,
                 "engURI",
-                SupportEventAdapterService.Service,
+                container.Resolve<EventAdapterService>(),
                 new NamedWindowMgmtServiceImpl(false, null),
                 null, new TableServiceImpl(rwLockManager, threadLocalManager),
-                new EngineSettingsService(new Configuration(resourceManager).EngineDefaults, new Uri[0]),
+                new EngineSettingsService(new Configuration(container).EngineDefaults, new Uri[0]),
                 new ValueAddEventServiceImpl(lockManager),
                 config,
                 null,

@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
     
             var fields = new string[]{"theString", "intPrimitive"};
-            string stmtTextCreateOne = "create window MyWindowFU#Firstunique(theString) as select * from SupportBean";
+            string stmtTextCreateOne = "create window MyWindowFU#firstunique(theString) as select * from SupportBean";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreateOne);
             epService.EPAdministrator.CreateEPL("insert into MyWindowFU select * from SupportBean");
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL("on SupportBean_A a delete from MyWindowFU where theString=a.id");

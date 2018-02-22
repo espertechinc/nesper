@@ -30,8 +30,8 @@ namespace com.espertech.esper.regression.epl.join
                     "Math.Signum(stream1.slope) as s1,\n" +
                     "Math.Signum(stream2.slope) as s2\n" +
                     "from\n" +
-                    "SupportBean#length_batch(3)#Linest(intPrimitive, longPrimitive) as stream1,\n" +
-                    "SupportBean#length_batch(2)#Linest(intPrimitive, longPrimitive) as stream2").Events += listener.Update;
+                    "SupportBean#length_batch(3)#linest(intPrimitive, longPrimitive) as stream1,\n" +
+                    "SupportBean#length_batch(2)#linest(intPrimitive, longPrimitive) as stream2").Events += listener.Update;
             epService.EPRuntime.SendEvent(MakeEvent("E3", 1, 100));
             epService.EPRuntime.SendEvent(MakeEvent("E4", 1, 100));
             Assert.IsFalse(listener.IsInvoked);

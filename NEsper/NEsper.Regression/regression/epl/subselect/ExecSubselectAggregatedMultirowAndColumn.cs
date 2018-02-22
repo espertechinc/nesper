@@ -63,8 +63,8 @@ namespace com.espertech.esper.regression.epl.subselect
             SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Group-by expressions in a subselect may not have an aggregation function [select (select intPrimitive, sum(longPrimitive) from SupportBean#keepall group by sum(intPrimitive)) from S0 as s0]");
     
             // "prev" not allowed in group-by
-            epl = "select (select intPrimitive, sum(longPrimitive) from SupportBean#keepall group by Prev(1, intPrimitive)) from S0 as s0";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Group-by expressions in a subselect may not have a function that requires view resources (prior, prev) [select (select intPrimitive, sum(longPrimitive) from SupportBean#keepall group by Prev(1, intPrimitive)) from S0 as s0]");
+            epl = "select (select intPrimitive, sum(longPrimitive) from SupportBean#keepall group by prev(1, intPrimitive)) from S0 as s0";
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Group-by expressions in a subselect may not have a function that requires view resources (prior, prev) [select (select intPrimitive, sum(longPrimitive) from SupportBean#keepall group by prev(1, intPrimitive)) from S0 as s0]");
         }
     
         private void RunAssertionMulticolumnGroupedWHaving(EPServiceProvider epService) {
@@ -355,7 +355,7 @@ namespace com.espertech.esper.regression.epl.subselect
                     "(select theString as c0, sum(intPrimitive) as c1 " +
                     "  from SupportBean#keepall group by theString)" +
                     "}" +
-                    "select GetGroups() as e1, GetGroups().Take(10) as e2 from S0#Lastevent()";
+                    "select GetGroups() as e1, GetGroups().Take(10) as e2 from S0#lastevent()";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

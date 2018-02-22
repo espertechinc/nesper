@@ -33,7 +33,7 @@ namespace com.espertech.esper.epl.expression.ops
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             _identNodes = new ExprIdentNode[4];
             _identNodes[0] = new ExprIdentNodeImpl("Mapped('a')");

@@ -96,7 +96,7 @@ namespace com.espertech.esper.regression.expr.datetime
     
             // wrong 1st parameter - string
             TryInvalid(epService, "select A.Before('x') from A as a",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Before('x')': Failed to resolve enumeration method, date-time method or mapped property 'a.Before('x')': For date-time method 'before' the first parameter expression returns 'class java.lang.string', however requires a Date, Calendar, long-type return value or event (with timestamp) [select A.Before('x') from A as a]");
+                    "Error starting statement: Failed to validate select-clause expression 'a.Before('x')': Failed to resolve enumeration method, date-time method or mapped property 'a.Before('x')': For date-time method 'before' the first parameter expression returns 'class System.String', however requires a Date, Calendar, long-type return value or event (with timestamp) [select A.Before('x') from A as a]");
     
             // wrong 1st parameter - event not defined with timestamp expression
             TryInvalid(epService, "select A.Before(b) from A#lastevent as a, SupportBean#lastevent as b",
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regression.expr.datetime
     
             // wrong target
             TryInvalid(epService, "select TheString.Before(a) from A#lastevent as a, SupportBean#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'theString.Before(a)': Date-time enumeration method 'before' requires either a Calendar, Date, long, LocalDateTime or ZonedDateTime value as input or events of an event type that declares a timestamp property but received java.lang.string [select TheString.Before(a) from A#lastevent as a, SupportBean#lastevent as b]");
+                    "Error starting statement: Failed to validate select-clause expression 'theString.Before(a)': Date-time enumeration method 'before' requires either a Calendar, Date, long, LocalDateTime or ZonedDateTime value as input or events of an event type that declares a timestamp property but received System.String [select TheString.Before(a) from A#lastevent as a, SupportBean#lastevent as b]");
             TryInvalid(epService, "select B.Before(a) from A#lastevent as a, SupportBean#lastevent as b",
                     "Error starting statement: Failed to validate select-clause expression 'b.Before(a)': Date-time enumeration method 'before' requires either a Calendar, Date, long, LocalDateTime or ZonedDateTime value as input or events of an event type that declares a timestamp property [select B.Before(a) from A#lastevent as a, SupportBean#lastevent as b]");
             TryInvalid(epService, "select A.Get('month').Before(a) from A#lastevent as a, SupportBean#lastevent as b",
@@ -120,9 +120,9 @@ namespace com.espertech.esper.regression.expr.datetime
     
             // test before/after
             TryInvalid(epService, "select A.Before(b, 'abc') from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Before(b,\"abc\")': Error validating date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 1 but received java.lang.string [select A.Before(b, 'abc') from A#lastevent as a, B#lastevent as b]");
+                    "Error starting statement: Failed to validate select-clause expression 'a.Before(b,\"abc\")': Error validating date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 1 but received System.String [select A.Before(b, 'abc') from A#lastevent as a, B#lastevent as b]");
             TryInvalid(epService, "select A.Before(b, 1, 'def') from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Before(b,1,\"def\")': Error validating date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 2 but received java.lang.string [select A.Before(b, 1, 'def') from A#lastevent as a, B#lastevent as b]");
+                    "Error starting statement: Failed to validate select-clause expression 'a.Before(b,1,\"def\")': Error validating date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 2 but received System.String [select A.Before(b, 1, 'def') from A#lastevent as a, B#lastevent as b]");
             TryInvalid(epService, "select A.Before(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b",
                     "Error starting statement: Failed to validate select-clause expression 'a.Before(b,1,2,3)': Parameters mismatch for date-time method 'before', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing interval start value, or an expression providing timestamp or timestamped-event and an expression providing interval start value and an expression providing interval finishes value, but receives 4 expressions [select A.Before(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b]");
     

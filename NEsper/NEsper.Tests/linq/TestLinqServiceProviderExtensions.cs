@@ -25,7 +25,7 @@ namespace com.espertech.esper.linq
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             var configuration = new Configuration(_container);
             _serviceProvider = EPServiceProviderManager.GetDefaultProvider(configuration);

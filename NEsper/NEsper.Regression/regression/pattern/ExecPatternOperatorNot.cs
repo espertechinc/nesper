@@ -143,7 +143,7 @@ namespace com.espertech.esper.regression.pattern
             epService.EPAdministrator.Configuration.AddEventType("AAA", typeof(SupportMarketDataBean));
     
             string text = "select A.theString as theString from pattern " +
-                    "[every A=BBB(intPrimitive=123) -> (timer:Interval(30 seconds) and not AAA(volume=123, symbol=A.theString))]";
+                    "[every A=BBB(intPrimitive=123) -> (timer:interval(30 seconds) and not AAA(volume=123, symbol=A.theString))]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;

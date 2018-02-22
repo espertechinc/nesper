@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.client
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec("2002-05-1T08:00:00.000")));
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
-            epService.EPAdministrator.CreateEPL("select * from pattern [every a=SupportBean(theString like 'A%') -> b=SupportBean(theString like 'B') where timer:Within(a.intPrimitive)]");
+            epService.EPAdministrator.CreateEPL("select * from pattern [every a=SupportBean(theString like 'A%') -> b=SupportBean(theString like 'B') where timer:within(a.intPrimitive)]");
             epService.EPRuntime.SendEvent(new SupportBean("A1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("A2", 60));
     

@@ -40,7 +40,7 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPAdministrator.CreateEPL("insert into MyInfra select * from MaxAmountEvent");
     
             string stmtText = "select theString as c0, sum(intPrimitive) as c1 " +
-                    "from SupportBean#Groupwin(theString)#length(2) as sb " +
+                    "from SupportBean#groupwin(theString)#length(2) as sb " +
                     "group by theString " +
                     "having sum(intPrimitive) > (select maxAmount from MyInfra as mw where sb.theString = mw.key)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);

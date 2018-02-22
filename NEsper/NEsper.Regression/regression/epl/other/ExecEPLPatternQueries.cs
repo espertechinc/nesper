@@ -153,7 +153,7 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionFollowedByAndWindow(EPServiceProvider epService) {
             string stmtText = "select irstream a.id as idA, b.id as idB, " +
                     "a.p00 as p00A, b.p00 as p00B from pattern [every a=" + typeof(SupportBean_S0).Name +
-                    " -> every b=" + typeof(SupportBean_S0).Name + "(p00=a.p00)]#Time(1)";
+                    " -> every b=" + typeof(SupportBean_S0).Name + "(p00=a.p00)]#time(1)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var updateListener = new SupportUpdateListener();
     

@@ -36,7 +36,7 @@ namespace com.espertech.esper.schedule
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             _service = new SchedulingServiceImpl(
                 new TimeSourceServiceImpl(), _container.Resolve<ILockManager>());

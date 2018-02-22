@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.epl.join
             MyStaticEval.WaitTimeMSec = 0;
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
-            string epl = "select * from SupportBean#Time(1) as sb, " +
+            string epl = "select * from SupportBean#time(1) as sb, " +
                     " SupportBean_S0#keepall as s0 " +
                     " where MyStaticEvaluator(sb.theString, s0.p00)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);

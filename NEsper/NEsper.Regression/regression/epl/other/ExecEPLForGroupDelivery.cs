@@ -60,7 +60,7 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionSubscriberOnly(EPServiceProvider epService) {
             var subscriber = new SupportSubscriberMRD();
             SendTimer(epService, 0);
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString,intPrimitive from SupportBean#Time_batch(1) for discrete_delivery");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString,intPrimitive from SupportBean#time_batch(1) for discrete_delivery");
             stmt.Subscriber = subscriber;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regression.epl.other
     
             stmt.Dispose();
             subscriber.Reset();
-            stmt = epService.EPAdministrator.CreateEPL("select irstream theString,intPrimitive from SupportBean#Time_batch(1) for Grouped_delivery(intPrimitive)");
+            stmt = epService.EPAdministrator.CreateEPL("select irstream theString,intPrimitive from SupportBean#time_batch(1) for Grouped_delivery(intPrimitive)");
             stmt.Subscriber = subscriber;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionDiscreteDelivery(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#Time_batch(1) for discrete_delivery");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#time_batch(1) for discrete_delivery");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -124,7 +124,7 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionGroupDelivery(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#Time_batch(1) for grouped_delivery (intPrimitive)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#time_batch(1) for grouped_delivery (intPrimitive)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regression.epl.other
     
             // test sorted
             stmt.Dispose();
-            stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#Time_batch(1) order by intPrimitive desc for grouped_delivery (intPrimitive)");
+            stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#time_batch(1) order by intPrimitive desc for grouped_delivery (intPrimitive)");
             stmt.Events += listener.Update;
             listener.Reset();
     
@@ -156,7 +156,7 @@ namespace com.espertech.esper.regression.epl.other
     
             // test multiple criteria
             stmt.Dispose();
-            string stmtText = "select theString, doubleBoxed, enumValue from SupportBean#Time_batch(1) order by theString, doubleBoxed, enumValue for Grouped_delivery(doubleBoxed, enumValue)";
+            string stmtText = "select theString, doubleBoxed, enumValue from SupportBean#time_batch(1) order by theString, doubleBoxed, enumValue for Grouped_delivery(doubleBoxed, enumValue)";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
             stmt.Events += listener.Update;
             listener.Reset();

@@ -49,17 +49,17 @@ namespace com.espertech.esper.regression.view
             // invalid return type for filter during compilation time
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             try {
-                epService.EPAdministrator.CreateEPL("select theString From SupportBean#Time(30 seconds) where intPrimitive group by theString");
+                epService.EPAdministrator.CreateEPL("select theString From SupportBean#time(30 seconds) where intPrimitive group by theString");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error validating expression: The where-clause filter expression must return a bool value [Select theString From SupportBean#Time(30 seconds) where intPrimitive group by theString]", ex.Message);
+                Assert.AreEqual("Error validating expression: The where-clause filter expression must return a bool value [Select theString From SupportBean#time(30 seconds) where intPrimitive group by theString]", ex.Message);
             }
     
             // invalid return type for filter at runtime
             var dict = new Dictionary<string, Object>();
             dict.Put("criteria", typeof(bool?));
             epService.EPAdministrator.Configuration.AddEventType("MapEvent", dict);
-            stmt = epService.EPAdministrator.CreateEPL("select * From MapEvent#Time(30 seconds) where criteria");
+            stmt = epService.EPAdministrator.CreateEPL("select * From MapEvent#time(30 seconds) where criteria");
     
             try {
                 epService.EPRuntime.SendEvent(Collections.SingletonDataMap("criteria", 15), "MapEvent");

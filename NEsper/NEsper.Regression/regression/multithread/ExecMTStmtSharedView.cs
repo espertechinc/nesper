@@ -49,7 +49,7 @@ namespace com.espertech.esper.regression.multithread
             for (int i = 0; i < stmt.Length; i++) {
                 stmt[i] = epService.EPAdministrator.CreateEPL(
                         " select * " +
-                                " from " + typeof(SupportMarketDataBean).FullName + "#Groupwin(symbol)#Uni(price)");
+                                " from " + typeof(SupportMarketDataBean).FullName + "#groupwin(symbol)#uni(price)");
                 listeners[i] = new SupportMTUpdateListener();
                 stmt[i].Events += listeners[i].Update;
             }

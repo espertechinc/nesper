@@ -34,7 +34,7 @@ namespace com.espertech.esper.view.stat
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             // Set up sum view and a test child view
             EventType type = WeightedAverageView.CreateEventType(SupportStatementContextFactory.MakeContext(_container), null, 1);

@@ -8,6 +8,7 @@
 
 using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.events.avro;
 using com.espertech.esper.events;
@@ -17,6 +18,7 @@ namespace com.espertech.esper.core.support
 {
     public class SupportEventAdapterService
     {
+#if false
         private static EventAdapterService _eventAdapterService;
 
         static SupportEventAdapterService()
@@ -25,7 +27,7 @@ namespace com.espertech.esper.core.support
                 new DefaultLockManager(timeout => new MonitorLock(timeout)),
                 new ClassLoaderProviderDefault(
                     new ClassLoaderDefault(
-                        new DefaultResourceManager(null, true)
+                        new DefaultResourceManager(true, null)
                     )));
         }
 
@@ -36,12 +38,13 @@ namespace com.espertech.esper.core.support
             _eventAdapterService = Allocate(lockManager, classLoaderProvider);
         }
 
-        public static EventAdapterService Service
+        public static EventAdapterService GetService(IContainer container)
         {
-            get { return _eventAdapterService; }
+            return _eventAdapterService;
         }
+#endif
 
-        private static EventAdapterService Allocate(
+        public static EventAdapterService Allocate(
             ILockManager lockManager,
             ClassLoaderProvider classLoaderProvider)
         {

@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.context
     
             string epl =
                     "\n @Name('ctx') create context RuleActivityTime as start (0, 9, *, *, *) end (0, 17, *, *, *);" +
-                            "\n @Name('window') context RuleActivityTime create window EventsWindow#Firstunique(productID) as Event;" +
+                            "\n @Name('window') context RuleActivityTime create window EventsWindow#firstunique(productID) as Event;" +
                             "\n @Name('variable') create variable bool IsOutputTriggered_2 = false;" +
                             "\n @Name('A') context RuleActivityTime insert into EventsWindow select * from Event(not Exists (select * from EventsWindow));" +
                             "\n @Name('B') context RuleActivityTime insert into EventsWindow select * from Event(not Exists (select * from EventsWindow));" +

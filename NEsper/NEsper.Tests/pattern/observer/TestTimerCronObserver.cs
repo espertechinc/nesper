@@ -35,7 +35,7 @@ namespace com.espertech.esper.pattern.observer
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             _beginState = new MatchedEventMapImpl(new MatchedEventMapMeta(new String[0], false));
     

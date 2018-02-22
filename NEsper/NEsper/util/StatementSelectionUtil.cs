@@ -13,22 +13,49 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.events;
 using com.espertech.esper.events.bean;
 
 namespace com.espertech.esper.util
 {
-    public class StatementSelectionUtil {
-        private static readonly BeanEventType STATEMENT_META_EVENT_TYPE;
+    public class StatementSelectionUtil
+    {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
-        static StatementSelectionUtil()
+
+        public const string StatementMetaEventTypeName = "STATEMENT_META_EVENT_TYPE";
+
+        public static BeanEventType GetStatementMetaEventType(IContainer container)
         {
-            STATEMENT_META_EVENT_TYPE = (BeanEventType) SupportEventAdapterService.Service.AddBeanType("StatementRow", typeof(StatementRow), true, true, true);
+            return container.Resolve<BeanEventType>(StatementMetaEventTypeName);
+        }
+
+        public static IContainer RegisterExpressionType(IContainer container)
+        {
+            container.Register<BeanEventType>(
+                CreateExpressionTypeInstance,
+                Lifespan.Singleton,
+                StatementMetaEventTypeName);
+            return container;
+        }
+
+        private static BeanEventType CreateExpressionTypeInstance(IContainer container)
+        {
+            if (!container.Has(StatementMetaEventTypeName))
+            {
+                var statementMetaEventType = (BeanEventType)container.Resolve<EventAdapterService>()
+                    .AddBeanType("StatementRow", typeof(StatementRow), true, true, true);
+                container.Register<BeanEventType>(
+                    statementMetaEventType, Lifespan.Singleton, StatementMetaEventTypeName);
+                return statementMetaEventType;
+            }
+
+            return container.Resolve<BeanEventType>(StatementMetaEventTypeName);
         }
 
         public static void ApplyExpressionToStatements(
@@ -63,7 +90,7 @@ namespace com.espertech.esper.util
                 {
                     if (filterExpr != null)
                     {
-                        if (!EvaluateStatement(filterExpr, epStmt))
+                        if (!EvaluateStatement(engine.Container, filterExpr, epStmt))
                         {
                             continue;
                         }
@@ -99,7 +126,7 @@ namespace com.espertech.esper.util
             }
         }
 
-        public static bool EvaluateStatement(ExprNode expression, EPStatement stmt)
+        public static bool EvaluateStatement(IContainer container, ExprNode expression, EPStatement stmt)
         {
             if (expression == null)
             {
@@ -115,10 +142,11 @@ namespace com.espertech.esper.util
                     "' for expression '" + ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(expression) + "'");
             }
 
-            try
-            {
+            try {
+                var eventAdapterService = container.Resolve<EventAdapterService>();
+                var statementMetaEventType = GetStatementMetaEventType(container);
                 var row = GetRow(stmt);
-                var rowBean = SupportEventAdapterService.Service.AdapterForTypedObject(row, STATEMENT_META_EVENT_TYPE);
+                var rowBean = eventAdapterService.AdapterForTypedObject(row, statementMetaEventType);
                 var evaluateParams = new EvaluateParams(new EventBean[] { rowBean }, true, null);
                 var pass = (bool?) evaluator.Evaluate(evaluateParams);
                 return !pass.GetValueOrDefault(false);
@@ -130,7 +158,7 @@ namespace com.espertech.esper.util
             }
             return false;
         }
-
+        
         public static Pair<ExprNode, string> CompileValidateStatementFilterExpr(
             EPServiceProviderSPI engine,
             string filterExpression)
@@ -146,9 +174,9 @@ namespace com.espertech.esper.util
                 return new Pair<ExprNode, string>(null, "Error compiling expression: " + ex.Message);
             }
 
-            try
-            {
-                var streamTypeService = new StreamTypeServiceImpl(STATEMENT_META_EVENT_TYPE, null, true, engine.URI);
+            try {
+                var statementMetaEventType = GetStatementMetaEventType(engine.Container);
+                var streamTypeService = new StreamTypeServiceImpl(statementMetaEventType, null, true, engine.URI);
                 exprNode = ExprNodeUtility.GetValidatedSubtree(
                     ExprNodeOrigin.SCRIPTPARAMS, exprNode,
                     new ExprValidationContext(

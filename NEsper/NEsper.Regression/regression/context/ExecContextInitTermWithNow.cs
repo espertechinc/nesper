@@ -73,7 +73,7 @@ namespace com.espertech.esper.regression.context
         private void RunAssertionOverlappingWithPattern(EPServiceProvider epService) {
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             string contextExpr = "create context MyContext " +
-                    "initiated by @Now and pattern [every timer:Interval(10)] terminated after 10 sec";
+                    "initiated by @Now and pattern [every timer:interval(10)] terminated after 10 sec";
             epService.EPAdministrator.CreateEPL(contextExpr);
     
             var fields = new string[]{"cnt"};

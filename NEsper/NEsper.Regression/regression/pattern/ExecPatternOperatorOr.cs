@@ -127,7 +127,7 @@ namespace com.espertech.esper.regression.pattern
             // try zero-time start
             var listener = new SupportUpdateListener();
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
-            epService.EPAdministrator.CreateEPL("select * from pattern [timer:Interval(0) or every timer:Interval(1 min)]")
+            epService.EPAdministrator.CreateEPL("select * from pattern [timer:interval(0) or every timer:interval(1 min)]")
                 .AddEventHandlerWithReplay(listener.Update);
             Assert.IsTrue(listener.IsInvoked);
     

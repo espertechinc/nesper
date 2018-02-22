@@ -42,20 +42,20 @@ namespace com.espertech.esper.regression.client
         {
             SendTimer(0, epService);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
-                "@Priority(1) select 1 as prio from pattern [every timer:Interval(10)]", "s1");
+                "@Priority(1) select 1 as prio from pattern [every timer:interval(10)]", "s1");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
             stmt = epService.EPAdministrator.CreateEPL(
-                "@Priority(3) select 3 as prio from pattern [every timer:Interval(10)]", "s3");
+                "@Priority(3) select 3 as prio from pattern [every timer:interval(10)]", "s3");
             stmt.Events += listener.Update;
 
             stmt = epService.EPAdministrator.CreateEPL(
-                "@Priority(2) select 2 as prio from pattern [every timer:Interval(10)]", "s2");
+                "@Priority(2) select 2 as prio from pattern [every timer:interval(10)]", "s2");
             stmt.Events += listener.Update;
 
             stmt = epService.EPAdministrator.CreateEPL(
-                "@Priority(4) select 4 as prio from pattern [every timer:Interval(10)]", "s4");
+                "@Priority(4) select 4 as prio from pattern [every timer:interval(10)]", "s4");
             stmt.Events += listener.Update;
 
             SendTimer(10000, epService);
@@ -63,21 +63,21 @@ namespace com.espertech.esper.regression.client
 
             epService.EPAdministrator.GetStatement("s2").Dispose();
             stmt = epService.EPAdministrator.CreateEPL(
-                "select 0 as prio from pattern [every timer:Interval(10)]", "s0");
+                "select 0 as prio from pattern [every timer:interval(10)]", "s0");
             stmt.Events += listener.Update;
 
             SendTimer(20000, epService);
             AssertPrio(listener, null, new[] {4, 3, 1, 0});
 
             stmt = epService.EPAdministrator.CreateEPL(
-                "@Priority(2) select 2 as prio from pattern [every timer:Interval(10)]", "s2");
+                "@Priority(2) select 2 as prio from pattern [every timer:interval(10)]", "s2");
             stmt.Events += listener.Update;
 
             SendTimer(30000, epService);
             AssertPrio(listener, null, new[] {4, 3, 2, 1, 0});
 
             stmt = epService.EPAdministrator.CreateEPL(
-                "@Priority(3) select 3 as prio from pattern [every timer:Interval(10)]", "s2");
+                "@Priority(3) select 3 as prio from pattern [every timer:interval(10)]", "s2");
             stmt.Events += listener.Update;
 
             SendTimer(40000, epService);
@@ -90,16 +90,16 @@ namespace com.espertech.esper.regression.client
         {
             SendTimer(0, epService);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
-                "@Drop select 1 as prio from pattern [every timer:Interval(10)]", "s1");
+                "@Drop select 1 as prio from pattern [every timer:interval(10)]", "s1");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
             stmt = epService.EPAdministrator.CreateEPL(
-                "@Priority(2) select 3 as prio from pattern [every timer:Interval(10)]", "s3");
+                "@Priority(2) select 3 as prio from pattern [every timer:interval(10)]", "s3");
             stmt.Events += listener.Update;
 
             stmt = epService.EPAdministrator.CreateEPL(
-                "select 2 as prio from pattern [every timer:Interval(10)]", "s2");
+                "select 2 as prio from pattern [every timer:interval(10)]", "s2");
             stmt.Events += listener.Update;
 
             SendTimer(10000, epService);

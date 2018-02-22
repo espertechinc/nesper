@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionUniqueAndFirstLength(EPServiceProvider epService) {
-            string epl = "select irstream theString, intPrimitive from SupportBean#Firstlength(3)#unique(theString)";
+            string epl = "select irstream theString, intPrimitive from SupportBean#firstlength(3)#unique(theString)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regression.view
             stmt.Dispose();
             listener.Reset();
     
-            epl = "select irstream theString, intPrimitive from SupportBean#unique(theString)#Firstlength(3)";
+            epl = "select irstream theString, intPrimitive from SupportBean#unique(theString)#firstlength(3)";
             stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += listener.Update;
     
@@ -68,7 +68,7 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionFirstUniqueAndFirstLength(EPServiceProvider epService) {
-            string epl = "select irstream theString, intPrimitive from SupportBean#Firstunique(theString)#Firstlength(3)";
+            string epl = "select irstream theString, intPrimitive from SupportBean#firstunique(theString)#firstlength(3)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -76,7 +76,7 @@ namespace com.espertech.esper.regression.view
             TryAssertionFirstUniqueAndLength(epService, listener, stmt);
     
             stmt.Dispose();
-            epl = "select irstream theString, intPrimitive from SupportBean#Firstlength(3)#Firstunique(theString)";
+            epl = "select irstream theString, intPrimitive from SupportBean#firstlength(3)#firstunique(theString)";
             stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += listener.Update;
     
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionFirstUniqueAndLengthOnDelete(EPServiceProvider epService) {
-            EPStatement nwstmt = epService.EPAdministrator.CreateEPL("create window MyWindowOne#Firstunique(theString)#Firstlength(3) as SupportBean");
+            EPStatement nwstmt = epService.EPAdministrator.CreateEPL("create window MyWindowOne#firstunique(theString)#firstlength(3) as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindowOne select * from SupportBean");
             epService.EPAdministrator.CreateEPL("on SupportBean_S0 delete from MyWindowOne where theString = p00");
     
@@ -158,34 +158,34 @@ namespace com.espertech.esper.regression.view
             stmt.Dispose();
     
             // test first-unique
-            stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#Firstunique(theString)#length_batch(3)");
+            stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#firstunique(theString)#length_batch(3)");
             stmt.Events += listener.Update;
             TryAssertionLengthBatchAndFirstUnique(epService, listener);
             stmt.Dispose();
     
-            stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#length_batch(3)#Firstunique(theString)");
+            stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#length_batch(3)#firstunique(theString)");
             stmt.Events += listener.Update;
             TryAssertionLengthBatchAndFirstUnique(epService, listener);
             stmt.Dispose();
     
             // test time-based expiry
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
-            stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#unique(theString)#Time_batch(1)");
+            stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#unique(theString)#time_batch(1)");
             stmt.Events += listener.Update;
             TryAssertionTimeBatchAndUnique(epService, listener, 0);
             stmt.Dispose();
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(100000));
-            stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#Time_batch(1)#unique(theString)");
+            stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#time_batch(1)#unique(theString)");
             stmt.Events += listener.Update;
             TryAssertionTimeBatchAndUnique(epService, listener, 100000);
             stmt.Dispose();
     
             try {
-                epService.EPAdministrator.CreateEPL("select * from SupportBean#Time_batch(1)#length_batch(10)");
+                epService.EPAdministrator.CreateEPL("select * from SupportBean#time_batch(1)#length_batch(10)");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Cannot combined multiple batch data windows into an intersection [select * from SupportBean#Time_batch(1)#length_batch(10)]", ex.Message);
+                Assert.AreEqual("Error starting statement: Cannot combined multiple batch data windows into an intersection [select * from SupportBean#time_batch(1)#length_batch(10)]", ex.Message);
             }
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regression.view
         private void RunAssertionIntersectAndDerivedValue(EPServiceProvider epService) {
             var fields = new string[]{"total"};
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#unique(intPrimitive)#unique(intBoxed)#Uni(doublePrimitive)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#unique(intPrimitive)#unique(intBoxed)#uni(doublePrimitive)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regression.view
         private void RunAssertionIntersectGroupBy(EPServiceProvider epService) {
             var fields = new string[]{"theString"};
     
-            string text = "select irstream theString from SupportBean#Groupwin(intPrimitive)#length(2)#unique(intBoxed) retain-intersection";
+            string text = "select irstream theString from SupportBean#groupwin(intPrimitive)#length(2)#unique(intBoxed) retain-intersection";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -265,7 +265,7 @@ namespace com.espertech.esper.regression.view
     
             // another combination
             stmt.Dispose();
-            epService.EPAdministrator.CreateEPL("select * from SupportBean#Groupwin(theString)#Time(.0083 sec)#firstevent").Dispose();
+            epService.EPAdministrator.CreateEPL("select * from SupportBean#groupwin(theString)#time(.0083 sec)#firstevent").Dispose();
         }
     
         private void RunAssertionIntersectSubselect(EPServiceProvider epService) {
@@ -435,7 +435,7 @@ namespace com.espertech.esper.regression.view
         private void RunAssertionIntersectSorted(EPServiceProvider epService) {
             var fields = new string[]{"theString"};
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#Sort(2, intPrimitive)#Sort(2, intBoxed) retain-intersection");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#sort(2, intPrimitive)#sort(2, intBoxed) retain-intersection");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -477,7 +477,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionIntersectTimeWin(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#unique(intPrimitive)#Time(10 sec) retain-intersection");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#unique(intPrimitive)#time(10 sec) retain-intersection");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -488,7 +488,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionIntersectTimeWinReversed(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#Time(10 sec)#unique(intPrimitive) retain-intersection");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#time(10 sec)#unique(intPrimitive) retain-intersection");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -499,7 +499,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionIntersectTimeWinSODA(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string stmtText = "select irstream theString from SupportBean#Time(10 seconds)#unique(intPrimitive) retain-intersection";
+            string stmtText = "select irstream theString from SupportBean#time(10 seconds)#unique(intPrimitive) retain-intersection";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
             Assert.AreEqual(stmtText, model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -513,7 +513,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionIntersectTimeWinNamedWindow(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            EPStatement stmtWindow = epService.EPAdministrator.CreateEPL("create window MyWindowTwo#Time(10 sec)#unique(intPrimitive) retain-intersection as select * from SupportBean");
+            EPStatement stmtWindow = epService.EPAdministrator.CreateEPL("create window MyWindowTwo#time(10 sec)#unique(intPrimitive) retain-intersection as select * from SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindowTwo select * from SupportBean");
             epService.EPAdministrator.CreateEPL("on SupportBean_S0 delete from MyWindowTwo where intBoxed = id");
             var listener = new SupportUpdateListener();
@@ -526,7 +526,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionIntersectTimeWinNamedWindowDelete(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("create window MyWindowThree#Time(10 sec)#unique(intPrimitive) retain-intersection as select * from SupportBean");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("create window MyWindowThree#time(10 sec)#unique(intPrimitive) retain-intersection as select * from SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindowThree select * from SupportBean");
             epService.EPAdministrator.CreateEPL("on SupportBean_S0 delete from MyWindowThree where intBoxed = id");
             var listener = new SupportUpdateListener();

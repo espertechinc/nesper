@@ -51,9 +51,11 @@ namespace com.espertech.esper.regression.dataflow
             dfOne.Run();
 
             EPAssertionUtil.AssertPropsPerRow(
+                epService.Container,
                 outputOne.GetAndReset().ToArray(), "theString,intPrimitive".Split(','), new[] {new object[] {"E1", 1}});
             var received = outputTwo.GetAndReset();
             EPAssertionUtil.AssertPropsPerRow(
+                epService.Container,
                 received.First.ToArray(), "theString,intPrimitive".Split(','), new[] {new object[] {"E1", 1}});
             EPAssertionUtil.AssertEqualsExactOrder(new[] {0}, received.Second.ToArray());
 
@@ -81,6 +83,7 @@ namespace com.espertech.esper.regression.dataflow
             EPAssertionUtil.AssertPropsPerRow(
                 outputOne.GetAndReset().ToArray(), "p0,p1".Split(','), new[] {new object[] {"E1", 1}});
             EPAssertionUtil.AssertPropsPerRow(
+                epService.Container,
                 outputTwo.GetAndReset()[0].ToArray(), "p0,p1".Split(','), new[] {new object[] {"E1", 1}});
 
             epService.EPAdministrator.DestroyAllStatements();

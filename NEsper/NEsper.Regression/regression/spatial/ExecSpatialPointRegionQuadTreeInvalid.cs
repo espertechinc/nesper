@@ -50,9 +50,9 @@ namespace com.espertech.esper.regression.spatial
     
             // invalid column type
             SupportMessageAssertUtil.TryInvalid(epService, "create index MyIndex on MyWindow((id, py) Pointregionquadtree(0, 0, 100, 100))",
-                    "Error starting statement: Index of type 'pointregionquadtree' for column 0 that is providing x-values expecting type java.lang.Number but received type java.lang.string");
+                    "Error starting statement: Index of type 'pointregionquadtree' for column 0 that is providing x-values expecting type java.lang.Number but received type System.String");
             SupportMessageAssertUtil.TryInvalid(epService, "create index MyIndex on MyWindow((px, id) Pointregionquadtree(0, 0, 100, 100))",
-                    "Error starting statement: Index of type 'pointregionquadtree' for column 1 that is providing y-values expecting type java.lang.Number but received type java.lang.string");
+                    "Error starting statement: Index of type 'pointregionquadtree' for column 1 that is providing y-values expecting type java.lang.Number but received type System.String");
     
             // invalid expressions for column or parameter
             SupportMessageAssertUtil.TryInvalid(epService, "create index MyIndex on MyWindow((dummy, dummy2) Pointregionquadtree(0, 0, 100, 100))",
@@ -74,17 +74,17 @@ namespace com.espertech.esper.regression.spatial
     
             // invalid parameter type
             SupportMessageAssertUtil.TryInvalid(epService, "create index MyIndex on MyWindow((px, py) Pointregionquadtree('a', 0, 100, 100))",
-                    "Error starting statement: Index of type 'pointregionquadtree' for parameter 0 that is providing xMin-values expecting type java.lang.Number but received type java.lang.string");
+                    "Error starting statement: Index of type 'pointregionquadtree' for parameter 0 that is providing xMin-values expecting type java.lang.Number but received type System.String");
             SupportMessageAssertUtil.TryInvalid(epService, "create index MyIndex on MyWindow((px, py) Pointregionquadtree(0, 'a', 100, 100))",
-                    "Error starting statement: Index of type 'pointregionquadtree' for parameter 1 that is providing yMin-values expecting type java.lang.Number but received type java.lang.string");
+                    "Error starting statement: Index of type 'pointregionquadtree' for parameter 1 that is providing yMin-values expecting type java.lang.Number but received type System.String");
             SupportMessageAssertUtil.TryInvalid(epService, "create index MyIndex on MyWindow((px, py) Pointregionquadtree(0, 0, 'a', 100))",
-                    "Error starting statement: Index of type 'pointregionquadtree' for parameter 2 that is providing width-values expecting type java.lang.Number but received type java.lang.string");
+                    "Error starting statement: Index of type 'pointregionquadtree' for parameter 2 that is providing width-values expecting type java.lang.Number but received type System.String");
             SupportMessageAssertUtil.TryInvalid(epService, "create index MyIndex on MyWindow((px, py) Pointregionquadtree(0, 0, 100, 'a'))",
-                    "Error starting statement: Index of type 'pointregionquadtree' for parameter 3 that is providing height-values expecting type java.lang.Number but received type java.lang.string");
+                    "Error starting statement: Index of type 'pointregionquadtree' for parameter 3 that is providing height-values expecting type java.lang.Number but received type System.String");
             SupportMessageAssertUtil.TryInvalid(epService, "create index MyIndex on MyWindow((px, py) Pointregionquadtree(0, 0, 100, 100, 'a'))",
-                    "Error starting statement: Index of type 'pointregionquadtree' for parameter 4 that is providing leafCapacity-values expecting type java.lang.int? but received type java.lang.string");
+                    "Error starting statement: Index of type 'pointregionquadtree' for parameter 4 that is providing leafCapacity-values expecting type " + Name.Of<int>() + " but received type System.String");
             SupportMessageAssertUtil.TryInvalid(epService, "create index MyIndex on MyWindow((px, py) Pointregionquadtree(0, 0, 100, 100, 1, 'a'))",
-                    "Error starting statement: Index of type 'pointregionquadtree' for parameter 5 that is providing maxTreeHeight-values expecting type java.lang.int? but received type java.lang.string");
+                    "Error starting statement: Index of type 'pointregionquadtree' for parameter 5 that is providing maxTreeHeight-values expecting type " + Name.Of<int>() + " but received type System.String");
     
             // invalid parameter value
             SupportMessageAssertUtil.TryInvalid(epService, "create index MyIndex on MyWindow((px, py) Pointregionquadtree(Cast(null, double), 0, 0, 0))",
@@ -136,11 +136,11 @@ namespace com.espertech.esper.regression.spatial
     
         private void RunAssertionInvalidMethod(EPServiceProvider epService) {
             SupportMessageAssertUtil.TryInvalid(epService, "select * from MyEventRectangleWithOffset(Point('a', 0).Inside(Rectangle(0, 0, 0, 0)))",
-                    "Failed to validate filter expression 'Point(\"a\",0).Inside(Rectangle(0,0,0,0))': Error validating left-hand-side function 'point', expected a number-type result for expression parameter 0 but received java.lang.string");
+                    "Failed to validate filter expression 'Point(\"a\",0).Inside(Rectangle(0,0,0,0))': Error validating left-hand-side function 'point', expected a number-type result for expression parameter 0 but received System.String");
             SupportMessageAssertUtil.TryInvalid(epService, "select * from MyEventRectangleWithOffset(Point(0).Inside(Rectangle(0, 0, 0, 0)))",
                     "Failed to validate filter expression 'Point(0).Inside(Rectangle(0,0,0,0))': Error validating left-hand-side method 'point', expected 2 parameters but received 1 parameters");
             SupportMessageAssertUtil.TryInvalid(epService, "select * from MyEventRectangleWithOffset(Point(0,0).Inside(Rectangle('a', 0, 0, 0)))",
-                    "Failed to validate filter expression 'Point(0,0).Inside(Rectangle(\"a\",0,0,0))': Error validating right-hand-side function 'rectangle', expected a number-type result for expression parameter 0 but received java.lang.string");
+                    "Failed to validate filter expression 'Point(0,0).Inside(Rectangle(\"a\",0,0,0))': Error validating right-hand-side function 'rectangle', expected a number-type result for expression parameter 0 but received System.String");
             SupportMessageAssertUtil.TryInvalid(epService, "select * from MyEventRectangleWithOffset(Point(0,0).Inside(Rectangle(0)))",
                     "Failed to validate filter expression 'Point(0,0).Inside(Rectangle(0))': Error validating right-hand-side function 'rectangle', expected 4 parameters but received 1 parameters");
             SupportMessageAssertUtil.TryInvalid(epService, "select * from MyEventRectangleWithOffset(Point(0,0).Inside(0))",

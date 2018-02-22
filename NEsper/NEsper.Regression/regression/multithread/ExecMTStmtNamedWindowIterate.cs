@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.multithread
     
         private void SetupStmts(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL(
-                    "create window MyWindow#Groupwin(theString)#keepall as select theString, longPrimitive from " + typeof(SupportBean).FullName);
+                    "create window MyWindow#groupwin(theString)#keepall as select theString, longPrimitive from " + typeof(SupportBean).FullName);
     
             epService.EPAdministrator.CreateEPL(
                     "insert into MyWindow(theString, longPrimitive) " +

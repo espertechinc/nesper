@@ -32,7 +32,7 @@ namespace com.espertech.esper.events.xml
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _schemaTypeId = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Id);
             _schemaTypeString = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.String);
             _schemaTypeBoolean = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Boolean);

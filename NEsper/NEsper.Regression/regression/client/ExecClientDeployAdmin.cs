@@ -430,16 +430,16 @@ namespace com.espertech.esper.regression.client
             catch (DeploymentActionException ex)
             {
                 Assert.AreEqual(
-                    "Deployment failed in module 'mymodule.one' in expression 'create schema MySchemaOne (col1 Wrong)' : Error starting statement: Nestable type configuration encountered an unexpected property type name 'Wrong' for property 'col1', expected java.lang.Type or java.util.Map or the name of a previously-declared Map or ObjectArray type [create schema MySchemaOne (col1 Wrong)]",
+                    "Deployment failed in module 'mymodule.one' in expression 'create schema MySchemaOne (col1 Wrong)' : Error starting statement: Nestable type configuration encountered an unexpected property type name 'Wrong' for property 'col1', expected Type or Map or the name of a previously-declared Map or ObjectArray type [create schema MySchemaOne (col1 Wrong)]",
                     ex.Message);
                 Assert.AreEqual(2, ex.Exceptions.Count);
                 Assert.AreEqual("create schema MySchemaOne (col1 Wrong)", ex.Exceptions[0].Expression);
                 Assert.AreEqual(
-                    "Error starting statement: Nestable type configuration encountered an unexpected property type name 'Wrong' for property 'col1', expected java.lang.Type or java.util.Map or the name of a previously-declared Map or ObjectArray type [create schema MySchemaOne (col1 Wrong)]",
+                    "Error starting statement: Nestable type configuration encountered an unexpected property type name 'Wrong' for property 'col1', expected Type or Map or the name of a previously-declared Map or ObjectArray type [create schema MySchemaOne (col1 Wrong)]",
                     ex.Exceptions[0].Inner.Message);
                 Assert.AreEqual("create schema MySchemaOne (col2 WrongTwo)", ex.Exceptions[1].Expression);
                 Assert.AreEqual(
-                    "Error starting statement: Nestable type configuration encountered an unexpected property type name 'WrongTwo' for property 'col2', expected java.lang.Type or java.util.Map or the name of a previously-declared Map or ObjectArray type [create schema MySchemaOne (col2 WrongTwo)]",
+                    "Error starting statement: Nestable type configuration encountered an unexpected property type name 'WrongTwo' for property 'col2', expected Type or Map or the name of a previously-declared Map or ObjectArray type [create schema MySchemaOne (col2 WrongTwo)]",
                     ex.Exceptions[1].Inner.Message);
             }
 
@@ -461,7 +461,7 @@ namespace com.espertech.esper.regression.client
             var textOne = "@Name('A') create schema MySchemaTwo (col1 int)";
             var textTwo = "@Name('B') create schema MySchemaTwo (col1 not_existing_type)";
             var errorTextTwo =
-                "Error starting statement: Nestable type configuration encountered an unexpected property type name 'not_existing_type' for property 'col1', expected java.lang.Type or java.util.Map or the name of a previously-declared Map or ObjectArray type [@Name('B') create schema MySchemaTwo (col1 not_existing_type)]";
+                "Error starting statement: Nestable type configuration encountered an unexpected property type name 'not_existing_type' for property 'col1', expected Type or Map or the name of a previously-declared Map or ObjectArray type [@Name('B') create schema MySchemaTwo (col1 not_existing_type)]";
             var textThree = "@Name('C') create schema MySchemaTwo (col1 int)";
             var module = MakeModule("mymodule.two", textOne, textTwo, textThree);
 
@@ -520,7 +520,7 @@ namespace com.espertech.esper.regression.client
         {
             var text = "create schema SomeSchema (col1 NotExists)";
             var error =
-                "Error starting statement: Nestable type configuration encountered an unexpected property type name 'NotExists' for property 'col1', expected java.lang.Type or java.util.Map or the name of a previously-declared Map or ObjectArray type [create schema SomeSchema (col1 NotExists)]";
+                "Error starting statement: Nestable type configuration encountered an unexpected property type name 'NotExists' for property 'col1', expected Type or Map or the name of a previously-declared Map or ObjectArray type [create schema SomeSchema (col1 NotExists)]";
 
             try
             {

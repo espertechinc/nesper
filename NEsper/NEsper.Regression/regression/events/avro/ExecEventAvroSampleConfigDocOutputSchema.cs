@@ -49,7 +49,7 @@ namespace com.espertech.esper.regression.events.avro
             var avroEvent = new ConfigurationEventTypeAvro(schemaThree);
             epService.EPAdministrator.Configuration.AddEventTypeAvro("CarLocUpdateEvent", avroEvent);
     
-            stmt = epService.EPAdministrator.CreateEPL("select count(*) from CarLocUpdateEvent(direction = 1)#Time(1 min)");
+            stmt = epService.EPAdministrator.CreateEPL("select count(*) from CarLocUpdateEvent(direction = 1)#time(1 min)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             var @event = new GenericRecord(schemaThree);

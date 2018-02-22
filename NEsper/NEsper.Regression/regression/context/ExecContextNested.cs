@@ -331,7 +331,7 @@ namespace com.espertech.esper.regression.context
                     + " context CtxSession partition by id from TestEvent, "
                     + " context CtxStartEnd start TestEvent as te end EndEvent(id=te.id)");
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
-                    "context TheContext select firstEvent from TestEvent#Firstevent() as firstEvent"
+                    "context TheContext select firstEvent from TestEvent#firstevent() as firstEvent"
                             + " inner join TestEvent#lastevent as lastEvent");
             var supportSubscriber = new SupportSubscriber();
             stmt.Subscriber = supportSubscriber;
@@ -1210,7 +1210,7 @@ namespace com.espertech.esper.regression.context
         private void RunAssertionNestedOverlappingAndPattern(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create context NestedContext " +
                     "context PartitionedByKeys partition by theString from SupportBean, " +
-                    "context TimedImmediate initiated @now and pattern[every timer:Interval(10)] terminated after 10 seconds");
+                    "context TimedImmediate initiated @now and pattern[every timer:interval(10)] terminated after 10 seconds");
             TryAssertion(epService);
         }
     

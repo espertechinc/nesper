@@ -214,7 +214,7 @@ namespace com.espertech.esper.regression.pattern
             testCase.Add("D2", "d[0]", events.GetEvent("D1"), "d[1]", events.GetEvent("D2"), "b[0]", events.GetEvent("B1"), "b[1]", events.GetEvent("B2"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("d=D until timer:Interval(7 sec)");
+            testCase = new EventExpressionCase("d=D until timer:interval(7 sec)");
             testCase.Add("E1", "d[0]", events.GetEvent("D1"), "d[1]", null, "d[2]", null);
             testCaseList.AddTest(testCase);
     
@@ -233,11 +233,11 @@ namespace com.espertech.esper.regression.pattern
             testCase.Add("B1", "d[0]", null, "b", events.GetEvent("B1"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("a=A until (every (timer:Interval(6 sec) and not A))");
+            testCase = new EventExpressionCase("a=A until (every (timer:interval(6 sec) and not A))");
             testCase.Add("G1", "a[0]", events.GetEvent("A1"), "a[1]", events.GetEvent("A2"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("A until (every (timer:Interval(7 sec) and not A))");
+            testCase = new EventExpressionCase("A until (every (timer:interval(7 sec) and not A))");
             testCase.Add("D3");
             testCaseList.AddTest(testCase);
     
@@ -462,7 +462,7 @@ namespace com.espertech.esper.regression.pattern
             // test with timer:interval
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
-            string query = "select * from pattern [every ([2:]e1=SupportBean(theString='2') until timer:Interval(5))->([2:]e2=SupportBean(theString='3') until timer:Interval(2))]";
+            string query = "select * from pattern [every ([2:]e1=SupportBean(theString='2') until timer:interval(5))->([2:]e2=SupportBean(theString='3') until timer:interval(2))]";
             epService.EPAdministrator.CreateEPL(query);
     
             epService.EPRuntime.SendEvent(new SupportBean("2", 0));
@@ -573,7 +573,7 @@ namespace com.espertech.esper.regression.pattern
     
             // test exactly-1
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
-            string eplExact1 = "select * from pattern [a=A -> [1] every (timer:Interval(10) and not B)]";
+            string eplExact1 = "select * from pattern [a=A -> [1] every (timer:interval(10) and not B)]";
             EPStatement stmtExact1 = epService.EPAdministrator.CreateEPL(eplExact1);
             stmtExact1.Events += listener.Update;
     
@@ -595,7 +595,7 @@ namespace com.espertech.esper.regression.pattern
     
             // test until
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000000));
-            string eplUntilOne = "select * from pattern [a=A -> b=B until ([1] every (timer:Interval(10) and not C))]";
+            string eplUntilOne = "select * from pattern [a=A -> b=B until ([1] every (timer:interval(10) and not C))]";
             epService.EPAdministrator.CreateEPL(eplUntilOne).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1005000));

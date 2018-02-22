@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.view
             // Set up a 1 second time window
             EPStatement weightedAvgView = epService.EPAdministrator.CreateEPL(
                     "select * from " + typeof(SupportMarketDataBean).FullName +
-                            "(symbol='" + SYMBOL + "')#Time(3.0)#Weighted_avg(price, volume, symbol, feed)");
+                            "(symbol='" + SYMBOL + "')#time(3.0)#weighted_avg(price, volume, symbol, feed)");
             var testListener = new SupportUpdateListener();
             weightedAvgView.Events += testListener.Update;
     

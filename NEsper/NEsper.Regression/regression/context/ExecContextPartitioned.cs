@@ -14,6 +14,7 @@ using com.espertech.esper.client.context;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.client.time;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.filter;
@@ -114,7 +115,7 @@ namespace com.espertech.esper.regression.context
                     "match_recognize ( " +
                     "  measures A.longPrimitive as e1, B.longPrimitive as e2" +
                     "  pattern (A B) " +
-                    "  define A as A.intPrimitive >= Prev(A.intPrimitive),B as B.intPrimitive >= Prev(B.intPrimitive) " +
+                    "  define A as A.intPrimitive >= prev(A.intPrimitive),B as B.intPrimitive >= prev(B.intPrimitive) " +
                     ")";
             EPStatement stmtMatchRecogWithPrev = epService.EPAdministrator.CreateEPL(eplMatchRecogWithPrev);
             stmtMatchRecogWithPrev.Events += listener.Update;
@@ -141,11 +142,11 @@ namespace com.espertech.esper.regression.context
     
             string epl = " context SegmentedBySession " +
                     " select rstream A.pageName as pageNameA , A.sessionId as sessionIdA, B.pageName as pageNameB, C.pageName as pageNameC from " +
-                    "WebEvent(pageName='Start')#Time(30) A " +
+                    "WebEvent(pageName='Start')#time(30) A " +
                     "full outer join " +
-                    "WebEvent(pageName='Middle')#Time(30) B on A.sessionId = B.sessionId " +
+                    "WebEvent(pageName='Middle')#time(30) B on A.sessionId = B.sessionId " +
                     "full outer join " +
-                    "WebEvent(pageName='End')#Time(30) C on A.sessionId  = C.sessionId " +
+                    "WebEvent(pageName='End')#time(30) C on A.sessionId  = C.sessionId " +
                     "where A.pageName is not null and (B.pageName is null or C.pageName is null) ";
             EPStatement statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -226,7 +227,7 @@ namespace com.espertech.esper.regression.context
     
             // incompatible property types
             epl = "create context SegmentedByAString partition by theString from SupportBean, id from SupportBean_S0";
-            TryInvalid(epService, epl, "Error starting statement: For context 'SegmentedByAString' for context 'SegmentedByAString' found mismatch of property types, property 'theString' of type 'java.lang.string' compared to property 'id' of type 'java.lang.int?' [");
+            TryInvalid(epService, epl, "Error starting statement: For context 'SegmentedByAString' for context 'SegmentedByAString' found mismatch of property types, property 'theString' of type 'System.String' compared to property 'id' of type '" + Name.Of<int>() + "' [");
     
             // duplicate type specification
             epl = "create context SegmentedByAString partition by theString from SupportBean, theString from SupportBean";
@@ -251,7 +252,7 @@ namespace com.espertech.esper.regression.context
             // partitioned with named window
             epService.EPAdministrator.CreateEPL("create schema SomeSchema(ipAddress string)");
             epService.EPAdministrator.CreateEPL("create context TheSomeSchemaCtx Partition By ipAddress From SomeSchema");
-            epl = "context TheSomeSchemaCtx create window MyEvent#Time(30 sec) (ipAddress string)";
+            epl = "context TheSomeSchemaCtx create window MyEvent#time(30 sec) (ipAddress string)";
             TryInvalid(epService, epl, "Error starting statement: Segmented context 'TheSomeSchemaCtx' requires that named windows are associated to an existing event type and that the event type is listed among the partitions defined by the create-context statement");
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -263,8 +264,8 @@ namespace com.espertech.esper.regression.context
             string[] fields = "col1".Split(',');
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("context SegmentedByAString " +
                     "select sum(intPrimitive) as col1," +
-                    "Prev(1, intPrimitive)," +
-                    "Prior(1, intPrimitive)," +
+                    "prev(1, intPrimitive)," +
+                    "prior(1, intPrimitive)," +
                     "(select id from SupportBean_S0#lastevent)" +
                     "  from SupportBean#keepall");
             var listener = new SupportUpdateListener();
@@ -484,7 +485,7 @@ namespace com.espertech.esper.regression.context
     
             var fieldsPrev = new[]{"theString", "col1"};
             EPStatement stmtPrev = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
-                    "select theString, (select Prev(0, id) from SupportBean_S0#keepall) as col1 from SupportBean");
+                    "select theString, (select prev(0, id) from SupportBean_S0#keepall) as col1 from SupportBean");
             var listener = new SupportUpdateListener();
             stmtPrev.Events += listener.Update;
     
@@ -509,7 +510,7 @@ namespace com.espertech.esper.regression.context
     
             var fieldsPrior = new[]{"theString", "col1"};
             EPStatement stmtPrior = epService.EPAdministrator.CreateEPL("@Name('B') context SegmentedByString " +
-                    "select theString, (select Prior(0, id) from SupportBean_S0#keepall) as col1 from SupportBean");
+                    "select theString, (select prior(0, id) from SupportBean_S0#keepall) as col1 from SupportBean");
             stmtPrior.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
@@ -537,7 +538,7 @@ namespace com.espertech.esper.regression.context
     
             var fields = new[]{"val0", "val1"};
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
-                    "select intPrimitive as val0, Prior(1, intPrimitive) as val1 from SupportBean");
+                    "select intPrimitive as val0, prior(1, intPrimitive) as val1 from SupportBean");
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     
@@ -741,7 +742,7 @@ namespace com.espertech.esper.regression.context
     
             string[] fieldsIterate = "intPrimitive".Split(',');
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
-                    "select irstream intPrimitive, Prevwindow(items) as pw from SupportBean#length(2) as items");
+                    "select irstream intPrimitive, prevwindow(items) as pw from SupportBean#length(2) as items");
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     
@@ -789,7 +790,7 @@ namespace com.espertech.esper.regression.context
             // test grouped delivery
             epService.EPAdministrator.CreateEPL("create variable bool trigger = false");
             epService.EPAdministrator.CreateEPL("create context MyCtx partition by theString from SupportBean");
-            epService.EPAdministrator.CreateEPL("@Name('Out') context MyCtx select * from SupportBean#Expr(not trigger) for Grouped_delivery(theString)");
+            epService.EPAdministrator.CreateEPL("@Name('Out') context MyCtx select * from SupportBean#expr(not trigger) for Grouped_delivery(theString)");
             epService.EPAdministrator.GetStatement("Out").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));

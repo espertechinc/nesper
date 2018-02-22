@@ -26,7 +26,7 @@ namespace com.espertech.esper.regression.view
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             SendCurrentTime(epService, "2002-02-01T09:00:00.000");
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#Firsttime(1 month)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#firsttime(1 month)");
     
             SendCurrentTime(epService, "2002-02-15T09:00:00.000");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));

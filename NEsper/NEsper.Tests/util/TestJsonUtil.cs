@@ -28,7 +28,7 @@ namespace com.espertech.esper.util
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _exprValidationContext = SupportExprValidationContextFactory.MakeEmpty(_container);
         }
     

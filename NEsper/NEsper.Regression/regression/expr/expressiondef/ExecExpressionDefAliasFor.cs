@@ -63,7 +63,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
             epService.EPAdministrator.CreateEPL("create schema EnterRoomEvent()");
             epService.EPAdministrator.CreateEPL("expression countPeople alias for {count(*)} \n" +
-                    "select countPeople from EnterRoomEvent#Time(10 seconds) having countPeople > 10");
+                    "select countPeople from EnterRoomEvent#time(10 seconds) having countPeople > 10");
     
             epService.EPAdministrator.DestroyAllStatements();
         }

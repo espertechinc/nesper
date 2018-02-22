@@ -100,7 +100,7 @@ namespace com.espertech.esper.regression.client
                             "into table ScanCountTable\n" +
                             "insert into CountStream\n" +
                             "select src, dst, count(*) as cnt, window(*) as win\n" +
-                            "from PortScanEvent#unique(src, dst, port)#Time(30 sec) group by src,dst;\n" +
+                            "from PortScanEvent#unique(src, dst, port)#time(30 sec) group by src,dst;\n" +
                             "\n" +
                             "create window SituationsWindow#keepall (src string, dst string, detectionTime long);\n" +
                             "\n" +
@@ -111,12 +111,12 @@ namespace com.espertech.esper.regression.client
                             "  then insert select src, dst, current_timestamp as detectionTime\n" +
                             "  then insert into OutputAlerts select 'DETECTED' as type, cs.cnt as cnt, cs.win as contributors;\n" +
                             "\n" +
-                            "on pattern [every timer:At(*, *, *, *, *)] \n" +
+                            "on pattern [every timer:at(*, *, *, *, *)] \n" +
                             "insert into OutputAlerts \n" +
                             "select 'UPDATE' as type, ScanCountTable[src, dst].cnt as cnt, ScanCountTable[src, dst].win as contributors\n" +
                             "from SituationsWindow sc;\n" +
                             "\n" +
-                            "on pattern [every timer:At(*, *, *, *, *)] \n" +
+                            "on pattern [every timer:at(*, *, *, *, *)] \n" +
                             "merge SituationsWindow sw\n" +
                             "when matched and (select cnt from ScanCountTable where src = sw.src and dst = sw.dst) < 10\n" +
                             "  then delete\n" +

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.mgr;
@@ -29,9 +30,23 @@ namespace com.espertech.esper.epl.join.hint
 {
     public class ExcludePlanHintExprUtil
     {
-        internal static readonly ObjectArrayEventType OAEXPRESSIONTYPE;
-    
-        static ExcludePlanHintExprUtil()
+        private const string OAExpressionTypeName = "OAEXPRESSIONTYPE";
+
+        public static ObjectArrayEventType GetOAExpressionType(IContainer container)
+        {
+            return container.Resolve<ObjectArrayEventType>(OAExpressionTypeName);
+        }
+
+        public static IContainer RegisterExpressionType(IContainer container)
+        {
+            container.Register<ObjectArrayEventType>(
+                CreateExpressionTypeInstance,
+                Lifespan.Singleton,
+                OAExpressionTypeName);
+            return container;
+        }
+
+        private static ObjectArrayEventType CreateExpressionTypeInstance(IContainer container)
         {
             var properties = new Dictionary<string, Object>();
             properties.Put("from_streamnum", typeof(int));
@@ -40,30 +55,34 @@ namespace com.espertech.esper.epl.join.hint
             properties.Put("to_streamname", typeof(string));
             properties.Put("opname", typeof(string));
             properties.Put("exprs", typeof(string[]));
-            OAEXPRESSIONTYPE =
-                new ObjectArrayEventType(
-                    EventTypeMetadata.CreateAnonymous(typeof (ExcludePlanHintExprUtil).Name, ApplicationType.OBJECTARR),
-                    typeof (ExcludePlanHintExprUtil).Name, 0, SupportEventAdapterService.Service, properties, null, null, null);
+            var eventAdapterService = container.Resolve<EventAdapterService>();
+            return new ObjectArrayEventType(
+                EventTypeMetadata.CreateAnonymous(typeof(ExcludePlanHintExprUtil).Name, ApplicationType.OBJECTARR),
+                typeof(ExcludePlanHintExprUtil).Name, 0, eventAdapterService, properties, null, null, null);
         }
-    
-        public static EventBean ToEvent(int fromStreamnum,
-                                        int toStreamnum,
-                                        string fromStreamname,
-                                        string toStreamname,
-                                        string opname,
-                                        ExprNode[] expressions) {
+        
+        public static EventBean ToEvent(
+            IContainer container,
+            int fromStreamnum,
+            int toStreamnum,
+            string fromStreamname,
+            string toStreamname,
+            string opname,
+            ExprNode[] expressions)
+        {
             var texts = new string[expressions.Length];
             for (var i = 0; i < expressions.Length; i++) {
                 texts[i] = ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(expressions[i]);
             }
             var @event = new Object[]{fromStreamnum, toStreamnum, fromStreamname, toStreamname, opname, texts};
-            return new ObjectArrayEventBean(@event, OAEXPRESSIONTYPE);
+            return new ObjectArrayEventBean(@event, GetOAExpressionType(container));
         }
     
         public static ExprEvaluator ToExpression(
             string hint,
             StatementContext statementContext)
         {
+            var container = statementContext.Container;
             var toCompile = "select * from com.esper.espertech.compat.DateTimeOffsetHelper#TimeInMillis(" + hint + ")";
             var raw = EPAdministratorHelper.CompileEPL(
                 statementContext.Container,
@@ -79,7 +98,7 @@ namespace com.espertech.esper.epl.join.hint
                 new TableServiceImpl(statementContext.RWLockManager, statementContext.ThreadLocalManager)
             );
             var expr = raw.StreamSpecs[0].ViewSpecs[0].ObjectParameters[0];
-            var validated = ExprNodeUtility.ValidateSimpleGetSubtree(ExprNodeOrigin.HINT, expr, statementContext, OAEXPRESSIONTYPE, false);
+            var validated = ExprNodeUtility.ValidateSimpleGetSubtree(ExprNodeOrigin.HINT, expr, statementContext, GetOAExpressionType(container), false);
             return validated.ExprEvaluator;
         }
     }

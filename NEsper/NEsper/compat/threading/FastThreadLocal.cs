@@ -110,7 +110,7 @@ namespace com.espertech.esper.compat.threading
 
         private static StaticData GetThreadData()
         {
-            StaticData lThreadData = _threadData;
+            var lThreadData = _threadData;
             if (lThreadData != null)
             {
                 return lThreadData;
@@ -321,6 +321,8 @@ namespace com.espertech.esper.compat.threading
             // indexes in the above range have already been allocated to the
             // table space, so it not necessary to worry about them... however,
             // down here we may be seeing table growth.
+
+            GetThreadData();
 
             var index = (int) Interlocked.Increment(ref _typeInstanceId);
             if (index >= _threadData.Table.Length)

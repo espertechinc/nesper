@@ -158,9 +158,9 @@ namespace com.espertech.esper.compat
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultResourceManager" /> class.
         /// </summary>
-        /// <param name="searchPath">The search path.</param>
         /// <param name="useDefaultSearchPath">if set to <c>true</c> [use default search path].</param>
-        public DefaultResourceManager(IEnumerable<string> searchPath, bool useDefaultSearchPath = true)
+        /// <param name="searchPath">The search path.</param>
+        public DefaultResourceManager(bool useDefaultSearchPath, params string[] searchPath)
         {
             _searchPath = new List<string>();
 

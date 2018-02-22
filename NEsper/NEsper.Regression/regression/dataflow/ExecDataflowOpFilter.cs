@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.dataflow
             TryInvalidInstantiate(epService, "theString = 1",
                     "Failed to instantiate data flow 'MySelect': Failed validation for operator 'Filter': Failed to validate filter dataflow operator expression 'theString=1': Implicit conversion from datatype 'int?' to 'string' is not allowed");
     
-            TryInvalidInstantiate(epService, "Prev(theString, 1) = 'abc'",
+            TryInvalidInstantiate(epService, "prev(theString, 1) = 'abc'",
                     "Failed to instantiate data flow 'MySelect': Failed validation for operator 'Filter': Invalid filter dataflow operator expression 'Prev(theString,1)=\"abc\"': Aggregation, sub-select, previous or prior functions are not supported in this context");
         }
     

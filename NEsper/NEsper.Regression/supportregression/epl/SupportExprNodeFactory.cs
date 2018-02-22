@@ -22,6 +22,7 @@ using com.espertech.esper.epl.expression.prev;
 using com.espertech.esper.epl.expression.prior;
 using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.variable;
+using com.espertech.esper.events;
 using com.espertech.esper.schedule;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.events;
@@ -415,7 +416,7 @@ namespace com.espertech.esper.supportregression.epl
 	        VariableService variableService = new VariableServiceImpl(
 	            0,
 	            new SchedulingServiceImpl(new TimeSourceServiceImpl(), supportContainer), 
-	            SupportEventAdapterService.Service,
+	            SupportContainer.Resolve<EventAdapterService>(),
 	            null,
 	            supportContainer.RWLockManager(),
 	            supportContainer.ThreadLocalManager());

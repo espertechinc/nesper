@@ -36,7 +36,7 @@ namespace com.espertech.esper.view
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _streamOne = new SupportStreamImpl(typeof(SupportBean), 1);
             _streamTwo = new SupportStreamImpl(typeof(SupportBean_A), 1);
     

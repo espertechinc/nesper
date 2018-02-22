@@ -26,7 +26,7 @@ namespace com.espertech.esper.epl.core
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _engineImportService = SupportEngineImportServiceFactory.Make(_container);
         }
     

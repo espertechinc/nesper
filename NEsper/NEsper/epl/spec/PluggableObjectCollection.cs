@@ -152,7 +152,6 @@ namespace com.espertech.esper.epl.spec
             Object optionalCustomConfig,
             EngineImportService engineImportService)
         {
-
             if (factoryClassName == null)
             {
                 throw new ConfigurationException("Factory class name has not been supplied for object '" + name + "'");

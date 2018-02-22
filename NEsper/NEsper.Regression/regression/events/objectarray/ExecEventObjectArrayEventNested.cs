@@ -44,10 +44,10 @@ namespace com.espertech.esper.regression.events.objectarray
                 epService.EPAdministrator.Configuration.AddEventType("ABC", new string[]{"p0"}, new Type[]{typeof(long)});
                 Assert.Fail();
             } catch (ConfigurationException ex) {
-                Assert.AreEqual("Event type named 'ABC' has already been declared with differing column name or type information: Type by name 'ABC' in property 'p0' expected class java.lang.int? but receives class java.lang.long", ex.Message);
+                Assert.AreEqual("Event type named 'ABC' has already been declared with differing column name or type information: Type by name 'ABC' in property 'p0' expected class " + Name.Of<int>() + " but receives class java.lang.long", ex.Message);
             }
     
-            TryInvalid(epService, new string[]{"a"}, new object[]{new SupportBean()}, "Nestable type configuration encountered an unexpected property type of 'SupportBean' for property 'a', expected java.lang.Type or java.util.Map or the name of a previously-declared Map or ObjectArray type");
+            TryInvalid(epService, new string[]{"a"}, new object[]{new SupportBean()}, "Nestable type configuration encountered an unexpected property type of 'SupportBean' for property 'a', expected Type or Map or the name of a previously-declared Map or ObjectArray type");
         }
     
         private void RunAssertionArrayProperty(EPServiceProvider epService) {

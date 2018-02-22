@@ -173,7 +173,7 @@ namespace com.espertech.esper.regression.events.render
         private void RunAssertionSQLDate(EPServiceProvider epService) {
             // ESPER-469
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            EPStatement statement = epService.EPAdministrator.CreateEPL("select Java.sql.Date.ValueOf(\"2010-01-31\") as mySqlDate from SupportBean");
+            EPStatement statement = epService.EPAdministrator.CreateEPL("select System.DateTime.Parse(\"2010-01-31\") as mySqlDate from SupportBean");
             epService.EPRuntime.SendEvent(new SupportBean());
     
             EventBean theEvent = statement.First();

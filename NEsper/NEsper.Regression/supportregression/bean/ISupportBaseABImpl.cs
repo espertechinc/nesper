@@ -13,7 +13,7 @@ namespace com.espertech.esper.supportregression.bean
 {
 	public class ISupportBaseABImpl : ISupportBaseAB
 	{
-		virtual public String BaseAB
+		public virtual String BaseAB
 		{
             get { return valueBaseAB; }
 		}

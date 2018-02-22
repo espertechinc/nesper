@@ -145,7 +145,7 @@ namespace com.espertech.esper.regression.pattern
     
             string stmt =
                     "select * from pattern [" +
-                            " every a=A -> (timer:Interval(10 seconds) and not (B(id=a.id) or C(id=a.id)))" +
+                            " every a=A -> (timer:interval(10 seconds) and not (B(id=a.id) or C(id=a.id)))" +
                             "] ";
     
             var listener = new SupportUpdateListener();
@@ -230,7 +230,7 @@ namespace com.espertech.esper.regression.pattern
                             "tagMayBeBroken.mac, " +
                             "tagMayBeBroken.zoneID " +
                             "from pattern [" +
-                            "every tagMayBeBroken=LR -> (timer:Interval(10 sec) and not LR(mac=tagMayBeBroken.mac))" +
+                            "every tagMayBeBroken=LR -> (timer:interval(10 sec) and not LR(mac=tagMayBeBroken.mac))" +
                             "]";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
@@ -340,7 +340,7 @@ namespace com.espertech.esper.regression.pattern
     
         private void RunAssertionFollowedNotEvery(EPServiceProvider epService) {
             string expression = "select * from pattern [every A=" + typeof(SupportBean).FullName +
-                    " -> (timer:Interval(1 seconds) and not " + typeof(SupportBean_A).Name + ")]";
+                    " -> (timer:interval(1 seconds) and not " + typeof(SupportBean_A).Name + ")]";
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
@@ -427,9 +427,9 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
             string pattern = "every s=SupportBean(theString='E') -> " +
-                    "(timer:Interval(10) and not SupportBean(theString='C1'))" +
+                    "(timer:interval(10) and not SupportBean(theString='C1'))" +
                     "or" +
-                    "(SupportBean(theString='C2') and not timer:Interval(10))";
+                    "(SupportBean(theString='C2') and not timer:interval(10))";
             EPStatement statement = epService.EPAdministrator.CreatePattern(pattern);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;

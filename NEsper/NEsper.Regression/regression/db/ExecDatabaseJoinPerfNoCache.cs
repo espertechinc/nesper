@@ -110,7 +110,7 @@ namespace com.espertech.esper.regression.db
             epServiceRetained.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
             var stmtText = "select istream myvarchar from " +
-                    typeof(SupportBean_S0).Name + "#Time(1 sec) as s0," +
+                    typeof(SupportBean_S0).Name + "#time(1 sec) as s0," +
                     " sql:MyDB ['select myvarchar from mytesttable where ${id} = mytesttable.mybigint'] as s1";
     
             var statement = epServiceRetained.EPAdministrator.CreateEPL(stmtText);

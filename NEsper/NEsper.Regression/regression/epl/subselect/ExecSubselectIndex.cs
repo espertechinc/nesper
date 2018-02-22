@@ -127,7 +127,7 @@ namespace com.espertech.esper.regression.epl.subselect
             // test std:firstunique
             SupportQueryPlanIndexHook.Reset();
             string eplFirstUnique = INDEX_CALLBACK_HOOK + "select id as c0, " +
-                    "(select intPrimitive from SupportBean#Firstunique(theString) where theString = s0.p00) as c1 " +
+                    "(select intPrimitive from SupportBean#firstunique(theString) where theString = s0.p00) as c1 " +
                     "from S0 as s0";
             EPStatement stmtFirstUnique = epService.EPAdministrator.CreateEPL(eplFirstUnique);
             stmtFirstUnique.Events += listener.Update;
@@ -150,7 +150,7 @@ namespace com.espertech.esper.regression.epl.subselect
             // test intersection std:firstunique
             SupportQueryPlanIndexHook.Reset();
             string eplIntersection = INDEX_CALLBACK_HOOK + "select id as c0, " +
-                    "(select intPrimitive from SupportBean#Time(1)#unique(theString) where theString = s0.p00) as c1 " +
+                    "(select intPrimitive from SupportBean#time(1)#unique(theString) where theString = s0.p00) as c1 " +
                     "from S0 as s0";
             EPStatement stmtIntersection = epService.EPAdministrator.CreateEPL(eplIntersection);
             stmtIntersection.Events += listener.Update;
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regression.epl.subselect
             // test grouped unique
             SupportQueryPlanIndexHook.Reset();
             string eplGrouped = INDEX_CALLBACK_HOOK + "select id as c0, " +
-                    "(select longPrimitive from SupportBean#Groupwin(theString)#unique(intPrimitive) where theString = s0.p00 and intPrimitive = s0.id) as c1 " +
+                    "(select longPrimitive from SupportBean#groupwin(theString)#unique(intPrimitive) where theString = s0.p00 and intPrimitive = s0.id) as c1 " +
                     "from S0 as s0";
             EPStatement stmtGrouped = epService.EPAdministrator.CreateEPL(eplGrouped);
             stmtGrouped.Events += listener.Update;

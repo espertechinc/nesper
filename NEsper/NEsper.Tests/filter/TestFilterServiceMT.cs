@@ -27,7 +27,7 @@ namespace com.espertech.esper.filter
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
         }
 
         [Test]

@@ -6,12 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
@@ -48,30 +48,29 @@ namespace com.espertech.esper.client
         /// Returns the default EPServiceProvider. The URI value for the service returned is "default".
         /// </summary>
         /// <returns>default instance of the service.</returns>
-        public static EPServiceProvider GetDefaultProvider(IContainer serviceProvider)
+        public static EPServiceProvider GetDefaultProvider(IContainer container)
         {
             return GetProvider(
-                serviceProvider,
-                EPServiceProviderConstants.DEFAULT_ENGINE_URI, 
-                new Configuration(
-                    serviceProvider.Resolve<IResourceManager>()));
+                container,
+                EPServiceProviderConstants.DEFAULT_ENGINE_URI,
+                new Configuration(container));
         }
 
         /// <summary>
         /// Returns the default EPServiceProvider. The URI value for the service returned is "default".
         /// </summary>
-        /// <param name="serviceProvider">The service provider.</param>
+        /// <param name="container">The service provider.</param>
         /// <param name="configuration">is the configuration for the service</param>
         /// <returns>
         /// default instance of the service.
         /// </returns>
         /// <exception cref="ConfigurationException">to indicate a configuration problem</exception>
         public static EPServiceProvider GetDefaultProvider(
-            IContainer serviceProvider,
+            IContainer container,
             Configuration configuration)
         {
             return GetProvider(
-                serviceProvider,
+                container,
                 EPServiceProviderConstants.DEFAULT_ENGINE_URI, 
                 configuration);
         }
@@ -100,8 +99,7 @@ namespace com.espertech.esper.client
             IContainer container, 
             string providerURI)
         {
-            return GetProvider(
-                container, providerURI, new Configuration(container.Resolve<IResourceManager>()));
+            return GetProvider(container, providerURI, new Configuration(container));
         }
 
         public static EPServiceProvider GetProvider(
@@ -193,15 +191,8 @@ namespace com.espertech.esper.client
             Configuration configuration, 
             string providerURINonNull)
         {
-            return container.Resolve<EPServiceProviderSPI>(
-                new {
-                    configuration,
-                    engineURI = providerURINonNull,
-                    runtimes = Runtimes
-                });
-
-//            return new EPServiceProviderImpl(
-//                serviceProvider, configuration, providerURINonNull, Runtimes);
+            return new EPServiceProviderImpl(
+                container, configuration, providerURINonNull, Runtimes);
         }
 
         /// <summary>

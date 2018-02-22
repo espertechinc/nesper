@@ -37,8 +37,8 @@ namespace com.espertech.esper.regression.resultset.querytype
                             " max(high.measurement) as highMeasurement, max(high.confidence) as confidenceOfHigh, max(high.device) as deviceOfHigh\n" +
                             ",min(low.measurement) as lowMeasurement, min(low.confidence) as confidenceOfLow, min(low.device) as deviceOfLow\n" +
                             "FROM\n" +
-                            " Sensor#Groupwin(type)#Time(1 hour)#unique(device)#Sort(1, measurement desc) as high " +
-                            ",Sensor#Groupwin(type)#Time(1 hour)#unique(device)#Sort(1, measurement asc) as low ";
+                            " Sensor#groupwin(type)#time(1 hour)#unique(device)#sort(1, measurement desc) as high " +
+                            ",Sensor#groupwin(type)#time(1 hour)#unique(device)#sort(1, measurement asc) as low ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtString);
             Log.Info(stmtString);

@@ -183,25 +183,18 @@ namespace com.espertech.esper.client
 
         [NonSerialized] private IDictionary<string, Object> _transientConfiguration;
 
-        private IResourceManager _resourceManager;
+        [NonSerialized] private IContainer _container;
 
         /// <summary>
         /// Constructs an empty configuration. The auto import values
         /// are set by default to System, System.Collections and
         /// System.Text.
         /// </summary>
-        public Configuration(IResourceManager resourceManager)
-        {
-            _resourceManager = resourceManager;
-            Reset();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Configuration"/> class.
-        /// </summary>
         /// <param name="container">The container.</param>
-        public Configuration(IContainer container) : this(container.Resolve<IResourceManager>())
+        public Configuration(IContainer container)
         {
+            _container = container;
+            Reset();
         }
 
         /// <summary>
@@ -251,8 +244,8 @@ namespace com.espertech.esper.client
         {
             String stripped = resource.StartsWith("/", StringComparison.CurrentCultureIgnoreCase)
                 ? resource.Substring(1) : resource;
-            Stream stream = _resourceManager.GetResourceAsStream(resource) ??
-                            _resourceManager.GetResourceAsStream(stripped);
+            Stream stream = ResourceManager.GetResourceAsStream(resource) ??
+                            ResourceManager.GetResourceAsStream(stripped);
             if (stream == null)
             {
                 throw new EPException(resource + " not found");
@@ -260,10 +253,7 @@ namespace com.espertech.esper.client
             return stream;
         }
 
-        public string EPServicesContextFactoryClassName
-        {
-            get { return _epServicesContextFactoryClassName; }
-        }
+        public string EPServicesContextFactoryClassName => _epServicesContextFactoryClassName;
 
         /// <summary>
         /// Sets the class name of the services context factory class to use.
@@ -347,9 +337,16 @@ namespace com.espertech.esper.client
         /// <value>map of transients</value>
         public IDictionary<string, object> TransientConfiguration
         {
-            get { return _transientConfiguration; }
-            set { this._transientConfiguration = value; }
+            get => _transientConfiguration;
+            set => _transientConfiguration = value;
         }
+
+        public IContainer Container {
+            get => _container;
+            set => _container = value;
+        }
+
+        public IResourceManager ResourceManager => _container.ResourceManager();
 
         /// <summary>
         /// Add single-row function with configurations.
@@ -794,115 +791,49 @@ namespace com.espertech.esper.client
             _methodInvocationReferences.Put(clazz.Name, methodInvocationConfig);
         }
 
-        public IDictionary<string, string> EventTypeNames
-        {
-            get { return _eventClasses; }
-        }
+        public IDictionary<string, string> EventTypeNames => _eventClasses;
 
-        public IDictionary<string, Properties> EventTypesMapEvents
-        {
-            get { return _mapNames; }
-        }
+        public IDictionary<string, Properties> EventTypesMapEvents => _mapNames;
 
-        public IDictionary<string, IDictionary<string, object>> EventTypesNestableMapEvents
-        {
-            get { return _nestableMapNames; }
-        }
+        public IDictionary<string, IDictionary<string, object>> EventTypesNestableMapEvents => _nestableMapNames;
 
-        public IDictionary<string, IDictionary<string, object>> EventTypesNestableObjectArrayEvents
-        {
-            get { return _nestableObjectArrayNames; }
-        }
+        public IDictionary<string, IDictionary<string, object>> EventTypesNestableObjectArrayEvents => _nestableObjectArrayNames;
 
-        public IDictionary<string, ConfigurationEventTypeXMLDOM> EventTypesXMLDOM
-        {
-            get { return _eventTypesXmldom; }
-        }
+        public IDictionary<string, ConfigurationEventTypeXMLDOM> EventTypesXMLDOM => _eventTypesXmldom;
 
-        public IDictionary<string, ConfigurationEventTypeAvro> EventTypesAvro
-        {
-            get { return _eventTypesAvro; }
-        }
+        public IDictionary<string, ConfigurationEventTypeAvro> EventTypesAvro => _eventTypesAvro;
 
-        public IDictionary<string, ConfigurationEventTypeLegacy> EventTypesLegacy
-        {
-            get { return _eventTypesLegacy; }
-        }
+        public IDictionary<string, ConfigurationEventTypeLegacy> EventTypesLegacy => _eventTypesLegacy;
 
-        public IList<AutoImportDesc> Imports
-        {
-            get { return _imports; }
-        }
+        public IList<AutoImportDesc> Imports => _imports;
 
-        public IList<AutoImportDesc> AnnotationImports
-        {
-            get { return _annotationImports; }
-        }
+        public IList<AutoImportDesc> AnnotationImports => _annotationImports;
 
-        public IDictionary<string, ConfigurationDBRef> DatabaseReferences
-        {
-            get { return _databaseReferences; }
-        }
+        public IDictionary<string, ConfigurationDBRef> DatabaseReferences => _databaseReferences;
 
-        public IList<ConfigurationPlugInView> PlugInViews
-        {
-            get { return _plugInViews; }
-        }
+        public IList<ConfigurationPlugInView> PlugInViews => _plugInViews;
 
-        public IDictionary<string, ConfigurationEventTypeObjectArray> ObjectArrayTypeConfigurations
-        {
-            get { return _objectArrayTypeConfigurations; }
-        }
+        public IDictionary<string, ConfigurationEventTypeObjectArray> ObjectArrayTypeConfigurations => _objectArrayTypeConfigurations;
 
-        public IList<ConfigurationPlugInVirtualDataWindow> PlugInVirtualDataWindows
-        {
-            get { return _plugInVirtualDataWindows; }
-        }
+        public IList<ConfigurationPlugInVirtualDataWindow> PlugInVirtualDataWindows => _plugInVirtualDataWindows;
 
-        public IList<ConfigurationPluginLoader> PluginLoaders
-        {
-            get { return _pluginLoaders; }
-        }
+        public IList<ConfigurationPluginLoader> PluginLoaders => _pluginLoaders;
 
-        public IList<ConfigurationPlugInAggregationFunction> PlugInAggregationFunctions
-        {
-            get { return _plugInAggregationFunctions; }
-        }
+        public IList<ConfigurationPlugInAggregationFunction> PlugInAggregationFunctions => _plugInAggregationFunctions;
 
-        public IList<ConfigurationPlugInAggregationMultiFunction> PlugInAggregationMultiFunctions
-        {
-            get { return _plugInAggregationMultiFunctions; }
-        }
+        public IList<ConfigurationPlugInAggregationMultiFunction> PlugInAggregationMultiFunctions => _plugInAggregationMultiFunctions;
 
-        public IList<ConfigurationPlugInSingleRowFunction> PlugInSingleRowFunctions
-        {
-            get { return _plugInSingleRowFunctions; }
-        }
+        public IList<ConfigurationPlugInSingleRowFunction> PlugInSingleRowFunctions => _plugInSingleRowFunctions;
 
-        public IList<ConfigurationPlugInPatternObject> PlugInPatternObjects
-        {
-            get { return _plugInPatternObjects; }
-        }
+        public IList<ConfigurationPlugInPatternObject> PlugInPatternObjects => _plugInPatternObjects;
 
-        public IDictionary<string, ConfigurationVariable> Variables
-        {
-            get { return _variables; }
-        }
+        public IDictionary<string, ConfigurationVariable> Variables => _variables;
 
-        public IDictionary<string, ConfigurationMethodRef> MethodInvocationReferences
-        {
-            get { return _methodInvocationReferences; }
-        }
+        public IDictionary<string, ConfigurationMethodRef> MethodInvocationReferences => _methodInvocationReferences;
 
-        public IDictionary<string, ConfigurationRevisionEventType> RevisionEventTypes
-        {
-            get { return _revisionEventTypes; }
-        }
+        public IDictionary<string, ConfigurationRevisionEventType> RevisionEventTypes => _revisionEventTypes;
 
-        public IDictionary<string, ConfigurationEventTypeMap> MapTypeConfigurations
-        {
-            get { return _mapTypeConfigurations; }
-        }
+        public IDictionary<string, ConfigurationEventTypeMap> MapTypeConfigurations => _mapTypeConfigurations;
 
         /// <summary>
         /// Add a plugin loader (f.e. an input/output adapter loader).
@@ -1124,39 +1055,24 @@ namespace com.espertech.esper.client
 
         public IList<Uri> PlugInEventTypeResolutionURIs
         {
-            get { return _plugInEventTypeResolutionUris; }
-            set { _plugInEventTypeResolutionUris = value; }
+            get => _plugInEventTypeResolutionUris;
+            set => _plugInEventTypeResolutionUris = value;
         }
 
-        public IDictionary<Uri, ConfigurationPlugInEventRepresentation> PlugInEventRepresentation
-        {
-            get { return _plugInEventRepresentation; }
-        }
+        public IDictionary<Uri, ConfigurationPlugInEventRepresentation> PlugInEventRepresentation => _plugInEventRepresentation;
 
-        public IDictionary<string, ConfigurationPlugInEventType> PlugInEventTypes
-        {
-            get { return _plugInEventTypes; }
-        }
+        public IDictionary<string, ConfigurationPlugInEventType> PlugInEventTypes => _plugInEventTypes;
 
-        public ISet<string> EventTypeAutoNamePackages
-        {
-            get { return _eventTypeAutoNamePackages; }
-        }
+        public ISet<string> EventTypeAutoNamePackages => _eventTypeAutoNamePackages;
 
-        public ConfigurationEngineDefaults EngineDefaults
-        {
-            get { return _engineDefaults; }
-        }
+        public ConfigurationEngineDefaults EngineDefaults => _engineDefaults;
 
         public void AddVariantStream(string varianteventTypeName, ConfigurationVariantStream variantStreamConfig)
         {
             _variantStreams.Put(varianteventTypeName, variantStreamConfig);
         }
 
-        public IDictionary<string, ConfigurationVariantStream> VariantStreams
-        {
-            get { return _variantStreams; }
-        }
+        public IDictionary<string, ConfigurationVariantStream> VariantStreams => _variantStreams;
 
         public void UpdateMapEventType(string mapeventTypeName, IDictionary<string, Object> typeMap)
         {
@@ -1206,10 +1122,7 @@ namespace com.espertech.esper.client
             throw new UnsupportedOperationException("Obtaining an event type by name is only available at runtime");
         }
 
-        public ICollection<EventType> EventTypes
-        {
-            get { throw new UnsupportedOperationException("Obtaining event types is only available at runtime"); }
-        }
+        public ICollection<EventType> EventTypes => throw new UnsupportedOperationException("Obtaining event types is only available at runtime");
 
         public void SetMetricsReportingEnabled()
         {
@@ -1223,12 +1136,12 @@ namespace com.espertech.esper.client
 
         public long PatternMaxSubexpressions
         {
-            set { EngineDefaults.Patterns.MaxSubexpressions = value; }
+            set => EngineDefaults.Patterns.MaxSubexpressions = value;
         }
 
         public long? MatchRecognizeMaxStates
         {
-            set { EngineDefaults.MatchRecognize.MaxStates = value; }
+            set => EngineDefaults.MatchRecognize.MaxStates = value;
         }
 
         /// <summary>
@@ -1264,8 +1177,9 @@ namespace com.espertech.esper.client
             {
                 Log.Debug("Configuring from resource: " + resource);
             }
-            Stream stream = GetConfigurationInputStream(resource);
-            ConfigurationParser.DoConfigure(this, stream, resource);
+            var stream = GetConfigurationInputStream(resource);
+            _container.Resolve<IConfigurationParser>()
+                .DoConfigure(this, stream, resource);
             return this;
         }
 
@@ -1285,7 +1199,8 @@ namespace com.espertech.esper.client
             }
             try
             {
-                ConfigurationParser.DoConfigure(this, WebRequest.Create(url).GetResponse().GetResponseStream(), url.ToString());
+                _container.Resolve<IConfigurationParser>()
+                    .DoConfigure(this, WebRequest.Create(url).GetResponse().GetResponseStream(), url.ToString());
                 return this;
             }
             catch (IOException ioe)
@@ -1310,9 +1225,9 @@ namespace com.espertech.esper.client
             }
             try
             {
-                using (var stream = new FileStream(configFile.FullName, FileMode.Open, FileAccess.Read))
-                {
-                    ConfigurationParser.DoConfigure(this, stream, configFile.ToString());
+                using (var stream = new FileStream(configFile.FullName, FileMode.Open, FileAccess.Read)) {
+                    _container.Resolve<IConfigurationParser>()
+                        .DoConfigure(this, stream, configFile.ToString());
                 }
             }
             catch (FileNotFoundException fnfe)
@@ -1359,15 +1274,18 @@ namespace com.espertech.esper.client
         /// <tt>esper-configuration-(version).xsd</tt>.
         /// </summary>
         /// <param name="document">an XML document from which you wish to load the configuration</param>
+        /// <returns>
+        /// A configuration configured via the <tt>Document</tt>
+        /// </returns>
         /// <exception cref="EPException">if there is problem in accessing the document.</exception>
-        /// <returns>A configuration configured via the <tt>Document</tt></returns>
         public Configuration Configure(XmlDocument document)
         {
             if (Log.IsDebugEnabled)
             {
                 Log.Debug("configuring from XML document");
             }
-            ConfigurationParser.DoConfigure(this, document);
+
+            _container.Resolve<IConfigurationParser>().DoConfigure(this, document);
             return this;
         }
 

@@ -130,7 +130,7 @@ namespace com.espertech.esper.regression.events.map
                 epService.EPRuntime.SendEvent(new object[0], "MyMap");
                 Assert.Fail();
             } catch (EPException ex) {
-                Assert.AreEqual("Event type named 'MyMap' has not been defined or is not a Object-array event type, the name 'MyMap' refers to a java.util.Map event type", ex.Message);
+                Assert.AreEqual("Event type named 'MyMap' has not been defined or is not a Object-array event type, the name 'MyMap' refers to a Map event type", ex.Message);
             }
             epService.EPAdministrator.DestroyAllStatements();
         }

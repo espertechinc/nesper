@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionSumOneView(EPServiceProvider epService) {
             string epl = "select irstream sum(longBoxed) as mySum " +
-                    "from " + typeof(SupportBean).FullName + "#Time(10 sec)";
+                    "from " + typeof(SupportBean).FullName + "#time(10 sec)";
     
             SendTimerEvent(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -53,7 +53,7 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionSumJoin(EPServiceProvider epService) {
             string epl = "select irstream sum(longBoxed) as mySum " +
                     "from " + typeof(SupportBeanString).FullName + "#keepall as one, " +
-                    typeof(SupportBean).FullName + "#Time(10 sec) as two " +
+                    typeof(SupportBean).FullName + "#time(10 sec) as two " +
                     "where one.theString = two.theString";
     
             SendTimerEvent(epService, 0);
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionAvgPerSym(EPServiceProvider epService) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
-                    "select irstream avg(price) as avgp, sym from " + typeof(SupportPriceEvent).FullName + "#Groupwin(sym)#length(2)"
+                    "select irstream avg(price) as avgp, sym from " + typeof(SupportPriceEvent).FullName + "#groupwin(sym)#length(2)"
             );
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -145,7 +145,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionSelectStarStdGroupBy(EPServiceProvider epService) {
             string stmtText = "select istream * from " + typeof(SupportMarketDataBean).FullName
-                    + "#Groupwin(symbol)#length(2)";
+                    + "#groupwin(symbol)#length(2)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionSelectExprStdGroupBy(EPServiceProvider epService) {
             string stmtText = "select istream price from " + typeof(SupportMarketDataBean).FullName
-                    + "#Groupwin(symbol)#length(2)";
+                    + "#groupwin(symbol)#length(2)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
@@ -174,7 +174,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionSelectAvgExprStdGroupBy(EPServiceProvider epService) {
             string stmtText = "select istream avg(price) as aprice from " + typeof(SupportMarketDataBean).FullName
-                    + "#Groupwin(symbol)#length(2)";
+                    + "#groupwin(symbol)#length(2)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
@@ -191,7 +191,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionSelectAvgStdGroupByUni(EPServiceProvider epService) {
             string stmtText = "select istream average as aprice from " + typeof(SupportMarketDataBean).FullName
-                    + "#Groupwin(symbol)#length(2)#Uni(price)";
+                    + "#groupwin(symbol)#length(2)#uni(price)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;

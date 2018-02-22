@@ -578,7 +578,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
                 "Named window or table 'DUMMY' has not been declared [");
 
             SupportMessageAssertUtil.TryInvalid(
-                epService, "on " + typeof(SupportBean_A).FullName + " select Prev(1, theString) from MyInfraInvalid",
+                epService, "on " + typeof(SupportBean_A).FullName + " select prev(1, theString) from MyInfraInvalid",
                 "Error starting statement: Failed to validate select-clause expression 'Prev(1,theString)': Previous function cannot be used in this context [");
 
             epService.EPAdministrator.DestroyAllStatements();
@@ -594,11 +594,11 @@ namespace com.espertech.esper.regression.nwtable.infra {
                 : "create table MyInfraPTS as (theString string)";
             epService.EPAdministrator.CreateEPL(stmtTextCreate);
 
-            var stmtCount = "on pattern[every timer:Interval(10 sec)] select count(eve), eve from MyInfraPTS as eve";
+            var stmtCount = "on pattern[every timer:interval(10 sec)] select count(eve), eve from MyInfraPTS as eve";
             epService.EPAdministrator.CreateEPL(stmtCount);
 
             var stmtTextOnSelect =
-                "on pattern [ every timer:Interval(10 sec)] select theString from MyInfraPTS having count(theString) > 0";
+                "on pattern [ every timer:interval(10 sec)] select theString from MyInfraPTS having count(theString) > 0";
             var stmt = epService.EPAdministrator.CreateEPL(stmtTextOnSelect);
             var listenerSelect = new SupportUpdateListener();
             stmt.Events += listenerSelect.Update;

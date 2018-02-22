@@ -65,7 +65,7 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionAggregatedSelectUnaggregatedHaving(EPServiceProvider epService) {
             // ESPER-571
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            string epl = "select max(intPrimitive) as val from SupportBean#Time(1) having max(intPrimitive) > intBoxed";
+            string epl = "select max(intPrimitive) as val from SupportBean#time(1) having max(intPrimitive) > intBoxed";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

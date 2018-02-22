@@ -40,7 +40,7 @@ namespace com.espertech.esper.core.service
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             MetricReportingPath.IsMetricsEnabled = false;
             _listenerOne = new SupportUpdateListener();

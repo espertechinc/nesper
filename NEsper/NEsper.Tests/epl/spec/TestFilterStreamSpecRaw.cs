@@ -34,7 +34,7 @@ namespace com.espertech.esper.epl.spec
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
         }
 
         [Test]

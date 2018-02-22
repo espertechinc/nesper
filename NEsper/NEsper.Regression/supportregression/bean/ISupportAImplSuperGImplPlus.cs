@@ -26,11 +26,11 @@ namespace com.espertech.esper.supportregression.bean
 		{
             get { return valueBaseAB; }
 		}
-		virtual public String B
+		public virtual String B
 		{
             get { return valueB; }
 		}
-		virtual public String C
+		public virtual String C
 		{
             get { return valueC; }
 		}

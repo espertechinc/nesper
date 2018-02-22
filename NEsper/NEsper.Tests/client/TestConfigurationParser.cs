@@ -37,7 +37,7 @@ namespace com.espertech.esper.client
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _config = new Configuration(_container);
         }
     
@@ -48,7 +48,8 @@ namespace com.espertech.esper.client
             var client = new WebClient();
             using (var stream = client.OpenRead(uri))
             {
-                ConfigurationParser.DoConfigure(_config, stream, uri.ToString());
+                _container.Resolve<IConfigurationParser>()
+                    .DoConfigure(_config, stream, uri.ToString());
                 AssertFileConfig(_config);
             }
         }
@@ -503,13 +504,12 @@ namespace com.espertech.esper.client
         public void TestRegressionFileConfig() 
         {
             var config = new Configuration(_container);
-
             var uri = _container.Resolve<IResourceManager>().ResolveResourceURL(TestConfiguration.ESPER_TEST_CONFIG);
             var client = new WebClient();
             using (var stream = client.OpenRead(uri))
             {
-                ConfigurationParser.DoConfigure(_config, stream, uri.ToString());
-                AssertFileConfig(_config);
+                _container.Resolve<IConfigurationParser>().DoConfigure(config, stream, uri.ToString());
+                AssertFileConfig(config);
             }
         }
 

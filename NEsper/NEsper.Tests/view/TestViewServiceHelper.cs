@@ -46,7 +46,7 @@ namespace com.espertech.esper.view
 	    [SetUp]
 	    public void SetUp()
 	    {
-	        _container = SupportContainer.Instance;
+	        _container = SupportContainer.Reset();
 	        top = new SupportSchemaNeutralView("top");
 
 	        child_1 = new SupportSchemaNeutralView("1");

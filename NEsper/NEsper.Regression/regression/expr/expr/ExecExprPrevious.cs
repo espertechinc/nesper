@@ -55,15 +55,15 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionExprNameAndTypeAndSODA(EPServiceProvider epService) {
             string epl = "select " +
-                    "Prev(1,intPrimitive), " +
-                    "Prev(1,sb), " +
-                    "Prevtail(1,intPrimitive), " +
-                    "Prevtail(1,sb), " +
-                    "Prevwindow(intPrimitive), " +
-                    "Prevwindow(sb), " +
-                    "Prevcount(intPrimitive), " +
-                    "Prevcount(sb) " +
-                    "from SupportBean#Time(1 minutes) as sb";
+                    "prev(1,intPrimitive), " +
+                    "prev(1,sb), " +
+                    "prevtail(1,intPrimitive), " +
+                    "prevtail(1,sb), " +
+                    "prevwindow(intPrimitive), " +
+                    "prevwindow(sb), " +
+                    "prevcount(intPrimitive), " +
+                    "prevcount(sb) " +
+                    "from SupportBean#time(1 minutes) as sb";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -73,14 +73,14 @@ namespace com.espertech.esper.regression.expr.expr
             EventBean resultBean = listener.GetNewDataListFlattened()[1];
     
             var rows = new object[][]{
-                new object[] {"Prev(1,intPrimitive)", typeof(int?)},
-                new object[] {"Prev(1,sb)", typeof(SupportBean)},
-                new object[] {"Prevtail(1,intPrimitive)", typeof(int?)},
-                new object[] {"Prevtail(1,sb)", typeof(SupportBean)},
-                new object[] {"Prevwindow(intPrimitive)", typeof(int?[])},
-                new object[] {"Prevwindow(sb)", typeof(SupportBean[])},
-                new object[] {"Prevcount(intPrimitive)", typeof(long)},
-                new object[] {"Prevcount(sb)", typeof(long)}
+                new object[] {"prev(1,intPrimitive)", typeof(int?)},
+                new object[] {"prev(1,sb)", typeof(SupportBean)},
+                new object[] {"prevtail(1,intPrimitive)", typeof(int?)},
+                new object[] {"prevtail(1,sb)", typeof(SupportBean)},
+                new object[] {"prevwindow(intPrimitive)", typeof(int?[])},
+                new object[] {"prevwindow(sb)", typeof(SupportBean[])},
+                new object[] {"prevcount(intPrimitive)", typeof(long)},
+                new object[] {"prevcount(sb)", typeof(long)}
             };
             for (int i = 0; i < rows.Length; i++) {
                 string message = "For prop '" + rows[i][0] + "'";
@@ -101,10 +101,10 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPrevStream(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType("S0", typeof(SupportBean_S0));
-            string text = "select Prev(1, s0) as result, " +
-                    "Prevtail(0, s0) as tailresult," +
-                    "Prevwindow(s0) as windowresult," +
-                    "Prevcount(s0) as countresult " +
+            string text = "select prev(1, s0) as result, " +
+                    "prevtail(0, s0) as tailresult," +
+                    "prevwindow(s0) as windowresult," +
+                    "prevcount(s0) as countresult " +
                     "from S0#length(2) as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPrevCountStarWithStaticMethod(EPServiceProvider epService) {
             string text = "select irstream count(*) as total, " +
-                    "Prev(" + typeof(ExecExprPrevious).Name + ".IntToLong(count(*)) - 1, price) as firstPrice from " + typeof(SupportMarketDataBean).FullName + "#Time(60)";
+                    "prev(" + typeof(ExecExprPrevious).Name + ".IntToLong(count(*)) - 1, price) as firstPrice from " + typeof(SupportMarketDataBean).FullName + "#time(60)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPrevCountStar(EPServiceProvider epService) {
             string text = "select irstream count(*) as total, " +
-                    "Prev(count(*) - 1, price) as firstPrice from " + typeof(SupportMarketDataBean).FullName + "#Time(60)";
+                    "prev(count(*) - 1, price) as firstPrice from " + typeof(SupportMarketDataBean).FullName + "#time(60)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -159,11 +159,11 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionPerGroupTwoCriteria(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType("MDBean", typeof(SupportMarketDataBean));
             string epl = "select symbol, feed, " +
-                    "Prev(1, price) as prevPrice, " +
-                    "Prevtail(price) as tailPrice, " +
-                    "Prevcount(price) as countPrice, " +
-                    "Prevwindow(price) as windowPrice " +
-                    "from MDBean#Groupwin(symbol, feed)#length(2)";
+                    "prev(1, price) as prevPrice, " +
+                    "prevtail(price) as tailPrice, " +
+                    "prevcount(price) as countPrice, " +
+                    "prevwindow(price) as windowPrice " +
+                    "from MDBean#groupwin(symbol, feed)#length(2)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             // test length window overflow
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            epService.EPAdministrator.CreateEPL("select Prev(5,intPrimitive) as val0 from SupportBean#Groupwin(theString)#length(5)").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select prev(5,intPrimitive) as val0 from SupportBean#groupwin(theString)#length(5)").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 11));
             Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("val0"));
@@ -241,13 +241,13 @@ namespace com.espertech.esper.regression.expr.expr
             // descending sort
             string epl = "select " +
                     "symbol, " +
-                    "Prev(1, price) as prevPrice, " +
-                    "Prev(2, price) as prevPrevPrice, " +
-                    "Prevtail(0, price) as prevTail0Price, " +
-                    "Prevtail(1, price) as prevTail1Price, " +
-                    "Prevcount(price) as countPrice, " +
-                    "Prevwindow(price) as windowPrice " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Groupwin(symbol)#Sort(10, price asc) ";
+                    "prev(1, price) as prevPrice, " +
+                    "prev(2, price) as prevPrevPrice, " +
+                    "prevtail(0, price) as prevTail0Price, " +
+                    "prevtail(1, price) as prevTail1Price, " +
+                    "prevcount(price) as countPrice, " +
+                    "prevwindow(price) as windowPrice " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#groupwin(symbol)#sort(10, price asc) ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -292,13 +292,13 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionTimeBatchPerGroup(EPServiceProvider epService) {
             string epl = "select " +
                     "symbol, " +
-                    "Prev(1, price) as prevPrice, " +
-                    "Prev(2, price) as prevPrevPrice, " +
-                    "Prevtail(0, price) as prevTail0Price, " +
-                    "Prevtail(1, price) as prevTail1Price, " +
-                    "Prevcount(price) as countPrice, " +
-                    "Prevwindow(price) as windowPrice " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Groupwin(symbol)#Time_batch(1 sec) ";
+                    "prev(1, price) as prevPrice, " +
+                    "prev(2, price) as prevPrevPrice, " +
+                    "prevtail(0, price) as prevTail0Price, " +
+                    "prevtail(1, price) as prevTail1Price, " +
+                    "prevcount(price) as countPrice, " +
+                    "prevwindow(price) as windowPrice " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#groupwin(symbol)#time_batch(1 sec) ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -350,16 +350,16 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionLengthBatchPerGroup(EPServiceProvider epService) {
-            // Also testing the alternative syntax here of "Prev(property)" and "Prev(property, index)" versus "Prev(index, property)"
+            // Also testing the alternative syntax here of "prev(property)" and "prev(property, index)" versus "prev(index, property)"
             string epl = "select irstream " +
                     "symbol, " +
-                    "Prev(price) as prevPrice, " +
-                    "Prev(price, 2) as prevPrevPrice, " +
-                    "Prevtail(price, 0) as prevTail0Price, " +
-                    "Prevtail(price, 1) as prevTail1Price, " +
-                    "Prevcount(price) as countPrice, " +
-                    "Prevwindow(price) as windowPrice " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Groupwin(symbol)#length_batch(3) ";
+                    "prev(price) as prevPrice, " +
+                    "prev(price, 2) as prevPrevPrice, " +
+                    "prevtail(price, 0) as prevTail0Price, " +
+                    "prevtail(price, 1) as prevTail1Price, " +
+                    "prevcount(price) as countPrice, " +
+                    "prevwindow(price) as windowPrice " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#groupwin(symbol)#length_batch(3) ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -428,53 +428,53 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionTimeWindowPerGroup(EPServiceProvider epService) {
             string epl = "select " +
                     "symbol, " +
-                    "Prev(1, price) as prevPrice, " +
-                    "Prev(2, price) as prevPrevPrice, " +
-                    "Prevtail(0, price) as prevTail0Price, " +
-                    "Prevtail(1, price) as prevTail1Price, " +
-                    "Prevcount(price) as countPrice, " +
-                    "Prevwindow(price) as windowPrice " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Groupwin(symbol)#Time(20 sec) ";
+                    "prev(1, price) as prevPrice, " +
+                    "prev(2, price) as prevPrevPrice, " +
+                    "prevtail(0, price) as prevTail0Price, " +
+                    "prevtail(1, price) as prevTail1Price, " +
+                    "prevcount(price) as countPrice, " +
+                    "prevwindow(price) as windowPrice " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#groupwin(symbol)#time(20 sec) ";
             AssertPerGroup(epl, epService);
         }
     
         private void RunAssertionExtTimeWindowPerGroup(EPServiceProvider epService) {
             string epl = "select " +
                     "symbol, " +
-                    "Prev(1, price) as prevPrice, " +
-                    "Prev(2, price) as prevPrevPrice, " +
-                    "Prevtail(0, price) as prevTail0Price, " +
-                    "Prevtail(1, price) as prevTail1Price, " +
-                    "Prevcount(price) as countPrice, " +
-                    "Prevwindow(price) as windowPrice " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Groupwin(symbol)#Ext_timed(volume, 20 sec) ";
+                    "prev(1, price) as prevPrice, " +
+                    "prev(2, price) as prevPrevPrice, " +
+                    "prevtail(0, price) as prevTail0Price, " +
+                    "prevtail(1, price) as prevTail1Price, " +
+                    "prevcount(price) as countPrice, " +
+                    "prevwindow(price) as windowPrice " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#groupwin(symbol)#ext_timed(volume, 20 sec) ";
             AssertPerGroup(epl, epService);
         }
     
         private void RunAssertionLengthWindowPerGroup(EPServiceProvider epService) {
             string epl =
                     "select symbol, " +
-                            "Prev(1, price) as prevPrice, " +
-                            "Prev(2, price) as prevPrevPrice, " +
-                            "Prevtail(price, 0) as prevTail0Price, " +
-                            "Prevtail(price, 1) as prevTail1Price, " +
-                            "Prevcount(price) as countPrice, " +
-                            "Prevwindow(price) as windowPrice " +
-                            "from " + typeof(SupportMarketDataBean).FullName + "#Groupwin(symbol)#length(10) ";
+                            "prev(1, price) as prevPrice, " +
+                            "prev(2, price) as prevPrevPrice, " +
+                            "prevtail(price, 0) as prevTail0Price, " +
+                            "prevtail(price, 1) as prevTail1Price, " +
+                            "prevcount(price) as countPrice, " +
+                            "prevwindow(price) as windowPrice " +
+                            "from " + typeof(SupportMarketDataBean).FullName + "#groupwin(symbol)#length(10) ";
             AssertPerGroup(epl, epService);
         }
     
         private void RunAssertionPreviousTimeWindow(EPServiceProvider epService) {
             string epl = "select irstream symbol as currSymbol, " +
-                    " Prev(2, symbol) as prevSymbol, " +
-                    " Prev(2, price) as prevPrice, " +
-                    " Prevtail(0, symbol) as prevTailSymbol, " +
-                    " Prevtail(0, price) as prevTailPrice, " +
-                    " Prevtail(1, symbol) as prevTail1Symbol, " +
-                    " Prevtail(1, price) as prevTail1Price, " +
-                    " Prevcount(price) as prevCountPrice, " +
-                    " Prevwindow(price) as prevWindowPrice " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Time(1 min) ";
+                    " prev(2, symbol) as prevSymbol, " +
+                    " prev(2, price) as prevPrice, " +
+                    " prevtail(0, symbol) as prevTailSymbol, " +
+                    " prevtail(0, price) as prevTailPrice, " +
+                    " prevtail(1, symbol) as prevTail1Symbol, " +
+                    " prevtail(1, price) as prevTail1Price, " +
+                    " prevcount(price) as prevCountPrice, " +
+                    " prevwindow(price) as prevWindowPrice " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#time(1 min) ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -540,15 +540,15 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPreviousExtTimedWindow(EPServiceProvider epService) {
             string epl = "select irstream symbol as currSymbol, " +
-                    " Prev(2, symbol) as prevSymbol, " +
-                    " Prev(2, price) as prevPrice, " +
-                    " Prevtail(0, symbol) as prevTailSymbol, " +
-                    " Prevtail(0, price) as prevTailPrice, " +
-                    " Prevtail(1, symbol) as prevTail1Symbol, " +
-                    " Prevtail(1, price) as prevTail1Price, " +
-                    " Prevcount(price) as prevCountPrice, " +
-                    " Prevwindow(price) as prevWindowPrice " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Ext_timed(volume, 1 min) ";
+                    " prev(2, symbol) as prevSymbol, " +
+                    " prev(2, price) as prevPrice, " +
+                    " prevtail(0, symbol) as prevTailSymbol, " +
+                    " prevtail(0, price) as prevTailPrice, " +
+                    " prevtail(1, symbol) as prevTail1Symbol, " +
+                    " prevtail(1, price) as prevTail1Price, " +
+                    " prevcount(price) as prevCountPrice, " +
+                    " prevwindow(price) as prevWindowPrice " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#ext_timed(volume, 1 min) ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -593,15 +593,15 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPreviousTimeBatchWindow(EPServiceProvider epService) {
             string epl = "select irstream symbol as currSymbol, " +
-                    " Prev(2, symbol) as prevSymbol, " +
-                    " Prev(2, price) as prevPrice, " +
-                    " Prevtail(0, symbol) as prevTailSymbol, " +
-                    " Prevtail(0, price) as prevTailPrice, " +
-                    " Prevtail(1, symbol) as prevTail1Symbol, " +
-                    " Prevtail(1, price) as prevTail1Price, " +
-                    " Prevcount(price) as prevCountPrice, " +
-                    " Prevwindow(price) as prevWindowPrice " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Time_batch(1 min) ";
+                    " prev(2, symbol) as prevSymbol, " +
+                    " prev(2, price) as prevPrice, " +
+                    " prevtail(0, symbol) as prevTailSymbol, " +
+                    " prevtail(0, price) as prevTailPrice, " +
+                    " prevtail(1, symbol) as prevTail1Symbol, " +
+                    " prevtail(1, price) as prevTail1Price, " +
+                    " prevcount(price) as prevCountPrice, " +
+                    " prevwindow(price) as prevWindowPrice " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#time_batch(1 min) ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -653,16 +653,16 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPreviousTimeBatchWindowJoin(EPServiceProvider epService) {
             string epl = "select theString as currSymbol, " +
-                    " Prev(2, symbol) as prevSymbol, " +
-                    " Prev(1, price) as prevPrice, " +
-                    " Prevtail(0, symbol) as prevTailSymbol, " +
-                    " Prevtail(0, price) as prevTailPrice, " +
-                    " Prevtail(1, symbol) as prevTail1Symbol, " +
-                    " Prevtail(1, price) as prevTail1Price, " +
-                    " Prevcount(price) as prevCountPrice, " +
-                    " Prevwindow(price) as prevWindowPrice " +
+                    " prev(2, symbol) as prevSymbol, " +
+                    " prev(1, price) as prevPrice, " +
+                    " prevtail(0, symbol) as prevTailSymbol, " +
+                    " prevtail(0, price) as prevTailPrice, " +
+                    " prevtail(1, symbol) as prevTail1Symbol, " +
+                    " prevtail(1, price) as prevTail1Price, " +
+                    " prevcount(price) as prevCountPrice, " +
+                    " prevwindow(price) as prevWindowPrice " +
                     "from " + typeof(SupportBean).FullName + "#keepall, " +
-                    typeof(SupportMarketDataBean).Name + "#Time_batch(1 min)";
+                    typeof(SupportMarketDataBean).Name + "#time_batch(1 min)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -703,18 +703,18 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPreviousLengthWindow(EPServiceProvider epService) {
             string epl = "select irstream symbol as currSymbol, " +
-                    "Prev(0, symbol) as prev0Symbol, " +
-                    "Prev(1, symbol) as prev1Symbol, " +
-                    "Prev(2, symbol) as prev2Symbol, " +
-                    "Prev(0, price) as prev0Price, " +
-                    "Prev(1, price) as prev1Price, " +
-                    "Prev(2, price) as prev2Price," +
-                    "Prevtail(0, symbol) as prevTail0Symbol, " +
-                    "Prevtail(0, price) as prevTail0Price, " +
-                    "Prevtail(1, symbol) as prevTail1Symbol, " +
-                    "Prevtail(1, price) as prevTail1Price, " +
-                    "Prevcount(price) as prevCountPrice, " +
-                    "Prevwindow(price) as prevWindowPrice " +
+                    "prev(0, symbol) as prev0Symbol, " +
+                    "prev(1, symbol) as prev1Symbol, " +
+                    "prev(2, symbol) as prev2Symbol, " +
+                    "prev(0, price) as prev0Price, " +
+                    "prev(1, price) as prev1Price, " +
+                    "prev(2, price) as prev2Price," +
+                    "prevtail(0, symbol) as prevTail0Symbol, " +
+                    "prevtail(0, price) as prevTail0Price, " +
+                    "prevtail(1, symbol) as prevTail1Symbol, " +
+                    "prevtail(1, price) as prevTail1Price, " +
+                    "prevcount(price) as prevCountPrice, " +
+                    "prevwindow(price) as prevWindowPrice " +
                     "from " + typeof(SupportMarketDataBean).FullName + "#length(3) ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -742,18 +742,18 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPreviousLengthBatch(EPServiceProvider epService) {
             string epl = "select irstream symbol as currSymbol, " +
-                    "Prev(0, symbol) as prev0Symbol, " +
-                    "Prev(1, symbol) as prev1Symbol, " +
-                    "Prev(2, symbol) as prev2Symbol, " +
-                    "Prev(0, price) as prev0Price, " +
-                    "Prev(1, price) as prev1Price, " +
-                    "Prev(2, price) as prev2Price, " +
-                    "Prevtail(0, symbol) as prevTail0Symbol, " +
-                    "Prevtail(0, price) as prevTail0Price, " +
-                    "Prevtail(1, symbol) as prevTail1Symbol, " +
-                    "Prevtail(1, price) as prevTail1Price, " +
-                    "Prevcount(price) as prevCountPrice, " +
-                    "Prevwindow(price) as prevWindowPrice " +
+                    "prev(0, symbol) as prev0Symbol, " +
+                    "prev(1, symbol) as prev1Symbol, " +
+                    "prev(2, symbol) as prev2Symbol, " +
+                    "prev(0, price) as prev0Price, " +
+                    "prev(1, price) as prev1Price, " +
+                    "prev(2, price) as prev2Price, " +
+                    "prevtail(0, symbol) as prevTail0Symbol, " +
+                    "prevtail(0, price) as prevTail0Price, " +
+                    "prevtail(1, symbol) as prevTail1Symbol, " +
+                    "prevtail(1, price) as prevTail1Price, " +
+                    "prevcount(price) as prevCountPrice, " +
+                    "prevwindow(price) as prevWindowPrice " +
                     "from " + typeof(SupportMarketDataBean).FullName + "#length_batch(3) ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -796,9 +796,9 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionPreviousLengthWindowWhere(EPServiceProvider epService) {
-            string epl = "select Prev(2, symbol) as currSymbol " +
+            string epl = "select prev(2, symbol) as currSymbol " +
                     "from " + typeof(SupportMarketDataBean).FullName + "#length(100) " +
-                    "where Prev(2, price) > 100";
+                    "where prev(2, price) > 100";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -815,7 +815,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionPreviousLengthWindowDynamic(EPServiceProvider epService) {
-            string epl = "select Prev(intPrimitive, theString) as sPrev " +
+            string epl = "select prev(intPrimitive, theString) as sPrev " +
                     "from " + typeof(SupportBean).FullName + "#length(100)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -847,19 +847,19 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPreviousSortWindow(EPServiceProvider epService) {
             string epl = "select symbol as currSymbol, " +
-                    " Prev(0, symbol) as prev0Symbol, " +
-                    " Prev(1, symbol) as prev1Symbol, " +
-                    " Prev(2, symbol) as prev2Symbol, " +
-                    " Prev(0, price) as prev0Price, " +
-                    " Prev(1, price) as prev1Price, " +
-                    " Prev(2, price) as prev2Price, " +
-                    " Prevtail(0, symbol) as prevTail0Symbol, " +
-                    " Prevtail(0, price) as prevTail0Price, " +
-                    " Prevtail(1, symbol) as prevTail1Symbol, " +
-                    " Prevtail(1, price) as prevTail1Price, " +
-                    " Prevcount(price) as prevCountPrice, " +
-                    " Prevwindow(price) as prevWindowPrice " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Sort(100, symbol asc)";
+                    " prev(0, symbol) as prev0Symbol, " +
+                    " prev(1, symbol) as prev1Symbol, " +
+                    " prev(2, symbol) as prev2Symbol, " +
+                    " prev(0, price) as prev0Price, " +
+                    " prev(1, price) as prev1Price, " +
+                    " prev(2, price) as prev2Price, " +
+                    " prevtail(0, symbol) as prevTail0Symbol, " +
+                    " prevtail(0, price) as prevTail0Price, " +
+                    " prevtail(1, symbol) as prevTail1Symbol, " +
+                    " prevtail(1, price) as prevTail1Price, " +
+                    " prevcount(price) as prevCountPrice, " +
+                    " prevwindow(price) as prevWindowPrice " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#sort(100, symbol asc)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -895,19 +895,19 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionPreviousExtTimedBatch(EPServiceProvider epService) {
             string[] fields = "currSymbol,prev0Symbol,prev0Price,prev1Symbol,prev1Price,prev2Symbol,prev2Price,prevTail0Symbol,prevTail0Price,prevTail1Symbol,prevTail1Price,prevCountPrice,prevWindowPrice".Split(',');
             string epl = "select irstream symbol as currSymbol, " +
-                    "Prev(0, symbol) as prev0Symbol, " +
-                    "Prev(0, price) as prev0Price, " +
-                    "Prev(1, symbol) as prev1Symbol, " +
-                    "Prev(1, price) as prev1Price, " +
-                    "Prev(2, symbol) as prev2Symbol, " +
-                    "Prev(2, price) as prev2Price," +
-                    "Prevtail(0, symbol) as prevTail0Symbol, " +
-                    "Prevtail(0, price) as prevTail0Price, " +
-                    "Prevtail(1, symbol) as prevTail1Symbol, " +
-                    "Prevtail(1, price) as prevTail1Price, " +
-                    "Prevcount(price) as prevCountPrice, " +
-                    "Prevwindow(price) as prevWindowPrice " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Ext_timed_batch(volume, 10, 0L) ";
+                    "prev(0, symbol) as prev0Symbol, " +
+                    "prev(0, price) as prev0Price, " +
+                    "prev(1, symbol) as prev1Symbol, " +
+                    "prev(1, price) as prev1Price, " +
+                    "prev(2, symbol) as prev2Symbol, " +
+                    "prev(2, price) as prev2Price," +
+                    "prevtail(0, symbol) as prevTail0Symbol, " +
+                    "prevtail(0, price) as prevTail0Price, " +
+                    "prevtail(1, symbol) as prevTail1Symbol, " +
+                    "prevtail(1, price) as prevTail1Price, " +
+                    "prevcount(price) as prevCountPrice, " +
+                    "prevwindow(price) as prevWindowPrice " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#ext_timed_batch(volume, 10, 0L) ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -945,15 +945,15 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionInvalid(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
-            TryInvalid(epService, "select Prev(0, average) " +
-                            "from " + typeof(SupportMarketDataBean).FullName + "#length(100)#Uni(price)",
+            TryInvalid(epService, "select prev(0, average) " +
+                            "from " + typeof(SupportMarketDataBean).FullName + "#length(100)#uni(price)",
                     "Error starting statement: Previous function requires a single data window view onto the stream [");
     
-            TryInvalid(epService, "select count(*) from SupportBean#keepall where Prev(0, intPrimitive) = 5",
-                    "Error starting statement: The 'prev' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provide remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead [select count(*) from SupportBean#keepall where Prev(0, intPrimitive) = 5]");
+            TryInvalid(epService, "select count(*) from SupportBean#keepall where prev(0, intPrimitive) = 5",
+                    "Error starting statement: The 'prev' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provide remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead [select count(*) from SupportBean#keepall where prev(0, intPrimitive) = 5]");
     
-            TryInvalid(epService, "select count(*) from SupportBean#keepall having Prev(0, intPrimitive) = 5",
-                    "Error starting statement: The 'prev' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provide remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead [select count(*) from SupportBean#keepall having Prev(0, intPrimitive) = 5]");
+            TryInvalid(epService, "select count(*) from SupportBean#keepall having prev(0, intPrimitive) = 5",
+                    "Error starting statement: The 'prev' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provide remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead [select count(*) from SupportBean#keepall having prev(0, intPrimitive) = 5]");
         }
 
         private void AssertEventWTail(

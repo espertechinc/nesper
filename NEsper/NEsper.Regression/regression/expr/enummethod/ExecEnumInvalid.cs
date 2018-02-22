@@ -63,7 +63,7 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             // invalid incompatible params
             epl = "select Contained.Take('a') from SupportBean_ST0_Container";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'contained.Take('a')': Failed to resolve enumeration method, date-time method or mapped property 'contained.Take('a')': Error validating enumeration method 'take', expected a number-type result for expression parameter 0 but received java.lang.string [select Contained.Take('a') from SupportBean_ST0_Container]");
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'contained.Take('a')': Failed to resolve enumeration method, date-time method or mapped property 'contained.Take('a')': Error validating enumeration method 'take', expected a number-type result for expression parameter 0 but received System.String [select Contained.Take('a') from SupportBean_ST0_Container]");
     
             // invalid incompatible params
             epl = "select Contained.Take(x => x.p00) from SupportBean_ST0_Container";
@@ -107,11 +107,11 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             // invalid incompatible params
             epl = "select Contained.AllOf(x => 1) from SupportBean_ST0_Container";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'contained.AllOf()': Error validating enumeration method 'allOf', expected a bool-type result for expression parameter 0 but received java.lang.int? [select Contained.AllOf(x => 1) from SupportBean_ST0_Container]");
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'contained.AllOf()': Error validating enumeration method 'allOf', expected a bool-type result for expression parameter 0 but received " + Name.Of<int>() + " [select Contained.AllOf(x => 1) from SupportBean_ST0_Container]");
     
             // invalid incompatible params
             epl = "select Contained.AllOf(x => 1) from SupportBean_ST0_Container";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'contained.AllOf()': Error validating enumeration method 'allOf', expected a bool-type result for expression parameter 0 but received java.lang.int? [select Contained.AllOf(x => 1) from SupportBean_ST0_Container]");
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'contained.AllOf()': Error validating enumeration method 'allOf', expected a bool-type result for expression parameter 0 but received " + Name.Of<int>() + " [select Contained.AllOf(x => 1) from SupportBean_ST0_Container]");
     
             // invalid incompatible params
             epl = "select Contained.Aggregate(0, (result, item) => result || ',') from SupportBean_ST0_Container";
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             // invalid incompatible params
             epl = "select Contained.Average(x => x.id) from SupportBean_ST0_Container";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'contained.Average()': Error validating enumeration method 'average', expected a number-type result for expression parameter 0 but received java.lang.string [select Contained.Average(x => x.id) from SupportBean_ST0_Container]");
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'contained.Average()': Error validating enumeration method 'average', expected a number-type result for expression parameter 0 but received System.String [select Contained.Average(x => x.id) from SupportBean_ST0_Container]");
     
             // not a property
             epl = "select Contained.Firstof().dummy from SupportBean_ST0_Container";

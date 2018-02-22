@@ -219,8 +219,8 @@ namespace com.espertech.esper.regression.context
             // variable use outside of context
             TryInvalid(epService, "select myctxone_int from SupportBean_S0",
                     "Variable 'myctxone_int' defined for use with context 'MyCtxOne' can only be accessed within that context [select myctxone_int from SupportBean_S0]");
-            TryInvalid(epService, "select * from SupportBean_S0#Expr(myctxone_int > 5)",
-                    "Variable 'myctxone_int' defined for use with context 'MyCtxOne' can only be accessed within that context [select * from SupportBean_S0#Expr(myctxone_int > 5)]");
+            TryInvalid(epService, "select * from SupportBean_S0#expr(myctxone_int > 5)",
+                    "Variable 'myctxone_int' defined for use with context 'MyCtxOne' can only be accessed within that context [select * from SupportBean_S0#expr(myctxone_int > 5)]");
             TryInvalid(epService, "select * from SupportBean_S0#keepall limit myctxone_int",
                     "Error starting statement: Variable 'myctxone_int' defined for use with context 'MyCtxOne' can only be accessed within that context [select * from SupportBean_S0#keepall limit myctxone_int]");
             TryInvalid(epService, "select * from SupportBean_S0#keepall limit 10 offset myctxone_int",

@@ -28,7 +28,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(
                     "create schema IncomingEvent(id int);\n" +
                             "create schema RetainedEvent(id int);\n" +
-                            "insert into RetainedEvent select * from IncomingEvent#Expr_batch(current_count >= 10000);\n" +
+                            "insert into RetainedEvent select * from IncomingEvent#expr_batch(current_count >= 10000);\n" +
                             "create window RetainedEventWindow#keepall as RetainedEvent;\n" +
                             "insert into RetainedEventWindow select * from RetainedEvent;\n");
     

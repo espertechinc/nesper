@@ -31,7 +31,7 @@ namespace com.espertech.esper.regression.epl.variable
             epService.EPAdministrator.Configuration.AddVariable("var3", typeof(long), null);
     
             long startTime = DateTimeHelper.CurrentTimeMillis;
-            string stmtTextSet = "on pattern [every timer:Interval(100 milliseconds)] set var1 = current_timestamp, var2 = var1 + 1, var3 = var1 + var2";
+            string stmtTextSet = "on pattern [every timer:interval(100 milliseconds)] set var1 = current_timestamp, var2 = var1 + 1, var3 = var1 + var2";
             EPStatement stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
             stmtSet.Events += listenerSet.Update;

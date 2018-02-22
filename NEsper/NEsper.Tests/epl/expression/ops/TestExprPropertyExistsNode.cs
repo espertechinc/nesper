@@ -28,7 +28,7 @@ namespace com.espertech.esper.epl.expression.ops
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance; _existsNodes = new ExprPropertyExistsNode[2];
+            _container = SupportContainer.Reset(); _existsNodes = new ExprPropertyExistsNode[2];
     
             _existsNodes[0] = new ExprPropertyExistsNode();
             _existsNodes[0].AddChildNode(SupportExprNodeFactory.MakeIdentNode("dummy?", "s0"));

@@ -270,7 +270,7 @@ namespace com.espertech.esper.regression.epl.contained
             epService.EPAdministrator.Configuration.AddEventType("ResponseEvent", typeof(ResponseEvent));
     
             string[] fields = "category,subEventType,avgTime".Split(',');
-            string stmtText = "select category, subEventType, avg(responseTimeMillis) as avgTime from ResponseEvent[select category, * from subEvents]#Time(1 min) group by category, subEventType order by category, subEventType";
+            string stmtText = "select category, subEventType, avg(responseTimeMillis) as avgTime from ResponseEvent[select category, * from subEvents]#time(1 min) group by category, subEventType order by category, subEventType";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

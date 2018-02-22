@@ -143,6 +143,8 @@ namespace com.espertech.esper.regression.epl.other
 
         private void RunAssertionInsertIntoWBeanWhere(EPServiceProvider epService)
         {
+            var container = epService.Container;
+
             var listenerInsert = new SupportUpdateListener();
             EPStatement stmtInsert =
                 epService.EPAdministrator.CreateEPL("insert into MyStreamBW select * from SupportBean");
@@ -209,7 +211,6 @@ namespace com.espertech.esper.regression.epl.other
             Assert.IsFalse(stmtUpdTwo.HasFirst());
 
             stmtUpdTwo.RemoveAllEventHandlers();
-            ;
 
             epService.EPRuntime.SendEvent(new SupportBean("E8", 2));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"E8", 1002});
@@ -222,8 +223,8 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPRuntime.SendEvent(new SupportBean("E9", 2));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"E9", 1002});
             EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), fields, new object[] {"E9", 2});
-            EPAssertionUtil.AssertPropsPono(subscriber.GetOldDataListFlattened()[0], fields, new object[] {"E9", 2});
-            EPAssertionUtil.AssertPropsPono(subscriber.GetNewDataListFlattened()[0], fields, new object[] {"E9", 1002});
+            EPAssertionUtil.AssertPropsPono(container, subscriber.GetOldDataListFlattened()[0], fields, new object[] {"E9", 2});
+            EPAssertionUtil.AssertPropsPono(container, subscriber.GetNewDataListFlattened()[0], fields, new object[] {"E9", 1002});
             subscriber.Reset();
 
             stmtUpdTwo.Dispose();

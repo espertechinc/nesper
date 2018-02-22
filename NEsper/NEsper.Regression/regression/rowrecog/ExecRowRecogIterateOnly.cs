@@ -77,7 +77,7 @@ namespace com.espertech.esper.regression.rowrecog
                     "  measures A.theString as a" +
                     "  all matches " +
                     "  pattern (A) " +
-                    "  define A as Prev(A.value, 2) = value" +
+                    "  define A as prev(A.value, 2) = value" +
                     ")";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regression.rowrecog
                     "  measures A.theString as a, A.cat as cat" +
                     "  all matches " +
                     "  pattern (A) " +
-                    "  define A as Prev(A.value, 2) = value" +
+                    "  define A as prev(A.value, 2) = value" +
                     ")";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);

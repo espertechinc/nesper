@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.pattern
             //
             // Last day of the month, at 5pm
             RunSequenceIsolated(epService, "2013-08-23T08:05:00.000",
-                    "select * from pattern [ every timer:At(0, 17, last, *, *) ]",
+                    "select * from pattern [ every timer:at(0, 17, last, *, *) ]",
                     new string[]{
                             "2013-08-31T17:00:00.000",
                             "2013-09-30T17:00:00.000",
@@ -54,7 +54,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Last day of the month, at the earliest
             RunSequenceIsolated(epService, "2013-08-23T08:05:00.000",
-                    "select * from pattern [ every timer:At(*, *, last, *, *) ]",
+                    "select * from pattern [ every timer:at(*, *, last, *, *) ]",
                     new string[]{
                             "2013-08-31T00:00:00.000",
                             "2013-09-30T00:00:00.000",
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Last Sunday of the month, at 5pm
             RunSequenceIsolated(epService, "2013-08-20T08:00:00.000",
-                    "select * from pattern [ every timer:At(0, 17, *, *, 0 last, *) ]",
+                    "select * from pattern [ every timer:at(0, 17, *, *, 0 last, *) ]",
                     new string[]{
                             "2013-08-25T17:00:00.000",
                             "2013-09-29T17:00:00.000",
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regression.pattern
             // Last Friday of the month, any time
             // 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4= Thursday, 5=Friday, 6=Saturday
             RunSequenceIsolated(epService, "2013-08-20T08:00:00.000",
-                    "select * from pattern [ every timer:At(*, *, *, *, 5 last, *) ]",
+                    "select * from pattern [ every timer:at(*, *, *, *, 5 last, *) ]",
                     new string[]{
                             "2013-08-30T00:00:00.000",
                             "2013-09-27T00:00:00.000",
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Last day of week (Saturday)
             RunSequenceIsolated(epService, "2013-08-01T08:00:00.000",
-                    "select * from pattern [ every timer:At(*, *, *, *, last, *) ]",
+                    "select * from pattern [ every timer:at(*, *, *, *, last, *) ]",
                     new string[]{
                             "2013-08-03T00:00:00.000",
                             "2013-08-10T00:00:00.000",
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regression.pattern
             // For Esper: January=1, February=2, March=3, April=4, May=5, June=6,
             //            July=7, August=8, September=9, November=10, October=11, December=12
             RunSequenceIsolated(epService, "2013-01-01T08:00:00.000",
-                    "select * from pattern [ every timer:At(*, *, last, 8, *, *) ]",
+                    "select * from pattern [ every timer:at(*, *, last, 8, *, *) ]",
                     new string[]{
                             "2013-08-31T00:00:00.000",
                             "2014-08-31T00:00:00.000",
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Last day of month in Feb. (test leap year)
             RunSequenceIsolated(epService, "2007-01-01T08:00:00.000",
-                    "select * from pattern [ every timer:At(*, *, last, 2, *, *) ]",
+                    "select * from pattern [ every timer:at(*, *, last, 2, *, *) ]",
                     new string[]{
                             "2007-02-28T00:00:00.000",
                             "2008-02-29T00:00:00.000",
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Observer for last Friday of each June (month 6)
             RunSequenceIsolated(epService, "2007-01-01T08:00:00.000",
-                    "select * from pattern [ every timer:At(*, *, *, 6, 5 last, *) ]",
+                    "select * from pattern [ every timer:at(*, *, *, 6, 5 last, *) ]",
                     new string[]{
                             "2007-06-29T00:00:00.000",
                             "2008-06-27T00:00:00.000",
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Last weekday (last day that is not a weekend day)
             RunSequenceIsolated(epService, "2013-08-23T08:05:00.000",
-                    "select * from pattern [ every timer:At(0, 17, lastweekday, *, *) ]",
+                    "select * from pattern [ every timer:at(0, 17, lastweekday, *, *) ]",
                     new string[]{
                             "2013-08-30T17:00:00.000",
                             "2013-09-30T17:00:00.000",
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Last weekday, any time
             RunSequenceIsolated(epService, "2013-08-23T08:05:00.000",
-                    "select * from pattern [ every timer:At(*, *, lastweekday, *, *, *) ]",
+                    "select * from pattern [ every timer:at(*, *, lastweekday, *, *, *) ]",
                     new string[]{
                             "2013-08-30T00:00:00.000",
                             "2013-09-30T00:00:00.000",
@@ -188,7 +188,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Observer for last weekday of September, for 2007 it's Friday September 28th
             RunSequenceIsolated(epService, "2007-08-23T08:05:00.000",
-                    "select * from pattern [ every timer:At(*, *, lastweekday, 9, *, *) ]",
+                    "select * from pattern [ every timer:at(*, *, lastweekday, 9, *, *) ]",
                     new string[]{
                             "2007-09-28T00:00:00.000",
                             "2008-09-30T00:00:00.000",
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Observer for last weekday of February
             RunSequenceIsolated(epService, "2007-01-23T08:05:00.000",
-                    "select * from pattern [ every timer:At(*, *, lastweekday, 2, *, *) ]",
+                    "select * from pattern [ every timer:at(*, *, lastweekday, 2, *, *) ]",
                     new string[]{
                             "2007-02-28T00:00:00.000",
                             "2008-02-29T00:00:00.000",
@@ -214,7 +214,7 @@ namespace com.espertech.esper.regression.pattern
             // WEEKDAY
             //
             RunSequenceIsolated(epService, "2007-01-23T08:05:00.000",
-                    "select * from pattern [ every timer:At(*, *, 1 weekday, 9, *, *) ]",
+                    "select * from pattern [ every timer:at(*, *, 1 weekday, 9, *, *) ]",
                     new string[]{
                             "2007-09-03T00:00:00.000",
                             "2008-09-01T00:00:00.000",
@@ -226,7 +226,7 @@ namespace com.espertech.esper.regression.pattern
                     });
     
             RunSequenceIsolated(epService, "2007-01-23T08:05:00.000",
-                    "select * from pattern [ every timer:At(*, *, 30 weekday, 9, *, *) ]",
+                    "select * from pattern [ every timer:at(*, *, 30 weekday, 9, *, *) ]",
                     new string[]{
                             "2007-09-28T00:00:00.000",
                             "2008-09-30T00:00:00.000",
@@ -239,7 +239,7 @@ namespace com.espertech.esper.regression.pattern
     
             // nearest weekday for current month on the 10th
             RunSequenceIsolated(epService, "2013-01-23T08:05:00.000",
-                    "select * from pattern [ every timer:At(*, *, 10 weekday, *, *, *) ]",
+                    "select * from pattern [ every timer:at(*, *, 10 weekday, *, *, *) ]",
                     new string[]{
                             "2013-02-11T00:00:00.000",
                             "2013-03-11T00:00:00.000",

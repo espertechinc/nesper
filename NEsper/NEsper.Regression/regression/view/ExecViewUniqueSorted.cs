@@ -58,7 +58,7 @@ namespace com.espertech.esper.regression.view
             // Get the top 3 volumes for each symbol
             EPStatement top3Prices = epService.EPAdministrator.CreateEPL(
                     "select * from " + typeof(SupportMarketDataBean).FullName +
-                            "#unique(symbol)#Sort(3, price desc)");
+                            "#unique(symbol)#sort(3, price desc)");
             var testListener = new SupportUpdateListener();
             top3Prices.Events += testListener.Update;
     
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regression.view
             string stmtString =
                     "SELECT irstream * " +
                             "FROM\n " +
-                            typeof(SupportSensorEvent).Name + "#Groupwin(type)#Time(1 hour)#unique(device)#Sort(1, measurement desc) as high ";
+                            typeof(SupportSensorEvent).Name + "#groupwin(type)#time(1 hour)#unique(device)#sort(1, measurement desc) as high ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtString);
             var testListener = new SupportUpdateListener();

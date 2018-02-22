@@ -92,7 +92,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "mywin window(*) @Type(SupportBean))");
     
             EPStatement stmtAgg = epService.EPAdministrator.CreateEPL("into table varagg " +
-                    "select window(sb.*) as mywin from SupportBean#Time(10 sec) as sb");
+                    "select window(sb.*) as mywin from SupportBean#time(10 sec) as sb");
             var listener = new SupportUpdateListener();
             stmtAgg.Events += listener.Update;
             Assert.AreEqual(typeof(SupportBean[]), stmtAgg.EventType.GetPropertyType("mywin"));

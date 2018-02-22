@@ -26,11 +26,13 @@ namespace com.espertech.esper.client.util
             _classLoader = classLoader;
         }
 
+#if FALSE
         public ClassLoaderProviderDefault(IContainer container)
         {
-            container.RegisterSingleton<ClassLoader, ClassLoaderDefault>();
+            container.Register<ClassLoader, ClassLoaderDefault>(Lifespan.Singleton);
             _classLoader = container.Resolve<ClassLoader>();
         }
+#endif
 
         public ClassLoader GetClassLoader()
         {

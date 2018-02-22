@@ -274,8 +274,8 @@ namespace com.espertech.esper.regression.context
         private void RunAssertionPatternStartedPatternEnded(EPServiceProvider epService) {
             SendTimeEvent(epService, "2002-05-1T08:00:00.000");
             epService.EPAdministrator.CreateEPL("create context EveryNowAndThen as " +
-                    "start pattern [s0=SupportBean_S0 -> timer:Interval(1 sec)] " +
-                    "end pattern [s1=SupportBean_S1 -> timer:Interval(1 sec)]");
+                    "start pattern [s0=SupportBean_S0 -> timer:interval(1 sec)] " +
+                    "end pattern [s1=SupportBean_S1 -> timer:interval(1 sec)]");
     
             var fields = "c1,c2".Split(',');
             var listener = new SupportUpdateListener();
@@ -411,7 +411,7 @@ namespace com.espertech.esper.regression.context
             var fields = "col1,col2,col3,col4,col5".Split(',');
             var listener = new SupportUpdateListener();
             var statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NineToFive " +
-                    "select Prev(theString) as col1, Prevwindow(sb) as col2, Prevtail(theString) as col3, Prior(1, theString) as col4, sum(intPrimitive) as col5 " +
+                    "select prev(theString) as col1, prevwindow(sb) as col2, prevtail(theString) as col3, prior(1, theString) as col4, sum(intPrimitive) as col5 " +
                     "from SupportBean#keepall as sb");
             statement.Events += listener.Update;
     
@@ -499,7 +499,7 @@ namespace com.espertech.esper.regression.context
             epService.EPAdministrator.CreateEPL("create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)");
     
             var listener = new SupportUpdateListener();
-            var statement = epService.EPAdministrator.CreateEPL("context NineToFive select * from pattern[every timer:Interval(10 sec)]");
+            var statement = epService.EPAdministrator.CreateEPL("context NineToFive select * from pattern[every timer:interval(10 sec)]");
             statement.Events += listener.Update;
             var spi = (EPServiceProviderSPI) epService;
             Assert.AreEqual(1, spi.SchedulingService.ScheduleHandleCount);   // from the context

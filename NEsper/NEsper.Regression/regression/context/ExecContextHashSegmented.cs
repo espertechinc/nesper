@@ -223,7 +223,7 @@ namespace com.espertech.esper.regression.context
     
             string[] fields = "c1,c2,c3,c4,c5".Split(',');
             string eplStmt = "context Ctx1 select intPrimitive as c1, " +
-                    "sum(longPrimitive) as c2, Prev(1, longPrimitive) as c3, Prior(1, longPrimitive) as c4," +
+                    "sum(longPrimitive) as c2, prev(1, longPrimitive) as c3, prior(1, longPrimitive) as c4," +
                     "(select p00 from SupportBean_S0#length(2)) as c5 " +
                     "from SupportBean#length(3)";
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplStmt);

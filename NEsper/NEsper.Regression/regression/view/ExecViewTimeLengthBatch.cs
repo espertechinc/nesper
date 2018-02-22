@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.view
             SendTimer(epService, startTime);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select irstream * from " + typeof(SupportMarketDataBean).FullName +
-                            "#Time_length_batch(10 sec, 3)");
+                            "#time_length_batch(10 sec, 3)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
@@ -205,7 +205,7 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select irstream * from " + typeof(SupportMarketDataBean).FullName +
-                            "#Time_length_batch(10 sec, 3, 'FORCE_UPDATE')");
+                            "#time_length_batch(10 sec, 3, 'FORCE_UPDATE')");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
@@ -402,7 +402,7 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select sum(price) from " + typeof(SupportMarketDataBean).FullName +
-                            "#Time_length_batch(10 sec, 3, 'FORCE_UPDATE')");
+                            "#time_length_batch(10 sec, 3, 'FORCE_UPDATE')");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
@@ -436,7 +436,7 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select sum(price) from " + typeof(SupportMarketDataBean).FullName +
-                            "#Time_length_batch(10 sec, 3, 'force_update, start_eager')");
+                            "#time_length_batch(10 sec, 3, 'force_update, start_eager')");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
@@ -470,7 +470,7 @@ namespace com.espertech.esper.regression.view
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select sum(price) from " + typeof(SupportMarketDataBean).FullName +
-                            "#Time_length_batch(10 sec, 3, 'force_update')");
+                            "#time_length_batch(10 sec, 3, 'force_update')");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -489,8 +489,8 @@ namespace com.espertech.esper.regression.view
             long startTime = 1000;
             SendTimer(epService, startTime);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
-                    "select price, Prev(1, price) as prevPrice, Prior(1, price) as priorPrice from " + typeof(SupportMarketDataBean).FullName +
-                            "#Time_length_batch(10 sec, 3)");
+                    "select price, prev(1, price) as prevPrice, prior(1, price) as priorPrice from " + typeof(SupportMarketDataBean).FullName +
+                            "#time_length_batch(10 sec, 3)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             EPRuntime engine = epService.EPRuntime;
@@ -518,7 +518,7 @@ namespace com.espertech.esper.regression.view
             EPRuntime engine = epService.EPRuntime;
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select symbol, sum(price) as s from " + typeof(SupportMarketDataBean).FullName +
-                            "#Time_length_batch(5, 10, \"START_EAGER\") group by symbol order by symbol asc");
+                            "#time_length_batch(5, 10, \"START_EAGER\") group by symbol order by symbol asc");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     

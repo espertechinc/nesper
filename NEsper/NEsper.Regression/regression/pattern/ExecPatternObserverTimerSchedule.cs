@@ -66,7 +66,7 @@ namespace com.espertech.esper.regression.pattern
             // For Testing, could also use this:
             /*
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSecWZone("2001-10-01T05:51:00.000GMT-0:00")));
-            epService.EPAdministrator.CreateEPL("select * from pattern[timer:Schedule('2008-03-01T13:00:00Z/P1Y2M10DT2H30M')]").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select * from pattern[timer:schedule('2008-03-01T13:00:00Z/P1Y2M10DT2H30M')]").Events += listener.Update;
     
             long next = epService.EPRuntime.NextScheduledTime;
             Log.Info(DateTime.Print(next));
@@ -80,7 +80,7 @@ namespace com.espertech.esper.regression.pattern
             EPServiceProviderIsolated iso = epService.GetEPServiceIsolated("E1");
             SendCurrentTime(iso, "2012-10-01T05:51:07.000GMT-0:00");
     
-            string epl = "select * from pattern[every sb=SupportBean -> timer:Schedule(iso: ComputeISO8601String(sb))]";
+            string epl = "select * from pattern[every sb=SupportBean -> timer:schedule(iso: ComputeISO8601String(sb))]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regression.pattern
             EPServiceProviderIsolated iso = epService.GetEPServiceIsolated("E1");
             SendCurrentTime(iso, "2012-10-01T05:51:07.000GMT-0:00");
     
-            string epl = "select * from pattern[every sb=SupportBean -> timer:Schedule(iso: 'R/1980-01-01T00:00:00Z/PT15S')]";
+            string epl = "select * from pattern[every sb=SupportBean -> timer:schedule(iso: 'R/1980-01-01T00:00:00Z/PT15S')]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
@@ -128,39 +128,39 @@ namespace com.espertech.esper.regression.pattern
         private void RunAssertionInvalid(EPServiceProvider epService) {
     
             // the ISO 8601 parse tests reside with the parser
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[every timer:Schedule(iso: 'x')]",
-                    "Invalid parameter for pattern observer 'timer:Schedule(iso:\"x\")': Failed to parse 'x': Exception parsing date 'x', the date is not a supported ISO 8601 date");
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[every timer:schedule(iso: 'x')]",
+                    "Invalid parameter for pattern observer 'timer:schedule(iso:\"x\")': Failed to parse 'x': Exception parsing date 'x', the date is not a supported ISO 8601 date");
     
             // named parameter tests: absence, typing, etc.
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:Schedule()]",
-                    "Invalid parameter for pattern observer 'timer:Schedule()': No parameters provided");
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:Schedule(x:1)]",
-                    "Invalid parameter for pattern observer 'timer:Schedule(x:1)': Unexpected named parameter 'x', expecting any of the following: [iso, repetitions, date, period]");
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:Schedule(period:1)]",
-                    "Invalid parameter for pattern observer 'timer:Schedule(period:1)': Failed to validate named parameter 'period', expected a single expression returning a TimePeriod-typed value");
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:Schedule(repetitions:'a', period:1 seconds)]",
-                    "Invalid parameter for pattern observer 'timer:Schedule(repetitions:\"a\",period:1 seconds)': Failed to validate named parameter 'repetitions', expected a single expression returning any of the following types: int,long");
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:Schedule(date:1 seconds)]",
-                    "Invalid parameter for pattern observer 'timer:Schedule(date:1 seconds)': Failed to validate named parameter 'date', expected a single expression returning any of the following types: string,Calendar,Date,long");
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:Schedule(repetitions:1)]",
-                    "Invalid parameter for pattern observer 'timer:Schedule(repetitions:1)': Either the date or period parameter is required");
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:Schedule(iso: 'R/1980-01-01T00:00:00Z/PT15S', repetitions:1)]",
-                    "Invalid parameter for pattern observer 'timer:Schedule(iso:\"R/1980-01-01T00:00:00Z/PT15S\",repetitions:1)': The 'iso' parameter is exclusive of other parameters");
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:schedule()]",
+                    "Invalid parameter for pattern observer 'timer:schedule()': No parameters provided");
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:schedule(x:1)]",
+                    "Invalid parameter for pattern observer 'timer:schedule(x:1)': Unexpected named parameter 'x', expecting any of the following: [iso, repetitions, date, period]");
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:schedule(period:1)]",
+                    "Invalid parameter for pattern observer 'timer:schedule(period:1)': Failed to validate named parameter 'period', expected a single expression returning a TimePeriod-typed value");
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:schedule(repetitions:'a', period:1 seconds)]",
+                    "Invalid parameter for pattern observer 'timer:schedule(repetitions:\"a\",period:1 seconds)': Failed to validate named parameter 'repetitions', expected a single expression returning any of the following types: int,long");
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:schedule(date:1 seconds)]",
+                    "Invalid parameter for pattern observer 'timer:schedule(date:1 seconds)': Failed to validate named parameter 'date', expected a single expression returning any of the following types: string,Calendar,Date,long");
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:schedule(repetitions:1)]",
+                    "Invalid parameter for pattern observer 'timer:schedule(repetitions:1)': Either the date or period parameter is required");
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:schedule(iso: 'R/1980-01-01T00:00:00Z/PT15S', repetitions:1)]",
+                    "Invalid parameter for pattern observer 'timer:schedule(iso:\"R/1980-01-01T00:00:00Z/PT15S\",repetitions:1)': The 'iso' parameter is exclusive of other parameters");
         }
     
         private void RunAssertionEquivalent(EPServiceProvider epService) {
     
-            string first = "select * from pattern[every timer:Schedule(iso: 'R2/2008-03-01T13:00:00Z/P1Y2M10DT2H30M')]";
+            string first = "select * from pattern[every timer:schedule(iso: 'R2/2008-03-01T13:00:00Z/P1Y2M10DT2H30M')]";
             TryAssertionEquivalent(epService, first);
     
             string second = "select * from pattern[every " +
-                    "(timer:Schedule(iso: '2008-03-01T13:00:00Z') or" +
-                    " timer:Schedule(iso: '2009-05-11T15:30:00Z'))]";
+                    "(timer:schedule(iso: '2008-03-01T13:00:00Z') or" +
+                    " timer:schedule(iso: '2009-05-11T15:30:00Z'))]";
             TryAssertionEquivalent(epService, second);
     
             string third = "select * from pattern[every " +
-                    "(timer:Schedule(iso: '2008-03-01T13:00:00Z') or" +
-                    " timer:Schedule(iso: '2008-03-01T13:00:00Z/P1Y2M10DT2H30M'))]";
+                    "(timer:schedule(iso: '2008-03-01T13:00:00Z') or" +
+                    " timer:schedule(iso: '2008-03-01T13:00:00Z/P1Y2M10DT2H30M'))]";
             TryAssertionEquivalent(epService, third);
         }
     
@@ -189,7 +189,7 @@ namespace com.espertech.esper.regression.pattern
             SendCurrentTime(iso, "2012-10-01T05:51:00.000GMT-0:00");
     
             // Repeat 3 times, starting "2012-10-01T05:52:00Z" (UTC), period of 2 seconds
-            string epl = "select * from pattern[timer:Schedule(" + parameters + ")]";
+            string epl = "select * from pattern[timer:schedule(" + parameters + ")]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regression.pattern
             SendCurrentTime(iso, "2012-10-01T05:51:00.000GMT-0:00");
     
             // Repeat 3 times, starting "2012-10-01T05:52:00Z" (UTC), period of 2 seconds
-            string epl = (audit ? "@Audit " : "") + "select * from pattern[every timer:Schedule(" + parameters + ")]";
+            string epl = (audit ? "@Audit " : "") + "select * from pattern[every timer:schedule(" + parameters + ")]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regression.pattern
             SendCurrentTime(iso, "2012-10-01T05:51:00.000GMT-0:00");
     
             // Fire once at "2012-10-01T05:52:00Z" (UTC)
-            string epl = "select * from pattern[" + (hasEvery ? "every " : "") + "timer:Schedule(" + parameters + ")]";
+            string epl = "select * from pattern[" + (hasEvery ? "every " : "") + "timer:schedule(" + parameters + ")]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
@@ -257,7 +257,7 @@ namespace com.espertech.esper.regression.pattern
             SendCurrentTime(iso, "2012-10-01T05:51:00.000GMT-0:00");
     
             // Fire once at "2012-10-01T05:52:00Z" (UTC)
-            string epl = "select * from pattern[" + (hasEvery ? "every " : "") + "timer:Schedule(iso: '2010-10-01T05:52:00Z')]";
+            string epl = "select * from pattern[" + (hasEvery ? "every " : "") + "timer:schedule(iso: '2010-10-01T05:52:00Z')]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
@@ -277,7 +277,7 @@ namespace com.espertech.esper.regression.pattern
             SendCurrentTime(iso, "2012-10-01T05:51:00.000GMT-0:00");
     
             // Fire once after 1 day and 2 hours
-            string epl = "select * from pattern[timer:Schedule(" + parameters + ")]";
+            string epl = "select * from pattern[timer:schedule(" + parameters + ")]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
@@ -299,7 +299,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Fire 3 times after 2 seconds from current time
             SendCurrentTime(iso, "2012-10-01T05:52:00.000GMT-0:00");
-            string epl = "select * from pattern[every timer:Schedule(" + parameters + ")]";
+            string epl = "select * from pattern[every timer:schedule(" + parameters + ")]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Fire 3 times after 2 seconds from current time
             SendCurrentTime(iso, "2012-10-01T05:52:00.000GMT-0:00");
-            string epl = "select * from pattern[every timer:Schedule(iso:'R/PT1M10S')]";
+            string epl = "select * from pattern[every timer:schedule(iso:'R/PT1M10S')]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
@@ -337,7 +337,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Repeat unlimited number of times, reference-dated to "1980-01-01T00:00:00Z" (UTC), period of 1 second
             SendCurrentTime(iso, "2012-10-01T05:52:00.000GMT-0:00");
-            string epl = "select * from pattern[every timer:Schedule(iso:'R/1980-01-01T00:00:00Z/PT1S')]";
+            string epl = "select * from pattern[every timer:schedule(iso:'R/1980-01-01T00:00:00Z/PT1S')]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
@@ -367,7 +367,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Repeat unlimited number of times, reference-dated to "1980-01-01T00:00:00Z" (UTC), period of 1 second
             SendCurrentTime(iso, "2012-10-01T05:52:00.000GMT-0:00");
-            string epl = "select * from pattern[every timer:Schedule(" + parameters + ")]";
+            string epl = "select * from pattern[every timer:schedule(" + parameters + ")]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
@@ -385,7 +385,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Repeat unlimited number of times, reference-dated to "1980-01-01T00:00:00Z" (UTC), period of 1 second
             SendCurrentTime(iso, "2012-01-01T00:0:00.000GMT-0:00");
-            string epl = "select * from pattern[every timer:Schedule(iso:'R/1980-01-01T00:00:00Z/PT10S')]";
+            string epl = "select * from pattern[every timer:schedule(iso:'R/1980-01-01T00:00:00Z/PT10S')]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
@@ -411,7 +411,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Repeat unlimited number of times, reference-dated to "1980-01-01T00:00:00Z" (UTC), period of 1 second
             SendCurrentTime(iso, "2012-01-01T00:0:00.000GMT-0:00");
-            string epl = "select * from pattern[every timer:Schedule(iso: 'R/PT10S')]";
+            string epl = "select * from pattern[every timer:schedule(iso: 'R/PT10S')]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
@@ -438,7 +438,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Repeat unlimited number of times, reference-dated to "1980-01-01T00:00:00Z" (UTC), period of 1 second
             SendCurrentTime(iso, "2012-10-01T05:52:00.000GMT-0:00");
-            string epl = "select * from pattern[every timer:Schedule(iso: 'R8/2012-10-01T05:51:00Z/PT10S')]";
+            string epl = "select * from pattern[every timer:schedule(iso: 'R8/2012-10-01T05:51:00Z/PT10S')]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
@@ -454,7 +454,7 @@ namespace com.espertech.esper.regression.pattern
     
             // Repeat unlimited number of times, reference-dated to future date, period of 1 day
             SendCurrentTime(iso, "2012-10-01T05:52:00.000GMT-0:00");
-            string epl = "select * from pattern[every timer:Schedule(iso: 'R/2013-01-01T02:00:05Z/P1D')]";
+            string epl = "select * from pattern[every timer:schedule(iso: 'R/2013-01-01T02:00:05Z/P1D')]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     

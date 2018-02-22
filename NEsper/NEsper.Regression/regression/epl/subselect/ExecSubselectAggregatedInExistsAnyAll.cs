@@ -271,9 +271,9 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionGroupedWHavingWEqualsAllAnySome(EPServiceProvider epService) {
             string[] fields = "c0,c1,c2".Split(',');
             string epl = "select " +
-                    "value = all (select sum(intPrimitive) from SupportBean#keepall group by theString having First(theString) != 'E1') as c0, " +
-                    "value = any (select sum(intPrimitive) from SupportBean#keepall group by theString having First(theString) != 'E1') as c1, " +
-                    "value = some (select sum(intPrimitive) from SupportBean#keepall group by theString having First(theString) != 'E1') as c2 " +
+                    "value = all (select sum(intPrimitive) from SupportBean#keepall group by theString having first(theString) != 'E1') as c0, " +
+                    "value = any (select sum(intPrimitive) from SupportBean#keepall group by theString having first(theString) != 'E1') as c1, " +
+                    "value = some (select sum(intPrimitive) from SupportBean#keepall group by theString having first(theString) != 'E1') as c2 " +
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();

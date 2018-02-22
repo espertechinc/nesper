@@ -94,13 +94,13 @@ namespace com.espertech.esper.regression.epl.join
             TryInvalid(epService, invalidJoin,
                     "Error starting statement: Joins require that at least one view is specified for each stream, no view was specified for A [select * from A, B]");
     
-            invalidJoin = "select * from A#Time(5 min), B";
+            invalidJoin = "select * from A#time(5 min), B";
             TryInvalid(epService, invalidJoin,
-                    "Error starting statement: Joins require that at least one view is specified for each stream, no view was specified for B [select * from A#Time(5 min), B]");
+                    "Error starting statement: Joins require that at least one view is specified for each stream, no view was specified for B [select * from A#time(5 min), B]");
     
-            invalidJoin = "select * from A#Time(5 min), pattern[A->B]";
+            invalidJoin = "select * from A#time(5 min), pattern[A->B]";
             TryInvalid(epService, invalidJoin,
-                    "Error starting statement: Joins require that at least one view is specified for each stream, no view was specified for pattern event stream [select * from A#Time(5 min), pattern[A->B]]");
+                    "Error starting statement: Joins require that at least one view is specified for each stream, no view was specified for pattern event stream [select * from A#time(5 min), pattern[A->B]]");
         }
     
         private void SendEvent(EPServiceProvider epService, Object theEvent) {

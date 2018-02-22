@@ -390,7 +390,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion1NoneNoHavingNoJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec)" +
+                           "from MarketData#time(5.5 sec)" +
                            "group by symbol " +
                            "order by symbol asc";
             TryAssertion12(epService, stmtText, "none");
@@ -399,7 +399,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion2NoneNoHavingJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec), " +
+                           "from MarketData#time(5.5 sec), " +
                            "SupportBean#keepall where theString=symbol " +
                            "group by symbol " +
                            "order by symbol asc";
@@ -409,7 +409,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion3NoneHavingNoJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec) " +
+                           "from MarketData#time(5.5 sec) " +
                            "group by symbol " +
                            " having sum(price) > 50";
             TryAssertion34(epService, stmtText, "none");
@@ -418,7 +418,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion4NoneHavingJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec), " +
+                           "from MarketData#time(5.5 sec), " +
                            "SupportBean#keepall where theString=symbol " +
                            "group by symbol " +
                            "having sum(price) > 50";
@@ -428,7 +428,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion5DefaultNoHavingNoJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec) " +
+                           "from MarketData#time(5.5 sec) " +
                            "group by symbol " +
                            "output every 1 seconds order by symbol asc";
             TryAssertion56(epService, stmtText, "default");
@@ -437,7 +437,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion6DefaultNoHavingJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec), " +
+                           "from MarketData#time(5.5 sec), " +
                            "SupportBean#keepall where theString=symbol " +
                            "group by symbol " +
                            "output every 1 seconds order by symbol asc";
@@ -447,7 +447,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion7DefaultHavingNoJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec) \n" +
+                           "from MarketData#time(5.5 sec) \n" +
                            "group by symbol " +
                            "having sum(price) > 50" +
                            "output every 1 seconds";
@@ -457,7 +457,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion8DefaultHavingJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec), " +
+                           "from MarketData#time(5.5 sec), " +
                            "SupportBean#keepall where theString=symbol " +
                            "group by symbol " +
                            "having sum(price) > 50" +
@@ -468,7 +468,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion9AllNoHavingNoJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec) " +
+                           "from MarketData#time(5.5 sec) " +
                            "group by symbol " +
                            "output all every 1 seconds " +
                            "order by symbol";
@@ -478,7 +478,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion10AllNoHavingJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec), " +
+                           "from MarketData#time(5.5 sec), " +
                            "SupportBean#keepall where theString=symbol " +
                            "group by symbol " +
                            "output all every 1 seconds " +
@@ -489,7 +489,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion11AllHavingNoJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec) " +
+                           "from MarketData#time(5.5 sec) " +
                            "group by symbol " +
                            "having sum(price) > 50 " +
                            "output all every 1 seconds";
@@ -499,7 +499,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion11AllHavingNoJoinHinted(EPServiceProvider epService)
         {
             var stmtText = "@Hint('enable_outputlimit_opt') select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec) " +
+                           "from MarketData#time(5.5 sec) " +
                            "group by symbol " +
                            "having sum(price) > 50 " +
                            "output all every 1 seconds";
@@ -509,7 +509,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion12AllHavingJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec), " +
+                           "from MarketData#time(5.5 sec), " +
                            "SupportBean#keepall where theString=symbol " +
                            "group by symbol " +
                            "having sum(price) > 50 " +
@@ -520,7 +520,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion12AllHavingJoinHinted(EPServiceProvider epService)
         {
             var stmtText = "@Hint('enable_outputlimit_opt') select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec), " +
+                           "from MarketData#time(5.5 sec), " +
                            "SupportBean#keepall where theString=symbol " +
                            "group by symbol " +
                            "having sum(price) > 50 " +
@@ -531,7 +531,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion13LastNoHavingNoJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec)" +
+                           "from MarketData#time(5.5 sec)" +
                            "group by symbol " +
                            "output last every 1 seconds " +
                            "order by symbol";
@@ -541,7 +541,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion14LastNoHavingJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec), " +
+                           "from MarketData#time(5.5 sec), " +
                            "SupportBean#keepall where theString=symbol " +
                            "group by symbol " +
                            "output last every 1 seconds " +
@@ -552,7 +552,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion15LastHavingNoJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec)" +
+                           "from MarketData#time(5.5 sec)" +
                            "group by symbol " +
                            "having sum(price) > 50 " +
                            "output last every 1 seconds";
@@ -562,7 +562,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion15LastHavingNoJoinHinted(EPServiceProvider epService)
         {
             var stmtText = "@Hint('enable_outputlimit_opt') select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec)" +
+                           "from MarketData#time(5.5 sec)" +
                            "group by symbol " +
                            "having sum(price) > 50 " +
                            "output last every 1 seconds";
@@ -572,7 +572,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion16LastHavingJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec), " +
+                           "from MarketData#time(5.5 sec), " +
                            "SupportBean#keepall where theString=symbol " +
                            "group by symbol " +
                            "having sum(price) > 50 " +
@@ -583,7 +583,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion16LastHavingJoinHinted(EPServiceProvider epService)
         {
             var stmtText = "@Hint('enable_outputlimit_opt') select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec), " +
+                           "from MarketData#time(5.5 sec), " +
                            "SupportBean#keepall where theString=symbol " +
                            "group by symbol " +
                            "having sum(price) > 50 " +
@@ -594,7 +594,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion17FirstNoHavingNoJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec) " +
+                           "from MarketData#time(5.5 sec) " +
                            "group by symbol " +
                            "output first every 1 seconds";
             TryAssertion17(epService, stmtText, "first");
@@ -603,7 +603,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion17FirstNoHavingJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec), " +
+                           "from MarketData#time(5.5 sec), " +
                            "SupportBean#keepall where theString=symbol " +
                            "group by symbol " +
                            "output first every 1 seconds";
@@ -613,7 +613,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion18SnapshotNoHavingNoJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec) " +
+                           "from MarketData#time(5.5 sec) " +
                            "group by symbol " +
                            "output snapshot every 1 seconds " +
                            "order by symbol";
@@ -623,7 +623,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion18SnapshotNoHavingJoin(EPServiceProvider epService)
         {
             var stmtText = "select symbol, sum(price) " +
-                           "from MarketData#Time(5.5 sec), " +
+                           "from MarketData#time(5.5 sec), " +
                            "SupportBean#keepall where theString=symbol " +
                            "group by symbol " +
                            "output snapshot every 1 seconds " +
@@ -896,7 +896,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             var fields = "symbol,maxVol".Split(',');
             var epl = "select irstream symbol, max(price) as maxVol" +
-                      " from " + typeof(SupportMarketDataBean).FullName + "#Sort(1, volume desc) as s0," +
+                      " from " + typeof(SupportMarketDataBean).FullName + "#sort(1, volume desc) as s0," +
                       typeof(SupportBean).FullName + "#keepall as s1 " +
                       "group by symbol output every 1 seconds";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -925,7 +925,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             SendTimer(epService, 0);
             var selectStmt = "select symbol, min(price) as minprice from " + typeof(SupportMarketDataBean).FullName +
-                             "#Time(10 seconds) group by symbol output snapshot every 1 seconds order by symbol asc";
+                             "#time(10 seconds) group by symbol output snapshot every 1 seconds order by symbol asc";
 
             var stmt = epService.EPAdministrator.CreateEPL(selectStmt);
             var listener = new SupportUpdateListener();
@@ -974,7 +974,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             SendTimer(epService, 0);
             var selectStmt = "select symbol, min(price) as minprice from " + typeof(SupportMarketDataBean).FullName +
-                             "#Time(10 seconds) as m, " +
+                             "#time(10 seconds) as m, " +
                              typeof(SupportBean).FullName + "#keepall as s where s.theString = m.symbol " +
                              "group by symbol output snapshot every 1 seconds order by symbol asc";
 
@@ -1120,7 +1120,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             var fields = "symbol,maxVol".Split(',');
             var epl = "select irstream symbol, max(price) as maxVol" +
-                      " from " + typeof(SupportMarketDataBean).FullName + "#Time(1 sec) " +
+                      " from " + typeof(SupportMarketDataBean).FullName + "#time(1 sec) " +
                       "group by symbol output every 1 seconds";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();

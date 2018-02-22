@@ -26,7 +26,7 @@ namespace com.espertech.esper.events.xml
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             var schemaUrl = _container.ResourceManager().ResolveResourceURL("regression/simpleSchema.xsd");
             var configNoNS = new ConfigurationEventTypeXMLDOM();
@@ -39,7 +39,7 @@ namespace com.espertech.esper.events.xml
                 schemaUrl.ToString(), null, SupportEngineImportServiceFactory.Make(_container),
                 _container.ResourceManager());
             var eventTypeNoNS = new SchemaXMLEventType(
-                null, 1, configNoNS, model, SupportEventAdapterService.Service, _container.LockManager());
+                null, 1, configNoNS, model, _container.Resolve<EventAdapterService>(), _container.LockManager());
 
             var noNSDoc = new XmlDocument();
             using (var stream = _container.ResourceManager().GetResourceAsStream("regression/simpleWithSchema.xml"))

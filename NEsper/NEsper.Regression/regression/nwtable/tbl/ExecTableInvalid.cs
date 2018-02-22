@@ -158,7 +158,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             try {
                 string epl = "into table " + name + " select " + provided + " as value from SupportBean" +
-                        (unbound ? "#Time(1000)" : "");
+                        (unbound ? "#time(1000)" : "");
                 epService.EPAdministrator.CreateEPL(epl);
                 Assert.Fail();
             } catch (EPStatementException ex) {
@@ -262,7 +262,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "Error starting statement: Invalid into-table clause: Failed to find table by name 'xxx' [");
             // group-by key type and count of group-by expressions
             SupportMessageAssertUtil.TryInvalid(epService, "into table aggvar_grouped_string select count(*) as total from SupportBean group by intPrimitive",
-                    "Error starting statement: Incompatible type returned by a group-by expression for use with table 'aggvar_grouped_string', the group-by expression 'intPrimitive' returns 'java.lang.int?' but the table expects 'java.lang.string' [");
+                    "Error starting statement: Incompatible type returned by a group-by expression for use with table 'aggvar_grouped_string', the group-by expression 'intPrimitive' returns '" + Name.Of<int>() + "' but the table expects 'System.String' [");
             SupportMessageAssertUtil.TryInvalid(epService, "into table aggvar_grouped_string select count(*) as total from SupportBean group by theString, intPrimitive",
                     "Error starting statement: Incompatible number of group-by expressions for use with table 'aggvar_grouped_string', the table expects 1 group-by expressions and provided are 2 group-by expressions [");
             SupportMessageAssertUtil.TryInvalid(epService, "into table aggvar_ungrouped select count(*) as total from SupportBean group by theString",
@@ -291,7 +291,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             SupportMessageAssertUtil.TryInvalid(epService, "select aggvar_grouped_string.total from SupportBean",
                     "Error starting statement: Failed to validate select-clause expression 'aggvar_grouped_string.total': Failed to resolve property 'aggvar_grouped_string.total' to a stream or nested property in a stream [");
             SupportMessageAssertUtil.TryInvalid(epService, "select aggvar_grouped_string[5].total from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'aggvar_grouped_string[5].total': Incompatible type returned by a key expression for use with table 'aggvar_grouped_string', the key expression '5' returns 'java.lang.int?' but the table expects 'java.lang.string' [select aggvar_grouped_string[5].total from SupportBean]");
+                    "Error starting statement: Failed to validate select-clause expression 'aggvar_grouped_string[5].total': Incompatible type returned by a key expression for use with table 'aggvar_grouped_string', the key expression '5' returns '" + Name.Of<int>() + "' but the table expects 'System.String' [select aggvar_grouped_string[5].total from SupportBean]");
             // top-level variable use without "keys" function
             SupportMessageAssertUtil.TryInvalid(epService, "select Aggvar_grouped_string.Something() from SupportBean",
                     "Invalid use of variable 'aggvar_grouped_string', unrecognized use of function 'something', expected 'Keys()' [");
@@ -308,14 +308,14 @@ namespace com.espertech.esper.regression.nwtable.tbl
             SupportMessageAssertUtil.TryInvalid(epService, "select aggvar_grouped_int[0].a.b from SupportBean",
                     "Invalid table expression 'aggvar_grouped_int[0].a.b [select aggvar_grouped_int[0].a.b from SupportBean]");
             // invalid use in non-contextual evaluation
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from SupportBean#Time(aggvar_ungrouped.total sec)",
-                    "Error starting statement: Error in view 'time', Invalid parameter expression 0 for Time view: Failed to validate view parameter expression 'aggvar_ungrouped.total seconds': Invalid use of table access expression, expression 'aggvar_ungrouped' is not allowed here [select * from SupportBean#Time(aggvar_ungrouped.total sec)]");
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from SupportBean#time(aggvar_ungrouped.total sec)",
+                    "Error starting statement: Error in view 'time', Invalid parameter expression 0 for Time view: Failed to validate view parameter expression 'aggvar_ungrouped.total seconds': Invalid use of table access expression, expression 'aggvar_ungrouped' is not allowed here [select * from SupportBean#time(aggvar_ungrouped.total sec)]");
             // indexed property expression but not an aggregtion-type variable
             epService.EPAdministrator.CreateEPL("create objectarray schema MyEvent(abc int[])");
             SupportMessageAssertUtil.TryInvalid(epService, "select abc[5*5] from MyEvent",
                     "Error starting statement: Failed to validate select-clause expression 'abc[5*5]': A table 'abc' could not be found [select abc[5*5] from MyEvent]");
             // view use
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from aggvar_grouped_string#Time(30)",
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from aggvar_grouped_string#time(30)",
                     "Views are not supported with tables");
             SupportMessageAssertUtil.TryInvalid(epService, "select (select * from aggvar_ungrouped#keepall) from SupportBean",
                     "Views are not supported with tables [");

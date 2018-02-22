@@ -209,7 +209,7 @@ namespace com.espertech.esper.regression.epl.other
     
             // invalid tests
             TryInvalid(epService, eventRepresentationEnum.GetAnnotationText() + " create schema E4(a long) copyFrom MyType",
-                    "Error starting statement: Type by name 'MyType' contributes property 'a' defined as 'java.lang.string' which overides the same property of type 'java.lang.long' [");
+                    "Error starting statement: Type by name 'MyType' contributes property 'a' defined as 'System.String' which overides the same property of type 'java.lang.long' [");
             TryInvalid(epService, eventRepresentationEnum.GetAnnotationText() + " create schema E4(c BaseTwo) copyFrom MyType",
                     "Error starting statement: Property by name 'c' is defined twice by adding type 'MyType' [");
             TryInvalid(epService, eventRepresentationEnum.GetAnnotationText() + " create schema E4(c BaseTwo) copyFrom XYZ",
@@ -274,7 +274,7 @@ namespace com.espertech.esper.regression.epl.other
     
         private void TryAssertionInvalid(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum) {
             var expectedOne = !eventRepresentationEnum.IsAvroEvent() ?
-                    "Error starting statement: Nestable type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected java.lang.Type or java.util.Map or the name of a previously-declared Map or ObjectArray type [" :
+                    "Error starting statement: Nestable type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected Type or Map or the name of a previously-declared Map or ObjectArray type [" :
                     "Error starting statement: Type definition encountered an unexpected property type name 'xxxx' for property 'col1', expected the name of a previously-declared Avro type";
             TryInvalid(epService, eventRepresentationEnum.GetAnnotationText() + " create schema MyEventType as (col1 xxxx)", expectedOne);
     

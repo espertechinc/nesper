@@ -21,9 +21,8 @@ namespace com.espertech.esper.client
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
         }
-
 
         [Test]
         public void TestGetInstance()

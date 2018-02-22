@@ -34,7 +34,8 @@ namespace com.espertech.esper.regression.dataflow
             epService.EPAdministrator.CreateEPL("create dataflow MyDataFlow " +
                     "Emitter -> outstream<MyOAEventType> {name:'src1'}" +
                     "DefaultSupportCaptureOp(outstream) {}");
-    
+
+            var container = epService.Container;
             var captureOp = new DefaultSupportCaptureOp<object>(SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions();
             options.OperatorProvider(new DefaultSupportGraphOpProvider(captureOp));
@@ -47,17 +48,17 @@ namespace com.espertech.esper.regression.dataflow
             Assert.AreEqual(EPDataFlowState.RUNNING, instance.State);
     
             emitter.Submit(new object[]{"E1", 10});
-            EPAssertionUtil.AssertPropsPerRow(captureOp.Current, fields, new object[][]{new object[] {"E1", 10}});
+            EPAssertionUtil.AssertPropsPerRow(container, captureOp.Current, fields, new object[][]{new object[] {"E1", 10}});
     
             emitter.Submit(new object[]{"E2", 20});
-            EPAssertionUtil.AssertPropsPerRow(captureOp.Current, fields, new object[][]{new object[] {"E1", 10}, new object[] {"E2", 20}});
+            EPAssertionUtil.AssertPropsPerRow(container, captureOp.Current, fields, new object[][]{new object[] {"E1", 10}, new object[] {"E2", 20}});
     
             emitter.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
-            EPAssertionUtil.AssertPropsPerRow(captureOp.Current, fields, new Object[0][]);
-            EPAssertionUtil.AssertPropsPerRow(captureOp.GetAndReset()[0].ToArray(), fields, new object[][]{new object[] {"E1", 10}, new object[] {"E2", 20}});
+            EPAssertionUtil.AssertPropsPerRow(container, captureOp.Current, fields, new Object[0][]);
+            EPAssertionUtil.AssertPropsPerRow(container, captureOp.GetAndReset()[0].ToArray(), fields, new object[][]{new object[] {"E1", 10}, new object[] {"E2", 20}});
     
             emitter.Submit(new object[]{"E3", 30});
-            EPAssertionUtil.AssertPropsPerRow(captureOp.Current, fields, new object[][]{new object[] {"E3", 30}});
+            EPAssertionUtil.AssertPropsPerRow(container, captureOp.Current, fields, new object[][]{new object[] {"E3", 30}});
     
             // stays running until cancelled (no transition to complete)
             Assert.AreEqual(EPDataFlowState.RUNNING, instance.State);

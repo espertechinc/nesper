@@ -134,7 +134,7 @@ namespace com.espertech.esper.regression.epl.insertinto
     
             // typable - selected column type is incompatible
             TryInvalid(epService, "insert into N1_2 select new {p0='a'} as p1 from SupportBean",
-                    "Error starting statement: Invalid assignment of column 'p0' of type 'java.lang.string' to event property 'p0' typed as 'java.lang.int?', column and parameter types mismatch [insert into N1_2 select new {p0='a'} as p1 from SupportBean]");
+                    "Error starting statement: Invalid assignment of column 'p0' of type 'System.String' to event property 'p0' typed as '" + Name.Of<int>() + "', column and parameter types mismatch [insert into N1_2 select new {p0='a'} as p1 from SupportBean]");
     
             // typable - selected column type is not matching anything
             TryInvalid(epService, "insert into N1_2 select new {xxx='a'} as p1 from SupportBean",

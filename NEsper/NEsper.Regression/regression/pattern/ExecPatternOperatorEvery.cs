@@ -84,7 +84,7 @@ namespace com.espertech.esper.regression.pattern
             SendTimer(epService, 0);
             string expression =
                     "select 'No event within 6 seconds' as alert\n" +
-                            "from pattern [ every (timer:Interval(6) and not " + typeof(SupportBean).FullName + ") ]";
+                            "from pattern [ every (timer:interval(6) and not " + typeof(SupportBean).FullName + ") ]";
     
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL(expression);
             Assert.IsFalse(statement.StatementContext.IsStatelessSelect);

@@ -427,7 +427,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCastStringAndNull_Compile(EPServiceProvider epService) {
-            var stmtText = "select cast(item?,java.lang.string) as t0 " +
+            var stmtText = "select cast(item?,System.String) as t0 " +
                     "from " + typeof(SupportMarkerInterface).FullName;
     
             var model = epService.EPAdministrator.CompileEPL(stmtText);

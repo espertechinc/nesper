@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.rowrecog
                     "       min(B.value) as minb, " +
                     "       2*min(B.value) as minb2x, " +
                     "       last(B.value) as lastb, " +
-                    "       First(B.value) as firstb," +
+                    "       first(B.value) as firstb," +
                     "       count(B.value) as countb " +
                     "  all matches pattern (A B* C) " +
                     "  define " +

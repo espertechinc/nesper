@@ -39,11 +39,11 @@ namespace com.espertech.esper.regression.expr.datetime
     
             configBean.EndTimestampPropertyName = null;
             configBean.StartTimestampPropertyName = "theString";
-            TryInvalidConfig(epService, typeof(SupportBean), configBean, "Declared start timestamp property 'theString' is expected to return a Date, Calendar or long-typed value but returns 'java.lang.string'");
+            TryInvalidConfig(epService, typeof(SupportBean), configBean, "Declared start timestamp property 'theString' is expected to return a Date, Calendar or long-typed value but returns 'System.String'");
     
             configBean.StartTimestampPropertyName = "longPrimitive";
             configBean.EndTimestampPropertyName = "theString";
-            TryInvalidConfig(epService, typeof(SupportBean), configBean, "Declared end timestamp property 'theString' is expected to return a Date, Calendar or long-typed value but returns 'java.lang.string'");
+            TryInvalidConfig(epService, typeof(SupportBean), configBean, "Declared end timestamp property 'theString' is expected to return a Date, Calendar or long-typed value but returns 'System.String'");
     
             configBean.StartTimestampPropertyName = "longdate";
             configBean.EndTimestampPropertyName = "caldate";

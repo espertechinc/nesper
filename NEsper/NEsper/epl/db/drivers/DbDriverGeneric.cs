@@ -6,11 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
 using System.Data.Common;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.container;
 
 namespace com.espertech.esper.epl.db.drivers
 {
@@ -29,7 +26,7 @@ namespace com.espertech.esper.epl.db.drivers
         /// </summary>
         public DbDriverGeneric(DbProviderFactoryManager dbProviderFactoryManager)
         {
-            _dbProviderFactory = dbProviderFactoryManager.GetFactory("MySql.Data.MySqlClient");
+            _dbProviderFactory = dbProviderFactoryManager.GetFactory("MySql.Data.MySqlClient.MySqlClientFactory");
             _isPositional = false;
             _paramPrefix = "@";
         }

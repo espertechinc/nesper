@@ -31,7 +31,7 @@ namespace com.espertech.esper.view
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             var registry = new PluggableObjectRegistryImpl(new[] {ViewEnumHelper.BuiltinViews});
             _service = new ViewResolutionServiceImpl(registry, null, null);

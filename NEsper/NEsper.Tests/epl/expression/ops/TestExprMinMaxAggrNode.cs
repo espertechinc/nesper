@@ -29,7 +29,7 @@ namespace com.espertech.esper.epl.expression.ops
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             _maxNode = new ExprMinMaxAggrNode(false, MinMaxTypeEnum.MAX, false, false);
             _minNode = new ExprMinMaxAggrNode(false, MinMaxTypeEnum.MIN, false, false);

@@ -183,7 +183,7 @@ namespace com.espertech.esper.regression.epl.contained
             string[] fields = "book.bookId,item.itemId,amount".Split(',');
             epService.EPAdministrator.Configuration.AddEventType("OrderEvent", typeof(OrderBean));
             string stmtText = "select book.bookId,item.itemId,amount from " +
-                    "OrderEvent[books]#Firstunique(bookId) book, " +
+                    "OrderEvent[books]#firstunique(bookId) book, " +
                     "OrderEvent[orderdetail.items]#keepall item " +
                     "where book.bookId = item.productId " +
                     "order by book.bookId, item.itemId";

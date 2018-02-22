@@ -34,7 +34,7 @@ namespace com.espertech.esper.epl.db
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             var configs = new Dictionary<String, ConfigurationDBRef>();
     

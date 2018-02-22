@@ -40,7 +40,7 @@ namespace com.espertech.esper.epl.core
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _typeService1Stream = new SupportStreamTypeSvc1Stream();
             _typeService3Stream = new SupportStreamTypeSvc3Stream();
             _groupByList = new List<ExprNode>();

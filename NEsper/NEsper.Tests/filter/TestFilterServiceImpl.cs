@@ -37,7 +37,7 @@ namespace com.espertech.esper.filter
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             _filterService = new FilterServiceLockCoarse(
                 _container.LockManager(), _container.RWLockManager(), false);

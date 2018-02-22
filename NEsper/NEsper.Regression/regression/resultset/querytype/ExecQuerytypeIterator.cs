@@ -288,7 +288,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             var fields = new string[]{"symbol", "msg"};
             string stmtText = "insert into Cutoff " +
                     "select symbol, (string.ValueOf(count(*)) || 'x1000.0') as msg " +
-                    "from " + typeof(SupportMarketDataBean).FullName + "#Groupwin(symbol)#length(1) " +
+                    "from " + typeof(SupportMarketDataBean).FullName + "#groupwin(symbol)#length(1) " +
                     "where price - volume >= 1000.0 group by symbol having count(*) = 1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             Assert.IsFalse(stmt.HasFirst());

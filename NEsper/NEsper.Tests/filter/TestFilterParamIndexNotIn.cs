@@ -35,7 +35,7 @@ namespace com.espertech.esper.filter
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
             _testEvaluators = new SupportEventEvaluator[4];
             for (int i = 0; i < _testEvaluators.Length; i++)
             {

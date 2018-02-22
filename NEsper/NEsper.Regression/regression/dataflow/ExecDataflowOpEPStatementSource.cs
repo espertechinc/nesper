@@ -59,7 +59,8 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             captureOp.WaitForInvocation(100, 1);
-            EPAssertionUtil.AssertProps(captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"E2"});
+            EPAssertionUtil.AssertProps(
+                epService.Container, captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"E2"});
     
             stmt.Stop();
     
@@ -70,7 +71,8 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
             captureOp.WaitForInvocation(100, 1);
-            EPAssertionUtil.AssertProps(captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"E4"});
+            EPAssertionUtil.AssertProps(
+                epService.Container, captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"E4"});
     
             stmt.Dispose();
     
@@ -81,7 +83,8 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.SendEvent(new SupportBean("E6", 6));
             captureOp.WaitForInvocation(100, 1);
-            EPAssertionUtil.AssertProps(captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"XE6X"});
+            EPAssertionUtil.AssertProps(
+                epService.Container, captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"XE6X"});
     
             df.Cancel();
             epService.EPAdministrator.DestroyAllStatements();
@@ -160,17 +163,20 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.SendEvent(new SupportBean_B("B1"));
             captureOp.WaitForInvocation(200, 1);
-            EPAssertionUtil.AssertProps(captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"B1"});
+            EPAssertionUtil.AssertProps(
+                epService.Container, captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"B1"});
     
             epService.EPAdministrator.CreateEPL("select theString, intPrimitive from SupportBean");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             captureOp.WaitForInvocation(200, 1);
-            EPAssertionUtil.AssertProps(captureOp.GetCurrentAndReset()[0], "theString,intPrimitive".Split(','), new object[]{"E1", 1});
+            EPAssertionUtil.AssertProps(
+                epService.Container, captureOp.GetCurrentAndReset()[0], "theString,intPrimitive".Split(','), new object[]{"E1", 1});
     
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select id from SupportBean_A");
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             captureOp.WaitForInvocation(200, 1);
-            EPAssertionUtil.AssertProps(captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"A1"});
+            EPAssertionUtil.AssertProps(
+                epService.Container, captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"A1"});
     
             stmtTwo.Stop();
     
@@ -182,11 +188,13 @@ namespace com.espertech.esper.regression.dataflow
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A3"));
             captureOp.WaitForInvocation(200, 1);
-            EPAssertionUtil.AssertProps(captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"A3"});
+            EPAssertionUtil.AssertProps(
+                epService.Container, captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"A3"});
     
             epService.EPRuntime.SendEvent(new SupportBean_B("B2"));
             captureOp.WaitForInvocation(200, 1);
-            EPAssertionUtil.AssertProps(captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"B2"});
+            EPAssertionUtil.AssertProps(
+                epService.Container, captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"B2"});
     
             df.Cancel();
     

@@ -365,7 +365,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             SendTime(epService, 0);
             string[] fields = "theString,pct".Split(',');
             string epl = "select theString, count(*) / count(*, group_by:()) as pct" +
-                    " from SupportBean#Time(30 sec)" +
+                    " from SupportBean#time(30 sec)" +
                     " group by theString" +
                     " output snapshot every 10 seconds";
             var listener = new SupportUpdateListener();
@@ -502,8 +502,8 @@ namespace com.espertech.esper.regression.resultset.aggregate
         private void TryAssertionUngroupedAggEvent(EPServiceProvider epService) {
             string[] cols = "first0,first1,last0,last1,window0,window1,maxby0,maxby1,minby0,minby1,sorted0,sorted1,maxbyever0,maxbyever1,minbyever0,minbyever1,firstever0,firstever1,lastever0,lastever1".Split(',');
             string epl = "select intPrimitive as c0, " +
-                    " First(sb, group_by:(theString)) as first0," +
-                    " First(sb, group_by:()) as first1," +
+                    " first(sb, group_by:(theString)) as first0," +
+                    " first(sb, group_by:()) as first1," +
                     " last(sb, group_by:(theString)) as last0," +
                     " last(sb, group_by:()) as last1," +
                     " window(sb, group_by:(theString)) as window0," +
@@ -766,8 +766,8 @@ namespace com.espertech.esper.regression.resultset.aggregate
                             " window(*, group_by:theString).FirstOf() as c1," +
                             " window(intPrimitive, group_by:()).FirstOf() as c2," +
                             " window(intPrimitive, group_by:theString).FirstOf() as c3," +
-                            " First(*, group_by:()).intPrimitive as c4," +
-                            " First(*, group_by:theString).intPrimitive as c5 " +
+                            " first(*, group_by:()).intPrimitive as c4," +
+                            " first(*, group_by:theString).intPrimitive as c5 " +
                             " from SupportBean#keepall " +
                             (grouped ? "group by theString, intPrimitive" : "");
             var listener = new SupportUpdateListener();

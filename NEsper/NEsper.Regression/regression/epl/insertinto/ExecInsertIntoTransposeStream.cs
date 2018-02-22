@@ -198,7 +198,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                 epService.EPAdministrator.CreateEPL("insert into SomeOtherStream select Transpose(CustomOne('O', 10)) from SupportBean");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Expression-returned value of type '" + typeof(SupportBean).FullName + "' cannot be converted to target event type 'SomeOtherStream' with underlying type 'java.util.Map' [insert into SomeOtherStream select Transpose(CustomOne('O', 10)) from SupportBean]", ex.Message);
+                Assert.AreEqual("Error starting statement: Expression-returned value of type '" + typeof(SupportBean).FullName + "' cannot be converted to target event type 'SomeOtherStream' with underlying type 'Map' [insert into SomeOtherStream select Transpose(CustomOne('O', 10)) from SupportBean]", ex.Message);
             }
     
             // invalid two parameters

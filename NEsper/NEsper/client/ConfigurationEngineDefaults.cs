@@ -445,7 +445,7 @@ namespace com.espertech.esper.client
             /// provided by views can only be combined if any of the retain-keywords is also specified for the stream.
             /// <para>
             /// If set to true then multiple expiry policies are allowed and the following statement compiles without exception:
-            /// "select * from MyEvent#TimeInMillis(10)#TimeInMillis(10)".
+            /// "select * from MyEvent#time(10)#time(10)".
             /// </para>
             /// </summary>
             /// <value>

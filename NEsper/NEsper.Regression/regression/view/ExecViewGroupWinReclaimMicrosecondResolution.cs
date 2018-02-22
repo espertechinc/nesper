@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.view
             EPServiceProviderIsolated isolated = epService.GetEPServiceIsolated("isolated");
             isolated.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
-            string epl = "@Hint('reclaim_group_aged=1,reclaim_group_freq=5') select * from SupportBean#Groupwin(theString)#keepall";
+            string epl = "@Hint('reclaim_group_aged=1,reclaim_group_freq=5') select * from SupportBean#groupwin(theString)#keepall";
             EPStatement stmt = isolated.EPAdministrator.CreateEPL(epl, "s0", null);
     
             isolated.EPRuntime.SendEvent(new SupportBean("E1", 0));

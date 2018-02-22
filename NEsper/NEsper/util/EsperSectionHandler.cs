@@ -12,6 +12,7 @@ using System.Xml;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using Configuration = com.espertech.esper.client.Configuration;
 
 namespace com.espertech.esper.util
@@ -22,15 +23,15 @@ namespace com.espertech.esper.util
 
     public class EsperSectionHandler : IConfigurationSectionHandler
     {
-        private readonly IResourceManager _resourceManager;
+        private readonly IContainer _container;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EsperSectionHandler"/> class.
+        /// Initializes a new instance of the <see cref="EsperSectionHandler" /> class.
         /// </summary>
-        /// <param name="resourceManager">The resource manager.</param>
-        public EsperSectionHandler(IResourceManager resourceManager)
+        /// <param name="container">The container.</param>
+        public EsperSectionHandler(IContainer container)
         {
-            _resourceManager = resourceManager;
+            _container = container;
         }
 
         /// <summary>
@@ -38,7 +39,7 @@ namespace com.espertech.esper.util
         /// </summary>
         public EsperSectionHandler()
         {
-            _resourceManager = new DefaultResourceManager(null, true);
+            _container = ContainerExtensions.CreateDefaultContainer(true);
         }
 
         #region IConfigurationSectionHandler Members
@@ -52,8 +53,9 @@ namespace com.espertech.esper.util
         /// <returns>The created section handler object.</returns>
         public object Create(object parent, object configContext, XmlNode section)
         {
-            Configuration configuration = new Configuration(_resourceManager);
-            ConfigurationParser.DoConfigure(configuration, (XmlElement) section);
+            var configuration = new Configuration(_container);
+            _container.Resolve<IConfigurationParser>()
+                .DoConfigure(configuration, (XmlElement) section);
             return configuration;
         }
 

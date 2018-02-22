@@ -31,14 +31,15 @@ namespace com.espertech.esper.client
     using Stream = System.IO.Stream;
 
     /// <summary>Parser for configuration XML.</summary>
-    public class ConfigurationParser
+    public class ConfigurationParser : IConfigurationParser
     {
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private static readonly XslCompiledTransform InitializerTransform;
 
-        private IResourceManager _resourceManager;
+        private readonly IContainer _container;
+        private readonly IResourceManager _resourceManager;
 
         /// <summary>
         /// Initializes the <see cref="ConfigurationParser"/> class.
@@ -46,10 +47,8 @@ namespace com.espertech.esper.client
         static ConfigurationParser()
         {
             var transformDocument = new XmlDocument();
-            using (
-                var transformDocumentStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
-                    "com.espertech.esper.client.InitializerTransform.xslt"))
-            {
+            using (var transformDocumentStream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream("com.espertech.esper.client.InitializerTransform.xslt")) {
                 transformDocument.Load(transformDocumentStream);
             }
 
@@ -61,9 +60,10 @@ namespace com.espertech.esper.client
         /// Initializes a new instance of the <see cref="ConfigurationParser"/> class.
         /// </summary>
         /// <param name="resourceManager">The resource manager.</param>
-        public ConfigurationParser(IResourceManager resourceManager)
+        public ConfigurationParser(IContainer container)
         {
-            _resourceManager = resourceManager;
+            _container = container;
+            _resourceManager = container.Resolve<IResourceManager>();
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace com.espertech.esper.client
         /// <param name="stream">The stream.</param>
         /// <param name="resourceName">The name to use in warning/error messages</param>
         /// <throws>  com.espertech.esper.client.EPException </throws>
-        public static void DoConfigure(Configuration configuration, Stream stream, String resourceName)
+        public void DoConfigure(Configuration configuration, Stream stream, String resourceName)
         {
             var document = GetDocument(stream, resourceName);
             DoConfigure(configuration, document);
@@ -117,12 +117,12 @@ namespace com.espertech.esper.client
         /// <param name="configuration">is the configuration object to populate</param>
         /// <param name="doc">to parse</param>
         /// <exception cref="EPException">to indicate parse errors</exception>
-        internal static void DoConfigure(Configuration configuration, XmlDocument doc)
+        public void DoConfigure(Configuration configuration, XmlDocument doc)
         {
             DoConfigure(configuration, doc.DocumentElement);
         }
 
-        internal static void DoConfigure(Configuration configuration, XmlElement rootElement)
+        public void DoConfigure(Configuration configuration, XmlElement rootElement)
         {
             foreach (var element in CreateElementEnumerable(rootElement.ChildNodes))
             {
@@ -196,13 +196,13 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleEventTypeAutoNames(Configuration configuration, XmlElement element)
+        private void HandleEventTypeAutoNames(Configuration configuration, XmlElement element)
         {
             var name = GetRequiredAttribute(element, "package-name");
             configuration.AddEventTypeAutoName(name);
         }
 
-        private static void HandleEventTypes(Configuration configuration, XmlElement element)
+        private void HandleEventTypes(Configuration configuration, XmlElement element)
         {
             var name = GetRequiredAttribute(element, "name");
             var classNode = element.Attributes.GetNamedItem("class");
@@ -217,7 +217,7 @@ namespace com.espertech.esper.client
             HandleEventTypeDef(name, optionalClassName, configuration, element);
         }
 
-        private static void HandleEventTypeDef(
+        private void HandleEventTypeDef(
             string name,
             string optionalClassName,
             Configuration configuration,
@@ -249,7 +249,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleMap(string name, Configuration configuration, XmlElement eventTypeElement)
+        private void HandleMap(string name, Configuration configuration, XmlElement eventTypeElement)
         {
             ConfigurationEventTypeMap config;
             var startTimestampProp = GetOptionalAttribute(eventTypeElement, "start-timestamp-property-name");
@@ -282,7 +282,7 @@ namespace com.espertech.esper.client
             configuration.AddEventType(name, propertyTypeNames);
         }
 
-        private static void HandleObjectArray(string name, Configuration configuration, XmlElement eventTypeElement)
+        private void HandleObjectArray(string name, Configuration configuration, XmlElement eventTypeElement)
         {
             ConfigurationEventTypeObjectArray config;
             var startTimestampProp = GetOptionalAttribute(eventTypeElement, "start-timestamp-property-name");
@@ -318,7 +318,7 @@ namespace com.espertech.esper.client
             configuration.AddEventType(name, propertyNames.ToArray(), propertyTypes.ToArray());
         }
 
-        private static void HandleXMLDOM(string name, Configuration configuration, XmlElement xmldomElement)
+        private void HandleXMLDOM(string name, Configuration configuration, XmlElement xmldomElement)
         {
             var rootElementName = GetRequiredAttribute(xmldomElement, "root-element-name");
             var rootElementNamespace = GetOptionalAttribute(xmldomElement, "root-element-namespace");
@@ -426,7 +426,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleAvro(string name, Configuration configuration, XmlElement element)
+        private void HandleAvro(string name, Configuration configuration, XmlElement element)
         {
             var schemaText = GetOptionalAttribute(element, "schema-text");
 
@@ -449,7 +449,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleLegacy(
+        private void HandleLegacy(
             string name,
             string className,
             Configuration configuration,
@@ -511,20 +511,20 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleAutoImports(Configuration configuration, XmlElement element)
+        private void HandleAutoImports(Configuration configuration, XmlElement element)
         {
             var name = GetRequiredAttribute(element, "import-name");
             var assembly = GetOptionalAttribute(element, "assembly");
             configuration.AddImport(name, assembly);
         }
 
-        private static void HandleAutoImportAnnotations(Configuration configuration, XmlElement element)
+        private void HandleAutoImportAnnotations(Configuration configuration, XmlElement element)
         {
             var name = GetRequiredAttribute(element, "import-name");
             configuration.AddAnnotationImport(name);
         }
 
-        private static void HandleDatabaseRefs(Configuration configuration, XmlElement element)
+        private void HandleDatabaseRefs(Configuration configuration, XmlElement element)
         {
             var name = GetRequiredAttribute(element, "name");
             var configDBRef = new ConfigurationDBRef();
@@ -538,7 +538,7 @@ namespace com.espertech.esper.client
                         {
                             var properties = CreatePropertiesFromAttributes(subElement.Attributes);
                             var driverName = subElement.Attributes.GetNamedItem("type").Value;
-                            configDBRef.SetDatabaseDriver(driverName, properties);
+                            configDBRef.SetDatabaseDriver(_container, driverName, properties);
                             break;
                         }
                     case "connection-lifecycle":
@@ -635,7 +635,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleMethodReference(Configuration configuration, XmlElement element)
+        private void HandleMethodReference(Configuration configuration, XmlElement element)
         {
             var className = GetRequiredAttribute(element, "class-name");
             var configMethodRef = new ConfigurationMethodRef();
@@ -663,7 +663,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandlePlugInView(Configuration configuration, XmlElement element)
+        private void HandlePlugInView(Configuration configuration, XmlElement element)
         {
             var @namespace = GetRequiredAttribute(element, "namespace");
             var name = GetRequiredAttribute(element, "name");
@@ -671,7 +671,7 @@ namespace com.espertech.esper.client
             configuration.AddPlugInView(@namespace, name, factoryClassName);
         }
 
-        private static void HandlePlugInVirtualDW(Configuration configuration, XmlElement element)
+        private void HandlePlugInVirtualDW(Configuration configuration, XmlElement element)
         {
             var @namespace = GetRequiredAttribute(element, "namespace");
             var name = GetRequiredAttribute(element, "name");
@@ -680,14 +680,14 @@ namespace com.espertech.esper.client
             configuration.AddPlugInVirtualDataWindow(@namespace, name, factoryClassName, config);
         }
 
-        private static void HandlePlugInAggregation(Configuration configuration, XmlElement element)
+        private void HandlePlugInAggregation(Configuration configuration, XmlElement element)
         {
             var name = GetRequiredAttribute(element, "name");
             var factoryClassName = GetRequiredAttribute(element, "factory-class");
             configuration.AddPlugInAggregationFunctionFactory(name, factoryClassName);
         }
 
-        private static void HandlePlugInMultiFunctionAggregation(Configuration configuration, XmlElement element)
+        private void HandlePlugInMultiFunctionAggregation(Configuration configuration, XmlElement element)
         {
             var functionNames = GetRequiredAttribute(element, "function-names");
             var factoryClassName = GetOptionalAttribute(element, "factory-class");
@@ -712,7 +712,7 @@ namespace com.espertech.esper.client
             configuration.AddPlugInAggregationMultiFunction(config);
         }
 
-        private static void HandlePlugInSingleRow(Configuration configuration, XmlElement element)
+        private void HandlePlugInSingleRow(Configuration configuration, XmlElement element)
         {
             var name = element.Attributes.GetNamedItem("name").InnerText;
             var functionClassName = element.Attributes.GetNamedItem("function-class").InnerText;
@@ -746,7 +746,7 @@ namespace com.espertech.esper.client
                     eventTypeName));
         }
 
-        private static void HandlePlugInPatternGuard(Configuration configuration, XmlElement element)
+        private void HandlePlugInPatternGuard(Configuration configuration, XmlElement element)
         {
             var @namespace = GetRequiredAttribute(element, "namespace");
             var name = GetRequiredAttribute(element, "name");
@@ -754,7 +754,7 @@ namespace com.espertech.esper.client
             configuration.AddPlugInPatternGuard(@namespace, name, factoryClassName);
         }
 
-        private static void HandlePlugInPatternObserver(Configuration configuration, XmlElement element)
+        private void HandlePlugInPatternObserver(Configuration configuration, XmlElement element)
         {
             var @namespace = GetRequiredAttribute(element, "namespace");
             var name = GetRequiredAttribute(element, "name");
@@ -762,7 +762,7 @@ namespace com.espertech.esper.client
             configuration.AddPlugInPatternObserver(@namespace, name, factoryClassName);
         }
 
-        private static void HandleVariable(Configuration configuration, XmlElement element)
+        private void HandleVariable(Configuration configuration, XmlElement element)
         {
             var variableName = GetRequiredAttribute(element, "name");
             var type = GetRequiredAttribute(element, "type");
@@ -790,7 +790,7 @@ namespace com.espertech.esper.client
             configuration.AddVariable(variableName, variableType, initValue, isConstant);
         }
 
-        private static void HandlePluginLoaders(Configuration configuration, XmlElement element)
+        private void HandlePluginLoaders(Configuration configuration, XmlElement element)
         {
             var loaderName = GetRequiredAttribute(element, "name");
             var className = GetRequiredAttribute(element, "class-name");
@@ -818,7 +818,7 @@ namespace com.espertech.esper.client
             configuration.AddPluginLoader(loaderName, className, properties, configXML);
         }
 
-        private static void HandlePlugInEventRepresentation(Configuration configuration, XmlElement element)
+        private void HandlePlugInEventRepresentation(Configuration configuration, XmlElement element)
         {
             var uri = GetRequiredAttribute(element, "uri");
             var className = GetRequiredAttribute(element, "class-name");
@@ -881,7 +881,7 @@ namespace com.espertech.esper.client
             configuration.AddPlugInEventRepresentation(uriParsed, className, initializer);
         }
 
-        private static void HandlePlugInEventType(Configuration configuration, XmlElement element)
+        private void HandlePlugInEventType(Configuration configuration, XmlElement element)
         {
             var uris = new List<Uri>();
             var name = GetRequiredAttribute(element, "name");
@@ -958,7 +958,7 @@ namespace com.espertech.esper.client
             configuration.AddPlugInEventType(name, uris.ToArray(), initializer);
         }
 
-        private static void HandlePlugInEventTypeNameResolution(Configuration configuration, XmlElement element)
+        private void HandlePlugInEventTypeNameResolution(Configuration configuration, XmlElement element)
         {
             var uris = new List<Uri>();
             foreach (var subElement in CreateElementEnumerable(element.ChildNodes))
@@ -983,7 +983,7 @@ namespace com.espertech.esper.client
             configuration.PlugInEventTypeResolutionURIs = uris.ToArray();
         }
 
-        private static void HandleRevisionEventType(Configuration configuration, XmlElement element)
+        private void HandleRevisionEventType(Configuration configuration, XmlElement element)
         {
             var revEventType = new ConfigurationRevisionEventType();
             var revTypeName = GetRequiredAttribute(element, "name");
@@ -1037,7 +1037,7 @@ namespace com.espertech.esper.client
             configuration.AddRevisionEventType(revTypeName, revEventType);
         }
 
-        private static void HandleVariantStream(Configuration configuration, XmlElement element)
+        private void HandleVariantStream(Configuration configuration, XmlElement element)
         {
             var variantStream = new ConfigurationVariantStream();
             var varianceName = GetRequiredAttribute(element, "name");
@@ -1070,7 +1070,7 @@ namespace com.espertech.esper.client
             configuration.AddVariantStream(varianceName, variantStream);
         }
 
-        private static void HandleEngineSettings(Configuration configuration, XmlElement element)
+        private void HandleEngineSettings(Configuration configuration, XmlElement element)
         {
             foreach (var subElement in CreateElementEnumerable(element.ChildNodes))
             {
@@ -1081,7 +1081,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleEngineSettingsDefaults(Configuration configuration, XmlElement parentElement)
+        private void HandleEngineSettingsDefaults(Configuration configuration, XmlElement parentElement)
         {
             foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
             {
@@ -1148,7 +1148,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleDefaultsThreading(Configuration configuration, XmlElement parentElement)
+        private void HandleDefaultsThreading(Configuration configuration, XmlElement parentElement)
         {
             var engineFairlockStr = GetOptionalAttribute(parentElement, "engine-fairlock");
             if (engineFairlockStr != null)
@@ -1278,7 +1278,7 @@ namespace com.espertech.esper.client
             return new ThreadPoolConfig(isEnabled, numThreads, capacity);
         }
 
-        private static void HandleDefaultsViewResources(Configuration configuration, XmlElement parentElement)
+        private void HandleDefaultsViewResources(Configuration configuration, XmlElement parentElement)
         {
             foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
             {
@@ -1309,7 +1309,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleDefaultsLogging(Configuration configuration, XmlElement parentElement)
+        private void HandleDefaultsLogging(Configuration configuration, XmlElement parentElement)
         {
             foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
             {
@@ -1351,7 +1351,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleDefaultsVariables(Configuration configuration, XmlElement parentElement)
+        private void HandleDefaultsVariables(Configuration configuration, XmlElement parentElement)
         {
             foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
             {
@@ -1364,7 +1364,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleDefaultsPatterns(Configuration configuration, XmlElement parentElement)
+        private void HandleDefaultsPatterns(Configuration configuration, XmlElement parentElement)
         {
             foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
             {
@@ -1383,7 +1383,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleDefaultsMatchRecognize(Configuration configuration, XmlElement parentElement)
+        private void HandleDefaultsMatchRecognize(Configuration configuration, XmlElement parentElement)
         {
             foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
             {
@@ -1402,7 +1402,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleDefaultsStreamSelection(Configuration configuration, XmlElement parentElement)
+        private void HandleDefaultsStreamSelection(Configuration configuration, XmlElement parentElement)
         {
             foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
             {
@@ -1437,7 +1437,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleDefaultsTimeSource(Configuration configuration, XmlElement parentElement)
+        private void HandleDefaultsTimeSource(Configuration configuration, XmlElement parentElement)
         {
             foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
             {
@@ -1487,7 +1487,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleMetricsReporting(Configuration configuration, XmlElement parentElement)
+        private void HandleMetricsReporting(Configuration configuration, XmlElement parentElement)
         {
             var enabled = GetRequiredAttribute(parentElement, "enabled");
             var isEnabled = Boolean.Parse(enabled);
@@ -1545,7 +1545,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleLanguage(Configuration configuration, XmlElement parentElement)
+        private void HandleLanguage(Configuration configuration, XmlElement parentElement)
         {
             var sortUsingCollator = GetOptionalAttribute(parentElement, "sort-using-collator");
             if (sortUsingCollator != null)
@@ -1555,7 +1555,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleExpression(Configuration configuration, XmlElement parentElement)
+        private void HandleExpression(Configuration configuration, XmlElement parentElement)
         {
             var integerDivision = GetOptionalAttribute(parentElement, "integer-division");
             if (integerDivision != null)
@@ -1615,7 +1615,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleExecution(Configuration configuration, XmlElement parentElement)
+        private void HandleExecution(Configuration configuration, XmlElement parentElement)
         {
             var prioritizedStr = GetOptionalAttribute(parentElement, "prioritized");
             if (prioritizedStr != null)
@@ -1670,7 +1670,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleDefaultScriptConfig(Configuration configuration, XmlElement parentElement)
+        private void HandleDefaultScriptConfig(Configuration configuration, XmlElement parentElement)
         {
             var defaultDialect = GetOptionalAttribute(parentElement, "default-dialect");
             if (defaultDialect != null)
@@ -1694,7 +1694,7 @@ namespace com.espertech.esper.client
             return list;
         }
 
-        private static void HandleMetricsReportingPatterns(
+        private void HandleMetricsReportingPatterns(
             ConfigurationMetricsReporting.StmtGroupMetrics groupDef,
             XmlElement parentElement)
         {
@@ -1730,7 +1730,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleDefaultsEventMeta(Configuration configuration, XmlElement parentElement)
+        private void HandleDefaultsEventMeta(Configuration configuration, XmlElement parentElement)
         {
             foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
             {

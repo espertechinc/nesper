@@ -125,7 +125,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                 Assert.Fail();
             }
 
-            epService.EPAdministrator.CreateEPL("create window MyWindow#Time(5 days) as C");
+            epService.EPAdministrator.CreateEPL("create window MyWindow#time(5 days) as C");
             var stmt = epService.EPAdministrator.CreateEPL("select * from MyWindow");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -225,7 +225,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPAdministrator.CreateEPL(
                 "create " + rep.GetOutputTypeCreateSchemaName() + " schema E1 as (myint long)");
             var message = !rep.IsAvroEvent()
-                ? "Error starting statement: Type by name 'E1' in property 'myint' expected class java.lang.int? but receives class java.lang.long"
+                ? "Error starting statement: Type by name 'E1' in property 'myint' expected class " + Name.Of<int>() + " but receives class java.lang.long"
                 : "Error starting statement: Type by name 'E1' in property 'myint' expected schema '\"long\"' but received schema '\"int\"'";
             SupportMessageAssertUtil.TryInvalid(epService, "insert into E1 select mysrc.* from Src as mysrc", message);
 

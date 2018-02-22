@@ -17,6 +17,7 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core.eval;
 using com.espertech.esper.epl.table.mgmt;
+using com.espertech.esper.events;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
@@ -45,7 +46,8 @@ namespace com.espertech.esper.epl.core
             var factory = new SelectExprProcessorHelper(
                 Collections.GetEmptyList<int>(), SupportSelectExprFactory.MakeNoAggregateSelectList(), 
                 Collections.GetEmptyList<SelectExprStreamDesc>(), null, null, false,
-                new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.Service, null,
+                new SupportStreamTypeSvc1Stream(),
+                container.Resolve<EventAdapterService>(), null,
                 selectExprEventTypeRegistry, statementContext.EngineImportService, 1, "stmtname", null,
                 new Configuration(container), null, new TableServiceImpl(container), null);
             _selectExprProcessor = factory.Evaluator;

@@ -172,7 +172,7 @@ namespace com.espertech.esper.regression.events.revision
         }
     
         private void RunAssertionGroupLength(EPServiceProvider epService) {
-            EPStatement stmtCreateWin = epService.EPAdministrator.CreateEPL("create window RevQuote#Groupwin(p1)#length(2) as select * from RevisableQuote");
+            EPStatement stmtCreateWin = epService.EPAdministrator.CreateEPL("create window RevQuote#groupwin(p1)#length(2) as select * from RevisableQuote");
             epService.EPAdministrator.CreateEPL("insert into RevQuote select * from FullEvent");
             epService.EPAdministrator.CreateEPL("insert into RevQuote select * from D1");
             epService.EPAdministrator.CreateEPL("insert into RevQuote select * from D5");

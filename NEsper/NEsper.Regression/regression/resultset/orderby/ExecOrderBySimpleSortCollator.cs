@@ -62,7 +62,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
             // test sort view
             var listener = new SupportUpdateListener();
-            stmtText = "select irstream theString from SupportBean#Sort(2, theString asc)";
+            stmtText = "select irstream theString from SupportBean#sort(2, theString asc)";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtText);
             stmtTwo.Events += listener.Update;
     
