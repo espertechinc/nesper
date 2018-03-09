@@ -103,15 +103,15 @@ namespace com.espertech.esper.regression.events.map
             epService.EPAdministrator.Configuration.AddEventType("MyLevel2", properties);
 
             var statementText = "select " +
-                                "Exists(innermap.int?) as t0, " +
-                                "Exists(innermap.innerTwo?.nested) as t1, " +
-                                "Exists(innermap.innerTwo?.innerThree.nestedTwo) as t2, " +
-                                "Exists(dynamicOne?) as t3, " +
-                                "Exists(dynamicTwo?) as t4, " +
-                                "Exists(indexed[1]?) as t5, " +
-                                "Exists(Mapped('keyOne')?) as t6, " +
-                                "Exists(innermap.indexedTwo[0]?) as t7, " +
-                                "Exists(innermap.MappedTwo('keyTwo')?) as t8 " +
+                                "exists(innermap.int?) as t0, " +
+                                "exists(innermap.innerTwo?.nested) as t1, " +
+                                "exists(innermap.innerTwo?.innerThree.nestedTwo) as t2, " +
+                                "exists(dynamicOne?) as t3, " +
+                                "exists(dynamicTwo?) as t4, " +
+                                "exists(indexed[1]?) as t5, " +
+                                "exists(Mapped('keyOne')?) as t6, " +
+                                "exists(innermap.indexedTwo[0]?) as t7, " +
+                                "exists(innermap.MappedTwo('keyTwo')?) as t8 " +
                                 "from MyLevel2#length(5)";
             var statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();

@@ -33,18 +33,18 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         public override void Run(EPServiceProvider epService) {
             SupportQueryPlanIndexHook.Reset();
-            var fields = new string[]{"theString", "intPrimitive"};
+            var fields = new string[]{"TheString", "IntPrimitive"};
     
             // create window
             string stmtTextCreate = "create window MyWindow#keepall as select * from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindow select * from " + typeof(SupportBean).FullName + "(theString like 'E%')";
+            string stmtTextInsertOne = "insert into MyWindow select * from " + typeof(SupportBean).FullName + "(TheString like 'E%')";
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create on-select stmt
-            string stmtTextSelect = "on " + typeof(SupportBean_A).Name + " insert into MyStream select mywin.* from MyWindow as mywin order by theString asc";
+            string stmtTextSelect = "on " + typeof(SupportBean_A).FullName + " insert into MyStream select mywin.* from MyWindow as mywin order by TheString asc";
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listenerSelect = new SupportUpdateListener();
             stmtSelect.Events += listenerSelect.Update;
@@ -57,7 +57,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             stmtConsumer.Events += listenerConsumer.Update;
     
             // create second inserting statement
-            string stmtTextInsertTwo = "insert into MyStream select * from " + typeof(SupportBean).FullName + "(theString like 'I%')";
+            string stmtTextInsertTwo = "insert into MyStream select * from " + typeof(SupportBean).FullName + "(TheString like 'I%')";
             epService.EPAdministrator.CreateEPL(stmtTextInsertTwo);
     
             // send event
@@ -94,18 +94,18 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             // check type
             EventType consumerType = stmtConsumer.EventType;
-            Assert.AreEqual(typeof(string), consumerType.GetPropertyType("theString"));
+            Assert.AreEqual(typeof(string), consumerType.GetPropertyType("TheString"));
             Assert.IsTrue(consumerType.PropertyNames.Length > 10);
             Assert.AreEqual(typeof(SupportBean), consumerType.UnderlyingType);
     
             // check type
             EventType onSelectType = stmtSelect.EventType;
-            Assert.AreEqual(typeof(string), onSelectType.GetPropertyType("theString"));
+            Assert.AreEqual(typeof(string), onSelectType.GetPropertyType("TheString"));
             Assert.IsTrue(onSelectType.PropertyNames.Length > 10);
             Assert.AreEqual(typeof(SupportBean), onSelectType.UnderlyingType);
     
             // delete all from named window
-            string stmtTextDelete = "on " + typeof(SupportBean_B).Name + " delete from MyWindow";
+            string stmtTextDelete = "on " + typeof(SupportBean_B).FullName + " delete from MyWindow";
             epService.EPAdministrator.CreateEPL(stmtTextDelete);
             SendSupportBean_B(epService, "B1");
     

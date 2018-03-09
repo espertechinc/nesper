@@ -6,18 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.datetime
 {
@@ -28,43 +22,43 @@ namespace com.espertech.esper.regression.expr.datetime
             configuration.AddEventType("SupportBean_ST0_Container", typeof(SupportBean_ST0_Container));
             configuration.AddEventType("SupportDateTime", typeof(SupportDateTime));
             configuration.AddImport(typeof(SupportBean_ST0_Container));
-            configuration.AddPlugInSingleRowFunction("makeTest", typeof(SupportBean_ST0_Container).Name, "makeTest");
+            configuration.AddPlugInSingleRowFunction("makeTest", typeof(SupportBean_ST0_Container).Name, "MakeTest");
         }
     
         public override void Run(EPServiceProvider epService) {
             string epl;
     
             // invalid incompatible params
-            epl = "select Contained.Set('hour', 1) from SupportBean_ST0_Container";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'contained.Set(\"hour\",1)': Date-time enumeration method 'set' requires either a Calendar, Date, long, LocalDateTime or ZonedDateTime value as input or events of an event type that declares a timestamp property but received collection of events of type '" + typeof(SupportBean_ST0).Name + "'");
+            epl = "select Contained.set('hour', 1) from SupportBean_ST0_Container";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.set(\"hour\",1)': Date-time enumeration method 'set' requires either a DateTime, DateTimeEx or long value as input or events of an event type that declares a timestamp property but received collection of events of type '" + typeof(SupportBean_ST0).FullName + "'");
     
             // invalid incompatible params
-            epl = "select window(*).Set('hour', 1) from SupportBean#keepall";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'window(*).Set(\"hour\",1)': Date-time enumeration method 'set' requires either a Calendar, Date, long, LocalDateTime or ZonedDateTime value as input or events of an event type that declares a timestamp property but received collection of events of type 'SupportBean'");
+            epl = "select window(*).set('hour', 1) from SupportBean#keepall";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'window(*).set(\"hour\",1)': Date-time enumeration method 'set' requires either a DateTime, DateTimeEx or long value as input or events of an event type that declares a timestamp property but received collection of events of type 'SupportBean'");
     
             // invalid incompatible params
-            epl = "select Utildate.Set('invalid') from SupportDateTime";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'utildate.Set(\"invalid\")': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value");
+            epl = "select Utildate.set('invalid') from SupportDateTime";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'utildate.set(\"invalid\")': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value");
     
             // invalid lambda parameter
-            epl = "select Utildate.Set(x => true) from SupportDateTime";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'utildate.Set()': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value");
+            epl = "select Utildate.set(x => true) from SupportDateTime";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'utildate.set()': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value");
     
             // invalid no parameter
-            epl = "select Utildate.Set() from SupportDateTime";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'utildate.Set()': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value");
+            epl = "select Utildate.set() from SupportDateTime";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'utildate.set()': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value");
     
             // invalid wrong parameter
-            epl = "select Utildate.Set(1) from SupportDateTime";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'utildate.Set(1)': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value");
+            epl = "select Utildate.set(1) from SupportDateTime";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'utildate.set(1)': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value");
     
             // invalid wrong parameter
-            epl = "select Utildate.Between('a', 'b') from SupportDateTime";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'utildate.Between(\"a\",\"b\")': Error validating date-time method 'between', expected a long-typed, Date-typed or Calendar-typed result for expression parameter 0 but received System.String");
+            epl = "select Utildate.between('a', 'b') from SupportDateTime";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'utildate.between(\"a\",\"b\")': Error validating date-time method 'between', expected a long-typed, Date-typed or Calendar-typed result for expression parameter 0 but received System.String");
     
             // invalid wrong parameter
-            epl = "select Utildate.Between(utildate, utildate, 1, true) from SupportDateTime";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'utildate.Between(utildate,utildate,...(42 chars)': Error validating date-time method 'between', expected a bool-type result for expression parameter 2 but received " + Name.Of<int>() + "");
+            epl = "select Utildate.between(utildate, utildate, 1, true) from SupportDateTime";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'utildate.between(utildate,utildate,...(42 chars)': Error validating date-time method 'between', expected a bool-type result for expression parameter 2 but received " + Name.Of<int>() + "");
     
             // mispatch parameter to input
             epl = "select Utildate.Format(java.time.format.DateTimeFormatter.ISO_ORDINAL_DATE) from SupportDateTime";

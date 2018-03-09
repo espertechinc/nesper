@@ -77,7 +77,7 @@ namespace com.espertech.esper.regression.expr.expr
             string caseExpr = "select case" +
                     " when symbol=\"GE\" then volume" +
                     " when symbol=\"DELL\" then sum(price) " +
-                    "end as p1 from " + typeof(SupportMarketDataBean).FullName + ".win:Length(10)";
+                    "end as p1 from " + typeof(SupportMarketDataBean).FullName + ".win:length(10)";
     
             Assert.AreEqual(caseExpr, model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -137,7 +137,7 @@ namespace com.espertech.esper.regression.expr.expr
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("p1"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("p1"));
     
             RunCaseSyntax1WithElse(epService, listener);
     
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regression.expr.expr
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("p1"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("p1"));
     
             RunCaseSyntax1WithElse(epService, listener);
     
@@ -179,7 +179,7 @@ namespace com.espertech.esper.regression.expr.expr
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("p1"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("p1"));
     
             RunCaseSyntax1WithElse(epService, listener);
     
@@ -225,11 +225,11 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCaseSyntax2(EPServiceProvider epService) {
-            string caseExpr = "select case intPrimitive " +
-                    " when longPrimitive then (intPrimitive + longPrimitive) " +
-                    " when doublePrimitive then intPrimitive * doublePrimitive" +
-                    " when floatPrimitive then floatPrimitive / doublePrimitive " +
-                    " else (intPrimitive + longPrimitive + floatPrimitive + doublePrimitive) end as p1 " +
+            string caseExpr = "select case IntPrimitive " +
+                    " when LongPrimitive then (IntPrimitive + LongPrimitive) " +
+                    " when DoublePrimitive then IntPrimitive * DoublePrimitive" +
+                    " when FloatPrimitive then FloatPrimitive / DoublePrimitive " +
+                    " else (IntPrimitive + LongPrimitive + FloatPrimitive + DoublePrimitive) end as p1 " +
                     " from " + typeof(SupportBean).FullName + "#length(10)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
@@ -263,24 +263,24 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionCaseSyntax2StringsNBranches(EPServiceProvider epService) {
             // Test of the various coercion user cases.
-            string caseExpr = "select case intPrimitive" +
-                    " when 1 then bool?.ToString(boolPrimitive) " +
-                    " when 2 then bool?.ToString(boolBoxed) " +
-                    " when 3 then Convert.ToString(intPrimitive) " +
-                    " when 4 then Convert.ToString(intBoxed)" +
-                    " when 5 then Long.ToString(longPrimitive) " +
-                    " when 6 then Long.ToString(longBoxed) " +
+            string caseExpr = "select case IntPrimitive" +
+                    " when 1 then bool?.ToString(BoolPrimitive) " +
+                    " when 2 then bool?.ToString(BoolBoxed) " +
+                    " when 3 then Convert.ToString(IntPrimitive) " +
+                    " when 4 then Convert.ToString(IntBoxed)" +
+                    " when 5 then Long.ToString(LongPrimitive) " +
+                    " when 6 then Long.ToString(LongBoxed) " +
                     " when 7 then Character.ToString(charPrimitive) " +
                     " when 8 then Character.ToString(charBoxed) " +
-                    " when 9 then Short.ToString(shortPrimitive) " +
-                    " when 10 then Short.ToString(shortBoxed) " +
+                    " when 9 then Short.ToString(ShortPrimitive) " +
+                    " when 10 then Short.ToString(ShortBoxed) " +
                     " when 11 then Byte.ToString(bytePrimitive) " +
                     " when 12 then Byte.ToString(byteBoxed) " +
-                    " when 13 then Float.ToString(floatPrimitive) " +
-                    " when 14 then Float.ToString(floatBoxed) " +
-                    " when 15 then double?.ToString(doublePrimitive) " +
-                    " when 16 then double?.ToString(doubleBoxed) " +
-                    " when 17 then theString " +
+                    " when 13 then Float.ToString(FloatPrimitive) " +
+                    " when 14 then Float.ToString(FloatBoxed) " +
+                    " when 15 then double?.ToString(DoublePrimitive) " +
+                    " when 16 then double?.ToString(DoubleBoxed) " +
+                    " when 17 then TheString " +
                     " else 'x' end as p1 " +
                     " from " + typeof(SupportBean).FullName + "#length(1)";
     
@@ -365,7 +365,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCaseSyntax2NoElseWithNull(EPServiceProvider epService) {
-            string caseExpr = "select case theString " +
+            string caseExpr = "select case TheString " +
                     " when null then true " +
                     " when '' then false end as p1" +
                     " from " + typeof(SupportBean).FullName + "#length(100)";
@@ -392,8 +392,8 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionCaseSyntax1WithNull(EPServiceProvider epService) {
             string caseExpr = "select case " +
-                    " when theString is null then true " +
-                    " when theString = '' then false end as p1" +
+                    " when TheString is null then true " +
+                    " when TheString = '' then false end as p1" +
                     " from " + typeof(SupportBean).FullName + "#length(100)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
@@ -417,7 +417,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCaseSyntax2WithNull_OM(EPServiceProvider epService) {
-            string caseExpr = "select case intPrimitive " +
+            string caseExpr = "select case IntPrimitive " +
                     "when 1 then null " +
                     "when 2 then 1.0d " +
                     "when 3 then null " +
@@ -426,7 +426,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.Create()
-                .Add(Expressions.CaseSwitch("intPrimitive")
+                .Add(Expressions.CaseSwitch("IntPrimitive")
                     .SetElse(Expressions.Constant(2))
                     .Add(Expressions.Constant(1), Expressions.Constant(null))
                     .Add(Expressions.Constant(2), Expressions.Constant(1.0))
@@ -447,7 +447,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCaseSyntax2WithNull_compile(EPServiceProvider epService) {
-            string caseExpr = "select case intPrimitive " +
+            string caseExpr = "select case IntPrimitive " +
                     "when 1 then null " +
                     "when 2 then 1.0d " +
                     "when 3 then null " +
@@ -469,7 +469,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCaseSyntax2WithNull(EPServiceProvider epService) {
-            string caseExpr = "select case intPrimitive " +
+            string caseExpr = "select case IntPrimitive " +
                     " when 1 then null " +
                     " when 2 then 1.0" +
                     " when 3 then null " +
@@ -498,7 +498,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCaseSyntax2WithNullBool(EPServiceProvider epService) {
-            string caseExpr = "select case boolBoxed " +
+            string caseExpr = "select case BoolBoxed " +
                     " when null then 1 " +
                     " when true then 2l" +
                     " when false then 3 " +
@@ -520,7 +520,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCaseSyntax2WithCoercion(EPServiceProvider epService) {
-            string caseExpr = "select case intPrimitive " +
+            string caseExpr = "select case IntPrimitive " +
                     " when 1.0 then null " +
                     " when 4/2.0 then 'x'" +
                     " end as p1 from " + typeof(SupportBean).FullName + "#length(100)";
@@ -542,7 +542,7 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionCaseSyntax2WithinExpression(EPServiceProvider epService) {
             string caseExpr = "select 2 * (case " +
-                    " intPrimitive when 1 then 2 " +
+                    " IntPrimitive when 1 then 2 " +
                     " when 2 then 3 " +
                     " else 10 end) as p1 " +
                     " from " + typeof(SupportBean).FullName + "#length(1)";
@@ -568,9 +568,9 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCaseSyntax2Sum(EPServiceProvider epService) {
-            string caseExpr = "select case intPrimitive when 1 then sum(longPrimitive) " +
-                    " when 2 then sum(floatPrimitive) " +
-                    " else sum(intPrimitive) end as p1 " +
+            string caseExpr = "select case IntPrimitive when 1 then sum(LongPrimitive) " +
+                    " when 2 then sum(FloatPrimitive) " +
+                    " else sum(IntPrimitive) end as p1 " +
                     " from " + typeof(SupportBean).FullName + "#length(10)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
@@ -607,8 +607,8 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionCaseSyntax2EnumChecks(EPServiceProvider epService) {
             string caseExpr = "select case supportEnum " +
-                    " when " + typeof(SupportEnum).Name + ".GetValueForEnum(0) then 1 " +
-                    " when " + typeof(SupportEnum).Name + ".GetValueForEnum(1) then 2 " +
+                    " when " + typeof(SupportEnum).FullName + ".GetValueForEnum(0) then 1 " +
+                    " when " + typeof(SupportEnum).FullName + ".GetValueForEnum(1) then 2 " +
                     " end as p1 " +
                     " from " + typeof(SupportBeanWithEnum).FullName + "#length(10)";
     
@@ -633,10 +633,10 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCaseSyntax2EnumResult(EPServiceProvider epService) {
-            string caseExpr = "select case intPrimitive * 2 " +
-                    " when 2 then " + typeof(SupportEnum).Name + ".GetValueForEnum(0) " +
-                    " when 4 then " + typeof(SupportEnum).Name + ".GetValueForEnum(1) " +
-                    " else " + typeof(SupportEnum).Name + ".GetValueForEnum(2) " +
+            string caseExpr = "select case IntPrimitive * 2 " +
+                    " when 2 then " + typeof(SupportEnum).FullName + ".GetValueForEnum(0) " +
+                    " when 4 then " + typeof(SupportEnum).FullName + ".GetValueForEnum(1) " +
+                    " else " + typeof(SupportEnum).FullName + ".GetValueForEnum(2) " +
                     " end as p1 " +
                     " from " + typeof(SupportBean).FullName + "#length(10)";
     
@@ -661,7 +661,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCaseSyntax2NoAsName(EPServiceProvider epService) {
-            string caseSubExpr = "case intPrimitive when 1 then 0 end";
+            string caseSubExpr = "case IntPrimitive when 1 then 0 end";
             string caseExpr = "select " + caseSubExpr +
                     " from " + typeof(SupportBean).FullName + "#length(10)";
     

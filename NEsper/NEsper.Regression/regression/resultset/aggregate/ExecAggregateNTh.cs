@@ -29,10 +29,10 @@ namespace com.espertech.esper.regression.resultset.aggregate
         public override void Run(EPServiceProvider epService) {
     
             string epl = "select " +
-                    "theString, " +
-                    "Nth(intPrimitive,0) as int1, " +  // current
-                    "Nth(intPrimitive,1) as int2 " +   // one before
-                    "from SupportBean#keepall group by theString output last every 3 events order by theString";
+                    "TheString, " +
+                    "nth(IntPrimitive,0) as int1, " +  // current
+                    "nth(IntPrimitive,1) as int2 " +   // one before
+                    "from SupportBean#keepall group by TheString output last every 3 events order by TheString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -47,12 +47,12 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             RunAssertion(epService, listener);
     
-            TryInvalid(epService, "select Nth() from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'Nth(*)': The nth aggregation function requires two parameters, an expression returning aggregation values and a numeric index constant [select Nth() from SupportBean]");
+            TryInvalid(epService, "select nth() from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'nth(*)': The nth aggregation function requires two parameters, an expression returning aggregation values and a numeric index constant [select nth() from SupportBean]");
         }
     
         private void RunAssertion(EPServiceProvider epService, SupportUpdateListener listener) {
-            string[] fields = "theString,int1,int2".Split(',');
+            string[] fields = "TheString,int1,int2".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("G2", 11));

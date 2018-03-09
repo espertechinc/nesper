@@ -50,7 +50,7 @@ namespace com.espertech.esper.regression.events.variant
             epService.EPAdministrator.CreateEPL("create window MainEventWindow#length(10000) as AllEvents");
             epService.EPAdministrator.CreateEPL("insert into MainEventWindow select " + this.GetType().Name + ".PreProcessEvent(@event) from AllEvents as event");
     
-            EPStatement statement = epService.EPAdministrator.CreateEPL("select * from MainEventWindow where theString = 'E'");
+            EPStatement statement = epService.EPAdministrator.CreateEPL("select * from MainEventWindow where TheString = 'E'");
             statement.AddEventHandlerWithReplay((new SupportUpdateListener()).Update);
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regression.events.variant
             Assert.AreSame(eventTwo, listenerOne.AssertOneGetNewAndReset().Underlying);
     
             stmt.Dispose();
-            string fields = "theString,boolBoxed,intPrimitive,longPrimitive,doublePrimitive,enumValue";
+            string fields = "TheString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,enumValue";
             stmt = epService.EPAdministrator.CreateEPL("select " + fields + " from MyVariantStreamOne");
             stmt.Events += listenerOne.Update;
             AssertEventTypeDefault(stmt.EventType);
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regression.events.variant
             // try dynamic property: should Exists but not show up as a declared property
             stmt.Dispose();
             fields = "v1,v2,v3";
-            stmt = epService.EPAdministrator.CreateEPL("select longBoxed? as v1,charBoxed? as v2,doubleBoxed? as v3 from MyVariantStreamOne");
+            stmt = epService.EPAdministrator.CreateEPL("select LongBoxed? as v1,charBoxed? as v2,DoubleBoxed? as v3 from MyVariantStreamOne");
             stmt.Events += listenerOne.Update;
             AssertEventTypeDefault(typeSelectAll);  // asserts prior "select *" event type
     
@@ -183,14 +183,14 @@ namespace com.espertech.esper.regression.events.variant
         }
     
         private void AssertEventTypeDefault(EventType eventType) {
-            string[] expected = "theString,boolBoxed,intPrimitive,longPrimitive,doublePrimitive,enumValue".Split(',');
+            string[] expected = "TheString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,enumValue".Split(',');
             string[] propertyNames = eventType.PropertyNames;
             EPAssertionUtil.AssertEqualsAnyOrder(expected, propertyNames);
-            Assert.AreEqual(typeof(string), eventType.GetPropertyType("theString"));
-            Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("boolBoxed"));
-            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("intPrimitive"));
-            Assert.AreEqual(typeof(long), eventType.GetPropertyType("longPrimitive"));
-            Assert.AreEqual(typeof(double?), eventType.GetPropertyType("doublePrimitive"));
+            Assert.AreEqual(typeof(string), eventType.GetPropertyType("TheString"));
+            Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("BoolBoxed"));
+            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("IntPrimitive"));
+            Assert.AreEqual(typeof(long), eventType.GetPropertyType("LongPrimitive"));
+            Assert.AreEqual(typeof(double?), eventType.GetPropertyType("DoublePrimitive"));
             Assert.AreEqual(typeof(SupportEnum), eventType.GetPropertyType("enumValue"));
             foreach (string expectedProp in expected) {
                 Assert.IsNotNull(eventType.GetGetter(expectedProp));
@@ -198,11 +198,11 @@ namespace com.espertech.esper.regression.events.variant
             }
     
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
-                    new EventPropertyDescriptor("theString", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("boolBoxed", typeof(bool?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("intPrimitive", typeof(int?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("longPrimitive", typeof(long), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("doublePrimitive", typeof(double?), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("TheString", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("BoolBoxed", typeof(bool?), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("IntPrimitive", typeof(int?), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("LongPrimitive", typeof(long), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("DoublePrimitive", typeof(double?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("enumValue", typeof(SupportEnum), null, false, false, false, false, false),
             }, eventType.PropertyDescriptors);
         }
@@ -214,7 +214,7 @@ namespace com.espertech.esper.regression.events.variant
             epService.EPAdministrator.Configuration.AddVariantStream("MyVariantStreamThree", variant);
     
             // test named window
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("create window MyVariantWindow#unique(theString) as select * from MyVariantStreamThree");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("create window MyVariantWindow#unique(TheString) as select * from MyVariantStreamThree");
             var listenerOne = new SupportUpdateListener();
             stmt.Events += listenerOne.Update;
             epService.EPAdministrator.CreateEPL("insert into MyVariantWindow select * from MyVariantStreamThree");
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regression.events.variant
     
             // test subquery
             stmt.Dispose();
-            stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean_A as a where Exists(select * from MyVariantStreamFour#lastevent as b where b.theString=a.id)");
+            stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean_A as a where Exists(select * from MyVariantStreamFour#lastevent as b where b.TheString=a.id)");
             stmt.Events += listenerOne.Update;
             events = new object[]{new SupportBean("E1", -1), new SupportBeanVariantStream("E2"), new SupportBean_A("E2")};
     
@@ -316,10 +316,10 @@ namespace com.espertech.esper.regression.events.variant
             variant.AddEventTypeName("SupportBeanVariantStream");
             epService.EPAdministrator.Configuration.AddVariantStream("MyVariantStreamFive", variant);
     
-            SupportMessageAssertUtil.TryInvalid(epService, "insert into MyVariantStreamFive select * from " + typeof(SupportBean_A).Name,
+            SupportMessageAssertUtil.TryInvalid(epService, "insert into MyVariantStreamFive select * from " + typeof(SupportBean_A).FullName,
                     "Error starting statement: Selected event type is not a valid event type of the variant stream 'MyVariantStreamFive'");
     
-            SupportMessageAssertUtil.TryInvalid(epService, "insert into MyVariantStreamFive select intPrimitive as k0 from " + typeof(SupportBean).FullName,
+            SupportMessageAssertUtil.TryInvalid(epService, "insert into MyVariantStreamFive select IntPrimitive as k0 from " + typeof(SupportBean).FullName,
                     "Error starting statement: Selected event type is not a valid event type of the variant stream 'MyVariantStreamFive' ");
         }
     

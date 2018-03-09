@@ -31,20 +31,20 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionCompile(EPServiceProvider epService) {
             var fields = new string[]{"key", "value"};
-            string stmtTextCreate = "create window MyWindow#keepall as select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
+            string stmtTextCreate = "create window MyWindow#keepall as select TheString as key, LongBoxed as value from " + typeof(SupportBean).FullName;
             EPStatementObjectModel modelCreate = epService.EPAdministrator.CompileEPL(stmtTextCreate);
             EPStatement stmtCreate = epService.EPAdministrator.Create(modelCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
-            Assert.AreEqual("create window MyWindow#keepall as select theString as key, longBoxed as value from " + typeof(SupportBean).FullName, modelCreate.ToEPL());
+            Assert.AreEqual("create window MyWindow#keepall as select TheString as key, LongBoxed as value from " + typeof(SupportBean).FullName, modelCreate.ToEPL());
     
-            string stmtTextOnSelect = "on " + typeof(SupportBean_B).Name + " select mywin.* from MyWindow as mywin";
+            string stmtTextOnSelect = "on " + typeof(SupportBean_B).FullName + " select mywin.* from MyWindow as mywin";
             EPStatementObjectModel modelOnSelect = epService.EPAdministrator.CompileEPL(stmtTextOnSelect);
             EPStatement stmtOnSelect = epService.EPAdministrator.Create(modelOnSelect);
             var listenerOnSelect = new SupportUpdateListener();
             stmtOnSelect.Events += listenerOnSelect.Update;
     
-            string stmtTextInsert = "insert into MyWindow select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
+            string stmtTextInsert = "insert into MyWindow select TheString as key, LongBoxed as value from " + typeof(SupportBean).FullName;
             EPStatementObjectModel modelInsert = epService.EPAdministrator.CompileEPL(stmtTextInsert);
             EPStatement stmtInsert = epService.EPAdministrator.Create(modelInsert);
     
@@ -110,18 +110,18 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var model = new EPStatementObjectModel();
             model.CreateWindow = CreateWindowClause.Create("MyWindow").AddView("keepall");
             model.SelectClause = SelectClause.Create()
-                    .AddWithAsProvidedName("theString", "key")
-                    .AddWithAsProvidedName("longBoxed", "value");
+                    .AddWithAsProvidedName("TheString", "key")
+                    .AddWithAsProvidedName("LongBoxed", "value");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName));
     
             EPStatement stmtCreate = epService.EPAdministrator.Create(model);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
     
-            string stmtTextCreate = "create window MyWindow#keepall as select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
+            string stmtTextCreate = "create window MyWindow#keepall as select TheString as key, LongBoxed as value from " + typeof(SupportBean).FullName;
             Assert.AreEqual(stmtTextCreate, model.ToEPL());
     
-            string stmtTextInsert = "insert into MyWindow select theString as key, longBoxed as value from " + typeof(SupportBean).FullName;
+            string stmtTextInsert = "insert into MyWindow select TheString as key, LongBoxed as value from " + typeof(SupportBean).FullName;
             EPStatementObjectModel modelInsert = epService.EPAdministrator.CompileEPL(stmtTextInsert);
             EPStatement stmtInsert = epService.EPAdministrator.Create(modelInsert);
     

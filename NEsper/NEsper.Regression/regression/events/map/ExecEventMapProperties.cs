@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.events.map
             IDictionary<string, Object> arrayDef = ExecEventMap.MakeMap(new object[][]{new object[] {"p0", typeof(int[])}, new object[] {"p1", typeof(SupportBean[])}});
             epService.EPAdministrator.Configuration.AddEventType("MyArrayMap", arrayDef);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select p0[0] as a, p0[1] as b, p1[0].intPrimitive as c, p1[1] as d, p0 as e from MyArrayMap");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select p0[0] as a, p0[1] as b, p1[0].IntPrimitive as c, p1[1] as d, p0 as e from MyArrayMap");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -57,16 +57,16 @@ namespace com.espertech.esper.regression.events.map
             IDictionary<string, Object> arrayDefOuter = ExecEventMap.MakeMap(new object[][]{new object[] {"outer", arrayDef}});
             epService.EPAdministrator.Configuration.AddEventType("MyArrayMapOuter", arrayDefOuter);
     
-            stmt = epService.EPAdministrator.CreateEPL("select outer.p0[0] as a, outer.p0[1] as b, outer.p1[0].intPrimitive as c, outer.p1[1] as d, outer.p0 as e from MyArrayMapOuter");
+            stmt = epService.EPAdministrator.CreateEPL("select outer.p0[0] as a, outer.p0[1] as b, outer.p1[0].IntPrimitive as c, outer.p1[1] as d, outer.p0 as e from MyArrayMapOuter");
             stmt.Events += listener.Update;
     
             IDictionary<string, Object> eventOuter = ExecEventMap.MakeMap(new object[][]{new object[] {"outer", theEvent}});
             epService.EPRuntime.SendEvent(eventOuter, "MyArrayMapOuter");
     
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a,b,c,d".Split(','), new object[]{1, 2, 5, beans[1]});
-            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("a"));
-            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("b"));
-            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("c"));
+            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("a"));
+            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("b"));
+            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c"));
             Assert.AreEqual(typeof(SupportBean), stmt.EventType.GetPropertyType("d"));
             Assert.AreEqual(typeof(int[]), stmt.EventType.GetPropertyType("e"));
     

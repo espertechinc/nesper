@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.multithread
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.Configuration.AddEventType<SupportBean_S0>();
             EPStatement stmt = epService.EPAdministrator.CreateEPL("update istream SupportBean as sb " +
-                    "set longPrimitive = (select count(*) from SupportBean_S0#keepall as s0 where s0.p00 = sb.theString)");
+                    "set LongPrimitive = (select count(*) from SupportBean_S0#keepall as s0 where s0.p00 = sb.TheString)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     

@@ -29,10 +29,10 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionMinMaxWindowStats(EPServiceProvider epService) {
             EPStatement stmt = SetUpMinMax(epService);
             EventType type = stmt.EventType;
-            Assert.AreEqual(typeof(long), type.GetPropertyType("myMax"));
-            Assert.AreEqual(typeof(long), type.GetPropertyType("myMin"));
-            Assert.AreEqual(typeof(long), type.GetPropertyType("myMinEx"));
-            Assert.AreEqual(typeof(long), type.GetPropertyType("myMaxEx"));
+            Assert.AreEqual(typeof(long?), type.GetPropertyType("myMax"));
+            Assert.AreEqual(typeof(long?), type.GetPropertyType("myMin"));
+            Assert.AreEqual(typeof(long?), type.GetPropertyType("myMinEx"));
+            Assert.AreEqual(typeof(long?), type.GetPropertyType("myMaxEx"));
     
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -43,18 +43,18 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionMinMaxWindowStats_OM(EPServiceProvider epService) {
-            string epl = "select max(longBoxed,intBoxed) as myMax, " +
-                    "max(longBoxed,intBoxed,shortBoxed) as myMaxEx, " +
-                    "min(longBoxed,intBoxed) as myMin, " +
-                    "min(longBoxed,intBoxed,shortBoxed) as myMinEx" +
+            string epl = "select max(LongBoxed,IntBoxed) as myMax, " +
+                    "max(LongBoxed,IntBoxed,ShortBoxed) as myMaxEx, " +
+                    "min(LongBoxed,IntBoxed) as myMin, " +
+                    "min(LongBoxed,IntBoxed,ShortBoxed) as myMinEx" +
                     " from " + typeof(SupportBean).FullName + "#length(3)";
     
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.Create()
-                    .Add(Expressions.Max("longBoxed", "intBoxed"), "myMax")
-                    .Add(Expressions.Max(Expressions.Property("longBoxed"), Expressions.Property("intBoxed"), Expressions.Property("shortBoxed")), "myMaxEx")
-                    .Add(Expressions.Min("longBoxed", "intBoxed"), "myMin")
-                    .Add(Expressions.Min(Expressions.Property("longBoxed"), Expressions.Property("intBoxed"), Expressions.Property("shortBoxed")), "myMinEx");
+                    .Add(Expressions.Max("LongBoxed", "IntBoxed"), "myMax")
+                    .Add(Expressions.Max(Expressions.Property("LongBoxed"), Expressions.Property("IntBoxed"), Expressions.Property("ShortBoxed")), "myMaxEx")
+                    .Add(Expressions.Min("LongBoxed", "IntBoxed"), "myMin")
+                    .Add(Expressions.Min(Expressions.Property("LongBoxed"), Expressions.Property("IntBoxed"), Expressions.Property("ShortBoxed")), "myMinEx");
 
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName)
                 .AddView("length", Expressions.Constant(3)));
@@ -71,10 +71,10 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionMinMaxWindowStats_Compile(EPServiceProvider epService) {
-            string epl = "select max(longBoxed,intBoxed) as myMax, " +
-                    "max(longBoxed,intBoxed,shortBoxed) as myMaxEx, " +
-                    "min(longBoxed,intBoxed) as myMin, " +
-                    "min(longBoxed,intBoxed,shortBoxed) as myMinEx" +
+            string epl = "select max(LongBoxed,IntBoxed) as myMax, " +
+                    "max(LongBoxed,IntBoxed,ShortBoxed) as myMaxEx, " +
+                    "min(LongBoxed,IntBoxed) as myMin, " +
+                    "min(LongBoxed,IntBoxed,ShortBoxed) as myMinEx" +
                     " from " + typeof(SupportBean).FullName + "#length(3)";
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
@@ -107,10 +107,10 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private EPStatement SetUpMinMax(EPServiceProvider epService) {
-            string epl = "select max(longBoxed, intBoxed) as myMax, " +
-                    "max(longBoxed, intBoxed, shortBoxed) as myMaxEx," +
-                    "min(longBoxed, intBoxed) as myMin," +
-                    "min(longBoxed, intBoxed, shortBoxed) as myMinEx" +
+            string epl = "select max(LongBoxed, IntBoxed) as myMax, " +
+                    "max(LongBoxed, IntBoxed, ShortBoxed) as myMaxEx," +
+                    "min(LongBoxed, IntBoxed) as myMin," +
+                    "min(LongBoxed, IntBoxed, ShortBoxed) as myMinEx" +
                     " from " + typeof(SupportBean).FullName + "#length(3) ";
             return epService.EPAdministrator.CreateEPL(epl);
         }

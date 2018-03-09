@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             // select/read
             string eplMergeSelect = "on SupportBean merge vartotal as vt " +
-                    "where vt.topgroup = intPrimitive and vt.thecnt > 0 " +
+                    "where vt.topgroup = IntPrimitive and vt.thecnt > 0 " +
                     "when matched then insert into MyOutputStream select *";
             epService.EPAdministrator.CreateEPL(eplMergeSelect);
             var listener = new SupportUpdateListener();

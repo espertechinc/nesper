@@ -50,27 +50,27 @@ namespace com.espertech.esper.regression.rowrecog
     
         private void RunAssertionTwoStatementNoDelete(EPServiceProvider epService) {
             string[] fields = "c0".Split(',');
-            string eplOne = "@Name('S1') select * from SupportBean(theString='A') " +
+            string eplOne = "@Name('S1') select * from SupportBean(TheString='A') " +
                     "match_recognize (" +
-                    "  measures P1.longPrimitive as c0" +
+                    "  measures P1.LongPrimitive as c0" +
                     "  pattern (P1 P2 P3) " +
                     "  define " +
-                    "    P1 as P1.intPrimitive = 1," +
-                    "    P2 as P2.intPrimitive = 1," +
-                    "    P3 as P3.intPrimitive = 2 and P3.longPrimitive = P1.longPrimitive" +
+                    "    P1 as P1.IntPrimitive = 1," +
+                    "    P2 as P2.IntPrimitive = 1," +
+                    "    P3 as P3.IntPrimitive = 2 and P3.LongPrimitive = P1.LongPrimitive" +
                     ")";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(eplOne);
             var listenerOne = new SupportUpdateListener();
             stmtOne.Events += listenerOne.Update;
     
-            string eplTwo = "@Name('S2') select * from SupportBean(theString='B') " +
+            string eplTwo = "@Name('S2') select * from SupportBean(TheString='B') " +
                     "match_recognize (" +
-                    "  measures P1.longPrimitive as c0" +
+                    "  measures P1.LongPrimitive as c0" +
                     "  pattern (P1 P2 P3) " +
                     "  define " +
-                    "    P1 as P1.intPrimitive = 1," +
-                    "    P2 as P2.intPrimitive = 1," +
-                    "    P3 as P3.intPrimitive = 2 and P3.longPrimitive = P1.longPrimitive" +
+                    "    P1 as P1.IntPrimitive = 1," +
+                    "    P2 as P2.IntPrimitive = 1," +
+                    "    P3 as P3.IntPrimitive = 2 and P3.LongPrimitive = P1.LongPrimitive" +
                     ")";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(eplTwo);
             var listenerTwo = new SupportUpdateListener();
@@ -127,13 +127,13 @@ namespace com.espertech.esper.regression.rowrecog
             string eplCtx = "create context MyCtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(p10 = s0.p00)";
             epService.EPAdministrator.CreateEPL(eplCtx);
     
-            string epl = "@Name('S1') context MyCtx select * from SupportBean(theString = context.s0.p00) " +
+            string epl = "@Name('S1') context MyCtx select * from SupportBean(TheString = context.s0.p00) " +
                     "match_recognize (" +
-                    "  measures P2.theString as c0" +
+                    "  measures P2.TheString as c0" +
                     "  pattern (P1 P2) " +
                     "  define " +
-                    "    P1 as P1.intPrimitive = 1," +
-                    "    P2 as P2.intPrimitive = 2" +
+                    "    P1 as P1.IntPrimitive = 1," +
+                    "    P2 as P2.IntPrimitive = 2" +
                     ")";
             var listener = new SupportUpdateListener();
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -173,17 +173,17 @@ namespace com.espertech.esper.regression.rowrecog
             epService.EPAdministrator.CreateEPL(namedWindow);
             string insert = "insert into MyWindow select * from SupportBean";
             epService.EPAdministrator.CreateEPL(insert);
-            string delete = "on SupportBean_S0 delete from MyWindow where theString = p00";
+            string delete = "on SupportBean_S0 delete from MyWindow where TheString = p00";
             epService.EPAdministrator.CreateEPL(delete);
     
             string epl = "@Name('S1') select * from MyWindow " +
                     "match_recognize (" +
-                    "  partition by theString " +
-                    "  measures P1.longPrimitive as c0, P2.longPrimitive as c1" +
+                    "  partition by TheString " +
+                    "  measures P1.LongPrimitive as c0, P2.LongPrimitive as c1" +
                     "  pattern (P1 P2) " +
                     "  define " +
-                    "    P1 as P1.intPrimitive = 0," +
-                    "    P2 as P2.intPrimitive = 1" +
+                    "    P1 as P1.IntPrimitive = 0," +
+                    "    P2 as P2.IntPrimitive = 1" +
                     ")";
             var listener = new SupportUpdateListener();
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -229,18 +229,18 @@ namespace com.espertech.esper.regression.rowrecog
             epService.EPAdministrator.CreateEPL(namedWindow);
             string insert = "insert into MyWindow select * from SupportBean";
             epService.EPAdministrator.CreateEPL(insert);
-            string delete = "on SupportBean_S0 delete from MyWindow where theString = p00 and intPrimitive = id";
+            string delete = "on SupportBean_S0 delete from MyWindow where TheString = p00 and IntPrimitive = id";
             epService.EPAdministrator.CreateEPL(delete);
     
             string epl = "@Name('S1') select * from MyWindow " +
                     "match_recognize (" +
-                    "  partition by theString " +
-                    "  measures P1.longPrimitive as c0, P2.longPrimitive as c1, P3.longPrimitive as c2" +
+                    "  partition by TheString " +
+                    "  measures P1.LongPrimitive as c0, P2.LongPrimitive as c1, P3.LongPrimitive as c2" +
                     "  pattern (P1 P2 P3) " +
                     "  define " +
-                    "    P1 as P1.intPrimitive = 0," +
-                    "    P2 as P2.intPrimitive = 1," +
-                    "    P3 as P3.intPrimitive = 2" +
+                    "    P1 as P1.IntPrimitive = 0," +
+                    "    P2 as P2.IntPrimitive = 1," +
+                    "    P3 as P3.IntPrimitive = 2" +
                     ")";
             var listener = new SupportUpdateListener();
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);

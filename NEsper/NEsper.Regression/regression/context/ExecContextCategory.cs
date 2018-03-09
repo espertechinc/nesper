@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionBooleanExprFilter(EPServiceProvider epService) {
-            var eplCtx = "create context Ctx600a group by theString like 'A%' as agroup, group by theString like 'B%' as bgroup, group by theString like 'C%' as cgroup from SupportBean";
+            var eplCtx = "create context Ctx600a group by TheString like 'A%' as agroup, group by TheString like 'B%' as bgroup, group by TheString like 'C%' as cgroup from SupportBean";
             epService.EPAdministrator.CreateEPL(eplCtx);
             var eplSum = "context Ctx600a select context.label as c0, count(*) as c1 from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(eplSum);
@@ -59,8 +59,8 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionContextPartitionSelection(EPServiceProvider epService) {
             var fields = "c0,c1,c2,c3".Split(',');
-            epService.EPAdministrator.CreateEPL("create context MyCtx as group by intPrimitive < -5 as grp1, group by intPrimitive between -5 and +5 as grp2, group by intPrimitive > 5 as grp3 from SupportBean");
-            var stmt = epService.EPAdministrator.CreateEPL("context MyCtx select context.id as c0, context.label as c1, theString as c2, sum(intPrimitive) as c3 from SupportBean#keepall group by theString");
+            epService.EPAdministrator.CreateEPL("create context MyCtx as group by IntPrimitive < -5 as grp1, group by IntPrimitive between -5 and +5 as grp2, group by IntPrimitive > 5 as grp3 from SupportBean");
+            var stmt = epService.EPAdministrator.CreateEPL("context MyCtx select context.id as c0, context.label as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", -5));
@@ -68,7 +68,12 @@ namespace com.espertech.esper.regression.context
             epService.EPRuntime.SendEvent(new SupportBean("E3", -100));
             epService.EPRuntime.SendEvent(new SupportBean("E3", -8));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 60));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), stmt.GetSafeEnumerator(), fields, new[] {new object[] {0, "grp1", "E3", -108}, new object[] {1, "grp2", "E1", 3}, new object[] {1, "grp2", "E2", -5}, new object[] {2, "grp3", "E1", 60}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), stmt.GetSafeEnumerator(), fields, new[] {
+                new object[] {0, "grp1", "E3", -108},
+                new object[] {1, "grp2", "E1", 3},
+                new object[] {1, "grp2", "E2", -5},
+                new object[] {2, "grp3", "E1", 60}
+            });
     
             // test iterator targeted by context partition id
             var selectorById = new SupportSelectorById(Collections.SingletonSet(1));
@@ -106,15 +111,15 @@ namespace com.espertech.esper.regression.context
             string epl;
     
             // invalid filter spec
-            epl = "create context ACtx group theString is not null as cat1 from SupportBean(dummy = 1)";
+            epl = "create context ACtx group TheString is not null as cat1 from SupportBean(dummy = 1)";
             TryInvalid(epService, epl, "Error starting statement: Failed to validate filter expression 'dummy=1': Property named 'dummy' is not valid in any stream [");
     
             // not a bool expression
-            epl = "create context ACtx group intPrimitive as grp1 from SupportBean";
-            TryInvalid(epService, epl, "Error starting statement: Filter expression not returning a bool value: 'intPrimitive' [");
+            epl = "create context ACtx group IntPrimitive as grp1 from SupportBean";
+            TryInvalid(epService, epl, "Error starting statement: Filter expression not returning a bool value: 'IntPrimitive' [");
     
             // validate statement not applicable filters
-            epService.EPAdministrator.CreateEPL("create context ACtx group intPrimitive < 10 as cat1 from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context ACtx group IntPrimitive < 10 as cat1 from SupportBean");
             epl = "context ACtx select * from SupportBean_S0";
             TryInvalid(epService, epl, "Error starting statement: Category context 'ACtx' requires that any of the events types that are listed in the category context also appear in any of the filter expressions of the statement [");
     
@@ -125,14 +130,14 @@ namespace com.espertech.esper.regression.context
             var filterSpi = (FilterServiceSPI) ((EPServiceProviderSPI) epService).FilterService;
             var ctx = "CategorizedContext";
             epService.EPAdministrator.CreateEPL("@Name('context') create context " + ctx + " " +
-                    "group intPrimitive < 10 as cat1, " +
-                    "group intPrimitive between 10 and 20 as cat2, " +
-                    "group intPrimitive > 20 as cat3 " +
+                    "group IntPrimitive < 10 as cat1, " +
+                    "group IntPrimitive between 10 and 20 as cat2, " +
+                    "group IntPrimitive > 20 as cat3 " +
                     "from SupportBean");
     
             var fields = "c0,c1,c2".Split(',');
             var statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context CategorizedContext " +
-                    "select context.name as c0, context.label as c1, sum(intPrimitive) as c2 from SupportBean");
+                    "select context.name as c0, context.label as c1, sum(IntPrimitive) as c2 from SupportBean");
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
             Assert.AreEqual(3, filterSpi.FilterCountApprox);
@@ -175,11 +180,11 @@ namespace com.espertech.esper.regression.context
         private void RunAssertionSingleCategorySODAPrior(EPServiceProvider epService) {
             var ctx = "CategorizedContext";
             var eplCtx = "@Name('context') create context " + ctx + " as " +
-                    "group intPrimitive<10 as cat1 " +
+                    "group IntPrimitive<10 as cat1 " +
                     "from SupportBean";
             epService.EPAdministrator.CreateEPL(eplCtx);
     
-            var eplStmt = "context CategorizedContext select context.name as c0, context.label as c1, prior(1,intPrimitive) as c2 from SupportBean";
+            var eplStmt = "context CategorizedContext select context.name as c0, context.label as c1, prior(1,IntPrimitive) as c2 from SupportBean";
             var statementOne = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplStmt);
             var listener = new SupportUpdateListener();
     
@@ -241,7 +246,7 @@ namespace com.espertech.esper.regression.context
             public bool Filter(ContextPartitionIdentifier contextPartitionIdentifier) {
                 var id = (ContextPartitionIdentifierCategory) contextPartitionIdentifier;
                 if (_matchCategory == null && _cpids.Contains(id.ContextPartitionId)) {
-                    throw new EPRuntimeException("Already Exists context id: " + id.ContextPartitionId);
+                    throw new EPRuntimeException("Already exists context id: " + id.ContextPartitionId);
                 }
                 _cpids.Add(id.ContextPartitionId);
                 _categories.Add(id.Label);

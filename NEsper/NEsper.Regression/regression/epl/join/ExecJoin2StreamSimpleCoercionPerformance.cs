@@ -28,10 +28,10 @@ namespace com.espertech.esper.regression.epl.join
         }
     
         private void RunAssertionPerformanceCoercionForward(EPServiceProvider epService) {
-            string stmt = "select A.longBoxed as value from " +
-                    typeof(SupportBean).FullName + "(theString='A')#length(1000000) as A," +
-                    typeof(SupportBean).FullName + "(theString='B')#length(1000000) as B" +
-                    " where A.longBoxed=B.intPrimitive";
+            string stmt = "select A.LongBoxed as value from " +
+                    typeof(SupportBean).FullName + "(TheString='A')#length(1000000) as A," +
+                    typeof(SupportBean).FullName + "(TheString='B')#length(1000000) as B" +
+                    " where A.LongBoxed=B.IntPrimitive";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmt);
             var listener = new SupportUpdateListener();
@@ -56,10 +56,10 @@ namespace com.espertech.esper.regression.epl.join
         }
     
         private void RunAssertionPerformanceCoercionBack(EPServiceProvider epService) {
-            string stmt = "select A.intPrimitive as value from " +
-                    typeof(SupportBean).FullName + "(theString='A')#length(1000000) as A," +
-                    typeof(SupportBean).FullName + "(theString='B')#length(1000000) as B" +
-                    " where A.intPrimitive=B.longBoxed";
+            string stmt = "select A.IntPrimitive as value from " +
+                    typeof(SupportBean).FullName + "(TheString='A')#length(1000000) as A," +
+                    typeof(SupportBean).FullName + "(TheString='B')#length(1000000) as B" +
+                    " where A.IntPrimitive=B.LongBoxed";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmt);
             var listener = new SupportUpdateListener();

@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
+using System.Linq;
 using Avro.Generic;
 
 using com.espertech.esper.client;
@@ -53,13 +53,13 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            SupportMessageAssertUtil.TryInvalid(epService, "on SupportBean select * where intPrimitive=1 insert into BStream select * where 1=2",
+            SupportMessageAssertUtil.TryInvalid(epService, "on SupportBean select * where IntPrimitive=1 insert into BStream select * where 1=2",
                     "Error starting statement: Required insert-into clause is not provided, the clause is required for split-stream syntax");
     
-            SupportMessageAssertUtil.TryInvalid(epService, "on SupportBean insert into AStream select * where intPrimitive=1 group by string insert into BStream select * where 1=2",
+            SupportMessageAssertUtil.TryInvalid(epService, "on SupportBean insert into AStream select * where IntPrimitive=1 group by string insert into BStream select * where 1=2",
                     "Error starting statement: A group-by clause, having-clause or order-by clause is not allowed for the split stream syntax");
     
-            SupportMessageAssertUtil.TryInvalid(epService, "on SupportBean insert into AStream select * where intPrimitive=1 insert into BStream select avg(intPrimitive) where 1=2",
+            SupportMessageAssertUtil.TryInvalid(epService, "on SupportBean insert into AStream select * where IntPrimitive=1 insert into BStream select avg(IntPrimitive) where 1=2",
                     "Error starting statement: Aggregation functions are not allowed in this context");
         }
     
@@ -73,20 +73,20 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionSplitPremptiveNamedWindow(EPServiceProvider epService) {
-            foreach (EventRepresentationChoice rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+            foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                 TryAssertionSplitPremptiveNamedWindow(epService, rep);
             }
         }
     
         private void RunAssertion1SplitDefault(EPServiceProvider epService) {
             // test wildcard
-            string stmtOrigText = "on SupportBean insert into AStream select *";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtOrigText);
+            var stmtOrigText = "on SupportBean insert into AStream select *";
+            var stmt = epService.EPAdministrator.CreateEPL(stmtOrigText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            SupportUpdateListener[] listeners = GetListeners();
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select * from AStream");
+            var listeners = GetListeners();
+            var stmtOne = epService.EPAdministrator.CreateEPL("select * from AStream");
             stmtOne.Events += listeners[0].Update;
     
             SendSupportBean(epService, "E1", 1);
@@ -94,8 +94,8 @@ namespace com.espertech.esper.regression.epl.other
             Assert.IsFalse(listener.IsInvoked);
     
             // test select
-            stmtOrigText = "on SupportBean insert into BStreamABC select 3*intPrimitive as value";
-            EPStatement stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
+            stmtOrigText = "on SupportBean insert into BStreamABC select 3*IntPrimitive as value";
+            var stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
     
             stmtOne = epService.EPAdministrator.CreateEPL("select value from BStreamABC");
             stmtOne.Events += listeners[1].Update;
@@ -111,10 +111,10 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertion2SplitNoDefaultOutputFirst(EPServiceProvider epService) {
-            string stmtOrigText = "@Audit on SupportBean " +
-                    "insert into AStream2SP select * where intPrimitive=1 " +
-                    "insert into BStream2SP select * where intPrimitive=1 or intPrimitive=2";
-            EPStatement stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
+            var stmtOrigText = "@Audit on SupportBean " +
+                    "insert into AStream2SP select * where IntPrimitive=1 " +
+                    "insert into BStream2SP select * where IntPrimitive=1 or IntPrimitive=2";
+            var stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
             TryAssertion(epService, stmtOrig);
     
             // statement object model
@@ -123,19 +123,19 @@ namespace com.espertech.esper.regression.epl.other
             model.FromClause = FromClause.Create(FilterStream.Create("SupportBean"));
             model.InsertInto = InsertIntoClause.Create("AStream2SP");
             model.SelectClause = SelectClause.CreateWildcard();
-            model.WhereClause = Expressions.Eq("intPrimitive", 1);
-            OnInsertSplitStreamClause clause = OnClause.CreateOnInsertSplitStream();
+            model.WhereClause = Expressions.Eq("IntPrimitive", 1);
+            var clause = OnClause.CreateOnInsertSplitStream();
             model.OnExpr = clause;
-            OnInsertSplitStreamItem item = OnInsertSplitStreamItem.Create(
+            var item = OnInsertSplitStreamItem.Create(
                     InsertIntoClause.Create("BStream2SP"),
                     SelectClause.CreateWildcard(),
-                    Expressions.Or(Expressions.Eq("intPrimitive", 1), Expressions.Eq("intPrimitive", 2)));
+                    Expressions.Or(Expressions.Eq("IntPrimitive", 1), Expressions.Eq("IntPrimitive", 2)));
             clause.AddItem(item);
             Assert.AreEqual(stmtOrigText, model.ToEPL());
             stmtOrig = epService.EPAdministrator.Create(model);
             TryAssertion(epService, stmtOrig);
     
-            EPStatementObjectModel newModel = epService.EPAdministrator.CompileEPL(stmtOrigText);
+            var newModel = epService.EPAdministrator.CompileEPL(stmtOrigText);
             stmtOrig = epService.EPAdministrator.Create(newModel);
             Assert.AreEqual(stmtOrigText, newModel.ToEPL());
             TryAssertion(epService, stmtOrig);
@@ -146,17 +146,17 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionSubquery(EPServiceProvider epService) {
-            string stmtOrigText = "on SupportBean " +
-                    "insert into AStreamSub select (select p00 from S0#lastevent) as string where intPrimitive=(select id from S0#lastevent) " +
-                    "insert into BStreamSub select (select p01 from S0#lastevent) as string where intPrimitive<>(select id from S0#lastevent) or (select id from S0#lastevent) is null";
-            EPStatement stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
+            var stmtOrigText = "on SupportBean " +
+                    "insert into AStreamSub select (select p00 from S0#lastevent) as string where IntPrimitive=(select id from S0#lastevent) " +
+                    "insert into BStreamSub select (select p01 from S0#lastevent) as string where IntPrimitive<>(select id from S0#lastevent) or (select id from S0#lastevent) is null";
+            var stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
             var listener = new SupportUpdateListener();
             stmtOrig.Events += listener.Update;
     
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select * from AStreamSub");
+            var stmtOne = epService.EPAdministrator.CreateEPL("select * from AStreamSub");
             var listenerAStream = new SupportUpdateListener();
             stmtOne.Events += listenerAStream.Update;
-            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select * from BStreamSub");
+            var stmtTwo = epService.EPAdministrator.CreateEPL("select * from BStreamSub");
             var listenerBStream = new SupportUpdateListener();
             stmtTwo.Events += listenerBStream.Update;
     
@@ -179,18 +179,18 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertion2SplitNoDefaultOutputAll(EPServiceProvider epService) {
-            string stmtOrigText = "on SupportBean " +
-                    "insert into AStream2S select theString where intPrimitive=1 " +
-                    "insert into BStream2S select theString where intPrimitive=1 or intPrimitive=2 " +
+            var stmtOrigText = "on SupportBean " +
+                    "insert into AStream2S select TheString where IntPrimitive=1 " +
+                    "insert into BStream2S select TheString where IntPrimitive=1 or IntPrimitive=2 " +
                     "output all";
-            EPStatement stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
+            var stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
             var listener = new SupportUpdateListener();
             stmtOrig.Events += listener.Update;
     
-            SupportUpdateListener[] listeners = GetListeners();
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select * from AStream2S");
+            var listeners = GetListeners();
+            var stmtOne = epService.EPAdministrator.CreateEPL("select * from AStream2S");
             stmtOne.Events += listeners[0].Update;
-            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select * from BStream2S");
+            var stmtTwo = epService.EPAdministrator.CreateEPL("select * from BStream2S");
             stmtTwo.Events += listeners[1].Update;
     
             Assert.AreNotSame(stmtOne.EventType, stmtTwo.EventType);
@@ -210,18 +210,18 @@ namespace com.espertech.esper.regression.epl.other
     
             SendSupportBean(epService, "E4", -999);
             AssertReceivedEach(listeners, new string[]{null, null});
-            Assert.AreEqual("E4", listener.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("E4", listener.AssertOneGetNewAndReset().Get("TheString"));
     
             stmtOrig.Dispose();
             stmtOrigText = "on SupportBean " +
-                    "insert into AStream2S select theString || '_1' as theString where intPrimitive in (1, 2) " +
-                    "insert into BStream2S select theString || '_2' as theString where intPrimitive in (2, 3) " +
-                    "insert into CStream2S select theString || '_3' as theString " +
+                    "insert into AStream2S select TheString || '_1' as TheString where IntPrimitive in (1, 2) " +
+                    "insert into BStream2S select TheString || '_2' as TheString where IntPrimitive in (2, 3) " +
+                    "insert into CStream2S select TheString || '_3' as TheString " +
                     "output all";
             stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
             stmtOrig.Events += listener.Update;
     
-            EPStatement stmtThree = epService.EPAdministrator.CreateEPL("select * from CStream2S");
+            var stmtThree = epService.EPAdministrator.CreateEPL("select * from CStream2S");
             stmtThree.Events += listeners[2].Update;
     
             SendSupportBean(epService, "E1", 2);
@@ -244,20 +244,20 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertion3And4SplitDefaultOutputFirst(EPServiceProvider epService) {
-            string stmtOrigText = "on SupportBean as mystream " +
-                    "insert into AStream34 select mystream.theString||'_1' as theString where intPrimitive=1 " +
-                    "insert into BStream34 select mystream.theString||'_2' as theString where intPrimitive=2 " +
-                    "insert into CStream34 select theString||'_3' as theString";
-            EPStatement stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
+            var stmtOrigText = "on SupportBean as mystream " +
+                    "insert into AStream34 select mystream.TheString||'_1' as TheString where IntPrimitive=1 " +
+                    "insert into BStream34 select mystream.TheString||'_2' as TheString where IntPrimitive=2 " +
+                    "insert into CStream34 select TheString||'_3' as TheString";
+            var stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
             var listener = new SupportUpdateListener();
             stmtOrig.Events += listener.Update;
     
-            SupportUpdateListener[] listeners = GetListeners();
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select * from AStream34");
+            var listeners = GetListeners();
+            var stmtOne = epService.EPAdministrator.CreateEPL("select * from AStream34");
             stmtOne.Events += listeners[0].Update;
-            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select * from BStream34");
+            var stmtTwo = epService.EPAdministrator.CreateEPL("select * from BStream34");
             stmtTwo.Events += listeners[1].Update;
-            EPStatement stmtThree = epService.EPAdministrator.CreateEPL("select * from CStream34");
+            var stmtThree = epService.EPAdministrator.CreateEPL("select * from CStream34");
             stmtThree.Events += listeners[2].Update;
 
             Assert.AreNotSame(stmtOne.EventType, stmtTwo.EventType);
@@ -280,15 +280,15 @@ namespace com.espertech.esper.regression.epl.other
             Assert.IsFalse(listener.IsInvoked);
     
             stmtOrigText = "on SupportBean " +
-                    "insert into AStream34 select theString||'_1' as theString where intPrimitive=10 " +
-                    "insert into BStream34 select theString||'_2' as theString where intPrimitive=20 " +
-                    "insert into CStream34 select theString||'_3' as theString where intPrimitive<0 " +
-                    "insert into DStream34 select theString||'_4' as theString";
+                    "insert into AStream34 select TheString||'_1' as TheString where IntPrimitive=10 " +
+                    "insert into BStream34 select TheString||'_2' as TheString where IntPrimitive=20 " +
+                    "insert into CStream34 select TheString||'_3' as TheString where IntPrimitive<0 " +
+                    "insert into DStream34 select TheString||'_4' as TheString";
             stmtOrig.Dispose();
             stmtOrig = epService.EPAdministrator.CreateEPL(stmtOrigText);
             stmtOrig.Events += listener.Update;
     
-            EPStatement stmtFour = epService.EPAdministrator.CreateEPL("select * from DStream34");
+            var stmtFour = epService.EPAdministrator.CreateEPL("select * from DStream34");
             stmtFour.Events += listeners[3].Update;
     
             SendSupportBean(epService, "E5", -999);
@@ -311,9 +311,9 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void AssertReceivedEach(SupportUpdateListener[] listeners, string[] stringValue) {
-            for (int i = 0; i < stringValue.Length; i++) {
+            for (var i = 0; i < stringValue.Length; i++) {
                 if (stringValue[i] != null) {
-                    Assert.AreEqual(stringValue[i], listeners[i].AssertOneGetNewAndReset().Get("theString"));
+                    Assert.AreEqual(stringValue[i], listeners[i].AssertOneGetNewAndReset().Get("TheString"));
                 } else {
                     Assert.IsFalse(listeners[i].IsInvoked);
                 }
@@ -321,17 +321,17 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void AssertReceivedSingle(SupportUpdateListener[] listeners, int index, string stringValue) {
-            for (int i = 0; i < listeners.Length; i++) {
+            for (var i = 0; i < listeners.Length; i++) {
                 if (i == index) {
                     continue;
                 }
                 Assert.IsFalse(listeners[i].IsInvoked);
             }
-            Assert.AreEqual(stringValue, listeners[index].AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual(stringValue, listeners[index].AssertOneGetNewAndReset().Get("TheString"));
         }
     
         private void AssertReceivedNone(SupportUpdateListener[] listeners) {
-            for (int i = 0; i < listeners.Length; i++) {
+            for (var i = 0; i < listeners.Length; i++) {
                 Assert.IsFalse(listeners[i].IsInvoked);
             }
         }
@@ -347,10 +347,10 @@ namespace com.espertech.esper.regression.epl.other
             var listener = new SupportUpdateListener();
             stmtOrig.Events += listener.Update;
     
-            SupportUpdateListener[] listeners = GetListeners();
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select * from AStream2SP");
+            var listeners = GetListeners();
+            var stmtOne = epService.EPAdministrator.CreateEPL("select * from AStream2SP");
             stmtOne.Events += listeners[0].Update;
-            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select * from BStream2SP");
+            var stmtTwo = epService.EPAdministrator.CreateEPL("select * from BStream2SP");
             stmtTwo.Events += listeners[1].Update;
 
             Assert.AreNotSame(stmtOne.EventType, stmtTwo.EventType);
@@ -370,7 +370,7 @@ namespace com.espertech.esper.regression.epl.other
     
             SendSupportBean(epService, "E4", -999);
             AssertReceivedNone(listeners);
-            Assert.AreEqual("E4", listener.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("E4", listener.AssertOneGetNewAndReset().Get("TheString"));
     
             stmtOrig.Dispose();
             stmtOne.Dispose();
@@ -382,13 +382,13 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create schema TypeTrigger(trigger int)");
             epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create window WinTwo#keepall as TypeTwo");
     
-            string stmtOrigText = "on TypeTrigger " +
+            var stmtOrigText = "on TypeTrigger " +
                     "insert into OtherStream select 1 " +
                     "insert into WinTwo(col2) select 2 " +
                     "output all";
             epService.EPAdministrator.CreateEPL(stmtOrigText);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("on OtherStream select col2 from WinTwo");
+            var stmt = epService.EPAdministrator.CreateEPL("on OtherStream select col2 from WinTwo");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -410,7 +410,7 @@ namespace com.espertech.esper.regression.epl.other
             Assert.AreEqual(2, listener.AssertOneGetNewAndReset().Get("col2"));
     
             epService.EPAdministrator.DestroyAllStatements();
-            foreach (string name in "TypeTwo,TypeTrigger,WinTwo,OtherStream".Split(',')) {
+            foreach (var name in "TypeTwo,TypeTrigger,WinTwo,OtherStream".Split(',')) {
                 epService.EPAdministrator.Configuration.RemoveEventType(name, true);
             }
         }
@@ -426,21 +426,21 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void TryAssertionFromClauseAsMultiple(EPServiceProvider epService, bool soda) {
-            string epl = "on OrderEvent as oe " +
-                    "insert into StartEvent select oe.orderdetail.orderId as oi " +
-                    "insert into ThenEvent select * from [select oe.orderdetail.orderId as oi, itemId from orderdetail.items] as item " +
-                    "insert into MoreEvent select oe.orderdetail.orderId as oi, item.itemId as itemId from [select oe, * from orderdetail.items] as item " +
+            var epl = "on OrderEvent as oe " +
+                    "insert into StartEvent select oe.orderdetail.OrderId as oi " +
+                    "insert into ThenEvent select * from [select oe.orderdetail.OrderId as oi, ItemId from orderdetail.Items] as item " +
+                    "insert into MoreEvent select oe.orderdetail.OrderId as oi, item.ItemId as ItemId from [select oe, * from orderdetail.Items] as item " +
                     "output all";
             SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
     
-            SupportUpdateListener[] listeners = GetListeners();
+            var listeners = GetListeners();
             epService.EPAdministrator.CreateEPL("select * from StartEvent").Events += listeners[0].Update;
             epService.EPAdministrator.CreateEPL("select * from ThenEvent").Events += listeners[1].Update;
             epService.EPAdministrator.CreateEPL("select * from MoreEvent").Events += listeners[2].Update;
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventOne());
-            string[] fieldsOrderId = "oi".Split(',');
-            string[] fieldsItems = "oi,itemId".Split(',');
+            var fieldsOrderId = "oi".Split(',');
+            var fieldsItems = "oi,ItemId".Split(',');
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fieldsOrderId, new object[]{"PO200901"});
             var expected = new[] {new object[] {"PO200901", "A001"}, new object[] {"PO200901", "A002"}, new object[] {"PO200901", "A003"}};
             EPAssertionUtil.AssertPropsPerRow(listeners[1].GetAndResetDataListsFlattened().First, fieldsItems, expected);
@@ -450,20 +450,20 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void TryAssertionFromClauseBeginBodyEnd(EPServiceProvider epService, bool soda) {
-            string epl = "on OrderEvent " +
-                    "insert into BeginEvent select orderdetail.orderId as orderId " +
-                    "insert into OrderItem select * from [select orderdetail.orderId as orderId, * from orderdetail.items] " +
-                    "insert into EndEvent select orderdetail.orderId as orderId " +
+            var epl = "on OrderEvent " +
+                    "insert into BeginEvent select orderdetail.OrderId as OrderId " +
+                    "insert into OrderItem select * from [select orderdetail.OrderId as OrderId, * from orderdetail.Items] " +
+                    "insert into EndEvent select orderdetail.OrderId as OrderId " +
                     "output all";
             SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
     
-            SupportUpdateListener[] listeners = GetListeners();
+            var listeners = GetListeners();
             epService.EPAdministrator.CreateEPL("select * from BeginEvent").Events += listeners[0].Update;
             epService.EPAdministrator.CreateEPL("select * from OrderItem").Events += listeners[1].Update;
             epService.EPAdministrator.CreateEPL("select * from EndEvent").Events += listeners[2].Update;
     
-            EventType typeOrderItem = epService.EPAdministrator.Configuration.GetEventType("OrderItem");
-            Assert.AreEqual("[amount, itemId, price, productId, orderId]", CompatExtensions.Render(typeOrderItem.PropertyNames));
+            var typeOrderItem = epService.EPAdministrator.Configuration.GetEventType("OrderItem");
+            Assert.AreEqual("[Amount, ItemId, OrderId, Price, ProductId]", CompatExtensions.Render(Enumerable.OrderBy(typeOrderItem.PropertyNames, propName => propName)));
     
             epService.EPRuntime.SendEvent(OrderBeanFactory.MakeEventOne());
             AssertFromClauseWContained(listeners, "PO200901", new[] {new object[] {"PO200901", "A001"}, new object[] {"PO200901", "A002"}, new object[] {"PO200901", "A003"}});
@@ -483,17 +483,17 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void TryAssertionFromClauseOutputFirstWhere(EPServiceProvider epService, bool soda) {
-            string[] fieldsOrderId = "oe.orderdetail.orderId".Split(',');
-            string epl = "on OrderEvent as oe " +
-                    "insert into HeaderEvent select orderdetail.orderId as orderId where 1=2 " +
-                    "insert into StreamOne select * from [select oe, * from orderdetail.items] where productId=\"10020\" " +
-                    "insert into StreamTwo select * from [select oe, * from orderdetail.items] where productId=\"10022\" " +
-                    "insert into StreamThree select * from [select oe, * from orderdetail.items] where productId in (\"10020\",\"10025\",\"10022\")";
+            var fieldsOrderId = "oe.orderdetail.OrderId".Split(',');
+            var epl = "on OrderEvent as oe " +
+                    "insert into HeaderEvent select orderdetail.OrderId as OrderId where 1=2 " +
+                    "insert into StreamOne select * from [select oe, * from orderdetail.Items] where productId=\"10020\" " +
+                    "insert into StreamTwo select * from [select oe, * from orderdetail.Items] where productId=\"10022\" " +
+                    "insert into StreamThree select * from [select oe, * from orderdetail.Items] where productId in (\"10020\",\"10025\",\"10022\")";
             SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
     
-            SupportUpdateListener[] listeners = GetListeners();
+            var listeners = GetListeners();
             var listenerEPL = new[]{"select * from StreamOne", "select * from StreamTwo", "select * from StreamThree"};
-            for (int i = 0; i < listenerEPL.Length; i++) {
+            for (var i = 0; i < listenerEPL.Length; i++) {
                 epService.EPAdministrator.CreateEPL(listenerEPL[i]).Events += listeners[i].Update;
                 listeners[i].Reset();
             }
@@ -522,26 +522,26 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void TryAssertionFromClauseDocSample(EPServiceProvider epService) {
-            string epl =
-                    "create schema MyOrderItem(itemId string);\n" +
-                            "create schema MyOrderEvent(orderId string, items MyOrderItem[]);\n" +
+            var epl =
+                    "create schema MyOrderItem(ItemId string);\n" +
+                            "create schema MyOrderEvent(OrderId string, Items MyOrderItem[]);\n" +
                             "on MyOrderEvent\n" +
-                            "  insert into MyOrderBeginEvent select orderId\n" +
-                            "  insert into MyOrderItemEvent select * from [select orderId, * from items]\n" +
-                            "  insert into MyOrderEndEvent select orderId\n" +
+                            "  insert into MyOrderBeginEvent select OrderId\n" +
+                            "  insert into MyOrderItemEvent select * from [select OrderId, * from Items]\n" +
+                            "  insert into MyOrderEndEvent select OrderId\n" +
                             "  output all;\n" +
                             "create context MyOrderContext \n" +
                             "  initiated by MyOrderBeginEvent as obe\n" +
-                            "  terminated by MyOrderEndEvent(orderId = obe.orderId);\n" +
+                            "  terminated by MyOrderEndEvent(OrderId = obe.OrderId);\n" +
                             "@Name('count') context MyOrderContext select count(*) as orderItemCount from MyOrderItemEvent output when terminated;\n";
-            DeploymentResult result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
+            var result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
     
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.GetStatement("count").Events += listener.Update;
     
             IDictionary<string, object> @event = new Dictionary<string, object>();
-            @event.Put("orderId", "1010");
-            @event.Put("items", new[] {Collections.SingletonDataMap("itemId", "A0001")});
+            @event.Put("OrderId", "1010");
+            @event.Put("Items", new[] {Collections.SingletonDataMap("ItemId", "A0001")});
             epService.EPRuntime.SendEvent(@event, "MyOrderEvent");
     
             Assert.AreEqual(1L, listener.AssertOneGetNewAndReset().Get("orderItemCount"));
@@ -550,8 +550,8 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void AssertFromClauseWContained(SupportUpdateListener[] listeners, string orderId, object[][] expected) {
-            string[] fieldsOrderId = "orderId".Split(',');
-            string[] fieldsItems = "orderId,itemId".Split(',');
+            var fieldsOrderId = "OrderId".Split(',');
+            var fieldsItems = "OrderId,ItemId".Split(',');
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fieldsOrderId, new object[]{orderId});
             EPAssertionUtil.AssertPropsPerRow(listeners[1].GetAndResetDataListsFlattened().First, fieldsItems, expected);
             EPAssertionUtil.AssertProps(listeners[2].AssertOneGetNewAndReset(), fieldsOrderId, new object[]{orderId});
@@ -559,7 +559,7 @@ namespace com.espertech.esper.regression.epl.other
     
         private SupportUpdateListener[] GetListeners() {
             var listeners = new SupportUpdateListener[10];
-            for (int i = 0; i < listeners.Length; i++) {
+            for (var i = 0; i < listeners.Length; i++) {
                 listeners[i] = new SupportUpdateListener();
             }
             return listeners;

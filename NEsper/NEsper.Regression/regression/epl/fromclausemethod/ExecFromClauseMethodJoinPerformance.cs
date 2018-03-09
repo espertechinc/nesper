@@ -20,13 +20,17 @@ using NUnit.Framework;
 namespace com.espertech.esper.regression.epl.fromclausemethod
 {
     public class ExecFromClauseMethodJoinPerformance : RegressionExecution {
+        /// <summary>
+        /// Configures the specified configuration.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
         public override void Configure(Configuration configuration) {
             configuration.EngineDefaults.Logging.IsEnableQueryPlan = true;
             configuration.AddEventType(typeof(SupportBeanInt));
     
             var configMethod = new ConfigurationMethodRef();
             configMethod.SetLRUCache(10);
-            configuration.AddMethodRef(typeof(SupportJoinMethods).Name, configMethod);
+            configuration.AddMethodRef(typeof(SupportJoinMethods), configMethod);
         }
     
         public override void Run(EPServiceProvider epService) {

@@ -13,8 +13,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
@@ -53,7 +51,7 @@ namespace com.espertech.esper.regression.client
     
         private void RunAssertionMovePattern(EPServiceProvider epService) {
             EPServiceProviderIsolated isolatedService = epService.GetEPServiceIsolated("Isolated");
-            EPStatement stmt = isolatedService.EPAdministrator.CreateEPL("select * from pattern [every (a=SupportBean -> b=SupportBean(theString=a.theString)) where timer:within(1 day)]", "TestStatement", null);
+            EPStatement stmt = isolatedService.EPAdministrator.CreateEPL("select * from pattern [every (a=SupportBean -> b=SupportBean(TheString=a.TheString)) where timer:within(1 day)]", "TestStatement", null);
             isolatedService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.CurrentTimeMillis + 1000));
             isolatedService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             var listener = new SupportUpdateListener();
@@ -124,7 +122,7 @@ namespace com.espertech.esper.regression.client
                 return;
             }
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from pattern [every a=SupportBean -> b=SupportBean(theString=a.theString)]");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from pattern [every a=SupportBean -> b=SupportBean(TheString=a.TheString)]");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -145,7 +143,7 @@ namespace com.espertech.esper.regression.client
     
             // send to 'right' engine
             unit.EPRuntime.SendEvent(new SupportBean("E1", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,a.intPrimitive,b.intPrimitive".Split(','), new object[]{"E1", 1, 3});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,a.IntPrimitive,b.IntPrimitive".Split(','), new object[]{"E1", 1, 3});
     
             // send second pair, and a fake to the wrong place
             unit.EPRuntime.SendEvent(new SupportBean("E2", 4));
@@ -159,7 +157,7 @@ namespace com.espertech.esper.regression.client
     
             // send to 'right' engine
             epService.EPRuntime.SendEvent(new SupportBean("E2", 6));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,a.intPrimitive,b.intPrimitive".Split(','), new object[]{"E2", 4, 6});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,a.IntPrimitive,b.IntPrimitive".Split(','), new object[]{"E2", 4, 6});
     
             epService.EPAdministrator.DestroyAllStatements();
             EPAssertionUtil.AssertEqualsAnyOrder(new string[]{"i1"}, epService.EPServiceIsolatedNames);
@@ -220,7 +218,7 @@ namespace com.espertech.esper.regression.client
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimerIso(10000, unit);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString".Split(','), new object[]{"E1"});
     
             SendTimerIso(11000, unit);
             unit.EPRuntime.SendEvent(new SupportBean("E2", 1));
@@ -234,7 +232,7 @@ namespace com.espertech.esper.regression.client
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimerUnisolated(epService, 130000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString".Split(','), new object[]{"E2"});
     
             SendTimerIso(30000, unit);
             Assert.IsFalse(listener.IsInvoked);
@@ -266,7 +264,7 @@ namespace com.espertech.esper.regression.client
     
             unit.EPRuntime.SendEvent(new SupportBean("E2", 2));
             Assert.IsFalse(listenerSelect.GetAndClearIsInvoked());
-            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E2"});
+            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), "TheString".Split(','), new object[]{"E2"});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
             Assert.IsFalse(listenerSelect.GetAndClearIsInvoked());
@@ -276,16 +274,16 @@ namespace com.espertech.esper.regression.client
             unit.EPAdministrator.RemoveStatement(stmtInsert);
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
-            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E4"});
-            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E4"});
+            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), "TheString".Split(','), new object[]{"E4"});
+            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), "TheString".Split(','), new object[]{"E4"});
     
             unit.EPRuntime.SendEvent(new SupportBean("E5", 5));
             Assert.IsFalse(listenerSelect.GetAndClearIsInvoked());
             Assert.IsFalse(listenerInsert.GetAndClearIsInvoked());
     
             epService.EPRuntime.SendEvent(new SupportBean("E6", 6));
-            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E6"});
-            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E6"});
+            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), "TheString".Split(','), new object[]{"E6"});
+            EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), "TheString".Split(','), new object[]{"E6"});
     
             unit.Dispose();
             epService.EPAdministrator.DestroyAllStatements();
@@ -296,11 +294,11 @@ namespace com.espertech.esper.regression.client
                 return;
             }
     
-            var fields = new string[]{"theString", "sumi"};
+            var fields = new string[]{"TheString", "sumi"};
             int count = 4;
             var listeners = new SupportUpdateListener[count];
             for (int i = 0; i < count; i++) {
-                string epl = "@Name('S" + i + "') select theString, sum(intPrimitive) as sumi from SupportBean(theString='" + i + "')#time(10)";
+                string epl = "@Name('S" + i + "') select TheString, sum(IntPrimitive) as sumi from SupportBean(TheString='" + i + "')#time(10)";
                 listeners[i] = new SupportUpdateListener();
                 epService.EPAdministrator.CreateEPL(epl).Events += listeners[i].Update;
             }
@@ -360,8 +358,8 @@ namespace com.espertech.esper.regression.client
                 return;
             }
     
-            var fields = new string[]{"theString"};
-            string epl = "select theString from SupportBean#time(60)";
+            var fields = new string[]{"TheString"};
+            string epl = "select TheString from SupportBean#time(60)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -407,10 +405,10 @@ namespace com.espertech.esper.regression.client
                 return;
             }
     
-            var fields = new string[]{"theString"};
+            var fields = new string[]{"TheString"};
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL("@Name('create') create window MyWindow#keepall as SupportBean");
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL("@Name('insert') insert into MyWindow select * from SupportBean");
-            EPStatement stmtDelete = epService.EPAdministrator.CreateEPL("@Name('delete') on SupportBean_A delete from MyWindow where theString = id");
+            EPStatement stmtDelete = epService.EPAdministrator.CreateEPL("@Name('delete') on SupportBean_A delete from MyWindow where TheString = id");
             EPStatement stmtConsume = epService.EPAdministrator.CreateEPL("@Name('consume') select irstream * from MyWindow");
             var listener = new SupportUpdateListener();
             stmtConsume.Events += listener.Update;
@@ -461,7 +459,7 @@ namespace com.espertech.esper.regression.client
             }
     
             SendTimerUnisolated(epService, 100000);
-            var fields = new string[]{"theString"};
+            var fields = new string[]{"TheString"};
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL("@Name('create') create window MyWindow#time(10) as SupportBean");
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL("@Name('insert') insert into MyWindow select * from SupportBean");
     
@@ -511,7 +509,7 @@ namespace com.espertech.esper.regression.client
     
             SendTimerUnisolated(epService, 5000);
             var fields = new string[]{"ct"};
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select Current_timestamp() as ct from SupportBean");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select current_timestamp() as ct from SupportBean");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -527,7 +525,7 @@ namespace com.espertech.esper.regression.client
     
             epService.EPAdministrator.DestroyAllStatements();
     
-            stmt = epService.EPAdministrator.CreateEPL("select theString as ct from SupportBean where Current_timestamp() >= 10000");
+            stmt = epService.EPAdministrator.CreateEPL("select TheString as ct from SupportBean where current_timestamp() >= 10000");
             stmt.Events += listener.Update;
     
             unit.EPRuntime.SendEvent(new SupportBean());
@@ -543,7 +541,7 @@ namespace com.espertech.esper.regression.client
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2"});
     
             stmt.Dispose();
-            stmt = epService.EPAdministrator.CreateEPL("select theString as ct from SupportBean where Current_timestamp() >= 120000");
+            stmt = epService.EPAdministrator.CreateEPL("select TheString as ct from SupportBean where current_timestamp() >= 120000");
             stmt.Events += listener.Update;
             unit.EPAdministrator.AddStatement(new EPStatement[]{stmt});
     
@@ -565,9 +563,9 @@ namespace com.espertech.esper.regression.client
             }
     
             SendTimerUnisolated(epService, 5000);
-            var fields = new string[]{"theString"};
+            var fields = new string[]{"TheString"};
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL("insert into NewStream select * from SupportBean");
-            EPStatement stmtUpd = epService.EPAdministrator.CreateEPL("update istream NewStream set theString = 'X'");
+            EPStatement stmtUpd = epService.EPAdministrator.CreateEPL("update istream NewStream set TheString = 'X'");
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("select * from NewStream");
             var listener = new SupportUpdateListener();
             stmtSelect.Events += listener.Update;
@@ -607,8 +605,8 @@ namespace com.espertech.esper.regression.client
             }
     
             SendTimerUnisolated(epService, 1000);
-            var fields = new string[]{"theString"};
-            string epl = "select irstream theString from SupportBean#time(10)";
+            var fields = new string[]{"TheString"};
+            string epl = "select irstream TheString from SupportBean#time(10)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -623,7 +621,7 @@ namespace com.espertech.esper.regression.client
             epService.EPRuntime.SendEvent(new SupportBean("E3", 0));
     
             SendTimerUnisolated(epService, 8000);
-            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select 'x' as theString from pattern [timer:interval(10)]");
+            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select 'x' as TheString from pattern [timer:interval(10)]");
             stmtTwo.Events += listener.Update;
     
             EPServiceProviderIsolated unit = epService.GetEPServiceIsolated("i1");
@@ -676,7 +674,7 @@ namespace com.espertech.esper.regression.client
             SendTimerIso(1000, unit);
     
             var fields = new string[]{"ct"};
-            EPStatement stmt = unit.EPAdministrator.CreateEPL("select Current_timestamp() as ct from pattern[every timer:interval(10)]", null, null);
+            EPStatement stmt = unit.EPAdministrator.CreateEPL("select current_timestamp() as ct from pattern[every timer:interval(10)]", null, null);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     

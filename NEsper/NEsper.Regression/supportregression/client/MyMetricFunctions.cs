@@ -8,6 +8,7 @@
 
 using System;
 using System.Threading;
+
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
@@ -17,7 +18,7 @@ namespace com.espertech.esper.supportregression.client
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
-        public static bool TakeCpuTime(long nanoSecTarget)
+        public static bool TakeCPUTime(long nanoSecTarget)
         {
             if (nanoSecTarget < 100)
             {

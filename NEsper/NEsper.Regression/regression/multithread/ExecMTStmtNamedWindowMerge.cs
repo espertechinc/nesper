@@ -39,9 +39,9 @@ namespace com.espertech.esper.regression.multithread
             // setup statements
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as select * from SupportBean");
             epService.EPAdministrator.CreateEPL("on SupportBean sb " +
-                    "merge MyWindow nw where nw.theString = sb.theString " +
+                    "merge MyWindow nw where nw.TheString = sb.TheString " +
                     " when not matched then insert select * " +
-                    " when matched then update set intPrimitive = nw.intPrimitive + 1");
+                    " when matched then update set IntPrimitive = nw.IntPrimitive + 1");
     
             // execute
             var threadPool = Executors.NewFixedThreadPool(numThreads);
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regression.multithread
             EventBean[] rows = epService.EPRuntime.ExecuteQuery("select * from MyWindow").Array;
             Assert.AreEqual(numEventsPerThread, rows.Length);
             foreach (EventBean row in rows) {
-                Assert.AreEqual(numThreads - 1, row.Get("intPrimitive"));
+                Assert.AreEqual(numThreads - 1, row.Get("IntPrimitive"));
             }
             //long deltaTime = endTime - startTime;
             //Log.Info("Totals updated: " + totalUpdates + "  Delta cumu: " + deltaCumulative + "  Delta pooled: " + deltaTime);

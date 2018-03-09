@@ -6,11 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
@@ -33,15 +30,15 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            string exceptionText = GetSyntaxExceptionPattern(epService, EVENT_NUM + "(doublePrimitive='ss'");
-            Assert.AreEqual("Incorrect syntax near end-of-input expecting a closing parenthesis ')' but found end-of-input at line 1 column 77, please check the filter specification within the pattern expression [" + typeof(SupportBean_N).Name + "(doublePrimitive='ss']", exceptionText);
+            string exceptionText = GetSyntaxExceptionPattern(epService, EVENT_NUM + "(DoublePrimitive='ss'");
+            Assert.AreEqual("Incorrect syntax near end-of-input expecting a closing parenthesis ')' but found end-of-input at line 1 column 77, please check the filter specification within the pattern expression [" + typeof(SupportBean_N).FullName + "(DoublePrimitive='ss']", exceptionText);
     
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            epService.EPAdministrator.CreateEPL("select * from pattern[(not a=SupportBean) -> SupportBean(theString=a.theString)]");
+            epService.EPAdministrator.CreateEPL("select * from pattern[(not a=SupportBean) -> SupportBean(TheString=a.TheString)]");
     
             // test invalid subselect
             epService.EPAdministrator.CreateEPL("create window WaitWindow#keepall as (waitTime int)");
-            epService.EPAdministrator.CreateEPL("insert into WaitWindow select intPrimitive as waitTime from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into WaitWindow select IntPrimitive as waitTime from SupportBean");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 100));
     
             try {
@@ -89,24 +86,24 @@ namespace com.espertech.esper.regression.pattern
             SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'dummy.nested=1': Failed to resolve property 'dummy.nested' to a stream or nested property in a stream [");
     
             // property wrong type
-            exception = GetStatementExceptionPattern(epService, EVENT_NUM + "(intPrimitive='s')");
-            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'intPrimitive=\"s\"': Implicit conversion from datatype 'string' to 'int?' is not allowed [");
+            exception = GetStatementExceptionPattern(epService, EVENT_NUM + "(IntPrimitive='s')");
+            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'IntPrimitive=\"s\"': Implicit conversion from datatype 'string' to '" + Name.Of<int>() + "' is not allowed [");
     
             // property not a primitive type
             exception = GetStatementExceptionPattern(epService, EVENT_COMPLEX + "(nested=1)");
-            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'nested=1': Implicit conversion from datatype 'int?' to 'SupportBeanSpecialGetterNested' is not allowed [");
+            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'nested=1': Implicit conversion from datatype '" + Name.Of<int>() + "' to 'SupportBeanSpecialGetterNested' is not allowed [");
     
             // no tag matches prior use
-            exception = GetStatementExceptionPattern(epService, EVENT_NUM + "(doublePrimitive=x.abc)");
-            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'doublePrimitive=x.abc': Failed to resolve property 'x.abc' to a stream or nested property in a stream [");
+            exception = GetStatementExceptionPattern(epService, EVENT_NUM + "(DoublePrimitive=x.abc)");
+            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'DoublePrimitive=x.abc': Failed to resolve property 'x.abc' to a stream or nested property in a stream [");
     
             // range not valid on string
-            exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + "(theString in [1:2])");
-            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'theString between 1 and 2': Implicit conversion from datatype 'string' to numeric is not allowed [");
+            exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + "(TheString in [1:2])");
+            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'TheString between 1 and 2': Implicit conversion from datatype 'string' to numeric is not allowed [");
     
             // range does not allow string params
-            exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + "(doubleBoxed in ['a':2])");
-            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'doubleBoxed between \"a\" and 2': Implicit conversion from datatype 'string' to numeric is not allowed [");
+            exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + "(DoubleBoxed in ['a':2])");
+            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'DoubleBoxed between \"a\" and 2': Implicit conversion from datatype 'string' to numeric is not allowed [");
     
             // invalid observer arg
             exception = GetStatementExceptionPattern(epService, "timer:at(9l)");
@@ -117,8 +114,8 @@ namespace com.espertech.esper.regression.pattern
             SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern guard '" + typeof(SupportBean).FullName + " where timer:within(\"s\")': Timer-within guard requires a single numeric or time period parameter [");
     
             // use-result property is wrong type
-            exception = GetStatementExceptionPattern(epService, "x=" + EVENT_ALLTYPES + " -> " + EVENT_ALLTYPES + "(doublePrimitive=x.boolBoxed)");
-            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'doublePrimitive=x.boolBoxed': Implicit conversion from datatype 'bool?' to 'double?' is not allowed [");
+            exception = GetStatementExceptionPattern(epService, "x=" + EVENT_ALLTYPES + " -> " + EVENT_ALLTYPES + "(DoublePrimitive=x.BoolBoxed)");
+            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'DoublePrimitive=x.BoolBoxed': Implicit conversion from datatype 'bool?' to 'double?' is not allowed [");
     
             // named-parameter for timer:at or timer:interval
             exception = GetStatementExceptionPattern(epService, "timer:interval(interval:10)");
@@ -130,20 +127,20 @@ namespace com.espertech.esper.regression.pattern
         private void RunAssertionUseResult(EPServiceProvider epService) {
             string @event = typeof(SupportBean_N).Name;
     
-            TryValid(epService, "na=" + @event + " -> nb=" + @event + "(doublePrimitive = na.doublePrimitive)");
-            TryInvalid(epService, "xx=" + @event + " -> nb=" + @event + "(doublePrimitive = na.doublePrimitive)");
-            TryInvalid(epService, "na=" + @event + " -> nb=" + @event + "(doublePrimitive = xx.doublePrimitive)");
-            TryInvalid(epService, "na=" + @event + " -> nb=" + @event + "(doublePrimitive = na.xx)");
-            TryInvalid(epService, "xx=" + @event + " -> nb=" + @event + "(xx = na.doublePrimitive)");
+            TryValid(epService, "na=" + @event + " -> nb=" + @event + "(DoublePrimitive = na.DoublePrimitive)");
+            TryInvalid(epService, "xx=" + @event + " -> nb=" + @event + "(DoublePrimitive = na.DoublePrimitive)");
+            TryInvalid(epService, "na=" + @event + " -> nb=" + @event + "(DoublePrimitive = xx.DoublePrimitive)");
+            TryInvalid(epService, "na=" + @event + " -> nb=" + @event + "(DoublePrimitive = na.xx)");
+            TryInvalid(epService, "xx=" + @event + " -> nb=" + @event + "(xx = na.DoublePrimitive)");
             TryInvalid(epService, "na=" + @event + " -> nb=" + @event + "(xx = na.xx)");
-            TryValid(epService, "na=" + @event + " -> nb=" + @event + "(doublePrimitive = na.doublePrimitive, intBoxed=na.intBoxed)");
-            TryValid(epService, "na=" + @event + "() -> nb=" + @event + "(doublePrimitive in (na.doublePrimitive:na.doubleBoxed))");
-            TryValid(epService, "na=" + @event + "() -> nb=" + @event + "(doublePrimitive in [na.doublePrimitive:na.doubleBoxed])");
-            TryValid(epService, "na=" + @event + "() -> nb=" + @event + "(doublePrimitive in [na.intBoxed:na.intPrimitive])");
-            TryInvalid(epService, "na=" + @event + "() -> nb=" + @event + "(doublePrimitive in [na.intBoxed:na.xx])");
-            TryInvalid(epService, "na=" + @event + "() -> nb=" + @event + "(doublePrimitive in [na.intBoxed:na.boolBoxed])");
-            TryInvalid(epService, "na=" + @event + "() -> nb=" + @event + "(doublePrimitive in [na.xx:na.intPrimitive])");
-            TryInvalid(epService, "na=" + @event + "() -> nb=" + @event + "(doublePrimitive in [na.boolBoxed:na.intPrimitive])");
+            TryValid(epService, "na=" + @event + " -> nb=" + @event + "(DoublePrimitive = na.DoublePrimitive, IntBoxed=na.IntBoxed)");
+            TryValid(epService, "na=" + @event + "() -> nb=" + @event + "(DoublePrimitive in (na.DoublePrimitive:na.DoubleBoxed))");
+            TryValid(epService, "na=" + @event + "() -> nb=" + @event + "(DoublePrimitive in [na.DoublePrimitive:na.DoubleBoxed])");
+            TryValid(epService, "na=" + @event + "() -> nb=" + @event + "(DoublePrimitive in [na.IntBoxed:na.IntPrimitive])");
+            TryInvalid(epService, "na=" + @event + "() -> nb=" + @event + "(DoublePrimitive in [na.IntBoxed:na.xx])");
+            TryInvalid(epService, "na=" + @event + "() -> nb=" + @event + "(DoublePrimitive in [na.IntBoxed:na.BoolBoxed])");
+            TryInvalid(epService, "na=" + @event + "() -> nb=" + @event + "(DoublePrimitive in [na.xx:na.IntPrimitive])");
+            TryInvalid(epService, "na=" + @event + "() -> nb=" + @event + "(DoublePrimitive in [na.BoolBoxed:na.IntPrimitive])");
         }
     
         private void TryInvalid(EPServiceProvider epService, string eplInvalidPattern) {

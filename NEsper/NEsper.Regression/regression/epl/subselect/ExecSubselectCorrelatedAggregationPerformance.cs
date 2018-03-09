@@ -30,7 +30,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
         public override void Run(EPServiceProvider epService) {
             string stmtText = "select p00, " +
-                    "(select sum(intPrimitive) from SupportBean#keepall where theString = s0.p00) as sump00 " +
+                    "(select sum(IntPrimitive) from SupportBean#keepall where TheString = s0.p00) as sump00 " +
                     "from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();

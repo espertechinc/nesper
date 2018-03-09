@@ -6,14 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
@@ -32,7 +28,7 @@ namespace com.espertech.esper.regression.client
             configuration.EngineDefaults.ExceptionHandling.AddClass(typeof(SupportExceptionHandlerFactory));
             configuration.EngineDefaults.ExceptionHandling.AddClass(typeof(SupportExceptionHandlerFactory));
             configuration.AddEventType<SupportBean>();
-            configuration.AddPlugInAggregationFunctionFactory("myinvalidagg", typeof(ExecClientExceptionHandlerNoHandler.InvalidAggTestFactory).Name);
+            configuration.AddPlugInAggregationFunctionFactory("myinvalidagg", typeof(ExecClientExceptionHandlerNoHandler.InvalidAggTestFactory));
         }
     
         public override void Run(EPServiceProvider epService) {

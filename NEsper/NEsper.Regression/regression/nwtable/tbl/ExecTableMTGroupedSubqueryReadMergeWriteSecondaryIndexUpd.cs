@@ -59,7 +59,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPRuntime.SendEvent(new LocalGroupEvent("insert", 0, 0));
     
             // select/read
-            string eplSubselect = "select (select count(*) from vartotal where topgroup=sb.intPrimitive) as c0 " +
+            string eplSubselect = "select (select count(*) from vartotal where topgroup=sb.IntPrimitive) as c0 " +
                     "from SupportBean as sb";
             EPStatement stmtSubselect = epService.EPAdministrator.CreateEPL(eplSubselect);
             var listener = new SupportUpdateListener();

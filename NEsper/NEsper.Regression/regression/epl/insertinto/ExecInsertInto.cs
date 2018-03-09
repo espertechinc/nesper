@@ -9,15 +9,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Avro;
+
 using Avro.Generic;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.client.time;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.events;
 using com.espertech.esper.events.bean;
@@ -25,10 +25,9 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util;
+
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
-
-// using static org.apache.avro.SchemaBuilder.record;
 
 using NUnit.Framework;
 
@@ -98,14 +97,14 @@ namespace com.espertech.esper.regression.epl.insertinto
         private void RunAssertionVariantRStreamOMToStmt(EPServiceProvider epService) {
             var model = new EPStatementObjectModel();
             model.InsertInto = InsertIntoClause.Create("Event_1_RSOM", new string[0], StreamSelector.RSTREAM_ONLY);
-            model.SelectClause = SelectClause.Create().Add("intPrimitive", "intBoxed");
+            model.SelectClause = SelectClause.Create().Add("IntPrimitive", "IntBoxed");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName));
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
     
             EPStatement stmt = epService.EPAdministrator.Create(model, "s1");
     
             string epl = "insert rstream into Event_1_RSOM " +
-                    "select intPrimitive, intBoxed " +
+                    "select IntPrimitive, IntBoxed " +
                     "from " + typeof(SupportBean).FullName;
             Assert.AreEqual(epl, model.ToEPL());
             Assert.AreEqual(epl, stmt.Text);
@@ -130,15 +129,15 @@ namespace com.espertech.esper.regression.epl.insertinto
         private void RunAssertionVariantOneOMToStmt(EPServiceProvider epService) {
             var model = new EPStatementObjectModel();
             model.InsertInto = InsertIntoClause.Create("Event_1_OMS", "delta", "product");
-            model.SelectClause = SelectClause.Create().Add(Expressions.Minus("intPrimitive", "intBoxed"), "deltaTag")
-                    .Add(Expressions.Multiply("intPrimitive", "intBoxed"), "productTag");
+            model.SelectClause = SelectClause.Create().Add(Expressions.Minus("IntPrimitive", "IntBoxed"), "deltaTag")
+                    .Add(Expressions.Multiply("IntPrimitive", "IntBoxed"), "productTag");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName).AddView(View.Create("length", Expressions.Constant(100))));
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
     
             EPStatement stmt = TryAssertsVariant(epService, null, model, "Event_1_OMS");
     
             string epl = "insert into Event_1_OMS(delta, product) " +
-                    "select intPrimitive-intBoxed as deltaTag, intPrimitive*intBoxed as productTag " +
+                    "select IntPrimitive-IntBoxed as deltaTag, IntPrimitive*IntBoxed as productTag " +
                     "from " + typeof(SupportBean).FullName + "#length(100)";
             Assert.AreEqual(epl, model.ToEPL());
             Assert.AreEqual(epl, stmt.Text);
@@ -148,7 +147,7 @@ namespace com.espertech.esper.regression.epl.insertinto
     
         private void RunAssertionVariantOneEPLToOMStmt(EPServiceProvider epService) {
             string epl = "insert into Event_1_EPL(delta, product) " +
-                    "select intPrimitive-intBoxed as deltaTag, intPrimitive*intBoxed as productTag " +
+                    "select IntPrimitive-IntBoxed as deltaTag, IntPrimitive*IntBoxed as productTag " +
                     "from " + typeof(SupportBean).FullName + "#length(100)";
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
@@ -162,7 +161,7 @@ namespace com.espertech.esper.regression.epl.insertinto
     
         private void RunAssertionVariantOne(EPServiceProvider epService) {
             string stmtText = "insert into Event_1VO (delta, product) " +
-                    "select intPrimitive - intBoxed as deltaTag, intPrimitive * intBoxed as productTag " +
+                    "select IntPrimitive - IntBoxed as deltaTag, IntPrimitive * IntBoxed as productTag " +
                     "from " + typeof(SupportBean).FullName + "#length(100)";
     
             TryAssertsVariant(epService, stmtText, null, "Event_1VO").Dispose();
@@ -170,7 +169,7 @@ namespace com.espertech.esper.regression.epl.insertinto
     
         private void RunAssertionVariantOneStateless(EPServiceProvider epService) {
             string stmtTextStateless = "insert into Event_1VOS (delta, product) " +
-                    "select intPrimitive - intBoxed as deltaTag, intPrimitive * intBoxed as productTag " +
+                    "select IntPrimitive - IntBoxed as deltaTag, IntPrimitive * IntBoxed as productTag " +
                     "from " + typeof(SupportBean).FullName;
             TryAssertsVariant(epService, stmtTextStateless, null, "Event_1VOS").Dispose();
         }
@@ -200,7 +199,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             Assert.IsTrue(stmtSelect.EventType is BeanEventType);
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            Assert.AreEqual("E1", listener.AssertOneGetNew().Get("theString"));
+            Assert.AreEqual("E1", listener.AssertOneGetNew().Get("TheString"));
             Assert.IsTrue(listener.AssertOneGetNew().Underlying is SupportBean);
     
             stmtSelect.Dispose();
@@ -208,10 +207,10 @@ namespace com.espertech.esper.regression.epl.insertinto
     
         private void RunAssertionVariantOneJoin(EPServiceProvider epService) {
             string stmtText = "insert into Event_1J (delta, product) " +
-                    "select intPrimitive - intBoxed as deltaTag, intPrimitive * intBoxed as productTag " +
+                    "select IntPrimitive - IntBoxed as deltaTag, IntPrimitive * IntBoxed as productTag " +
                     "from " + typeof(SupportBean).FullName + "#length(100) as s0," +
-                    typeof(SupportBean_A).Name + "#length(100) as s1 " +
-                    " where s0.theString = s1.id";
+                    typeof(SupportBean_A).FullName + "#length(100) as s1 " +
+                    " where s0.TheString = s1.id";
     
             TryAssertsVariant(epService, stmtText, null, "Event_1J").Dispose();
         }
@@ -220,8 +219,8 @@ namespace com.espertech.esper.regression.epl.insertinto
             string stmtText = "insert into Event_1JW (delta, product) " +
                     "select * " +
                     "from " + typeof(SupportBean).FullName + "#length(100) as s0," +
-                    typeof(SupportBean_A).Name + "#length(100) as s1 " +
-                    " where s0.theString = s1.id";
+                    typeof(SupportBean_A).FullName + "#length(100) as s1 " +
+                    " where s0.TheString = s1.id";
     
             try {
                 epService.EPAdministrator.CreateEPL(stmtText);
@@ -233,7 +232,7 @@ namespace com.espertech.esper.regression.epl.insertinto
     
         private void RunAssertionVariantTwo(EPServiceProvider epService) {
             string stmtText = "insert into Event_1_2 " +
-                    "select intPrimitive - intBoxed as delta, intPrimitive * intBoxed as product " +
+                    "select IntPrimitive - IntBoxed as delta, IntPrimitive * IntBoxed as product " +
                     "from " + typeof(SupportBean).FullName + "#length(100)";
     
             TryAssertsVariant(epService, stmtText, null, "Event_1_2").Dispose();
@@ -255,15 +254,15 @@ namespace com.espertech.esper.regression.epl.insertinto
             SupportBean theEvent = SendEvent(epService, 10, 11);
             Assert.IsTrue(listenerOne.GetAndClearIsInvoked());
             Assert.AreEqual(1, listenerOne.LastNewData.Length);
-            Assert.AreEqual(10, listenerOne.LastNewData[0].Get("intPrimitive"));
-            Assert.AreEqual(11, listenerOne.LastNewData[0].Get("intBoxed"));
+            Assert.AreEqual(10, listenerOne.LastNewData[0].Get("IntPrimitive"));
+            Assert.AreEqual(11, listenerOne.LastNewData[0].Get("IntBoxed"));
             Assert.AreEqual(20, listenerOne.LastNewData[0].EventType.PropertyNames.Length);
             Assert.AreSame(theEvent, listenerOne.LastNewData[0].Underlying);
     
             Assert.IsTrue(listenerTwo.GetAndClearIsInvoked());
             Assert.AreEqual(1, listenerTwo.LastNewData.Length);
-            Assert.AreEqual(10, listenerTwo.LastNewData[0].Get("intPrimitive"));
-            Assert.AreEqual(11, listenerTwo.LastNewData[0].Get("intBoxed"));
+            Assert.AreEqual(10, listenerTwo.LastNewData[0].Get("IntPrimitive"));
+            Assert.AreEqual(11, listenerTwo.LastNewData[0].Get("IntBoxed"));
             Assert.AreEqual(20, listenerTwo.LastNewData[0].EventType.PropertyNames.Length);
             Assert.AreSame(theEvent, listenerTwo.LastNewData[0].Underlying);
     
@@ -288,10 +287,10 @@ namespace com.espertech.esper.regression.epl.insertinto
     
         private void RunAssertionVariantTwoJoin(EPServiceProvider epService) {
             string stmtText = "insert into Event_1_2J " +
-                    "select intPrimitive - intBoxed as delta, intPrimitive * intBoxed as product " +
+                    "select IntPrimitive - IntBoxed as delta, IntPrimitive * IntBoxed as product " +
                     "from " + typeof(SupportBean).FullName + "#length(100) as s0," +
-                    typeof(SupportBean_A).Name + "#length(100) as s1 " +
-                    " where s0.theString = s1.id";
+                    typeof(SupportBean_A).FullName + "#length(100) as s1 " +
+                    " where s0.TheString = s1.id";
     
             EPStatement stmt = TryAssertsVariant(epService, stmtText, null, "Event_1_2J");
     
@@ -319,13 +318,13 @@ namespace com.espertech.esper.regression.epl.insertinto
     
         private void RunAssertionInvalidStreamUsed(EPServiceProvider epService) {
             string stmtText = "insert into Event_1IS (delta, product) " +
-                    "select intPrimitive - intBoxed as deltaTag, intPrimitive * intBoxed as productTag " +
+                    "select IntPrimitive - IntBoxed as deltaTag, IntPrimitive * IntBoxed as productTag " +
                     "from " + typeof(SupportBean).FullName + "#length(100)";
             epService.EPAdministrator.CreateEPL(stmtText);
     
             try {
                 stmtText = "insert into Event_1IS(delta) " +
-                        "select (intPrimitive - intBoxed) as deltaTag " +
+                        "select (IntPrimitive - IntBoxed) as deltaTag " +
                         "from " + typeof(SupportBean).FullName + "#length(100)";
                 epService.EPAdministrator.CreateEPL(stmtText);
                 Assert.Fail();
@@ -620,14 +619,14 @@ namespace com.espertech.esper.regression.epl.insertinto
             } else if (rep == null) {
                 Assert.Fail();
             } else if (rep.Value.IsMapEvent()) {
-                epService.EPAdministrator.Configuration.AddEventType("S0", Collections.SingletonDataMap("theString", typeof(string)));
+                epService.EPAdministrator.Configuration.AddEventType("S0", Collections.SingletonDataMap("TheString", typeof(string)));
                 epService.EPAdministrator.Configuration.AddEventType("S1", Collections.SingletonDataMap("id", typeof(string)));
             } else if (rep.Value.IsObjectArrayEvent()) {
-                epService.EPAdministrator.Configuration.AddEventType("S0", new string[]{"theString"}, new object[]{typeof(string)});
+                epService.EPAdministrator.Configuration.AddEventType("S0", new string[]{"TheString"}, new object[]{typeof(string)});
                 epService.EPAdministrator.Configuration.AddEventType("S1", new string[]{"id"}, new object[]{typeof(string)});
             } else if (rep.Value.IsAvroEvent()) {
                 epService.EPAdministrator.Configuration.AddEventTypeAvro("S0", new ConfigurationEventTypeAvro() {
-                    AvroSchema = SchemaBuilder.Record("S0", RequiredString("theString"))
+                    AvroSchema = SchemaBuilder.Record("S0", RequiredString("TheString"))
                 });
                 epService.EPAdministrator.Configuration.AddEventTypeAvro("S1", new ConfigurationEventTypeAvro() {
                     AvroSchema = SchemaBuilder.Record("S1", RequiredString("id"))
@@ -638,7 +637,7 @@ namespace com.espertech.esper.regression.epl.insertinto
     
             string textOne = (bean ? "" : rep.Value.GetAnnotationText()) + "insert into event2 select * " +
                     "from S0#length(100) as s0, S1#length(5) as s1 " +
-                    "where s0.theString = s1.id";
+                    "where s0.TheString = s1.id";
             string textTwo = (bean ? "" : rep.Value.GetAnnotationText()) + "select * from event2#length(10)";
     
             // Attach listener to feed
@@ -674,14 +673,14 @@ namespace com.espertech.esper.regression.epl.insertinto
                 eventS0 = new SupportBean("myId", -1);
                 epService.EPRuntime.SendEvent(eventS0);
             } else if (rep.Value.IsMapEvent()) {
-                eventS0 = Collections.SingletonMap("theString", "myId");
+                eventS0 = Collections.SingletonMap("TheString", "myId");
                 epService.EPRuntime.SendEvent((Map) eventS0, "S0");
             } else if (rep.Value.IsObjectArrayEvent()) {
                 eventS0 = new object[]{"myId"};
                 epService.EPRuntime.SendEvent((object[]) eventS0, "S0");
             } else if (rep.Value.IsAvroEvent()) {
                 var theEvent = new GenericRecord(SupportAvroUtil.GetAvroSchema(epService, "S0").AsRecordSchema());
-                theEvent.Put("theString", "myId");
+                theEvent.Put("TheString", "myId");
                 eventS0 = theEvent;
                 epService.EPRuntime.SendEventAvro(theEvent, "S0");
             } else {
@@ -734,17 +733,17 @@ namespace com.espertech.esper.regression.epl.insertinto
         {
             // declare source type
             if (sourceBean) {
-                epService.EPAdministrator.CreateEPL("create schema SourceSchema as " + typeof(MyP0P1EventSource).FullName);
+                epService.EPAdministrator.CreateEPL("create schema SourceSchema as " + TypeHelper.MaskTypeName<MyP0P1EventSource>());
             } else {
-                epService.EPAdministrator.CreateEPL("create " + sourceType.Value.GetOutputTypeCreateSchemaName() + " schema SourceSchema as (p0 string, p1 int)");
+                epService.EPAdministrator.CreateEPL("create " + sourceType.Value.GetOutputTypeCreateSchemaName() + " schema SourceSchema as (P0 string, P1 int)");
             }
     
             // declare target type
             if (targetBean) {
-                epService.EPAdministrator.CreateEPL("create schema TargetSchema as " + typeof(MyP0P1EventTarget).FullName);
+                epService.EPAdministrator.CreateEPL("create schema TargetSchema as " + TypeHelper.MaskTypeName<MyP0P1EventTarget>());
             } else {
-                epService.EPAdministrator.CreateEPL("create " + targetType.Value.GetOutputTypeCreateSchemaName() + " schema TargetContainedSchema as (c0 int)");
-                epService.EPAdministrator.CreateEPL("create " + targetType.Value.GetOutputTypeCreateSchemaName() + " schema TargetSchema (p0 string, p1 int, c0 TargetContainedSchema)");
+                epService.EPAdministrator.CreateEPL("create " + targetType.Value.GetOutputTypeCreateSchemaName() + " schema TargetContainedSchema as (C0 int)");
+                epService.EPAdministrator.CreateEPL("create " + targetType.Value.GetOutputTypeCreateSchemaName() + " schema TargetSchema (P0 string, P1 int, C0 TargetContainedSchema)");
             }
     
             // insert-into and select
@@ -758,73 +757,54 @@ namespace com.espertech.esper.regression.epl.insertinto
                 epService.EPRuntime.SendEvent(new MyP0P1EventSource("a", 10));
             } else if (sourceType.Value.IsMapEvent()) {
                 var map = new Dictionary<string, object>();
-                map.Put("p0", "a");
-                map.Put("p1", 10);
+                map.Put("P0", "a");
+                map.Put("P1", 10);
                 epService.EPRuntime.SendEvent(map, "SourceSchema");
             } else if (sourceType.Value.IsObjectArrayEvent()) {
                 epService.EPRuntime.SendEvent(new object[]{"a", 10}, "SourceSchema");
             } else if (sourceType.Value.IsAvroEvent()) {
                 var schema = SchemaBuilder.Record("schema",
-                    RequiredString("p0"),
-                    RequiredString("p1"),
-                    RequiredString("c0"));
+                    RequiredString("P0"),
+                    RequiredString("P1"),
+                    RequiredString("C0"));
                 var record = new GenericRecord(schema);
-                record.Put("p0", "a");
-                record.Put("p1", 10);
+                record.Put("P0", "a");
+                record.Put("P1", 10);
                 epService.EPRuntime.SendEventAvro(record, "SourceSchema");
             } else {
                 Assert.Fail();
             }
     
             // assert
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "p0,p1,c0".Split(','), new object[]{"a", 10, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "P0,P1,C0".Split(','), new object[]{"a", 10, null});
         }
     
         public class MyP0P1EventSource {
-            private readonly string p0;
-            private readonly int p1;
-
             public MyP0P1EventSource(string p0, int p1) {
-                this.p0 = p0;
-                this.p1 = p1;
+                P0 = p0;
+                P1 = p1;
             }
 
-            public string P0 => p0;
+            public string P0 { get; }
 
-            public int P1 => p1;
+            public int P1 { get; }
         }
     
         public class MyP0P1EventTarget {
-            private string p0;
-            private int p1;
-            private Object c0;
-
             public MyP0P1EventTarget() {
             }
 
             public MyP0P1EventTarget(string p0, int p1, Object c0) {
-                this.p0 = p0;
-                this.p1 = p1;
-                this.c0 = c0;
+                P0 = p0;
+                P1 = p1;
+                C0 = c0;
             }
 
-            public string P0
-            {
-                get => p0;
-                set => p0 = value;
-            }
+            public string P0 { get; set; }
 
-            public int P1
-            {
-                get => p1;
-                set => p1 = value;
-            }
+            public int P1 { get; set; }
 
-            public object C0
-            {
-                get => c0;
-                set => c0 = value;
-            }
+            public object C0 { get; set; }
         }
     }
 } // end of namespace

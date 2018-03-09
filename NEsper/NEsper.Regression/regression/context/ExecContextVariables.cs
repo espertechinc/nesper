@@ -43,9 +43,9 @@ namespace com.espertech.esper.regression.context
         private void RunAssertionSegmentedByKey(EPServiceProvider epService) {
             string[] fields = "mycontextvar".Split(',');
             epService.EPAdministrator.CreateEPL("create context MyCtx as " +
-                    "partition by theString from SupportBean, p00 from SupportBean_S0");
+                    "partition by TheString from SupportBean, p00 from SupportBean_S0");
             epService.EPAdministrator.CreateEPL("context MyCtx create variable int mycontextvar = 0");
-            epService.EPAdministrator.CreateEPL("context MyCtx on SupportBean(intPrimitive > 0) set mycontextvar = intPrimitive");
+            epService.EPAdministrator.CreateEPL("context MyCtx on SupportBean(IntPrimitive > 0) set mycontextvar = IntPrimitive");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("context MyCtx select mycontextvar from SupportBean_S0").Events += listener.Update;
     
@@ -81,8 +81,8 @@ namespace com.espertech.esper.regression.context
             epService.EPAdministrator.CreateEPL("create context MyCtx as " +
                     "initiated by SupportBean_S0 s0 terminated by SupportBean_S1(p10 = s0.p00)");
             epService.EPAdministrator.CreateEPL("context MyCtx create variable int mycontextvar = 5");
-            epService.EPAdministrator.CreateEPL("context MyCtx on SupportBean(theString = context.s0.p00) set mycontextvar = intPrimitive");
-            epService.EPAdministrator.CreateEPL("context MyCtx on SupportBean(intPrimitive < 0) set mycontextvar = intPrimitive");
+            epService.EPAdministrator.CreateEPL("context MyCtx on SupportBean(TheString = context.s0.p00) set mycontextvar = IntPrimitive");
+            epService.EPAdministrator.CreateEPL("context MyCtx on SupportBean(IntPrimitive < 0) set mycontextvar = IntPrimitive");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("context MyCtx select mycontextvar from SupportBean_S2(p20 = context.s0.p00)").Events += listener.Update;
     
@@ -122,8 +122,8 @@ namespace com.espertech.esper.regression.context
             // test module deployment and undeployment
             string epl = "@Name(\"context\")\n" +
                     "create context MyContext\n" +
-                    "initiated by Distinct(theString) SupportBean as input\n" +
-                    "terminated by SupportBean(theString = input.theString);\n" +
+                    "initiated by Distinct(TheString) SupportBean as input\n" +
+                    "terminated by SupportBean(TheString = input.TheString);\n" +
                     "\n" +
                     "@Name(\"ctx variable counter\")\n" +
                     "context MyContext create variable integer counter = 0;\n";
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regression.context
             stmtVar.Events += listenerCreateVariable.Update;
     
             var listenerUpdate = new SupportUpdateListener();
-            EPStatement stmtUpd = epService.EPAdministrator.CreateEPL("@Name('upd') context MyCtx on SupportBean(theString = context.s0.p00) set mycontextvar = intPrimitive");
+            EPStatement stmtUpd = epService.EPAdministrator.CreateEPL("@Name('upd') context MyCtx on SupportBean(TheString = context.s0.p00) set mycontextvar = IntPrimitive");
             stmtUpd.Events += listenerUpdate.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "P1"));    // allocate partition P1
@@ -169,7 +169,7 @@ namespace com.espertech.esper.regression.context
     
             epService.EPAdministrator.CreateEPL("create context MyCtx as initiated by SupportBean_S0 s0 terminated after 24 hours");
             epService.EPAdministrator.CreateEPL("context MyCtx create variable int mycontextvar = 5");
-            epService.EPAdministrator.CreateEPL("context MyCtx on SupportBean(theString = context.s0.p00) set mycontextvar = intPrimitive");
+            epService.EPAdministrator.CreateEPL("context MyCtx on SupportBean(TheString = context.s0.p00) set mycontextvar = IntPrimitive");
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "P1"));    // allocate partition P1
             AssertVariableValues(epService, 0, 5);
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("create context MyCtxOne as partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context MyCtxOne as partition by TheString from SupportBean");
             epService.EPAdministrator.CreateEPL("create context MyCtxTwo as partition by p00 from SupportBean_S0");
             epService.EPAdministrator.CreateEPL("context MyCtxOne create variable int myctxone_int = 0");
     
@@ -227,8 +227,8 @@ namespace com.espertech.esper.regression.context
                     "Error starting statement: Variable 'myctxone_int' defined for use with context 'MyCtxOne' can only be accessed within that context [select * from SupportBean_S0#keepall limit 10 offset myctxone_int]");
             TryInvalid(epService, "select * from SupportBean_S0#keepall output every myctxone_int events",
                     "Error starting statement: Error in the output rate limiting clause: Variable 'myctxone_int' defined for use with context 'MyCtxOne' can only be accessed within that context [select * from SupportBean_S0#keepall output every myctxone_int events]");
-            TryInvalid(epService, "@Hint('reclaim_group_aged=myctxone_int') select longPrimitive, count(*) from SupportBean group by longPrimitive",
-                    "Error starting statement: Variable 'myctxone_int' defined for use with context 'MyCtxOne' can only be accessed within that context [@Hint('reclaim_group_aged=myctxone_int') select longPrimitive, count(*) from SupportBean group by longPrimitive]");
+            TryInvalid(epService, "@Hint('reclaim_group_aged=myctxone_int') select LongPrimitive, count(*) from SupportBean group by LongPrimitive",
+                    "Error starting statement: Variable 'myctxone_int' defined for use with context 'MyCtxOne' can only be accessed within that context [@Hint('reclaim_group_aged=myctxone_int') select LongPrimitive, count(*) from SupportBean group by LongPrimitive]");
         }
     
         private void AssertVariableValues(EPServiceProvider epService, int agentInstanceId, int expected) {

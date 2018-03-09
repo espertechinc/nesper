@@ -10,16 +10,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using com.espertech.esper.client;
-using com.espertech.esper.client.hook;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.regression.events;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.epl;
-using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 
 
@@ -53,7 +49,8 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionExceptionHandler(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("throwException", GetType().FullName, "throwException", ValueCacheEnum.DISABLED, FilterOptimizableEnum.ENABLED, true);
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
+                "throwException", GetType(), "ThrowException", ValueCacheEnum.DISABLED, FilterOptimizableEnum.ENABLED, true);
             string epl = "@Name('ABCName') select * from SupportBean(ThrowException())";
             epService.EPAdministrator.CreateEPL(epl);
     

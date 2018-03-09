@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.multithread
     {
         public override void Run(EPServiceProvider epService)
         {
-            var stmt = epService.EPAdministrator.CreateEPL("select theString from " + typeof(SupportBean).FullName);
+            var stmt = epService.EPAdministrator.CreateEPL("select TheString from " + typeof(SupportBean).FullName);
 
             var strings = new List<string>().AsSyncList();
             stmt.Events += (sender, eventArgs) => strings.Add((string) eventArgs.NewEvents[0].Get("TheString"));
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regression.multithread
             for (var i = 0; i < 50; i++)
             {
                 var stmtUpd = epService.EPAdministrator.CreateEPL(
-                    "update istream " + typeof(SupportBean).FullName + " set theString='a'");
+                    "update istream " + typeof(SupportBean).FullName + " set TheString='a'");
                 Thread.Sleep(10);
                 stmtUpd.Dispose();
             }

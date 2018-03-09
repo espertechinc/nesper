@@ -254,7 +254,7 @@ namespace com.espertech.esper.supportregression.epl
                 var values = new Dictionary<string, object>();
                 rows[i] = values;
 
-                values.Put("mapstring", "|" + theString + "_" + i + "|");
+                values.Put("mapstring", $"|{theString}_{i}|");
                 values.Put("mapint", i + 100);
             }
 
@@ -279,7 +279,7 @@ namespace com.espertech.esper.supportregression.epl
                 var values = new Object[2];
                 rows[i] = values;
 
-                values[0] = "|" + theString + "_" + i + "|";
+                values[0] = $"|{theString}_{i}|";
                 values[1] = i + 100;
             }
 
@@ -307,7 +307,7 @@ namespace com.espertech.esper.supportregression.epl
                 return values;
             }
 
-            values.Put("mapstring", "|" + theString + "|");
+            values.Put("mapstring", $"|{theString}|");
             values.Put("mapint", id + 1);
             return values;
         }
@@ -336,7 +336,7 @@ namespace com.espertech.esper.supportregression.epl
                 return values;
             }
 
-            values.Put("mapstring", "|" + theString + "|");
+            values.Put("mapstring", $"|{theString}|");
             values.Put("mapint", id + 1);
             return values;
         }
@@ -526,7 +526,7 @@ namespace com.espertech.esper.supportregression.epl
             {
                 return "|<null>|";
             }
-            return "|" + theString + "|";
+            return $"|{theString}|";
         }
 
         public class FetchedData
@@ -659,7 +659,7 @@ namespace com.espertech.esper.supportregression.epl
             }
 
             var fields = new Object[2];
-            fields[0] = "|" + theString + "|";
+            fields[0] = $"|{theString}|";
             fields[1] = id + 1;
             return fields;
         }
@@ -692,7 +692,7 @@ namespace com.espertech.esper.supportregression.epl
             return result;
         }
 
-        public static MyMethodReturn[] FetchPONOArray(String mystring, int myint)
+        public static MyMethodReturn[] FetchPonoArray(String mystring, int myint)
         {
             if (myint < 0)
             {
@@ -705,7 +705,7 @@ namespace com.espertech.esper.supportregression.epl
             return new MyMethodReturn[] { new MyMethodReturn("|" + mystring + "|", myint + 1) };
         }
 
-        public static ICollection<MyMethodReturn> FetchPONOCollection(String mystring, int myint)
+        public static ICollection<MyMethodReturn> FetchPonoCollection(String mystring, int myint)
         {
             if (myint < 0)
             {
@@ -718,25 +718,25 @@ namespace com.espertech.esper.supportregression.epl
             return Collections.SingletonList(new MyMethodReturn("|" + mystring + "|", myint + 1));
         }
 
-        public static IEnumerable<MyMethodReturn> FetchPONOIterable(String mystring, int myint)
+        public static IEnumerable<MyMethodReturn> FetchPonoIterable(String mystring, int myint)
         {
             if (myint < 0)
             {
                 return null;
             }
-            return FetchPONOCollection(mystring, myint);
+            return FetchPonoCollection(mystring, myint);
         }
 
-        public static IEnumerator<MyMethodReturn> FetchPONOIterator(String mystring, int myint)
+        public static IEnumerator<MyMethodReturn> FetchPonoIterator(String mystring, int myint)
         {
             if (myint < 0)
             {
                 return null;
             }
-            return FetchPONOCollection(mystring, myint).GetEnumerator();
+            return FetchPonoCollection(mystring, myint).GetEnumerator();
         }
 
-        public static MyMethodReturn[] FetchPONOArrayMR(String theString, int id)
+        public static MyMethodReturn[] FetchPonoArrayMR(String theString, int id)
         {
             if (id < 0)
             {
@@ -751,13 +751,13 @@ namespace com.espertech.esper.supportregression.epl
             var rows = new MyMethodReturn[id];
             for (var i = 0; i < id; i++)
             {
-                rows[i] = new MyMethodReturn("|" + theString + "_" + i + "|", i + 100);
+                rows[i] = new MyMethodReturn($"|{theString}_{i}|", i + 100);
             }
 
             return rows;
         }
 
-        public static ICollection<MyMethodReturn> FetchPONOCollectionMR(String theString, int id)
+        public static ICollection<MyMethodReturn> FetchPonoCollectionMR(String theString, int id)
         {
             if (id < 0)
             {
@@ -772,29 +772,29 @@ namespace com.espertech.esper.supportregression.epl
             var rows = new List<MyMethodReturn>(id);
             for (var i = 0; i < id; i++)
             {
-                rows.Add(new MyMethodReturn("|" + theString + "_" + i + "|", i + 100));
+                rows.Add(new MyMethodReturn($"|{theString}_{i}|", i + 100));
             }
 
             return rows;
         }
 
-        public static IEnumerable<MyMethodReturn> FetchPONOIterableMR(String theString, int id)
+        public static IEnumerable<MyMethodReturn> FetchPonoIterableMR(String theString, int id)
         {
             if (id < 0)
             {
                 return null;
             }
-            return FetchPONOCollectionMR(theString, id);
+            return FetchPonoCollectionMR(theString, id);
         }
 
 
-        public static IEnumerator<MyMethodReturn> FetchPONOIteratorMR(String theString, int id)
+        public static IEnumerator<MyMethodReturn> FetchPonoIteratorMR(String theString, int id)
         {
             if (id < 0)
             {
                 return null;
             }
-            return FetchPONOCollectionMR(theString, id).GetEnumerator();
+            return FetchPonoCollectionMR(theString, id).GetEnumerator();
         }
 
         public static IDictionary<string, object> FetchMapCollectionMRMetadata()
@@ -823,7 +823,7 @@ namespace com.espertech.esper.supportregression.epl
                 var values = new Dictionary<string, object>();
                 rows.Add(values);
 
-                values.Put("mapstring", "|" + theString + "_" + i + "|");
+                values.Put("mapstring", $"|{theString}_{i}|");
                 values.Put("mapint", i + 100);
             }
 
@@ -884,7 +884,7 @@ namespace com.espertech.esper.supportregression.epl
                 var values = new Object[2];
                 rows.Add(values);
 
-                values[0] = "|" + theString + "_" + i + "|";
+                values[0] = $"|{theString}_{i}|";
                 values[1] = i + 100;
             }
 

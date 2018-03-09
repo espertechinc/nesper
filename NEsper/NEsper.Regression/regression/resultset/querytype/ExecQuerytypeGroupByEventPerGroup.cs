@@ -45,7 +45,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionCriteriaByDotMethod(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            string epl = "select Sb.TheString as c0, sum(intPrimitive) as c1 from SupportBean#length_batch(2) as sb group by Sb.TheString";
+            string epl = "select Sb.TheString as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by Sb.TheString";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             // with output snapshot
             string[] fields = "c0,c1".Split(',');
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select theString as c0, sum(intPrimitive) as c1 from SupportBean group by theString " +
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString " +
                     "output snapshot every 3 events");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -85,8 +85,8 @@ namespace com.espertech.esper.regression.resultset.querytype
             stmt.Dispose();
     
             // with order-by
-            stmt = epService.EPAdministrator.CreateEPL("select theString as c0, sum(intPrimitive) as c1 from SupportBean group by theString " +
-                    "output snapshot every 3 events order by theString asc");
+            stmt = epService.EPAdministrator.CreateEPL("select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString " +
+                    "output snapshot every 3 events order by TheString asc");
             stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             stmt.Dispose();
     
             // test un-grouped case
-            stmt = epService.EPAdministrator.CreateEPL("select null as c0, sum(intPrimitive) as c1 from SupportBean output snapshot every 3 events");
+            stmt = epService.EPAdministrator.CreateEPL("select null as c0, sum(IntPrimitive) as c1 from SupportBean output snapshot every 3 events");
             stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             // test reclaim
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
-            stmt = epService.EPAdministrator.CreateEPL("@Hint('reclaim_group_aged=1,reclaim_group_freq=1') select theString as c0, sum(intPrimitive) as c1 from SupportBean group by theString " +
+            stmt = epService.EPAdministrator.CreateEPL("@Hint('reclaim_group_aged=1,reclaim_group_freq=1') select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString " +
                     "output snapshot every 3 events");
             stmt.Events += listener.Update;
     
@@ -152,11 +152,11 @@ namespace com.espertech.esper.regression.resultset.querytype
             epService.EPAdministrator.Configuration.AddEventType("SupportBean_B", typeof(SupportBean_B));
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as select * from SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
-            epService.EPAdministrator.CreateEPL("on SupportBean_A a delete from MyWindow w where w.theString = a.id");
+            epService.EPAdministrator.CreateEPL("on SupportBean_A a delete from MyWindow w where w.TheString = a.id");
             epService.EPAdministrator.CreateEPL("on SupportBean_B delete from MyWindow");
     
-            string[] fields = "theString,mysum".Split(',');
-            string epl = "@Hint('DISABLE_RECLAIM_GROUP') select theString, sum(intPrimitive) as mysum from MyWindow group by theString order by theString";
+            string[] fields = "TheString,mysum".Split(',');
+            string epl = "@Hint('DISABLE_RECLAIM_GROUP') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString order by TheString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             stmt.Dispose();
             epService.EPRuntime.SendEvent(new SupportBean_B("delete"));
     
-            epl = "select theString, sum(intPrimitive) as mysum from MyWindow group by theString order by theString";
+            epl = "select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString order by TheString";
             stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += listener.Update;
     
@@ -181,7 +181,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             // After the oldest group is 60 second old, reclaim group older then  30 seconds
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Hint('reclaim_group_aged=30,reclaim_group_freq=5') select longPrimitive, count(*) from SupportBean group by longPrimitive");
+            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Hint('reclaim_group_aged=30,reclaim_group_freq=5') select LongPrimitive, count(*) from SupportBean group by LongPrimitive");
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     
@@ -214,14 +214,14 @@ namespace com.espertech.esper.regression.resultset.querytype
             }
     
             // no frequency provided
-            epService.EPAdministrator.CreateEPL("@Hint('reclaim_group_aged=30') select longPrimitive, count(*) from SupportBean group by longPrimitive");
+            epService.EPAdministrator.CreateEPL("@Hint('reclaim_group_aged=30') select LongPrimitive, count(*) from SupportBean group by LongPrimitive");
             epService.EPRuntime.SendEvent(new SupportBean());
     
             epService.EPAdministrator.CreateEPL("create variable int myAge = 10");
             epService.EPAdministrator.CreateEPL("create variable int myFreq = 10");
     
             stmtOne.Dispose();
-            stmtOne = epService.EPAdministrator.CreateEPL("@Hint('reclaim_group_aged=myAge,reclaim_group_freq=myFreq') select longPrimitive, count(*) from SupportBean group by longPrimitive");
+            stmtOne = epService.EPAdministrator.CreateEPL("@Hint('reclaim_group_aged=myAge,reclaim_group_freq=myFreq') select LongPrimitive, count(*) from SupportBean group by LongPrimitive");
             stmtOne.Events += listener.Update;
     
             for (int i = 0; i < 1000; i++) {
@@ -262,21 +262,21 @@ namespace com.espertech.esper.regression.resultset.querytype
             stmtOne.Dispose();
     
             // invalid tests
-            TryInvalid(epService, "@Hint('reclaim_group_aged=xyz') select longPrimitive, count(*) from SupportBean group by longPrimitive",
-                    "Error starting statement: Failed to parse hint parameter value 'xyz' as a double-typed seconds value or variable name [@Hint('reclaim_group_aged=xyz') select longPrimitive, count(*) from SupportBean group by longPrimitive]");
-            TryInvalid(epService, "@Hint('reclaim_group_aged=30,reclaim_group_freq=xyz') select longPrimitive, count(*) from SupportBean group by longPrimitive",
-                    "Error starting statement: Failed to parse hint parameter value 'xyz' as a double-typed seconds value or variable name [@Hint('reclaim_group_aged=30,reclaim_group_freq=xyz') select longPrimitive, count(*) from SupportBean group by longPrimitive]");
+            TryInvalid(epService, "@Hint('reclaim_group_aged=xyz') select LongPrimitive, count(*) from SupportBean group by LongPrimitive",
+                    "Error starting statement: Failed to parse hint parameter value 'xyz' as a double-typed seconds value or variable name [@Hint('reclaim_group_aged=xyz') select LongPrimitive, count(*) from SupportBean group by LongPrimitive]");
+            TryInvalid(epService, "@Hint('reclaim_group_aged=30,reclaim_group_freq=xyz') select LongPrimitive, count(*) from SupportBean group by LongPrimitive",
+                    "Error starting statement: Failed to parse hint parameter value 'xyz' as a double-typed seconds value or variable name [@Hint('reclaim_group_aged=30,reclaim_group_freq=xyz') select LongPrimitive, count(*) from SupportBean group by LongPrimitive]");
             epService.EPAdministrator.Configuration.AddVariable("MyVar", typeof(string), "");
-            TryInvalid(epService, "@Hint('reclaim_group_aged=MyVar') select longPrimitive, count(*) from SupportBean group by longPrimitive",
-                    "Error starting statement: Variable type of variable 'MyVar' is not numeric [@Hint('reclaim_group_aged=MyVar') select longPrimitive, count(*) from SupportBean group by longPrimitive]");
-            TryInvalid(epService, "@Hint('reclaim_group_aged=-30,reclaim_group_freq=30') select longPrimitive, count(*) from SupportBean group by longPrimitive",
-                    "Error starting statement: Hint parameter value '-30' is an invalid value, expecting a double-typed seconds value or variable name [@Hint('reclaim_group_aged=-30,reclaim_group_freq=30') select longPrimitive, count(*) from SupportBean group by longPrimitive]");
+            TryInvalid(epService, "@Hint('reclaim_group_aged=MyVar') select LongPrimitive, count(*) from SupportBean group by LongPrimitive",
+                    "Error starting statement: Variable type of variable 'MyVar' is not numeric [@Hint('reclaim_group_aged=MyVar') select LongPrimitive, count(*) from SupportBean group by LongPrimitive]");
+            TryInvalid(epService, "@Hint('reclaim_group_aged=-30,reclaim_group_freq=30') select LongPrimitive, count(*) from SupportBean group by LongPrimitive",
+                    "Error starting statement: Hint parameter value '-30' is an invalid value, expecting a double-typed seconds value or variable name [@Hint('reclaim_group_aged=-30,reclaim_group_freq=30') select LongPrimitive, count(*) from SupportBean group by LongPrimitive]");
     
             /// <summary>Test natural timer - long running test to be commented out.</summary>
             /*
             epService = EPServiceProviderManager.GetProvider(GetType().FullName);
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Hint('reclaim_group_aged=1,reclaim_group_freq=1') select longPrimitive, count(*) from SupportBean group by longPrimitive");
+            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Hint('reclaim_group_aged=1,reclaim_group_freq=1') select LongPrimitive, count(*) from SupportBean group by LongPrimitive");
     
             int count = 0;
             While(true)
@@ -480,9 +480,9 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "sum(price) as mySum," +
                     "avg(price) as myAvg " +
                     "from " + typeof(SupportBeanString).FullName + "#length(100) as one, " +
-                    typeof(SupportMarketDataBean).Name + "#length(3) as two " +
+                    typeof(SupportMarketDataBean).FullName + "#length(3) as two " +
                     "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                    "       and one.theString = two.symbol " +
+                    "       and one.TheString = two.symbol " +
                     "group by symbol";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -500,7 +500,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionUniqueInBatch(EPServiceProvider epService) {
             string stmtOne = "insert into MyStream select symbol, price from " +
-                    typeof(SupportMarketDataBean).Name + "#time_batch(1 sec)";
+                    typeof(SupportMarketDataBean).FullName + "#time_batch(1 sec)";
             epService.EPAdministrator.CreateEPL(stmtOne);
             SendTimer(epService, 0);
     

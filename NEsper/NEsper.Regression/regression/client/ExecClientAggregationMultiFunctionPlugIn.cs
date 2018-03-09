@@ -25,7 +25,7 @@ namespace com.espertech.esper.regression.client
 {
     public class ExecClientAggregationMultiFunctionPlugIn : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            var config = new ConfigurationPlugInAggregationMultiFunction(SupportAggMFFuncExtensions.GetFunctionNames(), typeof(SupportAggMFFactory).Name);
+            var config = new ConfigurationPlugInAggregationMultiFunction(SupportAggMFFuncExtensions.GetFunctionNames(), typeof(SupportAggMFFactory));
             configuration.AddPlugInAggregationMultiFunction(config);
             configuration.AddEventType<SupportBean>();
         }
@@ -40,7 +40,7 @@ namespace com.espertech.esper.regression.client
     
             // test scalar only
             string[] fieldsScalar = "c0,c1".Split(',');
-            string eplScalar = "select Ss(theString) as c0, Ss(intPrimitive) as c1 from SupportBean";
+            string eplScalar = "select ss(TheString) as c0, ss(IntPrimitive) as c1 from SupportBean";
             EPStatement stmtScalar = epService.EPAdministrator.CreateEPL(eplScalar);
             var listener = new SupportUpdateListener();
             stmtScalar.Events += listener.Update;
@@ -58,10 +58,10 @@ namespace com.espertech.esper.regression.client
             // test scalar-array only
             string[] fieldsScalarArray = "c0,c1,c2,c3".Split(',');
             string eplScalarArray = "select " +
-                    "Sa(theString) as c0, " +
-                    "Sa(intPrimitive) as c1, " +
-                    "Sa(theString).AllOf(v => v = 'E1') as c2, " +
-                    "Sa(intPrimitive).AllOf(v => v = 1) as c3 " +
+                    "sa(TheString) as c0, " +
+                    "sa(IntPrimitive) as c1, " +
+                    "sa(TheString).allOf(v => v = 'E1') as c2, " +
+                    "sa(IntPrimitive).allOf(v => v = 1) as c3 " +
                     "from SupportBean";
             EPStatement stmtScalarArray = epService.EPAdministrator.CreateEPL(eplScalarArray);
             stmtScalarArray.Events += listener.Update;
@@ -84,10 +84,10 @@ namespace com.espertech.esper.regression.client
             // test scalar-collection only
             string[] fieldsScalarColl = "c2,c3".Split(',');
             string eplScalarColl = "select " +
-                    "Sc(theString) as c0, " +
-                    "Sc(intPrimitive) as c1, " +
-                    "Sc(theString).AllOf(v => v = 'E1') as c2, " +
-                    "Sc(intPrimitive).AllOf(v => v = 1) as c3 " +
+                    "sc(TheString) as c0, " +
+                    "sc(IntPrimitive) as c1, " +
+                    "sc(TheString).allOf(v => v = 'E1') as c2, " +
+                    "sc(IntPrimitive).allOf(v => v = 1) as c3 " +
                     "from SupportBean";
             EPStatement stmtScalarColl = epService.EPAdministrator.CreateEPL(eplScalarColl);
             stmtScalarColl.Events += listener.Update;
@@ -112,11 +112,11 @@ namespace com.espertech.esper.regression.client
             // test single-event return
             string[] fieldsSingleEvent = "c0,c1,c2,c3,c4".Split(',');
             string eplSingleEvent = "select " +
-                    "Se1() as c0, " +
-                    "Se1().AllOf(v => v.theString = 'E1') as c1, " +
-                    "Se1().AllOf(v => v.intPrimitive = 1) as c2, " +
-                    "Se1().theString as c3, " +
-                    "Se1().intPrimitive as c4 " +
+                    "se1() as c0, " +
+                    "se1().allOf(v => v.TheString = 'E1') as c1, " +
+                    "se1().allOf(v => v.IntPrimitive = 1) as c2, " +
+                    "se1().TheString as c3, " +
+                    "se1().IntPrimitive as c4 " +
                     "from SupportBean";
             EPStatement stmtSingleEvent = epService.EPAdministrator.CreateEPL(eplSingleEvent);
             stmtSingleEvent.Events += listener.Update;
@@ -141,8 +141,8 @@ namespace com.espertech.esper.regression.client
             string[] fieldsEnumEvent = "c0,c1,c2".Split(',');
             string eplEnumEvent = "select " +
                     "Ee() as c0, " +
-                    "Ee().AllOf(v => v.theString = 'E1') as c1, " +
-                    "Ee().AllOf(v => v.intPrimitive = 1) as c2 " +
+                    "Ee().allOf(v => v.TheString = 'E1') as c1, " +
+                    "Ee().allOf(v => v.IntPrimitive = 1) as c2 " +
                     "from SupportBean";
             EPStatement stmtEnumEvent = epService.EPAdministrator.CreateEPL(eplEnumEvent);
             stmtEnumEvent.Events += listener.Update;
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionSameProviderGroupedReturnSingleEvent(EPServiceProvider epService) {
-            string epl = "select Se1() as c0, Se2() as c1 from SupportBean#keepall group by theString";
+            string epl = "select se1() as c0, se2() as c1 from SupportBean#keepall group by TheString";
     
             // test regular
             SupportAggMFFactory.Reset();
@@ -260,7 +260,7 @@ namespace com.espertech.esper.regression.client
             var config = new ConfigurationPlugInAggregationMultiFunction("thefunction".Split(','), typeof(SupportAggMFFactory).FullName);
             epService.EPAdministrator.Configuration.AddPlugInAggregationMultiFunction(config);
             try {
-                var configTwo = new ConfigurationPlugInAggregationMultiFunction("xyz,gmbh,thefunction".Split(','), typeof(ExecClientAggregationFunctionPlugIn).Name);
+                var configTwo = new ConfigurationPlugInAggregationMultiFunction("xyz,gmbh,thefunction".Split(','), typeof(ExecClientAggregationFunctionPlugIn));
                 epService.EPAdministrator.Configuration.AddPlugInAggregationMultiFunction(configTwo);
                 Assert.Fail();
             } catch (ConfigurationException ex) {

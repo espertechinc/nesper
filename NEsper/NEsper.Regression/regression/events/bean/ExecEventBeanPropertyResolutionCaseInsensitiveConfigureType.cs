@@ -23,7 +23,7 @@ namespace com.espertech.esper.regression.events.bean
         public override void Configure(Configuration configuration) {
             var legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.PropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
-            configuration.AddEventType("Bean", typeof(SupportBean).FullName, legacyDef);
+            configuration.AddEventType("Bean", typeof(SupportBean).AssemblyQualifiedName, legacyDef);
         }
     
         public override void Run(EPServiceProvider epService) {

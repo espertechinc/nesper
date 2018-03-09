@@ -44,12 +44,12 @@ namespace com.espertech.esper.regression.nwtable.tbl
         // Use aggregation method single-value when the aggregation has a natural current value
         // that can be obtained without asking it a question.
         private void RunAssertionPlugInAggMethod_CSVLast3Strings(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddPlugInAggregationFunctionFactory("csvWords", typeof(SimpleWordCSVFactory).Name);
+            epService.EPAdministrator.Configuration.AddPlugInAggregationFunctionFactory("csvWords", typeof(SimpleWordCSVFactory));
     
             epService.EPAdministrator.CreateEPL("create table varaggPIN (csv CsvWords())");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select varaggPIN.csv as c0 from SupportBean_S0").Events += listener.Update;
-            epService.EPAdministrator.CreateEPL("into table varaggPIN select CsvWords(theString) as csv from SupportBean#length(3)");
+            epService.EPAdministrator.CreateEPL("into table varaggPIN select CsvWords(TheString) as csv from SupportBean#length(3)");
     
             SendWordAssert(epService, listener, "the", "the");
             SendWordAssert(epService, listener, "fox", "the,fox");
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.Configuration.AddPlugInAggregationMultiFunction(config);
     
             epService.EPAdministrator.CreateEPL("create table varaggRCM (wordCount ReferenceCountedMap(string))");
-            epService.EPAdministrator.CreateEPL("into table varaggRCM select ReferenceCountedMap(theString) as wordCount from SupportBean#length(3)");
+            epService.EPAdministrator.CreateEPL("into table varaggRCM select ReferenceCountedMap(TheString) as wordCount from SupportBean#length(3)");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select VaraggRCM.wordCount.ReferenceCountLookup(p00) as c0 from SupportBean_S0").Events += listener.Update;
     

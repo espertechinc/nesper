@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.view
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
             string[] fields = "id".Split(',');
-            string epl = "select irstream * from SupportBeanTimestamp#timetolive(timestamp)";
+            string epl = "select irstream * from SupportBeanTimestamp#timeToLive(timestamp)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

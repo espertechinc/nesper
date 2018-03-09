@@ -218,9 +218,9 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionInNullableCoercion(EPServiceProvider epService) {
-            string stmtText = "select longBoxed from " + typeof(SupportBean).FullName + "(theString='A') as s0 " +
-                    "where longBoxed in " +
-                    "(select intBoxed from " + typeof(SupportBean).FullName + "(theString='B')#length(1000))";
+            string stmtText = "select LongBoxed from " + typeof(SupportBean).FullName + "(TheString='A') as s0 " +
+                    "where LongBoxed in " +
+                    "(select IntBoxed from " + typeof(SupportBean).FullName + "(TheString='B')#length(1000))";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -242,20 +242,20 @@ namespace com.espertech.esper.regression.epl.subselect
             SendBean(epService, "A", null, null);
             Assert.IsFalse(listener.IsInvoked);
             SendBean(epService, "A", null, 99L);
-            Assert.AreEqual(99L, listener.AssertOneGetNewAndReset().Get("longBoxed"));
+            Assert.AreEqual(99L, listener.AssertOneGetNewAndReset().Get("LongBoxed"));
     
             SendBean(epService, "B", 98, null);
     
             SendBean(epService, "A", null, 98L);
-            Assert.AreEqual(98L, listener.AssertOneGetNewAndReset().Get("longBoxed"));
+            Assert.AreEqual(98L, listener.AssertOneGetNewAndReset().Get("LongBoxed"));
     
             stmt.Dispose();
         }
     
         private void RunAssertionInNullRow(EPServiceProvider epService) {
-            string stmtText = "select intBoxed from " + typeof(SupportBean).FullName + "(theString='A') as s0 " +
-                    "where intBoxed in " +
-                    "(select longBoxed from " + typeof(SupportBean).FullName + "(theString='B')#length(1000))";
+            string stmtText = "select IntBoxed from " + typeof(SupportBean).FullName + "(TheString='A') as s0 " +
+                    "where IntBoxed in " +
+                    "(select LongBoxed from " + typeof(SupportBean).FullName + "(TheString='B')#length(1000))";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regression.epl.subselect
             Assert.IsFalse(listener.IsInvoked);
     
             SendBean(epService, "A", 1, 1L);
-            Assert.AreEqual(1, listener.AssertOneGetNewAndReset().Get("intBoxed"));
+            Assert.AreEqual(1, listener.AssertOneGetNewAndReset().Get("IntBoxed"));
     
             SendBean(epService, "B", null, null);
     
@@ -275,15 +275,15 @@ namespace com.espertech.esper.regression.epl.subselect
             Assert.IsFalse(listener.IsInvoked);
     
             SendBean(epService, "A", 1, 1L);
-            Assert.AreEqual(1, listener.AssertOneGetNewAndReset().Get("intBoxed"));
+            Assert.AreEqual(1, listener.AssertOneGetNewAndReset().Get("IntBoxed"));
     
             stmt.Dispose();
         }
     
         private void RunAssertionNotInNullRow(EPServiceProvider epService) {
-            string stmtText = "select intBoxed from " + typeof(SupportBean).FullName + "(theString='A') as s0 " +
-                    "where intBoxed not in " +
-                    "(select longBoxed from " + typeof(SupportBean).FullName + "(theString='B')#length(1000))";
+            string stmtText = "select IntBoxed from " + typeof(SupportBean).FullName + "(TheString='A') as s0 " +
+                    "where IntBoxed not in " +
+                    "(select LongBoxed from " + typeof(SupportBean).FullName + "(TheString='B')#length(1000))";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -336,19 +336,19 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionNotInNullableCoercion(EPServiceProvider epService) {
-            string stmtText = "select longBoxed from " + typeof(SupportBean).FullName + "(theString='A') as s0 " +
-                    "where longBoxed not in " +
-                    "(select intBoxed from " + typeof(SupportBean).FullName + "(theString='B')#length(1000))";
+            string stmtText = "select LongBoxed from " + typeof(SupportBean).FullName + "(TheString='A') as s0 " +
+                    "where LongBoxed not in " +
+                    "(select IntBoxed from " + typeof(SupportBean).FullName + "(TheString='B')#length(1000))";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
             SendBean(epService, "A", 0, 0L);
-            Assert.AreEqual(0L, listener.AssertOneGetNewAndReset().Get("longBoxed"));
+            Assert.AreEqual(0L, listener.AssertOneGetNewAndReset().Get("LongBoxed"));
     
             SendBean(epService, "A", null, null);
-            Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("longBoxed"));
+            Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("LongBoxed"));
     
             SendBean(epService, "B", null, null);
     
@@ -380,11 +380,11 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPAdministrator.Configuration.AddEventType("ArrayBean", typeof(SupportBeanArrayCollMap));
             try {
                 string stmtText = "select " +
-                        "intArr in (select intPrimitive from SupportBean#keepall) as r1 from ArrayBean";
+                        "intArr in (select IntPrimitive from SupportBean#keepall) as r1 from ArrayBean";
                 epService.EPAdministrator.CreateEPL(stmtText);
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr in (select intPrimitive from SupportBean#keepall) as r1 from ArrayBean]", ex.Message);
+                Assert.AreEqual("Error starting statement: Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr in (select IntPrimitive from SupportBean#keepall) as r1 from ArrayBean]", ex.Message);
             }
         }
     

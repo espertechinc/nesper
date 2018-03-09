@@ -155,7 +155,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimeEvent(epService, 1, 8, 0, 0, 0);
             epService.EPAdministrator.Configuration.AddVariable("myvar", typeof(int), 0);
             epService.EPAdministrator.Configuration.AddVariable("count_insert_var", typeof(int), 0);
-            epService.EPAdministrator.CreateEPL("on SupportBean set myvar = intPrimitive");
+            epService.EPAdministrator.CreateEPL("on SupportBean set myvar = IntPrimitive");
     
             string expression = "select symbol from MarketData#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
@@ -218,7 +218,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            Assert.AreEqual("E2", listener.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("E2", listener.AssertOneGetNewAndReset().Get("TheString"));
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
@@ -228,7 +228,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             epService.EPRuntime.SendEvent(new SupportBean("E5", 5));
             SendTimeEvent(epService, 2, 8, 0, 1, 0);
-            Assert.AreEqual("E5", listener.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("E5", listener.AssertOneGetNewAndReset().Get("TheString"));
     
             epService.EPRuntime.SendEvent(new SupportBean("E6", 6));
             Assert.IsFalse(listener.IsInvoked);
@@ -237,7 +237,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             // test count_total for insert and remove
             epService.EPAdministrator.CreateEPL("create variable int var_cnt_total = 3");
-            string expressionTotal = "select theString from SupportBean#length(2) output when count_insert_total = var_cnt_total or count_remove_total > 2";
+            string expressionTotal = "select TheString from SupportBean#length(2) output when count_insert_total = var_cnt_total or count_remove_total > 2";
             EPStatement stmtTotal = epService.EPAdministrator.CreateEPL(expressionTotal);
             stmtTotal.Events += listener.Update;
     
@@ -246,7 +246,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "theString".Split(','), new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "TheString".Split(','), new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
     
             epService.EPRuntime.SetVariableValue("var_cnt_total", -1);
     
@@ -254,7 +254,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             Assert.IsFalse(listener.GetAndClearIsInvoked());
     
             epService.EPRuntime.SendEvent(new SupportBean("E5", 1));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "theString".Split(','), new object[][]{new object[] {"E4"}, new object[] {"E5"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "TheString".Split(','), new object[][]{new object[] {"E4"}, new object[] {"E5"}});
             epService.EPAdministrator.DestroyAllStatements();
         }
     
@@ -300,7 +300,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimeEvent(epService, 1, 8, 0, 0, 0);
             epService.EPAdministrator.Configuration.AddVariable("myint", typeof(int), 0);
             epService.EPAdministrator.Configuration.AddVariable("mystring", typeof(string), "");
-            epService.EPAdministrator.CreateEPL("on SupportBean set myint = intPrimitive, mystring = theString");
+            epService.EPAdministrator.CreateEPL("on SupportBean set myint = IntPrimitive, mystring = TheString");
     
             string expression = "select symbol from MarketData#length(2) output when myint = 1 and mystring like 'F%'";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expression);
@@ -454,8 +454,8 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             TryInvalid(epService, "select * from MarketData output when true then set 1",
                     "Error starting statement: Error in the output rate limiting clause: Missing variable assignment expression in assignment number 0 [select * from MarketData output when true then set 1]");
     
-            TryInvalid(epService, "select theString, count(*) from SupportBean#length(2) group by theString output all every 0 seconds",
-                    "Error starting statement: Invalid time period expression returns a zero or negative time interval [select theString, count(*) from SupportBean#length(2) group by theString output all every 0 seconds]");
+            TryInvalid(epService, "select TheString, count(*) from SupportBean#length(2) group by TheString output all every 0 seconds",
+                    "Error starting statement: Invalid time period expression returns a zero or negative time interval [select TheString, count(*) from SupportBean#length(2) group by TheString output all every 0 seconds]");
         }
     
         private void SendTimer(EPServiceProvider epService, long timeInMSec) {

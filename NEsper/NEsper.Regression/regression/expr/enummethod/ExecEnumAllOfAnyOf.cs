@@ -10,14 +10,9 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.enummethod
 {
@@ -37,13 +32,15 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1".Split(',');
             string eplFragment = "select " +
-                    "contained.Allof(x => p00 = 12) as val0," +
-                    "contained.Anyof(x => p00 = 12) as val1 " +
+                    "Contained.allof(x => p00 = 12) as val0," +
+                    "Contained.anyof(x => p00 = 12) as val1 " +
                     "from Bean";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(bool?), typeof(bool?)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
+                typeof(bool), typeof(bool)
+            });
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value("E1,1", "E2,12", "E2,2"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true});
@@ -67,13 +64,15 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1".Split(',');
             string eplFragment = "select " +
-                    "strvals.Allof(x => x='E2') as val0," +
-                    "strvals.Anyof(x => x='E2') as val1 " +
+                    "Strvals.allof(x => x='E2') as val0," +
+                    "Strvals.anyof(x => x='E2') as val1 " +
                     "from SupportCollection";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(bool?), typeof(bool?)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
+                typeof(bool), typeof(bool)
+            });
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2,E3"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, true});

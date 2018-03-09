@@ -32,18 +32,18 @@ namespace com.espertech.esper.regression.view
             RunAssertionDocSample(epService);
     
             epService.EPAdministrator.CreateEPL("create context CtxInitToTerm initiated by MyInitEventWLength as miewl terminated after 1 year");
-            RunAssertionWindow(epService, "Length_batch(context.miewl.intSize)");
-            RunAssertionWindow(epService, "Time(context.miewl.intSize)");
-            RunAssertionWindow(epService, "Ext_timed(longPrimitive, context.miewl.intSize)");
-            RunAssertionWindow(epService, "Time_batch(context.miewl.intSize)");
-            RunAssertionWindow(epService, "Ext_timed_batch(longPrimitive, context.miewl.intSize)");
-            RunAssertionWindow(epService, "Time_length_batch(context.miewl.intSize, context.miewl.intSize)");
-            RunAssertionWindow(epService, "Time_accum(context.miewl.intSize)");
-            RunAssertionWindow(epService, "Firstlength(context.miewl.intSize)");
-            RunAssertionWindow(epService, "Firsttime(context.miewl.intSize)");
-            RunAssertionWindow(epService, "Sort(context.miewl.intSize, intPrimitive)");
-            RunAssertionWindow(epService, "Rank(theString, context.miewl.intSize, theString)");
-            RunAssertionWindow(epService, "Time_order(longPrimitive, context.miewl.intSize)");
+            RunAssertionWindow(epService, "length_batch(context.miewl.IntSize)");
+            RunAssertionWindow(epService, "time(context.miewl.IntSize)");
+            RunAssertionWindow(epService, "ext_timed(LongPrimitive, context.miewl.IntSize)");
+            RunAssertionWindow(epService, "time_batch(context.miewl.IntSize)");
+            RunAssertionWindow(epService, "ext_timed_batch(LongPrimitive, context.miewl.IntSize)");
+            RunAssertionWindow(epService, "time_length_batch(context.miewl.IntSize, context.miewl.IntSize)");
+            RunAssertionWindow(epService, "time_accum(context.miewl.IntSize)");
+            RunAssertionWindow(epService, "firstlength(context.miewl.IntSize)");
+            RunAssertionWindow(epService, "firsttime(context.miewl.IntSize)");
+            RunAssertionWindow(epService, "sort(context.miewl.IntSize, IntPrimitive)");
+            RunAssertionWindow(epService, "rank(TheString, context.miewl.IntSize, TheString)");
+            RunAssertionWindow(epService, "time_order(LongPrimitive, context.miewl.IntSize)");
         }
     
         private void RunAssertionDocSample(EPServiceProvider epService) {
@@ -62,7 +62,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionLengthWindow(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create context CtxInitToTerm initiated by MyInitEventWLength as miewl terminated after 1 year");
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("context CtxInitToTerm select context.miewl.id as id, count(*) as cnt from SupportBean(theString=context.miewl.id)#length(context.miewl.intSize)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("context CtxInitToTerm select context.miewl.Id as id, count(*) as cnt from SupportBean(TheString=context.miewl.Id)#length(context.miewl.IntSize)");
     
             epService.EPRuntime.SendEvent(new MyInitEventWLength("P1", 2));
             epService.EPRuntime.SendEvent(new MyInitEventWLength("P2", 4));
@@ -79,21 +79,14 @@ namespace com.espertech.esper.regression.view
         }
     
         public class MyInitEventWLength {
-            private readonly string id;
-            private readonly int intSize;
-    
             public MyInitEventWLength(string id, int intSize) {
-                this.id = id;
-                this.intSize = intSize;
+                this.Id = id;
+                this.IntSize = intSize;
             }
-    
-            public string GetId() {
-                return id;
-            }
-    
-            public int GetIntSize() {
-                return intSize;
-            }
+
+            public string Id { get; }
+
+            public int IntSize { get; }
         }
     }
 } // end of namespace

@@ -78,7 +78,7 @@ namespace com.espertech.esper.regression.db
         private void RunAssertionSelectRStream(EPServiceProvider epServiceRetained)
         {
             var stmtText = "select rstream myvarchar from " +
-                    typeof(SupportBean_S0).Name + "#length(1000) as s0," +
+                    typeof(SupportBean_S0).FullName + "#length(1000) as s0," +
                     " sql:MyDB ['select myvarchar from mytesttable where ${id} = mytesttable.mybigint'] as s1";
     
             var statement = epServiceRetained.EPAdministrator.CreateEPL(stmtText);
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regression.db
             epServiceRetained.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
             var stmtText = "select istream myvarchar from " +
-                    typeof(SupportBean_S0).Name + "#time(1 sec) as s0," +
+                    typeof(SupportBean_S0).FullName + "#time(1 sec) as s0," +
                     " sql:MyDB ['select myvarchar from mytesttable where ${id} = mytesttable.mybigint'] as s1";
     
             var statement = epServiceRetained.EPAdministrator.CreateEPL(stmtText);
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regression.db
         private void RunAssertionWhereClauseNoIndexNoCache(EPServiceProvider epServiceRetained)
         {
             var stmtText = "select id, mycol3, mycol2 from " +
-                    typeof(SupportBean_S0).Name + "#keepall as s0," +
+                    typeof(SupportBean_S0).FullName + "#keepall as s0," +
                     " sql:MyDB ['select mycol3, mycol2 from mytesttable_large'] as s1 where s0.id = s1.mycol3";
     
             var statement = epServiceRetained.EPAdministrator.CreateEPL(stmtText);

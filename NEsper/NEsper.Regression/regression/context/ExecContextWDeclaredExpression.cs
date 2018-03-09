@@ -27,8 +27,8 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionDeclaredExpression(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create context MyCtx as " +
-                    "group by intPrimitive < 0 as n, " +
-                    "group by intPrimitive > 0 as p " +
+                    "group by IntPrimitive < 0 as n, " +
+                    "group by IntPrimitive > 0 as p " +
                     "from SupportBean");
             epService.EPAdministrator.CreateEPL("create expression getLabelOne { context.label }");
             epService.EPAdministrator.CreateEPL("create expression getLabelTwo { 'x'||context.label||'x' }");
@@ -45,8 +45,8 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionAliasExpression(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create context MyCtx as " +
-                    "group by intPrimitive < 0 as n, " +
-                    "group by intPrimitive > 0 as p " +
+                    "group by IntPrimitive < 0 as n, " +
+                    "group by IntPrimitive > 0 as p " +
                     "from SupportBean");
             epService.EPAdministrator.CreateEPL("create expression getLabelOne alias for { context.label }");
             epService.EPAdministrator.CreateEPL("create expression getLabelTwo alias for { 'x'||context.label||'x' }");
@@ -61,19 +61,19 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionContextFilter(EPServiceProvider epService) {
-            string expr = "create expression THE_EXPRESSION alias for {theString='x'}";
+            string expr = "create expression THE_EXPRESSION alias for {TheString='x'}";
             epService.EPAdministrator.CreateEPL(expr);
     
             string context = "create context context2 initiated @now and pattern[Every(SupportBean(THE_EXPRESSION))] terminated after 10 minutes";
             epService.EPAdministrator.CreateEPL(context);
     
             var listener = new SupportUpdateListener();
-            string statement = "context context2 select * from pattern[e1=SupportBean(THE_EXPRESSION) -> e2=SupportBean(theString='y')]";
+            string statement = "context context2 select * from pattern[e1=SupportBean(THE_EXPRESSION) -> e2=SupportBean(TheString='y')]";
             epService.EPAdministrator.CreateEPL(statement).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("x", 1));
             epService.EPRuntime.SendEvent(new SupportBean("y", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "e1.intPrimitive,e2.intPrimitive".Split(','), new object[]{1, 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "e1.IntPrimitive,e2.IntPrimitive".Split(','), new object[]{1, 2});
     
             epService.EPAdministrator.DestroyAllStatements();
         }

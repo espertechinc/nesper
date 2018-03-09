@@ -43,9 +43,9 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionPatternNoWindow(EPServiceProvider epService) {
             // Test for Esper-115
             string cepStatementString = "@IterableUnbound select * from pattern " +
-                    "[every ( addressInfo = " + typeof(SupportBean).FullName + "(theString='address') " +
-                    "-> txnWD = " + typeof(SupportBean).FullName + "(theString='txn') ) ] " +
-                    "where addressInfo.intBoxed = txnWD.intBoxed";
+                    "[every ( addressInfo = " + typeof(SupportBean).FullName + "(TheString='address') " +
+                    "-> txnWD = " + typeof(SupportBean).FullName + "(TheString='txn') ) ] " +
+                    "where addressInfo.IntBoxed = txnWD.IntBoxed";
             EPStatement epStatement = epService.EPAdministrator.CreateEPL(cepStatementString);
     
             var myEventBean1 = new SupportBean();
@@ -71,9 +71,9 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionPatternWithWindow(EPServiceProvider epService) {
             string cepStatementString = "select * from pattern " +
-                    "[every ( addressInfo = " + typeof(SupportBean).FullName + "(theString='address') " +
-                    "-> txnWD = " + typeof(SupportBean).FullName + "(theString='txn') ) ]#lastevent " +
-                    "where addressInfo.intBoxed = txnWD.intBoxed";
+                    "[every ( addressInfo = " + typeof(SupportBean).FullName + "(TheString='address') " +
+                    "-> txnWD = " + typeof(SupportBean).FullName + "(TheString='txn') ) ]#lastevent " +
+                    "where addressInfo.IntBoxed = txnWD.IntBoxed";
             EPStatement epStatement = epService.EPAdministrator.CreateEPL(cepStatementString);
     
             var myEventBean1 = new SupportBean();

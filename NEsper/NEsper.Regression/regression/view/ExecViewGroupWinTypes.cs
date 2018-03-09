@@ -23,11 +23,11 @@ namespace com.espertech.esper.regression.view
     public class ExecViewGroupWinTypes : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
             string viewStmt = "select * from " + typeof(SupportBean).FullName +
-                    "#groupwin(intPrimitive)#length(4)#groupwin(longBoxed)#uni(doubleBoxed)";
+                    "#groupwin(IntPrimitive)#length(4)#groupwin(LongBoxed)#uni(DoubleBoxed)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(viewStmt);
     
-            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("intPrimitive"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("longBoxed"));
+            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("IntPrimitive"));
+            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("LongBoxed"));
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("stddev"));
             Assert.AreEqual(8, stmt.EventType.PropertyNames.Length);
         }

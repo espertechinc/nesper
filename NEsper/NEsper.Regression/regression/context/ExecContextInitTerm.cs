@@ -82,7 +82,7 @@ namespace com.espertech.esper.regression.context
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             var contextExpr = "create context CtxPerId start after 0 sec end after 60 sec";
             epService.EPAdministrator.CreateEPL(contextExpr);
-            var stream = epService.EPAdministrator.CreateEPL("context CtxPerId select theString as c0, intPrimitive as c1 from SupportBean");
+            var stream = epService.EPAdministrator.CreateEPL("context CtxPerId select TheString as c0, IntPrimitive as c1 from SupportBean");
             var listener = new SupportUpdateListener();
             stream.Events += listener.Update;
     
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regression.context
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(120000));
             var contextExprTwo = "create context CtxPerId initiated by pattern [timer:interval(0) or every timer:interval(1 min)] terminated after 60 sec";
             epService.EPAdministrator.CreateEPL(contextExprTwo);
-            var streamTwo = epService.EPAdministrator.CreateEPL("context CtxPerId select theString as c0, sum(intPrimitive) as c1 from SupportBean");
+            var streamTwo = epService.EPAdministrator.CreateEPL("context CtxPerId select TheString as c0, sum(IntPrimitive) as c1 from SupportBean");
             var listener = new SupportUpdateListener();
             streamTwo.Events += listener.Update;
     
@@ -130,11 +130,11 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionPatternInclusion(EPServiceProvider epService) {
-            var fields = "theString,intPrimitive".Split(',');
+            var fields = "TheString,IntPrimitive".Split(',');
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
-            var contextExpr = "create context CtxPerId initiated by pattern [every-distinct (a.theString, 10 sec) a=SupportBean]@Inclusive terminated after 10 sec ";
+            var contextExpr = "create context CtxPerId initiated by pattern [every-distinct (a.TheString, 10 sec) a=SupportBean]@Inclusive terminated after 10 sec ";
             epService.EPAdministrator.CreateEPL(contextExpr);
-            var streamExpr = "context CtxPerId select * from SupportBean(theString = context.a.theString) output last when terminated";
+            var streamExpr = "context CtxPerId select * from SupportBean(TheString = context.a.TheString) output last when terminated";
             var stream = epService.EPAdministrator.CreateEPL(streamExpr);
             var listener = new SupportUpdateListener();
             stream.Events += listener.Update;
@@ -195,9 +195,9 @@ namespace com.espertech.esper.regression.context
             var fields = "c1,c2,c3,c4".Split(',');
             epService.EPAdministrator.CreateEPL("create context MyCtx as " +
                     "start SupportBean " +
-                    "end SupportBean(intPrimitive=11)");
+                    "end SupportBean(IntPrimitive=11)");
             var stmt = epService.EPAdministrator.CreateEPL("context MyCtx " +
-                    "select min(intPrimitive) as c1, max(intPrimitive) as c2, sum(intPrimitive) as c3, avg(intPrimitive) as c4 from SupportBean " +
+                    "select min(IntPrimitive) as c1, max(IntPrimitive) as c2, sum(IntPrimitive) as c3, avg(IntPrimitive) as c4 from SupportBean " +
                     "output snapshot when terminated");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -212,13 +212,13 @@ namespace com.espertech.esper.regression.context
     
             // same event terminates - included
             fields = "c1,c2,c3,c4".Split(',');
-            epService.EPAdministrator.CreateEPL("create schema MyCtxTerminate(theString string)");
+            epService.EPAdministrator.CreateEPL("create schema MyCtxTerminate(TheString string)");
             epService.EPAdministrator.CreateEPL("create context MyCtx as start SupportBean end MyCtxTerminate");
             stmt = epService.EPAdministrator.CreateEPL("context MyCtx " +
-                    "select min(intPrimitive) as c1, max(intPrimitive) as c2, sum(intPrimitive) as c3, avg(intPrimitive) as c4 from SupportBean " +
+                    "select min(IntPrimitive) as c1, max(IntPrimitive) as c2, sum(IntPrimitive) as c3, avg(IntPrimitive) as c4 from SupportBean " +
                     "output snapshot when terminated");
             stmt.Events += listener.Update;
-            epService.EPAdministrator.CreateEPL("insert into MyCtxTerminate select theString from SupportBean(intPrimitive=11)");
+            epService.EPAdministrator.CreateEPL("insert into MyCtxTerminate select TheString from SupportBean(IntPrimitive=11)");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             Assert.IsFalse(listener.IsInvoked);
@@ -227,8 +227,8 @@ namespace com.espertech.esper.regression.context
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10, 11, 21, 10.5d});
     
             // test with audit
-            var epl = "@Audit create context AdBreakCtx as initiated by SupportBean(intPrimitive > 0) as ad " +
-                    " terminated by SupportBean(theString=ad.theString, intPrimitive < 0) as endAd";
+            var epl = "@Audit create context AdBreakCtx as initiated by SupportBean(IntPrimitive > 0) as ad " +
+                    " terminated by SupportBean(TheString=ad.TheString, IntPrimitive < 0) as endAd";
             epService.EPAdministrator.CreateEPL(epl);
             epService.EPAdministrator.CreateEPL("context AdBreakCtx select count(*) from SupportBean");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
@@ -241,7 +241,7 @@ namespace com.espertech.esper.regression.context
             var fields = "c0,c1,c2,c3".Split(',');
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             epService.EPAdministrator.CreateEPL("create context MyCtx as initiated by SupportBean_S0 s0 terminated by SupportBean_S1(id=s0.id)");
-            var stmt = epService.EPAdministrator.CreateEPL("context MyCtx select context.id as c0, context.s0.p00 as c1, theString as c2, sum(intPrimitive) as c3 from SupportBean#keepall group by theString");
+            var stmt = epService.EPAdministrator.CreateEPL("context MyCtx select context.id as c0, context.s0.p00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString");
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "S0_1"));
@@ -290,7 +290,7 @@ namespace com.espertech.esper.regression.context
                     "terminated by SupportBean_S1");
     
             var fields = "c1".Split(',');
-            var stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context MyContext select sum(intPrimitive) as c1 from SupportBean");
+            var stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context MyContext select sum(IntPrimitive) as c1 from SupportBean");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -324,7 +324,7 @@ namespace com.espertech.esper.regression.context
     
             var fields = "c1,c2".Split(',');
             var listener = new SupportUpdateListener();
-            var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.s0.p00 as c1, sum(intPrimitive) as c2 " +
+            var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.s0.p00 as c1, sum(IntPrimitive) as c2 " +
                     "from SupportBean#keepall output snapshot when terminated");
             statement.Events += listener.Update;
     
@@ -407,7 +407,7 @@ namespace com.espertech.esper.regression.context
     
             var fields = "c1,c2,c3".Split(',');
             var stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context EverySupportBean " +
-                    "select context.a.id as c1, context.b.id as c2, theString as c3 from SupportBean");
+                    "select context.a.id as c1, context.b.id as c2, TheString as c3 from SupportBean");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -432,13 +432,13 @@ namespace com.espertech.esper.regression.context
         private void RunAssertionFilterInitiatedStraightEquals(EPServiceProvider epService) {
             SendTimeEvent(epService, "2002-05-1T08:00:00.000");
             var ctxEPL = "create context EverySupportBean as " +
-                    "initiated by SupportBean(theString like \"I%\") as sb " +
+                    "initiated by SupportBean(TheString like \"I%\") as sb " +
                     "terminated after 1 minutes";
             epService.EPAdministrator.CreateEPL(ctxEPL);
     
             var fields = "c1".Split(',');
             var stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context EverySupportBean " +
-                    "select sum(longPrimitive) as c1 from SupportBean(intPrimitive = context.sb.intPrimitive)");
+                    "select sum(LongPrimitive) as c1 from SupportBean(IntPrimitive = context.sb.IntPrimitive)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -482,42 +482,42 @@ namespace com.espertech.esper.regression.context
                     "initiated by SupportBean_S0 as sb " +
                     "terminated after 10 days 5 hours 2 minutes 1 sec 11 milliseconds");
     
-            TryOperator(epService, "context.sb.id = intBoxed", new[] {new object[] {10, true}, new object[] {9, false}, new object[] {null, false}});
-            TryOperator(epService, "intBoxed = context.sb.id", new[] {new object[] {10, true}, new object[] {9, false}, new object[] {null, false}});
+            TryOperator(epService, "context.sb.id = IntBoxed", new[] {new object[] {10, true}, new object[] {9, false}, new object[] {null, false}});
+            TryOperator(epService, "IntBoxed = context.sb.id", new[] {new object[] {10, true}, new object[] {9, false}, new object[] {null, false}});
     
-            TryOperator(epService, "context.sb.id > intBoxed", new[] {new object[] {11, false}, new object[] {10, false}, new object[] {9, true}, new object[] {8, true}});
-            TryOperator(epService, "context.sb.id >= intBoxed", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, true}, new object[] {8, true}});
-            TryOperator(epService, "context.sb.id < intBoxed", new[] {new object[] {11, true}, new object[] {10, false}, new object[] {9, false}, new object[] {8, false}});
-            TryOperator(epService, "context.sb.id <= intBoxed", new[] {new object[] {11, true}, new object[] {10, true}, new object[] {9, false}, new object[] {8, false}});
+            TryOperator(epService, "context.sb.id > IntBoxed", new[] {new object[] {11, false}, new object[] {10, false}, new object[] {9, true}, new object[] {8, true}});
+            TryOperator(epService, "context.sb.id >= IntBoxed", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, true}, new object[] {8, true}});
+            TryOperator(epService, "context.sb.id < IntBoxed", new[] {new object[] {11, true}, new object[] {10, false}, new object[] {9, false}, new object[] {8, false}});
+            TryOperator(epService, "context.sb.id <= IntBoxed", new[] {new object[] {11, true}, new object[] {10, true}, new object[] {9, false}, new object[] {8, false}});
     
-            TryOperator(epService, "intBoxed < context.sb.id", new[] {new object[] {11, false}, new object[] {10, false}, new object[] {9, true}, new object[] {8, true}});
-            TryOperator(epService, "intBoxed <= context.sb.id", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, true}, new object[] {8, true}});
-            TryOperator(epService, "intBoxed > context.sb.id", new[] {new object[] {11, true}, new object[] {10, false}, new object[] {9, false}, new object[] {8, false}});
-            TryOperator(epService, "intBoxed >= context.sb.id", new[] {new object[] {11, true}, new object[] {10, true}, new object[] {9, false}, new object[] {8, false}});
+            TryOperator(epService, "IntBoxed < context.sb.id", new[] {new object[] {11, false}, new object[] {10, false}, new object[] {9, true}, new object[] {8, true}});
+            TryOperator(epService, "IntBoxed <= context.sb.id", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, true}, new object[] {8, true}});
+            TryOperator(epService, "IntBoxed > context.sb.id", new[] {new object[] {11, true}, new object[] {10, false}, new object[] {9, false}, new object[] {8, false}});
+            TryOperator(epService, "IntBoxed >= context.sb.id", new[] {new object[] {11, true}, new object[] {10, true}, new object[] {9, false}, new object[] {8, false}});
     
-            TryOperator(epService, "intBoxed in (context.sb.id)", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, false}, new object[] {8, false}});
-            TryOperator(epService, "intBoxed between context.sb.id and context.sb.id", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, false}, new object[] {8, false}});
+            TryOperator(epService, "IntBoxed in (context.sb.id)", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, false}, new object[] {8, false}});
+            TryOperator(epService, "IntBoxed between context.sb.id and context.sb.id", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, false}, new object[] {8, false}});
     
-            TryOperator(epService, "context.sb.id != intBoxed", new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, false}});
-            TryOperator(epService, "intBoxed != context.sb.id", new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, false}});
+            TryOperator(epService, "context.sb.id != IntBoxed", new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, false}});
+            TryOperator(epService, "IntBoxed != context.sb.id", new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, false}});
     
-            TryOperator(epService, "intBoxed not in (context.sb.id)", new[] {new object[] {11, true}, new object[] {10, false}, new object[] {9, true}, new object[] {8, true}});
-            TryOperator(epService, "intBoxed not between context.sb.id and context.sb.id", new[] {new object[] {11, true}, new object[] {10, false}, new object[] {9, true}, new object[] {8, true}});
+            TryOperator(epService, "IntBoxed not in (context.sb.id)", new[] {new object[] {11, true}, new object[] {10, false}, new object[] {9, true}, new object[] {8, true}});
+            TryOperator(epService, "IntBoxed not between context.sb.id and context.sb.id", new[] {new object[] {11, true}, new object[] {10, false}, new object[] {9, true}, new object[] {8, true}});
     
-            TryOperator(epService, "context.sb.id is intBoxed", new[] {new object[] {10, true}, new object[] {9, false}, new object[] {null, false}});
-            TryOperator(epService, "intBoxed is context.sb.id", new[] {new object[] {10, true}, new object[] {9, false}, new object[] {null, false}});
+            TryOperator(epService, "context.sb.id is IntBoxed", new[] {new object[] {10, true}, new object[] {9, false}, new object[] {null, false}});
+            TryOperator(epService, "IntBoxed is context.sb.id", new[] {new object[] {10, true}, new object[] {9, false}, new object[] {null, false}});
     
-            TryOperator(epService, "context.sb.id is not intBoxed", new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, true}});
-            TryOperator(epService, "intBoxed is not context.sb.id", new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, true}});
+            TryOperator(epService, "context.sb.id is not IntBoxed", new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, true}});
+            TryOperator(epService, "IntBoxed is not context.sb.id", new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, true}});
     
             // try coercion
-            TryOperator(epService, "context.sb.id = shortBoxed", new[] {new object[] {(short) 10, true}, new object[] {(short) 9, false}, new object[] {null, false}});
-            TryOperator(epService, "shortBoxed = context.sb.id", new[] {new object[] {(short) 10, true}, new object[] {(short) 9, false}, new object[] {null, false}});
+            TryOperator(epService, "context.sb.id = ShortBoxed", new[] {new object[] {(short) 10, true}, new object[] {(short) 9, false}, new object[] {null, false}});
+            TryOperator(epService, "ShortBoxed = context.sb.id", new[] {new object[] {(short) 10, true}, new object[] {(short) 9, false}, new object[] {null, false}});
     
-            TryOperator(epService, "context.sb.id > shortBoxed", new[] {new object[] {(short) 11, false}, new object[] {(short) 10, false}, new object[] {(short) 9, true}, new object[] {(short) 8, true}});
-            TryOperator(epService, "shortBoxed < context.sb.id", new[] {new object[] {(short) 11, false}, new object[] {(short) 10, false}, new object[] {(short) 9, true}, new object[] {(short) 8, true}});
+            TryOperator(epService, "context.sb.id > ShortBoxed", new[] {new object[] {(short) 11, false}, new object[] {(short) 10, false}, new object[] {(short) 9, true}, new object[] {(short) 8, true}});
+            TryOperator(epService, "ShortBoxed < context.sb.id", new[] {new object[] {(short) 11, false}, new object[] {(short) 10, false}, new object[] {(short) 9, true}, new object[] {(short) 8, true}});
     
-            TryOperator(epService, "shortBoxed in (context.sb.id)", new[] {new object[] {(short) 11, false}, new object[] {(short) 10, true}, new object[] {(short) 9, false}, new object[] {(short) 8, false}});
+            TryOperator(epService, "ShortBoxed in (context.sb.id)", new[] {new object[] {(short) 11, false}, new object[] {(short) 10, true}, new object[] {(short) 9, false}, new object[] {(short) 8, false}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -526,7 +526,7 @@ namespace com.espertech.esper.regression.context
             var filterSpi = (FilterServiceSPI) ((EPServiceProviderSPI) epService).FilterService;
     
             var stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context EverySupportBean " +
-                    "select theString as c0,intPrimitive as c1,context.sb.p00 as c2 " +
+                    "select TheString as c0,IntPrimitive as c1,context.sb.p00 as c2 " +
                     "from SupportBean(" + @operator + ")");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -568,8 +568,8 @@ namespace com.espertech.esper.regression.context
     
             var fields = "c0,c1,c2".Split(',');
             var stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context EverySupportBean " +
-                    "select theString as c0,intPrimitive as c1,context.sb.p00 as c2 " +
-                    "from SupportBean(intPrimitive + context.sb.id = 5)");
+                    "select TheString as c0,IntPrimitive as c1,context.sb.p00 as c2 " +
+                    "from SupportBean(IntPrimitive + context.sb.id = 5)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -609,7 +609,7 @@ namespace com.espertech.esper.regression.context
             var listener = new SupportUpdateListener();
     
             var fields = "c1,c2,c3".Split(',');
-            var eplGrouped = "@Name('S1') context CtxInitiated select theString as c1, sum(intPrimitive) as c2, context.sb0.p00 as c3 from SupportBean";
+            var eplGrouped = "@Name('S1') context CtxInitiated select TheString as c1, sum(IntPrimitive) as c2, context.sb0.p00 as c3 from SupportBean";
             epService.EPAdministrator.CreateEPL(eplGrouped).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 1));
@@ -649,7 +649,7 @@ namespace com.espertech.esper.regression.context
     
             // test when-terminated and snapshot
             var fields = "c1".Split(',');
-            var epl = "context EveryMinute select sum(intPrimitive) as c1 from SupportBean output snapshot when terminated";
+            var epl = "context EveryMinute select sum(IntPrimitive) as c1 from SupportBean output snapshot when terminated";
             var stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -684,7 +684,7 @@ namespace com.espertech.esper.regression.context
     
             // test late-coming statement without "terminated"
             var stmtTwo = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context EveryMinute " +
-                    "select context.id as c0, sum(intPrimitive) as c1 from SupportBean output snapshot every 2 events");
+                    "select context.id as c0, sum(IntPrimitive) as c1 from SupportBean output snapshot every 2 events");
             stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E10", 1));
@@ -714,7 +714,7 @@ namespace com.espertech.esper.regression.context
             // test when-terminated and every 2 events output all with group by
             var fields = "c1,c2".Split(',');
             var stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context EveryMinute " +
-                    "select theString as c1, sum(intPrimitive) as c2 from SupportBean group by theString output all every 2 events and when terminated order by theString asc");
+                    "select TheString as c1, sum(IntPrimitive) as c2 from SupportBean group by TheString output all every 2 events and when terminated order by TheString asc");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -764,7 +764,7 @@ namespace com.espertech.esper.regression.context
             // test when-terminated and every 2 events output all with group by
             var fields = "c0".Split(',');
             var epl = "context EveryMinute " +
-                    "select theString as c0 from SupportBean output when count_insert>1 and when terminated and count_insert>0";
+                    "select TheString as c0 from SupportBean output when count_insert>1 and when terminated and count_insert>0";
             var stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -809,7 +809,7 @@ namespace com.espertech.esper.regression.context
             // test when-terminated and every 2 events output all with group by
             var fields = "c0".Split(',');
             var epl = "context EveryMinute " +
-                    "select theString as c0 from SupportBean output when terminated and count_insert > 0";
+                    "select TheString as c0 from SupportBean output when terminated and count_insert > 0";
             var stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -839,7 +839,7 @@ namespace com.espertech.esper.regression.context
     
             // include then-set and both real-time and terminated output
             epService.EPAdministrator.CreateEPL("create variable int myvar = 0");
-            var eplOne = "context EveryMinute select theString as c0 from SupportBean " +
+            var eplOne = "context EveryMinute select TheString as c0 from SupportBean " +
                     "output when true " +
                     "then set myvar=1 " +
                     "and when terminated " +
@@ -873,7 +873,7 @@ namespace com.espertech.esper.regression.context
     
             // include only-terminated output with set
             epService.EPRuntime.SetVariableValue("myvar", 0);
-            var eplTwo = "context EverySupportBeanS0 select theString as c0 from SupportBean " +
+            var eplTwo = "context EverySupportBeanS0 select TheString as c0 from SupportBean " +
                     "output when terminated " +
                     "then set myvar=10";
             var stmtTwo = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplTwo);
@@ -903,7 +903,7 @@ namespace com.espertech.esper.regression.context
                     "terminated after 3 min");
     
             var fields = "c1,c2".Split(',');
-            var statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL("@IterableUnbound context EveryMinute select theString as c1, sum(intPrimitive) as c2 from SupportBean");
+            var statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL("@IterableUnbound context EveryMinute select TheString as c1, sum(IntPrimitive) as c2 from SupportBean");
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
     
@@ -1021,7 +1021,7 @@ namespace com.espertech.esper.regression.context
     
             SupportModelHelper.CreateByCompileOrParse(epService, soda, "create context SupportBeanInstanceCtx as initiated by SupportBean as sb");
             var stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, "context SupportBeanInstanceCtx " +
-                    "select id, context.sb.intPrimitive as sbint, context.startTime as starttime, context.endTime as endtime from SupportBean_S0(p00=context.sb.theString)");
+                    "select id, context.sb.IntPrimitive as sbint, context.startTime as starttime, context.endTime as endtime from SupportBean_S0(p00=context.sb.TheString)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             var fields = "id,sbint,starttime,endtime".Split(',');
@@ -1042,7 +1042,7 @@ namespace com.espertech.esper.regression.context
     
             SupportModelHelper.CreateByCompileOrParse(epService, soda, "create context SupportBeanInstanceCtx as start SupportBean as sb");
             var stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, "context SupportBeanInstanceCtx " +
-                    "select id, context.sb.intPrimitive as sbint, context.startTime as starttime, context.endTime as endtime from SupportBean_S0(p00=context.sb.theString)");
+                    "select id, context.sb.IntPrimitive as sbint, context.startTime as starttime, context.endTime as endtime from SupportBean_S0(p00=context.sb.TheString)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             var fields = "id,sbint,starttime,endtime".Split(',');
@@ -1066,10 +1066,10 @@ namespace com.espertech.esper.regression.context
                     "context Lvl2Ctx as start SupportBean_S1 as s1");
     
             var stmt = epService.EPAdministrator.CreateEPL("context MyCtx " +
-                    "select theString, context.Lvl1Ctx.s0.p00 as p00, context.Lvl2Ctx.s1.p10 as p10 from SupportBean");
+                    "select TheString, context.Lvl1Ctx.s0.p00 as p00, context.Lvl2Ctx.s1.p10 as p10 from SupportBean");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            var fields = "theString,p00,p10".Split(',');
+            var fields = "TheString,p00,p10".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean("P1", 100));
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "A"));

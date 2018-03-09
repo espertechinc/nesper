@@ -37,9 +37,9 @@ namespace com.espertech.esper.regression.epl.join
                     "s1.id as s1Id, " +
                     "s1.p10 as s1p10 " +
                     " from " +
-                    " pattern [every (es0a=" + typeof(SupportBean_S0).Name + "(p00='a') " +
-                    "or es0b=" + typeof(SupportBean_S0).Name + "(p00='b'))]#length(5) as s0," +
-                    typeof(SupportBean_S1).Name + "#length(5) as s1" +
+                    " pattern [every (es0a=" + typeof(SupportBean_S0).FullName + "(p00='a') " +
+                    "or es0b=" + typeof(SupportBean_S0).FullName + "(p00='b'))]#length(5) as s0," +
+                    typeof(SupportBean_S1).FullName + "#length(5) as s1" +
                     " where (es0a.id = s1.id) or (es0b.id = s1.id)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
     
@@ -113,10 +113,10 @@ namespace com.espertech.esper.regression.epl.join
                     "es2.p20 as es2p20, " +
                     "es3.p30 as es3p30" +
                     " from " +
-                    " pattern [every (es0=" + typeof(SupportBean_S0).Name +
-                    " and es1=" + typeof(SupportBean_S1).Name + ")]#length(3) as s0," +
-                    " pattern [every (es2=" + typeof(SupportBean_S2).Name +
-                    " and es3=" + typeof(SupportBean_S3).Name + ")]#length(3) as s1" +
+                    " pattern [every (es0=" + typeof(SupportBean_S0).FullName +
+                    " and es1=" + typeof(SupportBean_S1).FullName + ")]#length(3) as s0," +
+                    " pattern [every (es2=" + typeof(SupportBean_S2).FullName +
+                    " and es3=" + typeof(SupportBean_S3).FullName + ")]#length(3) as s1" +
                     " where s0.es0.id = s1.es2.id";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
     
@@ -182,10 +182,10 @@ namespace com.espertech.esper.regression.epl.join
         private void RunAssertion2PatternJoinWildcard(EPServiceProvider epService) {
             string stmtText = "select * " +
                     " from " +
-                    " pattern [every (es0=" + typeof(SupportBean_S0).Name +
-                    " and es1=" + typeof(SupportBean_S1).Name + ")]#length(5) as s0," +
-                    " pattern [every (es2=" + typeof(SupportBean_S2).Name +
-                    " and es3=" + typeof(SupportBean_S3).Name + ")]#length(5) as s1" +
+                    " pattern [every (es0=" + typeof(SupportBean_S0).FullName +
+                    " and es1=" + typeof(SupportBean_S1).FullName + ")]#length(5) as s0," +
+                    " pattern [every (es2=" + typeof(SupportBean_S2).FullName +
+                    " and es3=" + typeof(SupportBean_S3).FullName + ")]#length(5) as s1" +
                     " where s0.es0.id = s1.es2.id";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
     
@@ -199,11 +199,15 @@ namespace com.espertech.esper.regression.epl.join
     
             EventBean theEvent = updateListener.AssertOneGetNewAndReset();
     
-            IDictionary<string, EventBean> result = (IDictionary<string, EventBean>) theEvent.Get("s0");
+            IDictionary<string, EventBean> result = theEvent.Get("s0")
+                .UnwrapDictionary()
+                .Transform(k => k, v => (EventBean) v, k => k, v => v);
             Assert.AreSame(s0, result.Get("es0").Underlying);
             Assert.AreSame(s1, result.Get("es1").Underlying);
-    
-            result = (IDictionary<string, EventBean>) theEvent.Get("s1");
+
+            result = theEvent.Get("s1")
+                .UnwrapDictionary()
+                .Transform(k => k, v => (EventBean) v, k => k, v => v);
             Assert.AreSame(s2, result.Get("es2").Underlying);
             Assert.AreSame(s3, result.Get("es3").Underlying);
     

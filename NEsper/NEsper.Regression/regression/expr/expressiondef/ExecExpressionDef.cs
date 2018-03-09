@@ -68,8 +68,8 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var fields = "c0".Split(',');
             var listener = new SupportUpdateListener();
     
-            epService.EPAdministrator.CreateEPL("create expression F1 { (select intPrimitive from SupportBean#lastevent)}");
-            epService.EPAdministrator.CreateEPL("create expression F2 { param => (select a.intPrimitive from SupportBean#unique(theString) as a where a.theString = param.theString) }");
+            epService.EPAdministrator.CreateEPL("create expression F1 { (select IntPrimitive from SupportBean#lastevent)}");
+            epService.EPAdministrator.CreateEPL("create expression F2 { param => (select a.IntPrimitive from SupportBean#unique(TheString) as a where a.TheString = param.TheString) }");
             epService.EPAdministrator.CreateEPL("create expression F3 { s => F1()+F2(s) }");
             epService.EPAdministrator.CreateEPL("select F3(myevent) as c0 from SupportBean as myevent").Events += listener.Update;
     
@@ -84,9 +84,9 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
         private void RunAssertionWildcardAndPattern(EPServiceProvider epService) {
             var eplNonJoin =
-                    "expression abc { x => intPrimitive } " +
-                            "expression def { (x, y) => x.intPrimitive * y.intPrimitive }" +
-                            "select Abc(*) as c0, Def(*, *) as c1 from SupportBean";
+                    "expression abc { x => IntPrimitive } " +
+                            "expression def { (x, y) => x.IntPrimitive * y.IntPrimitive }" +
+                            "select abc(*) as c0, def(*, *) as c1 from SupportBean";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(eplNonJoin).Events += listener.Update;
     
@@ -94,13 +94,13 @@ namespace com.espertech.esper.regression.expr.expressiondef
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0, c1".Split(','), new object[]{2, 4});
             epService.EPAdministrator.DestroyAllStatements();
     
-            var eplPattern = "expression abc { x => intPrimitive * 2} " +
-                    "select * from pattern [a=SupportBean -> b=SupportBean(intPrimitive = Abc(a))]";
+            var eplPattern = "expression abc { x => IntPrimitive * 2} " +
+                    "select * from pattern [a=SupportBean -> b=SupportBean(IntPrimitive = abc(a))]";
             epService.EPAdministrator.CreateEPL(eplPattern).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 4));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString, b.theString".Split(','), new object[]{"E1", "E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString, b.TheString".Split(','), new object[]{"E1", "E2"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -123,12 +123,12 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var epl =
                     "@Audit('exprdef') " +
                             "expression last2X {\n" +
-                            "  p => WindowOne(WindowOne.col1 = p.theString).TakeLast(2)\n" +
+                            "  p => WindowOne(WindowOne.col1 = p.TheString).TakeLast(2)\n" +
                             "} " +
                             "expression last2Y {\n" +
-                            "  p => WindowTwo(WindowTwo.col1 = p.theString).TakeLast(2).SelectFrom(q => q.col2)\n" +
+                            "  p => WindowTwo(WindowTwo.col1 = p.TheString).TakeLast(2).selectFrom(q => q.col2)\n" +
                             "} " +
-                            "select Last2X(sb).SelectFrom(a => a.col2).SequenceEqual(Last2Y(sb)) as val from SupportBean as sb";
+                            "select Last2X(sb).selectFrom(a => a.col2).sequenceEqual(Last2Y(sb)) as val from SupportBean as sb";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -144,8 +144,8 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var fieldsInner = "col1,col2".Split(',');
             var epl = "expression gettotal {" +
                     " x => case " +
-                    "  when theString = 'A' then new { col1 = 'X', col2 = 10 } " +
-                    "  when theString = 'B' then new { col1 = 'Y', col2 = 20 } " +
+                    "  when TheString = 'A' then new { col1 = 'X', col2 = 10 } " +
+                    "  when TheString = 'B' then new { col1 = 'Y', col2 = 20 } " +
                     "end" +
                     "} " +
                     "insert into OtherStream select Gettotal(sb) as val0 from SupportBean sb";
@@ -198,10 +198,10 @@ namespace com.espertech.esper.regression.expr.expressiondef
         private void RunAssertionSubqueryMultiresult(EPServiceProvider epService) {
             var eplOne = "" +
                     "expression maxi {" +
-                    " (select max(intPrimitive) from SupportBean#keepall)" +
+                    " (select max(IntPrimitive) from SupportBean#keepall)" +
                     "} " +
                     "expression mini {" +
-                    " (select min(intPrimitive) from SupportBean#keepall)" +
+                    " (select min(IntPrimitive) from SupportBean#keepall)" +
                     "} " +
                     "select p00/Maxi() as val0, p00/Mini() as val1 " +
                     "from SupportBean_ST0#lastevent";
@@ -209,7 +209,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
             var eplTwo = "" +
                     "expression subq {" +
-                    " (select max(intPrimitive) as maxi, min(intPrimitive) as mini from SupportBean#keepall)" +
+                    " (select max(IntPrimitive) as maxi, min(IntPrimitive) as mini from SupportBean#keepall)" +
                     "} " +
                     "select p00/Subq().maxi as val0, p00/Subq().mini as val1 " +
                     "from SupportBean_ST0#lastevent";
@@ -217,7 +217,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
             var eplTwoAlias = "" +
                     "expression subq alias for " +
-                    " { (select max(intPrimitive) as maxi, min(intPrimitive) as mini from SupportBean#keepall) }" +
+                    " { (select max(IntPrimitive) as maxi, min(IntPrimitive) as mini from SupportBean#keepall) }" +
                     " " +
                     "select p00/Subq().maxi as val0, p00/Subq().mini as val1 " +
                     "from SupportBean_ST0#lastevent";
@@ -246,13 +246,13 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
         private void RunAssertionSubqueryCross(EPServiceProvider epService) {
             var eplDeclare = "expression subq {" +
-                    " (x, y) => (select theString from SupportBean#keepall where theString = x.id and intPrimitive = y.p10)" +
+                    " (x, y) => (select TheString from SupportBean#keepall where TheString = x.id and IntPrimitive = y.p10)" +
                     "} " +
                     "select Subq(one, two) as val1 " +
                     "from SupportBean_ST0#lastevent as one, SupportBean_ST1#lastevent as two";
             TryAssertionSubqueryCross(epService, eplDeclare);
     
-            var eplAlias = "expression subq alias for { (select theString from SupportBean#keepall where theString = one.id and intPrimitive = two.p10) }" +
+            var eplAlias = "expression subq alias for { (select TheString from SupportBean#keepall where TheString = one.id and IntPrimitive = two.p10) }" +
                     "select subq as val1 " +
                     "from SupportBean_ST0#lastevent as one, SupportBean_ST1#lastevent as two";
             TryAssertionSubqueryCross(epService, eplAlias);
@@ -280,18 +280,18 @@ namespace com.espertech.esper.regression.expr.expressiondef
         private void RunAssertionSubqueryJoinSameField(EPServiceProvider epService) {
             var eplDeclare = "" +
                     "expression subq {" +
-                    " x => (select intPrimitive from SupportBean#keepall where theString = x.pcommon)" +   // a common field
+                    " x => (select IntPrimitive from SupportBean#keepall where TheString = x.pcommon)" +   // a common field
                     "} " +
                     "select Subq(one) as val1, Subq(two) as val2 " +
                     "from SupportBean_ST0#lastevent as one, SupportBean_ST1#lastevent as two";
             TryAssertionSubqueryJoinSameField(epService, eplDeclare);
     
             var eplAlias = "" +
-                    "expression subq alias for {(select intPrimitive from SupportBean#keepall where theString = pcommon) }" +
+                    "expression subq alias for {(select IntPrimitive from SupportBean#keepall where TheString = pcommon) }" +
                     "select subq as val1, subq as val2 " +
                     "from SupportBean_ST0#lastevent as one, SupportBean_ST1#lastevent as two";
             TryInvalid(epService, eplAlias,
-                    "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Failed to validate filter expression 'theString=pcommon': Property named 'pcommon' is ambiguous as is valid for more then one stream [expression subq alias for {(select intPrimitive from SupportBean#keepall where theString = pcommon) }select subq as val1, subq as val2 from SupportBean_ST0#lastevent as one, SupportBean_ST1#lastevent as two]");
+                    "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Failed to validate filter expression 'TheString=pcommon': Property named 'pcommon' is ambiguous as is valid for more then one stream [expression subq alias for {(select IntPrimitive from SupportBean#keepall where TheString = pcommon) }select subq as val1, subq as val2 from SupportBean_ST0#lastevent as one, SupportBean_ST1#lastevent as two]");
         }
     
         private void TryAssertionSubqueryJoinSameField(EPServiceProvider epService, string epl) {
@@ -317,13 +317,13 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
         private void RunAssertionSubqueryCorrelated(EPServiceProvider epService) {
             var eplDeclare = "expression subqOne {" +
-                    " x => (select id from SupportBean_ST0#keepall where p00 = x.intPrimitive)" +
+                    " x => (select id from SupportBean_ST0#keepall where p00 = x.IntPrimitive)" +
                     "} " +
-                    "select theString as val0, SubqOne(t) as val1 from SupportBean as t";
+                    "select TheString as val0, SubqOne(t) as val1 from SupportBean as t";
             TryAssertionSubqueryCorrelated(epService, eplDeclare);
     
-            var eplAlias = "expression subqOne alias for {(select id from SupportBean_ST0#keepall where p00 = t.intPrimitive)} " +
-                    "select theString as val0, SubqOne(t) as val1 from SupportBean as t";
+            var eplAlias = "expression subqOne alias for {(select id from SupportBean_ST0#keepall where p00 = t.IntPrimitive)} " +
+                    "select TheString as val0, SubqOne(t) as val1 from SupportBean as t";
             TryAssertionSubqueryCorrelated(epService, eplAlias);
         }
     
@@ -353,11 +353,11 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
         private void RunAssertionSubqueryUncorrelated(EPServiceProvider epService) {
             var eplDeclare = "expression subqOne {(select id from SupportBean_ST0#lastevent)} " +
-                    "select theString as val0, SubqOne() as val1 from SupportBean as t";
+                    "select TheString as val0, SubqOne() as val1 from SupportBean as t";
             TryAssertionSubqueryUncorrelated(epService, eplDeclare);
     
             var eplAlias = "expression subqOne alias for {(select id from SupportBean_ST0#lastevent)} " +
-                    "select theString as val0, subqOne as val1 from SupportBean as t";
+                    "select TheString as val0, subqOne as val1 from SupportBean as t";
             TryAssertionSubqueryUncorrelated(epService, eplAlias);
         }
     
@@ -384,12 +384,12 @@ namespace com.espertech.esper.regression.expr.expressiondef
         }
     
         private void RunAssertionSubqueryNamedWindowUncorrelated(EPServiceProvider epService) {
-            var eplDeclare = "expression subqnamedwin { MyWindow.Where(x => x.val1 > 10).OrderBy(x => x.val0) } " +
-                    "select Subqnamedwin() as c0, Subqnamedwin().Where(x => x.val1 < 100) as c1 from SupportBean_ST0 as t";
+            var eplDeclare = "expression subqnamedwin { MyWindow.where(x => x.val1 > 10).OrderBy(x => x.val0) } " +
+                    "select Subqnamedwin() as c0, Subqnamedwin().where(x => x.val1 < 100) as c1 from SupportBean_ST0 as t";
             TryAssertionSubqueryNamedWindowUncorrelated(epService, eplDeclare);
     
-            var eplAlias = "expression subqnamedwin alias for {MyWindow.Where(x => x.val1 > 10).OrderBy(x => x.val0)}" +
-                    "select subqnamedwin as c0, subqnamedwin.Where(x => x.val1 < 100) as c1 from SupportBean_ST0";
+            var eplAlias = "expression subqnamedwin alias for {MyWindow.where(x => x.val1 > 10).OrderBy(x => x.val0)}" +
+                    "select subqnamedwin as c0, subqnamedwin.where(x => x.val1 < 100) as c1 from SupportBean_ST0";
             TryAssertionSubqueryNamedWindowUncorrelated(epService, eplAlias);
         }
     
@@ -399,7 +399,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var fieldsInside = "val0".Split(',');
     
             epService.EPAdministrator.CreateEPL(EventRepresentationChoice.MAP.GetAnnotationText() + " create window MyWindow#keepall as (val0 string, val1 int)");
-            epService.EPAdministrator.CreateEPL("insert into MyWindow (val0, val1) select theString, intPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into MyWindow (val0, val1) select TheString, IntPrimitive from SupportBean");
     
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -433,35 +433,35 @@ namespace com.espertech.esper.regression.expr.expressiondef
         private void RunAssertionSubqueryNamedWindowCorrelated(EPServiceProvider epService) {
     
             var epl = "expression subqnamedwin {" +
-                    "  x => MyWindow(val0 = x.key0).Where(y => val1 > 10)" +
+                    "  x => MyWindow(val0 = x.key0).where(y => val1 > 10)" +
                     "} " +
                     "select Subqnamedwin(t) as c0 from SupportBean_ST0 as t";
             TryAssertionSubqNWCorrelated(epService, epl);
     
             // more or less prefixes
             epl = "expression subqnamedwin {" +
-                    "  x => MyWindow(val0 = x.key0).Where(y => y.val1 > 10)" +
+                    "  x => MyWindow(val0 = x.key0).where(y => y.val1 > 10)" +
                     "} " +
                     "select Subqnamedwin(t) as c0 from SupportBean_ST0 as t";
             TryAssertionSubqNWCorrelated(epService, epl);
     
             // with property-explicit stream name
             epl = "expression subqnamedwin {" +
-                    "  x => MyWindow(MyWindow.val0 = x.key0).Where(y => y.val1 > 10)" +
+                    "  x => MyWindow(MyWindow.val0 = x.key0).where(y => y.val1 > 10)" +
                     "} " +
                     "select Subqnamedwin(t) as c0 from SupportBean_ST0 as t";
             TryAssertionSubqNWCorrelated(epService, epl);
     
             // with alias
-            epl = "expression subqnamedwin alias for {MyWindow(MyWindow.val0 = t.key0).Where(y => y.val1 > 10)}" +
+            epl = "expression subqnamedwin alias for {MyWindow(MyWindow.val0 = t.key0).where(y => y.val1 > 10)}" +
                     "select subqnamedwin as c0 from SupportBean_ST0 as t";
             TryAssertionSubqNWCorrelated(epService, epl);
     
             // test ambiguous property names
             epService.EPAdministrator.CreateEPL(EventRepresentationChoice.MAP.GetAnnotationText() + " create window MyWindowTwo#keepall as (id string, p00 int)");
-            epService.EPAdministrator.CreateEPL("insert into MyWindowTwo (id, p00) select theString, intPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into MyWindowTwo (id, p00) select TheString, IntPrimitive from SupportBean");
             epl = "expression subqnamedwin {" +
-                    "  x => MyWindowTwo(MyWindowTwo.id = x.id).Where(y => y.p00 > 10)" +
+                    "  x => MyWindowTwo(MyWindowTwo.id = x.id).where(y => y.p00 > 10)" +
                     "} " +
                     "select Subqnamedwin(t) as c0 from SupportBean_ST0 as t";
             epService.EPAdministrator.CreateEPL(epl);
@@ -472,7 +472,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var fieldInside = "val0".Split(',');
     
             epService.EPAdministrator.CreateEPL(EventRepresentationChoice.MAP.GetAnnotationText() + " create window MyWindow#keepall as (val0 string, val1 int)");
-            epService.EPAdministrator.CreateEPL("insert into MyWindow (val0, val1) select theString, intPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into MyWindow (val0, val1) select TheString, IntPrimitive from SupportBean");
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -505,10 +505,10 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var fields = new string[]{"val1", "val2", "val3", "val4"};
             var epl = "" +
                     "expression sumA {x => " +
-                    "   sum(x.intPrimitive) " +
+                    "   sum(x.IntPrimitive) " +
                     "} " +
                     "expression sumB {x => " +
-                    "   sum(x.intBoxed) " +
+                    "   sum(x.IntBoxed) " +
                     "} " +
                     "expression countC {" +
                     "   count(*) " +
@@ -543,11 +543,11 @@ namespace com.espertech.esper.regression.expr.expressiondef
         }
     
         private void RunAssertionAggregationAccess(EPServiceProvider epService) {
-            var eplDeclare = "expression wb {s => window(*).Where(y => y.intPrimitive > 2) }" +
+            var eplDeclare = "expression wb {s => window(*).where(y => y.IntPrimitive > 2) }" +
                     "select Wb(t) as val1 from SupportBean#keepall as t";
             TryAssertionAggregationAccess(epService, eplDeclare);
     
-            var eplAlias = "expression wb alias for {window(*).Where(y => y.intPrimitive > 2)}" +
+            var eplAlias = "expression wb alias for {window(*).where(y => y.IntPrimitive > 2)}" +
                     "select wb as val1 from SupportBean#keepall as t";
             TryAssertionAggregationAccess(epService, eplAlias);
         }
@@ -555,8 +555,8 @@ namespace com.espertech.esper.regression.expr.expressiondef
         private void RunAssertionAggregatedResult(EPServiceProvider epService) {
             var fields = "c0,c1".Split(',');
             var epl =
-                    "expression lambda1 { o => 1 * o.intPrimitive }\n" +
-                            "expression lambda2 { o => 3 * o.intPrimitive }\n" +
+                    "expression lambda1 { o => 1 * o.IntPrimitive }\n" +
+                            "expression lambda2 { o => 3 * o.IntPrimitive }\n" +
                             "select sum(Lambda1(e)) as c0, sum(Lambda2(e)) as c1 from SupportBean as e";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
@@ -593,12 +593,12 @@ namespace com.espertech.esper.regression.expr.expressiondef
             epService.EPAdministrator.Configuration.AddEventType(typeof(MyEvent));
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
-            var eplScalarDeclare = "expression scalarfilter {s => strvals.Where(y => y != 'E1') } " +
-                    "select Scalarfilter(t).Where(x => x != 'E2') as val1 from SupportCollection as t";
+            var eplScalarDeclare = "expression scalarfilter {s => Strvals.where(y => y != 'E1') } " +
+                    "select Scalarfilter(t).where(x => x != 'E2') as val1 from SupportCollection as t";
             TryAssertionScalarReturn(epService, eplScalarDeclare);
     
-            var eplScalarAlias = "expression scalarfilter alias for {strvals.Where(y => y != 'E1')}" +
-                    "select Scalarfilter.Where(x => x != 'E2') as val1 from SupportCollection";
+            var eplScalarAlias = "expression scalarfilter alias for {Strvals.where(y => y != 'E1')}" +
+                    "select Scalarfilter.where(x => x != 'E2') as val1 from SupportCollection";
             TryAssertionScalarReturn(epService, eplScalarAlias);
     
             // test with cast and with on-select and where-clause use
@@ -615,7 +615,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
         private void TryAssertionNamedWindowCast(EPServiceProvider epService, string epl, string windowPostfix) {
     
             epService.EPAdministrator.CreateEPL("create window MyWindow" + windowPostfix + "#keepall as (myObject long)");
-            epService.EPAdministrator.CreateEPL("insert into MyWindow" + windowPostfix + "(myObject) select Cast(intPrimitive, long) from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into MyWindow" + windowPostfix + "(myObject) select Cast(IntPrimitive, long) from SupportBean");
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -654,15 +654,15 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var fields = new string[]{"FZero()", "FOne(t)", "FTwo(t,t)", "FThree(t,t)"};
             var eplDeclared = "" +
                     "expression fZero {10} " +
-                    "expression fOne {x => x.intPrimitive} " +
-                    "expression fTwo {(x,y) => x.intPrimitive+y.intPrimitive} " +
-                    "expression fThree {(x,y) => x.intPrimitive+100} " +
+                    "expression fOne {x => x.IntPrimitive} " +
+                    "expression fTwo {(x,y) => x.IntPrimitive+y.IntPrimitive} " +
+                    "expression fThree {(x,y) => x.IntPrimitive+100} " +
                     "select FZero(), FOne(t), FTwo(t,t), FThree(t,t) from SupportBean as t";
             var eplFormatted = "" +
                     "expression fZero {10}" + NEWLINE +
-                    "expression fOne {x => x.intPrimitive}" + NEWLINE +
-                    "expression fTwo {(x,y) => x.intPrimitive+y.intPrimitive}" + NEWLINE +
-                    "expression fThree {(x,y) => x.intPrimitive+100}" + NEWLINE +
+                    "expression fOne {x => x.IntPrimitive}" + NEWLINE +
+                    "expression fTwo {(x,y) => x.IntPrimitive+y.IntPrimitive}" + NEWLINE +
+                    "expression fThree {(x,y) => x.IntPrimitive+100}" + NEWLINE +
                     "select FZero(), FOne(t), FTwo(t,t), FThree(t,t)" + NEWLINE +
                     "from SupportBean as t";
             var stmt = epService.EPAdministrator.CreateEPL(eplDeclared);
@@ -684,9 +684,9 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
             var eplAlias = "" +
                     "expression fZero alias for {10} " +
-                    "expression fOne alias for {intPrimitive} " +
-                    "expression fTwo alias for {intPrimitive+intPrimitive} " +
-                    "expression fThree alias for {intPrimitive+100} " +
+                    "expression fOne alias for {IntPrimitive} " +
+                    "expression fTwo alias for {IntPrimitive+IntPrimitive} " +
+                    "expression fThree alias for {IntPrimitive+100} " +
                     "select fZero, fOne, fTwo, fThree from SupportBean";
             var stmtAlias = epService.EPAdministrator.CreateEPL(eplAlias);
             stmtAlias.Events += listener.Update;
@@ -711,20 +711,20 @@ namespace com.espertech.esper.regression.expr.expressiondef
         private void RunAssertionOneParameterLambdaReturn(EPServiceProvider epService) {
     
             var eplDeclare = "" +
-                    "expression one {x1 => x1.contained.Where(y => y.p00 < 10) } " +
-                    "expression two {x2 => One(x2).Where(y => y.p00 > 1)  } " +
+                    "expression one {x1 => x1.Contained.where(y => y.p00 < 10) } " +
+                    "expression two {x2 => One(x2).where(y => y.p00 > 1)  } " +
                     "select One(s0c) as val1, Two(s0c) as val2 from SupportBean_ST0_Container as s0c";
             TryAssertionOneParameterLambdaReturn(epService, eplDeclare);
     
             var eplAliasWParen = "" +
-                    "expression one alias for {contained.Where(y => y.p00 < 10)}" +
-                    "expression two alias for {One().Where(y => y.p00 > 1)}" +
+                    "expression one alias for {Contained.where(y => y.p00 < 10)}" +
+                    "expression two alias for {One().where(y => y.p00 > 1)}" +
                     "select one as val1, two as val2 from SupportBean_ST0_Container as s0c";
             TryAssertionOneParameterLambdaReturn(epService, eplAliasWParen);
     
             var eplAliasNoParen = "" +
-                    "expression one alias for {contained.Where(y => y.p00 < 10)}" +
-                    "expression two alias for {one.Where(y => y.p00 > 1)}" +
+                    "expression one alias for {Contained.where(y => y.p00 < 10)}" +
+                    "expression two alias for {one.where(y => y.p00 > 1)}" +
                     "select one as val1, two as val2 from SupportBean_ST0_Container as s0c";
             TryAssertionOneParameterLambdaReturn(epService, eplAliasNoParen);
         }
@@ -813,10 +813,10 @@ namespace com.espertech.esper.regression.expr.expressiondef
         }
     
         private void RunAssertionWhereClauseExpression(EPServiceProvider epService) {
-            var eplNoAlias = "expression one {x=>x.boolPrimitive} select * from SupportBean as sb where One(sb)";
+            var eplNoAlias = "expression one {x=>x.BoolPrimitive} select * from SupportBean as sb where One(sb)";
             TryAssertionWhereClauseExpression(epService, eplNoAlias);
     
-            var eplAlias = "expression one alias for {boolPrimitive} select * from SupportBean as sb where one";
+            var eplAlias = "expression one alias for {BoolPrimitive} select * from SupportBean as sb where one";
             TryAssertionWhereClauseExpression(epService, eplAlias);
         }
     
@@ -838,41 +838,41 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
     
-            var epl = "expression abc {(select * from SupportBean_ST0#lastevent as st0 where p00=intPrimitive)} select Abc() from SupportBean";
-            TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean_ST0: Failed to validate filter expression 'p00=intPrimitive': Property named 'intPrimitive' is not valid in any stream [expression abc {(select * from SupportBean_ST0#lastevent as st0 where p00=intPrimitive)} select Abc() from SupportBean]");
+            var epl = "expression abc {(select * from SupportBean_ST0#lastevent as st0 where p00=IntPrimitive)} select abc() from SupportBean";
+            TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean_ST0: Failed to validate filter expression 'p00=IntPrimitive': Property named 'IntPrimitive' is not valid in any stream [expression abc {(select * from SupportBean_ST0#lastevent as st0 where p00=IntPrimitive)} select abc() from SupportBean]");
     
-            epl = "expression abc {x=>strvals.Where(x=> x != 'E1')} select Abc(str) from SupportCollection str";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Abc(str)': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'strvals.Where()': Error validating enumeration method 'where', the lambda-parameter name 'x' has already been declared in this context [expression abc {x=>strvals.Where(x=> x != 'E1')} select Abc(str) from SupportCollection str]");
+            epl = "expression abc {x=>Strvals.where(x=> x != 'E1')} select abc(str) from SupportCollection str";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'abc(str)': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'Strvals.Where()': Error validating enumeration method 'where', the lambda-parameter name 'x' has already been declared in this context [expression abc {x=>Strvals.where(x=> x != 'E1')} select abc(str) from SupportCollection str]");
     
-            epl = "expression abc {avg(intPrimitive)} select Abc() from SupportBean";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Abc()': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'avg(intPrimitive)': Property named 'intPrimitive' is not valid in any stream [expression abc {avg(intPrimitive)} select Abc() from SupportBean]");
+            epl = "expression abc {avg(IntPrimitive)} select abc() from SupportBean";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'abc()': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'avg(IntPrimitive)': Property named 'IntPrimitive' is not valid in any stream [expression abc {avg(IntPrimitive)} select abc() from SupportBean]");
     
-            epl = "expression abc {(select * from SupportBean_ST0#lastevent as st0 where p00=sb.intPrimitive)} select Abc() from SupportBean sb";
-            TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean_ST0: Failed to validate filter expression 'p00=sb.intPrimitive': Failed to find a stream named 'sb' (did you mean 'st0'?) [expression abc {(select * from SupportBean_ST0#lastevent as st0 where p00=sb.intPrimitive)} select Abc() from SupportBean sb]");
+            epl = "expression abc {(select * from SupportBean_ST0#lastevent as st0 where p00=sb.IntPrimitive)} select abc() from SupportBean sb";
+            TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean_ST0: Failed to validate filter expression 'p00=sb.IntPrimitive': Failed to find a stream named 'sb' (did you mean 'st0'?) [expression abc {(select * from SupportBean_ST0#lastevent as st0 where p00=sb.IntPrimitive)} select abc() from SupportBean sb]");
     
-            epl = "expression abc {window(*)} select Abc() from SupportBean";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Abc()': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'window(*)': The 'window' aggregation function requires that at least one stream is provided [expression abc {window(*)} select Abc() from SupportBean]");
+            epl = "expression abc {window(*)} select abc() from SupportBean";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'abc()': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'window(*)': The 'window' aggregation function requires that at least one stream is provided [expression abc {window(*)} select abc() from SupportBean]");
     
-            epl = "expression abc {x => intPrimitive} select Abc() from SupportBean";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Abc()': Parameter count mismatches for declared expression 'abc', expected 1 parameters but received 0 parameters [expression abc {x => intPrimitive} select Abc() from SupportBean]");
+            epl = "expression abc {x => IntPrimitive} select abc() from SupportBean";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'abc()': Parameter count mismatches for declared expression 'abc', expected 1 parameters but received 0 parameters [expression abc {x => IntPrimitive} select abc() from SupportBean]");
     
-            epl = "expression abc {intPrimitive} select Abc(sb) from SupportBean sb";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Abc(sb)': Parameter count mismatches for declared expression 'abc', expected 0 parameters but received 1 parameters [expression abc {intPrimitive} select Abc(sb) from SupportBean sb]");
+            epl = "expression abc {IntPrimitive} select abc(sb) from SupportBean sb";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'abc(sb)': Parameter count mismatches for declared expression 'abc', expected 0 parameters but received 1 parameters [expression abc {IntPrimitive} select abc(sb) from SupportBean sb]");
     
-            epl = "expression abc {x=>} select Abc(sb) from SupportBean sb";
-            TryInvalid(epService, epl, "Incorrect syntax near '}' at line 1 column 19 near reserved keyword 'select' [expression abc {x=>} select Abc(sb) from SupportBean sb]");
+            epl = "expression abc {x=>} select abc(sb) from SupportBean sb";
+            TryInvalid(epService, epl, "Incorrect syntax near '}' at line 1 column 19 near reserved keyword 'select' [expression abc {x=>} select abc(sb) from SupportBean sb]");
     
-            epl = "expression abc {intPrimitive} select Abc() from SupportBean sb";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Abc()': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'intPrimitive': Property named 'intPrimitive' is not valid in any stream [expression abc {intPrimitive} select Abc() from SupportBean sb]");
+            epl = "expression abc {IntPrimitive} select abc() from SupportBean sb";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'abc()': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'IntPrimitive': Property named 'IntPrimitive' is not valid in any stream [expression abc {IntPrimitive} select abc() from SupportBean sb]");
     
-            epl = "expression abc {x=>x} select Abc(1) from SupportBean sb";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Abc(1)': Expression 'abc' requires a stream name as a parameter [expression abc {x=>x} select Abc(1) from SupportBean sb]");
+            epl = "expression abc {x=>x} select abc(1) from SupportBean sb";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'abc(1)': Expression 'abc' requires a stream name as a parameter [expression abc {x=>x} select abc(1) from SupportBean sb]");
     
-            epl = "expression abc {x=>intPrimitive} select * from SupportBean sb where Abc(sb)";
-            TryInvalid(epService, epl, "Filter expression not returning a bool value: 'Abc(sb)' [expression abc {x=>intPrimitive} select * from SupportBean sb where Abc(sb)]");
+            epl = "expression abc {x=>IntPrimitive} select * from SupportBean sb where abc(sb)";
+            TryInvalid(epService, epl, "Filter expression not returning a bool value: 'abc(sb)' [expression abc {x=>IntPrimitive} select * from SupportBean sb where abc(sb)]");
     
-            epl = "expression abc {x=>x.intPrimitive = 0} select * from SupportBean#lastevent sb1, SupportBean#lastevent sb2 where Abc(*)";
-            TryInvalid(epService, epl, "Error validating expression: Failed to validate filter expression 'Abc(*)': Expression 'abc' only allows a wildcard parameter if there is a single stream available, please use a stream or tag name instead [expression abc {x=>x.intPrimitive = 0} select * from SupportBean#lastevent sb1, SupportBean#lastevent sb2 where Abc(*)]");
+            epl = "expression abc {x=>x.IntPrimitive = 0} select * from SupportBean#lastevent sb1, SupportBean#lastevent sb2 where abc(*)";
+            TryInvalid(epService, epl, "Error validating expression: Failed to validate filter expression 'abc(*)': Expression 'abc' only allows a wildcard parameter if there is a single stream available, please use a stream or tag name instead [expression abc {x=>x.IntPrimitive = 0} select * from SupportBean#lastevent sb1, SupportBean#lastevent sb2 where abc(*)]");
         }
     
         private SupportBean GetSupportBean(int intPrimitive, int? intBoxed) {

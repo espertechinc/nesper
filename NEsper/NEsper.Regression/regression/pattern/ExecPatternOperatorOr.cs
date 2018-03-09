@@ -117,9 +117,9 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionOrAndNotAndZeroStart(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportBean_A).Name);
-            epService.EPAdministrator.Configuration.AddEventType("B", typeof(SupportBean_B).Name);
-            epService.EPAdministrator.Configuration.AddEventType("C", typeof(SupportBean_C).Name);
+            epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportBean_A));
+            epService.EPAdministrator.Configuration.AddEventType("B", typeof(SupportBean_B));
+            epService.EPAdministrator.Configuration.AddEventType("C", typeof(SupportBean_C));
     
             TryOrAndNot(epService, "(a=A -> b=B) or (a=A -> not b=B)");
             TryOrAndNot(epService, "a=A -> (b=B or not B)");

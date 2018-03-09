@@ -29,7 +29,7 @@ namespace com.espertech.esper.regression.events.infra
     
         public override void Configure(Configuration configuration) {
             var avroSchema = SchemaBuilder.Record(AVRO_TYPENAME,
-                    TypeBuilder.Field("intPrimitive", TypeBuilder.IntType()));
+                    TypeBuilder.Field("IntPrimitive", TypeBuilder.IntType()));
             string avroSchemaText = avroSchema.ToString().Replace("\"", "&quot;");
     
             string xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -37,18 +37,18 @@ namespace com.espertech.esper.regression.events.infra
                     "\t<event-type name=\"MyStaticBean\" class=\"" + typeof(SupportBean).FullName + "\"/>\n" +
                     "\t<event-type name=\"" + MAP_TYPENAME + "\">\n" +
                     "\t\t<java-util-map>\n" +
-                    "\t  \t\t<map-property name=\"intPrimitive\" class=\"int\"/>\n" +
+                    "\t  \t\t<map-property name=\"IntPrimitive\" class=\"int\"/>\n" +
                     "\t  \t</java-util-map>\n" +
                     "\t</event-type>\n" +
                     "\t\n" +
                     "\t<event-type name=\"" + OA_TYPENAME + "\">\n" +
                     "\t\t<objectarray>\n" +
-                    "\t  \t\t<objectarray-property name=\"intPrimitive\" class=\"int\"/>\n" +
+                    "\t  \t\t<objectarray-property name=\"IntPrimitive\" class=\"int\"/>\n" +
                     "\t  \t</objectarray>\n" +
                     "\t</event-type>\n" +
                     "\t<event-type name=\"" + XML_TYPENAME + "\">\n" +
                     "\t\t<xml-dom root-element-name=\"myevent\">\n" +
-                    "\t\t\t<xpath-property property-name=\"intPrimitive\" xpath=\"@intPrimitive\" type=\"number\"/>\n" +
+                    "\t\t\t<xpath-property property-name=\"IntPrimitive\" xpath=\"@IntPrimitive\" type=\"number\"/>\n" +
                     "\t\t</xml-dom>\n" +
                     "\t</event-type>\n" +
                     "\t<event-type name=\"" + AVRO_TYPENAME + "\">\n" +
@@ -64,30 +64,30 @@ namespace com.espertech.esper.regression.events.infra
             RunAssertion(epService, "MyStaticBean", FBEAN, new SupportBean("E1", 10));
     
             // Map
-            RunAssertion(epService, MAP_TYPENAME, FMAP, Collections.SingletonMap("intPrimitive", 10));
+            RunAssertion(epService, MAP_TYPENAME, FMAP, Collections.SingletonMap("IntPrimitive", 10));
     
             // Object-Array
             RunAssertion(epService, OA_TYPENAME, FOA, new object[]{10});
     
             // XML
-            RunAssertion(epService, XML_TYPENAME, FXML, "<myevent intPrimitive=\"10\"/>");
+            RunAssertion(epService, XML_TYPENAME, FXML, "<myevent IntPrimitive=\"10\"/>");
     
             // Avro
-            var schema = SchemaBuilder.Record("somename", TypeBuilder.RequiredInt("intPrimitive"));
+            var schema = SchemaBuilder.Record("somename", TypeBuilder.RequiredInt("IntPrimitive"));
             var record = new GenericRecord(schema);
-            record.Put("intPrimitive", 10);
+            record.Put("IntPrimitive", 10);
             RunAssertion(epService, AVRO_TYPENAME, FAVRO, record);
         }
     
         private void RunAssertion(EPServiceProvider epService, string typename, FunctionSendEvent fsend, Object underlying) {
     
-            string stmtText = "select intPrimitive from " + typename;
+            string stmtText = "select IntPrimitive from " + typename;
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
             fsend.Invoke(epService, underlying);
-            var n = listener.AssertOneGetNewAndReset().Get("intPrimitive").AsInt();
+            var n = listener.AssertOneGetNewAndReset().Get("IntPrimitive").AsInt();
             Assert.AreEqual(10, n);
     
             stmt.Dispose();

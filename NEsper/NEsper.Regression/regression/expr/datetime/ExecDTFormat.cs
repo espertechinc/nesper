@@ -34,26 +34,28 @@ namespace com.espertech.esper.regression.expr.datetime
             string startTime = "2002-05-30T09:00:00.000";
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(startTime)));
     
-            string[] fields = "val0,val1,val2,val3,val4,val5".Split(',');
+            string[] fields = "val0,val1,val2".Split(',');
             string eplFragment = "select " +
                     "current_timestamp.Format() as val0," +
                     "utildate.Format() as val1," +
-                    "longdate.Format() as val2," +
-                    "caldate.Format() as val3," +
-                    "localdate.Format() as val4," +
-                    "zoneddate.Format() as val5" +
+                    "longdate.Format() as val2" +
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
+                typeof(string), typeof(string), typeof(string)
+            });
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            object[] expected = SupportDateTime.GetArrayCoerced(startTime, "sdf", "sdf", "sdf", "sdf", "dtf_isodt", "dtf_isozdt");
+            object[] expected = SupportDateTime.GetArrayCoerced(startTime, 
+                "str[utc]", "str[utc]", "str[utc]");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, expected);
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{SupportDateTime.GetValueCoerced(startTime, "sdf"), null, null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {
+                SupportDateTime.GetValueCoerced(startTime, "str[utc]"), null, null
+            });
     
             stmtFragment.Dispose();
         }

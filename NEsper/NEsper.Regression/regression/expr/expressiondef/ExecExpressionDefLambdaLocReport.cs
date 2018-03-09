@@ -45,16 +45,16 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
             var eplFragment = "" +
                     "expression lostLuggage {" +
-                    "  lr => lr.items.Where(l => l.type='L' and " +
-                    "    lr.items.Anyof(p => p.type='P' and p.assetId=l.assetIdPassenger and LRUtil.Distance(l.location.x, l.location.y, p.location.x, p.location.y) > 20))" +
+                    "  lr => lr.items.where(l => l.type='L' and " +
+                    "    lr.items.anyof(p => p.type='P' and p.assetId=l.assetIdPassenger and LRUtil.Distance(l.location.x, l.location.y, p.location.x, p.location.y) > 20))" +
                     "}" +
                     "expression passengers {" +
-                    "  lr => lr.items.Where(l => l.type='P')" +
+                    "  lr => lr.items.where(l => l.type='P')" +
                     "}" +
                     "" +
                     "expression nearestOwner {" +
                     "  lr => LostLuggage(lr).ToMap(key => key.assetId, " +
-                    "     value => Passengers(lr).MinBy(p => LRUtil.Distance(value.location.x, value.location.y, p.location.x, p.location.y)))" +
+                    "     value => Passengers(lr).minBy(p => LRUtil.Distance(value.location.x, value.location.y, p.location.x, p.location.y)))" +
                     "}" +
                     "" +
                     "select LostLuggage(lr) as val1, NearestOwner(lr) as val2 from LocationReport lr";

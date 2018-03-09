@@ -96,13 +96,13 @@ namespace com.espertech.esper.regression.rowrecog
         public void TryPermute(EPServiceProvider epService, bool soda, string pattern) {
             string epl = "select * from SupportBean " +
                     "match_recognize (" +
-                    " partition by intPrimitive" +
+                    " partition by IntPrimitive" +
                     " measures A as a, B as b, C as c" +
                     " pattern (" + pattern + ")" +
                     " define" +
-                    " A as A.theString like \"A%\"," +
-                    " B as B.theString like \"B%\"," +
-                    " C as C.theString like \"C%\"" +
+                    " A as A.TheString like \"A%\"," +
+                    " B as B.TheString like \"B%\"," +
+                    " C as C.TheString like \"C%\"" +
                     ")";
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();

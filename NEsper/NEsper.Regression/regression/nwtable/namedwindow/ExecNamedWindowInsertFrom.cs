@@ -58,12 +58,12 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create consumer
-            string stmtTextSelectOne = "select theString from MyWindow";
+            string stmtTextSelectOne = "select TheString from MyWindow";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             stmtSelectOne.Events += listeners[2].Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            var fields = new[]{"theString"};
+            var fields = new[]{"TheString"};
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, new object[]{"E1"});
             EPAssertionUtil.AssertProps(listeners[2].AssertOneGetNewAndReset(), fields, new object[]{"E1"});
     
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
         }
     
         private void RunAssertionInsertWhereTypeAndFilter(EPServiceProvider epService, SupportUpdateListener[] listeners) {
-            var fields = new[]{"theString"};
+            var fields = new[]{"TheString"};
     
             // create window
             string stmtTextCreateOne = "create window MyWindowIWT#keepall as SupportBean";
@@ -80,7 +80,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             EventType eventTypeOne = stmtCreateOne.EventType;
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindowIWT select * from SupportBean(intPrimitive > 0)";
+            string stmtTextInsertOne = "insert into MyWindowIWT select * from SupportBean(IntPrimitive > 0)";
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // populate some data
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             Assert.AreEqual(StatementType.CREATE_WINDOW, ((EPStatementSPI) stmtCreateTwo).StatementMetadata.StatementType);
     
             // create window with keep-all and filter
-            string stmtTextCreateThree = "create window MyWindowThree#keepall as MyWindowIWT insert where theString like 'A%'";
+            string stmtTextCreateThree = "create window MyWindowThree#keepall as MyWindowIWT insert where TheString like 'A%'";
             EPStatement stmtCreateThree = epService.EPAdministrator.CreateEPL(stmtTextCreateThree);
             stmtCreateThree.Events += listeners[3].Update;
             EPAssertionUtil.AssertPropsPerRow(stmtCreateThree.GetEnumerator(), fields, new[] {new object[] {"A1"}, new object[] {"A4"}});
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             Assert.AreEqual(2, GetCount(epService, "MyWindowThree"));
     
             // create window with last-per-id
-            string stmtTextCreateFour = "create window MyWindowFour#unique(intPrimitive) as MyWindowIWT insert";
+            string stmtTextCreateFour = "create window MyWindowFour#unique(IntPrimitive) as MyWindowIWT insert";
             EPStatement stmtCreateFour = epService.EPAdministrator.CreateEPL(stmtTextCreateFour);
             stmtCreateFour.Events += listeners[4].Update;
             EPAssertionUtil.AssertPropsPerRow(stmtCreateFour.GetEnumerator(), fields, new[] {new object[] {"C3"}, new object[] {"C5"}});
@@ -124,10 +124,10 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             Assert.IsFalse(listeners[4].IsInvoked);
             Assert.AreEqual(2, GetCount(epService, "MyWindowFour"));
     
-            epService.EPAdministrator.CreateEPL("insert into MyWindowIWT select * from SupportBean(theString like 'A%')");
-            epService.EPAdministrator.CreateEPL("insert into MyWindowTwo select * from SupportBean(theString like 'B%')");
-            epService.EPAdministrator.CreateEPL("insert into MyWindowThree select * from SupportBean(theString like 'C%')");
-            epService.EPAdministrator.CreateEPL("insert into MyWindowFour select * from SupportBean(theString like 'D%')");
+            epService.EPAdministrator.CreateEPL("insert into MyWindowIWT select * from SupportBean(TheString like 'A%')");
+            epService.EPAdministrator.CreateEPL("insert into MyWindowTwo select * from SupportBean(TheString like 'B%')");
+            epService.EPAdministrator.CreateEPL("insert into MyWindowThree select * from SupportBean(TheString like 'C%')");
+            epService.EPAdministrator.CreateEPL("insert into MyWindowFour select * from SupportBean(TheString like 'D%')");
             Assert.IsFalse(listeners[0].IsInvoked || listeners[2].IsInvoked || listeners[3].IsInvoked || listeners[4].IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("B9", -9));
@@ -238,14 +238,14 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             TryInvalid(epService, "create window testWindow3#keepall as SupportBean insert",
                     "A named window by name 'SupportBean' could not be located, use the insert-keyword with an existing named window [create window testWindow3#keepall as SupportBean insert]");
-            TryInvalid(epService, "create window testWindow3#keepall as select * from " + typeof(SupportBean).FullName + " insert where (intPrimitive = 10)",
+            TryInvalid(epService, "create window testWindow3#keepall as select * from " + typeof(SupportBean).FullName + " insert where (IntPrimitive = 10)",
                     "A named window by name '" + typeof(SupportBean).FullName + "' could not be located, use the insert-keyword with an existing named window [");
-            TryInvalid(epService, "create window MyWindowTwo#keepall as MyWindowINV insert where (select intPrimitive from SupportBean#lastevent)",
-                    "Create window where-clause may not have a subselect [create window MyWindowTwo#keepall as MyWindowINV insert where (select intPrimitive from SupportBean#lastevent)]");
-            TryInvalid(epService, "create window MyWindowTwo#keepall as MyWindowINV insert where sum(intPrimitive) > 2",
-                    "Create window where-clause may not have an aggregation function [create window MyWindowTwo#keepall as MyWindowINV insert where sum(intPrimitive) > 2]");
-            TryInvalid(epService, "create window MyWindowTwo#keepall as MyWindowINV insert where prev(1, intPrimitive) = 1",
-                    "Create window where-clause may not have a function that requires view resources (prior, prev) [create window MyWindowTwo#keepall as MyWindowINV insert where prev(1, intPrimitive) = 1]");
+            TryInvalid(epService, "create window MyWindowTwo#keepall as MyWindowINV insert where (select IntPrimitive from SupportBean#lastevent)",
+                    "Create window where-clause may not have a subselect [create window MyWindowTwo#keepall as MyWindowINV insert where (select IntPrimitive from SupportBean#lastevent)]");
+            TryInvalid(epService, "create window MyWindowTwo#keepall as MyWindowINV insert where sum(IntPrimitive) > 2",
+                    "Create window where-clause may not have an aggregation function [create window MyWindowTwo#keepall as MyWindowINV insert where sum(IntPrimitive) > 2]");
+            TryInvalid(epService, "create window MyWindowTwo#keepall as MyWindowINV insert where prev(1, IntPrimitive) = 1",
+                    "Create window where-clause may not have a function that requires view resources (prior, prev) [create window MyWindowTwo#keepall as MyWindowINV insert where prev(1, IntPrimitive) = 1]");
         }
     
         private IDictionary<string, object> MakeMap(object[][] entries) {

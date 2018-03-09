@@ -31,8 +31,8 @@ namespace com.espertech.esper.regression.expr.filter
         }
     
         private void RunAssertionInDynamic(EPServiceProvider epService) {
-            string expr = "select * from pattern [a=" + typeof(SupportBeanNumeric).Name + " -> every b=" + typeof(SupportBean).FullName
-                    + "(intPrimitive in (a.intOne, a.intTwo))]";
+            string expr = "select * from pattern [a=" + typeof(SupportBeanNumeric).FullName + " -> every b=" + typeof(SupportBean).FullName
+                    + "(IntPrimitive in (a.intOne, a.intTwo))]";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expr);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -46,8 +46,8 @@ namespace com.espertech.esper.regression.expr.filter
             Assert.IsTrue(listener.GetAndClearIsInvoked());
             stmt.Stop();
     
-            expr = "select * from pattern [a=" + typeof(SupportBean_S0).Name + " -> every b=" + typeof(SupportBean).FullName
-                    + "(theString in (a.p00, a.p01, a.p02))]";
+            expr = "select * from pattern [a=" + typeof(SupportBean_S0).FullName + " -> every b=" + typeof(SupportBean).FullName
+                    + "(TheString in (a.p00, a.p01, a.p02))]";
             stmt = epService.EPAdministrator.CreateEPL(expr);
             stmt.Events += listener.Update;
     
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regression.expr.filter
         }
     
         private void RunAssertionSimpleIntAndEnumWrite(EPServiceProvider epService) {
-            string expr = "select * from " + typeof(SupportBean).FullName + "(intPrimitive in (1, 10))";
+            string expr = "select * from " + typeof(SupportBean).FullName + "(IntPrimitive in (1, 10))";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expr);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -100,113 +100,113 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
             // we do not coerce
-            TryInvalid(epService, "select * from " + typeof(SupportBean).FullName + "(intPrimitive in (1L, 10L))");
-            TryInvalid(epService, "select * from " + typeof(SupportBean).FullName + "(intPrimitive in (1, 10L))");
-            TryInvalid(epService, "select * from " + typeof(SupportBean).FullName + "(intPrimitive in (1, 'x'))");
+            TryInvalid(epService, "select * from " + typeof(SupportBean).FullName + "(IntPrimitive in (1L, 10L))");
+            TryInvalid(epService, "select * from " + typeof(SupportBean).FullName + "(IntPrimitive in (1, 10L))");
+            TryInvalid(epService, "select * from " + typeof(SupportBean).FullName + "(IntPrimitive in (1, 'x'))");
     
             string expr = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" + typeof(SupportBean).FullName
-                    + "(intPrimitive in (a.longPrimitive, a.longBoxed))]";
+                    + "(IntPrimitive in (a.LongPrimitive, a.LongBoxed))]";
             TryInvalid(epService, expr);
         }
     
         private void RunAssertionInExpr(EPServiceProvider epService) {
-            TryExpr(epService, "(theString > 'b')", "theString", new string[]{"a", "b", "c", "d"}, new bool[]{false, false, true, true});
-            TryExpr(epService, "(theString < 'b')", "theString", new string[]{"a", "b", "c", "d"}, new bool[]{true, false, false, false});
-            TryExpr(epService, "(theString >= 'b')", "theString", new string[]{"a", "b", "c", "d"}, new bool[]{false, true, true, true});
-            TryExpr(epService, "(theString <= 'b')", "theString", new string[]{"a", "b", "c", "d"}, new bool[]{true, true, false, false});
-            TryExpr(epService, "(theString in ['b':'d'])", "theString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{false, true, true, true, false});
-            TryExpr(epService, "(theString in ('b':'d'])", "theString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{false, false, true, true, false});
-            TryExpr(epService, "(theString in ['b':'d'))", "theString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{false, true, true, false, false});
-            TryExpr(epService, "(theString in ('b':'d'))", "theString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{false, false, true, false, false});
-            TryExpr(epService, "(boolPrimitive in (false))", "boolPrimitive", new object[]{true, false}, new bool[]{false, true});
-            TryExpr(epService, "(boolPrimitive in (false, false, false))", "boolPrimitive", new object[]{true, false}, new bool[]{false, true});
-            TryExpr(epService, "(boolPrimitive in (false, true, false))", "boolPrimitive", new object[]{true, false}, new bool[]{true, true});
-            TryExpr(epService, "(intBoxed in (4, 6, 1))", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, true, false, false, true, false, true});
-            TryExpr(epService, "(intBoxed in (3))", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, true, false, false, false});
-            TryExpr(epService, "(longBoxed in (3))", "longBoxed", new object[]{0L, 1L, 2L, 3L, 4L, 5L, 6L}, new bool[]{false, false, false, true, false, false, false});
-            TryExpr(epService, "(intBoxed between 4 and 6)", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, false, true, true, true});
-            TryExpr(epService, "(intBoxed between 2 and 1)", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, true, true, false, false, false, false});
-            TryExpr(epService, "(intBoxed between 4 and -1)", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, true, true, false, false});
-            TryExpr(epService, "(intBoxed in [2:4])", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, true, true, true, false, false});
-            TryExpr(epService, "(intBoxed in (2:4])", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, true, true, false, false});
-            TryExpr(epService, "(intBoxed in [2:4))", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, true, true, false, false, false});
-            TryExpr(epService, "(intBoxed in (2:4))", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, true, false, false, false});
+            TryExpr(epService, "(TheString > 'b')", "TheString", new string[]{"a", "b", "c", "d"}, new bool[]{false, false, true, true});
+            TryExpr(epService, "(TheString < 'b')", "TheString", new string[]{"a", "b", "c", "d"}, new bool[]{true, false, false, false});
+            TryExpr(epService, "(TheString >= 'b')", "TheString", new string[]{"a", "b", "c", "d"}, new bool[]{false, true, true, true});
+            TryExpr(epService, "(TheString <= 'b')", "TheString", new string[]{"a", "b", "c", "d"}, new bool[]{true, true, false, false});
+            TryExpr(epService, "(TheString in ['b':'d'])", "TheString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{false, true, true, true, false});
+            TryExpr(epService, "(TheString in ('b':'d'])", "TheString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{false, false, true, true, false});
+            TryExpr(epService, "(TheString in ['b':'d'))", "TheString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{false, true, true, false, false});
+            TryExpr(epService, "(TheString in ('b':'d'))", "TheString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{false, false, true, false, false});
+            TryExpr(epService, "(BoolPrimitive in (false))", "BoolPrimitive", new object[]{true, false}, new bool[]{false, true});
+            TryExpr(epService, "(BoolPrimitive in (false, false, false))", "BoolPrimitive", new object[]{true, false}, new bool[]{false, true});
+            TryExpr(epService, "(BoolPrimitive in (false, true, false))", "BoolPrimitive", new object[]{true, false}, new bool[]{true, true});
+            TryExpr(epService, "(IntBoxed in (4, 6, 1))", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, true, false, false, true, false, true});
+            TryExpr(epService, "(IntBoxed in (3))", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, true, false, false, false});
+            TryExpr(epService, "(LongBoxed in (3))", "LongBoxed", new object[]{0L, 1L, 2L, 3L, 4L, 5L, 6L}, new bool[]{false, false, false, true, false, false, false});
+            TryExpr(epService, "(IntBoxed between 4 and 6)", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, false, true, true, true});
+            TryExpr(epService, "(IntBoxed between 2 and 1)", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, true, true, false, false, false, false});
+            TryExpr(epService, "(IntBoxed between 4 and -1)", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, true, true, false, false});
+            TryExpr(epService, "(IntBoxed in [2:4])", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, true, true, true, false, false});
+            TryExpr(epService, "(IntBoxed in (2:4])", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, true, true, false, false});
+            TryExpr(epService, "(IntBoxed in [2:4))", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, true, true, false, false, false});
+            TryExpr(epService, "(IntBoxed in (2:4))", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, true, false, false, false});
         }
     
         private void RunAssertionNotInExpr(EPServiceProvider epService) {
-            TryExpr(epService, "(intBoxed not between 4 and 6)", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, true, false, false, false});
-            TryExpr(epService, "(intBoxed not between 2 and 1)", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, false, false, true, true, true, true});
-            TryExpr(epService, "(intBoxed not between 4 and -1)", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, false, false, true, true});
-            TryExpr(epService, "(intBoxed not in [2:4])", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, false, false, false, true, true});
-            TryExpr(epService, "(intBoxed not in (2:4])", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, false, false, true, true});
-            TryExpr(epService, "(intBoxed not in [2:4))", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, false, false, true, true, true});
-            TryExpr(epService, "(intBoxed not in (2:4))", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, false, true, true, true});
-            TryExpr(epService, "(theString not in ['b':'d'])", "theString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{true, false, false, false, true});
-            TryExpr(epService, "(theString not in ('b':'d'])", "theString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{true, true, false, false, true});
-            TryExpr(epService, "(theString not in ['b':'d'))", "theString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{true, false, false, true, true});
-            TryExpr(epService, "(theString not in ('b':'d'))", "theString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{true, true, false, true, true});
-            TryExpr(epService, "(theString not in ('a', 'b'))", "theString", new string[]{"a", "x", "b", "y"}, new bool[]{false, true, false, true});
-            TryExpr(epService, "(boolPrimitive not in (false))", "boolPrimitive", new object[]{true, false}, new bool[]{true, false});
-            TryExpr(epService, "(boolPrimitive not in (false, false, false))", "boolPrimitive", new object[]{true, false}, new bool[]{true, false});
-            TryExpr(epService, "(boolPrimitive not in (false, true, false))", "boolPrimitive", new object[]{true, false}, new bool[]{false, false});
-            TryExpr(epService, "(intBoxed not in (4, 6, 1))", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, false, true, true, false, true, false});
-            TryExpr(epService, "(intBoxed not in (3))", "intBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, false, true, true, true});
-            TryExpr(epService, "(longBoxed not in (3))", "longBoxed", new object[]{0L, 1L, 2L, 3L, 4L, 5L, 6L}, new bool[]{true, true, true, false, true, true, true});
+            TryExpr(epService, "(IntBoxed not between 4 and 6)", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, true, false, false, false});
+            TryExpr(epService, "(IntBoxed not between 2 and 1)", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, false, false, true, true, true, true});
+            TryExpr(epService, "(IntBoxed not between 4 and -1)", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{false, false, false, false, false, true, true});
+            TryExpr(epService, "(IntBoxed not in [2:4])", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, false, false, false, true, true});
+            TryExpr(epService, "(IntBoxed not in (2:4])", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, false, false, true, true});
+            TryExpr(epService, "(IntBoxed not in [2:4))", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, false, false, true, true, true});
+            TryExpr(epService, "(IntBoxed not in (2:4))", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, false, true, true, true});
+            TryExpr(epService, "(TheString not in ['b':'d'])", "TheString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{true, false, false, false, true});
+            TryExpr(epService, "(TheString not in ('b':'d'])", "TheString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{true, true, false, false, true});
+            TryExpr(epService, "(TheString not in ['b':'d'))", "TheString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{true, false, false, true, true});
+            TryExpr(epService, "(TheString not in ('b':'d'))", "TheString", new string[]{"a", "b", "c", "d", "e"}, new bool[]{true, true, false, true, true});
+            TryExpr(epService, "(TheString not in ('a', 'b'))", "TheString", new string[]{"a", "x", "b", "y"}, new bool[]{false, true, false, true});
+            TryExpr(epService, "(BoolPrimitive not in (false))", "BoolPrimitive", new object[]{true, false}, new bool[]{true, false});
+            TryExpr(epService, "(BoolPrimitive not in (false, false, false))", "BoolPrimitive", new object[]{true, false}, new bool[]{true, false});
+            TryExpr(epService, "(BoolPrimitive not in (false, true, false))", "BoolPrimitive", new object[]{true, false}, new bool[]{false, false});
+            TryExpr(epService, "(IntBoxed not in (4, 6, 1))", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, false, true, true, false, true, false});
+            TryExpr(epService, "(IntBoxed not in (3))", "IntBoxed", new object[]{0, 1, 2, 3, 4, 5, 6}, new bool[]{true, true, true, false, true, true, true});
+            TryExpr(epService, "(LongBoxed not in (3))", "LongBoxed", new object[]{0L, 1L, 2L, 3L, 4L, 5L, 6L}, new bool[]{true, true, true, false, true, true, true});
         }
     
         private void RunAssertionReuse(EPServiceProvider epService) {
-            string expr = "select * from " + typeof(SupportBean).FullName + "(intBoxed in [2:4])";
+            string expr = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in [2:4])";
             TryReuse(epService, new string[]{expr, expr});
     
-            expr = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (1, 2, 3))";
+            expr = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (1, 2, 3))";
             TryReuse(epService, new string[]{expr, expr});
     
-            string exprOne = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (2:3])";
-            string exprTwo = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (1:3])";
+            string exprOne = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (2:3])";
+            string exprTwo = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (1:3])";
             TryReuse(epService, new string[]{exprOne, exprTwo});
     
-            exprOne = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (2, 3, 4))";
-            exprTwo = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (1, 3))";
+            exprOne = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (2, 3, 4))";
+            exprTwo = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (1, 3))";
             TryReuse(epService, new string[]{exprOne, exprTwo});
     
-            exprOne = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (2, 3, 4))";
-            exprTwo = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (1, 3))";
-            string exprThree = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (8, 3))";
+            exprOne = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (2, 3, 4))";
+            exprTwo = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (1, 3))";
+            string exprThree = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (8, 3))";
             TryReuse(epService, new string[]{exprOne, exprTwo, exprThree});
     
-            exprOne = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (3, 1, 3))";
-            exprTwo = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (3, 3))";
-            exprThree = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (1, 3))";
+            exprOne = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (3, 1, 3))";
+            exprTwo = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (3, 3))";
+            exprThree = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (1, 3))";
             TryReuse(epService, new string[]{exprOne, exprTwo, exprThree});
     
-            exprOne = "select * from " + typeof(SupportBean).FullName + "(boolPrimitive=false, intBoxed in (1, 2, 3))";
-            exprTwo = "select * from " + typeof(SupportBean).FullName + "(boolPrimitive=false, intBoxed in (3, 4))";
-            exprThree = "select * from " + typeof(SupportBean).FullName + "(boolPrimitive=false, intBoxed in (3))";
+            exprOne = "select * from " + typeof(SupportBean).FullName + "(BoolPrimitive=false, IntBoxed in (1, 2, 3))";
+            exprTwo = "select * from " + typeof(SupportBean).FullName + "(BoolPrimitive=false, IntBoxed in (3, 4))";
+            exprThree = "select * from " + typeof(SupportBean).FullName + "(BoolPrimitive=false, IntBoxed in (3))";
             TryReuse(epService, new string[]{exprOne, exprTwo, exprThree});
     
-            exprOne = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (1, 2, 3), longPrimitive >= 0)";
-            exprTwo = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (3, 4), intPrimitive >= 0)";
-            exprThree = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (3), bytePrimitive < 1)";
+            exprOne = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (1, 2, 3), LongPrimitive >= 0)";
+            exprTwo = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (3, 4), IntPrimitive >= 0)";
+            exprThree = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (3), bytePrimitive < 1)";
             TryReuse(epService, new string[]{exprOne, exprTwo, exprThree});
         }
     
         private void RunAssertionReuseNot(EPServiceProvider epService) {
-            string expr = "select * from " + typeof(SupportBean).FullName + "(intBoxed not in [1:2])";
+            string expr = "select * from " + typeof(SupportBean).FullName + "(IntBoxed not in [1:2])";
             TryReuse(epService, new string[]{expr, expr});
     
-            string exprOne = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (3, 1, 3))";
-            string exprTwo = "select * from " + typeof(SupportBean).FullName + "(intBoxed not in (2, 1))";
-            string exprThree = "select * from " + typeof(SupportBean).FullName + "(intBoxed not between 0 and -3)";
+            string exprOne = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (3, 1, 3))";
+            string exprTwo = "select * from " + typeof(SupportBean).FullName + "(IntBoxed not in (2, 1))";
+            string exprThree = "select * from " + typeof(SupportBean).FullName + "(IntBoxed not between 0 and -3)";
             TryReuse(epService, new string[]{exprOne, exprTwo, exprThree});
     
-            exprOne = "select * from " + typeof(SupportBean).FullName + "(intBoxed not in (1, 4, 5))";
-            exprTwo = "select * from " + typeof(SupportBean).FullName + "(intBoxed not in (1, 4, 5))";
-            exprThree = "select * from " + typeof(SupportBean).FullName + "(intBoxed not in (4, 5, 1))";
+            exprOne = "select * from " + typeof(SupportBean).FullName + "(IntBoxed not in (1, 4, 5))";
+            exprTwo = "select * from " + typeof(SupportBean).FullName + "(IntBoxed not in (1, 4, 5))";
+            exprThree = "select * from " + typeof(SupportBean).FullName + "(IntBoxed not in (4, 5, 1))";
             TryReuse(epService, new string[]{exprOne, exprTwo, exprThree});
     
-            exprOne = "select * from " + typeof(SupportBean).FullName + "(intBoxed not in (3:4))";
-            exprTwo = "select * from " + typeof(SupportBean).FullName + "(intBoxed not in [1:3))";
-            exprThree = "select * from " + typeof(SupportBean).FullName + "(intBoxed not in (1,1,1,33))";
+            exprOne = "select * from " + typeof(SupportBean).FullName + "(IntBoxed not in (3:4))";
+            exprTwo = "select * from " + typeof(SupportBean).FullName + "(IntBoxed not in [1:3))";
+            exprThree = "select * from " + typeof(SupportBean).FullName + "(IntBoxed not in (1,1,1,33))";
             TryReuse(epService, new string[]{exprOne, exprTwo, exprThree});
         }
     
@@ -222,7 +222,7 @@ namespace com.espertech.esper.regression.expr.filter
             }
     
             // send event, all should receive the event
-            SendBean(epService, "intBoxed", 3);
+            SendBean(epService, "IntBoxed", 3);
             for (int i = 0; i < testListener.Length; i++) {
                 Assert.IsTrue(testListener[i].IsInvoked);
                 testListener[i].Reset();
@@ -233,7 +233,7 @@ namespace com.espertech.esper.regression.expr.filter
                 stmt[toStop].Stop();
     
                 // send event, all remaining statement received it
-                SendBean(epService, "intBoxed", 3);
+                SendBean(epService, "IntBoxed", 3);
                 for (int i = 0; i <= toStop; i++) {
                     Assert.IsFalse(testListener[i].IsInvoked);
                     testListener[i].Reset();
@@ -245,7 +245,7 @@ namespace com.espertech.esper.regression.expr.filter
             }
     
             // now all statements are stopped, send event and verify no listener received
-            SendBean(epService, "intBoxed", 3);
+            SendBean(epService, "IntBoxed", 3);
             for (int i = 0; i < testListener.Length; i++) {
                 Assert.IsFalse(testListener[i].IsInvoked);
             }
@@ -285,16 +285,16 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void SendBean(EPServiceProvider epService, string fieldName, Object value) {
             var theEvent = new SupportBean();
-            if (fieldName.Equals("theString")) {
+            if (fieldName.Equals("TheString")) {
                 theEvent.TheString = (string) value;
             }
-            else if (fieldName.Equals("boolPrimitive")) {
+            else if (fieldName.Equals("BoolPrimitive")) {
                 theEvent.BoolPrimitive = (bool) value;
             }
-            else if (fieldName.Equals("intBoxed")) {
+            else if (fieldName.Equals("IntBoxed")) {
                 theEvent.IntBoxed = (int?) value;
             }
-            else if (fieldName.Equals("longBoxed")) {
+            else if (fieldName.Equals("LongBoxed")) {
                 theEvent.LongBoxed = (long) value;
             }
             epService.EPRuntime.SendEvent(theEvent);

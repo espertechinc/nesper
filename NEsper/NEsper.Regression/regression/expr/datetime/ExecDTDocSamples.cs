@@ -26,32 +26,32 @@ namespace com.espertech.esper.regression.expr.datetime
             meta.Put("timeTaken", typeof(DateTime));
             epService.EPAdministrator.Configuration.AddEventType("RFIDEvent", meta);
     
-            epService.EPAdministrator.CreateEPL("select TimeTaken.Format() as timeTakenStr from RFIDEvent");
-            epService.EPAdministrator.CreateEPL("select TimeTaken.Get('month') as timeTakenMonth from RFIDEvent");
-            epService.EPAdministrator.CreateEPL("select TimeTaken.MonthOfYear as timeTakenMonth from RFIDEvent");
-            epService.EPAdministrator.CreateEPL("select TimeTaken.Minus(2 minutes) as timeTakenMinus2Min from RFIDEvent");
-            epService.EPAdministrator.CreateEPL("select TimeTaken.Minus(2*60*1000) as timeTakenMinus2Min from RFIDEvent");
-            epService.EPAdministrator.CreateEPL("select TimeTaken.Plus(2 minutes) as timeTakenMinus2Min from RFIDEvent");
-            epService.EPAdministrator.CreateEPL("select TimeTaken.Plus(2*60*1000) as timeTakenMinus2Min from RFIDEvent");
-            epService.EPAdministrator.CreateEPL("select TimeTaken.RoundCeiling('min') as timeTakenRounded from RFIDEvent");
-            epService.EPAdministrator.CreateEPL("select TimeTaken.RoundFloor('min') as timeTakenRounded from RFIDEvent");
-            epService.EPAdministrator.CreateEPL("select TimeTaken.Set('month', 3) as timeTakenMonth from RFIDEvent");
-            epService.EPAdministrator.CreateEPL("select TimeTaken.WithDate(2002, 4, 30) as timeTakenDated from RFIDEvent");
-            epService.EPAdministrator.CreateEPL("select TimeTaken.WithMax('sec') as timeTakenMaxSec from RFIDEvent");
-            epService.EPAdministrator.CreateEPL("select TimeTaken.ToCalendar() as timeTakenCal from RFIDEvent");
-            epService.EPAdministrator.CreateEPL("select TimeTaken.ToDate() as timeTakenDate from RFIDEvent");
-            epService.EPAdministrator.CreateEPL("select TimeTaken.ToMillisec() as timeTakenLong from RFIDEvent");
+            epService.EPAdministrator.CreateEPL("select timeTaken.Format() as timeTakenStr from RFIDEvent");
+            epService.EPAdministrator.CreateEPL("select timeTaken.Get('month') as timeTakenMonth from RFIDEvent");
+            epService.EPAdministrator.CreateEPL("select timeTaken.GetMonthOfYear() as timeTakenMonth from RFIDEvent");
+            epService.EPAdministrator.CreateEPL("select timeTaken.Minus(2 minutes) as timeTakenMinus2Min from RFIDEvent");
+            epService.EPAdministrator.CreateEPL("select timeTaken.Minus(2*60*1000) as timeTakenMinus2Min from RFIDEvent");
+            epService.EPAdministrator.CreateEPL("select timeTaken.Plus(2 minutes) as timeTakenMinus2Min from RFIDEvent");
+            epService.EPAdministrator.CreateEPL("select timeTaken.Plus(2*60*1000) as timeTakenMinus2Min from RFIDEvent");
+            epService.EPAdministrator.CreateEPL("select timeTaken.RoundCeiling('min') as timeTakenRounded from RFIDEvent");
+            epService.EPAdministrator.CreateEPL("select timeTaken.RoundFloor('min') as timeTakenRounded from RFIDEvent");
+            epService.EPAdministrator.CreateEPL("select timeTaken.Set('month', 3) as timeTakenMonth from RFIDEvent");
+            epService.EPAdministrator.CreateEPL("select timeTaken.WithDate(2002, 4, 30) as timeTakenDated from RFIDEvent");
+            epService.EPAdministrator.CreateEPL("select timeTaken.WithMax('sec') as timeTakenMaxSec from RFIDEvent");
+            epService.EPAdministrator.CreateEPL("select timeTaken.ToCalendar() as timeTakenCal from RFIDEvent");
+            epService.EPAdministrator.CreateEPL("select timeTaken.ToDate() as timeTakenDate from RFIDEvent");
+            epService.EPAdministrator.CreateEPL("select timeTaken.ToMillisec() as timeTakenLong from RFIDEvent");
     
             // test pattern use
             var leg = new ConfigurationEventTypeLegacy();
-            leg.StartTimestampPropertyName = "longdateStart";
-            epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportTimeStartEndA).Name, leg);
-            epService.EPAdministrator.Configuration.AddEventType("B", typeof(SupportTimeStartEndB).Name, leg);
+            leg.StartTimestampPropertyName = "LongdateStart";
+            epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportTimeStartEndA), leg);
+            epService.EPAdministrator.Configuration.AddEventType("B", typeof(SupportTimeStartEndB), leg);
     
-            TryRun(epService, "a.longdateStart.After(b)", "2002-05-30T09:00:00.000", "2002-05-30T08:59:59.999", true);
-            TryRun(epService, "a.After(b.longdateStart)", "2002-05-30T09:00:00.000", "2002-05-30T08:59:59.999", true);
-            TryRun(epService, "a.After(b)", "2002-05-30T09:00:00.000", "2002-05-30T08:59:59.999", true);
-            TryRun(epService, "a.After(b)", "2002-05-30T08:59:59.999", "2002-05-30T09:00:00.000", false);
+            TryRun(epService, "a.LongdateStart.after(b)", "2002-05-30T09:00:00.000", "2002-05-30T08:59:59.999", true);
+            TryRun(epService, "a.after(b.LongdateStart)", "2002-05-30T09:00:00.000", "2002-05-30T08:59:59.999", true);
+            TryRun(epService, "a.after(b)", "2002-05-30T09:00:00.000", "2002-05-30T08:59:59.999", true);
+            TryRun(epService, "a.after(b)", "2002-05-30T08:59:59.999", "2002-05-30T09:00:00.000", false);
         }
     
         private void TryRun(EPServiceProvider epService, string condition, string tsa, string tsb, bool isInvoked) {

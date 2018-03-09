@@ -9,6 +9,7 @@
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
+using com.espertech.esper.compat;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
@@ -215,7 +216,7 @@ namespace com.espertech.esper.regression.epl.subselect
                     "Error starting statement: Failed to plan subquery number 1 querying S1: Failed to validate filter expression 'id=p00': Property named 'p00' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\" [select (select id from S1#lastevent where id = p00) from S0]");
     
             TryInvalid(epService, "select id in (select * from S1#length(1000)) as value from S0",
-                    "Error starting statement: Failed to validate select-clause expression subquery number 1 querying S1: Implicit conversion from datatype 'SupportBean_S1' to 'int?' is not allowed [select id in (select * from S1#length(1000)) as value from S0]");
+                    "Error starting statement: Failed to validate select-clause expression subquery number 1 querying S1: Implicit conversion from datatype 'SupportBean_S1' to '" + Name.Of<int>() + "' is not allowed [select id in (select * from S1#length(1000)) as value from S0]");
         }
     
         private void RunAssertionUnfilteredStreamPrior_OM(EPServiceProvider epService) {

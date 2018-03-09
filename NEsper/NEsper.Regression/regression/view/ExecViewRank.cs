@@ -44,7 +44,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionPrevAndGroupWin(EPServiceProvider epService) {
             var stmt = epService.EPAdministrator.CreateEPL("select prevwindow(ev) as win, prev(0, ev) as prev0, prev(1, ev) as prev1, prev(2, ev) as prev2, prev(3, ev) as prev3, prev(4, ev) as prev4 " +
-                    "from SupportBean#rank(theString, 3, intPrimitive) as ev");
+                    "from SupportBean#rank(TheString, 3, IntPrimitive) as ev");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -74,10 +74,10 @@ namespace com.espertech.esper.regression.view
                 new object[][]{new object[] {"E2", 97, 1L}, new object[] {"E1", 98, 1L}, new object[] {"E3", 98, 0L}});
             stmt.Dispose();
     
-            stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#groupwin(theString)#rank(intPrimitive, 2, doublePrimitive) as ev");
+            stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#groupwin(TheString)#rank(IntPrimitive, 2, DoublePrimitive) as ev");
             stmt.Events += listener.Update;
     
-            var fields = "theString,intPrimitive,longPrimitive,doublePrimitive".Split(',');
+            var fields = "TheString,IntPrimitive,LongPrimitive,DoublePrimitive".Split(',');
             epService.EPRuntime.SendEvent(MakeEvent("E1", 100, 0L, 1d));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 100, 0L, 1d});
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1", 100, 0L, 1d}});
@@ -102,8 +102,8 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionMultiexpression(EPServiceProvider epService) {
-            var fields = "theString,intPrimitive,longPrimitive,doublePrimitive".Split(',');
-            var stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#rank(theString, intPrimitive, 3, longPrimitive, doublePrimitive)");
+            var fields = "TheString,IntPrimitive,LongPrimitive,DoublePrimitive".Split(',');
+            var stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#rank(TheString, IntPrimitive, 3, LongPrimitive, DoublePrimitive)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -139,13 +139,13 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionRemoveStream(EPServiceProvider epService) {
-            var fields = "theString,intPrimitive,longPrimitive".Split(',');
-            var stmtCreate = epService.EPAdministrator.CreateEPL("create window MyWindow#rank(theString, 3, intPrimitive asc) as SupportBean");
+            var fields = "TheString,IntPrimitive,LongPrimitive".Split(',');
+            var stmtCreate = epService.EPAdministrator.CreateEPL("create window MyWindow#rank(TheString, 3, IntPrimitive asc) as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
             var stmtListen = epService.EPAdministrator.CreateEPL("select irstream * from MyWindow");
             var listener = new SupportUpdateListener();
             stmtListen.Events += listener.Update;
-            epService.EPAdministrator.CreateEPL("on SupportBean_A delete from MyWindow mw where theString = id");
+            epService.EPAdministrator.CreateEPL("on SupportBean_A delete from MyWindow mw where TheString = id");
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 10, 0L));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 10, 0L});
@@ -191,8 +191,8 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionRanked(EPServiceProvider epService) {
-            var fields = "theString,intPrimitive,longPrimitive".Split(',');
-            var stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#rank(theString, 4, intPrimitive desc)");
+            var fields = "TheString,IntPrimitive,LongPrimitive".Split(',');
+            var stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#rank(TheString, 4, IntPrimitive desc)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -286,27 +286,27 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            TryInvalid(epService, "select * from SupportBean#rank(1, intPrimitive desc)",
-                    "Error starting statement: Error attaching view to event stream: Rank view requires a list of expressions providing unique keys, a numeric size parameter and a list of expressions providing sort keys [select * from SupportBean#rank(1, intPrimitive desc)]");
+            TryInvalid(epService, "select * from SupportBean#rank(1, IntPrimitive desc)",
+                    "Error starting statement: Error attaching view to event stream: Rank view requires a list of expressions providing unique keys, a numeric size parameter and a list of expressions providing sort keys [select * from SupportBean#rank(1, IntPrimitive desc)]");
     
-            TryInvalid(epService, "select * from SupportBean#rank(1, intPrimitive, theString desc)",
-                    "Error starting statement: Error attaching view to event stream: Failed to find unique value expressions that are expected to occur before the numeric size parameter [select * from SupportBean#rank(1, intPrimitive, theString desc)]");
+            TryInvalid(epService, "select * from SupportBean#rank(1, IntPrimitive, TheString desc)",
+                    "Error starting statement: Error attaching view to event stream: Failed to find unique value expressions that are expected to occur before the numeric size parameter [select * from SupportBean#rank(1, IntPrimitive, TheString desc)]");
     
-            TryInvalid(epService, "select * from SupportBean#rank(theString, intPrimitive, 1)",
-                    "Error starting statement: Error attaching view to event stream: Failed to find sort key expressions after the numeric size parameter [select * from SupportBean#rank(theString, intPrimitive, 1)]");
+            TryInvalid(epService, "select * from SupportBean#rank(TheString, IntPrimitive, 1)",
+                    "Error starting statement: Error attaching view to event stream: Failed to find sort key expressions after the numeric size parameter [select * from SupportBean#rank(TheString, IntPrimitive, 1)]");
     
-            TryInvalid(epService, "select * from SupportBean#rank(theString, intPrimitive, theString desc)",
-                    "Error starting statement: Error attaching view to event stream: Failed to find constant value for the numeric size parameter [select * from SupportBean#rank(theString, intPrimitive, theString desc)]");
+            TryInvalid(epService, "select * from SupportBean#rank(TheString, IntPrimitive, TheString desc)",
+                    "Error starting statement: Error attaching view to event stream: Failed to find constant value for the numeric size parameter [select * from SupportBean#rank(TheString, IntPrimitive, TheString desc)]");
     
-            TryInvalid(epService, "select * from SupportBean#rank(theString, 1, 1, intPrimitive, theString desc)",
-                    "Error starting statement: Error attaching view to event stream: Invalid view parameter expression 2 for Rank view, the expression returns a constant result value, are you sure? [select * from SupportBean#rank(theString, 1, 1, intPrimitive, theString desc)]");
+            TryInvalid(epService, "select * from SupportBean#rank(TheString, 1, 1, IntPrimitive, TheString desc)",
+                    "Error starting statement: Error attaching view to event stream: Invalid view parameter expression 2 for Rank view, the expression returns a constant result value, are you sure? [select * from SupportBean#rank(TheString, 1, 1, IntPrimitive, TheString desc)]");
     
-            TryInvalid(epService, "select * from SupportBean#rank(theString, intPrimitive, 1, intPrimitive, 1, theString desc)",
-                    "Error starting statement: Error attaching view to event stream: Invalid view parameter expression 4 for Rank view, the expression returns a constant result value, are you sure? [select * from SupportBean#rank(theString, intPrimitive, 1, intPrimitive, 1, theString desc)]");
+            TryInvalid(epService, "select * from SupportBean#rank(TheString, IntPrimitive, 1, IntPrimitive, 1, TheString desc)",
+                    "Error starting statement: Error attaching view to event stream: Invalid view parameter expression 4 for Rank view, the expression returns a constant result value, are you sure? [select * from SupportBean#rank(TheString, IntPrimitive, 1, IntPrimitive, 1, TheString desc)]");
         }
     
         private void AssertWindowAggAndPrev(IContainer container, SupportUpdateListener listener, object[][] expected) {
-            var fields = "theString,intPrimitive,longPrimitive".Split(',');
+            var fields = "TheString,IntPrimitive,LongPrimitive".Split(',');
             var @event = listener.AssertOneGetNewAndReset();
             EPAssertionUtil.AssertPropsPerRow(container, (object[]) @event.Get("win"), fields, expected);
             for (var i = 0; i < 5; i++) {

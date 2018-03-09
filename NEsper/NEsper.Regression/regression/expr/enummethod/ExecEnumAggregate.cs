@@ -10,14 +10,9 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.enummethod
 {
@@ -37,9 +32,9 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             var fields = new string[]{"val0", "val1", "val2"};
             string eplFragment = "select " +
-                    "contained.Aggregate(0, (result, item) => result + item.p00) as val0, " +
-                    "contained.Aggregate('', (result, item) => result || ', ' || item.id) as val1, " +
-                    "contained.Aggregate('', (result, item) => result || (case when result='' then '' else ',' end) || item.id) as val2 " +
+                    "Contained.aggregate(0, (result, item) => result + item.p00) as val0, " +
+                    "Contained.aggregate('', (result, item) => result || ', ' || item.id) as val1, " +
+                    "Contained.aggregate('', (result, item) => result || (case when result='' then '' else ',' end) || item.id) as val2 " +
                     " from Bean";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
@@ -69,7 +64,7 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0".Split(',');
             string eplFragment = "select " +
-                    "strvals.Aggregate('', (result, item) => result || '+' || item) as val0 " +
+                    "Strvals.aggregate('', (result, item) => result || '+' || item) as val0 " +
                     "from SupportCollection";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();

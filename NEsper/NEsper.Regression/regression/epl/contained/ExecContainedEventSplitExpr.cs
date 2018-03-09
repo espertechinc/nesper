@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.epl.contained
         public override void Run(EPServiceProvider epService)
         {
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                "invalidSentence", GetType().FullName, "invalidSentenceMethod");
+                "invalidSentence", GetType().FullName, "InvalidSentenceMethod");
 
             RunAssertionScriptContextValue(epService);
             RunAssertionSplitExprReturnsEventBean(epService);
@@ -50,15 +50,16 @@ namespace com.espertech.esper.regression.epl.contained
         {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
-            var script = "@Name('mystmt') create expression Object js:MyGetScriptContext() [\n" +
-                         "MyGetScriptContext();" +
+            var script = "@Name('mystmt') create expression Object jscript:MyGetScriptContext() [\n" +
                          "function MyGetScriptContext() {" +
                          "  return epl;\n" +
-                         "}]";
+                         "}" +
+                         "return MyGetScriptContext();" +
+                         "]";
             epService.EPAdministrator.CreateEPL(script);
 
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select MyGetScriptContext() as c0 from SupportBean")
+            epService.EPAdministrator.CreateEPL("select myGetScriptContext() as c0 from SupportBean")
                 .Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean());
             var context = (EPLScriptContext) listener.AssertOneGetNewAndReset().Get("c0");
@@ -70,28 +71,33 @@ namespace com.espertech.esper.regression.epl.contained
         private void RunAssertionSplitExprReturnsEventBean(EPServiceProvider epService)
         {
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                "mySplitUDFReturnEventBeanArray", GetType().FullName, "mySplitUDFReturnEventBeanArray");
+                "mySplitUDFReturnEventBeanArray", GetType().FullName, "MySplitUDFReturnEventBeanArray");
 
-            var script = "create expression EventBean[] js:MySplitScriptReturnEventBeanArray(value) [\n" +
-                         "MySplitScriptReturnEventBeanArray(value);" +
-                         "function MySplitScriptReturnEventBeanArray(value) {" +
-                         "  var split = value.Split(',');\n" +
-                         "  var EventBeanArray = Java.Type(\"com.espertech.esper.client.EventBean[]\");\n" +
-                         "  var events = new EventBeanArray(split.Length);  " +
-                         "  for (var i = 0; i < split.Length; i++) {\n" +
-                         "    var pvalue = split[i].Substring(1);\n" +
-                         "    if (split[i].StartsWith(\"A\")) {\n" +
-                         "      events[i] =  epl.EventBeanService.AdapterForMap(java.util.Collections.SingletonMap(\"p0\", pvalue), \"AEvent\");\n" +
-                         "    }\n" +
-                         "    else if (split[i].StartsWith(\"B\")) {\n" +
-                         "      events[i] =  epl.EventBeanService.AdapterForMap(java.util.Collections.SingletonMap(\"p1\", pvalue), \"BEvent\");\n" +
-                         "    }\n" +
-                         "    else {\n" +
-                         "      throw new UnsupportedOperationException(\"Unrecognized type\");\n" +
-                         "    }\n" +
-                         "  }\n" +
-                         "  return events;\n" +
-                         "}]";
+            var script = string.Join(
+                "\n",
+                "create expression EventBean[] jscript:mySplitScriptReturnEventBeanArray(value) [",
+                "function mySplitScriptReturnEventBeanArray(value) {",
+                "  var split = value.split(',');",
+                "  var etype = host.resolveType('com.espertech.esper.client.EventBean');",
+                "  var events = host.newArr(etype, split.length);",
+                "  for (var i = 0; i < split.length; i++) {",
+                "    var pvalue = split[i].substring(1);",
+                "    if (split[i].startsWith(\"A\")) {",
+                "      events[i] = epl.EventBeanService.AdapterForMap(Collections.SingletonDataMap(\"p0\", pvalue), \"AEvent\");",
+                "    }",
+                "    else if (split[i].startsWith(\"B\")) {",
+                "      events[i] = epl.EventBeanService.AdapterForMap(Collections.SingletonDataMap(\"p1\", pvalue), \"BEvent\");",
+                "    }",
+                "    else {",
+                "      xhost.throwException('UnsupportedOperationException', 'Unrecognized type');",
+                "    }",
+                "  }",
+                "  return events;",
+                "}",
+                "return mySplitScriptReturnEventBeanArray(value);",
+                "]"
+            );
+
             epService.EPAdministrator.CreateEPL(script);
 
             var epl = "create schema BaseEvent();\n" +

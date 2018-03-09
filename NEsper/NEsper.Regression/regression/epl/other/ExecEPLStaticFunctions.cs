@@ -73,7 +73,7 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionNullPrimitive(EPServiceProvider epService) {
             // test passing null
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select NullPrimitive.GetValue(intBoxed) from SupportBean").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select NullPrimitive.GetValue(IntBoxed) from SupportBean").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
     
@@ -155,7 +155,7 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionPattern(EPServiceProvider epService) {
             var className = typeof(SupportStaticMethodLib).FullName;
             var statementText = "select * from pattern [my@event =" + typeof(SupportBean).FullName + "(" +
-                    className + ".DelimitPipe(theString) = '|a|')]";
+                    className + ".DelimitPipe(TheString) = '|a|')]";
             var stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -452,7 +452,7 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionPassthru(EPServiceProvider epService) {
             var text = "select " +
                     "SupportStaticMethodLib.Passthru(id) as val" +
-                    " from " + typeof(SupportBean_S0).Name;
+                    " from " + typeof(SupportBean_S0).FullName;
             var stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

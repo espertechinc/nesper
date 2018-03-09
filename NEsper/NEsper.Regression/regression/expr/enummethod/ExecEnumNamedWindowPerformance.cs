@@ -6,15 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
@@ -49,19 +45,19 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             // test expression reuse
             string epl = "expression q {" +
-                    "  x => (select * from Win where intPrimitive = x.p00)" +
+                    "  x => (select * from Win where IntPrimitive = x.p00)" +
                     "}" +
                     "select " +
-                    "Q(st0).Where(x => theString = key0) as val0, " +
-                    "Q(st0).Where(x => theString = key0) as val1, " +
-                    "Q(st0).Where(x => theString = key0) as val2, " +
-                    "Q(st0).Where(x => theString = key0) as val3, " +
-                    "Q(st0).Where(x => theString = key0) as val4, " +
-                    "Q(st0).Where(x => theString = key0) as val5, " +
-                    "Q(st0).Where(x => theString = key0) as val6, " +
-                    "Q(st0).Where(x => theString = key0) as val7, " +
-                    "Q(st0).Where(x => theString = key0) as val8, " +
-                    "Q(st0).Where(x => theString = key0) as val9 " +
+                    "Q(st0).where(x => TheString = key0) as val0, " +
+                    "Q(st0).where(x => TheString = key0) as val1, " +
+                    "Q(st0).where(x => TheString = key0) as val2, " +
+                    "Q(st0).where(x => TheString = key0) as val3, " +
+                    "Q(st0).where(x => TheString = key0) as val4, " +
+                    "Q(st0).where(x => TheString = key0) as val5, " +
+                    "Q(st0).where(x => TheString = key0) as val6, " +
+                    "Q(st0).where(x => TheString = key0) as val7, " +
+                    "Q(st0).where(x => TheString = key0) as val8, " +
+                    "Q(st0).where(x => TheString = key0) as val9 " +
                     "from SupportBean_ST0 st0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -89,7 +85,7 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             // test expression reuse
             string epl = "expression q {" +
-                    "  x => Win(theString = x.key0).Where(y => intPrimitive = x.p00)" +
+                    "  x => Win(TheString = x.key0).where(y => IntPrimitive = x.p00)" +
                     "}" +
                     "select " +
                     "Q(st0) as val0, " +

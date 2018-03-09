@@ -29,7 +29,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionOverridingSubclass(EPServiceProvider epService) {
             string epl = "select val as value from " +
-                    typeof(SupportOverrideOne).Name + "#length(10)";
+                    typeof(SupportOverrideOne).FullName + "#length(10)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();

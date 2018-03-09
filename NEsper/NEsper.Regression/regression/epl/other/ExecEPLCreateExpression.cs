@@ -44,18 +44,18 @@ namespace com.espertech.esper.regression.epl.other
             TryInvalid(epService, "create expression E1 {''}",
                     "Error starting statement: Expression 'E1' has already been declared [create expression E1 {''}]");
     
-            epService.EPAdministrator.CreateEPL("create expression int js:Abc(p1, p2) [p1*p2]");
-            TryInvalid(epService, "create expression int js:Abc(a, a) [p1*p2]",
-                    "Error starting statement: Script 'abc' that takes the same number of parameters has already been declared [create expression int js:Abc(a, a) [p1*p2]]");
+            epService.EPAdministrator.CreateEPL("create expression int jscript:abc(p1, p2) [return p1*p2;]");
+            TryInvalid(epService, "create expression int jscript:abc(a, a) [return p1*p2;]",
+                    "Error starting statement: Script 'abc' that takes the same number of parameters has already been declared [create expression int jscript:abc(a, a) [p1*p2]]");
         }
     
         private void RunAssertionParseSpecialAndMixedExprAndScript(EPServiceProvider epService) {
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("create expression string js:Myscript(p1) [\"--\"+p1+\"--\"]");
-            epService.EPAdministrator.CreateEPL("create expression myexpr {sb => '--'||theString||'--'}");
+            epService.EPAdministrator.CreateEPL("create expression string jscript:myscript(p1) [return \"--\"+p1+\"--\";]");
+            epService.EPAdministrator.CreateEPL("create expression myexpr {sb => '--'||TheString||'--'}");
     
             // test mapped property syntax
-            string eplMapped = "select Myscript('x') as c0, Myexpr(sb) as c1 from SupportBean as sb";
+            string eplMapped = "select myscript('x') as c0, myexpr(sb) as c1 from SupportBean as sb";
             EPStatement stmtMapped = epService.EPAdministrator.CreateEPL(eplMapped);
             stmtMapped.Events += listener.Update;
     
@@ -66,31 +66,32 @@ namespace com.espertech.esper.regression.epl.other
             // test expression chained syntax
             string eplExpr = "" +
                     "create expression scalarfilter {s => " +
-                    "   strvals.Where(y => y != 'E1') " +
+                    "   Strvals.where(y => y != 'E1') " +
                     "}";
             epService.EPAdministrator.CreateEPL(eplExpr);
-            string eplSelect = "select Scalarfilter(t).Where(x => x != 'E2') as val1 from SupportCollection as t";
+            string eplSelect = "select Scalarfilter(t).where(x => x != 'E2') as val1 from SupportCollection as t";
             epService.EPAdministrator.CreateEPL(eplSelect).Events += listener.Update;
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2,E3,E4"));
             LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val1", "E3", "E4");
             epService.EPAdministrator.DestroyAllStatements();
             listener.Reset();
-    
-            // test script chained synax
-            string eplScript = "create expression " + typeof(SupportBean).FullName + " js:CallIt() [ new " + typeof(SupportBean).FullName + "('E1', 10); ]";
+
+            // test script chained syntax
+            var beanType = typeof(SupportBean).FullName;
+            var eplScript = $"create expression {beanType} jscript:callIt() [ return host.newObj(host.resolveType('{beanType}'), 'E1', 10); ]";
             epService.EPAdministrator.CreateEPL(eplScript);
-            epService.EPAdministrator.CreateEPL("select CallIt() as val0, CallIt().TheString as val1 from SupportBean as sb").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select callIt() as val0, callIt().TheString as val1 from SupportBean as sb").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0.theString,val0.intPrimitive,val1".Split(','), new object[]{"E1", 10, "E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0.TheString,val0.IntPrimitive,val1".Split(','), new object[]{"E1", 10, "E1"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
         private void RunAssertionScriptUse(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("create expression int js:Abc(p1, p2) [p1*p2*10]");
-            epService.EPAdministrator.CreateEPL("create expression int js:Abc(p1) [p1*10]");
+            epService.EPAdministrator.CreateEPL("create expression int jscript:abc(p1, p2) [return p1*p2*10;]");
+            epService.EPAdministrator.CreateEPL("create expression int jscript:abc(p1) [return p1*10;]");
     
-            string epl = "select Abc(intPrimitive, doublePrimitive) as c0, Abc(intPrimitive) as c1 from SupportBean";
+            string epl = "select abc(IntPrimitive, DoublePrimitive) as c0, abc(IntPrimitive) as c1 from SupportBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -101,13 +102,13 @@ namespace com.espertech.esper.regression.epl.other
             stmt.Dispose();
     
             // test SODA
-            string eplExpr = "create expression Somescript(i1) ['a']";
+            string eplExpr = "create expression somescript(i1) ['a']";
             EPStatementObjectModel modelExpr = epService.EPAdministrator.CompileEPL(eplExpr);
             Assert.AreEqual(eplExpr, modelExpr.ToEPL());
             EPStatement stmtSODAExpr = epService.EPAdministrator.Create(modelExpr);
             Assert.AreEqual(eplExpr, stmtSODAExpr.Text);
     
-            string eplSelect = "select Somescript(1) from SupportBean";
+            string eplSelect = "select somescript(1) from SupportBean";
             EPStatementObjectModel modelSelect = epService.EPAdministrator.CompileEPL(eplSelect);
             Assert.AreEqual(eplSelect, modelSelect.ToEPL());
             EPStatement stmtSODASelect = epService.EPAdministrator.Create(modelSelect);
@@ -118,14 +119,14 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionExpressionUse(EPServiceProvider epService) {
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("create expression TwoPi {Math.PI * 2}");
-            epService.EPAdministrator.CreateEPL("create expression factorPi {sb => Math.PI * intPrimitive}");
+            epService.EPAdministrator.CreateEPL("create expression twoPi {Math.PI * 2}");
+            epService.EPAdministrator.CreateEPL("create expression factorPi {sb => Math.PI * IntPrimitive}");
     
             string[] fields = "c0,c1,c2".Split(',');
             string epl = "select " +
-                    "TwoPi() as c0," +
-                    "(select TwoPi() from SupportBean_S0#lastevent) as c1," +
-                    "FactorPi(sb) as c2 " +
+                    "twoPi() as c0," +
+                    "(select twoPi() from SupportBean_S0#lastevent) as c1," +
+                    "factorPi(sb) as c2 " +
                     "from SupportBean sb";
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL(epl);
             stmtSelect.Events += listener.Update;
@@ -138,20 +139,20 @@ namespace com.espertech.esper.regression.epl.other
             stmtSelect.Dispose();
     
             // test local expression override
-            EPStatement stmtOverride = epService.EPAdministrator.CreateEPL("expression TwoPi {Math.PI * 10} select TwoPi() as c0 from SupportBean");
+            EPStatement stmtOverride = epService.EPAdministrator.CreateEPL("expression twoPi {Math.PI * 10} select twoPi() as c0 from SupportBean");
             stmtOverride.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0".Split(','), new object[]{Math.PI * 10});
     
             // test SODA
-            string eplExpr = "create expression JoinMultiplication {(s1,s2) => s1.intPrimitive*s2.id}";
+            string eplExpr = "create expression joinMultiplication {(s1,s2) => s1.IntPrimitive*s2.id}";
             EPStatementObjectModel modelExpr = epService.EPAdministrator.CompileEPL(eplExpr);
             Assert.AreEqual(eplExpr, modelExpr.ToEPL());
             EPStatement stmtSODAExpr = epService.EPAdministrator.Create(modelExpr);
             Assert.AreEqual(eplExpr, stmtSODAExpr.Text);
     
             // test SODA and join and 2-stream parameter
-            string eplJoin = "select JoinMultiplication(sb,s0) from SupportBean#lastevent as sb, SupportBean_S0#lastevent as s0";
+            string eplJoin = "select joinMultiplication(sb,s0) from SupportBean#lastevent as sb, SupportBean_S0#lastevent as s0";
             EPStatementObjectModel modelJoin = epService.EPAdministrator.CompileEPL(eplJoin);
             Assert.AreEqual(eplJoin, modelJoin.ToEPL());
             EPStatement stmtSODAJoin = epService.EPAdministrator.Create(modelJoin);
@@ -167,12 +168,12 @@ namespace com.espertech.esper.regression.epl.other
     
         private void TryAssertionTestExpressionUse(EPServiceProvider epService, bool namedWindow) {
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("create expression myexpr {(select intPrimitive from MyInfra)}");
+            epService.EPAdministrator.CreateEPL("create expression myexpr {(select IntPrimitive from MyInfra)}");
             string eplCreate = namedWindow ?
                     "create window MyInfra#keepall as SupportBean" :
-                    "create table MyInfra(theString string, intPrimitive int)";
+                    "create table MyInfra(TheString string, IntPrimitive int)";
             epService.EPAdministrator.CreateEPL(eplCreate);
-            epService.EPAdministrator.CreateEPL("insert into MyInfra select theString, intPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into MyInfra select TheString, IntPrimitive from SupportBean");
             epService.EPAdministrator.CreateEPL("select Myexpr() as c0 from SupportBean_S0").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 100));
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
@@ -183,14 +184,14 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionExprAndScriptLifecycleAndFilter(EPServiceProvider epService) {
             // expression assertion
-            TryAssertionLifecycleAndFilter(epService, "create expression MyFilter {sb => intPrimitive = 1}",
-                    "select * from SupportBean(MyFilter(sb)) as sb",
-                    "create expression MyFilter {sb => intPrimitive = 2}");
+            TryAssertionLifecycleAndFilter(epService, "create expression myFilter {sb => IntPrimitive = 1}",
+                    "select * from SupportBean(myFilter(sb)) as sb",
+                    "create expression MyFilter {sb => IntPrimitive = 2}");
     
             // script assertion
-            TryAssertionLifecycleAndFilter(epService, "create expression bool js:MyFilter(intPrimitive) [intPrimitive==1]",
-                    "select * from SupportBean(MyFilter(intPrimitive)) as sb",
-                    "create expression bool js:MyFilter(intPrimitive) [intPrimitive==2]");
+            TryAssertionLifecycleAndFilter(epService, "create expression bool jsscript:myFilter(IntPrimitive) [return IntPrimitive==1]",
+                    "select * from SupportBean(myFilter(IntPrimitive)) as sb",
+                    "create expression bool jscript:myFilter(IntPrimitive) [return IntPrimitive==2]");
         }
     
         private void TryAssertionLifecycleAndFilter(EPServiceProvider epService, string expressionBefore,

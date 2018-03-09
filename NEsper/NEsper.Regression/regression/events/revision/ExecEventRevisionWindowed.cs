@@ -11,19 +11,15 @@ using System.Collections.Generic;
 using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 
-using NUnit.Framework;
-
 namespace com.espertech.esper.regression.events.revision
 {
     public class ExecEventRevisionWindowed : RegressionExecution {
-        private readonly string[] fields = "k0,p1,p5".Split(',');
+        private readonly string[] fields = "K0,P1,P5".Split(',');
     
         public override void Configure(Configuration configuration) {
             // first revision event type
@@ -33,7 +29,7 @@ namespace com.espertech.esper.regression.events.revision
             configuration.AddEventType("D5", typeof(SupportDeltaFive));
     
             var configRev = new ConfigurationRevisionEventType();
-            configRev.KeyPropertyNames = new string[]{"k0"};
+            configRev.KeyPropertyNames = new string[]{"K0"};
             configRev.AddNameBaseEventType("FullEvent");
             configRev.AddNameDeltaEventType("D1");
             configRev.AddNameDeltaEventType("D5");
@@ -41,9 +37,9 @@ namespace com.espertech.esper.regression.events.revision
     
             // second revision event type
             configuration.AddEventType("MyMap", MakeMap(
-                    new object[][]{new object[] {"p5", typeof(string)}, new object[] {"p1", typeof(string)}, new object[] {"k0", typeof(string)}, new object[] {"m0", typeof(string)}}));
+                    new object[][]{new object[] {"P5", typeof(string)}, new object[] {"P1", typeof(string)}, new object[] {"K0", typeof(string)}, new object[] {"m0", typeof(string)}}));
             configRev = new ConfigurationRevisionEventType();
-            configRev.KeyPropertyNames = new string[]{"p5", "p1"};
+            configRev.KeyPropertyNames = new string[]{"P5", "P1"};
             configRev.AddNameBaseEventType("MyMap");
             configRev.AddNameDeltaEventType("D1");
             configRev.AddNameDeltaEventType("D5");
@@ -66,7 +62,7 @@ namespace com.espertech.esper.regression.events.revision
     
             var config = new ConfigurationRevisionEventType();
             config.AddNameBaseEventType("ISupportRevisionFull");
-            config.KeyPropertyNames = new string[]{"k0"};
+            config.KeyPropertyNames = new string[]{"K0"};
             config.AddNameDeltaEventType("ISupportDeltaFive");
             epService.EPAdministrator.Configuration.AddRevisionEventType("MyInterface", config);
     
@@ -74,10 +70,10 @@ namespace com.espertech.esper.regression.events.revision
             epService.EPAdministrator.CreateEPL("insert into MyInterfaceWindow select * from ISupportRevisionFull");
             epService.EPAdministrator.CreateEPL("insert into MyInterfaceWindow select * from ISupportDeltaFive");
     
-            EPStatement consumerOne = epService.EPAdministrator.CreateEPL("@Audit select irstream k0,p0,p1 from MyInterfaceWindow");
+            EPStatement consumerOne = epService.EPAdministrator.CreateEPL("@Audit select irstream K0,P0,P1 from MyInterfaceWindow");
             var listenerOne = new SupportUpdateListener();
             consumerOne.Events += listenerOne.Update;
-            string[] fields = "k0,p0,p1".Split(',');
+            string[] fields = "K0,P0,P1".Split(',');
             EPAssertionUtil.AssertEqualsAnyOrder(consumerOne.EventType.PropertyNames, fields);
     
             epService.EPRuntime.SendEvent(new SupportRevisionFull(null, "00", "10", "20", "30", "40", "50"));
@@ -98,17 +94,17 @@ namespace com.espertech.esper.regression.events.revision
         }
     
         private void RunAssertionMultiPropertyMapMixin(EPServiceProvider epService) {
-            string[] fields = "k0,p1,p5,m0".Split(',');
+            string[] fields = "K0,P1,P5,m0".Split(',');
             EPStatement stmtCreateWin = epService.EPAdministrator.CreateEPL("create window RevMap#length(3) as select * from RevisableMap");
             epService.EPAdministrator.CreateEPL("insert into RevMap select * from MyMap");
             epService.EPAdministrator.CreateEPL("insert into RevMap select * from D1");
             epService.EPAdministrator.CreateEPL("insert into RevMap select * from D5");
     
-            EPStatement consumerOne = epService.EPAdministrator.CreateEPL("select irstream * from RevMap order by k0");
+            EPStatement consumerOne = epService.EPAdministrator.CreateEPL("select irstream * from RevMap order by K0");
             var listenerOne = new SupportUpdateListener();
             consumerOne.Events += listenerOne.Update;
     
-            epService.EPRuntime.SendEvent(MakeMap(new object[][]{new object[] {"p5", "p5_1"}, new object[] {"p1", "p1_1"}, new object[] {"k0", "E1"}, new object[] {"m0", "M0"}}), "MyMap");
+            epService.EPRuntime.SendEvent(MakeMap(new object[][]{new object[] {"P5", "p5_1"}, new object[] {"P1", "p1_1"}, new object[] {"K0", "E1"}, new object[] {"m0", "M0"}}), "MyMap");
             EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"E1", "p1_1", "p5_1", "M0"});
     
             epService.EPRuntime.SendEvent(new SupportDeltaFive("E2", "p1_1", "p5_1"));
@@ -117,7 +113,7 @@ namespace com.espertech.esper.regression.events.revision
             EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new object[]{"E2", "p1_1", "p5_1", "M0"});
             listenerOne.Reset();
     
-            epService.EPRuntime.SendEvent(MakeMap(new object[][]{new object[] {"p5", "p5_1"}, new object[] {"p1", "p1_2"}, new object[] {"k0", "E3"}, new object[] {"m0", "M1"}}), "MyMap");
+            epService.EPRuntime.SendEvent(MakeMap(new object[][]{new object[] {"P5", "p5_1"}, new object[] {"P1", "p1_2"}, new object[] {"K0", "E3"}, new object[] {"m0", "M1"}}), "MyMap");
             EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields, new object[][]{new object[] {"E2", "p1_1", "p5_1", "M0"}, new object[] {"E3", "p1_2", "p5_1", "M1"}});
     
             epService.EPRuntime.SendEvent(new SupportDeltaFive("E4", "p1_1", "p5_1"));
@@ -126,7 +122,7 @@ namespace com.espertech.esper.regression.events.revision
             EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields, new object[][]{new object[] {"E3", "p1_2", "p5_1", "M1"}, new object[] {"E4", "p1_1", "p5_1", "M0"}});
             listenerOne.Reset();
     
-            epService.EPRuntime.SendEvent(MakeMap(new object[][]{new object[] {"p5", "p5_2"}, new object[] {"p1", "p1_1"}, new object[] {"k0", "E5"}, new object[] {"m0", "M2"}}), "MyMap");
+            epService.EPRuntime.SendEvent(MakeMap(new object[][]{new object[] {"P5", "p5_2"}, new object[] {"P1", "p1_1"}, new object[] {"K0", "E5"}, new object[] {"m0", "M2"}}), "MyMap");
             EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"E5", "p1_1", "p5_2", "M2"});
             EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields,
                     new object[][]{new object[] {"E3", "p1_2", "p5_1", "M1"}, new object[] {"E4", "p1_1", "p5_1", "M0"}, new object[] {"E5", "p1_1", "p5_2", "M2"}});
@@ -139,7 +135,7 @@ namespace com.espertech.esper.regression.events.revision
         }
     
         private void RunAssertionUnique(EPServiceProvider epService) {
-            EPStatement stmtCreateWin = epService.EPAdministrator.CreateEPL("create window RevQuote#unique(p1) as select * from RevisableQuote");
+            EPStatement stmtCreateWin = epService.EPAdministrator.CreateEPL("create window RevQuote#unique(P1) as select * from RevisableQuote");
             epService.EPAdministrator.CreateEPL("insert into RevQuote select * from FullEvent");
             epService.EPAdministrator.CreateEPL("insert into RevQuote select * from D1");
             epService.EPAdministrator.CreateEPL("insert into RevQuote select * from D5");
@@ -177,31 +173,31 @@ namespace com.espertech.esper.regression.events.revision
             epService.EPAdministrator.CreateEPL("insert into RevQuote select * from D1");
             epService.EPAdministrator.CreateEPL("insert into RevQuote select * from D5");
     
-            EPStatement consumerOne = epService.EPAdministrator.CreateEPL("select irstream * from RevQuote order by k0 asc");
+            EPStatement consumerOne = epService.EPAdministrator.CreateEPL("select irstream * from RevQuote order by K0 asc");
             var listenerOne = new SupportUpdateListener();
             consumerOne.Events += listenerOne.Update;
     
-            epService.EPRuntime.SendEvent(new SupportRevisionFull("a", "p1", "a50"));
-            epService.EPRuntime.SendEvent(new SupportDeltaFive("a", "p1", "a51"));
-            epService.EPRuntime.SendEvent(new SupportRevisionFull("b", "p2", "b50"));
-            epService.EPRuntime.SendEvent(new SupportRevisionFull("c", "p3", "c50"));
-            epService.EPRuntime.SendEvent(new SupportDeltaFive("d", "p3", "d50"));
+            epService.EPRuntime.SendEvent(new SupportRevisionFull("a", "P1", "a50"));
+            epService.EPRuntime.SendEvent(new SupportDeltaFive("a", "P1", "a51"));
+            epService.EPRuntime.SendEvent(new SupportRevisionFull("b", "P2", "b50"));
+            epService.EPRuntime.SendEvent(new SupportRevisionFull("c", "P3", "c50"));
+            epService.EPRuntime.SendEvent(new SupportDeltaFive("d", "P3", "d50"));
     
             listenerOne.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields, new object[][]{new object[] {"a", "p1", "a51"}, new object[] {"b", "p2", "b50"}, new object[] {"c", "p3", "c50"}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields, new object[][]{new object[] {"a", "P1", "a51"}, new object[] {"b", "P2", "b50"}, new object[] {"c", "P3", "c50"}});
     
-            epService.EPRuntime.SendEvent(new SupportDeltaFive("b", "p1", "b51"));
-            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new object[]{"b", "p1", "b51"});
-            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new object[]{"b", "p2", "b50"});
+            epService.EPRuntime.SendEvent(new SupportDeltaFive("b", "P1", "b51"));
+            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new object[]{"b", "P1", "b51"});
+            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new object[]{"b", "P2", "b50"});
             listenerOne.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields, new object[][]{new object[] {"a", "p1", "a51"}, new object[] {"b", "p1", "b51"}, new object[] {"c", "p3", "c50"}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields, new object[][]{new object[] {"a", "P1", "a51"}, new object[] {"b", "P1", "b51"}, new object[] {"c", "P3", "c50"}});
     
-            epService.EPRuntime.SendEvent(new SupportDeltaFive("c", "p1", "c51"));
-            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new object[]{"c", "p1", "c51"});
-            EPAssertionUtil.AssertProps(listenerOne.LastOldData[1], fields, new object[]{"c", "p3", "c50"});
-            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new object[]{"a", "p1", "a51"});
+            epService.EPRuntime.SendEvent(new SupportDeltaFive("c", "P1", "c51"));
+            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new object[]{"c", "P1", "c51"});
+            EPAssertionUtil.AssertProps(listenerOne.LastOldData[1], fields, new object[]{"c", "P3", "c50"});
+            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new object[]{"a", "P1", "a51"});
             listenerOne.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields, new object[][]{new object[] {"b", "p1", "b51"}, new object[] {"c", "p1", "c51"}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields, new object[][]{new object[] {"b", "P1", "b51"}, new object[] {"c", "P1", "c51"}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }

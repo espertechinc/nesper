@@ -6,19 +6,21 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
+using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
+using com.espertech.esper.util;
 
+using static com.espertech.esper.util.TypeHelper;
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
 using NUnit.Framework;
@@ -54,22 +56,23 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             var entry = new ConfigurationPlugInSingleRowFunction();
             entry.Name = "myItemProducerUDF";
             entry.FunctionClassName = GetType().FullName;
-            entry.FunctionMethodName = "myItemProducerUDF";
+            entry.FunctionMethodName = "MyItemProducerUDF";
             entry.EventTypeName = "ItemEvent";
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(entry);
-    
-            string script = "create expression EventBean[] @Type(ItemEvent) js:MyItemProducerScript() [\n" +
-                    "MyItemProducerScript();" +
-                    "function MyItemProducerScript() {" +
-                    "  var EventBeanArray = Java.Type(\"com.espertech.esper.client.EventBean[]\");\n" +
-                    "  var events = new EventBeanArray(2);\n" +
-                    "  events[0] = epl.EventBeanService.AdapterForMap(java.util.Collections.SingletonMap(\"id\", \"id1\"), \"ItemEvent\");\n" +
-                    "  events[1] = epl.EventBeanService.AdapterForMap(java.util.Collections.SingletonMap(\"id\", \"id3\"), \"ItemEvent\");\n" +
-                    "  return events;\n" +
-                    "}]";
+
+            string script = "create expression EventBean[] @Type(ItemEvent) jscript:myItemProducerScript() [\n" +
+                            "  function myItemProducerScript() {" +
+                            "    var eventBean = host.resolveType('com.espertech.esper.client.EventBean');\n" +
+                            "    var events = host.newArr(eventBean, 2);\n" +
+                            "    events[0] = epl.EventBeanService.AdapterForMap(Collections.SingletonDataMap(\"id\", \"id1\"), \"ItemEvent\");\n" +
+                            "    events[1] = epl.EventBeanService.AdapterForMap(Collections.SingletonDataMap(\"id\", \"id3\"), \"ItemEvent\");\n" +
+                            "    return events;\n" +
+                            "  }" +
+                            "  return myItemProducerScript();" +
+                            "]";
             epService.EPAdministrator.CreateEPL(script);
     
-            TryAssertionUDFAndScriptReturningEvents(epService, "myItemProducerUDF");
+            TryAssertionUDFAndScriptReturningEvents(epService, "MyItemProducerUDF");
             TryAssertionUDFAndScriptReturningEvents(epService, "myItemProducerScript");
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -78,10 +81,10 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         private void RunAssertionEventBeanArray(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create schema MyItemEvent(p0 string)");
     
-            TryAssertionEventBeanArray(epService, "eventBeanArrayForString", false);
-            TryAssertionEventBeanArray(epService, "eventBeanArrayForString", true);
-            TryAssertionEventBeanArray(epService, "eventBeanCollectionForString", false);
-            TryAssertionEventBeanArray(epService, "eventBeanIteratorForString", false);
+            TryAssertionEventBeanArray(epService, "EventBeanArrayForString", false);
+            TryAssertionEventBeanArray(epService, "EventBeanArrayForString", true);
+            TryAssertionEventBeanArray(epService, "EventBeanCollectionForString", false);
+            TryAssertionEventBeanArray(epService, "EventBeanIteratorForString", false);
     
             SupportMessageAssertUtil.TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".FetchResult12(0) @Type(ItemEvent)",
                     "Error starting statement: The @type annotation is only allowed when the invocation target returns EventBean instances");
@@ -110,7 +113,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             string stmtText;
     
             // ESPER 556
-            stmtText = "select max(col1) as maxcol1 from SupportBean#unique(theString), method:" + className + ".FetchResult100() ";
+            stmtText = "select max(col1) as maxcol1 from SupportBean#unique(TheString), method:" + className + ".FetchResult100() ";
     
             string[] fields = "maxcol1".Split(',');
             EPStatementSPI stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(stmtText);
@@ -132,12 +135,12 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             string stmtText;
     
             // fetchBetween must execute first, fetchIdDelimited is dependent on the result of fetchBetween
-            stmtText = "select intPrimitive,intBoxed,col1,col2 from SupportBean#keepall " +
+            stmtText = "select IntPrimitive,IntBoxed,col1,col2 from SupportBean#keepall " +
                     "left outer join " +
                     "method:" + className + ".FetchResult100() " +
-                    "on intPrimitive = col1 and intBoxed = col2";
+                    "on IntPrimitive = col1 and IntBoxed = col2";
     
-            string[] fields = "intPrimitive,intBoxed,col1,col2".Split(',');
+            string[] fields = "IntPrimitive,IntBoxed,col1,col2".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, null);
             var listener = new SupportUpdateListener();
@@ -228,7 +231,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.CreateEPL("create variable int lower");
             epService.EPAdministrator.CreateEPL("create variable int upper");
-            EPStatement setStmt = epService.EPAdministrator.CreateEPL("on SupportBean set lower=intPrimitive,upper=intBoxed");
+            EPStatement setStmt = epService.EPAdministrator.CreateEPL("on SupportBean set lower=IntPrimitive,upper=IntBoxed");
             Assert.AreEqual(StatementType.ON_SET, ((EPStatementSPI) setStmt).StatementMetadata.StatementType);
     
             string className = typeof(SupportStaticMethodLib).FullName;
@@ -251,7 +254,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.CreateEPL("create variable int lower");
             epService.EPAdministrator.CreateEPL("create variable int upper");
-            epService.EPAdministrator.CreateEPL("on SupportBean set lower=intPrimitive,upper=intBoxed");
+            epService.EPAdministrator.CreateEPL("on SupportBean set lower=IntPrimitive,upper=IntBoxed");
     
             string className = typeof(SupportStaticMethodLib).FullName;
             string stmtText;
@@ -320,7 +323,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.CreateEPL("create variable int lower");
             epService.EPAdministrator.CreateEPL("create variable int upper");
-            epService.EPAdministrator.CreateEPL("on SupportBean set lower=intPrimitive,upper=intBoxed");
+            epService.EPAdministrator.CreateEPL("on SupportBean set lower=IntPrimitive,upper=IntBoxed");
     
             // Test int and singlerow
             string className = typeof(SupportStaticMethodLib).FullName;
@@ -345,10 +348,10 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         }
     
         private void TryAssertionReturnTypeMultipleRow(EPServiceProvider epService, string method) {
-            string epl = "select theString, intPrimitive, mapstring, mapint from " +
+            string epl = "select TheString, IntPrimitive, mapstring, mapint from " +
                     typeof(SupportBean).FullName + "#keepall as s1, " +
                     "method:" + typeof(SupportStaticMethodLib).FullName + "." + method;
-            string[] fields = "theString,intPrimitive,mapstring,mapint".Split(',');
+            string[] fields = "TheString,IntPrimitive,mapstring,mapint".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -386,32 +389,32 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         }
     
         private void RunAssertionDifferentReturnTypes(EPServiceProvider epService) {
-            TryAssertionSingleRowFetch(epService, "FetchMap(theString, intPrimitive)");
-            TryAssertionSingleRowFetch(epService, "FetchMapEventBean(s1, 'theString', 'intPrimitive')");
-            TryAssertionSingleRowFetch(epService, "FetchObjectArrayEventBean(theString, intPrimitive)");
-            TryAssertionSingleRowFetch(epService, "FetchPOJOArray(theString, intPrimitive)");
-            TryAssertionSingleRowFetch(epService, "FetchPOJOCollection(theString, intPrimitive)");
-            TryAssertionSingleRowFetch(epService, "FetchPOJOIterator(theString, intPrimitive)");
+            TryAssertionSingleRowFetch(epService, "FetchMap(TheString, IntPrimitive)");
+            TryAssertionSingleRowFetch(epService, "FetchMapEventBean(s1, 'TheString', 'IntPrimitive')");
+            TryAssertionSingleRowFetch(epService, "FetchObjectArrayEventBean(TheString, IntPrimitive)");
+            TryAssertionSingleRowFetch(epService, "FetchPonoArray(TheString, IntPrimitive)");
+            TryAssertionSingleRowFetch(epService, "FetchPonoCollection(TheString, IntPrimitive)");
+            TryAssertionSingleRowFetch(epService, "FetchPonoIterator(TheString, IntPrimitive)");
     
-            TryAssertionReturnTypeMultipleRow(epService, "FetchMapArrayMR(theString, intPrimitive)");
-            TryAssertionReturnTypeMultipleRow(epService, "FetchOAArrayMR(theString, intPrimitive)");
-            TryAssertionReturnTypeMultipleRow(epService, "FetchPOJOArrayMR(theString, intPrimitive)");
-            TryAssertionReturnTypeMultipleRow(epService, "FetchMapCollectionMR(theString, intPrimitive)");
-            TryAssertionReturnTypeMultipleRow(epService, "FetchOACollectionMR(theString, intPrimitive)");
-            TryAssertionReturnTypeMultipleRow(epService, "FetchPOJOCollectionMR(theString, intPrimitive)");
-            TryAssertionReturnTypeMultipleRow(epService, "FetchMapIteratorMR(theString, intPrimitive)");
-            TryAssertionReturnTypeMultipleRow(epService, "FetchOAIteratorMR(theString, intPrimitive)");
-            TryAssertionReturnTypeMultipleRow(epService, "FetchPOJOIteratorMR(theString, intPrimitive)");
+            TryAssertionReturnTypeMultipleRow(epService, "FetchMapArrayMR(TheString, IntPrimitive)");
+            TryAssertionReturnTypeMultipleRow(epService, "FetchOAArrayMR(TheString, IntPrimitive)");
+            TryAssertionReturnTypeMultipleRow(epService, "FetchPonoArrayMR(TheString, IntPrimitive)");
+            TryAssertionReturnTypeMultipleRow(epService, "FetchMapCollectionMR(TheString, IntPrimitive)");
+            TryAssertionReturnTypeMultipleRow(epService, "FetchOACollectionMR(TheString, IntPrimitive)");
+            TryAssertionReturnTypeMultipleRow(epService, "FetchPonoCollectionMR(TheString, IntPrimitive)");
+            TryAssertionReturnTypeMultipleRow(epService, "FetchMapIteratorMR(TheString, IntPrimitive)");
+            TryAssertionReturnTypeMultipleRow(epService, "FetchOAIteratorMR(TheString, IntPrimitive)");
+            TryAssertionReturnTypeMultipleRow(epService, "FetchPonoIteratorMR(TheString, IntPrimitive)");
         }
     
         private void TryAssertionSingleRowFetch(EPServiceProvider epService, string method) {
-            string epl = "select theString, intPrimitive, mapstring, mapint from " +
+            string epl = "select TheString, IntPrimitive, mapstring, mapint from " +
                     typeof(SupportBean).FullName + " as s1, " +
                     "method:" + typeof(SupportStaticMethodLib).FullName + "." + method;
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            var fields = new string[]{"theString", "intPrimitive", "mapstring", "mapint"};
+            var fields = new string[]{"TheString", "IntPrimitive", "mapstring", "mapint"};
     
             SendBeanEvent(epService, "E1", 1);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1, "|E1|", 2});
@@ -429,13 +432,13 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         }
     
         private void RunAssertionArrayNoArg(EPServiceProvider epService) {
-            string joinStatement = "select id, theString from " +
+            string joinStatement = "select id, TheString from " +
                     typeof(SupportBean).FullName + "#length(3) as s1, " +
-                    "method:" + typeof(SupportStaticMethodLib).FullName + ".fetchArrayNoArg";
+                    "method:" + typeof(SupportStaticMethodLib).FullName + ".FetchArrayNoArg";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(joinStatement);
             TryArrayNoArg(epService, stmt);
     
-            joinStatement = "select id, theString from " +
+            joinStatement = "select id, TheString from " +
                     typeof(SupportBean).FullName + "#length(3) as s1, " +
                     "method:" + typeof(SupportStaticMethodLib).FullName + ".FetchArrayNoArg()";
             stmt = epService.EPAdministrator.CreateEPL(joinStatement);
@@ -447,10 +450,10 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             TryArrayNoArg(epService, stmt);
     
             model = new EPStatementObjectModel();
-            model.SelectClause = SelectClause.Create("id", "theString");
+            model.SelectClause = SelectClause.Create("id", "TheString");
             model.FromClause = FromClause.Create()
                     .Add(FilterStream.Create(typeof(SupportBean).FullName, "s1").AddView("length", Expressions.Constant(3)))
-                    .Add(MethodInvocationStream.Create(typeof(SupportStaticMethodLib).FullName, "fetchArrayNoArg"));
+                    .Add(MethodInvocationStream.Create(typeof(SupportStaticMethodLib).FullName, "FetchArrayNoArg"));
             stmt = epService.EPAdministrator.Create(model);
             Assert.AreEqual(joinStatement, model.ToEPL());
     
@@ -460,7 +463,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         private void TryArrayNoArg(EPServiceProvider epService, EPStatement stmt) {
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            var fields = new string[]{"id", "theString"};
+            var fields = new string[]{"id", "TheString"};
     
             SendBeanEvent(epService, "E1");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"1", "E1"});
@@ -472,14 +475,14 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         }
     
         private void RunAssertionArrayWithArg(EPServiceProvider epService) {
-            string joinStatement = "select irstream id, theString from " +
+            string joinStatement = "select irstream id, TheString from " +
                     typeof(SupportBean).FullName + "()#length(3) as s1, " +
-                    " method:" + typeof(SupportStaticMethodLib).FullName + ".FetchArrayGen(intPrimitive)";
+                    " method:" + typeof(SupportStaticMethodLib).FullName + ".FetchArrayGen(IntPrimitive)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(joinStatement);
             TryArrayWithArg(epService, stmt);
     
-            joinStatement = "select irstream id, theString from " +
-                    "method:" + typeof(SupportStaticMethodLib).FullName + ".FetchArrayGen(intPrimitive) as s0, " +
+            joinStatement = "select irstream id, TheString from " +
+                    "method:" + typeof(SupportStaticMethodLib).FullName + ".FetchArrayGen(IntPrimitive) as s0, " +
                     typeof(SupportBean).FullName + "#length(3)";
             stmt = epService.EPAdministrator.CreateEPL(joinStatement);
             TryArrayWithArg(epService, stmt);
@@ -490,11 +493,11 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             TryArrayWithArg(epService, stmt);
     
             model = new EPStatementObjectModel();
-            model.SelectClause = SelectClause.Create("id", "theString")
+            model.SelectClause = SelectClause.Create("id", "TheString")
                 .SetStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH);
             model.FromClause = FromClause.Create()
-                .Add(MethodInvocationStream.Create(typeof(SupportStaticMethodLib).FullName, "fetchArrayGen", "s0")
-                        .AddParameter(Expressions.Property("intPrimitive")))
+                .Add(MethodInvocationStream.Create(typeof(SupportStaticMethodLib).FullName, "FetchArrayGen", "s0")
+                        .AddParameter(Expressions.Property("IntPrimitive")))
                 .Add(FilterStream.Create(typeof(SupportBean).FullName).AddView("length", Expressions.Constant(3)));
             stmt = epService.EPAdministrator.Create(model);
             Assert.AreEqual(joinStatement, model.ToEPL());
@@ -505,7 +508,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         private void TryArrayWithArg(EPServiceProvider epService, EPStatement stmt) {
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            var fields = new string[]{"id", "theString"};
+            var fields = new string[]{"id", "TheString"};
     
             SendBeanEvent(epService, "E1", -1);
             Assert.IsFalse(listener.IsInvoked);
@@ -540,14 +543,14 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         }
     
         private void RunAssertionObjectNoArg(EPServiceProvider epService) {
-            string joinStatement = "select id, theString from " +
+            string joinStatement = "select id, TheString from " +
                     typeof(SupportBean).FullName + "()#length(3) as s1, " +
                     " method:" + typeof(SupportStaticMethodLib).FullName + ".FetchObjectNoArg()";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(joinStatement);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            var fields = new string[]{"id", "theString"};
+            var fields = new string[]{"id", "TheString"};
     
             SendBeanEvent(epService, "E1");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"2", "E1"});
@@ -557,14 +560,14 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         }
     
         private void RunAssertionObjectWithArg(EPServiceProvider epService) {
-            string joinStatement = "select id, theString from " +
+            string joinStatement = "select id, TheString from " +
                     typeof(SupportBean).FullName + "()#length(3) as s1, " +
-                    " method:" + typeof(SupportStaticMethodLib).FullName + ".FetchObject(theString)";
+                    " method:" + typeof(SupportStaticMethodLib).FullName + ".FetchObject(TheString)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(joinStatement);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            var fields = new string[]{"id", "theString"};
+            var fields = new string[]{"id", "TheString"};
     
             SendBeanEvent(epService, "E1");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"|E1|", "E1"});
@@ -577,7 +580,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         }
     
         private void RunAssertionInvocationTargetEx(EPServiceProvider epService) {
-            string joinStatement = "select s1.theString from " +
+            string joinStatement = "select s1.TheString from " +
                     typeof(SupportBean).FullName + "()#length(3) as s1, " +
                     " method:" + typeof(SupportStaticMethodLib).FullName + ".ThrowExceptionBeanReturn()";
     
@@ -593,16 +596,16 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
             TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".FetchArrayGen()",
-                    "Error starting statement: Method footprint does not match the number or type of expression parameters, expecting no parameters in method: Could not find static method named 'fetchArrayGen' in class '" + typeof(SupportStaticMethodLib).FullName + "' taking no parameters (nearest match found was 'fetchArrayGen' taking Type(s) 'int') [");
+                    "Error starting statement: Method footprint does not match the number or type of expression parameters, expecting no parameters in method: Could not find static method named 'FetchArrayGen' in class '" + typeof(SupportStaticMethodLib).FullName + "' taking no parameters (nearest match found was 'FetchArrayGen' taking type(s) 'System.Int32') [");
     
             TryInvalid(epService, "select * from SupportBean, method:.abc where 1=2",
                     "Incorrect syntax near '.' at line 1 column 34, please check the method invocation join within the from clause [select * from SupportBean, method:.abc where 1=2]");
     
             TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".FetchObjectAndSleep(1)",
-                    "Error starting statement: Method footprint does not match the number or type of expression parameters, expecting a method where parameters are typed 'int?': Could not find static method named 'fetchObjectAndSleep' in class '" + typeof(SupportStaticMethodLib).FullName + "' with matching parameter number and expected parameter Type(s) 'int?' (nearest match found was 'fetchObjectAndSleep' taking Type(s) 'string, int, long') [");
+                    "Error starting statement: Method footprint does not match the number or type of expression parameters, expecting a method where parameters are typed '" + GetCleanName<int?>() + "': Could not find static method named 'FetchObjectAndSleep' in class '" + typeof(SupportStaticMethodLib).FullName + "' with matching parameter number and expected parameter type(s) '" + GetCleanName<int?>() + "' (nearest match found was 'FetchObjectAndSleep' taking type(s) 'System.String, System.Int32, System.Int64') [");
     
             TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".Sleep(100) where 1=2",
-                    "Error starting statement: Invalid return type for static method 'sleep' of class '" + typeof(SupportStaticMethodLib).FullName + "', expecting a Java class [select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".Sleep(100) where 1=2]");
+                    "Error starting statement: Invalid return type for static method 'Sleep' of class '" + typeof(SupportStaticMethodLib).FullName + "', expecting a class [select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".Sleep(100) where 1=2]");
     
             TryInvalid(epService, "select * from SupportBean, method:AClass. where 1=2",
                     "Incorrect syntax near 'where' (a reserved keyword) expecting an identifier but found 'where' at line 1 column 42, please check the view specifications within the from clause [select * from SupportBean, method:AClass. where 1=2]");
@@ -620,7 +623,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                     "Error starting statement: Could not find public static method named 'dummy' in class '" + typeof(SupportStaticMethodLib).FullName + "' [");
     
             TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".MinusOne(10) where 1=2",
-                    "Error starting statement: Invalid return type for static method 'minusOne' of class '" + typeof(SupportStaticMethodLib).FullName + "', expecting a Java class [");
+                    "Error starting statement: Invalid return type for static method 'MinusOne' of class '" + typeof(SupportStaticMethodLib).FullName + "', expecting a class [");
     
             TryInvalid(epService, "select * from SupportBean, xyz:" + typeof(SupportStaticMethodLib).FullName + ".FetchArrayNoArg() where 1=2",
                     "Expecting keyword 'method', found 'xyz' [select * from SupportBean, xyz:" + typeof(SupportStaticMethodLib).FullName + ".FetchArrayNoArg() where 1=2]");
@@ -636,13 +639,13 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
     
             epService.EPAdministrator.Configuration.AddImport(typeof(SupportMethodInvocationJoinInvalid));
             TryInvalid(epService, "select * from method:SupportMethodInvocationJoinInvalid.ReadRowNoMetadata()",
-                    "Error starting statement: Could not find getter method for method invocation, expected a method by name 'readRowNoMetadataMetadata' accepting no parameters [select * from method:SupportMethodInvocationJoinInvalid.ReadRowNoMetadata()]");
+                    "Error starting statement: Could not find getter method for method invocation, expected a method by name 'ReadRowNoMetadataMetadata' accepting no parameters [select * from method:SupportMethodInvocationJoinInvalid.ReadRowNoMetadata()]");
     
             TryInvalid(epService, "select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()",
-                    "Error starting statement: Getter method 'readRowWrongMetadataMetadata' does not return Map [select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()]");
+                    "Error starting statement: Getter method 'ReadRowWrongMetadataMetadata' does not return " + typeof(IDictionary<string, object>).FullName + " [select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()]");
     
             TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".InvalidOverloadForJoin(null)",
-                    "Error starting statement: Method by name 'invalidOverloadForJoin' is overloaded in class '" + typeof(SupportStaticMethodLib).FullName + "' and overloaded methods do not return the same type");
+                    "Error starting statement: Method by name 'InvalidOverloadForJoin' is overloaded in class '" + typeof(SupportStaticMethodLib).FullName + "' and overloaded methods do not return the same type");
         }
     
         private void TryAssertionUDFAndScriptReturningEvents(EPServiceProvider epService, string methodName) {
@@ -657,7 +660,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         }
     
         private void TryAssertionEventBeanArray(EPServiceProvider epService, string methodName, bool soda) {
-            string epl = "select p0 from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + "." + methodName + "(theString) @Type(MyItemEvent)";
+            string epl = "select p0 from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + "." + methodName + "(TheString) @Type(MyItemEvent)";
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

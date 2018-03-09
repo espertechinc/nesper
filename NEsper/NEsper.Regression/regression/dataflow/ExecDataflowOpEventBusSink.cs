@@ -19,13 +19,13 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.dataflow;
 using com.espertech.esper.supportregression.execution;
-
-
+using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.dataflow
 {
-    public class ExecDataflowOpEventBusSink : RegressionExecution {
+    public class ExecDataflowOpEventBusSink : RegressionExecution
+    {
         public override void Run(EPServiceProvider epService) {
             RunAssertionAllTypes(epService);
             RunAssertionBeacon(epService);
@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.dataflow
             RunAssertionAllTypes(epService, "MyXMLEvent", DefaultSupportGraphEventUtil.XMLEvents);
             RunAssertionAllTypes(epService, "MyOAEvent", DefaultSupportGraphEventUtil.OAEvents);
             RunAssertionAllTypes(epService, "MyMapEvent", DefaultSupportGraphEventUtil.MapEvents);
-            RunAssertionAllTypes(epService, "MyEvent", DefaultSupportGraphEventUtil.PONOEvents);
+            RunAssertionAllTypes(epService, "MyEvent", DefaultSupportGraphEventUtil.PonoEvents);
     
             // invalid: output stream
             SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "DF1", "create dataflow DF1 EventBusSink -> s1 {}",
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regression.dataflow
                     "// With collector that performs transformation.\n" +
                     "EventBusSink(instream) {\n" +
                     "collector : {\n" +
-                    "class : '" + typeof(MyTransformToEventBus).Name + "'\n" +
+                    "class : '" + typeof(MyTransformToEventBus).FullName + "'\n" +
                     "}\n" +
                     "}";
             epService.EPAdministrator.CreateEPL(docSmple);
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regression.dataflow
                     "MyObjectArrayGraphSource -> OutStream<?> {}" +
                     "EventBusSink(OutStream) {" +
                     "  collector : {" +
-                    "    class: '" + typeof(MyTransformToEventBus).Name + "'" +
+                    "    class: '" + typeof(MyTransformToEventBus).FullName + "'" +
                     "  }" +
                     "}");
     

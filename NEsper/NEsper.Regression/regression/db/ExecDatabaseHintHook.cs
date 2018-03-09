@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.db
             epService.EPAdministrator.Configuration.AddVariable("myvariableOCC", typeof(int), 10);
     
             var fields = new string[]{"myint"};
-            string stmtText = "@Hook(type=HookType.SQLCOL, hook='" + typeof(SupportSQLColumnTypeConversion).Name + "')" +
+            string stmtText = "@Hook(type=HookType.SQLCOL, hook='" + typeof(SupportSQLColumnTypeConversion).FullName + "')" +
                     "select * from sql:MyDB ['select myint from mytesttable where myint = ${myvariableOCC}']";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regression.db
             epService.EPAdministrator.Configuration.AddVariable("myvariableIPC", typeof(Object), "x10");
     
             var fields = new string[]{"myint"};
-            string stmtText = "@Hook(type=HookType.SQLCOL, hook='" + typeof(SupportSQLColumnTypeConversion).Name + "')" +
+            string stmtText = "@Hook(type=HookType.SQLCOL, hook='" + typeof(SupportSQLColumnTypeConversion).FullName + "')" +
                     "select * from sql:MyDB ['select myint from mytesttable where myint = ${myvariableIPC}']";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -97,8 +97,8 @@ namespace com.espertech.esper.regression.db
             SupportSQLColumnTypeConversion.Reset();
             epService.EPAdministrator.Configuration.AddVariable("myvariableORC", typeof(int), 10);
     
-            string[] fields = "theString,intPrimitive".Split(',');
-            string stmtText = "@Hook(type=HookType.SQLROW, hook='" + typeof(SupportSQLOutputRowConversion).Name + "')" +
+            string[] fields = "TheString,IntPrimitive".Split(',');
+            string stmtText = "@Hook(type=HookType.SQLROW, hook='" + typeof(SupportSQLOutputRowConversion).FullName + "')" +
                     "select * from sql:MyDB ['select * from mytesttable where myint = ${myvariableORC}']";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();

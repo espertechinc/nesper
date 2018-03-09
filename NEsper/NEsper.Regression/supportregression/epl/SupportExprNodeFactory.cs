@@ -344,8 +344,8 @@ namespace com.espertech.esper.supportregression.epl
 	    public static ExprCaseNode MakeCaseSyntax1Node()
 	    {
 	        // Build (case 1 expression):
-	        // case when s0.intPrimitive = 1 then "a"
-	        //      when s0.intPrimitive = 2 then "b"
+	        // case when s0.IntPrimitive = 1 then "a"
+	        //      when s0.IntPrimitive = 2 then "b"
 	        //      else "c"
 	        // end
 	        var caseNode = new ExprCaseNode(false);

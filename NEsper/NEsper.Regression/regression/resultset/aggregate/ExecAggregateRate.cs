@@ -65,7 +65,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
         {
             var fields = "myrate,myqtyrate".Split(',');
             var epl =
-                "select RATE(longPrimitive) as myrate, RATE(longPrimitive, intPrimitive) as myqtyrate from SupportBean#length(3)";
+                "select RATE(LongPrimitive) as myrate, RATE(LongPrimitive, IntPrimitive) as myqtyrate from SupportBean#length(3)";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -88,14 +88,14 @@ namespace com.espertech.esper.regression.resultset.aggregate
                 listener.AssertOneGetNewAndReset(), fields, new object[] {3 * 1000 / 800d, 25 * 1000 / 800d});
 
             TryInvalid(
-                epService, "select rate(longPrimitive) as myrate from SupportBean",
-                "Error starting statement: Failed to validate select-clause expression 'rate(longPrimitive)': The rate aggregation function in the timestamp-property notation requires data windows [select rate(longPrimitive) as myrate from SupportBean]");
+                epService, "select rate(LongPrimitive) as myrate from SupportBean",
+                "Error starting statement: Failed to validate select-clause expression 'rate(LongPrimitive)': The rate aggregation function in the timestamp-property notation requires data windows [select rate(LongPrimitive) as myrate from SupportBean]");
             TryInvalid(
                 epService, "select rate(current_timestamp) as myrate from SupportBean#time(20)",
-                "Error starting statement: Failed to validate select-clause expression 'rate(Current_timestamp())': The rate aggregation function does not allow the current engine timestamp as a parameter [select rate(current_timestamp) as myrate from SupportBean#time(20)]");
+                "Error starting statement: Failed to validate select-clause expression 'rate(current_timestamp())': The rate aggregation function does not allow the current engine timestamp as a parameter [select rate(current_timestamp) as myrate from SupportBean#time(20)]");
             TryInvalid(
-                epService, "select rate(theString) as myrate from SupportBean#time(20)",
-                "Error starting statement: Failed to validate select-clause expression 'rate(theString)': The rate aggregation function requires a property or expression returning a non-constant long-type value as the first parameter in the timestamp-property notation [select rate(theString) as myrate from SupportBean#time(20)]");
+                epService, "select rate(TheString) as myrate from SupportBean#time(20)",
+                "Error starting statement: Failed to validate select-clause expression 'rate(TheString)': The rate aggregation function requires a property or expression returning a non-constant long-type value as the first parameter in the timestamp-property notation [select rate(TheString) as myrate from SupportBean#time(20)]");
 
             stmt.Dispose();
         }
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             var runnable = new RateSendRunnable(epService.EPRuntime);
             var timer = new ScheduledThreadPoolExecutor(1);
     
-            //string viewExpr = "select RATE(longPrimitive) as myrate from SupportBean#time(10) output every 1 sec";
+            //string viewExpr = "select RATE(LongPrimitive) as myrate from SupportBean#time(10) output every 1 sec";
             var viewExpr = "select RATE(10) as myrate from SupportBean output snapshot every 1 sec";
             var stmt = epService.EPAdministrator.CreateEPL(viewExpr);
             stmt.Events += (sender, args) => Log.Info(newEvents[0].Get("myrate"));

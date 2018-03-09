@@ -76,13 +76,13 @@ namespace com.espertech.esper.regression.dataflow
     
         private void RunAssertionDeploymentAdmin(EPServiceProvider epService) {
     
-            epService.EPAdministrator.Configuration.AddImport(typeof(DefaultSupportSourceOp).Namespace + ".*");
+            epService.EPAdministrator.Configuration.AddImport(typeof(DefaultSupportSourceOp).Namespace);
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             string eplModule = "create dataflow TheGraph\n" +
                     "create schema ABC as " + typeof(SupportBean).FullName + "," +
                     "DefaultSupportSourceOp -> outstream<SupportBean> {}\n" +
-                    "Select(outstream) -> selectedData {select: (select theString, intPrimitive from outstream) }\n" +
+                    "Select(outstream) -> selectedData {select: (select TheString, IntPrimitive from outstream) }\n" +
                     "DefaultSupportCaptureOp(selectedData) {};";
             Module module = epService.EPAdministrator.DeploymentAdmin.Parse(eplModule);
             Assert.AreEqual(1, module.Items.Count);

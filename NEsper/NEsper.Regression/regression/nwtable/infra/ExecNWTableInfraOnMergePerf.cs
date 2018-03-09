@@ -46,15 +46,15 @@ namespace com.espertech.esper.regression.nwtable.infra
             Assert.IsTrue(outputType.MatchesClass(stmtNamedWindow.EventType.UnderlyingType));
     
             // preload events
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("insert into MyWindow select theString as c1, intPrimitive as c2 from SupportBean");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("insert into MyWindow select TheString as c1, IntPrimitive as c2 from SupportBean");
             int totalUpdated = 5000;
             for (int i = 0; i < totalUpdated; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean("E" + i, 0));
             }
             stmt.Dispose();
     
-            string epl = "on SupportBean sb merge MyWindow nw where nw.c1 = sb.theString " +
-                    "when matched then update set nw.c2=sb.intPrimitive";
+            string epl = "on SupportBean sb merge MyWindow nw where nw.c1 = sb.TheString " +
+                    "when matched then update set nw.c2=sb.IntPrimitive";
             stmt = epService.EPAdministrator.CreateEPL(epl);
             var mergeListener = new SupportUpdateListener();
             stmt.Events += mergeListener.Update;

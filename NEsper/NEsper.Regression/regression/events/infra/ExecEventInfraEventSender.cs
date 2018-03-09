@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.events.infra
             // Bean
             RunAssertionSuccess(epService, typeof(SupportBean).FullName, new SupportBean());
             RunAssertionInvalid(epService, typeof(SupportBean).FullName, new SupportBean_G("G1"),
-                    "Event object of type " + typeof(SupportBean_G).Name + " does not equal, extend or implement the type " + typeof(SupportBean).FullName + " of event type 'SupportBean'");
+                    "Event object of type " + typeof(SupportBean_G).FullName + " does not equal, extend or implement the type " + typeof(SupportBean).FullName + " of event type 'SupportBean'");
             RunAssertionSuccess(epService, "Marker", new SupportMarkerImplA("Q2"), new SupportBean_G("Q3"));
     
             // Map
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regression.events.infra
             }
     
             // Internal implicit wrapper type
-            epService.EPAdministrator.CreateEPL("insert into ABC select *, theString as value from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into ABC select *, TheString as value from SupportBean");
             try {
                 epService.EPRuntime.GetEventSender("ABC");
                 Assert.Fail("Event type named 'ABC' could not be found");

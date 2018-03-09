@@ -6,20 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.IO;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.soda;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.pattern;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
 
 using NUnit.Framework;
 
@@ -28,20 +23,20 @@ namespace com.espertech.esper.regression.pattern
     public class ExecPatternExpressionText : RegressionExecution {
     
         public override void Configure(Configuration configuration) {
-            configuration.AddEventType("SupportBean", typeof(SupportBean).FullName);
-            configuration.AddEventType("A", typeof(SupportBean_A).Name);
-            configuration.AddEventType("B", typeof(SupportBean_B).Name);
-            configuration.AddEventType("C", typeof(SupportBean_C).Name);
-            configuration.AddEventType("D", typeof(SupportBean_D).Name);
-            configuration.AddEventType("E", typeof(SupportBean_E).Name);
-            configuration.AddEventType("F", typeof(SupportBean_F).Name);
-            configuration.AddEventType("G", typeof(SupportBean_G).Name);
+            configuration.AddEventType("SupportBean", typeof(SupportBean));
+            configuration.AddEventType("A", typeof(SupportBean_A));
+            configuration.AddEventType("B", typeof(SupportBean_B));
+            configuration.AddEventType("C", typeof(SupportBean_C));
+            configuration.AddEventType("D", typeof(SupportBean_D));
+            configuration.AddEventType("E", typeof(SupportBean_E));
+            configuration.AddEventType("F", typeof(SupportBean_F));
+            configuration.AddEventType("G", typeof(SupportBean_G));
         }
     
         public override void Run(EPServiceProvider epService) {
             TryAssertion(epService, "every a=SupportBean -> b=SupportBean@consume", null);
             TryAssertion(epService, "every a=SupportBean -> b=SupportBean@consume", null);
-            TryAssertion(epService, "every a=SupportBean -> b=SupportBean@Consume(2)", null);
+            TryAssertion(epService, "every a=SupportBean -> b=SupportBean@consume(2)", null);
             TryAssertion(epService, "a=A -> b=B", null);
             TryAssertion(epService, "b=B and every d=D", null);
             TryAssertion(epService, "every b=B and d=B", null);
@@ -145,8 +140,8 @@ namespace com.espertech.esper.regression.pattern
             TryAssertion(epService, "timer:interval(2999 milliseconds)", null);
             TryAssertion(epService, "timer:interval(4 seconds) -> b=B", null);
             TryAssertion(epService, "b=B -> timer:interval(0)", null);
-            TryAssertion(epService, "b=B -> timer:interval(6.0) -> d=D", null);
-            TryAssertion(epService, "every (b=B -> timer:interval(2.0) -> d=D)", null);
+            TryAssertion(epService, "b=B -> timer:interval(6.0d) -> d=D", null);
+            TryAssertion(epService, "every (b=B -> timer:interval(2.0d) -> d=D)", null);
             TryAssertion(epService, "b=B or timer:interval(2.001)", null);
             TryAssertion(epService, "b=B or timer:interval(8.5)", null);
             TryAssertion(epService, "timer:interval(8.5) or timer:interval(7.5)", null);
@@ -180,21 +175,21 @@ namespace com.espertech.esper.regression.pattern
             TryAssertion(epService, "every b=B -> (every d=D) where timer:withinmax(1 days,3)", null);
             TryAssertion(epService, "a=A -> (every b=B) while (b.id!=\"B3\")", null);
             TryAssertion(epService, "(every b=B) while (b.id!=\"B1\")", null);
-            TryAssertion(epService, "every-Distinct(a.intPrimitive,1) a=SupportBean(theString like \"A%\")", null);
-            TryAssertion(epService, "every-Distinct(a.intPrimitive,1 seconds) a=SupportBean(theString like \"A%\")", null);
-            TryAssertion(epService, "every-Distinct(intPrimitive) a=SupportBean", null);
-            TryAssertion(epService, "[2] every-Distinct(a.intPrimitive) a=SupportBean", null);
-            TryAssertion(epService, "every-Distinct(a[0].intPrimitive) ([2] a=SupportBean)", null);
-            TryAssertion(epService, "every-Distinct(a[0].intPrimitive,a[0].intPrimitive,1 hours) ([2] a=SupportBean)", null);
-            TryAssertion(epService, "(every-Distinct(a.intPrimitive) a=SupportBean) where timer:within(10 seconds)", null);
-            TryAssertion(epService, "every-Distinct(a.intPrimitive) a=SupportBean where timer:within(10)", null);
-            TryAssertion(epService, "every-Distinct(a.intPrimitive,1 hours) a=SupportBean where timer:within(10)", null);
-            TryAssertion(epService, "every-Distinct(a.intPrimitive,b.intPrimitive) (a=SupportBean(theString like \"A%\") and b=SupportBean(theString like \"B%\"))", null);
-            TryAssertion(epService, "every-Distinct(a.intPrimitive) (a=SupportBean and not SupportBean)", null);
-            TryAssertion(epService, "every-Distinct(a.intPrimitive,1 hours) (a=SupportBean and not SupportBean)", null);
-            TryAssertion(epService, "every-Distinct(a.intPrimitive+b.intPrimitive,1 hours) (a=SupportBean -> b=SupportBean)", null);
-            TryAssertion(epService, "every-Distinct(a.intPrimitive) a=SupportBean -> b=SupportBean(intPrimitive=a.intPrimitive)", null);
-            TryAssertion(epService, "every-Distinct(a.intPrimitive) a=SupportBean -> every-Distinct(b.intPrimitive) b=SupportBean(theString like \"B%\")", null);
+            TryAssertion(epService, "every-distinct(a.IntPrimitive,1) a=SupportBean(TheString like \"A%\")", null);
+            TryAssertion(epService, "every-distinct(a.IntPrimitive,1 seconds) a=SupportBean(TheString like \"A%\")", null);
+            TryAssertion(epService, "every-distinct(IntPrimitive) a=SupportBean", null);
+            TryAssertion(epService, "[2] every-distinct(a.IntPrimitive) a=SupportBean", null);
+            TryAssertion(epService, "every-distinct(a[0].IntPrimitive) ([2] a=SupportBean)", null);
+            TryAssertion(epService, "every-distinct(a[0].IntPrimitive,a[0].IntPrimitive,1 hours) ([2] a=SupportBean)", null);
+            TryAssertion(epService, "(every-distinct(a.IntPrimitive) a=SupportBean) where timer:within(10 seconds)", null);
+            TryAssertion(epService, "every-distinct(a.IntPrimitive) a=SupportBean where timer:within(10)", null);
+            TryAssertion(epService, "every-distinct(a.IntPrimitive,1 hours) a=SupportBean where timer:within(10)", null);
+            TryAssertion(epService, "every-distinct(a.IntPrimitive,b.IntPrimitive) (a=SupportBean(TheString like \"A%\") and b=SupportBean(TheString like \"B%\"))", null);
+            TryAssertion(epService, "every-distinct(a.IntPrimitive) (a=SupportBean and not SupportBean)", null);
+            TryAssertion(epService, "every-distinct(a.IntPrimitive,1 hours) (a=SupportBean and not SupportBean)", null);
+            TryAssertion(epService, "every-distinct(a.IntPrimitive+b.IntPrimitive,1 hours) (a=SupportBean -> b=SupportBean)", null);
+            TryAssertion(epService, "every-distinct(a.IntPrimitive) a=SupportBean -> b=SupportBean(IntPrimitive=a.IntPrimitive)", null);
+            TryAssertion(epService, "every-distinct(a.IntPrimitive) a=SupportBean -> every-distinct(b.IntPrimitive) b=SupportBean(TheString like \"B%\")", null);
         }
     
         private void TryAssertion(EPServiceProvider epService, string patternText, string expectedIfDifferent) {

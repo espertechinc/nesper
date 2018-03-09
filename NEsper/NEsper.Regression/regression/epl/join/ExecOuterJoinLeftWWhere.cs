@@ -143,9 +143,9 @@ namespace com.espertech.esper.regression.epl.join
     
         private EPStatement SetupStatement(EPServiceProvider epService, string whereClause) {
             string joinStatement = "select * from " +
-                    typeof(SupportBean_S0).Name + "#length(5) as s0 " +
+                    typeof(SupportBean_S0).FullName + "#length(5) as s0 " +
                     "left outer join " +
-                    typeof(SupportBean_S1).Name + "#length(5) as s1" +
+                    typeof(SupportBean_S1).FullName + "#length(5) as s1" +
                     " on s0.p00 = s1.p10 " +
                     whereClause;
     

@@ -77,9 +77,9 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertionUnaggregatedOutputFirst(EPServiceProvider epService) {
             SendTimer(epService, 0);
     
-            string[] fields = "theString,intPrimitive".Split(',');
+            string[] fields = "TheString,IntPrimitive".Split(',');
             string epl = "select * from SupportBean\n" +
-                    "     group by theString\n" +
+                    "     group by TheString\n" +
                     "     output first every 10 seconds";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -127,27 +127,27 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
     
-            string stmtText = "select theString, longPrimitive, sum(intPrimitive) as value from MyWindow group by theString having sum(intPrimitive) > 20 output first every 2 events";
+            string stmtText = "select TheString, LongPrimitive, sum(IntPrimitive) as value from MyWindow group by TheString having sum(IntPrimitive) > 20 output first every 2 events";
             TryOutputFirstHaving(epService, stmtText);
     
-            string stmtTextJoin = "select theString, longPrimitive, sum(intPrimitive) as value from MyWindow mv, SupportBean_A#keepall a where a.id = mv.theString " +
-                    "group by theString having sum(intPrimitive) > 20 output first every 2 events";
+            string stmtTextJoin = "select TheString, LongPrimitive, sum(IntPrimitive) as value from MyWindow mv, SupportBean_A#keepall a where a.id = mv.TheString " +
+                    "group by TheString having sum(IntPrimitive) > 20 output first every 2 events";
             TryOutputFirstHaving(epService, stmtTextJoin);
     
-            string stmtTextOrder = "select theString, longPrimitive, sum(intPrimitive) as value from MyWindow group by theString having sum(intPrimitive) > 20 output first every 2 events order by theString asc";
+            string stmtTextOrder = "select TheString, LongPrimitive, sum(IntPrimitive) as value from MyWindow group by TheString having sum(IntPrimitive) > 20 output first every 2 events order by TheString asc";
             TryOutputFirstHaving(epService, stmtTextOrder);
     
-            string stmtTextOrderJoin = "select theString, longPrimitive, sum(intPrimitive) as value from MyWindow mv, SupportBean_A#keepall a where a.id = mv.theString " +
-                    "group by theString having sum(intPrimitive) > 20 output first every 2 events order by theString asc";
+            string stmtTextOrderJoin = "select TheString, LongPrimitive, sum(IntPrimitive) as value from MyWindow mv, SupportBean_A#keepall a where a.id = mv.TheString " +
+                    "group by TheString having sum(IntPrimitive) > 20 output first every 2 events order by TheString asc";
             TryOutputFirstHaving(epService, stmtTextOrderJoin);
         }
     
         private void TryOutputFirstHaving(EPServiceProvider epService, string statementText) {
-            string[] fields = "theString,longPrimitive,value".Split(',');
-            string[] fieldsLimited = "theString,value".Split(',');
+            string[] fields = "TheString,LongPrimitive,value".Split(',');
+            string[] fieldsLimited = "TheString,value".Split(',');
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
-            epService.EPAdministrator.CreateEPL("on MarketData md delete from MyWindow mw where mw.intPrimitive = md.price");
+            epService.EPAdministrator.CreateEPL("on MarketData md delete from MyWindow mw where mw.IntPrimitive = md.price");
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -219,7 +219,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion2NoneNoHavingJoin(EPServiceProvider epService) {
             string stmtText = "select symbol, volume, sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "group by symbol";
             TryAssertion12(epService, stmtText, "none");
         }
@@ -235,7 +235,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion4NoneHavingJoin(EPServiceProvider epService) {
             string stmtText = "select symbol, volume, sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "group by symbol " +
                     "having sum(price) > 50";
             TryAssertion34(epService, stmtText, "none");
@@ -252,7 +252,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion6DefaultNoHavingJoin(EPServiceProvider epService) {
             string stmtText = "select symbol, volume, sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "group by symbol " +
                     "output every 1 seconds";
             TryAssertion56(epService, stmtText, "default");
@@ -270,7 +270,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion8DefaultHavingJoin(EPServiceProvider epService) {
             string stmtText = "select symbol, volume, sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "group by symbol " +
                     "having sum(price) > 50" +
                     "output every 1 seconds";
@@ -289,7 +289,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion10AllNoHavingJoin(EPServiceProvider epService) {
             string stmtText = "select symbol, volume, sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "group by symbol " +
                     "output all every 1 seconds " +
                     "order by symbol";
@@ -317,7 +317,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion12AllHavingJoin(EPServiceProvider epService) {
             string stmtText = "select symbol, volume, sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "group by symbol " +
                     "having sum(price) > 50 " +
                     "output all every 1 seconds";
@@ -327,7 +327,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion12AllHavingJoinHinted(EPServiceProvider epService) {
             string stmtText = "@Hint('enable_outputlimit_opt') select symbol, volume, sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "group by symbol " +
                     "having sum(price) > 50 " +
                     "output all every 1 seconds";
@@ -346,7 +346,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion14LastNoHavingJoin(EPServiceProvider epService) {
             string stmtText = "select symbol, volume, sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "group by symbol " +
                     "output last every 1 seconds " +
                     "order by symbol";
@@ -374,7 +374,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion16LastHavingJoin(EPServiceProvider epService) {
             string stmtText = "select symbol, volume, sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "group by symbol " +
                     "having sum(price) > 50 " +
                     "output last every 1 seconds";
@@ -384,7 +384,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion16LastHavingJoinHinted(EPServiceProvider epService) {
             string stmtText = "@Hint('enable_outputlimit_opt') select symbol, volume, sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "group by symbol " +
                     "having sum(price) > 50 " +
                     "output last every 1 seconds";
@@ -402,7 +402,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion17FirstNoHavingJoin(EPServiceProvider epService) {
             string stmtText = "select symbol, volume, sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "group by symbol " +
                     "output first every 1 seconds";
             TryAssertion17(epService, stmtText, "first");
@@ -644,7 +644,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             string epl = "select irstream symbol, volume, sum(price) as sumprice" +
                     " from " + typeof(SupportMarketDataBean).FullName + "#time(10 sec) as s0," +
                     typeof(SupportBean).FullName + "#keepall as s1 " +
-                    "where s0.symbol = s1.theString " +
+                    "where s0.symbol = s1.TheString " +
                     "group by symbol " +
                     "having sum(price) >= 10 " +
                     "output every 3 events";
@@ -664,7 +664,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             string epl = "select irstream symbol, volume, max(price) as maxVol" +
                     " from " + typeof(SupportMarketDataBean).FullName + "#sort(1, volume) as s0," +
-                    typeof(SupportBean).FullName + "#keepall as s1 where s1.theString = s0.symbol " +
+                    typeof(SupportBean).FullName + "#keepall as s1 where s1.TheString = s0.symbol " +
                     "group by symbol output every 1 seconds";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -742,7 +742,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             string selectStmt = "select symbol, volume, sum(price) as sumprice from " + typeof(SupportMarketDataBean).FullName +
                     "#time(10 seconds) as m, " + typeof(SupportBean).FullName +
-                    "#keepall as s where s.theString = m.symbol group by symbol output snapshot every 1 seconds order by symbol, volume asc";
+                    "#keepall as s where s.TheString = m.symbol group by symbol output snapshot every 1 seconds order by symbol, volume asc";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(selectStmt);
             var listener = new SupportUpdateListener();
@@ -914,9 +914,9 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             // Every event generates a new row, this time we sum the price by symbol and output volume
             string epl = "select symbol, volume, sum(price) as mySum " +
                     "from " + typeof(SupportBeanString).FullName + "#length(100) as one, " +
-                    typeof(SupportMarketDataBean).Name + "#length(5) as two " +
+                    typeof(SupportMarketDataBean).FullName + "#length(5) as two " +
                     "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                    "  and one.theString = two.symbol " +
+                    "  and one.TheString = two.symbol " +
                     "group by symbol " +
                     "output every 2 events";
     
@@ -968,9 +968,9 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             // Every event generates a new row, this time we sum the price by symbol and output volume
             string epl = hint + "select symbol, volume, sum(price) as mySum " +
                     "from " + typeof(SupportBeanString).FullName + "#length(100) as one, " +
-                    typeof(SupportMarketDataBean).Name + "#length(5) as two " +
+                    typeof(SupportMarketDataBean).FullName + "#length(5) as two " +
                     "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                    "  and one.theString = two.symbol " +
+                    "  and one.TheString = two.symbol " +
                     "group by symbol " +
                     "output all every 2 events";
     
@@ -999,9 +999,9 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             string epl = hint +
                     "select symbol, volume, sum(price) as mySum " +
                     "from " + typeof(SupportBeanString).FullName + "#length(100) as one, " +
-                    typeof(SupportMarketDataBean).Name + "#length(5) as two " +
+                    typeof(SupportMarketDataBean).FullName + "#length(5) as two " +
                     "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                    "  and one.theString = two.symbol " +
+                    "  and one.TheString = two.symbol " +
                     "group by symbol " +
                     "output last every 2 events";
     

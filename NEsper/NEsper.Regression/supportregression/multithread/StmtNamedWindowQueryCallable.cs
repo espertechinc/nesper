@@ -44,12 +44,12 @@ namespace com.espertech.esper.supportregression.multithread
                     SendMarketBean(_threadKey, loop);
                     total++;
 
-                    string selectQuery = "select * from MyWindow where theString='" + _threadKey +
-                                         "' and longPrimitive=" + loop;
+                    string selectQuery = "select * from MyWindow where TheString='" + _threadKey +
+                                         "' and LongPrimitive=" + loop;
                     EPOnDemandQueryResult queryResult = _engine.ExecuteQuery(selectQuery);
                     Assert.AreEqual(1, queryResult.Array.Length);
-                    Assert.AreEqual(_threadKey, queryResult.Array[0].Get("theString"));
-                    Assert.AreEqual((long) loop, queryResult.Array[0].Get("longPrimitive"));
+                    Assert.AreEqual(_threadKey, queryResult.Array[0].Get("TheString"));
+                    Assert.AreEqual((long) loop, queryResult.Array[0].Get("LongPrimitive"));
                 }
             }
             catch (Exception ex)

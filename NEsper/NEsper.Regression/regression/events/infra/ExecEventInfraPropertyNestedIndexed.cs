@@ -177,13 +177,13 @@ namespace com.espertech.esper.regression.events.infra
         {
             var epl = "select " +
                       "l1[0].lvl1 as c0, " +
-                      "Exists(l1[0].lvl1) as exists_c0, " +
+                      "exists(l1[0].lvl1) as exists_c0, " +
                       "l1[0].l2[0].lvl2 as c1, " +
-                      "Exists(l1[0].l2[0].lvl2) as exists_c1, " +
+                      "exists(l1[0].l2[0].lvl2) as exists_c1, " +
                       "l1[0].l2[0].l3[0].lvl3 as c2, " +
-                      "Exists(l1[0].l2[0].l3[0].lvl3) as exists_c2, " +
+                      "exists(l1[0].l2[0].l3[0].lvl3) as exists_c2, " +
                       "l1[0].l2[0].l3[0].l4[0].lvl4 as c3, " +
-                      "Exists(l1[0].l2[0].l3[0].l4[0].lvl4) as exists_c3 " +
+                      "exists(l1[0].l2[0].l3[0].l4[0].lvl4) as exists_c3 " +
                       "from " + typename;
             var statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();

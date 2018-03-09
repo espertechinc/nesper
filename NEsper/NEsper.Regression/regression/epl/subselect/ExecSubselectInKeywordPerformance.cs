@@ -70,8 +70,8 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionPerformanceWhereClauseCoercion(EPServiceProvider epService) {
-            var stmtText = "select intPrimitive from MyEvent(theString='A') as s0 where intPrimitive in (" +
-                    "select longBoxed from MyEvent(theString='B')#length(10000) where s0.intPrimitive = longBoxed)";
+            var stmtText = "select IntPrimitive from MyEvent(TheString='A') as s0 where IntPrimitive in (" +
+                    "select LongBoxed from MyEvent(TheString='B')#length(10000) where s0.IntPrimitive = LongBoxed)";
     
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regression.epl.subselect
                 bean.TheString = "A";
                 bean.IntPrimitive = index;
                 epService.EPRuntime.SendEvent(bean);
-                Assert.AreEqual(index, listener.AssertOneGetNewAndReset().Get("intPrimitive"));
+                Assert.AreEqual(index, listener.AssertOneGetNewAndReset().Get("IntPrimitive"));
             }
             var endTime = DateTimeHelper.CurrentTimeMillis;
             var delta = endTime - startTime;

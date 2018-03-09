@@ -29,19 +29,19 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCoalesceBeans(EPServiceProvider epService) {
-            TryCoalesceBeans(epService, "select coalesce(a.theString, b.theString) as myString, coalesce(a, b) as myBean" +
-                    " from pattern [every (a=" + typeof(SupportBean).FullName + "(theString='s0') or b=" + typeof(SupportBean).FullName + "(theString='s1'))]");
+            TryCoalesceBeans(epService, "select coalesce(a.TheString, b.TheString) as myString, coalesce(a, b) as myBean" +
+                    " from pattern [every (a=" + typeof(SupportBean).FullName + "(TheString='s0') or b=" + typeof(SupportBean).FullName + "(TheString='s1'))]");
     
-            TryCoalesceBeans(epService, "SELECT COALESCE(a.theString, b.theString) AS myString, COALESCE(a, b) AS myBean" +
-                    " FROM PATTERN [EVERY (a=" + typeof(SupportBean).FullName + "(theString='s0') OR b=" + typeof(SupportBean).FullName + "(theString='s1'))]");
+            TryCoalesceBeans(epService, "SELECT COALESCE(a.TheString, b.TheString) AS myString, COALESCE(a, b) AS myBean" +
+                    " FROM PATTERN [EVERY (a=" + typeof(SupportBean).FullName + "(TheString='s0') OR b=" + typeof(SupportBean).FullName + "(TheString='s1'))]");
         }
     
         private void RunAssertionCoalesceLong(EPServiceProvider epService) {
-            EPStatement stmt = SetupCoalesce(epService, "coalesce(longBoxed, intBoxed, shortBoxed)");
+            EPStatement stmt = SetupCoalesce(epService, "coalesce(LongBoxed, IntBoxed, ShortBoxed)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("result"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("result"));
     
             SendEvent(epService, 1L, 2, (short) 3);
             Assert.AreEqual(1L, listener.AssertOneGetNewAndReset().Get("result"));
@@ -59,12 +59,12 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCoalesceLong_OM(EPServiceProvider epService) {
-            string epl = "select coalesce(longBoxed,intBoxed,shortBoxed) as result" +
+            string epl = "select coalesce(LongBoxed,IntBoxed,ShortBoxed) as result" +
                     " from " + typeof(SupportBean).FullName + "#length(1000)";
     
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.Create().Add(Expressions.Coalesce(
-                    "longBoxed", "intBoxed", "shortBoxed"), "result");
+                    "LongBoxed", "IntBoxed", "ShortBoxed"), "result");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName)
                 .AddView("length", Expressions.Constant(1000)));
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regression.expr.expr
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("result"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("result"));
     
             TryCoalesceLong(epService, listener);
     
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCoalesceLong_Compile(EPServiceProvider epService) {
-            string epl = "select coalesce(longBoxed,intBoxed,shortBoxed) as result" +
+            string epl = "select coalesce(LongBoxed,IntBoxed,ShortBoxed) as result" +
                     " from " + typeof(SupportBean).FullName + "#length(1000)";
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regression.expr.expr
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("result"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("result"));
     
             TryCoalesceLong(epService, listener);
     
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCoalesceDouble(EPServiceProvider epService) {
-            EPStatement stmt = SetupCoalesce(epService, "coalesce(null, byteBoxed, shortBoxed, intBoxed, longBoxed, floatBoxed, doubleBoxed)");
+            EPStatement stmt = SetupCoalesce(epService, "coalesce(null, byteBoxed, ShortBoxed, IntBoxed, LongBoxed, FloatBoxed, DoubleBoxed)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("result"));
@@ -133,15 +133,15 @@ namespace com.espertech.esper.regression.expr.expr
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             Assert.AreEqual(null, stmt.EventType.GetPropertyType("result"));
     
-            TryCoalesceInvalid(epService, "coalesce(intPrimitive)");
-            TryCoalesceInvalid(epService, "coalesce(intPrimitive, string)");
-            TryCoalesceInvalid(epService, "coalesce(intPrimitive, xxx)");
-            TryCoalesceInvalid(epService, "coalesce(intPrimitive, booleanBoxed)");
-            TryCoalesceInvalid(epService, "coalesce(charPrimitive, longBoxed)");
+            TryCoalesceInvalid(epService, "coalesce(IntPrimitive)");
+            TryCoalesceInvalid(epService, "coalesce(IntPrimitive, string)");
+            TryCoalesceInvalid(epService, "coalesce(IntPrimitive, xxx)");
+            TryCoalesceInvalid(epService, "coalesce(IntPrimitive, booleanBoxed)");
+            TryCoalesceInvalid(epService, "coalesce(charPrimitive, LongBoxed)");
             TryCoalesceInvalid(epService, "coalesce(charPrimitive, string, string)");
-            TryCoalesceInvalid(epService, "coalesce(string, longBoxed)");
-            TryCoalesceInvalid(epService, "coalesce(null, longBoxed, string)");
-            TryCoalesceInvalid(epService, "coalesce(null, null, boolBoxed, 1l)");
+            TryCoalesceInvalid(epService, "coalesce(string, LongBoxed)");
+            TryCoalesceInvalid(epService, "coalesce(null, LongBoxed, string)");
+            TryCoalesceInvalid(epService, "coalesce(null, null, BoolBoxed, 1l)");
         }
     
         private EPStatement SetupCoalesce(EPServiceProvider epService, string coalesceExpr) {

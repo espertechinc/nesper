@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string eplCreateVariable = "create table vartotal (total sum(int))";
             epService.EPAdministrator.CreateEPL(eplCreateVariable);
     
-            string eplInto = "into table vartotal select sum(intPrimitive) as total from SupportBean";
+            string eplInto = "into table vartotal select sum(IntPrimitive) as total from SupportBean";
             epService.EPAdministrator.CreateEPL(eplInto);
     
             var listenerZero = new SupportUpdateListener();

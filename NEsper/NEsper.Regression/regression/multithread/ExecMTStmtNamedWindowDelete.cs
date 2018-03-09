@@ -28,19 +28,19 @@ namespace com.espertech.esper.regression.multithread
     public class ExecMTStmtNamedWindowDelete : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
             EPStatement stmtWindow = epService.EPAdministrator.CreateEPL(
-                    "create window MyWindow#keepall as select theString, longPrimitive from " + typeof(SupportBean).FullName);
+                    "create window MyWindow#keepall as select TheString, LongPrimitive from " + typeof(SupportBean).FullName);
             var listenerWindow = new SupportMTUpdateListener();
             stmtWindow.Events += listenerWindow.Update;
     
             epService.EPAdministrator.CreateEPL(
-                    "insert into MyWindow(theString, longPrimitive) " +
+                    "insert into MyWindow(TheString, LongPrimitive) " +
                             " select symbol, volume \n" +
                             " from " + typeof(SupportMarketDataBean).FullName);
     
-            string stmtTextDelete = "on " + typeof(SupportBean_A).FullName + " as s0 delete from MyWindow as win where win.theString = s0.id";
+            string stmtTextDelete = "on " + typeof(SupportBean_A).FullName + " as s0 delete from MyWindow as win where win.TheString = s0.id";
             epService.EPAdministrator.CreateEPL(stmtTextDelete);
     
-            EPStatement stmtConsumer = epService.EPAdministrator.CreateEPL("select irstream theString, longPrimitive from MyWindow");
+            EPStatement stmtConsumer = epService.EPAdministrator.CreateEPL("select irstream TheString, LongPrimitive from MyWindow");
             var listenerConsumer = new SupportMTUpdateListener();
             stmtConsumer.Events += listenerConsumer.Update;
     
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regression.multithread
             EventBean[] newEvents = listenerWindow.GetNewDataListFlattened();
             var receivedIds = new string[newEvents.Length];
             for (int i = 0; i < newEvents.Length; i++) {
-                receivedIds[i] = (string) newEvents[i].Get("theString");
+                receivedIds[i] = (string) newEvents[i].Get("TheString");
             }
             Assert.AreEqual(receivedIds.Length, expectedIds.Length);
     

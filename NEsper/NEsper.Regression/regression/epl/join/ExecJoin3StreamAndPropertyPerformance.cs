@@ -31,9 +31,9 @@ namespace com.espertech.esper.regression.epl.join
         private void RunAssertionPerfAllProps(EPServiceProvider epService) {
             // Statement where all streams are reachable from each other via properties
             string stmt = "select * from " +
-                    typeof(SupportBean_A).Name + "()#length(1000000) s1," +
-                    typeof(SupportBean_B).Name + "()#length(1000000) s2," +
-                    typeof(SupportBean_C).Name + "()#length(1000000) s3" +
+                    typeof(SupportBean_A).FullName + "()#length(1000000) s1," +
+                    typeof(SupportBean_B).FullName + "()#length(1000000) s2," +
+                    typeof(SupportBean_C).FullName + "()#length(1000000) s3" +
                     " where s1.id=s2.id and s2.id=s3.id and s1.id=s3.id";
             TryJoinPerf3Streams(epService, stmt);
         }
@@ -41,9 +41,9 @@ namespace com.espertech.esper.regression.epl.join
         private void RunAssertionPerfPartialProps(EPServiceProvider epService) {
             // Statement where the s1 stream is not reachable by joining s2 to s3 and s3 to s1
             string stmt = "select * from " +
-                    typeof(SupportBean_A).Name + "#length(1000000) s1," +
-                    typeof(SupportBean_B).Name + "#length(1000000) s2," +
-                    typeof(SupportBean_C).Name + "#length(1000000) s3" +
+                    typeof(SupportBean_A).FullName + "#length(1000000) s1," +
+                    typeof(SupportBean_B).FullName + "#length(1000000) s2," +
+                    typeof(SupportBean_C).FullName + "#length(1000000) s3" +
                     " where s1.id=s2.id and s2.id=s3.id";   // ==> therefore s1.id = s3.id
             TryJoinPerf3Streams(epService, stmt);
         }
@@ -53,9 +53,9 @@ namespace com.espertech.esper.regression.epl.join
     
             // Statement where the s1 stream is not reachable by joining s2 to s3 and s3 to s1
             string epl = "select * from " +
-                    typeof(SupportBean_A).Name + "()#length(1000000) s1," +
-                    typeof(SupportBean_B).Name + "()#length(1000000) s2," +
-                    typeof(SupportBean_C).Name + "()#length(1000000) s3" +
+                    typeof(SupportBean_A).FullName + "()#length(1000000) s1," +
+                    typeof(SupportBean_B).FullName + "()#length(1000000) s2," +
+                    typeof(SupportBean_C).FullName + "()#length(1000000) s3" +
                     " where s1.id=s2.id";   // ==> stream s3 no properties supplied, full s3 scan
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);

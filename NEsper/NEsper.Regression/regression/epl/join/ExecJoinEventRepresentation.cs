@@ -146,7 +146,7 @@ namespace com.espertech.esper.regression.epl.join
                 "insert into S0 select 's0' as streamone, * from " + typeof(SupportBean).FullName);
             epService.EPAdministrator.CreateEPL(
                 "insert into S1 select 's1' as streamtwo, * from " + typeof(SupportBean).FullName);
-            var joinStatement = "select * from S0#keepall as a, S1#keepall as b where a.intBoxed = b.intBoxed";
+            var joinStatement = "select * from S0#keepall as a, S1#keepall as b where a.IntBoxed = b.IntBoxed";
 
             var stmt = epService.EPAdministrator.CreateEPL(joinStatement);
             var listener = new SupportUpdateListener();

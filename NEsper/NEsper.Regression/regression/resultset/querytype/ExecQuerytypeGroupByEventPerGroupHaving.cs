@@ -33,7 +33,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionHavingCount(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            string text = "select * from SupportBean(intPrimitive = 3)#length(10) as e1 group by theString having count(*) > 2";
+            string text = "select * from SupportBean(IntPrimitive = 3)#length(10) as e1 group by TheString having count(*) > 2";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -50,9 +50,9 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionSumJoin(EPServiceProvider epService) {
             string epl = "select irstream symbol, sum(price) as mySum " +
                     "from " + typeof(SupportBeanString).FullName + "#length(100) as one, " +
-                    " " + typeof(SupportMarketDataBean).Name + "#length(3) as two " +
+                    " " + typeof(SupportMarketDataBean).FullName + "#length(3) as two " +
                     "where (symbol='DELL' or symbol='IBM' or symbol='GE')" +
-                    "       and one.theString = two.symbol " +
+                    "       and one.TheString = two.symbol " +
                     "group by symbol " +
                     "having sum(price) >= 100";
     

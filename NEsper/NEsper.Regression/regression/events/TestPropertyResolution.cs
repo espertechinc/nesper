@@ -110,7 +110,7 @@ namespace com.espertech.esper.regression.events
 
 	        // test escape in column name
 	        epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-	        EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select theString as `order`, theString as `price.for.goods` from SupportBean");
+	        EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select TheString as `order`, TheString as `price.for.goods` from SupportBean");
 	        stmtTwo.Events += listener.Update;
 	        Assert.AreEqual(typeof(string), stmtTwo.EventType.GetPropertyType("order"));
 	        Assert.AreEqual("price.for.goods", stmtTwo.EventType.PropertyDescriptors[1].PropertyName);
@@ -309,7 +309,7 @@ namespace com.espertech.esper.regression.events
 	        Configuration configuration = SupportConfigFactory.GetConfiguration();
 	        ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
 	        legacyDef.PropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
-	        configuration.AddEventType("Bean", typeof(SupportBean).FullName, legacyDef);
+	        configuration.AddEventType("Bean", typeof(SupportBean), legacyDef);
 
 	        TryCaseInsensitive(configuration, "select theSTRING, INTPRIMITIVE from Bean where THESTRING='A'", "theSTRING", "INTPRIMITIVE");
 	        TryCaseInsensitive(configuration, "select THEsTrInG, INTprimitIVE from Bean where theSTRing='A'", "THEsTrInG", "INTprimitIVE");

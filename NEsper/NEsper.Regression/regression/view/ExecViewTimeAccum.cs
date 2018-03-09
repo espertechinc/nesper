@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
     
             SendCurrentTime(epService, "2002-03-01T09:00:00.000");
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "theString".Split(','), new object[][]{new object[] {"E1"}, new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "TheString".Split(','), new object[][]{new object[] {"E1"}, new object[] {"E2"}});
     
             stmt.Dispose();
         }

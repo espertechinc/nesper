@@ -44,15 +44,15 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
         }
     
         private void RunAssertionUpdateNonPropertySet(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("increaseIntCopyDouble", GetType().FullName, "increaseIntCopyDouble");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("increaseIntCopyDouble", GetType().FullName, "IncreaseIntCopyDouble");
             epService.EPAdministrator.CreateEPL("create window MyWindowUNP#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindowUNP select * from SupportBean");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("on SupportBean_S0 as sb " +
                     "merge MyWindowUNP as mywin when matched then " +
-                    "update set Mywin.DoublePrimitive = id, IncreaseIntCopyDouble(initial, mywin)");
+                    "update set mywin.DoublePrimitive = id, IncreaseIntCopyDouble(initial, mywin)");
             var mergeListener = new SupportUpdateListener();
             stmt.Events += mergeListener.Update;
-            string[] fields = "intPrimitive,doublePrimitive,doubleBoxed".Split(',');
+            string[] fields = "IntPrimitive,DoublePrimitive,DoubleBoxed".Split(',');
     
             epService.EPRuntime.SendEvent(MakeSupportBean("E1", 10, 2));
             epService.EPRuntime.SendEvent(new SupportBean_S0(5, "E1"));
@@ -60,8 +60,8 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             // try a case-statement
             string eplCase = "on SupportBean_S0 merge MyWindowUNP " +
-                    "when matched then update set theString = " +
-                    "case intPrimitive when 1 then 'a' else 'b' end";
+                    "when matched then update set TheString = " +
+                    "case IntPrimitive when 1 then 'a' else 'b' end";
             epService.EPAdministrator.CreateEPL(eplCase);
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -76,7 +76,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             var nwListener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("@Name('D') select * from B").Events += nwListener.Update;
-            epService.EPAdministrator.CreateEPL("@Name('E') insert into A select intPrimitive as id FROM SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('E') insert into A select IntPrimitive as id FROM SupportBean");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.IsTrue(nwListener.IsInvoked);
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPAdministrator.CreateEPL("insert into W1 select * from SupportBean");
             epService.EPAdministrator.CreateEPL("create window W2#lastevent as SupportBean");
             epService.EPAdministrator.CreateEPL("on W1 as a merge W2 as b when not matched then insert into OutStream " +
-                    "select a.theString as c0, Istream() as c1");
+                    "select a.TheString as c0, istream() as c1");
             var mergeListener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select * from OutStream").Events += mergeListener.Update;
     
@@ -228,21 +228,21 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
         }
     
         private void RunAssertionPropertyInsertBean(EPServiceProvider epService) {
-            EPStatement stmtWindow = epService.EPAdministrator.CreateEPL("create window MergeWindow#unique(theString) as SupportBean");
+            EPStatement stmtWindow = epService.EPAdministrator.CreateEPL("create window MergeWindow#unique(TheString) as SupportBean");
     
-            string epl = "on SupportBean as up merge MergeWindow as mv where mv.theString=up.theString when not matched then insert select intPrimitive";
+            string epl = "on SupportBean as up merge MergeWindow as mv where mv.TheString=up.TheString when not matched then insert select IntPrimitive";
             EPStatement stmtMerge = epService.EPAdministrator.CreateEPL(epl);
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
     
             EventBean theEvent = stmtWindow.First();
-            EPAssertionUtil.AssertProps(theEvent, "theString,intPrimitive".Split(','), new object[]{null, 10});
+            EPAssertionUtil.AssertProps(theEvent, "TheString,IntPrimitive".Split(','), new object[]{null, 10});
             stmtMerge.Dispose();
     
-            epl = "on SupportBean as up merge MergeWindow as mv where mv.theString=up.theString when not matched then insert select theString, intPrimitive";
+            epl = "on SupportBean as up merge MergeWindow as mv where mv.TheString=up.TheString when not matched then insert select TheString, IntPrimitive";
             epService.EPAdministrator.CreateEPL(epl);
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
     
-            EPAssertionUtil.AssertPropsPerRow(stmtWindow.GetEnumerator(), "theString,intPrimitive".Split(','), new object[][]{new object[] {null, 10}, new object[] {"E2", 20}});
+            EPAssertionUtil.AssertPropsPerRow(stmtWindow.GetEnumerator(), "TheString,IntPrimitive".Split(','), new object[][]{new object[] {null, 10}, new object[] {"E2", 20}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -262,11 +262,11 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             string epl = "on MyEvent me " +
                     "merge MyWindowSS mw " +
-                    "when not matched and (select intPrimitive>0 from SupportBean(theString like 'A%')#lastevent) then " +
-                    "Insert(col1, col2) select (select theString from SupportBean(theString like 'A%')#lastevent), (select intPrimitive from SupportBean(theString like 'A%')#lastevent) " +
-                    "when matched and (select intPrimitive>0 from SupportBean(theString like 'B%')#lastevent) then " +
-                    "update set col1=(select theString from SupportBean(theString like 'B%')#lastevent), col2=(select intPrimitive from SupportBean(theString like 'B%')#lastevent) " +
-                    "when matched and (select intPrimitive>0 from SupportBean(theString like 'C%')#lastevent) then " +
+                    "when not matched and (select IntPrimitive>0 from SupportBean(TheString like 'A%')#lastevent) then " +
+                    "insert(col1, col2) select (select TheString from SupportBean(TheString like 'A%')#lastevent), (select IntPrimitive from SupportBean(TheString like 'A%')#lastevent) " +
+                    "when matched and (select IntPrimitive>0 from SupportBean(TheString like 'B%')#lastevent) then " +
+                    "update set col1=(select TheString from SupportBean(TheString like 'B%')#lastevent), col2=(select IntPrimitive from SupportBean(TheString like 'B%')#lastevent) " +
+                    "when matched and (select IntPrimitive>0 from SupportBean(TheString like 'C%')#lastevent) then " +
                     "delete";
             epService.EPAdministrator.CreateEPL(epl);
     

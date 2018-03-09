@@ -31,7 +31,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             RunAssertionDependent(epService, "create index IDX on mytable (p)");
             RunAssertionDependent(epService, "select * from SupportBean, mytable");
-            RunAssertionDependent(epService, "select * from SupportBean where Exists (select * from mytable)");
+            RunAssertionDependent(epService, "select * from SupportBean where exists (select * from mytable)");
             RunAssertionDependent(epService, "insert into mytable select 'a' as id, 'a' as p from SupportBean");
         }
     

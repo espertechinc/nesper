@@ -20,25 +20,25 @@ namespace com.espertech.esper.regression.client
     public class ExecClientVirtualDataWindowToLookup : RegressionExecution
     {
         public override void Configure(Configuration configuration) {
-            configuration.AddPlugInVirtualDataWindow("test", "vdw", typeof(SupportVirtualDWFactory).Name);
+            configuration.AddPlugInVirtualDataWindow("test", "vdw", typeof(SupportVirtualDWFactory));
             configuration.AddEventType<SupportBean>();
             configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
         }
     
         public override void Run(EPServiceProvider epService) {
             // client-side
-            epService.EPAdministrator.CreateEPL("create window MyVDW.test:Vdw() as SupportBean");
+            epService.EPAdministrator.CreateEPL("create window MyVDW.test:vdw() as SupportBean");
             SupportVirtualDW window = (SupportVirtualDW) GetFromContext(epService, "/virtualdw/MyVDW");
             var supportBean = new SupportBean("E1", 100);
             window.Data = Collections.SingletonSet<object>(supportBean);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select (select sum(intPrimitive) from MyVDW vdw where vdw.theString = s0.p00) from SupportBean_S0 s0");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select (select sum(IntPrimitive) from MyVDW vdw where vdw.TheString = s0.p00) from SupportBean_S0 s0");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             VirtualDataWindowLookupContextSPI spiContext = (VirtualDataWindowLookupContextSPI) window.LastRequestedIndex;
     
             // CM side
-            epService.EPAdministrator.CreateEPL("create window MyWin#unique(theString) as SupportBean");
+            epService.EPAdministrator.CreateEPL("create window MyWin#unique(TheString) as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWin select * from SupportBean");
         }
     

@@ -39,15 +39,15 @@ namespace com.espertech.esper.regression.rowrecog
             string text = "select * " +
                     "from SupportBean " +
                     "match_recognize (" +
-                    " measures A.theString as beginA, last(Z.theString) as lastZ" +
+                    " measures A.TheString as beginA, last(Z.TheString) as lastZ" +
                     " all matches" +
                     " after match skip to current row" +
                     " pattern (A W+ X+ Y+ Z+)" +
                     " define" +
-                    " W as W.intPrimitive<Prev(W.intPrimitive)," +
-                    " X as X.intPrimitive>Prev(X.intPrimitive)," +
-                    " Y as Y.intPrimitive<Prev(Y.intPrimitive)," +
-                    " Z as Z.intPrimitive>Prev(Z.intPrimitive)" +
+                    " W as W.IntPrimitive<Prev(W.IntPrimitive)," +
+                    " X as X.IntPrimitive>Prev(X.IntPrimitive)," +
+                    " Y as Y.IntPrimitive<Prev(Y.IntPrimitive)," +
+                    " Z as Z.IntPrimitive>Prev(Z.IntPrimitive)" +
                     ")";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
@@ -158,25 +158,25 @@ namespace com.espertech.esper.regression.rowrecog
             string query = "SELECT * " +
                     "FROM MyEvent#keepall" +
                     "   MATCH_RECOGNIZE (" +
-                    "       MEASURES A.theString AS a_string," +
+                    "       MEASURES A.TheString AS a_string," +
                     "         A.value AS a_value," +
-                    "         B.theString AS b_string," +
+                    "         B.TheString AS b_string," +
                     "         B.value AS b_value," +
-                    "         C[0].theString AS c0_string," +
+                    "         C[0].TheString AS c0_string," +
                     "         C[0].value AS c0_value," +
-                    "         C[1].theString AS c1_string," +
+                    "         C[1].TheString AS c1_string," +
                     "         C[1].value AS c1_value," +
-                    "         C[2].theString AS c2_string," +
+                    "         C[2].TheString AS c2_string," +
                     "         C[2].value AS c2_value," +
-                    "         D.theString AS d_string," +
+                    "         D.TheString AS d_string," +
                     "         D.value AS d_value," +
-                    "         E[0].theString AS e0_string," +
+                    "         E[0].TheString AS e0_string," +
                     "         E[0].value AS e0_value," +
-                    "         E[1].theString AS e1_string," +
+                    "         E[1].TheString AS e1_string," +
                     "         E[1].value AS e1_value," +
-                    "         F[0].theString AS f0_string," +
+                    "         F[0].TheString AS f0_string," +
                     "         F[0].value AS f0_value," +
-                    "         F[1].theString AS f1_string," +
+                    "         F[1].TheString AS f1_string," +
                     "         F[1].value AS f1_value" +
                     "       ALL MATCHES" +
                     "       after match skip to current row" +

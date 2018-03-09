@@ -58,8 +58,8 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertionUngroupedWHavingWIn(EPServiceProvider epService) {
             string[] fields = "c0,c1".Split(',');
-            string epl = "select value in (select sum(intPrimitive) from SupportBean#keepall having last(theString) != 'E1') as c0," +
-                    "value not in (select sum(intPrimitive) from SupportBean#keepall having last(theString) != 'E1') as c1 " +
+            string epl = "select value in (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) != 'E1') as c0," +
+                    "value not in (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) != 'E1') as c1 " +
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -84,8 +84,8 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertionGroupedWHavingWIn(EPServiceProvider epService) {
             string[] fields = "c0,c1".Split(',');
-            string epl = "select value in (select sum(intPrimitive) from SupportBean#keepall group by theString having last(theString) != 'E1') as c0," +
-                    "value not in (select sum(intPrimitive) from SupportBean#keepall group by theString having last(theString) != 'E1') as c1 " +
+            string epl = "select value in (select sum(IntPrimitive) from SupportBean#keepall group by TheString having last(TheString) != 'E1') as c0," +
+                    "value not in (select sum(IntPrimitive) from SupportBean#keepall group by TheString having last(TheString) != 'E1') as c1 " +
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -104,8 +104,8 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertionGroupedWOHavingWIn(EPServiceProvider epService) {
             string[] fields = "c0,c1".Split(',');
-            string epl = "select value in (select sum(intPrimitive) from SupportBean#keepall group by theString) as c0," +
-                    "value not in (select sum(intPrimitive) from SupportBean#keepall group by theString) as c1 " +
+            string epl = "select value in (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c0," +
+                    "value not in (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c1 " +
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -123,8 +123,8 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertionUngroupedWOHavingWIn(EPServiceProvider epService) {
             string[] fields = "c0,c1".Split(',');
-            string epl = "select value in (select sum(intPrimitive) from SupportBean#keepall) as c0," +
-                    "value not in (select sum(intPrimitive) from SupportBean#keepall) as c1 " +
+            string epl = "select value in (select sum(IntPrimitive) from SupportBean#keepall) as c0," +
+                    "value not in (select sum(IntPrimitive) from SupportBean#keepall) as c1 " +
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -148,9 +148,9 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionGroupedWOHavingWRelOpAllAnySome(EPServiceProvider epService) {
             string[] fields = "c0,c1,c2".Split(',');
             string epl = "select " +
-                    "value < all (select sum(intPrimitive) from SupportBean#keepall group by theString) as c0, " +
-                    "value < any (select sum(intPrimitive) from SupportBean#keepall group by theString) as c1, " +
-                    "value < some (select sum(intPrimitive) from SupportBean#keepall group by theString) as c2 " +
+                    "value < all (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c0, " +
+                    "value < any (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c1, " +
+                    "value < some (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c2 " +
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -171,9 +171,9 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionGroupedWHavingWRelOpAllAnySome(EPServiceProvider epService) {
             string[] fields = "c0,c1,c2".Split(',');
             string epl = "select " +
-                    "value < all (select sum(intPrimitive) from SupportBean#keepall group by theString having last(theString) not in ('E1', 'E3')) as c0, " +
-                    "value < any (select sum(intPrimitive) from SupportBean#keepall group by theString having last(theString) not in ('E1', 'E3')) as c1, " +
-                    "value < some (select sum(intPrimitive) from SupportBean#keepall group by theString having last(theString) not in ('E1', 'E3')) as c2 " +
+                    "value < all (select sum(IntPrimitive) from SupportBean#keepall group by TheString having last(TheString) not in ('E1', 'E3')) as c0, " +
+                    "value < any (select sum(IntPrimitive) from SupportBean#keepall group by TheString having last(TheString) not in ('E1', 'E3')) as c1, " +
+                    "value < some (select sum(IntPrimitive) from SupportBean#keepall group by TheString having last(TheString) not in ('E1', 'E3')) as c2 " +
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -199,9 +199,9 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionGroupedWOHavingWEqualsAllAnySome(EPServiceProvider epService) {
             string[] fields = "c0,c1,c2".Split(',');
             string epl = "select " +
-                    "value = all (select sum(intPrimitive) from SupportBean#keepall group by theString) as c0, " +
-                    "value = any (select sum(intPrimitive) from SupportBean#keepall group by theString) as c1, " +
-                    "value = some (select sum(intPrimitive) from SupportBean#keepall group by theString) as c2 " +
+                    "value = all (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c0, " +
+                    "value = any (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c1, " +
+                    "value = some (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c2 " +
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -221,9 +221,9 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionUngroupedWOHavingWEqualsAllAnySome(EPServiceProvider epService) {
             string[] fields = "c0,c1,c2".Split(',');
             string epl = "select " +
-                    "value = all (select sum(intPrimitive) from SupportBean#keepall) as c0, " +
-                    "value = any (select sum(intPrimitive) from SupportBean#keepall) as c1, " +
-                    "value = some (select sum(intPrimitive) from SupportBean#keepall) as c2 " +
+                    "value = all (select sum(IntPrimitive) from SupportBean#keepall) as c0, " +
+                    "value = any (select sum(IntPrimitive) from SupportBean#keepall) as c1, " +
+                    "value = some (select sum(IntPrimitive) from SupportBean#keepall) as c2 " +
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -243,9 +243,9 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionUngroupedWHavingWEqualsAllAnySome(EPServiceProvider epService) {
             string[] fields = "c0,c1,c2".Split(',');
             string epl = "select " +
-                    "value = all (select sum(intPrimitive) from SupportBean#keepall having last(theString) != 'E1') as c0, " +
-                    "value = any (select sum(intPrimitive) from SupportBean#keepall having last(theString) != 'E1') as c1, " +
-                    "value = some (select sum(intPrimitive) from SupportBean#keepall having last(theString) != 'E1') as c2 " +
+                    "value = all (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) != 'E1') as c0, " +
+                    "value = any (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) != 'E1') as c1, " +
+                    "value = some (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) != 'E1') as c2 " +
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -271,9 +271,9 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionGroupedWHavingWEqualsAllAnySome(EPServiceProvider epService) {
             string[] fields = "c0,c1,c2".Split(',');
             string epl = "select " +
-                    "value = all (select sum(intPrimitive) from SupportBean#keepall group by theString having first(theString) != 'E1') as c0, " +
-                    "value = any (select sum(intPrimitive) from SupportBean#keepall group by theString having first(theString) != 'E1') as c1, " +
-                    "value = some (select sum(intPrimitive) from SupportBean#keepall group by theString having first(theString) != 'E1') as c2 " +
+                    "value = all (select sum(IntPrimitive) from SupportBean#keepall group by TheString having first(TheString) != 'E1') as c0, " +
+                    "value = any (select sum(IntPrimitive) from SupportBean#keepall group by TheString having first(TheString) != 'E1') as c1, " +
+                    "value = some (select sum(IntPrimitive) from SupportBean#keepall group by TheString having first(TheString) != 'E1') as c2 " +
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -295,8 +295,8 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertionUngroupedWHavingWExists(EPServiceProvider epService) {
             string[] fields = "c0,c1".Split(',');
-            string epl = "select Exists (select sum(intPrimitive) from SupportBean having sum(intPrimitive) < 15) as c0," +
-                    "not Exists (select sum(intPrimitive) from SupportBean  having sum(intPrimitive) < 15) as c1 from SupportValueEvent";
+            string epl = "select exists (select sum(IntPrimitive) from SupportBean having sum(IntPrimitive) < 15) as c0," +
+                    "not exists (select sum(IntPrimitive) from SupportBean  having sum(IntPrimitive) < 15) as c1 from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -314,8 +314,8 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertionUngroupedWOHavingWExists(EPServiceProvider epService) {
             string[] fields = "c0,c1".Split(',');
-            string epl = "select Exists (select sum(intPrimitive) from SupportBean) as c0," +
-                    "not Exists (select sum(intPrimitive) from SupportBean) as c1 from SupportValueEvent";
+            string epl = "select exists (select sum(IntPrimitive) from SupportBean) as c0," +
+                    "not exists (select sum(IntPrimitive) from SupportBean) as c1 from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -333,8 +333,8 @@ namespace com.espertech.esper.regression.epl.subselect
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL("insert into MyWindow(key, anint) select id, value from SupportIdAndValueEvent");
     
             string[] fields = "c0,c1".Split(',');
-            string epl = "select Exists (select sum(anint) from MyWindow group by key) as c0," +
-                    "not Exists (select sum(anint) from MyWindow group by key) as c1 from SupportValueEvent";
+            string epl = "select exists (select sum(anint) from MyWindow group by key) as c0," +
+                    "not exists (select sum(anint) from MyWindow group by key) as c1 from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -358,8 +358,8 @@ namespace com.espertech.esper.regression.epl.subselect
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL("insert into MyWindow(key, anint) select id, value from SupportIdAndValueEvent");
     
             string[] fields = "c0,c1".Split(',');
-            string epl = "select Exists (select sum(anint) from MyWindow group by key having sum(anint) < 15) as c0," +
-                    "not Exists (select sum(anint) from MyWindow group by key having sum(anint) < 15) as c1 from SupportValueEvent";
+            string epl = "select exists (select sum(anint) from MyWindow group by key having sum(anint) < 15) as c0," +
+                    "not exists (select sum(anint) from MyWindow group by key having sum(anint) < 15) as c1 from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -384,9 +384,9 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionUngroupedWHavingWRelOpAllAnySome(EPServiceProvider epService) {
             string[] fields = "c0,c1,c2".Split(',');
             string epl = "select " +
-                    "value < all (select sum(intPrimitive) from SupportBean#keepall having last(theString) not in ('E1', 'E3')) as c0, " +
-                    "value < any (select sum(intPrimitive) from SupportBean#keepall having last(theString) not in ('E1', 'E3')) as c1, " +
-                    "value < some (select sum(intPrimitive) from SupportBean#keepall having last(theString) not in ('E1', 'E3')) as c2 " +
+                    "value < all (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) not in ('E1', 'E3')) as c0, " +
+                    "value < any (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) not in ('E1', 'E3')) as c1, " +
+                    "value < some (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) not in ('E1', 'E3')) as c2 " +
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -412,9 +412,9 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionUngroupedWOHavingWRelOpAllAnySome(EPServiceProvider epService) {
             string[] fields = "c0,c1,c2".Split(',');
             string epl = "select " +
-                    "value < all (select sum(intPrimitive) from SupportBean#keepall) as c0, " +
-                    "value < any (select sum(intPrimitive) from SupportBean#keepall) as c1, " +
-                    "value < some (select sum(intPrimitive) from SupportBean#keepall) as c2 " +
+                    "value < all (select sum(IntPrimitive) from SupportBean#keepall) as c0, " +
+                    "value < any (select sum(IntPrimitive) from SupportBean#keepall) as c1, " +
+                    "value < some (select sum(IntPrimitive) from SupportBean#keepall) as c2 " +
                     "from SupportValueEvent";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -432,7 +432,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionExistsSimple(EPServiceProvider epService) {
-            string stmtText = "select id from S0 where Exists (select max(id) from S1#length(3))";
+            string stmtText = "select id from S0 where exists (select max(id) from S1#length(3))";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

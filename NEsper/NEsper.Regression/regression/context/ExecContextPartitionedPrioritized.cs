@@ -25,7 +25,7 @@ namespace com.espertech.esper.regression.context
     
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL(
-                    "create context SegmentedByMessage partition by theString from SupportBean");
+                    "create context SegmentedByMessage partition by TheString from SupportBean");
     
             EPStatement statementWithDropAnnotation = epService.EPAdministrator.CreateEPL(
                     "@Drop @Priority(1) context SegmentedByMessage select 'test1' from SupportBean");

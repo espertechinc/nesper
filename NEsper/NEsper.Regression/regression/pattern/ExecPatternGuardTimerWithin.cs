@@ -49,7 +49,7 @@ namespace com.espertech.esper.regression.pattern
             testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(1999 msec)");
             testCaseList.AddTest(testCase);
     
-            string text = "select * from pattern [b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:within(10.001d)]";
+            string text = "select * from pattern [b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:within(10.001)]";
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.CreateWildcard();
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
@@ -291,7 +291,7 @@ namespace com.espertech.esper.regression.pattern
             SendTimer(0, epService);
     
             // Set up a timer:within
-            EPStatement statement = epService.EPAdministrator.CreateEPL("select b.theString as id from pattern[a=SupportBean -> (every b=SupportBean) where timer:within(a.intPrimitive seconds)]");
+            EPStatement statement = epService.EPAdministrator.CreateEPL("select b.TheString as id from pattern[a=SupportBean -> (every b=SupportBean) where timer:within(a.IntPrimitive seconds)]");
     
             var testListener = new SupportUpdateListener();
             statement.Events += testListener.Update;

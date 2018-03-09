@@ -14,9 +14,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
-
-using static com.espertech.esper.supportregression.bean.SupportBeanConstants;
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.pattern
@@ -46,10 +43,10 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionFollowedWithMax(EPServiceProvider epService, SupportConditionHandlerFactory.SupportConditionHandler handler) {
-            string expressionOne = "@Name('S1') select * from pattern [every a=SupportBean(theString like 'A%') -[2]> b=SupportBean_A(id=a.theString)]";
+            string expressionOne = "@Name('S1') select * from pattern [every a=SupportBean(TheString like 'A%') -[2]> b=SupportBean_A(id=a.TheString)]";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(expressionOne);
     
-            string expressionTwo = "@Name('S2') select * from pattern [every a=SupportBean(theString like 'B%') -> b=SupportBean_B(id=a.theString)]";
+            string expressionTwo = "@Name('S2') select * from pattern [every a=SupportBean(TheString like 'B%') -> b=SupportBean_B(id=a.TheString)]";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(expressionTwo);
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 0));
@@ -85,10 +82,10 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionTwoStatementsAndStopDestroy(EPServiceProvider epService, SupportConditionHandlerFactory.SupportConditionHandler handler) {
-            string expressionOne = "@Name('S1') select * from pattern [every a=SupportBean(theString like 'A%') -> b=SupportBean_A(id=a.theString)]";
+            string expressionOne = "@Name('S1') select * from pattern [every a=SupportBean(TheString like 'A%') -> b=SupportBean_A(id=a.TheString)]";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(expressionOne);
     
-            string expressionTwo = "@Name('S2') select * from pattern [every a=SupportBean(theString like 'B%') -> b=SupportBean_B(id=a.theString)]";
+            string expressionTwo = "@Name('S2') select * from pattern [every a=SupportBean(TheString like 'B%') -> b=SupportBean_B(id=a.TheString)]";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(expressionTwo);
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 0));

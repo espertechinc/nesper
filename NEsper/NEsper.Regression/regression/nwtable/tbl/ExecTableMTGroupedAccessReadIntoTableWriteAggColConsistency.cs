@@ -202,7 +202,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
 
                 try
                 {
-                    var eplSelect = "select vartotal[theString] as out from SupportBean";
+                    var eplSelect = "select vartotal[TheString] as out from SupportBean";
                     var listener = new SupportUpdateListener();
                     _epService.EPAdministrator.CreateEPL(eplSelect).Events += listener.Update;
 

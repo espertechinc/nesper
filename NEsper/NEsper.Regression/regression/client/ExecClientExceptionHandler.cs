@@ -6,12 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
@@ -23,7 +18,7 @@ namespace com.espertech.esper.regression.client
     public class ExecClientExceptionHandler : RegressionExecution {
         public override void Configure(Configuration configuration) {
             configuration.AddEventType<SupportBean>();
-            configuration.AddPlugInAggregationFunctionFactory("myinvalidagg", typeof(ExecClientExceptionHandlerNoHandler.InvalidAggTestFactory).Name);
+            configuration.AddPlugInAggregationFunctionFactory("myinvalidagg", typeof(ExecClientExceptionHandlerNoHandler.InvalidAggTestFactory));
         }
     
         public override void Run(EPServiceProvider epService) {

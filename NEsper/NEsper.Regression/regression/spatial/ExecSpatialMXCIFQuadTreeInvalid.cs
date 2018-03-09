@@ -87,7 +87,7 @@ namespace com.espertech.esper.regression.spatial
             epService.EPAdministrator.CreateEPL("create window SomeWindow#keepall as SupportSpatialEventRectangle");
             epService.EPAdministrator.CreateEPL("create index SomeWindowIdx1 on SomeWindow((x, y, width, height) Mxcifquadtree(0, 0, 1, 1))");
             SupportMessageAssertUtil.TryInvalid(epService, "create index SomeWindowIdx2 on SomeWindow((x, y, width, height) Mxcifquadtree(0, 0, 1, 1))",
-                    "Error starting statement: An index for the same columns already Exists");
+                    "Error starting statement: An index for the same columns already exists");
     
             epService.EPAdministrator.DestroyAllStatements();
         }

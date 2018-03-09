@@ -29,7 +29,7 @@ namespace com.espertech.esper.regression.expr.expr
     
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            string epl = "select intPrimitive/intBoxed as result from SupportBean";
+            string epl = "select IntPrimitive/IntBoxed as result from SupportBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

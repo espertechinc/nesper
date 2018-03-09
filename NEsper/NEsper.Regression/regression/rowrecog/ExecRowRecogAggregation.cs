@@ -32,8 +32,8 @@ namespace com.espertech.esper.regression.rowrecog
         private void RunAssertionMeasureAggregation(EPServiceProvider epService) {
             string text = "select * from MyEvent#keepall " +
                     "match_recognize (" +
-                    "  measures A.theString as a_string, " +
-                    "       C.theString as c_string, " +
+                    "  measures A.TheString as a_string, " +
+                    "       C.TheString as c_string, " +
                     "       max(B.value) as maxb, " +
                     "       min(B.value) as minb, " +
                     "       2*min(B.value) as minb2x, " +
@@ -90,8 +90,8 @@ namespace com.espertech.esper.regression.rowrecog
             string text = "select * from MyEvent#keepall " +
                     "match_recognize (" +
                     "  partition by cat" +
-                    "  measures A.cat as cat, A.theString as a_string, " +
-                    "       D.theString as d_string, " +
+                    "  measures A.cat as cat, A.TheString as a_string, " +
+                    "       D.TheString as d_string, " +
                     "       sum(C.value) as sumc, " +
                     "       sum(B.value) as sumb, " +
                     "       sum(B.value + A.value) as sumaplusb, " +

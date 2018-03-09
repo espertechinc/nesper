@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Reflection;
 
 using com.espertech.esper.client;
@@ -31,24 +30,24 @@ namespace com.espertech.esper.regression.client
     
         public override void Run(EPServiceProvider epService) {
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
-            epService.EPAdministrator.CreateEPL("@Name('0') create schema StatementMetric as " + typeof(StatementMetric).Name);
+            epService.EPAdministrator.CreateEPL("@Name('0') create schema StatementMetric as " + typeof(StatementMetric).FullName);
             epService.EPAdministrator.CreateEPL("@Name('A') create window MyWindow#lastevent as select * from SupportBean");
             epService.EPAdministrator.CreateEPL("@Name('B1') insert into MyWindow select * from SupportBean");
             epService.EPAdministrator.CreateEPL("@Name('B2') insert into MyWindow select * from SupportBean");
-            epService.EPAdministrator.CreateEPL("@Name('C') select sum(intPrimitive) from MyWindow");
-            epService.EPAdministrator.CreateEPL("@Name('D') select sum(w1.intPrimitive) from MyWindow w1, MyWindow w2");
+            epService.EPAdministrator.CreateEPL("@Name('C') select sum(IntPrimitive) from MyWindow");
+            epService.EPAdministrator.CreateEPL("@Name('D') select sum(w1.IntPrimitive) from MyWindow w1, MyWindow w2");
     
             string appModuleTwo = "@Name('W') create window SupportBeanWindow#keepall as SupportBean;" +
                     "" +
                     "@Name('M') on SupportBean oe\n" +
                     "  merge SupportBeanWindow pw\n" +
-                    "  where pw.theString = oe.theString\n" +
+                    "  where pw.TheString = oe.TheString\n" +
                     "  when not matched \n" +
                     "    then insert select *\n" +
-                    "  when matched and oe.intPrimitive=1\n" +
+                    "  when matched and oe.IntPrimitive=1\n" +
                     "    then delete\n" +
                     "  when matched\n" +
-                    "    then update set pw.intPrimitive = oe.intPrimitive";
+                    "    then update set pw.IntPrimitive = oe.IntPrimitive";
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(appModuleTwo, null, null, null);
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("@Name('X') select * from StatementMetric");
@@ -78,7 +77,7 @@ namespace com.espertech.esper.regression.client
             configuration.EngineDefaults.MetricsReporting.IsThreading = false;
             configuration.EngineDefaults.MetricsReporting.EngineInterval = engineMetricInterval;
             configuration.EngineDefaults.MetricsReporting.StatementInterval = stmtMetricInterval;
-            configuration.AddImport(typeof(MyMetricFunctions).Name);
+            configuration.AddImport(typeof(MyMetricFunctions).FullName);
             configuration.AddEventType<SupportBean>();
         }
     }

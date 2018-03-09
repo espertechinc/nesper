@@ -6,15 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Xml.XPath;
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.events.xml
 {
@@ -30,7 +24,7 @@ namespace com.espertech.esper.regression.events.xml
         }
     
         public override void Run(EPServiceProvider epService) {
-            string stmtTextOne = "select var, xpathAttrNum.After(xpathAttrNumTwo) from TestXMLNoSchemaType#length(100)";
+            string stmtTextOne = "select var, xpathAttrNum.after(xpathAttrNumTwo) from TestXMLNoSchemaType#length(100)";
             epService.EPAdministrator.CreateEPL(stmtTextOne);
         }
     }

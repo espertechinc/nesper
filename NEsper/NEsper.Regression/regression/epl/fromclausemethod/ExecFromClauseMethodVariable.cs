@@ -16,6 +16,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.regression.epl.fromclausemethod
 {
@@ -46,7 +47,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
     
             // invalid footprint
             SupportMessageAssertUtil.TryInvalid(epService, "select * from method:MyConstantServiceVariable.FetchABean() as h0",
-                    "Error starting statement: Method footprint does not match the number or type of expression parameters, expecting no parameters in method: Could not find enumeration method, date-time method or instance method named 'fetchABean' in class 'com.espertech.esper.regression.epl.fromclausemethod.ExecFromClauseMethodVariable$MyConstantServiceVariable' taking no parameters (nearest match found was 'fetchABean' taking Type(s) 'int') [");
+                    "Error starting statement: Method footprint does not match the number or type of expression parameters, expecting no parameters in method: Could not find enumeration method, date-time method or instance method named 'fetchABean' in class 'com.espertech.esper.regression.epl.fromclausemethod.ExecFromClauseMethodVariable$MyConstantServiceVariable' taking no parameters (nearest match found was 'fetchABean' taking type(s) 'int') [");
     
             // null variable value and metadata is instance method
             epService.EPAdministrator.Configuration.AddVariable("MyNullMap", typeof(MyMethodHandlerMap), null);
@@ -55,7 +56,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
     
             // variable with context and metadata is instance method
             epService.EPAdministrator.CreateEPL("create context BetweenStartAndEnd start SupportBean end SupportBean");
-            epService.EPAdministrator.CreateEPL("context BetweenStartAndEnd create variable " + typeof(MyMethodHandlerMap).Name + " themap");
+            epService.EPAdministrator.CreateEPL("context BetweenStartAndEnd create variable " + TypeHelper.MaskTypeName<MyMethodHandlerMap>() + " themap");
             SupportMessageAssertUtil.TryInvalid(epService, "context BetweenStartAndEnd select field1, field2 from method:themap.MapData",
                     "Error starting statement: Failed to access variable method invocation metadata: The metadata method is an instance method however the variable is contextual, please declare the metadata method as static or remove the context declaration for the variable");
         }
@@ -84,9 +85,9 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                     "create variable MyNonConstantServiceVariable var = MyNonConstantServiceVariableFactory.Make()");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("context MyContext " +
-                    "select id as c0 from SupportBean(intPrimitive=context.c_s0.id) as sb, " +
-                    "method:var.FetchABean(intPrimitive) as h0").Events += listener.Update;
-            epService.EPAdministrator.CreateEPL("context MyContext on SupportBean_S2(id = context.c_s0.id) set var.postfix=p20");
+                    "select id as c0 from SupportBean(IntPrimitive=context.c_s0.id) as sb, " +
+                    "method:var.FetchABean(IntPrimitive) as h0").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("context MyContext on SupportBean_S2(id = context.c_s0.id) set var.Postfix=p20");
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
             epService.EPRuntime.SendEvent(new SupportBean_S0(2));
@@ -101,16 +102,16 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             SendEventAssert(epService, listener, "E2", 2, "_2_b");
     
             // invalid context
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from method:var.FetchABean(intPrimitive) as h0",
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from method:var.FetchABean(IntPrimitive) as h0",
                     "Error starting statement: Variable by name 'var' has been declared for context 'MyContext' and can only be used within the same context");
             epService.EPAdministrator.CreateEPL("create context ABC start @now end after 1 minute");
-            SupportMessageAssertUtil.TryInvalid(epService, "context ABC select * from method:var.FetchABean(intPrimitive) as h0",
+            SupportMessageAssertUtil.TryInvalid(epService, "context ABC select * from method:var.FetchABean(IntPrimitive) as h0",
                     "Error starting statement: Variable by name 'var' has been declared for context 'MyContext' and can only be used within the same context");
         }
     
         private void RunAssertionConstantVariable(EPServiceProvider epService) {
             string epl = "select id as c0 from SupportBean as sb, " +
-                    "method:MyConstantServiceVariable.FetchABean(intPrimitive) as h0";
+                    "method:MyConstantServiceVariable.FetchABean(IntPrimitive) as h0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -122,11 +123,11 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         }
     
         private void TryAssertionNonConstantVariable(EPServiceProvider epService, bool soda) {
-            string modifyEPL = "on SupportBean_S0 set MyNonConstantServiceVariable.postfix=p00";
+            string modifyEPL = "on SupportBean_S0 set MyNonConstantServiceVariable.Postfix=p00";
             SupportModelHelper.CreateByCompileOrParse(epService, soda, modifyEPL);
     
             string epl = "select id as c0 from SupportBean as sb, " +
-                    "method:MyNonConstantServiceVariable.FetchABean(intPrimitive) as h0";
+                    "method:MyNonConstantServiceVariable.FetchABean(IntPrimitive) as h0";
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -153,7 +154,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         {
             public SupportBean_A FetchABean(int intPrimitive)
             {
-                return new SupportBean_A("_" + intPrimitive + "_");
+                return new SupportBean_A($"_{intPrimitive}_");
             }
         }
 
@@ -175,7 +176,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
 
             public SupportBean_A FetchABean(int intPrimitive)
             {
-                return new SupportBean_A("_" + intPrimitive + "_" + _postfix);
+                return new SupportBean_A($"_{intPrimitive}_{_postfix}");
             }
         }
 
@@ -183,7 +184,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         {
             public static SupportBean_A FetchABean(int intPrimitive)
             {
-                return new SupportBean_A("_" + intPrimitive + "_");
+                return new SupportBean_A($"_{intPrimitive}_");
             }
         }
 
@@ -215,17 +216,14 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                 }
             }
 
-            public IDictionary<string, object>[] MapData
+            public IDictionary<string, object>[] MapData()
             {
-                get
-                {
-                    var maps = new IDictionary<string, object>[1];
-                    var row = new Dictionary<string, Object>();
-                    maps[0] = row;
-                    row.Put("field1", _field1);
-                    row.Put("field2", _field2);
-                    return maps;
-                }
+                var maps = new IDictionary<string, object>[1];
+                var row = new Dictionary<string, Object>();
+                maps[0] = row;
+                row.Put("field1", _field1);
+                row.Put("field2", _field2);
+                return maps;
             }
         }
     

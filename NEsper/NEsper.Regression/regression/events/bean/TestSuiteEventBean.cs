@@ -47,8 +47,8 @@ namespace com.espertech.esper.regression.events.bean
     
         [Test]
         public void TestExecEventBeanJavaBeanAccessor() {
-            RegressionRunner.Run(new ExecEventBeanJavaBeanAccessor(true));
-            RegressionRunner.Run(new ExecEventBeanJavaBeanAccessor(false));
+            RegressionRunner.Run(new ExecEventBeanAccessor(true));
+            RegressionRunner.Run(new ExecEventBeanAccessor(false));
         }
     
         [Test]

@@ -31,7 +31,7 @@ namespace com.espertech.esper.regression.multithread
     public class ExecMTStmtNamedWindowSubqueryAgg : RegressionExecution {
         public override void Configure(Configuration configuration) {
             configuration.AddEventType<SupportBean>();
-            configuration.AddPlugInAggregationFunctionFactory("intListAgg", typeof(MyIntListAggregationFactory).Name);
+            configuration.AddPlugInAggregationFunctionFactory("intListAgg", typeof(MyIntListAggregationFactory));
             configuration.EngineDefaults.EventMeta.DefaultEventRepresentation = EventUnderlyingType.MAP; // use Map-type events for testing
         }
     
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regression.multithread
                     "when not matched then insert select uekey as wskey, ueint as wsint " +
                     "when matched then delete");
             // note: here all threads use the same string key to insert/delete and different values for the int
-            EPStatement targetStatement = epService.EPAdministrator.CreateEPL("select (select IntListAgg(wsint) from MyWindow mw where wskey = sb.theString) as val from SupportBean sb");
+            EPStatement targetStatement = epService.EPAdministrator.CreateEPL("select (select IntListAgg(wsint) from MyWindow mw where wskey = sb.TheString) as val from SupportBean sb");
     
             // execute
             var threadPool = Executors.NewFixedThreadPool(numThreads);

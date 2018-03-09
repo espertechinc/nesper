@@ -119,11 +119,11 @@ namespace com.espertech.esper.regression.events.infra
         {
             string stmtText = "select " +
                     "simpleProperty? as simple, " +
-                    "Exists(simpleProperty?) as exists_simple, " +
+                    "exists(simpleProperty?) as exists_simple, " +
                     "nested?.nestedValue as nested, " +
-                    "Exists(nested?.nestedValue) as exists_nested, " +
+                    "exists(nested?.nestedValue) as exists_nested, " +
                     "nested?.nestedNested.nestedNestedValue as nestedNested, " +
-                    "Exists(nested?.nestedNested.nestedNestedValue) as exists_nestedNested " +
+                    "exists(nested?.nestedNested.nestedNestedValue) as exists_nestedNested " +
                     "from " + typename;
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();

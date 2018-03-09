@@ -34,8 +34,8 @@ namespace com.espertech.esper.regression.epl.join
         }
     
         private void RunAssertionInKeywordSingleIndexLookup(EPServiceProvider epService) {
-            string epl = "select intPrimitive as val from SupportBean#keepall sb, SupportBean_S0 s0 unidirectional " +
-                    "where sb.theString in (s0.p00, s0.p01)";
+            string epl = "select IntPrimitive as val from SupportBean#keepall sb, SupportBean_S0 s0 unidirectional " +
+                    "where sb.TheString in (s0.p00, s0.p01)";
             string[] fields = "val".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -59,7 +59,7 @@ namespace com.espertech.esper.regression.epl.join
     
         private void RunAssertionInKeywordMultiIndexLookup(EPServiceProvider epService) {
             string epl = "select id as val from SupportBean_S0#keepall s0, SupportBean sb unidirectional " +
-                    "where sb.theString in (s0.p00, s0.p01)";
+                    "where sb.TheString in (s0.p00, s0.p01)";
             string[] fields = "val".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();

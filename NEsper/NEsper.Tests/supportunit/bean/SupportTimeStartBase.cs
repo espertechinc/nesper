@@ -7,73 +7,42 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.supportunit.bean
 {
-	public abstract class SupportTimeStartBase
+    public abstract class SupportTimeStartBase
     {
-	    private string _key;
-	    private readonly long? _longdateStart;
-        private readonly DateTimeOffset _utildateStart;
-	    private readonly DateTimeEx _dateTimeExStart;
-	    private readonly long? _longdateEnd;
-	    private readonly DateTimeOffset _utildateEnd;
-        private readonly DateTimeEx _dateTimeExEnd;
-
-	    public SupportTimeStartBase(string key, string datestr, long duration)
+        public SupportTimeStartBase(string key, string datestr, long duration)
         {
-	        _key = key;
+            Key = key;
 
-	        if (datestr != null) {
-	            // expected : 2002-05-30T09:00:00.000
-	            long start = DateTimeParser.ParseDefaultMSec(datestr);
-	            long end = start + duration;
+            if (datestr != null) {
+                // expected : 2002-05-30T09:00:00.000
+                var start = DateTimeParser.ParseDefaultMSec(datestr);
+                var end = start + duration;
 
-	            _longdateStart = start;
-	            _utildateStart = SupportDateTime.ToDate(start);
-	            _dateTimeExStart = SupportDateTime.ToDateTimeEx(start);
-	            _longdateEnd = end;
-	            _utildateEnd = SupportDateTime.ToDate(end);
-                _dateTimeExEnd = SupportDateTime.ToDateTimeEx(end);
-	        }
-	    }
+                LongdateStart = start;
+                UtildateStart = SupportDateTime.ToDate(start);
+                DateTimeExStart = SupportDateTime.ToDateTimeEx(start);
+                LongdateEnd = end;
+                UtildateEnd = SupportDateTime.ToDate(end);
+                DateTimeExEnd = SupportDateTime.ToDateTimeEx(end);
+            }
+        }
 
-	    public long? LongdateStart
-	    {
-	        get { return _longdateStart; }
-	    }
+        public long? LongdateStart { get; }
 
-	    public DateTimeOffset UtildateStart
-	    {
-	        get { return _utildateStart; }
-	    }
+        public DateTimeOffset UtildateStart { get; }
 
-	    public DateTimeEx DateTimeExStart
-	    {
-	        get { return _dateTimeExStart; }
-	    }
+        public DateTimeEx DateTimeExStart { get; }
 
-	    public long? LongdateEnd
-	    {
-	        get { return _longdateEnd; }
-	    }
+        public long? LongdateEnd { get; }
 
-	    public DateTimeOffset UtildateEnd
-	    {
-	        get { return _utildateEnd; }
-	    }
+        public DateTimeOffset UtildateEnd { get; }
 
-	    public DateTimeEx DateTimeExEnd
-	    {
-	        get { return _dateTimeExEnd; }
-	    }
+        public DateTimeEx DateTimeExEnd { get; }
 
-	    public string Key
-	    {
-	        get { return _key; }
-	        set { _key = value; }
-	    }
-	}
+        public string Key { get; set; }
+    }
 } // end of namespace

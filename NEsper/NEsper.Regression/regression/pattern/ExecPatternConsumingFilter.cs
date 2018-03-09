@@ -11,13 +11,8 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
-using static com.espertech.esper.supportregression.bean.SupportBeanConstants;
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
 using NUnit.Framework;
@@ -36,7 +31,7 @@ namespace com.espertech.esper.regression.pattern
     
         private void RunAssertionFollowedBy(EPServiceProvider epService) {
             string[] fields = "a,b".Split(',');
-            string pattern = "select a.theString as a, b.theString as b from pattern[every a=SupportBean -> b=SupportBean@consume]";
+            string pattern = "select a.TheString as a, b.TheString as b from pattern[every a=SupportBean -> b=SupportBean@consume]";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(pattern).Events += listener.Update;
     
@@ -57,7 +52,7 @@ namespace com.espertech.esper.regression.pattern
     
         private void RunAssertionAnd(EPServiceProvider epService) {
             string[] fields = "a,b".Split(',');
-            string pattern = "select a.theString as a, b.theString as b from pattern[every (a=SupportBean and b=SupportBean)]";
+            string pattern = "select a.TheString as a, b.TheString as b from pattern[every (a=SupportBean and b=SupportBean)]";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(pattern).Events += listener.Update;
     
@@ -65,7 +60,7 @@ namespace com.espertech.esper.regression.pattern
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E1"});
             epService.EPAdministrator.DestroyAllStatements();
     
-            pattern = "select a.theString as a, b.theString as b from pattern [every (a=SupportBean and b=SupportBean(intPrimitive=10)@Consume(2))]";
+            pattern = "select a.TheString as a, b.TheString as b from pattern [every (a=SupportBean and b=SupportBean(IntPrimitive=10)@consume(2))]";
             epService.EPAdministrator.CreateEPL(pattern).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
@@ -94,55 +89,55 @@ namespace com.espertech.esper.regression.pattern
     
         private void RunAssertionOr(EPServiceProvider epService) {
             string[] fields = "a,b".Split(',');
-            TryAssertion(epService, fields, "select a.theString as a, b.theString as b from pattern[every a=SupportBean or b=SupportBean] order by a asc",
+            TryAssertion(epService, fields, "select a.TheString as a, b.TheString as b from pattern[every a=SupportBean or b=SupportBean] order by a asc",
                     new object[][]{new object[] {null, "E1"}, new object[] {"E1", null}});
     
-            TryAssertion(epService, fields, "select a.theString as a, b.theString as b from pattern[every a=SupportBean@Consume(1) or every b=SupportBean@Consume(1)] order by a asc",
+            TryAssertion(epService, fields, "select a.TheString as a, b.TheString as b from pattern[every a=SupportBean@consume(1) or every b=SupportBean@consume(1)] order by a asc",
                     new object[][]{new object[] {null, "E1"}, new object[] {"E1", null}});
     
-            TryAssertion(epService, fields, "select a.theString as a, b.theString as b from pattern[every a=SupportBean@Consume(2) or b=SupportBean@Consume(1)] order by a asc",
+            TryAssertion(epService, fields, "select a.TheString as a, b.TheString as b from pattern[every a=SupportBean@consume(2) or b=SupportBean@consume(1)] order by a asc",
                     new object[]{"E1", null});
     
-            TryAssertion(epService, fields, "select a.theString as a, b.theString as b from pattern[every a=SupportBean@Consume(1) or b=SupportBean@Consume(2)] order by a asc",
+            TryAssertion(epService, fields, "select a.TheString as a, b.TheString as b from pattern[every a=SupportBean@consume(1) or b=SupportBean@consume(2)] order by a asc",
                     new object[]{null, "E1"});
     
-            TryAssertion(epService, fields, "select a.theString as a, b.theString as b from pattern[every a=SupportBean or b=SupportBean@Consume(2)] order by a asc",
+            TryAssertion(epService, fields, "select a.TheString as a, b.TheString as b from pattern[every a=SupportBean or b=SupportBean@consume(2)] order by a asc",
                     new object[]{null, "E1"});
     
-            TryAssertion(epService, fields, "select a.theString as a, b.theString as b from pattern[every a=SupportBean@Consume(1) or b=SupportBean] order by a asc",
+            TryAssertion(epService, fields, "select a.TheString as a, b.TheString as b from pattern[every a=SupportBean@consume(1) or b=SupportBean] order by a asc",
                     new object[]{"E1", null});
     
-            TryAssertion(epService, fields, "select a.theString as a, b.theString as b from pattern[every a=SupportBean(intPrimitive=11)@Consume(1) or b=SupportBean] order by a asc",
+            TryAssertion(epService, fields, "select a.TheString as a, b.TheString as b from pattern[every a=SupportBean(IntPrimitive=11)@consume(1) or b=SupportBean] order by a asc",
                     new object[]{null, "E1"});
     
-            TryAssertion(epService, fields, "select a.theString as a, b.theString as b from pattern[every a=SupportBean(intPrimitive=10)@Consume(1) or b=SupportBean] order by a asc",
+            TryAssertion(epService, fields, "select a.TheString as a, b.TheString as b from pattern[every a=SupportBean(IntPrimitive=10)@consume(1) or b=SupportBean] order by a asc",
                     new object[]{"E1", null});
     
             fields = "a,b,c".Split(',');
-            TryAssertion(epService, fields, "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@Consume(1) or b=SupportBean@Consume(2) or c=SupportBean@Consume(3)] order by a,b,c",
+            TryAssertion(epService, fields, "select a.TheString as a, b.TheString as b, c.TheString as c from pattern[every a=SupportBean@consume(1) or b=SupportBean@consume(2) or c=SupportBean@consume(3)] order by a,b,c",
                     new object[][]{new object[] {null, null, "E1"}});
     
-            TryAssertion(epService, fields, "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@Consume(1) or every b=SupportBean@Consume(2) or every c=SupportBean@Consume(2)] order by a,b,c",
+            TryAssertion(epService, fields, "select a.TheString as a, b.TheString as b, c.TheString as c from pattern[every a=SupportBean@consume(1) or every b=SupportBean@consume(2) or every c=SupportBean@consume(2)] order by a,b,c",
                     new object[][]{new object[] {null, null, "E1"}, new object[] {null, "E1", null}});
     
-            TryAssertion(epService, fields, "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@Consume(2) or every b=SupportBean@Consume(2) or every c=SupportBean@Consume(2)] order by a,b,c",
+            TryAssertion(epService, fields, "select a.TheString as a, b.TheString as b, c.TheString as c from pattern[every a=SupportBean@consume(2) or every b=SupportBean@consume(2) or every c=SupportBean@consume(2)] order by a,b,c",
                     new object[][]{new object[] {null, null, "E1"}, new object[] {null, "E1", null}, new object[] {"E1", null, null}});
     
-            TryAssertion(epService, fields, "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@Consume(2) or every b=SupportBean@Consume(2) or every c=SupportBean@Consume(1)] order by a,b,c",
+            TryAssertion(epService, fields, "select a.TheString as a, b.TheString as b, c.TheString as c from pattern[every a=SupportBean@consume(2) or every b=SupportBean@consume(2) or every c=SupportBean@consume(1)] order by a,b,c",
                     new object[][]{new object[] {null, "E1", null}, new object[] {"E1", null, null}});
     
-            TryAssertion(epService, fields, "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@Consume(2) or every b=SupportBean@Consume(1) or every c=SupportBean@Consume(2)] order by a,b,c",
+            TryAssertion(epService, fields, "select a.TheString as a, b.TheString as b, c.TheString as c from pattern[every a=SupportBean@consume(2) or every b=SupportBean@consume(1) or every c=SupportBean@consume(2)] order by a,b,c",
                     new object[][]{new object[] {null, null, "E1"}, new object[] {"E1", null, null}});
     
-            TryAssertion(epService, fields, "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@Consume(0) or every b=SupportBean or every c=SupportBean] order by a,b,c",
+            TryAssertion(epService, fields, "select a.TheString as a, b.TheString as b, c.TheString as c from pattern[every a=SupportBean@consume(0) or every b=SupportBean or every c=SupportBean] order by a,b,c",
                     new object[][]{new object[] {null, null, "E1"}, new object[] {null, "E1", null}, new object[] {"E1", null, null}});
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            TryInvalid(epService, "select * from pattern[every a=SupportBean@Consume()]",
-                    "Incorrect syntax near ')' expecting any of the following tokens {IntegerLiteral, FloatingPointLiteral} but found a closing parenthesis ')' at line 1 column 50, please check the filter specification within the pattern expression within the from clause [select * from pattern[every a=SupportBean@Consume()]]");
-            TryInvalid(epService, "select * from pattern[every a=SupportBean@Consume(-1)]",
-                    "Incorrect syntax near '-' expecting any of the following tokens {IntegerLiteral, FloatingPointLiteral} but found a minus '-' at line 1 column 50, please check the filter specification within the pattern expression within the from clause [select * from pattern[every a=SupportBean@Consume(-1)]]");
+            TryInvalid(epService, "select * from pattern[every a=SupportBean@consume()]",
+                    "Incorrect syntax near ')' expecting any of the following tokens {IntegerLiteral, FloatingPointLiteral} but found a closing parenthesis ')' at line 1 column 50, please check the filter specification within the pattern expression within the from clause [select * from pattern[every a=SupportBean@consume()]]");
+            TryInvalid(epService, "select * from pattern[every a=SupportBean@consume(-1)]",
+                    "Incorrect syntax near '-' expecting any of the following tokens {IntegerLiteral, FloatingPointLiteral} but found a minus '-' at line 1 column 50, please check the filter specification within the pattern expression within the from clause [select * from pattern[every a=SupportBean@consume(-1)]]");
             TryInvalid(epService, "select * from pattern[every a=SupportBean@xx]",
                     "Error in expression: Unexpected pattern filter @ annotation, expecting 'consume' but received 'xx' [select * from pattern[every a=SupportBean@xx]]");
         }

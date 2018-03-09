@@ -24,9 +24,9 @@ using NUnit.Framework;
 namespace com.espertech.esper.regression.epl.join
 {
     public class ExecJoinSingleOp3Stream : RegressionExecution {
-        private static readonly string EVENT_A = typeof(SupportBean_A).Name;
-        private static readonly string EVENT_B = typeof(SupportBean_B).Name;
-        private static readonly string EVENT_C = typeof(SupportBean_C).Name;
+        private static readonly string EVENT_A = typeof(SupportBean_A).FullName;
+        private static readonly string EVENT_B = typeof(SupportBean_B).FullName;
+        private static readonly string EVENT_C = typeof(SupportBean_C).FullName;
     
         public override void Run(EPServiceProvider epService) {
             RunAssertionJoinUniquePerId(epService);

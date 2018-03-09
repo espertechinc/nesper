@@ -10,16 +10,11 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.enummethod
 {
@@ -38,12 +33,14 @@ namespace com.espertech.esper.regression.expr.enummethod
     
         private void RunAssertionSelectFrom(EPServiceProvider epService) {
             string[] fields = "val0".Split(',');
-            string eplFragment = "select Contained.SelectFrom(x => key0).SequenceEqual(contained.SelectFrom(y => id)) as val0 " +
+            string eplFragment = "select Contained.selectFrom(x => key0).sequenceEqual(Contained.selectFrom(y => id)) as val0 " +
                     "from SupportBean_ST0_Container";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val0".Split(','), new Type[]{typeof(bool?)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val0".Split(','), new Type[] {
+                typeof(bool)
+            });
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make3Value("I1,E1,0", "I2,E2,0"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false});
@@ -64,7 +61,7 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0".Split(',');
             string eplFragment = "select " +
-                    "strvals.SequenceEqual(strvalstwo) as val0 " +
+                    "Strvals.sequenceEqual(strvalstwo) as val0 " +
                     "from SupportCollection";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
@@ -119,8 +116,8 @@ namespace com.espertech.esper.regression.expr.enummethod
         private void RunAssertionInvalid(EPServiceProvider epService) {
             string epl;
     
-            epl = "select window(*).SequenceEqual(strvals) from SupportCollection#lastevent";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'window(*).SequenceEqual(strvals)': Invalid input for built-in enumeration method 'sequenceEqual' and 1-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type 'SupportCollection' [select window(*).SequenceEqual(strvals) from SupportCollection#lastevent]");
+            epl = "select window(*).sequenceEqual(strvals) from SupportCollection#lastevent";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'window(*).sequenceEqual(strvals)': Invalid input for built-in enumeration method 'sequenceEqual' and 1-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type 'SupportCollection' [select window(*).sequenceEqual(strvals) from SupportCollection#lastevent]");
         }
     }
 } // end of namespace

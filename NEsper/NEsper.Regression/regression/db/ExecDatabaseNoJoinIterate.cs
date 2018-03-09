@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.db
             epService.EPAdministrator.CreateEPL("create variable int queryvar_int");
             epService.EPAdministrator.CreateEPL("create variable int lower");
             epService.EPAdministrator.CreateEPL("create variable int upper");
-            epService.EPAdministrator.CreateEPL("on SupportBean set queryvar_int=intPrimitive, queryvar_bool=boolPrimitive, lower=intPrimitive,upper=intBoxed");
+            epService.EPAdministrator.CreateEPL("on SupportBean set queryvar_int=IntPrimitive, queryvar_bool=BoolPrimitive, lower=IntPrimitive,upper=IntBoxed");
     
             // Test int and singlerow
             string stmtText = "select myint from sql:MyDB ['select myint from mytesttable where ${queryvar_int -2} = mytesttable.mybigint']";
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regression.db
             epService.EPAdministrator.CreateEPL("create variable int queryvar_int");
             epService.EPAdministrator.CreateEPL("create variable int lower");
             epService.EPAdministrator.CreateEPL("create variable int upper");
-            epService.EPAdministrator.CreateEPL("on SupportBean set queryvar_int=intPrimitive, queryvar_bool=boolPrimitive, lower=intPrimitive,upper=intBoxed");
+            epService.EPAdministrator.CreateEPL("on SupportBean set queryvar_int=IntPrimitive, queryvar_bool=BoolPrimitive, lower=IntPrimitive,upper=IntBoxed");
     
             // Test int and singlerow
             string stmtText = "select myint from sql:MyDB ['select myint from mytesttable where ${queryvar_int} = mytesttable.mybigint']";

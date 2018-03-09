@@ -35,7 +35,7 @@ namespace com.espertech.esper.regression.multithread
     
         private void RunAssertionIteratorSingleStmt(EPServiceProvider epService) {
             var stmt = new EPStatement[]{epService.EPAdministrator.CreateEPL(
-                    " select theString from " + typeof(SupportBean).FullName + "#time(5 min)")};
+                    " select TheString from " + typeof(SupportBean).FullName + "#time(5 min)")};
     
             TrySend(epService, 2, 10, stmt);
         }
@@ -49,7 +49,7 @@ namespace com.espertech.esper.regression.multithread
             var stmt = new EPStatement[3];
             for (int i = 0; i < stmt.Length; i++) {
                 string name = "Stmt_" + i;
-                string stmtText = "@Name('" + name + "') select theString from " + typeof(SupportBean).FullName + "#time(5 min)";
+                string stmtText = "@Name('" + name + "') select TheString from " + typeof(SupportBean).FullName + "#time(5 min)";
                 stmt[i] = engine.EPAdministrator.CreateEPL(stmtText);
             }
     
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regression.multithread
             var stmt = new EPStatement[3];
             for (int i = 0; i < stmt.Length; i++) {
                 string name = "Stmt_" + i;
-                string stmtText = "@Name('" + name + "') select theString from " + typeof(SupportBean).FullName + "#time(5 min)";
+                string stmtText = "@Name('" + name + "') select TheString from " + typeof(SupportBean).FullName + "#time(5 min)";
                 stmt[i] = engine.EPAdministrator.CreateEPL(stmtText);
             }
     

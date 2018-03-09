@@ -65,31 +65,31 @@ namespace com.espertech.esper.regression.epl.join
     
         private void RunAssertionRangeOuterJoin(EPServiceProvider epService) {
     
-            string stmtOne = "select sb.theString as sbstr, sb.intPrimitive as sbint, sbr.key as sbrk, sbr.rangeStart as sbrs, sbr.rangeEnd as sbre " +
+            string stmtOne = "select sb.TheString as sbstr, sb.IntPrimitive as sbint, sbr.key as sbrk, sbr.rangeStart as sbrs, sbr.rangeEnd as sbre " +
                     "from SupportBean#keepall sb " +
                     "full outer join " +
                     "SupportBeanRange#keepall sbr " +
-                    "on theString = key " +
-                    "where intPrimitive between rangeStart and rangeEnd " +
-                    "order by rangeStart asc, intPrimitive asc";
+                    "on TheString = key " +
+                    "where IntPrimitive between rangeStart and rangeEnd " +
+                    "order by rangeStart asc, IntPrimitive asc";
             TryAssertion(epService, stmtOne);
     
-            string stmtTwo = "select sb.theString as sbstr, sb.intPrimitive as sbint, sbr.key as sbrk, sbr.rangeStart as sbrs, sbr.rangeEnd as sbre " +
+            string stmtTwo = "select sb.TheString as sbstr, sb.IntPrimitive as sbint, sbr.key as sbrk, sbr.rangeStart as sbrs, sbr.rangeEnd as sbre " +
                     "from SupportBeanRange#keepall sbr " +
                     "full outer join " +
                     "SupportBean#keepall sb " +
-                    "on theString = key " +
-                    "where intPrimitive between rangeStart and rangeEnd " +
-                    "order by rangeStart asc, intPrimitive asc";
+                    "on TheString = key " +
+                    "where IntPrimitive between rangeStart and rangeEnd " +
+                    "order by rangeStart asc, IntPrimitive asc";
             TryAssertion(epService, stmtTwo);
     
-            string stmtThree = "select sb.theString as sbstr, sb.intPrimitive as sbint, sbr.key as sbrk, sbr.rangeStart as sbrs, sbr.rangeEnd as sbre " +
+            string stmtThree = "select sb.TheString as sbstr, sb.IntPrimitive as sbint, sbr.key as sbrk, sbr.rangeStart as sbrs, sbr.rangeEnd as sbre " +
                     "from SupportBeanRange#keepall sbr " +
                     "full outer join " +
                     "SupportBean#keepall sb " +
-                    "on theString = key " +
-                    "where intPrimitive >= rangeStart and intPrimitive <= rangeEnd " +
-                    "order by rangeStart asc, intPrimitive asc";
+                    "on TheString = key " +
+                    "where IntPrimitive >= rangeStart and IntPrimitive <= rangeEnd " +
+                    "order by rangeStart asc, IntPrimitive asc";
             TryAssertion(epService, stmtThree);
         }
     
@@ -139,13 +139,13 @@ namespace com.espertech.esper.regression.epl.join
         }
     
         private void RunAssertionFullOuterIteratorGroupBy(EPServiceProvider epService) {
-            string epl = "select theString, intPrimitive, symbol, volume " +
+            string epl = "select TheString, IntPrimitive, symbol, volume " +
                     "from " + typeof(SupportMarketDataBean).FullName + "#keepall " +
                     "full outer join " +
-                    typeof(SupportBean).FullName + "#groupwin(theString, intPrimitive)#length(2) " +
-                    "on theString = symbol " +
-                    "group by theString, intPrimitive, symbol " +
-                    "order by theString, intPrimitive, symbol, volume";
+                    typeof(SupportBean).FullName + "#groupwin(TheString, IntPrimitive)#length(2) " +
+                    "on TheString = symbol " +
+                    "group by TheString, IntPrimitive, symbol " +
+                    "order by TheString, IntPrimitive, symbol, volume";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -173,14 +173,14 @@ namespace com.espertech.esper.regression.epl.join
             {
                 Log.Info(
                        "string=" + events[i].Get("string") +
-                       "  int=" + events[i].Get("intPrimitive") +
+                       "  int=" + events[i].Get("IntPrimitive") +
                        "  symbol=" + events[i].Get("symbol") +
                        "  volume="  + events[i].Get("volume")
                     );
             }
             */
     
-            EPAssertionUtil.AssertPropsPerRow(events, "theString,intPrimitive,symbol,volume".Split(','),
+            EPAssertionUtil.AssertPropsPerRow(events, "TheString,IntPrimitive,symbol,volume".Split(','),
                     new object[][]{
                             new object[] {null, null, "c3", 400L},
                             new object[] {"c0", 0, "c0", 200L},
@@ -297,13 +297,13 @@ namespace com.espertech.esper.regression.epl.join
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.Create("s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11".Split(','));
             FromClause fromClause = FromClause.Create(
-                    FilterStream.Create(typeof(SupportBean_S0).Name, "s0").AddView("keepall"),
-                    FilterStream.Create(typeof(SupportBean_S1).Name, "s1").AddView("keepall"));
+                    FilterStream.Create(typeof(SupportBean_S0).FullName, "s0").AddView("keepall"),
+                    FilterStream.Create(typeof(SupportBean_S1).FullName, "s1").AddView("keepall"));
             fromClause.Add(OuterJoinQualifier.Create("s0.p00", OuterJoinType.LEFT, "s1.p10").Add("s1.p11", "s0.p01"));
             model.FromClause = fromClause;
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
     
-            string stmtText = "select s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11 from " + typeof(SupportBean_S0).Name + "#keepall as s0 left outer join " + typeof(SupportBean_S1).Name + "#keepall as s1 on s0.p00 = s1.p10 and s1.p11 = s0.p01";
+            string stmtText = "select s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11 from " + typeof(SupportBean_S0).FullName + "#keepall as s0 left outer join " + typeof(SupportBean_S1).FullName + "#keepall as s1 on s0.p00 = s1.p10 and s1.p11 = s0.p01";
             Assert.AreEqual(stmtText, model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
@@ -319,9 +319,9 @@ namespace com.espertech.esper.regression.epl.join
     
         private void RunAssertionMultiColumnLeft(EPServiceProvider epService) {
             string epl = "select s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11 from " +
-                    typeof(SupportBean_S0).Name + "#length(3) as s0 " +
+                    typeof(SupportBean_S0).FullName + "#length(3) as s0 " +
                     "left outer join " +
-                    typeof(SupportBean_S1).Name + "#length(5) as s1" +
+                    typeof(SupportBean_S1).FullName + "#length(5) as s1" +
                     " on s0.p00 = s1.p10 and s0.p01 = s1.p11";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -351,9 +351,9 @@ namespace com.espertech.esper.regression.epl.join
         private void RunAssertionMultiColumnRight(EPServiceProvider epService) {
             string[] fields = "s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11".Split(',');
             string epl = "select s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11 from " +
-                    typeof(SupportBean_S0).Name + "#length(3) as s0 " +
+                    typeof(SupportBean_S0).FullName + "#length(3) as s0 " +
                     "right outer join " +
-                    typeof(SupportBean_S1).Name + "#length(5) as s1" +
+                    typeof(SupportBean_S1).FullName + "#length(5) as s1" +
                     " on s0.p00 = s1.p10 and s1.p11 = s0.p01";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -376,12 +376,12 @@ namespace com.espertech.esper.regression.epl.join
         }
     
         private void RunAssertionMultiColumnRightCoercion(EPServiceProvider epService) {
-            string[] fields = "s0.theString, s1.theString".Split(',');
-            string epl = "select s0.theString, s1.theString from " +
-                    typeof(SupportBean).FullName + "(theString like 'S0%')#keepall as s0 " +
+            string[] fields = "s0.TheString, s1.TheString".Split(',');
+            string epl = "select s0.TheString, s1.TheString from " +
+                    typeof(SupportBean).FullName + "(TheString like 'S0%')#keepall as s0 " +
                     "right outer join " +
-                    typeof(SupportBean).FullName + "(theString like 'S1%')#keepall as s1" +
-                    " on s0.intPrimitive = s1.doublePrimitive and s1.intPrimitive = s0.doublePrimitive";
+                    typeof(SupportBean).FullName + "(TheString like 'S1%')#keepall as s1" +
+                    " on s0.IntPrimitive = s1.DoublePrimitive and s1.IntPrimitive = s0.DoublePrimitive";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -607,9 +607,9 @@ namespace com.espertech.esper.regression.epl.join
     
         private EPStatement SetupStatement(EPServiceProvider epService, SupportUpdateListener listener, string outerJoinType) {
             string joinStatement = "select irstream s0.id, s0.p00, s1.id, s1.p10 from " +
-                    typeof(SupportBean_S0).Name + "#length(3) as s0 " +
+                    typeof(SupportBean_S0).FullName + "#length(3) as s0 " +
                     outerJoinType + " outer join " +
-                    typeof(SupportBean_S1).Name + "#length(5) as s1" +
+                    typeof(SupportBean_S1).FullName + "#length(5) as s1" +
                     " on s0.p00 = s1.p10";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(joinStatement);

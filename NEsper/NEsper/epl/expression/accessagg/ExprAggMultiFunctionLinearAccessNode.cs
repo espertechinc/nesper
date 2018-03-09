@@ -269,7 +269,7 @@ namespace com.espertech.esper.epl.expression.accessagg
             AggregationStateType stateType,
             ExprValidationContext validationContext)
         {
-            var message = "For into-table use 'Window(*)' or ''Window(stream.*)' instead";
+            var message = "For into-table use 'window(*)' or ''window(stream.*)' instead";
             if (stateType != AggregationStateType.WINDOW) throw new ExprValidationException(message);
             if (childNodes.Length == 0 || childNodes.Length > 1) throw new ExprValidationException(message);
             if (validationContext.StreamTypeService.StreamNames.Length == 0)

@@ -30,11 +30,11 @@ namespace com.espertech.esperio.regression.adapter
     {
         private static readonly String NEW_LINE = Environment.NewLine;
 
-        internal const String CSV_FILENAME_ONELINE_TRADE = "regression/csvtest_tradedata.csv";
+        internal const String CSV_FILENAME_ONELINE_TRADE = "regression/test_tradedata.csv";
 
-        private const string CSV_FILENAME_ONELINE_TRADE_MULTIPLE = "regression/csvtest_tradedata_multiple.csv";
-        private const string CSV_FILENAME_TIMESTAMPED_PRICES = "regression/csvtest_timestamp_prices.csv";
-        private const string CSV_FILENAME_TIMESTAMPED_TRADES = "regression/csvtest_timestamp_trades.csv";
+        private const string CSV_FILENAME_ONELINE_TRADE_MULTIPLE = "regression/test_tradedata_multiple.csv";
+        private const string CSV_FILENAME_TIMESTAMPED_PRICES = "regression/test_timestamp_prices.csv";
+        private const string CSV_FILENAME_TIMESTAMPED_TRADES = "regression/test_timestamp_trades.csv";
 
         private readonly bool _useBean;
 
@@ -43,7 +43,7 @@ namespace com.espertech.esperio.regression.adapter
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
         }
 
         public EPServiceProvider EPService { get; set; }

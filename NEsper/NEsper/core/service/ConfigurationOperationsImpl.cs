@@ -101,7 +101,12 @@ namespace com.espertech.esper.core.service
                 Collections.GetEmptyList<ConfigurationPlugInVirtualDataWindow>(), 
                 _engineImportService);
         }
-    
+
+        public void AddPlugInView(string @namespace, string name, Type viewFactoryClass)
+        {
+            AddPlugInView(@namespace, name, viewFactoryClass.AssemblyQualifiedName);
+        }
+
         public void AddPlugInAggregationMultiFunction(ConfigurationPlugInAggregationMultiFunction config) {
             try {
                 _engineImportService.AddAggregationMultiFunction(config);
@@ -109,7 +114,12 @@ namespace com.espertech.esper.core.service
                 throw new ConfigurationException(e.Message, e);
             }
         }
-    
+
+        public void AddPlugInAggregationFunctionFactory(string functionName, Type aggregationFactoryClass)
+        {
+            AddPlugInAggregationFunctionFactory(functionName, aggregationFactoryClass.AssemblyQualifiedName);
+        }
+
         public void AddPlugInAggregationFunctionFactory(string functionName, string aggregationFactoryClassName) {
             try {
                 var desc = new ConfigurationPlugInAggregationFunction(functionName, aggregationFactoryClassName);
@@ -118,19 +128,31 @@ namespace com.espertech.esper.core.service
                 throw new ConfigurationException(e.Message, e);
             }
         }
-    
+
+        public void AddPlugInSingleRowFunction(string functionName, Type clazz, string methodName) {
+            AddPlugInSingleRowFunction(functionName, clazz.AssemblyQualifiedName, methodName);
+        }
         public void AddPlugInSingleRowFunction(string functionName, string className, string methodName) {
             InternalAddPlugInSingleRowFunction(functionName, className, methodName, ValueCacheEnum.DISABLED, FilterOptimizableEnum.ENABLED, false, null);
         }
-    
+
+        public void AddPlugInSingleRowFunction(string functionName, Type clazz, string methodName, ValueCacheEnum valueCache) {
+            AddPlugInSingleRowFunction(functionName, clazz.AssemblyQualifiedName, methodName, valueCache);
+        }
         public void AddPlugInSingleRowFunction(string functionName, string className, string methodName, ValueCacheEnum valueCache) {
             InternalAddPlugInSingleRowFunction(functionName, className, methodName, valueCache, FilterOptimizableEnum.ENABLED, false, null);
         }
-    
+
+        public void AddPlugInSingleRowFunction(string functionName, Type clazz, string methodName, FilterOptimizableEnum filterOptimizable) {
+            AddPlugInSingleRowFunction(functionName, clazz.AssemblyQualifiedName, methodName, filterOptimizable);
+        }
         public void AddPlugInSingleRowFunction(string functionName, string className, string methodName, FilterOptimizableEnum filterOptimizable) {
             InternalAddPlugInSingleRowFunction(functionName, className, methodName, ValueCacheEnum.DISABLED, filterOptimizable, false, null);
         }
-    
+
+        public void AddPlugInSingleRowFunction(string functionName, Type clazz, string methodName, ValueCacheEnum valueCache, FilterOptimizableEnum filterOptimizable, bool rethrowExceptions) {
+            AddPlugInSingleRowFunction(functionName, clazz.AssemblyQualifiedName, methodName, valueCache, filterOptimizable, rethrowExceptions);
+        }
         public void AddPlugInSingleRowFunction(string functionName, string className, string methodName, ValueCacheEnum valueCache, FilterOptimizableEnum filterOptimizable, bool rethrowExceptions) {
             InternalAddPlugInSingleRowFunction(functionName, className, methodName, valueCache, filterOptimizable, rethrowExceptions, null);
         }
@@ -174,7 +196,7 @@ namespace com.espertech.esper.core.service
 
         public void AddAnnotationImport(Type autoImport)
         {
-            AddAnnotationImport(autoImport.FullName, autoImport.AssemblyQualifiedName);
+            AddAnnotationImport(autoImport.FullName, autoImport.Assembly.FullName);
         }
 
         public void AddAnnotationImport<T>(bool importNamespace)
@@ -586,6 +608,14 @@ namespace com.espertech.esper.core.service
         public void AddEventType<T>(string eventTypeName, ConfigurationEventTypeLegacy legacyEventTypeDesc)
         {
             AddEventType(eventTypeName, typeof(T).AssemblyQualifiedName, legacyEventTypeDesc);
+        }
+
+        public void AddEventType(
+            string eventTypeName,
+            Type eventClass,
+            ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        {
+            AddEventType(eventTypeName, eventClass.AssemblyQualifiedName, legacyEventTypeDesc);
         }
 
         public void AddEventType(string eventTypeName, string eventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc)

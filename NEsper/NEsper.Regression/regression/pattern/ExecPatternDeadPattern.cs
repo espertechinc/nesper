@@ -6,12 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
@@ -22,9 +18,9 @@ namespace com.espertech.esper.regression.pattern
 {
     public class ExecPatternDeadPattern : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.AddEventType("A", typeof(SupportBean_A).Name);
-            configuration.AddEventType("B", typeof(SupportBean_B).Name);
-            configuration.AddEventType("C", typeof(SupportBean_C).Name);
+            configuration.AddEventType("A", typeof(SupportBean_A));
+            configuration.AddEventType("B", typeof(SupportBean_B));
+            configuration.AddEventType("C", typeof(SupportBean_C));
         }
     
         public override void Run(EPServiceProvider epService) {

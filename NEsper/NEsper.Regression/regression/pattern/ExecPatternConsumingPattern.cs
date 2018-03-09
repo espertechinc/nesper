@@ -7,15 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.IO;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.client.soda;
 using com.espertech.esper.client.time;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
 
@@ -187,15 +182,15 @@ namespace com.espertech.esper.regression.pattern
         private void RunAssertionEveryOp(EPServiceProvider epService)
         {
             TryAssertionEveryBeginState(epService, "");
-            TryAssertionEveryBeginState(epService, "-Distinct(id)");
-            TryAssertionEveryBeginState(epService, "-Distinct(id, 10 seconds)");
+            TryAssertionEveryBeginState(epService, "-distinct(id)");
+            TryAssertionEveryBeginState(epService, "-distinct(id, 10 seconds)");
 
             TryAssertionEveryChildState(epService, "", true);
             TryAssertionEveryChildState(epService, "", false);
-            TryAssertionEveryChildState(epService, "-Distinct(id)", true);
-            TryAssertionEveryChildState(epService, "-Distinct(id)", false);
-            TryAssertionEveryChildState(epService, "-Distinct(id, 10 seconds)", true);
-            TryAssertionEveryChildState(epService, "-Distinct(id, 10 seconds)", false);
+            TryAssertionEveryChildState(epService, "-distinct(id)", true);
+            TryAssertionEveryChildState(epService, "-distinct(id)", false);
+            TryAssertionEveryChildState(epService, "-distinct(id, 10 seconds)", true);
+            TryAssertionEveryChildState(epService, "-distinct(id, 10 seconds)", false);
         }
 
         private void TryAssertionEveryChildState(EPServiceProvider epService, string everySuffix, bool matchDiscard)

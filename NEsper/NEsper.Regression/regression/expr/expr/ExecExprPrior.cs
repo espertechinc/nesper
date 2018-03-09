@@ -49,7 +49,7 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionPriorTimewindowStats(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
-            string epl = "SELECT prior(1, average) as value FROM SupportBean()#time(5 minutes)#uni(intPrimitive)";
+            string epl = "SELECT prior(1, average) as value FROM SupportBean()#time(5 minutes)#uni(IntPrimitive)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -550,11 +550,11 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionPriorTimeBatchWindowJoin(EPServiceProvider epService) {
-            string epl = "select theString as currSymbol, " +
+            string epl = "select TheString as currSymbol, " +
                     "prior(2, symbol) as priorSymbol, " +
                     "prior(1, price) as priorPrice " +
                     "from " + typeof(SupportBean).FullName + "#keepall, " +
-                    typeof(SupportMarketDataBean).Name + "#time_batch(1 min)";
+                    typeof(SupportMarketDataBean).FullName + "#time_batch(1 min)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();

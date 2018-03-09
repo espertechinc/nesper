@@ -40,75 +40,75 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
         private void RunAssertionInvalidAggMatchSingleFunc(EPServiceProvider epService) {
             // sum
-            TryInvalidAggMatch(epService, "var1", "sum(double)", false, "sum(intPrimitive)",
-                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double)' and received 'sum(intPrimitive)': The required parameter type is java.lang.double? and provided is int [");
+            TryInvalidAggMatch(epService, "var1", "sum(double)", false, "sum(IntPrimitive)",
+                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double)' and received 'sum(IntPrimitive)': The required parameter type is " + Name.Clean<double>() + " and provided is int [");
             TryInvalidAggMatch(epService, "var1", "sum(double)", false, "count(*)",
                     "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double)' and received 'count(*)': Not a 'sum' aggregation [");
-            TryInvalidAggMatch(epService, "var1", "sum(double)", false, "sum(doublePrimitive, theString='a')",
-                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double)' and received 'sum(doublePrimitive,theString=\"a\")': The aggregation declares no filter expression and provided is a filter expression [");
-            TryInvalidAggMatch(epService, "var1", "sum(double, bool)", false, "sum(doublePrimitive)",
-                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double,bool)' and received 'sum(doublePrimitive)': The aggregation declares a filter expression and provided is no filter expression [");
+            TryInvalidAggMatch(epService, "var1", "sum(double)", false, "sum(DoublePrimitive, TheString='a')",
+                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double)' and received 'sum(DoublePrimitive,TheString=\"a\")': The aggregation declares no filter expression and provided is a filter expression [");
+            TryInvalidAggMatch(epService, "var1", "sum(double, bool)", false, "sum(DoublePrimitive)",
+                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double,bool)' and received 'sum(DoublePrimitive)': The aggregation declares a filter expression and provided is no filter expression [");
     
             // count
-            TryInvalidAggMatch(epService, "var1", "count(*)", false, "sum(intPrimitive)",
-                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'count(*)' and received 'sum(intPrimitive)': Not a 'count' aggregation [");
-            TryInvalidAggMatch(epService, "var1", "count(*)", false, "count(distinct intPrimitive)",
-                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'count(*)' and received 'count(distinct intPrimitive)': The aggregation declares no distinct and provided is a distinct [");
-            TryInvalidAggMatch(epService, "var1", "count(*)", false, "count(distinct intPrimitive, boolPrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "count(distinct int)", false, "count(distinct doublePrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "count(*)", false, "sum(IntPrimitive)",
+                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'count(*)' and received 'sum(IntPrimitive)': Not a 'count' aggregation [");
+            TryInvalidAggMatch(epService, "var1", "count(*)", false, "count(distinct IntPrimitive)",
+                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'count(*)' and received 'count(distinct IntPrimitive)': The aggregation declares no distinct and provided is a distinct [");
+            TryInvalidAggMatch(epService, "var1", "count(*)", false, "count(distinct IntPrimitive, BoolPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "count(distinct int)", false, "count(distinct DoublePrimitive)", null);
             TryInvalidAggMatch(epService, "var1", "count(int)", false, "count(*)",
                     "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'count(int)' and received 'count(*)': The aggregation declares ignore nulls and provided is no ignore nulls [");
     
             // avg
-            TryInvalidAggMatch(epService, "var1", "avg(int)", false, "sum(intPrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "avg(int)", false, "avg(longPrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "avg(int)", false, "avg(intPrimitive, boolPrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "avg(int)", false, "avg(distinct intPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "avg(int)", false, "sum(IntPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "avg(int)", false, "avg(LongPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "avg(int)", false, "avg(IntPrimitive, BoolPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "avg(int)", false, "avg(distinct IntPrimitive)", null);
     
             // min-max
-            TryInvalidAggMatch(epService, "var1", "max(int)", false, "min(intPrimitive)",
-                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'max(int)' and received 'min(intPrimitive)': The aggregation declares max and provided is min [");
-            TryInvalidAggMatch(epService, "var1", "min(int)", false, "avg(intPrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "min(int)", false, "min(doublePrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "min(int)", false, "fmin(intPrimitive, theString='a')",
-                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'min(int)' and received 'min(intPrimitive,theString=\"a\")': The aggregation declares no filter expression and provided is a filter expression [");
+            TryInvalidAggMatch(epService, "var1", "max(int)", false, "min(IntPrimitive)",
+                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'max(int)' and received 'min(IntPrimitive)': The aggregation declares max and provided is min [");
+            TryInvalidAggMatch(epService, "var1", "min(int)", false, "avg(IntPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "min(int)", false, "min(DoublePrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "min(int)", false, "fmin(IntPrimitive, TheString='a')",
+                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'min(int)' and received 'min(IntPrimitive,TheString=\"a\")': The aggregation declares no filter expression and provided is a filter expression [");
     
             // stddev
-            TryInvalidAggMatch(epService, "var1", "stddev(int)", false, "avg(intPrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "stddev(int)", false, "stddev(doublePrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "stddev(int)", false, "stddev(intPrimitive, true)", null);
+            TryInvalidAggMatch(epService, "var1", "stddev(int)", false, "avg(IntPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "stddev(int)", false, "stddev(DoublePrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "stddev(int)", false, "stddev(IntPrimitive, true)", null);
     
             // avedev
-            TryInvalidAggMatch(epService, "var1", "avedev(int)", false, "avg(intPrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "avedev(int)", false, "avedev(doublePrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "avedev(int)", false, "avedev(intPrimitive, true)", null);
+            TryInvalidAggMatch(epService, "var1", "avedev(int)", false, "avg(IntPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "avedev(int)", false, "avedev(DoublePrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "avedev(int)", false, "avedev(IntPrimitive, true)", null);
     
             // median
-            TryInvalidAggMatch(epService, "var1", "median(int)", false, "avg(intPrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "median(int)", false, "median(doublePrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "median(int)", false, "median(intPrimitive, true)", null);
+            TryInvalidAggMatch(epService, "var1", "median(int)", false, "avg(IntPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "median(int)", false, "median(DoublePrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "median(int)", false, "median(IntPrimitive, true)", null);
     
             // firstever
-            TryInvalidAggMatch(epService, "var1", "firstever(int)", false, "lastever(intPrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "firstever(int)", false, "firstever(doublePrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "firstever(int, bool)", false, "firstever(intPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "firstever(int)", false, "lastever(IntPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "firstever(int)", false, "firstever(DoublePrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "firstever(int, bool)", false, "firstever(IntPrimitive)", null);
     
             // lastever
-            TryInvalidAggMatch(epService, "var1", "lastever(int)", false, "firstever(intPrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "lastever(int)", false, "lastever(doublePrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "lastever(int, bool)", false, "lastever(intPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "lastever(int)", false, "firstever(IntPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "lastever(int)", false, "lastever(DoublePrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "lastever(int, bool)", false, "lastever(IntPrimitive)", null);
     
             // countever
-            TryInvalidAggMatch(epService, "var1", "lastever(int)", true, "countever(intPrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "lastever(int, bool)", true, "countever(intPrimitive)", null);
-            TryInvalidAggMatch(epService, "var1", "lastever(int)", true, "countever(intPrimitive, true)", null);
-            TryInvalidAggMatch(epService, "var1", "countever(*)", true, "countever(intPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "lastever(int)", true, "countever(IntPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "lastever(int, bool)", true, "countever(IntPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "lastever(int)", true, "countever(IntPrimitive, true)", null);
+            TryInvalidAggMatch(epService, "var1", "countever(*)", true, "countever(IntPrimitive)", null);
     
             // nth
-            TryInvalidAggMatch(epService, "var1", "Nth(int, 10)", false, "avg(20)", null);
-            TryInvalidAggMatch(epService, "var1", "Nth(int, 10)", false, "Nth(intPrimitive, 11)",
-                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'Nth(int,10)' and received 'Nth(intPrimitive,11)': The size is 10 and provided is 11 [");
-            TryInvalidAggMatch(epService, "var1", "Nth(int, 10)", false, "Nth(doublePrimitive, 10)", null);
+            TryInvalidAggMatch(epService, "var1", "nth(int, 10)", false, "avg(20)", null);
+            TryInvalidAggMatch(epService, "var1", "nth(int, 10)", false, "nth(IntPrimitive, 11)",
+                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'nth(int,10)' and received 'nth(IntPrimitive,11)': The size is 10 and provided is 11 [");
+            TryInvalidAggMatch(epService, "var1", "nth(int, 10)", false, "nth(DoublePrimitive, 10)", null);
     
             // rate
             TryInvalidAggMatch(epService, "var1", "rate(20)", false, "avg(20)", null);
@@ -116,10 +116,10 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'rate(20)' and received 'rate(11)': The size is 20000 and provided is 11000 [");
     
             // leaving
-            TryInvalidAggMatch(epService, "var1", "leaving()", false, "avg(intPrimitive)", null);
+            TryInvalidAggMatch(epService, "var1", "leaving()", false, "avg(IntPrimitive)", null);
     
             // plug-in single-func
-            epService.EPAdministrator.Configuration.AddPlugInAggregationFunctionFactory("myaggsingle", typeof(MyAggregationFunctionFactory).Name);
+            epService.EPAdministrator.Configuration.AddPlugInAggregationFunctionFactory("myaggsingle", typeof(MyAggregationFunctionFactory));
             TryInvalidAggMatch(epService, "var1", "Myaggsingle()", false, "leaving()",
                     "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'Myaggsingle(*)' and received 'leaving(*)': Not a 'myaggsingle' aggregation [");
         }
@@ -129,21 +129,21 @@ namespace com.espertech.esper.regression.nwtable.tbl
             //
     
             // window vs agg method
-            TryInvalidAggMatch(epService, "var1", "window(*) @Type(SupportBean)", true, "avg(intPrimitive)",
-                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'window(*)' and received 'avg(intPrimitive)': Not a 'window' aggregation [");
+            TryInvalidAggMatch(epService, "var1", "window(*) @Type(SupportBean)", true, "avg(IntPrimitive)",
+                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'window(*)' and received 'avg(IntPrimitive)': Not a 'window' aggregation [");
             // window vs sorted
-            TryInvalidAggMatch(epService, "var1", "window(*) @Type(SupportBean)", true, "sorted(intPrimitive)",
-                    "Error starting statement: Failed to validate select-clause expression 'sorted(intPrimitive)': When specifying into-table a sort expression cannot be provided [");
+            TryInvalidAggMatch(epService, "var1", "window(*) @Type(SupportBean)", true, "sorted(IntPrimitive)",
+                    "Error starting statement: Failed to validate select-clause expression 'sorted(IntPrimitive)': When specifying into-table a sort expression cannot be provided [");
             // wrong type
             TryInvalidAggMatch(epService, "var1", "window(*) @Type(SupportBean_S0)", true, "window(*)",
                     "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'window(*)' and received 'window(*)': The required event type is 'SupportBean_S0' and provided is 'SupportBean' [");
     
             // sorted
             //
-            TryInvalidAggMatch(epService, "var1", "sorted(intPrimitive) @Type(SupportBean)", true, "window(*)",
-                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'sorted(intPrimitive)' and received 'window(*)': Not a 'sorted' aggregation [");
-            TryInvalidAggMatch(epService, "var1", "sorted(id) @Type(SupportBean_S0)", true, "sorted(intPrimitive)",
-                    "Error starting statement: Failed to validate select-clause expression 'sorted(intPrimitive)': When specifying into-table a sort expression cannot be provided [");
+            TryInvalidAggMatch(epService, "var1", "sorted(IntPrimitive) @Type(SupportBean)", true, "window(*)",
+                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'sorted(IntPrimitive)' and received 'window(*)': Not a 'sorted' aggregation [");
+            TryInvalidAggMatch(epService, "var1", "sorted(id) @Type(SupportBean_S0)", true, "sorted(IntPrimitive)",
+                    "Error starting statement: Failed to validate select-clause expression 'sorted(IntPrimitive)': When specifying into-table a sort expression cannot be provided [");
     
             // plug-in
             //
@@ -226,12 +226,12 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "Error starting statement: Expression 'Singlerow(1)' is not an aggregation [");
             // can only declare "sorted()" or "window" aggregation function
             // this is to make sure future compatibility when optimizing queries
-            SupportMessageAssertUtil.TryInvalid(epService, "create table aggvar_invalid as (mywindow window(intPrimitive) @Type(SupportBean))",
-                    "Error starting statement: Failed to validate table-column expression 'window(intPrimitive)': For tables columns, the window aggregation function requires the 'window(*)' declaration [");
+            SupportMessageAssertUtil.TryInvalid(epService, "create table aggvar_invalid as (mywindow window(IntPrimitive) @Type(SupportBean))",
+                    "Error starting statement: Failed to validate table-column expression 'window(IntPrimitive)': For tables columns, the window aggregation function requires the 'window(*)' declaration [");
             SupportMessageAssertUtil.TryInvalid(epService, "create table aggvar_invalid as (mywindow last(*)@Type(SupportBean))", "skip");
             SupportMessageAssertUtil.TryInvalid(epService, "create table aggvar_invalid as (mywindow window(sb.*)@Type(SupportBean)", "skip");
-            SupportMessageAssertUtil.TryInvalid(epService, "create table aggvar_invalid as (mymax MaxBy(intPrimitive) @Type(SupportBean))",
-                    "Error starting statement: Failed to validate table-column expression 'maxby(intPrimitive)': For tables columns, the aggregation function requires the 'sorted(*)' declaration [");
+            SupportMessageAssertUtil.TryInvalid(epService, "create table aggvar_invalid as (mymax MaxBy(IntPrimitive) @Type(SupportBean))",
+                    "Error starting statement: Failed to validate table-column expression 'maxby(IntPrimitive)': For tables columns, the aggregation function requires the 'sorted(*)' declaration [");
             // same column multiple times
             SupportMessageAssertUtil.TryInvalid(epService, "create table aggvar_invalid as (mycount count(*),mycount count(*))",
                     "Error starting statement: Column 'mycount' is listed more than once [create table aggvar_invalid as (mycount count(*),mycount count(*))]");
@@ -252,20 +252,20 @@ namespace com.espertech.esper.regression.nwtable.tbl
             SupportMessageAssertUtil.TryInvalid(epService, "create table abc as (mystr string primary keys)",
                     "Invalid keyword 'keys' encountered, expected 'primary key' [");
             SupportMessageAssertUtil.TryInvalid(epService, "create table SomeSchema as (mystr string)",
-                    "Error starting statement: An event type or schema by name 'SomeSchema' already Exists [");
+                    "Error starting statement: An event type or schema by name 'SomeSchema' already exists [");
     
             // invalid-into
             //
             //
             // table-not-found
-            SupportMessageAssertUtil.TryInvalid(epService, "into table xxx select count(*) as total from SupportBean group by intPrimitive",
+            SupportMessageAssertUtil.TryInvalid(epService, "into table xxx select count(*) as total from SupportBean group by IntPrimitive",
                     "Error starting statement: Invalid into-table clause: Failed to find table by name 'xxx' [");
             // group-by key type and count of group-by expressions
-            SupportMessageAssertUtil.TryInvalid(epService, "into table aggvar_grouped_string select count(*) as total from SupportBean group by intPrimitive",
-                    "Error starting statement: Incompatible type returned by a group-by expression for use with table 'aggvar_grouped_string', the group-by expression 'intPrimitive' returns '" + Name.Of<int>() + "' but the table expects 'System.String' [");
-            SupportMessageAssertUtil.TryInvalid(epService, "into table aggvar_grouped_string select count(*) as total from SupportBean group by theString, intPrimitive",
+            SupportMessageAssertUtil.TryInvalid(epService, "into table aggvar_grouped_string select count(*) as total from SupportBean group by IntPrimitive",
+                    "Error starting statement: Incompatible type returned by a group-by expression for use with table 'aggvar_grouped_string', the group-by expression 'IntPrimitive' returns '" + Name.Of<int>() + "' but the table expects 'System.String' [");
+            SupportMessageAssertUtil.TryInvalid(epService, "into table aggvar_grouped_string select count(*) as total from SupportBean group by TheString, IntPrimitive",
                     "Error starting statement: Incompatible number of group-by expressions for use with table 'aggvar_grouped_string', the table expects 1 group-by expressions and provided are 2 group-by expressions [");
-            SupportMessageAssertUtil.TryInvalid(epService, "into table aggvar_ungrouped select count(*) as total from SupportBean group by theString",
+            SupportMessageAssertUtil.TryInvalid(epService, "into table aggvar_ungrouped select count(*) as total from SupportBean group by TheString",
                     "Error starting statement: Incompatible number of group-by expressions for use with table 'aggvar_ungrouped', the table expects no group-by expressions and provided are 1 group-by expressions [");
             SupportMessageAssertUtil.TryInvalid(epService, "into table aggvar_grouped_string select count(*) as total from SupportBean",
                     "Error starting statement: Incompatible number of group-by expressions for use with table 'aggvar_grouped_string', the table expects 1 group-by expressions and provided are no group-by expressions [");
@@ -323,10 +323,10 @@ namespace com.espertech.esper.regression.nwtable.tbl
             SupportMessageAssertUtil.TryInvalid(epService, "select * from aggvar_grouped_string[books]",
                     "Contained-event expressions are not supported with tables");
             // join invalid
-            SupportMessageAssertUtil.TryInvalid(epService, "select aggvar_grouped_int[1].total.CountMinSketchFrequency(theString) from SupportBean",
+            SupportMessageAssertUtil.TryInvalid(epService, "select aggvar_grouped_int[1].total.CountMinSketchFrequency(TheString) from SupportBean",
                     "Error starting statement: Failed to validate select-clause expression 'aggvar_grouped_int[1].total.countMi...(62 chars)': Invalid combination of aggregation state and aggregation accessor [");
-            SupportMessageAssertUtil.TryInvalid(epService, "select Total.CountMinSketchFrequency(theString) from aggvar_grouped_int, SupportBean unidirectional",
-                    "Error starting statement: Failed to validate select-clause expression 'total.CountMinSketchFrequency(theString)': Failed to validate method-chain expression 'total.CountMinSketchFrequency(theString)': Invalid combination of aggregation state and aggregation accessor [");
+            SupportMessageAssertUtil.TryInvalid(epService, "select Total.CountMinSketchFrequency(TheString) from aggvar_grouped_int, SupportBean unidirectional",
+                    "Error starting statement: Failed to validate select-clause expression 'total.CountMinSketchFrequency(TheString)': Failed to validate method-chain expression 'total.CountMinSketchFrequency(TheString)': Invalid combination of aggregation state and aggregation accessor [");
             // cannot be marked undirectional
             SupportMessageAssertUtil.TryInvalid(epService, "select * from aggvar_grouped_int unidirectional, SupportBean",
                     "Error starting statement: Tables cannot be marked as unidirectional [");
@@ -338,7 +338,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "Error starting statement: Tables cannot be used in an on-action statement triggering stream [");
             // cannot be used in match-recognize
             SupportMessageAssertUtil.TryInvalid(epService, "select * from aggvar_ungrouped " +
-                            "match_recognize ( measures a.theString as a pattern (A) define A as true)",
+                            "match_recognize ( measures a.TheString as a pattern (A) define A as true)",
                     "Error starting statement: Tables cannot be used with match-recognize [");
             // cannot be used in update-istream
             SupportMessageAssertUtil.TryInvalid(epService, "update istream aggvar_grouped_string set key = 'a'",
@@ -351,12 +351,12 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "Tables cannot be used in pattern filter atoms [");
             // schema by the same name
             SupportMessageAssertUtil.TryInvalid(epService, "create schema aggvar_ungrouped as " + typeof(SupportBean).FullName,
-                    "Error starting statement: A table by name 'aggvar_ungrouped' already Exists [");
+                    "Error starting statement: A table by name 'aggvar_ungrouped' already exists [");
             try {
                 epService.EPAdministrator.Configuration.AddEventType("aggvar_ungrouped", "p0".Split(','), new object[]{typeof(int)});
                 Assert.Fail();
             } catch (EPException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex, "A table by name 'aggvar_ungrouped' already Exists");
+                SupportMessageAssertUtil.AssertMessage(ex, "A table by name 'aggvar_ungrouped' already exists");
             }
         }
     

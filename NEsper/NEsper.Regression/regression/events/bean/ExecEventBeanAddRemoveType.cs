@@ -53,7 +53,7 @@ namespace com.espertech.esper.regression.events.bean
             Assert.IsTrue(configOps.GetEventTypeNameUsedBy("MyBeanEvent").IsEmpty());
     
             // compile
-            epService.EPAdministrator.CreateEPL("select boolPrimitive from MyBeanEvent", "stmtTwo");
+            epService.EPAdministrator.CreateEPL("select BoolPrimitive from MyBeanEvent", "stmtTwo");
             EPAssertionUtil.AssertEqualsExactOrder(configOps.GetEventTypeNameUsedBy("MyBeanEvent").ToArray(), new string[]{"stmtTwo"});
             try {
                 epService.EPAdministrator.CreateEPL("select id from MyBeanEvent");
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regression.events.bean
             // compile
             epService.EPAdministrator.CreateEPL("select feed from MyBeanEvent");
             try {
-                epService.EPAdministrator.CreateEPL("select boolPrimitive from MyBeanEvent");
+                epService.EPAdministrator.CreateEPL("select BoolPrimitive from MyBeanEvent");
                 Assert.Fail();
             } catch (EPException) {
                 // expected

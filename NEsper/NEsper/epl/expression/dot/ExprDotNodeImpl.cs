@@ -360,10 +360,9 @@ namespace com.espertech.esper.epl.expression.dot
                 {
                     getter = streamType.GetGetter(propertyInfoPair.First.PropertyName);
 
-                    var propertyEval =
-                        ExprDotNodeUtility.GetPropertyEnumerationSource(
-                            propertyInfoPair.First.PropertyName, streamId, streamType, hasEnumerationMethod,
-                            validationContext.IsDisablePropertyExpressionEventCollCache);
+                    var propertyEval = ExprDotNodeUtility.GetPropertyEnumerationSource(
+                        propertyInfoPair.First.PropertyName, streamId, streamType, hasEnumerationMethod,
+                        validationContext.IsDisablePropertyExpressionEventCollCache);
                     typeInfo = propertyEval.ReturnType;
                     enumerationEval = propertyEval.Enumeration;
                     inputType = propertyEval.ReturnType;

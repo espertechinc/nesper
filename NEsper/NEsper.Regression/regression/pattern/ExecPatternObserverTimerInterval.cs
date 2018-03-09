@@ -51,7 +51,7 @@ namespace com.espertech.esper.regression.pattern
             testCase.Add("B1");
             testCaseList.AddTest(testCase);
 
-            var text = "select * from pattern [timer:interval(1.999d)]";
+            var text = "select * from pattern [timer:interval(1.999)]";
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.CreateWildcard();
             PatternExpr pattern = Patterns.TimerInterval(1.999d);
@@ -276,7 +276,7 @@ namespace com.espertech.esper.regression.pattern
             SendTimer(0, epService);
 
             // Set up a timer:within
-            var statement = epService.EPAdministrator.CreateEPL("select a.theString as id from pattern [every a=SupportBean -> timer:interval(intPrimitive seconds)]");
+            var statement = epService.EPAdministrator.CreateEPL("select a.TheString as id from pattern [every a=SupportBean -> timer:interval(IntPrimitive seconds)]");
 
             var testListener = new SupportUpdateListener();
             statement.AddListener(testListener);
@@ -304,7 +304,7 @@ namespace com.espertech.esper.regression.pattern
             SendTimer(0, epService);
 
             // Set up a timer:within
-            var statement = epService.EPAdministrator.CreateEPL("select a[0].theString as a0id, a[1].theString as a1id from pattern [ [2] a=SupportBean -> timer:interval(a[0].intPrimitive+a[1].intPrimitive seconds)]");
+            var statement = epService.EPAdministrator.CreateEPL("select a[0].TheString as a0id, a[1].TheString as a1id from pattern [ [2] a=SupportBean -> timer:interval(a[0].IntPrimitive+a[1].IntPrimitive seconds)]");
 
             var testListener = new SupportUpdateListener();
             statement.AddListener(testListener);

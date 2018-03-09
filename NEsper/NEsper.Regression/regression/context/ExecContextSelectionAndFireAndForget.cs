@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
     
-            epService.EPAdministrator.CreateEPL("create context SegmentedSB as partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context SegmentedSB as partition by TheString from SupportBean");
             epService.EPAdministrator.CreateEPL("create context SegmentedS0 as partition by p00 from SupportBean_S0");
             epService.EPAdministrator.CreateEPL("context SegmentedSB create window WinSB#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("context SegmentedS0 create window WinS0#keepall as SupportBean_S0");
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regression.context
                     "Error executing statement: Number of context partition selectors does not match the number of named windows in the from-clause [select * from WinSB, WinS1]");
     
             // test join
-            epService.EPAdministrator.CreateEPL("create context PartitionedByString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context PartitionedByString partition by TheString from SupportBean");
             epService.EPAdministrator.CreateEPL("context PartitionedByString create window MyWindowOne#keepall as SupportBean");
     
             epService.EPAdministrator.CreateEPL("create context PartitionedByP00 partition by p00 from SupportBean_S0");
@@ -72,10 +72,10 @@ namespace com.espertech.esper.regression.context
             epService.EPRuntime.SendEvent(new SupportBean_S0(2, "G1"));
     
             try {
-                RunQueryAll(epService, "select mw1.intPrimitive as c1, mw2.id as c2 from MyWindowOne mw1, MyWindowTwo mw2 where mw1.theString = mw2.p00", "c1,c2",
+                RunQueryAll(epService, "select mw1.IntPrimitive as c1, mw2.id as c2 from MyWindowOne mw1, MyWindowTwo mw2 where mw1.TheString = mw2.p00", "c1,c2",
                         new[] {new object[] {10, 2}, new object[] {11, 1}}, 2);
             } catch (EPStatementException ex) {
-                Assert.AreEqual(ex.Message, "Error executing statement: Joins against named windows that are under context are not supported [select mw1.intPrimitive as c1, mw2.id as c2 from MyWindowOne mw1, MyWindowTwo mw2 where mw1.theString = mw2.p00]");
+                Assert.AreEqual(ex.Message, "Error executing statement: Joins against named windows that are under context are not supported [select mw1.IntPrimitive as c1, mw2.id as c2 from MyWindowOne mw1, MyWindowTwo mw2 where mw1.TheString = mw2.p00]");
             }
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionContextNamedWindowQuery(EPServiceProvider epService) {
     
-            epService.EPAdministrator.CreateEPL("create context PartitionedByString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context PartitionedByString partition by TheString from SupportBean");
             epService.EPAdministrator.CreateEPL("context PartitionedByString create window MyWindow#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
     
@@ -92,19 +92,19 @@ namespace com.espertech.esper.regression.context
             epService.EPRuntime.SendEvent(new SupportBean("E2", 21));
     
             // test no context
-            RunQueryAll(epService, "select sum(intPrimitive) as c1 from MyWindow", "c1", new[] {new object[] {51}}, 1);
-            RunQueryAll(epService, "select sum(intPrimitive) as c1 from MyWindow where intPrimitive > 15", "c1", new[] {new object[] {41}}, 1);
-            RunQuery(epService, "select sum(intPrimitive) as c1 from MyWindow", "c1", new[] {new object[] {41}}, new ContextPartitionSelector[] {new SupportSelectorPartitioned(Collections.SingletonSet(new object[] {"E2"}))});
-            RunQuery(epService, "select sum(intPrimitive) as c1 from MyWindow", "c1", new[] {new object[] {41}}, new ContextPartitionSelector[] {new SupportSelectorById(Collections.SingletonSet(1))});
+            RunQueryAll(epService, "select sum(IntPrimitive) as c1 from MyWindow", "c1", new[] {new object[] {51}}, 1);
+            RunQueryAll(epService, "select sum(IntPrimitive) as c1 from MyWindow where IntPrimitive > 15", "c1", new[] {new object[] {41}}, 1);
+            RunQuery(epService, "select sum(IntPrimitive) as c1 from MyWindow", "c1", new[] {new object[] {41}}, new ContextPartitionSelector[] {new SupportSelectorPartitioned(Collections.SingletonSet(new object[] {"E2"}))});
+            RunQuery(epService, "select sum(IntPrimitive) as c1 from MyWindow", "c1", new[] {new object[] {41}}, new ContextPartitionSelector[] {new SupportSelectorById(Collections.SingletonSet(1))});
     
             // test with context props
-            RunQueryAll(epService, "context PartitionedByString select context.key1 as c0, intPrimitive as c1 from MyWindow",
+            RunQueryAll(epService, "context PartitionedByString select context.key1 as c0, IntPrimitive as c1 from MyWindow",
                     "c0,c1", new[] {new object[] {"E1", 10}, new object[] {"E2", 20}, new object[] {"E2", 21}}, 1);
-            RunQueryAll(epService, "context PartitionedByString select context.key1 as c0, intPrimitive as c1 from MyWindow where intPrimitive > 15",
+            RunQueryAll(epService, "context PartitionedByString select context.key1 as c0, IntPrimitive as c1 from MyWindow where IntPrimitive > 15",
                     "c0,c1", new[] {new object[] {"E2", 20}, new object[] {"E2", 21}}, 1);
     
             // test targeted context partition
-            RunQuery(epService, "context PartitionedByString select context.key1 as c0, intPrimitive as c1 from MyWindow where intPrimitive > 15",
+            RunQuery(epService, "context PartitionedByString select context.key1 as c0, IntPrimitive as c1 from MyWindow where IntPrimitive > 15",
                     "c0,c1", new[] {new object[] {"E2", 20}, new object[] {"E2", 21}}, new[] {new SupportSelectorPartitioned(Collections.SingletonList(new object[] {"E2"}))});
     
             try
@@ -131,7 +131,7 @@ namespace com.espertech.esper.regression.context
     
             epService.EPAdministrator.CreateEPL("create context NestedContext " +
                     "context ACtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(id=s0.id), " +
-                    "context BCtx group by intPrimitive < 0 as grp1, group by intPrimitive = 0 as grp2, group by intPrimitive > 0 as grp3 from SupportBean");
+                    "context BCtx group by IntPrimitive < 0 as grp1, group by IntPrimitive = 0 as grp2, group by IntPrimitive > 0 as grp3 from SupportBean");
             epService.EPAdministrator.CreateEPL("context NestedContext create window MyWindow#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
     
@@ -142,11 +142,11 @@ namespace com.espertech.esper.regression.context
             epService.EPRuntime.SendEvent(new SupportBean("E3", 5));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
     
-            RunQueryAll(epService, "select theString as c1, sum(intPrimitive) as c2 from MyWindow group by theString", "c1,c2", new[] {new object[] {"E1", 5}, new object[] {"E2", -2}, new object[] {"E3", 10}}, 1);
-            RunQuery(epService, "select theString as c1, sum(intPrimitive) as c2 from MyWindow group by theString", "c1,c2", new[] {new object[] {"E1", 3}, new object[] {"E3", 5}},
+            RunQueryAll(epService, "select TheString as c1, sum(IntPrimitive) as c2 from MyWindow group by TheString", "c1,c2", new[] {new object[] {"E1", 5}, new object[] {"E2", -2}, new object[] {"E3", 10}}, 1);
+            RunQuery(epService, "select TheString as c1, sum(IntPrimitive) as c2 from MyWindow group by TheString", "c1,c2", new[] {new object[] {"E1", 3}, new object[] {"E3", 5}},
                     new ContextPartitionSelector[]{new SupportSelectorById(Collections.SingletonSet(2))});
     
-            RunQuery(epService, "context NestedContext select context.ACtx.s0.p00 as c1, context.BCtx.label as c2, theString as c3, sum(intPrimitive) as c4 from MyWindow group by theString", "c1,c2,c3,c4", new[] {new object[] {"S0_1", "grp3", "E1", 3}, new object[] {"S0_1", "grp3", "E3", 5}},
+            RunQuery(epService, "context NestedContext select context.ACtx.s0.p00 as c1, context.BCtx.label as c2, TheString as c3, sum(IntPrimitive) as c4 from MyWindow group by TheString", "c1,c2,c3,c4", new[] {new object[] {"S0_1", "grp3", "E1", 3}, new object[] {"S0_1", "grp3", "E3", 5}},
                     new ContextPartitionSelector[]{new SupportSelectorById(Collections.SingletonSet(2))});
     
             // extract path
@@ -158,9 +158,9 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionIterateStatement(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("create context PartitionedByString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context PartitionedByString partition by TheString from SupportBean");
             string[] fields = "c0,c1".Split(',');
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("@Name('StmtOne') context PartitionedByString select context.key1 as c0, sum(intPrimitive) as c1 from SupportBean#length(5)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("@Name('StmtOne') context PartitionedByString select context.key1 as c0, sum(IntPrimitive) as c1 from SupportBean#length(5)");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
@@ -202,14 +202,14 @@ namespace com.espertech.esper.regression.context
                 stmtTwo.GetEnumerator(null);
                 Assert.Fail();
             } catch (UnsupportedOperationException ex) {
-                Assert.AreEqual(ex.Message, "Iterator with context selector is only supported for statements under context");
+                Assert.AreEqual(ex.Message, "Enumerator with context selector is only supported for statements under context");
             }
     
             try {
                 stmtTwo.GetSafeEnumerator(null);
                 Assert.Fail();
             } catch (UnsupportedOperationException ex) {
-                Assert.AreEqual(ex.Message, "Iterator with context selector is only supported for statements under context");
+                Assert.AreEqual(ex.Message, "Enumerator with context selector is only supported for statements under context");
             }
     
             epService.EPAdministrator.DestroyAllStatements();

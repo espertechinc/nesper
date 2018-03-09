@@ -6,14 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.subscriber;
@@ -25,7 +21,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.regression.client
 {
     public class ExecClientSubscriberBind : RegressionExecution {
-        private static readonly string[] FIELDS = "theString,intPrimitive".Split(',');
+        private static readonly string[] FIELDS = "TheString,IntPrimitive".Split(',');
     
         public override void Configure(Configuration configuration) {
             configuration.AddEventTypeAutoName(typeof(SupportBean).Namespace);
@@ -39,13 +35,13 @@ namespace com.espertech.esper.regression.client
         private void RunAssertionBindings(EPServiceProvider epService) {
     
             // just wildcard
-            EPStatement stmtJustWildcard = epService.EPAdministrator.CreateEPL("select * from SupportBean(theString='E2')");
+            EPStatement stmtJustWildcard = epService.EPAdministrator.CreateEPL("select * from SupportBean(TheString='E2')");
             TryAssertionJustWildcard(epService, stmtJustWildcard, new SupportSubscriberRowByRowSpecificNStmt());
             TryAssertionJustWildcard(epService, stmtJustWildcard, new SupportSubscriberRowByRowSpecificWStmt());
             stmtJustWildcard.Dispose();
     
             // wildcard with props
-            EPStatement stmtWildcardWProps = epService.EPAdministrator.CreateEPL("select *, intPrimitive + 2, 'x'||theString||'x' from " + typeof(SupportBean).FullName);
+            EPStatement stmtWildcardWProps = epService.EPAdministrator.CreateEPL("select *, IntPrimitive + 2, 'x'||TheString||'x' from " + typeof(SupportBean).FullName);
             TryAssertionWildcardWProps(epService, stmtWildcardWProps, new SupportSubscriberRowByRowSpecificNStmt());
             TryAssertionWildcardWProps(epService, stmtWildcardWProps, new SupportSubscriberRowByRowSpecificWStmt());
             stmtWildcardWProps.Dispose();
@@ -57,13 +53,13 @@ namespace com.espertech.esper.regression.client
             stmtNested.Dispose();
     
             // enum
-            EPStatement stmtEnum = epService.EPAdministrator.CreateEPL("select theString, supportEnum from SupportBeanWithEnum");
+            EPStatement stmtEnum = epService.EPAdministrator.CreateEPL("select TheString, supportEnum from SupportBeanWithEnum");
             TryAssertionEnum(epService, stmtEnum, new SupportSubscriberRowByRowSpecificNStmt());
             TryAssertionEnum(epService, stmtEnum, new SupportSubscriberRowByRowSpecificWStmt());
             stmtEnum.Dispose();
     
             // null-typed select value
-            EPStatement stmtNullSelected = epService.EPAdministrator.CreateEPL("select null, longBoxed from SupportBean");
+            EPStatement stmtNullSelected = epService.EPAdministrator.CreateEPL("select null, LongBoxed from SupportBean");
             TryAssertionNullSelected(epService, stmtNullSelected, new SupportSubscriberRowByRowSpecificNStmt());
             TryAssertionNullSelected(epService, stmtNullSelected, new SupportSubscriberRowByRowSpecificWStmt());
             stmtNullSelected.Dispose();
@@ -152,7 +148,7 @@ namespace com.espertech.esper.regression.client
             stmtNoParamsSubscriber.Dispose();
     
             // named-method subscriber
-            EPStatement stmtNamedMethod = epService.EPAdministrator.CreateEPL("select theString from SupportBean");
+            EPStatement stmtNamedMethod = epService.EPAdministrator.CreateEPL("select TheString from SupportBean");
             TryAsserionNamedMethod(epService, stmtNamedMethod, new SupportSubscriberMultirowUnderlyingNamedMethodNStmt());
             TryAsserionNamedMethod(epService, stmtNamedMethod, new SupportSubscriberMultirowUnderlyingNamedMethodWStmt());
             stmtNamedMethod.Dispose();
@@ -174,8 +170,8 @@ namespace com.espertech.esper.regression.client
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
     
             EventBean theEvent = listener.AssertOneGetNewAndReset();
-            Assert.AreEqual("E1", theEvent.Get("theString"));
-            Assert.AreEqual(1, theEvent.Get("intPrimitive"));
+            Assert.AreEqual("E1", theEvent.Get("TheString"));
+            Assert.AreEqual(1, theEvent.Get("IntPrimitive"));
             Assert.IsTrue(theEvent.Underlying is Pair<object,object>);
     
             foreach (string property in stmt.EventType.PropertyNames) {
@@ -185,7 +181,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void TryAssertionBindUpdateIRStream(EPServiceProvider epService, SupportSubscriberRowByRowFullBase subscriber) {
-            string stmtText = "select irstream theString, intPrimitive from " + typeof(SupportBean).FullName + "#length_batch(2)";
+            string stmtText = "select irstream TheString, IntPrimitive from " + typeof(SupportBean).FullName + "#length_batch(2)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             stmt.Subscriber = subscriber;
     
@@ -203,7 +199,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void TryAssertionBindObjectArr(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum, SupportSubscriberMultirowObjectArrayBase subscriber) {
-            string stmtText = eventRepresentationEnum.GetAnnotationText() + " select irstream theString, intPrimitive from " + typeof(SupportBean).FullName + "#length_batch(2)";
+            string stmtText = eventRepresentationEnum.GetAnnotationText() + " select irstream TheString, IntPrimitive from " + typeof(SupportBean).FullName + "#length_batch(2)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             stmt.Subscriber = subscriber;
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
@@ -224,7 +220,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void TryAssertionBindMap(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum, SupportSubscriberMultirowMapBase subscriber) {
-            string stmtText = eventRepresentationEnum.GetAnnotationText() + " select irstream theString, intPrimitive from " + typeof(SupportBean).FullName + "#length_batch(2)";
+            string stmtText = eventRepresentationEnum.GetAnnotationText() + " select irstream TheString, IntPrimitive from " + typeof(SupportBean).FullName + "#length_batch(2)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             stmt.Subscriber = subscriber;
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
@@ -245,7 +241,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void TryAssertionWidening(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum, SupportSubscriberRowByRowSpecificBase subscriber) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " select bytePrimitive, intPrimitive, longPrimitive, floatPrimitive from SupportBean(theString='E1')");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " select bytePrimitive, IntPrimitive, LongPrimitive, FloatPrimitive from SupportBean(TheString='E1')");
             stmt.Subscriber = subscriber;
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
     
@@ -262,7 +258,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void TryAssertionObjectArrayDelivery(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum, SupportSubscriberRowByRowObjectArrayBase subscriber) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " select theString, intPrimitive from SupportBean#unique(theString)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " select TheString, IntPrimitive from SupportBean#unique(TheString)");
             stmt.Subscriber = subscriber;
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
     
@@ -276,7 +272,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void TryAssertionRowMapDelivery(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum, SupportSubscriberRowByRowMapBase subscriber) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " select irstream theString, intPrimitive from SupportBean#unique(theString)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " select irstream TheString, IntPrimitive from SupportBean#unique(TheString)");
             stmt.Subscriber = subscriber;
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
     
@@ -315,7 +311,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void TryAssertionStreamSelectWJoin(EPServiceProvider epService, SupportSubscriberRowByRowSpecificBase subscriber) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select null, s1, s0 from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.theString = s1.symbol");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select null, s1, s0 from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.symbol");
             stmt.Subscriber = subscriber;
     
             var s0 = new SupportBean("E1", 100);
@@ -328,7 +324,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void TryAssertionBindWildcardJoin(EPServiceProvider epService, SupportSubscriberRowByRowSpecificBase subscriber) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.theString = s1.symbol");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.symbol");
             stmt.Subscriber = subscriber;
     
             var s0 = new SupportBean("E1", 100);
@@ -348,7 +344,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void TryAssertionStreamWildcardJoin(EPServiceProvider epService, SupportSubscriberRowByRowSpecificBase subscriber) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select theString || '<', s1.* as s1, s0.* as s0 from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.theString = s1.symbol");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select TheString || '<', s1.* as s1, s0.* as s0 from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.symbol");
             stmt.Subscriber = subscriber;
     
             var s0 = new SupportBean("E1", 100);
@@ -369,7 +365,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void TryAssertionOutputLimitNoJoin(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum, SupportSubscriberRowByRowSpecificBase subscriber) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " select theString, intPrimitive from SupportBean output every 2 events");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " select TheString, IntPrimitive from SupportBean output every 2 events");
             stmt.Subscriber = subscriber;
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
     
@@ -383,7 +379,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void TryAssertionOutputLimitJoin(EPServiceProvider epService, SupportSubscriberRowByRowSpecificBase subscriber) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select theString, intPrimitive from SupportBean#keepall, SupportMarketDataBean#keepall where symbol = theString output every 2 events");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select TheString, IntPrimitive from SupportBean#keepall, SupportMarketDataBean#keepall where symbol = TheString output every 2 events");
             stmt.Subscriber = subscriber;
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("E1", 0, 1L, ""));
@@ -396,7 +392,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void TryAssertionRStreamSelect(EPServiceProvider epService, SupportSubscriberRowByRowSpecificBase subscriber) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select rstream s0 from SupportBean#unique(theString) as s0");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select rstream s0 from SupportBean#unique(TheString) as s0");
             stmt.Subscriber = subscriber;
     
             // send event
@@ -435,7 +431,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void TryAssertionStaticMethod(EPServiceProvider epService) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select theString, intPrimitive from " + typeof(SupportBean).FullName);
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select TheString, IntPrimitive from " + typeof(SupportBean).FullName);
     
             var subscriber = new SupportSubscriberRowByRowStatic();
             stmt.Subscriber = subscriber;
@@ -468,7 +464,7 @@ namespace com.espertech.esper.regression.client
     
         private void TryAssertionPreferEPStatement(EPServiceProvider epService) {
             var subscriber = new SupportSubscriberUpdateBothFootprints();
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select theString, intPrimitive from SupportBean");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select TheString, IntPrimitive from SupportBean");
             stmt.Subscriber = subscriber;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));

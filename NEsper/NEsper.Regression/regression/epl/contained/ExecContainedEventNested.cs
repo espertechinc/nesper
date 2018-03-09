@@ -6,14 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.bookexample;
@@ -63,7 +58,7 @@ namespace com.espertech.esper.regression.epl.contained
         }
     
         private void RunAssertionNamedWindowSubquery(EPServiceProvider epService) {
-            string[] fields = "theString,totalPrice".Split(',');
+            string[] fields = "TheString,totalPrice".Split(',');
             epService.EPAdministrator.Configuration.AddEventType("OrderEvent", typeof(OrderBean));
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
@@ -89,7 +84,7 @@ namespace com.espertech.esper.regression.epl.contained
         }
     
         private void RunAssertionNamedWindowOnTrigger(EPServiceProvider epService) {
-            string[] fields = "theString,intPrimitive".Split(',');
+            string[] fields = "TheString,IntPrimitive".Split(',');
             epService.EPAdministrator.Configuration.AddEventType("OrderEvent", typeof(OrderBean));
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
@@ -98,7 +93,7 @@ namespace com.espertech.esper.regression.epl.contained
             epService.EPAdministrator.CreateEPL("create window OrderWindowNWOT#lastevent as OrderEvent");
             epService.EPAdministrator.CreateEPL("insert into OrderWindowNWOT select * from OrderEvent");
     
-            string stmtText = "on OrderWindowNWOT[books] owb select sbw.* from SupportBeanWindow sbw where theString = title";
+            string stmtText = "on OrderWindowNWOT[books] owb select sbw.* from SupportBeanWindow sbw where TheString = title";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -237,7 +232,7 @@ namespace com.espertech.esper.regression.epl.contained
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from pattern [" +
-                    "every r=OrderEvent[books][reviews] -> SupportBean(intPrimitive = r[0].reviewId)]");
+                    "every r=OrderEvent[books][reviews] -> SupportBean(IntPrimitive = r[0].reviewId)]");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -261,8 +256,8 @@ namespace com.espertech.esper.regression.epl.contained
             epService.EPAdministrator.Configuration.AddEventType("OrderEvent", typeof(OrderBean));
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select theString from SupportBean s0 where " +
-                    "Exists (select * from OrderEvent[books][reviews]#unique(reviewId) where reviewId = s0.intPrimitive)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select TheString from SupportBean s0 where " +
+                    "exists (select * from OrderEvent[books][reviews]#unique(reviewId) where reviewId = s0.IntPrimitive)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -316,7 +311,7 @@ namespace com.espertech.esper.regression.epl.contained
                     "Expression in a property-selection may not utilize a subselect [select bookId from OrderEvent[select bookId, (select abc from review#lastevent) from books]]");
     
             TryInvalid(epService, "select bookId from OrderEvent[select prev(1, bookId) from books]",
-                    "Failed to validate contained-event expression 'Prev(1,bookId)': Previous function cannot be used in this context [select bookId from OrderEvent[select prev(1, bookId) from books]]");
+                    "Failed to validate contained-event expression 'prev(1,bookId)': Previous function cannot be used in this context [select bookId from OrderEvent[select prev(1, bookId) from books]]");
     
             TryInvalid(epService, "select bookId from OrderEvent[select * from books][select * from reviews]",
                     "A column name must be supplied for all but one stream if multiple streams are selected via the stream.* notation [select bookId from OrderEvent[select * from books][select * from reviews]]");

@@ -50,7 +50,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
         {
             var epl =
                 "create table varTotal (key string primary key, total sum(int));\n" +
-                "into table varTotal select theString, sum(intPrimitive) as total from SupportBean group by theString;\n" +
+                "into table varTotal select TheString, sum(IntPrimitive) as total from SupportBean group by TheString;\n" +
                 "@Name('listen') select varTotal[p00].total as c0 from SupportBean_S0;\n";
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             epService.EPRuntime.SendEvent(new SupportBean("A", 10));

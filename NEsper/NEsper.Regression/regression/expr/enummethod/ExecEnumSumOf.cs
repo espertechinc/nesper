@@ -11,9 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
@@ -39,15 +37,18 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1,val2,val3".Split(',');
             string eplFragment = "select " +
-                    "beans.SumOf(x => intBoxed) as val0," +
-                    "beans.SumOf(x => doubleBoxed) as val1," +
-                    "beans.SumOf(x => longBoxed) as val2," +
-                    "beans.SumOf(x => decimalBoxed) as val3 " +
+                    "beans.sumOf(x => IntBoxed) as val0," +
+                    "beans.sumOf(x => DoubleBoxed) as val1," +
+                    "beans.sumOf(x => LongBoxed) as val2," +
+                    "beans.sumOf(x => decimalBoxed) as val3 " +
                     "from Bean";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(int?), typeof(double?), typeof(long), typeof(decimal?)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
+                typeof(int?), typeof(double?),
+                typeof(long?), typeof(decimal?)
+            });
     
             epService.EPRuntime.SendEvent(new SupportBean_Container(null));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, null, null});
@@ -71,13 +72,15 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1".Split(',');
             string eplFragment = "select " +
-                    "intvals.SumOf() as val0, " +
-                    "bdvals.SumOf() as val1 " +
+                    "Intvals.sumOf() as val0, " +
+                    "Bdvals.sumOf() as val1 " +
                     "from SupportCollection";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(int?), typeof(decimal?)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
+                typeof(int?), typeof(decimal?)
+            });
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeNumeric("1,4,5"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1 + 4 + 5, 1m + 4m + 5m});
@@ -97,14 +100,14 @@ namespace com.espertech.esper.regression.expr.enummethod
             stmtFragment.Dispose();
     
             // test average with lambda
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(ExecEnumMinMax.MyService).Name, "extractNum");
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractBigDecimal", typeof(ExecEnumMinMax.MyService).Name, "extractBigDecimal");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(ExecEnumMinMax.MyService), "ExtractNum");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractDecimal", typeof(ExecEnumMinMax.MyService), "ExtractDecimal");
     
             // lambda with string-array input
             string[] fieldsLambda = "val0,val1".Split(',');
             string eplLambda = "select " +
-                    "strvals.SumOf(v => ExtractNum(v)) as val0, " +
-                    "strvals.SumOf(v => ExtractBigDecimal(v)) as val1 " +
+                    "Strvals.sumOf(v => extractNum(v)) as val0, " +
+                    "Strvals.sumOf(v => extractDecimal(v)) as val1 " +
                     "from SupportCollection";
             EPStatement stmtLambda = epService.EPAdministrator.CreateEPL(eplLambda);
             stmtLambda.Events += listener.Update;
@@ -137,8 +140,8 @@ namespace com.espertech.esper.regression.expr.enummethod
         private void RunAssertionInvalid(EPServiceProvider epService) {
             string epl;
     
-            epl = "select Beans.Sumof() from Bean";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'beans.Sumof()': Invalid input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" + typeof(SupportBean).FullName + "' [select Beans.Sumof() from Bean]");
+            epl = "select Beans.sumof() from Bean";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'beans.sumof()': Invalid input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" + typeof(SupportBean).FullName + "' [select Beans.sumof() from Bean]");
         }
     }
 } // end of namespace

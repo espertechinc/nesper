@@ -24,7 +24,7 @@ namespace com.espertech.esper.regression.resultset.orderby
         }
     
         public override void Run(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean).FullName);
+            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
             string frenchForSin = "p\u00E9ch\u00E9";
             string frenchForFruit = "p\u00EAche";
     
@@ -54,15 +54,15 @@ namespace com.espertech.esper.regression.resultset.orderby
 #endif
 
             // test order by
-            string stmtText = "select theString from SupportBean#keepall order by theString asc";
+            string stmtText = "select TheString from SupportBean#keepall order by TheString asc";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtText);
             epService.EPRuntime.SendEvent(new SupportBean(frenchForSin, 1));
             epService.EPRuntime.SendEvent(new SupportBean(frenchForFruit, 1));
-            EPAssertionUtil.AssertPropsPerRow(stmtOne.GetEnumerator(), "theString".Split(','), new object[][]{new object[] {sortedFrench[0]}, new object[] {sortedFrench[1]}});
+            EPAssertionUtil.AssertPropsPerRow(stmtOne.GetEnumerator(), "TheString".Split(','), new object[][]{new object[] {sortedFrench[0]}, new object[] {sortedFrench[1]}});
     
             // test sort view
             var listener = new SupportUpdateListener();
-            stmtText = "select irstream theString from SupportBean#sort(2, theString asc)";
+            stmtText = "select irstream TheString from SupportBean#sort(2, TheString asc)";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtText);
             stmtTwo.Events += listener.Update;
     
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             epService.EPRuntime.SendEvent(new SupportBean(frenchForFruit, 1));
             epService.EPRuntime.SendEvent(new SupportBean("abc", 1));
     
-            Assert.AreEqual(frenchForSin, listener.LastOldData[0].Get("theString"));
+            Assert.AreEqual(frenchForSin, listener.LastOldData[0].Get("TheString"));
         }
     }
 } // end of namespace

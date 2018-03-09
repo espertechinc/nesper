@@ -7,18 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.datetime
 {
@@ -35,7 +28,7 @@ namespace com.espertech.esper.regression.expr.datetime
     
         private void RunAssertionInput(EPServiceProvider epService) {
     
-            string[] fields = "val0,val1,val2,val3,val4".Split(',');
+            string[] fields = "val0,val1".Split(',');
             string eplFragment = "select " +
                     "utildate.RoundCeiling('hour') as val0," +
                     "longdate.RoundCeiling('hour') as val1" +
@@ -43,15 +36,15 @@ namespace com.espertech.esper.regression.expr.datetime
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]
-            {
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
                 typeof(DateTimeOffset?), typeof(long?)
             });
     
             string startTime = "2002-05-30T09:01:02.003";
             string expectedTime = "2002-5-30T10:00:00.000";
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, SupportDateTime.GetArrayCoerced(expectedTime, "util", "long", "cal", "ldt", "zdt"));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
+                SupportDateTime.GetArrayCoerced(expectedTime, "util", "long"));
     
             stmtFragment.Dispose();
         }

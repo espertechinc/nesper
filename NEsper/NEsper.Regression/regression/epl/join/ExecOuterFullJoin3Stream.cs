@@ -24,9 +24,9 @@ namespace com.espertech.esper.regression.epl.join
 {
     public class ExecOuterFullJoin3Stream : RegressionExecution {
         private static readonly string[] FIELDS = new string[]{"s0.p00", "s0.p01", "s1.p10", "s1.p11", "s2.p20", "s2.p21"};
-        private static readonly string EVENT_S0 = typeof(SupportBean_S0).Name;
-        private static readonly string EVENT_S1 = typeof(SupportBean_S1).Name;
-        private static readonly string EVENT_S2 = typeof(SupportBean_S2).Name;
+        private static readonly string EVENT_S0 = typeof(SupportBean_S0).FullName;
+        private static readonly string EVENT_S1 = typeof(SupportBean_S1).FullName;
+        private static readonly string EVENT_S2 = typeof(SupportBean_S2).FullName;
     
         public override void Run(EPServiceProvider epService) {
             RunAssertionFullJoin_2sides_multicolumn(epService);

@@ -49,10 +49,10 @@ namespace com.espertech.esper.regression.nwtable.infra
             // create window one
             string eplCreate = namedWindow ?
                     "create window MyInfraFAFKB#keepall as SupportBean" :
-                    "create table MyInfraFAFKB (theString string primary key, intPrimitive int primary key)";
+                    "create table MyInfraFAFKB (TheString string primary key, IntPrimitive int primary key)";
             epService.EPAdministrator.CreateEPL(eplCreate);
-            epService.EPAdministrator.CreateEPL("insert into MyInfraFAFKB select theString, intPrimitive from SupportBean");
-            EPStatement idx = epService.EPAdministrator.CreateEPL("create index idx1 on MyInfraFAFKB(intPrimitive btree)");
+            epService.EPAdministrator.CreateEPL("insert into MyInfraFAFKB select TheString, IntPrimitive from SupportBean");
+            EPStatement idx = epService.EPAdministrator.CreateEPL("create index idx1 on MyInfraFAFKB(IntPrimitive btree)");
     
             // insert X rows
             int maxRows = 10000;   //for performance testing change to int maxRows = 100000;
@@ -62,23 +62,23 @@ namespace com.espertech.esper.regression.nwtable.infra
             epService.EPRuntime.SendEvent(new SupportBean("B", 100));
     
             // fire single-key queries
-            string eplIdx1One = "select intPrimitive as sumi from MyInfraFAFKB where intPrimitive = 5501";
+            string eplIdx1One = "select IntPrimitive as sumi from MyInfraFAFKB where IntPrimitive = 5501";
             RunFAFAssertion(epService, eplIdx1One, 5501);
     
-            string eplIdx1Two = "select sum(intPrimitive) as sumi from MyInfraFAFKB where intPrimitive > 9997";
+            string eplIdx1Two = "select sum(IntPrimitive) as sumi from MyInfraFAFKB where IntPrimitive > 9997";
             RunFAFAssertion(epService, eplIdx1Two, 9998 + 9999);
     
             // drop index, create multikey btree
             idx.Dispose();
-            epService.EPAdministrator.CreateEPL("create index idx2 on MyInfraFAFKB(intPrimitive btree, theString btree)");
+            epService.EPAdministrator.CreateEPL("create index idx2 on MyInfraFAFKB(IntPrimitive btree, TheString btree)");
     
-            string eplIdx2One = "select intPrimitive as sumi from MyInfraFAFKB where intPrimitive = 5501 and theString = 'A'";
+            string eplIdx2One = "select IntPrimitive as sumi from MyInfraFAFKB where IntPrimitive = 5501 and TheString = 'A'";
             RunFAFAssertion(epService, eplIdx2One, 5501);
     
-            string eplIdx2Two = "select sum(intPrimitive) as sumi from MyInfraFAFKB where intPrimitive in [5000:5004) and theString = 'A'";
+            string eplIdx2Two = "select sum(IntPrimitive) as sumi from MyInfraFAFKB where IntPrimitive in [5000:5004) and TheString = 'A'";
             RunFAFAssertion(epService, eplIdx2Two, 5000 + 5001 + 5003 + 5002);
     
-            string eplIdx2Three = "select sum(intPrimitive) as sumi from MyInfraFAFKB where intPrimitive=5001 and theString between 'A' and 'B'";
+            string eplIdx2Three = "select sum(IntPrimitive) as sumi from MyInfraFAFKB where IntPrimitive=5001 and TheString between 'A' and 'B'";
             RunFAFAssertion(epService, eplIdx2Three, 5001);
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -102,10 +102,10 @@ namespace com.espertech.esper.regression.nwtable.infra
             // create window one
             string eplCreate = namedWindow ?
                     "create window MyInfraFAFKR#keepall as SupportBean" :
-                    "create table MyInfraFAFKR (theString string primary key, intPrimitive int primary key)";
+                    "create table MyInfraFAFKR (TheString string primary key, IntPrimitive int primary key)";
             epService.EPAdministrator.CreateEPL(eplCreate);
-            epService.EPAdministrator.CreateEPL("insert into MyInfraFAFKR select theString, intPrimitive from SupportBean");
-            epService.EPAdministrator.CreateEPL("create index idx1 on MyInfraFAFKR(theString hash, intPrimitive btree)");
+            epService.EPAdministrator.CreateEPL("insert into MyInfraFAFKR select TheString, IntPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("create index idx1 on MyInfraFAFKR(TheString hash, IntPrimitive btree)");
     
             // insert X rows
             int maxRows = 10000;   //for performance testing change to int maxRows = 100000;
@@ -113,26 +113,26 @@ namespace com.espertech.esper.regression.nwtable.infra
                 epService.EPRuntime.SendEvent(new SupportBean("A", i));
             }
     
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive not in [3:9997]", 1 + 2 + 9998 + 9999);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive not in [3:9997)", 1 + 2 + 9997 + 9998 + 9999);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive not in (3:9997]", 1 + 2 + 3 + 9998 + 9999);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive not in (3:9997)", 1 + 2 + 3 + 9997 + 9998 + 9999);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'B' and intPrimitive not in (3:9997)", null);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive between 200 and 202", 603);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive between 202 and 199", 199 + 200 + 201 + 202);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive >= 200 and intPrimitive <= 202", 603);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive >= 202 and intPrimitive <= 200", null);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive > 9997", 9998 + 9999);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive >= 9997", 9997 + 9998 + 9999);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive < 5", 4 + 3 + 2 + 1);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive <= 5", 5 + 4 + 3 + 2 + 1);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive in [200:202]", 603);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive in [200:202)", 401);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive in (200:202]", 403);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive in (200:202)", 201);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive not in [3:9997]", 1 + 2 + 9998 + 9999);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive not in [3:9997)", 1 + 2 + 9997 + 9998 + 9999);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive not in (3:9997]", 1 + 2 + 3 + 9998 + 9999);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive not in (3:9997)", 1 + 2 + 3 + 9997 + 9998 + 9999);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'B' and IntPrimitive not in (3:9997)", null);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive between 200 and 202", 603);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive between 202 and 199", 199 + 200 + 201 + 202);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive >= 200 and IntPrimitive <= 202", 603);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive >= 202 and IntPrimitive <= 200", null);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive > 9997", 9998 + 9999);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive >= 9997", 9997 + 9998 + 9999);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive < 5", 4 + 3 + 2 + 1);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive <= 5", 5 + 4 + 3 + 2 + 1);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive in [200:202]", 603);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive in [200:202)", 401);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive in (200:202]", 403);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive in (200:202)", 201);
     
             // test no value returned
-            EPOnDemandPreparedQuery query = epService.EPRuntime.PrepareQuery("select * from MyInfraFAFKR where theString = 'A' and intPrimitive < 0");
+            EPOnDemandPreparedQuery query = epService.EPRuntime.PrepareQuery("select * from MyInfraFAFKR where TheString = 'A' and IntPrimitive < 0");
             EPOnDemandQueryResult result = query.Execute();
             Assert.AreEqual(0, result.Array.Length);
     
@@ -144,10 +144,10 @@ namespace com.espertech.esper.regression.nwtable.infra
             // create window one
             string eplCreate = namedWindow ?
                     "create window MyInfraRP#keepall as SupportBean" :
-                    "create table MyInfraRP (theString string primary key, intPrimitive int primary key)";
+                    "create table MyInfraRP (TheString string primary key, IntPrimitive int primary key)";
             epService.EPAdministrator.CreateEPL(eplCreate);
-            epService.EPAdministrator.CreateEPL("insert into MyInfraRP select theString, intPrimitive from SupportBean");
-            epService.EPAdministrator.CreateEPL("create index idx1 on MyInfraRP(intPrimitive btree)");
+            epService.EPAdministrator.CreateEPL("insert into MyInfraRP select TheString, IntPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("create index idx1 on MyInfraRP(IntPrimitive btree)");
     
             // insert X rows
             int maxRows = 10000;   //for performance testing change to int maxRows = 100000;
@@ -155,25 +155,25 @@ namespace com.espertech.esper.regression.nwtable.infra
                 epService.EPRuntime.SendEvent(new SupportBean("K", i));
             }
     
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive between 200 and 202", 603);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive between 202 and 199", 199 + 200 + 201 + 202);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive >= 200 and intPrimitive <= 202", 603);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive >= 202 and intPrimitive <= 200", null);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive > 9997", 9998 + 9999);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive >= 9997", 9997 + 9998 + 9999);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive < 5", 4 + 3 + 2 + 1);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive <= 5", 5 + 4 + 3 + 2 + 1);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive in [200:202]", 603);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive in [200:202)", 401);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive in (200:202]", 403);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive in (200:202)", 201);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive not in [3:9997]", 1 + 2 + 9998 + 9999);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive not in [3:9997)", 1 + 2 + 9997 + 9998 + 9999);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive not in (3:9997]", 1 + 2 + 3 + 9998 + 9999);
-            RunFAFAssertion(epService, "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive not in (3:9997)", 1 + 2 + 3 + 9997 + 9998 + 9999);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive between 200 and 202", 603);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive between 202 and 199", 199 + 200 + 201 + 202);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive >= 200 and IntPrimitive <= 202", 603);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive >= 202 and IntPrimitive <= 200", null);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive > 9997", 9998 + 9999);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive >= 9997", 9997 + 9998 + 9999);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive < 5", 4 + 3 + 2 + 1);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive <= 5", 5 + 4 + 3 + 2 + 1);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive in [200:202]", 603);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive in [200:202)", 401);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive in (200:202]", 403);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive in (200:202)", 201);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive not in [3:9997]", 1 + 2 + 9998 + 9999);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive not in [3:9997)", 1 + 2 + 9997 + 9998 + 9999);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive not in (3:9997]", 1 + 2 + 3 + 9998 + 9999);
+            RunFAFAssertion(epService, "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive not in (3:9997)", 1 + 2 + 3 + 9997 + 9998 + 9999);
     
             // test no value returned
-            EPOnDemandPreparedQuery query = epService.EPRuntime.PrepareQuery("select * from MyInfraRP where intPrimitive < 0");
+            EPOnDemandPreparedQuery query = epService.EPRuntime.PrepareQuery("select * from MyInfraRP where IntPrimitive < 0");
             EPOnDemandQueryResult result = query.Execute();
             Assert.AreEqual(0, result.Array.Length);
     
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "create window MyInfraOne#keepall as (f1 string, f2 int)" :
                     "create table MyInfraOne (f1 string primary key, f2 int primary key)";
             epService.EPAdministrator.CreateEPL(stmtTextCreateOne);
-            epService.EPAdministrator.CreateEPL("insert into MyInfraOne(f1, f2) select theString, intPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into MyInfraOne(f1, f2) select TheString, IntPrimitive from SupportBean");
             epService.EPAdministrator.CreateEPL("create index MyInfraOneIndex on MyInfraOne(f1)");
     
             // insert X rows

@@ -6,14 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
@@ -25,7 +21,7 @@ namespace com.espertech.esper.regression.client
 {
     public class ExecClientStatementAwareEvents : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.AddEventType("Bean", typeof(SupportBean).FullName);
+            configuration.AddEventType("Bean", typeof(SupportBean));
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -132,23 +128,23 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionUseOnMultipleStmts(EPServiceProvider epService) {
-            EPStatement statementOne = epService.EPAdministrator.CreateEPL("select * from Bean(theString='A' or theString='C')");
-            EPStatement statementTwo = epService.EPAdministrator.CreateEPL("select * from Bean(theString='B' or theString='C')");
+            EPStatement statementOne = epService.EPAdministrator.CreateEPL("select * from Bean(TheString='A' or TheString='C')");
+            EPStatement statementTwo = epService.EPAdministrator.CreateEPL("select * from Bean(TheString='B' or TheString='C')");
     
             var awareListener = new SupportStmtAwareUpdateListener();
             statementOne.Events += awareListener.Update;
             statementTwo.Events += awareListener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("B", 1));
-            Assert.AreEqual("B", awareListener.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("B", awareListener.AssertOneGetNewAndReset().Get("TheString"));
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 1));
-            Assert.AreEqual("A", awareListener.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("A", awareListener.AssertOneGetNewAndReset().Get("TheString"));
     
             epService.EPRuntime.SendEvent(new SupportBean("C", 1));
             Assert.AreEqual(2, awareListener.NewDataList.Count);
-            Assert.AreEqual("C", awareListener.NewDataList[0][0].Get("theString"));
-            Assert.AreEqual("C", awareListener.NewDataList[1][0].Get("theString"));
+            Assert.AreEqual("C", awareListener.NewDataList[0][0].Get("TheString"));
+            Assert.AreEqual("C", awareListener.NewDataList[1][0].Get("TheString"));
             EPStatement[] stmts = awareListener.StatementList.ToArray();
             EPAssertionUtil.AssertEqualsAnyOrder(stmts, new object[]{statementOne, statementTwo});
     

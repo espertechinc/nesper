@@ -24,7 +24,7 @@ namespace com.espertech.esper.regression.events.plugin
 {
     public class ExecEventPlugInContextContent : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.AddPlugInEventRepresentation(new Uri("type://test/support"), typeof(SupportEventRepresentation).Name, "abc");
+            configuration.AddPlugInEventRepresentation(new Uri("type://test/support"), typeof(SupportEventRepresentation), "abc");
         }
     
         public override void Run(EPServiceProvider epService) {

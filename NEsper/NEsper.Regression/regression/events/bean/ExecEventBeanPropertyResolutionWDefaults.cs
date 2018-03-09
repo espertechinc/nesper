@@ -125,7 +125,7 @@ namespace com.espertech.esper.regression.events.bean
             // test escape in column name
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(
-                "select theString as `order`, theString as `price.for.goods` from SupportBean");
+                "select TheString as `order`, TheString as `price.for.goods` from SupportBean");
             stmtTwo.Events += listener.Update;
             Assert.AreEqual(typeof(string), stmtTwo.EventType.GetPropertyType("order"));
             Assert.AreEqual("price.for.goods", stmtTwo.EventType.PropertyDescriptors[1].PropertyName);

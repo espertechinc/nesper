@@ -8,8 +8,8 @@
 
 using System;
 
-using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
+using NEsper.Scripting.ClearScript;
 
 using NUnit.Framework;
 
@@ -23,6 +23,8 @@ namespace com.espertech.esper
         [OneTimeSetUp]
         public void RunBeforeAnyTests()
         {
+            var clearScript = typeof(ScriptingEngineJScript);
+
             // Ensure that AVRO support is loaded before we change directories
             SchemaBuilder.Record("dummy");
 

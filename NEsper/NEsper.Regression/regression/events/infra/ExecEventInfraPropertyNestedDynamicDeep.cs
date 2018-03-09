@@ -187,17 +187,17 @@ namespace com.espertech.esper.regression.events.infra
         {
             var stmtText = "select " +
                            " item.nested?.nestedValue as n1, " +
-                           " Exists(item.nested?.nestedValue) as exists_n1, " +
+                           " exists(item.nested?.nestedValue) as exists_n1, " +
                            " item.nested?.nestedValue? as n2, " +
-                           " Exists(item.nested?.nestedValue?) as exists_n2, " +
+                           " exists(item.nested?.nestedValue?) as exists_n2, " +
                            " item.nested?.nestedNested.nestedNestedValue as n3, " +
-                           " Exists(item.nested?.nestedNested.nestedNestedValue) as exists_n3, " +
+                           " exists(item.nested?.nestedNested.nestedNestedValue) as exists_n3, " +
                            " item.nested?.nestedNested?.nestedNestedValue as n4, " +
-                           " Exists(item.nested?.nestedNested?.nestedNestedValue) as exists_n4, " +
+                           " exists(item.nested?.nestedNested?.nestedNestedValue) as exists_n4, " +
                            " item.nested?.nestedNested.nestedNestedValue? as n5, " +
-                           " Exists(item.nested?.nestedNested.nestedNestedValue?) as exists_n5, " +
+                           " exists(item.nested?.nestedNested.nestedNestedValue?) as exists_n5, " +
                            " item.nested?.nestedNested?.nestedNestedValue? as n6, " +
-                           " Exists(item.nested?.nestedNested?.nestedNestedValue?) as exists_n6 " +
+                           " exists(item.nested?.nestedNested?.nestedNestedValue?) as exists_n6 " +
                            " from " + typename;
 
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);

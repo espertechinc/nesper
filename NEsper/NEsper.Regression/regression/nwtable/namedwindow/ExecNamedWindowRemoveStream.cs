@@ -22,7 +22,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
 {
     public class ExecNamedWindowRemoveStream : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
-            var fields = new string[]{"theString"};
+            var fields = new string[]{"TheString"};
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             EPStatement stmt1 = epService.EPAdministrator.CreateEPL("create window W1#length(2) as select * from SupportBean");
             EPStatement stmt2 = epService.EPAdministrator.CreateEPL("create window W2#length(2) as select * from SupportBean");

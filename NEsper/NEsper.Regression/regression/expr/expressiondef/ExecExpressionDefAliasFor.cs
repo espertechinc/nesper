@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
         private void RunAssertionContextPartition(EPServiceProvider epService) {
             string epl =
-                    "create expression the_expr alias for {theString='a' and intPrimitive=1};\n" +
+                    "create expression the_expr alias for {TheString='a' and IntPrimitive=1};\n" +
                             "create context the_context start @now end after 10 minutes;\n" +
                             "@Name('s0') context the_context select * from SupportBean(the_expr)\n";
             DeploymentResult result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
         }
     
         private void RunAssertionAliasAggregation(EPServiceProvider epService) {
-            string epl = "@Audit expression total alias for {sum(intPrimitive)} " +
+            string epl = "@Audit expression total alias for {sum(IntPrimitive)} " +
                     "select total, total+1 from SupportBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("create expression myalias alias for {1}");
-            epService.EPAdministrator.CreateEPL("select myaliastwo from SupportBean(intPrimitive = myalias)").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select myaliastwo from SupportBean(IntPrimitive = myalias)").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             Assert.IsFalse(listener.IsInvoked);

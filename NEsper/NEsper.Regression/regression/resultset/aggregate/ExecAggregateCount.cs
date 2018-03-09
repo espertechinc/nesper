@@ -83,7 +83,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
         private void RunAssertionCountHaving(EPServiceProvider epService) {
             string theEvent = typeof(SupportBean).FullName;
-            string statementText = "select irstream sum(intPrimitive) as mysum from " + theEvent + " having sum(intPrimitive) = 2";
+            string statementText = "select irstream sum(IntPrimitive) as mysum from " + theEvent + " having sum(IntPrimitive) = 2";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

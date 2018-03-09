@@ -92,10 +92,10 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             stmtText = "insert into MyWindow select * from Event";
             epService.EPAdministrator.CreateEPL(stmtText);
     
-            stmtText = "on MyWindow e delete from MyWindow win where win.theString=e.theString and e.intPrimitive = 7";
+            stmtText = "on MyWindow e delete from MyWindow win where win.TheString=e.TheString and e.IntPrimitive = 7";
             epService.EPAdministrator.CreateEPL(stmtText);
     
-            stmtText = "on MyWindow e delete from MyWindow win where win.theString=e.theString and e.intPrimitive = 5";
+            stmtText = "on MyWindow e delete from MyWindow win where win.TheString=e.TheString and e.IntPrimitive = 5";
             epService.EPAdministrator.CreateEPL(stmtText);
     
             stmtText = "on MyWindow e insert into ResultStream select e.* from MyWindow";
@@ -110,13 +110,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             Assert.IsFalse(listener.IsInvoked, "E1");
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 8));
-            Assert.AreEqual("E2", listener.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("E2", listener.AssertOneGetNewAndReset().Get("TheString"));
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 5));
             Assert.IsFalse(listener.IsInvoked, "E3");
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 6));
-            Assert.AreEqual("E4", listener.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("E4", listener.AssertOneGetNewAndReset().Get("TheString"));
         }
     }
 } // end of namespace

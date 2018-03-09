@@ -33,8 +33,8 @@ namespace com.espertech.esper.regression.epl.insertinto
                     "insert into MyThirdStream(es0id, es1id) " +
                             "select es0.id, es1.id " +
                             "from " +
-                            "pattern [every (es0=" + typeof(SupportBean_S0).Name +
-                            " or es1=" + typeof(SupportBean_S1).Name + ")]";
+                            "pattern [every (es0=" + typeof(SupportBean_S0).FullName +
+                            " or es1=" + typeof(SupportBean_S1).FullName + ")]";
             epService.EPAdministrator.CreateEPL(stmtText);
     
             string stmtTwoText =
@@ -54,8 +54,8 @@ namespace com.espertech.esper.regression.epl.insertinto
                     "insert into MySecondStream(s0, s1) " +
                             "select es0, es1 " +
                             "from " +
-                            "pattern [every (es0=" + typeof(SupportBean_S0).Name +
-                            " or es1=" + typeof(SupportBean_S1).Name + ")]";
+                            "pattern [every (es0=" + typeof(SupportBean_S0).FullName +
+                            " or es1=" + typeof(SupportBean_S1).FullName + ")]";
             epService.EPAdministrator.CreateEPL(stmtText);
     
             string stmtTwoText =
@@ -75,8 +75,8 @@ namespace com.espertech.esper.regression.epl.insertinto
                     "insert into MyStream " +
                             "select es0, es1 " +
                             "from " +
-                            "pattern [every (es0=" + typeof(SupportBean_S0).Name +
-                            " or es1=" + typeof(SupportBean_S1).Name + ")]";
+                            "pattern [every (es0=" + typeof(SupportBean_S0).FullName +
+                            " or es1=" + typeof(SupportBean_S1).FullName + ")]";
             epService.EPAdministrator.CreateEPL(stmtText);
     
             string stmtTwoText =

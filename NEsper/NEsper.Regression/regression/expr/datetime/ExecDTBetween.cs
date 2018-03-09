@@ -11,15 +11,10 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
-using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.datetime
 {
@@ -40,17 +35,15 @@ namespace com.espertech.esper.regression.expr.datetime
             string startTime = "2002-05-30T09:00:00.000";
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(startTime)));
     
-            string[] fieldsCurrentTs = "val0,val1,val2,val3,val4,val5,val6,val7,val8".Split(',');
+            string[] fieldsCurrentTs = "val0,val1,val2,val3,val4,val5,val6".Split(',');
             string eplCurrentTS = "select " +
-                    "current_timestamp.After(longdateStart) as val0, " +
-                    "current_timestamp.Between(longdateStart, longdateEnd) as val1, " +
-                    "current_timestamp.Between(utildateStart, caldateEnd) as val2, " +
-                    "current_timestamp.Between(caldateStart, utildateEnd) as val3, " +
-                    "current_timestamp.Between(utildateStart, utildateEnd) as val4, " +
-                    "current_timestamp.Between(caldateStart, caldateEnd) as val5, " +
-                    "current_timestamp.Between(caldateEnd, caldateStart) as val6, " +
-                    "current_timestamp.Between(ldtStart, ldtEnd) as val7, " +
-                    "current_timestamp.Between(zdtStart, zdtEnd) as val8 " +
+                    "current_timestamp.after(LongdateStart) as val0, " +
+                    "current_timestamp.Between(LongdateStart, LongdateEnd) as val1, " +
+                    "current_timestamp.Between(UtildateStart, CaldateEnd) as val2, " +
+                    "current_timestamp.Between(CaldateStart, UtildateEnd) as val3, " +
+                    "current_timestamp.Between(UtildateStart, UtildateEnd) as val4, " +
+                    "current_timestamp.Between(CaldateStart, CaldateEnd) as val5, " +
+                    "current_timestamp.Between(CaldateEnd, CaldateStart) as val6 " +
                     "from SupportTimeStartEndA";
             EPStatement stmtCurrentTs = epService.EPAdministrator.CreateEPL(eplCurrentTS);
             var listener = new SupportUpdateListener();
@@ -58,34 +51,44 @@ namespace com.espertech.esper.regression.expr.datetime
             LambdaAssertionUtil.AssertTypesAllSame(stmtCurrentTs.EventType, fieldsCurrentTs, typeof(bool?));
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[]{true, false, false, false, false, false, false, false, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[] {
+                true, false, false, false, false, false, false
+            });
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[]{true, true, true, true, true, true, true, true, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[] {
+                true, true, true, true, true, true, true
+            });
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T08:59:59.999", 100));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[]{true, true, true, true, true, true, true, true, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[] {
+                true, true, true, true, true, true, true
+            });
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T09:00:00.000", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[]{false, true, true, true, true, true, true, true, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[] {
+                false, true, true, true, true, true, true
+            });
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T09:00:00.000", 100));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[]{false, true, true, true, true, true, true, true, true});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[] {
+                false, true, true, true, true, true, true
+            });
     
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("E1", "2002-05-30T09:00:00.001", 100));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[]{false, false, false, false, false, false, false, false, false});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsCurrentTs, new object[] {
+                false, false, false, false, false, false, false
+            });
             stmtCurrentTs.Dispose();
     
             // test calendar field and constants
             epService.EPAdministrator.Configuration.AddImport(typeof(DateTime));
-            string[] fieldsConstants = "val0,val1,val2,val3,val4,val5".Split(',');
+            string[] fieldsConstants = "val0,val1,val2,val5".Split(',');
             string eplConstants = "select " +
-                    "longdateStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\")) as val0, " +
-                    "utildateStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\")) as val1, " +
-                    "caldateStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\")) as val2, " +
-                    "ldtStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\")) as val3, " +
-                    "zdtStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\")) as val4, " +
-                    "longdateStart.Between(DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\")) as val5 " +
+                    "LongdateStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\")) as val0, " +
+                    "UtildateStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\")) as val1, " +
+                    "CaldateStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\")) as val2, " +
+                    "LongdateStart.Between(DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\")) as val5 " +
                     "from SupportTimeStartEndA";
             EPStatement stmtConstants = epService.EPAdministrator.CreateEPL(eplConstants);
             stmtConstants.Events += listener.Update;
@@ -118,11 +121,9 @@ namespace com.espertech.esper.regression.expr.datetime
             epService.EPAdministrator.CreateEPL("create variable bool VAR_TRUE = true");
             epService.EPAdministrator.CreateEPL("create variable bool VAR_FALSE = false");
     
-            TryAssertionExcludeEndpoints(epService, "longdateStart, longdateEnd");
-            TryAssertionExcludeEndpoints(epService, "utildateStart, utildateEnd");
-            TryAssertionExcludeEndpoints(epService, "caldateStart, caldateEnd");
-            TryAssertionExcludeEndpoints(epService, "ldtStart, ldtEnd");
-            TryAssertionExcludeEndpoints(epService, "zdtStart, zdtEnd");
+            TryAssertionExcludeEndpoints(epService, "LongdateStart, LongdateEnd");
+            TryAssertionExcludeEndpoints(epService, "UtildateStart, UtildateEnd");
+            TryAssertionExcludeEndpoints(epService, "CaldateStart, CaldateEnd");
         }
     
         private void TryAssertionExcludeEndpoints(EPServiceProvider epService, string fields) {
@@ -161,10 +162,10 @@ namespace com.espertech.esper.regression.expr.datetime
             epService.EPAdministrator.Configuration.AddImport(typeof(DateTime));
             string[] fieldsConstants = "val0,val1,val2,val3".Split(',');
             string eplConstants = "select " +
-                    "longdateStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), true, true) as val0, " +
-                    "longdateStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), true, false) as val1, " +
-                    "longdateStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), false, true) as val2, " +
-                    "longdateStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), false, false) as val3 " +
+                    "LongdateStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), true, true) as val0, " +
+                    "LongdateStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), true, false) as val1, " +
+                    "LongdateStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), false, true) as val2, " +
+                    "LongdateStart.Between(DateTime.ToCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.ToCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), false, false) as val3 " +
                     "from SupportTimeStartEndA";
             EPStatement stmtConstants = epService.EPAdministrator.CreateEPL(eplConstants);
             stmtConstants.Events += listener.Update;

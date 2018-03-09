@@ -77,7 +77,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
 
             FromClause fromClause = FromClause.Create(
                     FilterStream.Create(typeof(SupportBeanString).Name, "one").AddView(View.Create("length", Expressions.Constant(100))),
-                    FilterStream.Create(typeof(SupportMarketDataBean).Name, "two").AddView(View.Create("length", Expressions.Constant(5))));
+                    FilterStream.Create(typeof(SupportMarketDataBean).FullName, "two").AddView(View.Create("length", Expressions.Constant(5))));
             model.FromClause = fromClause;
             model.WhereClause = Expressions.And().Add(
                     Expressions.Or()
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                         .Add(Expressions.Eq("symbol", "IBM"))
                         .Add(Expressions.Eq("symbol", "GE"))
                 )
-                .Add(Expressions.EqProperty("one.theString", "two.symbol"));
+                .Add(Expressions.EqProperty("one.TheString", "two.symbol"));
 
             model.GroupByClause = GroupByClause.Create("symbol");
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
@@ -96,9 +96,9 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "stddev(price) as myStdev, " +
                     "avedev(price) as myAvedev " +
                     "from " + typeof(SupportBeanString).FullName + "#length(100) as one, " +
-                    typeof(SupportMarketDataBean).Name + "#length(5) as two " +
+                    typeof(SupportMarketDataBean).FullName + "#length(5) as two " +
                     "where (symbol=\"DELL\" or symbol=\"IBM\" or symbol=\"GE\") " +
-                    "and one.theString=two.symbol " +
+                    "and one.TheString=two.symbol " +
                     "group by symbol";
             Assert.AreEqual(epl, model.ToEPL());
     
@@ -122,9 +122,9 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "stddev(price) as myStdev," +
                     "avedev(price) as myAvedev " +
                     "from " + typeof(SupportBeanString).FullName + "#length(100) as one, " +
-                    typeof(SupportMarketDataBean).Name + "#length(5) as two " +
+                    typeof(SupportMarketDataBean).FullName + "#length(5) as two " +
                     "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                    "       and one.theString = two.symbol " +
+                    "       and one.TheString = two.symbol " +
                     "group by symbol";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);

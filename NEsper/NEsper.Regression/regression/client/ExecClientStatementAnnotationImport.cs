@@ -6,18 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.client
 {
@@ -30,11 +23,11 @@ namespace com.espertech.esper.regression.client
     
         public override void Run(EPServiceProvider epService) {
             // init-time import
-            epService.EPAdministrator.CreateEPL("@MyAnnotationValueEnum(supportEnum = SupportEnum.ENUM_VALUE_1) " +
+            epService.EPAdministrator.CreateEPL("@MyAnnotationValueEnum(SupportEnum = SupportEnum.ENUM_VALUE_1) " +
                     "select * from SupportBean");
     
             // try invalid annotation not yet imported
-            string epl = "@MyAnnotationValueEnumTwo(supportEnum = SupportEnum.ENUM_VALUE_1) select * from SupportBean";
+            string epl = "@MyAnnotationValueEnumTwo(SupportEnum = SupportEnum.ENUM_VALUE_1) select * from SupportBean";
             SupportMessageAssertUtil.TryInvalid(epService, epl, "Failed to process statement annotations: Failed to resolve @-annotation");
     
             // runtime import

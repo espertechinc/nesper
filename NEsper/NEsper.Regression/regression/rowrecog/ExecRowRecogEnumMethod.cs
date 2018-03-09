@@ -30,12 +30,12 @@ namespace com.espertech.esper.regression.rowrecog
         public override void Run(EPServiceProvider epService) {
             string[] fields = "c0,c1".Split(',');
             string epl = "select * from SupportBean match_recognize ("
-                    + "partition by theString "
-                    + "measures A.theString as c0, C.intPrimitive as c1 "
+                    + "partition by TheString "
+                    + "measures A.TheString as c0, C.IntPrimitive as c1 "
                     + "pattern (A B+ C) "
                     + "define "
-                    + "B as B.intPrimitive > A.intPrimitive, "
-                    + "C as C.doublePrimitive > B.FirstOf().intPrimitive)";
+                    + "B as B.IntPrimitive > A.IntPrimitive, "
+                    + "C as C.DoublePrimitive > B.FirstOf().IntPrimitive)";
             // can also be expressed as: B[0].intPrimitive
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;

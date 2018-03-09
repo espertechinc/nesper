@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net.Mime;
 using System.Text;
 using com.espertech.esper.client;
+using com.espertech.esper.client.annotation;
 using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -56,7 +57,7 @@ namespace com.espertech.esper.regression.events.render
             string result = epService.EPRuntime.EventRenderer.RenderJSON("supportBean", statement.First());
     
             //Log.Info(result);
-            string valuesOnly = "{ \"bigDecimal\": null, \"boolBoxed\": null, \"boolPrimitive\": false, \"byteBoxed\": null, \"bytePrimitive\": 0, \"charBoxed\": null, \"charPrimitive\": \"x\", \"doubleBoxed\": null, \"doublePrimitive\": 0.0, \"enumValue\": \"ENUM_VALUE_1\", \"floatBoxed\": null, \"floatPrimitive\": 0.0, \"intBoxed\": 992, \"intPrimitive\": 1, \"longBoxed\": null, \"longPrimitive\": 0, \"shortBoxed\": null, \"shortPrimitive\": 0, \"theString\": \"a\\nc>\", \"this\": { \"bigDecimal\": null, \"boolBoxed\": null, \"boolPrimitive\": false, \"byteBoxed\": null, \"bytePrimitive\": 0, \"charBoxed\": null, \"charPrimitive\": \"x\", \"doubleBoxed\": null, \"doublePrimitive\": 0.0, \"enumValue\": \"ENUM_VALUE_1\", \"floatBoxed\": null, \"floatPrimitive\": 0.0, \"intBoxed\": 992, \"intPrimitive\": 1, \"longBoxed\": null, \"longPrimitive\": 0, \"shortBoxed\": null, \"shortPrimitive\": 0, \"theString\": \"a\\nc>\" } }";
+            string valuesOnly = "{ \"BoolBoxed\": null, \"BoolPrimitive\": false, \"ByteBoxed\": null, \"BytePrimitive\": 0, \"CharBoxed\": null, \"CharPrimitive\": \"x\", \"DecimalBoxed\": null, \"DoubleBoxed\": null, \"DoublePrimitive\": 0.0, \"EnumValue\": \"ENUM_VALUE_1\", \"FloatBoxed\": null, \"FloatPrimitive\": 0.0, \"IntBoxed\": 992, \"IntPrimitive\": 1, \"LongBoxed\": null, \"LongPrimitive\": 0, \"ShortBoxed\": null, \"ShortPrimitive\": 0, \"TheString\": \"a\\nc>\", \"This\": { \"BoolBoxed\": null, \"BoolPrimitive\": false, \"ByteBoxed\": null, \"BytePrimitive\": 0, \"CharBoxed\": null, \"CharPrimitive\": \"x\", \"DecimalBoxed\": null, \"DoubleBoxed\": null, \"DoublePrimitive\": 0.0, \"EnumValue\": \"ENUM_VALUE_1\", \"FloatBoxed\": null, \"FloatPrimitive\": 0.0, \"IntBoxed\": 992, \"IntPrimitive\": 1, \"LongBoxed\": null, \"LongPrimitive\": 0, \"ShortBoxed\": null, \"ShortPrimitive\": 0, \"TheString\": \"a\\nc>\" } }";
             string expected = "{ \"supportBean\": " + valuesOnly + " }";
             Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
     
@@ -104,10 +105,6 @@ namespace com.espertech.esper.regression.events.render
             string expected = "{\n" +
                     "  \"outerMap\": {\n" +
                     "    \"intarr\": [1, 2],\n" +
-                    "    \"innersimple\": {\n" +
-                    "      \"prop1\": \"\",\n" +
-                    "      \"stringarr\": [\"a\", \"b\"]\n" +
-                    "    },\n" +
                     "    \"innerarray\": [{\n" +
                     "        \"prop1\": \"\",\n" +
                     "        \"stringarr\": [\"a\", \"b\"]\n" +
@@ -116,8 +113,12 @@ namespace com.espertech.esper.regression.events.render
                     "        \"prop1\": \"abcdef\",\n" +
                     "        \"stringarr\": []\n" +
                     "      }],\n" +
+                    "    \"innersimple\": {\n" +
+                    "      \"prop1\": \"\",\n" +
+                    "      \"stringarr\": [\"a\", \"b\"]\n" +
+                    "    },\n" +
                     "    \"prop0\": {\n" +
-                    "      \"id\": \"A1\"\n" +
+                    "      \"Id\": \"A1\"\n" +
                     "    }\n" +
                     "  }\n" +
                     "}";
@@ -168,6 +169,7 @@ namespace com.espertech.esper.regression.events.render
         }
     
         public class EmptyMapEvent {
+            [PropertyName("props")]
             public IDictionary<string, string> Props { get; }
             public EmptyMapEvent(IDictionary<string, string> props) {
                 this.Props = props;

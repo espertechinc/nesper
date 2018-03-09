@@ -9,9 +9,6 @@
 using System;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
@@ -33,17 +30,17 @@ namespace com.espertech.esper.regression.expr.datetime
             configBean.EndTimestampPropertyName = null;
             TryInvalidConfig(epService, typeof(SupportBean), configBean, "Declared start timestamp property name 'xyz' was not found");
     
-            configBean.StartTimestampPropertyName = "longPrimitive";
+            configBean.StartTimestampPropertyName = "LongPrimitive";
             configBean.EndTimestampPropertyName = "xyz";
             TryInvalidConfig(epService, typeof(SupportBean), configBean, "Declared end timestamp property name 'xyz' was not found");
     
             configBean.EndTimestampPropertyName = null;
-            configBean.StartTimestampPropertyName = "theString";
-            TryInvalidConfig(epService, typeof(SupportBean), configBean, "Declared start timestamp property 'theString' is expected to return a Date, Calendar or long-typed value but returns 'System.String'");
+            configBean.StartTimestampPropertyName = "TheString";
+            TryInvalidConfig(epService, typeof(SupportBean), configBean, "Declared start timestamp property 'TheString' is expected to return a DateTime, DateTimeEx or long-typed value but returns 'System.String'");
     
-            configBean.StartTimestampPropertyName = "longPrimitive";
-            configBean.EndTimestampPropertyName = "theString";
-            TryInvalidConfig(epService, typeof(SupportBean), configBean, "Declared end timestamp property 'theString' is expected to return a Date, Calendar or long-typed value but returns 'System.String'");
+            configBean.StartTimestampPropertyName = "LongPrimitive";
+            configBean.EndTimestampPropertyName = "TheString";
+            TryInvalidConfig(epService, typeof(SupportBean), configBean, "Declared end timestamp property 'TheString' is expected to return a DateTime, DateTimeEx or long-typed value but returns 'System.String'");
     
             configBean.StartTimestampPropertyName = "longdate";
             configBean.EndTimestampPropertyName = "caldate";
@@ -52,7 +49,7 @@ namespace com.espertech.esper.regression.expr.datetime
     
         private void TryInvalidConfig(EPServiceProvider epService, Type clazz, ConfigurationEventTypeLegacy config, string message) {
             try {
-                epService.EPAdministrator.Configuration.AddEventType(clazz.Name, clazz.Name, config);
+                epService.EPAdministrator.Configuration.AddEventType(clazz.Name, clazz, config);
                 Assert.Fail();
             } catch (ConfigurationException ex) {
                 Assert.AreEqual(message, ex.Message);

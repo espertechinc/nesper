@@ -48,11 +48,11 @@ namespace com.espertech.esper.regression.events.infra
     
             // Map
             var mapInner = new Dictionary<string, object>();
-            mapInner.Put("myInsideInt", 10);
+            mapInner.Put("MyInsideInt", 10);
             var topInner = new Dictionary<string, object>();
-            topInner.Put("myInt", 1);
-            topInner.Put("myString", "abc");
-            topInner.Put("nested", mapInner);
+            topInner.Put("MyInt", 1);
+            topInner.Put("MyString", "abc");
+            topInner.Put("Nested", mapInner);
             RunAssertion(epService, MAP_TYPENAME, FMAP, topInner);
     
             // Object-array
@@ -61,18 +61,18 @@ namespace com.espertech.esper.regression.events.infra
             RunAssertion(epService, OA_TYPENAME, FOA, oaTop);
     
             // XML
-            string xml = "<myevent myInt=\"1\" myString=\"abc\"><nested myInsideInt=\"10\"/></myevent>";
+            string xml = "<myevent MyInt=\"1\" MyString=\"abc\"><Nested MyInsideInt=\"10\"/></myevent>";
             RunAssertion(epService, XML_TYPENAME, FXML, xml);
     
             // Avro
             var schema = GetAvroSchema();
-            var innerSchema = schema.GetField("nested").Schema.AsRecordSchema();
+            var innerSchema = schema.GetField("Nested").Schema.AsRecordSchema();
             var avroInner = new GenericRecord(innerSchema);
-            avroInner.Put("myInsideInt", 10);
+            avroInner.Put("MyInsideInt", 10);
             var avro = new GenericRecord(schema);
-            avro.Put("myInt", 1);
-            avro.Put("myString", "abc");
-            avro.Put("nested", avroInner);
+            avro.Put("MyInt", 1);
+            avro.Put("MyString", "abc");
+            avro.Put("Nested", avroInner);
             RunAssertion(epService, AVRO_TYPENAME, FAVRO, avro);
         }
     
@@ -90,31 +90,31 @@ namespace com.espertech.esper.regression.events.infra
     
             JSONEventRenderer jsonEventRenderer = epService.EPRuntime.EventRenderer.GetJSONRenderer(statement.EventType);
             string json = jsonEventRenderer.Render(eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
-            Assert.AreEqual("{\"myInt\":1,\"myString\":\"abc\",\"nested\":{\"myInsideInt\":10}}", json);
+            Assert.AreEqual("{\"MyInt\":1,\"MyString\":\"abc\",\"Nested\":{\"MyInsideInt\":10}}", json);
     
             XMLEventRenderer xmlEventRenderer = epService.EPRuntime.EventRenderer.GetXMLRenderer(statement.EventType);
             string xml = xmlEventRenderer.Render("root", eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
-            Assert.AreEqual("<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><myInt>1</myInt><myString>abc</myString><nested><myInsideInt>10</myInsideInt></nested></root>", xml);
+            Assert.AreEqual("<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><MyInt>1</MyInt><MyString>abc</MyString><Nested><MyInsideInt>10</MyInsideInt></Nested></root>", xml);
     
             statement.Dispose();
         }
     
         private void AddMapEventType(EPServiceProvider epService) {
             var inner = new LinkedHashMap<string, object>();
-            inner.Put("myInsideInt", "int");
+            inner.Put("MyInsideInt", "int");
             var top = new LinkedHashMap<string, object>();
-            top.Put("myInt", "int");
-            top.Put("myString", "string");
-            top.Put("nested", inner);
+            top.Put("MyInt", "int");
+            top.Put("MyString", "string");
+            top.Put("Nested", inner);
             epService.EPAdministrator.Configuration.AddEventType(MAP_TYPENAME, top);
         }
     
         private void AddOAEventType(EPServiceProvider epService) {
-            var namesInner = new string[]{"myInsideInt"};
+            var namesInner = new string[]{"MyInsideInt"};
             var typesInner = new object[]{typeof(int)};
             epService.EPAdministrator.Configuration.AddEventType(OA_TYPENAME + "_1", namesInner, typesInner);
     
-            var names = new string[]{"myInt", "myString", "nested"};
+            var names = new string[]{"MyInt", "MyString", "Nested"};
             var types = new object[]{typeof(int), typeof(string), OA_TYPENAME + "_1"};
             epService.EPAdministrator.Configuration.AddEventType(OA_TYPENAME, names, types);
         }
@@ -128,16 +128,16 @@ namespace com.espertech.esper.regression.events.infra
                     "\t\t<xs:complexType>\n" +
                     "\t\t\t<xs:sequence minOccurs=\"0\" maxOccurs=\"unbounded\">\n" +
                     "\t\t\t\t<xs:choice>\n" +
-                    "\t\t\t\t\t<xs:element ref=\"esper:nested\" minOccurs=\"1\" maxOccurs=\"1\"/>\n" +
+                    "\t\t\t\t\t<xs:element ref=\"esper:Nested\" minOccurs=\"1\" maxOccurs=\"1\"/>\n" +
                     "\t\t\t\t</xs:choice>\n" +
                     "\t\t\t</xs:sequence>\n" +
-                    "\t\t\t<xs:attribute name=\"myInt\" type=\"xs:int\" use=\"required\"/>\n" +
-                    "\t\t\t<xs:attribute name=\"myString\" type=\"xs:string\" use=\"required\"/>\n" +
+                    "\t\t\t<xs:attribute name=\"MyInt\" type=\"xs:int\" use=\"required\"/>\n" +
+                    "\t\t\t<xs:attribute name=\"MyString\" type=\"xs:string\" use=\"required\"/>\n" +
                     "\t\t</xs:complexType>\n" +
                     "\t</xs:element>\n" +
-                    "\t<xs:element name=\"nested\">\n" +
+                    "\t<xs:element name=\"Nested\">\n" +
                     "\t\t<xs:complexType>\n" +
-                    "\t\t\t<xs:attribute name=\"myInsideInt\" type=\"xs:int\" use=\"required\"/>\n" +
+                    "\t\t\t<xs:attribute name=\"MyInsideInt\" type=\"xs:int\" use=\"required\"/>\n" +
                     "\t\t</xs:complexType>\n" +
                     "\t</xs:element>\n" +
                     "</xs:schema>\n";
@@ -151,13 +151,13 @@ namespace com.espertech.esper.regression.events.infra
     
         private static RecordSchema GetAvroSchema() {
             Schema inner = SchemaBuilder.Record(AVRO_TYPENAME + "_inside",
-                    TypeBuilder.Field("myInsideInt", TypeBuilder.IntType()));
+                    TypeBuilder.Field("MyInsideInt", TypeBuilder.IntType()));
     
             return SchemaBuilder.Record(AVRO_TYPENAME,
-                    TypeBuilder.Field("myInt", TypeBuilder.IntType()),
-                    TypeBuilder.Field("myString", TypeBuilder.StringType(
+                    TypeBuilder.Field("MyInt", TypeBuilder.IntType()),
+                    TypeBuilder.Field("MyString", TypeBuilder.StringType(
                             TypeBuilder.Property(PROP_STRING_KEY, PROP_STRING_VALUE))),
-                    TypeBuilder.Field("nested", inner));
+                    TypeBuilder.Field("Nested", inner));
         }
     
         public sealed class MyInsideEvent {

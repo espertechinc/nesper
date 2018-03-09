@@ -37,16 +37,16 @@ namespace com.espertech.esper.regression.nwtable.infra
     
             string eplCreate = namedWindow ?
                     "create window MyInfra#keepall as SupportBean" :
-                    "create table MyInfra(theString string primary key, intPrimitive int, intBoxed int, doublePrimitive double)";
+                    "create table MyInfra(TheString string primary key, IntPrimitive int, IntBoxed int, DoublePrimitive double)";
             epService.EPAdministrator.CreateEPL(eplCreate);
-            epService.EPAdministrator.CreateEPL("insert into MyInfra select theString, intPrimitive, intBoxed, doublePrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into MyInfra select TheString, IntPrimitive, IntBoxed, DoublePrimitive from SupportBean");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("on SupportBean_S0 as sb " +
                     "update MyInfra as mywin" +
-                    " set intPrimitive=id, intBoxed=mywin.intPrimitive, doublePrimitive=initial.intPrimitive" +
-                    " where mywin.theString = sb.p00");
+                    " set IntPrimitive=id, IntBoxed=mywin.IntPrimitive, DoublePrimitive=initial.IntPrimitive" +
+                    " where mywin.TheString = sb.p00");
             var listenerWindow = new SupportUpdateListener();
             stmt.Events += listenerWindow.Update;
-            string[] fields = "intPrimitive,intBoxed,doublePrimitive".Split(',');
+            string[] fields = "IntPrimitive,IntBoxed,DoublePrimitive".Split(',');
     
             epService.EPRuntime.SendEvent(MakeSupportBean("E1", 1, 2));
             epService.EPRuntime.SendEvent(new SupportBean_S0(5, "E1"));
@@ -68,16 +68,16 @@ namespace com.espertech.esper.regression.nwtable.infra
     
             string eplCreate = namedWindow ?
                     "create window MyInfraSS#keepall as SupportBean" :
-                    "create table MyInfraSS(theString string primary key, intPrimitive int)";
+                    "create table MyInfraSS(TheString string primary key, IntPrimitive int)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(eplCreate);
-            epService.EPAdministrator.CreateEPL("insert into MyInfraSS select theString, intPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into MyInfraSS select TheString, IntPrimitive from SupportBean");
     
-            // This is better done with "set intPrimitive = intPrimitive + 1"
+            // This is better done with "set IntPrimitive = IntPrimitive + 1"
             string epl = "@Name(\"Self Update\")\n" +
                     "on SupportBean_A c\n" +
                     "update MyInfraSS s\n" +
-                    "set intPrimitive = (select intPrimitive from MyInfraSS t where t.theString = c.id) + 1\n" +
-                    "where s.theString = c.id";
+                    "set IntPrimitive = (select IntPrimitive from MyInfraSS t where t.TheString = c.id) + 1\n" +
+                    "where s.TheString = c.id";
             epService.EPAdministrator.CreateEPL(epl);
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             epService.EPRuntime.SendEvent(new SupportBean_A("E1"));
             epService.EPRuntime.SendEvent(new SupportBean_A("E2"));
     
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "theString,intPrimitive".Split(','), new object[][]{new object[] {"E1", 3}, new object[] {"E2", 7}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "TheString,IntPrimitive".Split(','), new object[][]{new object[] {"E1", 3}, new object[] {"E2", 7}});
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfraSS", false);
         }

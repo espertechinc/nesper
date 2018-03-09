@@ -6,13 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.deploy;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
@@ -47,7 +42,7 @@ namespace com.espertech.esper.regression.epl.contained
             string epl = "create objectarray schema DeleteId(id int);" +
                     "create window MyWindow#keepall as SupportBean;" +
                     "insert into MyWindow select * from SupportBean;" +
-                    "on SupportBeanArrayCollMap[intArr@Type(DeleteId)] delete from MyWindow where intPrimitive = id";
+                    "on SupportBeanArrayCollMap[intArr@Type(DeleteId)] delete from MyWindow where IntPrimitive = id";
             DeploymentResult deployed = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));

@@ -59,7 +59,7 @@ namespace com.espertech.esper.regression.dataflow
                 dataFlowRuntime.SaveConfiguration("MyFirstFlow", "MyDataflow", null);
                 Assert.Fail();
             } catch (EPDataFlowAlreadyExistsException ex) {
-                Assert.AreEqual("Data flow saved configuration by name 'MyFirstFlow' already Exists", ex.Message);
+                Assert.AreEqual("Data flow saved configuration by name 'MyFirstFlow' already exists", ex.Message);
             }
     
             // remove it

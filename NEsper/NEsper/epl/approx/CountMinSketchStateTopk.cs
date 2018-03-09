@@ -79,9 +79,8 @@ namespace com.espertech.esper.epl.approx
         private void RemoveItemFromSorted(long frequency, Blob value)
         {
             var existing = _topk.Get(frequency);
-            if (existing is Deque<Blob>)
+            if (existing is Deque<Blob> deque)
             {
-                var deque = (Deque<Blob>)existing;
                 deque.Remove(value);
                 if (deque.IsEmpty())
                 {

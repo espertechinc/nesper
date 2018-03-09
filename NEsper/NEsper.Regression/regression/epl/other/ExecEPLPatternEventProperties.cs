@@ -30,23 +30,23 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionWildcardSimplePattern(EPServiceProvider epService) {
-            SupportUpdateListener updateListener = SetupSimplePattern(epService, "*");
+            var updateListener = SetupSimplePattern(epService, "*");
     
             var theEvent = new SupportBean();
             epService.EPRuntime.SendEvent(theEvent);
     
-            EventBean eventBean = updateListener.AssertOneGetNewAndReset();
+            var eventBean = updateListener.AssertOneGetNewAndReset();
             Assert.AreSame(theEvent, eventBean.Get("a"));
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
         private void RunAssertionWildcardOrPattern(EPServiceProvider epService) {
-            SupportUpdateListener updateListener = SetupOrPattern(epService, "*");
+            var updateListener = SetupOrPattern(epService, "*");
     
             object theEvent = new SupportBean();
             epService.EPRuntime.SendEvent(theEvent);
-            EventBean eventBean = updateListener.AssertOneGetNewAndReset();
+            var eventBean = updateListener.AssertOneGetNewAndReset();
             Assert.AreSame(theEvent, eventBean.Get("a"));
             Assert.IsNull(eventBean.Get("b"));
     
@@ -60,37 +60,38 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionPropertiesSimplePattern(EPServiceProvider epService) {
-            SupportUpdateListener updateListener = SetupSimplePattern(epService, "a, a as myEvent, a.intPrimitive as myInt, a.theString");
+            var updateListener = SetupSimplePattern(epService, "a, a as myEvent, a.IntPrimitive as myInt, a.TheString");
     
             var theEvent = new SupportBean();
             theEvent.IntPrimitive = 1;
             theEvent.TheString = "test";
             epService.EPRuntime.SendEvent(theEvent);
     
-            EventBean eventBean = updateListener.AssertOneGetNewAndReset();
+            var eventBean = updateListener.AssertOneGetNewAndReset();
             Assert.AreSame(theEvent, eventBean.Get("a"));
             Assert.AreSame(theEvent, eventBean.Get("myEvent"));
             Assert.AreEqual(1, eventBean.Get("myInt"));
-            Assert.AreEqual("test", eventBean.Get("a.theString"));
+            Assert.AreEqual("test", eventBean.Get("a.TheString"));
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
         private void RunAssertionPropertiesOrPattern(EPServiceProvider epService) {
-            SupportUpdateListener updateListener = SetupOrPattern(epService, "a, a as myAEvent, b, b as myBEvent, a.intPrimitive as myInt, " +
-                    "a.theString, b.simpleProperty as simple, b.indexed[0] as indexed, b.nested.nestedValue as nestedVal");
+            var updateListener = SetupOrPattern(epService,
+                "a, a as myAEvent, b, b as myBEvent, a.IntPrimitive as myInt, " +
+                "a.TheString, b.SimpleProperty as Simple, b.Indexed[0] as Indexed, b.Nested.NestedValue as NestedVal");
     
             Object theEvent = SupportBeanComplexProps.MakeDefaultBean();
             epService.EPRuntime.SendEvent(theEvent);
-            EventBean eventBean = updateListener.AssertOneGetNewAndReset();
+            var eventBean = updateListener.AssertOneGetNewAndReset();
             Assert.AreSame(theEvent, eventBean.Get("b"));
-            Assert.AreEqual("simple", eventBean.Get("simple"));
-            Assert.AreEqual(1, eventBean.Get("indexed"));
-            Assert.AreEqual("nestedValue", eventBean.Get("nestedVal"));
+            Assert.AreEqual("Simple", eventBean.Get("Simple"));
+            Assert.AreEqual(1, eventBean.Get("Indexed"));
+            Assert.AreEqual("NestedValue", eventBean.Get("NestedVal"));
             Assert.IsNull(eventBean.Get("a"));
             Assert.IsNull(eventBean.Get("myAEvent"));
             Assert.IsNull(eventBean.Get("myInt"));
-            Assert.IsNull(eventBean.Get("a.theString"));
+            Assert.IsNull(eventBean.Get("a.TheString"));
     
             var eventTwo = new SupportBean();
             eventTwo.IntPrimitive = 2;
@@ -98,28 +99,28 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPRuntime.SendEvent(eventTwo);
             eventBean = updateListener.AssertOneGetNewAndReset();
             Assert.AreEqual(2, eventBean.Get("myInt"));
-            Assert.AreEqual("test2", eventBean.Get("a.theString"));
+            Assert.AreEqual("test2", eventBean.Get("a.TheString"));
             Assert.IsNull(eventBean.Get("b"));
             Assert.IsNull(eventBean.Get("myBEvent"));
-            Assert.IsNull(eventBean.Get("simple"));
-            Assert.IsNull(eventBean.Get("indexed"));
-            Assert.IsNull(eventBean.Get("nestedVal"));
+            Assert.IsNull(eventBean.Get("Simple"));
+            Assert.IsNull(eventBean.Get("Indexed"));
+            Assert.IsNull(eventBean.Get("NestedVal"));
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
         private SupportUpdateListener SetupSimplePattern(EPServiceProvider epService, string selectCriteria) {
-            string stmtText = "select " + selectCriteria + " from pattern [a=" + typeof(SupportBean).FullName + "]";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
+            var stmtText = "select " + selectCriteria + " from pattern [a=" + typeof(SupportBean).FullName + "]";
+            var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             return listener;
         }
     
         private SupportUpdateListener SetupOrPattern(EPServiceProvider epService, string selectCriteria) {
-            string stmtText = "select " + selectCriteria + " from pattern [Every(a=" + typeof(SupportBean).FullName +
-                    " or b=" + typeof(SupportBeanComplexProps).Name + ")]";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
+            var stmtText = "select " + selectCriteria + " from pattern [Every(a=" + typeof(SupportBean).FullName +
+                    " or b=" + typeof(SupportBeanComplexProps).FullName + ")]";
+            var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var updateListener = new SupportUpdateListener();
             stmt.Events += updateListener.Update;
             return updateListener;

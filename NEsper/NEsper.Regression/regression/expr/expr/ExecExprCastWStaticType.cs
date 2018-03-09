@@ -31,8 +31,8 @@ namespace com.espertech.esper.regression.expr.expr
             map.Put("anFloat", typeof(string));
             map.Put("anByte", typeof(string));
             map.Put("anShort", typeof(string));
-            map.Put("intPrimitive", typeof(int));
-            map.Put("intBoxed", typeof(int?));
+            map.Put("IntPrimitive", typeof(int));
+            map.Put("IntBoxed", typeof(int?));
             configuration.AddEventType("TestEvent", map);
         }
     
@@ -44,10 +44,10 @@ namespace com.espertech.esper.regression.expr.expr
                     "Cast(anFloat, float) as floatVal, " +
                     "Cast(anByte, byte) as byteVal, " +
                     "Cast(anShort, short) as shortVal, " +
-                    "Cast(intPrimitive, int) as intOne, " +
-                    "Cast(intBoxed, int) as intTwo, " +
-                    "Cast(intPrimitive, java.lang.long) as longOne, " +
-                    "Cast(intBoxed, long) as longTwo " +
+                    "Cast(IntPrimitive, int) as intOne, " +
+                    "Cast(IntBoxed, int) as intTwo, " +
+                    "Cast(IntPrimitive, " + Name.Clean<long>() + ") as longOne, " +
+                    "Cast(IntBoxed, long) as longTwo " +
                     "from TestEvent";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmt);
@@ -61,8 +61,8 @@ namespace com.espertech.esper.regression.expr.expr
             map.Put("anFloat", "1.001");
             map.Put("anByte", "0x0A");
             map.Put("anShort", "223");
-            map.Put("intPrimitive", 10);
-            map.Put("intBoxed", 11);
+            map.Put("IntPrimitive", 10);
+            map.Put("IntBoxed", 11);
     
             epService.EPRuntime.SendEvent(map, "TestEvent");
             EventBean row = listener.AssertOneGetNewAndReset();

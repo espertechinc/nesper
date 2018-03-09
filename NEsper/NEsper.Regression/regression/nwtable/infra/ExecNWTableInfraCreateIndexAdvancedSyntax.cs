@@ -33,17 +33,17 @@ namespace com.espertech.esper.regression.nwtable.infra
                 epService.EPAdministrator.Configuration.AddEventType(clazz);
             }
     
-            AssertCompileSODA(epService, "create index MyIndex on MyWindow((x,y) Dummy_name(\"a\",10101))");
+            AssertCompileSODA(epService, "create index MyIndex on MyWindow((x,y) dummy_name(\"a\",10101))");
             AssertCompileSODA(epService, "create index MyIndex on MyWindow(x dummy_name)");
             AssertCompileSODA(epService, "create index MyIndex on MyWindow((x,y,z) dummy_name)");
-            AssertCompileSODA(epService, "create index MyIndex on MyWindow(x dummy_name, (y,z) Dummy_name_2(\"a\"), p dummyname3)");
+            AssertCompileSODA(epService, "create index MyIndex on MyWindow(x dummy_name, (y,z) dummy_name_2(\"a\"), p dummyname3)");
     
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportSpatialPoint");
             SupportMessageAssertUtil.TryInvalid(epService, "create index MyIndex on MyWindow(())",
                     "Error starting statement: Invalid empty list of index expressions");
     
-            SupportMessageAssertUtil.TryInvalid(epService, "create index MyIndex on MyWindow(intPrimitive+1)",
-                    "Error starting statement: Invalid index expression 'intPrimitive+1'");
+            SupportMessageAssertUtil.TryInvalid(epService, "create index MyIndex on MyWindow(IntPrimitive+1)",
+                    "Error starting statement: Invalid index expression 'IntPrimitive+1'");
     
             SupportMessageAssertUtil.TryInvalid(epService, "create index MyIndex on MyWindow((x, y))",
                     "Error starting statement: Invalid multiple index expressions");

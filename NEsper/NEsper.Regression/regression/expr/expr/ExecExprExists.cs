@@ -32,11 +32,11 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionExistsSimple(EPServiceProvider epService) {
-            string stmtText = "select Exists(theString) as t0, " +
-                    " Exists(intBoxed?) as t1, " +
-                    " Exists(dummy?) as t2, " +
-                    " Exists(intPrimitive?) as t3, " +
-                    " Exists(intPrimitive) as t4 " +
+            string stmtText = "select exists(TheString) as t0, " +
+                    " exists(IntBoxed?) as t1, " +
+                    " exists(dummy?) as t2, " +
+                    " exists(IntPrimitive?) as t3, " +
+                    " exists(IntPrimitive) as t4 " +
                     " from " + typeof(SupportBean).FullName;
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
@@ -58,17 +58,17 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionExistsInner(EPServiceProvider epService) {
-            string stmtText = "select Exists(item?.id) as t0, " +
-                    " Exists(item?.id?) as t1, " +
-                    " Exists(item?.item.intBoxed) as t2, " +
-                    " Exists(item?.indexed[0]?) as t3, " +
-                    " Exists(item?.Mapped('keyOne')?) as t4, " +
-                    " Exists(item?.nested?) as t5, " +
-                    " Exists(item?.nested.nestedValue?) as t6, " +
-                    " Exists(item?.nested.nestedNested?) as t7, " +
-                    " Exists(item?.nested.nestedNested.nestedNestedValue?) as t8, " +
-                    " Exists(item?.nested.nestedNested.nestedNestedValue.dummy?) as t9, " +
-                    " Exists(item?.nested.nestedNested.dummy?) as t10 " +
+            string stmtText = "select exists(item?.id) as t0, " +
+                    " exists(item?.id?) as t1, " +
+                    " exists(item?.item.IntBoxed) as t2, " +
+                    " exists(item?.indexed[0]?) as t3, " +
+                    " exists(item?.Mapped('keyOne')?) as t4, " +
+                    " exists(item?.nested?) as t5, " +
+                    " exists(item?.nested.nestedValue?) as t6, " +
+                    " exists(item?.nested.nestedNested?) as t7, " +
+                    " exists(item?.nested.nestedNested.nestedNestedValue?) as t8, " +
+                    " exists(item?.nested.nestedNested.nestedNestedValue.dummy?) as t9, " +
+                    " exists(item?.nested.nestedNested.dummy?) as t10 " +
                     " from " + typeof(SupportMarkerInterface).FullName;
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
@@ -107,11 +107,11 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCastDoubleAndNull_OM(EPServiceProvider epService) {
-            string stmtText = "select Exists(item?.intBoxed) as t0 " +
+            string stmtText = "select exists(item?.IntBoxed) as t0 " +
                     "from " + typeof(SupportMarkerInterface).FullName;
     
             var model = new EPStatementObjectModel();
-            model.SelectClause = SelectClause.Create().Add(Expressions.ExistsProperty("item?.intBoxed"), "t0");
+            model.SelectClause = SelectClause.Create().Add(Expressions.ExistsProperty("item?.IntBoxed"), "t0");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarkerInterface).FullName));
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
             Assert.AreEqual(stmtText, model.ToEPL());
@@ -135,7 +135,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCastStringAndNull_Compile(EPServiceProvider epService) {
-            string stmtText = "select Exists(item?.intBoxed) as t0 " +
+            string stmtText = "select exists(item?.IntBoxed) as t0 " +
                     "from " + typeof(SupportMarkerInterface).FullName;
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);

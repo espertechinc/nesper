@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.context
             var fields = "c0,c1,c2,c3".Split(',');
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             epService.EPAdministrator.CreateEPL("create context MyCtx as start SupportBean_S0 s0 end SupportBean_S1(id=s0.id)");
-            var stmt = epService.EPAdministrator.CreateEPL("context MyCtx select context.id as c0, context.s0.p00 as c1, theString as c2, sum(intPrimitive) as c3 from SupportBean#keepall group by theString");
+            var stmt = epService.EPAdministrator.CreateEPL("context MyCtx select context.id as c0, context.s0.p00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString");
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "S0_1"));
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regression.context
     
             var fields = "c1,c2,c3".Split(',');
             var listener = new SupportUpdateListener();
-            var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.s0.id as c1, context.s1.id as c2, sum(intPrimitive) as c3 " +
+            var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.s0.id as c1, context.s1.id as c2, sum(IntPrimitive) as c3 " +
                     "from SupportBean#keepall output snapshot when terminated");
             statement.Events += listener.Update;
     
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regression.context
     
             var fields = "c1,c2".Split(',');
             var listener = new SupportUpdateListener();
-            var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.s0.p00 as c1, sum(intPrimitive) as c2 " +
+            var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.s0.p00 as c1, sum(IntPrimitive) as c2 " +
                     "from SupportBean#keepall");
             statement.Events += listener.Update;
     
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regression.context
             var fields = "c1,c2,c3".Split(',');
             var fieldsShort = "c3".Split(',');
             var listener = new SupportUpdateListener();
-            var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.startTime as c1, context.endTime as c2, sum(intPrimitive) as c3 " +
+            var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.startTime as c1, context.endTime as c2, sum(IntPrimitive) as c3 " +
                     "from SupportBean#keepall");
             statement.Events += listener.Update;
     
@@ -239,7 +239,7 @@ namespace com.espertech.esper.regression.context
     
             var fields = "c1,c2".Split(',');
             var listener = new SupportUpdateListener();
-            var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.s0.p00 as c1, sum(intPrimitive) as c2 " +
+            var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.s0.p00 as c1, sum(IntPrimitive) as c2 " +
                     "from SupportBean#keepall output snapshot when terminated");
             statement.Events += listener.Update;
     
@@ -279,7 +279,7 @@ namespace com.espertech.esper.regression.context
     
             var fields = "c1,c2".Split(',');
             var listener = new SupportUpdateListener();
-            var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.s0.p00 as c1, sum(intPrimitive) as c2 " +
+            var statement = epService.EPAdministrator.CreateEPL("context EveryNowAndThen select context.s0.p00 as c1, sum(IntPrimitive) as c2 " +
                     "from SupportBean#keepall");
             statement.Events += listener.Update;
     
@@ -411,7 +411,7 @@ namespace com.espertech.esper.regression.context
             var fields = "col1,col2,col3,col4,col5".Split(',');
             var listener = new SupportUpdateListener();
             var statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NineToFive " +
-                    "select prev(theString) as col1, prevwindow(sb) as col2, prevtail(theString) as col3, prior(1, theString) as col4, sum(intPrimitive) as col5 " +
+                    "select prev(TheString) as col1, prevwindow(sb) as col2, prevtail(TheString) as col3, prior(1, TheString) as col4, sum(IntPrimitive) as col5 " +
                     "from SupportBean#keepall as sb");
             statement.Events += listener.Update;
     
@@ -458,8 +458,8 @@ namespace com.espertech.esper.regression.context
             var fields = "col1,col2,col3,col4".Split(',');
             var listener = new SupportUpdateListener();
             var statement = epService.EPAdministrator.CreateEPL("context NineToFive " +
-                    "select sb.theString as col1, sb.intPrimitive as col2, s0.id as col3, s0.p00 as col4 " +
-                    "from SupportBean#keepall as sb full outer join SupportBean_S0#keepall as s0 on p00 = theString");
+                    "select sb.TheString as col1, sb.IntPrimitive as col2, s0.id as col3, s0.p00 as col4 " +
+                    "from SupportBean#keepall as sb full outer join SupportBean_S0#keepall as s0 on p00 = TheString");
             statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -534,9 +534,9 @@ namespace com.espertech.esper.regression.context
             SendTimeEvent(epService, "2002-05-1T08:00:00.000");
             epService.EPAdministrator.CreateEPL("create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)");
     
-            var fields = "theString,col".Split(',');
+            var fields = "TheString,col".Split(',');
             var listener = new SupportUpdateListener();
-            var statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NineToFive select theString, (select p00 from SupportBean_S0#lastevent) as col from SupportBean");
+            var statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NineToFive select TheString, (select p00 from SupportBean_S0#lastevent) as col from SupportBean");
             statement.Events += listener.Update;
             Assert.AreEqual(0, filterSPI.FilterCountApprox);   // from the context
     
@@ -583,12 +583,12 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionNWSameContextOnExpr(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("makeBean", GetType().FullName, "singleRowPluginMakeBean");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("makeBean", GetType().FullName, "SingleRowPluginMakeBean");
             SendTimeEvent(epService, "2002-05-1T08:00:00.000");
             epService.EPAdministrator.CreateEPL("create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)");
     
             // no started yet
-            var fields = "theString,intPrimitive".Split(',');
+            var fields = "TheString,IntPrimitive".Split(',');
             var listener = new SupportUpdateListener();
             var stmt = epService.EPAdministrator.CreateEPL("context NineToFive create window MyWindow#keepall as SupportBean");
             stmt.Events += listener.Update;
@@ -596,8 +596,8 @@ namespace com.espertech.esper.regression.context
             epService.EPAdministrator.CreateEPL("context NineToFive insert into MyWindow select * from SupportBean");
     
             epService.EPAdministrator.CreateEPL("context NineToFive " +
-                    "on SupportBean_S0 s0 merge MyWindow mw where mw.theString = s0.p00 " +
-                    "when matched then update set intPrimitive = s0.id " +
+                    "on SupportBean_S0 s0 merge MyWindow mw where mw.TheString = s0.p00 " +
+                    "when matched then update set IntPrimitive = s0.id " +
                     "when not matched then insert select MakeBean(id, p00)");
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
@@ -730,7 +730,7 @@ namespace com.espertech.esper.regression.context
     
             // test built-in properties
             var stmtLast = epService.EPAdministrator.CreateEPL("@Name('A') context NineToFive " +
-                    "select context.name as c1, context.startTime as c2, context.endTime as c3, theString as c4 from SupportBean");
+                    "select context.name as c1, context.startTime as c2, context.endTime as c3, TheString as c4 from SupportBean");
             var listener = new SupportUpdateListener();
             stmtLast.Events += listener.Update;
     

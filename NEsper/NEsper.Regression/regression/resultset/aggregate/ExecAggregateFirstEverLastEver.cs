@@ -29,18 +29,18 @@ namespace com.espertech.esper.regression.resultset.aggregate
             RunAssertionFirstLastEver(epService, false);
             RunAssertionOnDelete(epService);
     
-            SupportMessageAssertUtil.TryInvalid(epService, "select countever(distinct intPrimitive) from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'countever(distinct intPrimitive)': Aggregation function 'countever' does now allow distinct [");
+            SupportMessageAssertUtil.TryInvalid(epService, "select countever(distinct IntPrimitive) from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'countever(distinct IntPrimitive)': Aggregation function 'countever' does now allow distinct [");
         }
     
         private void RunAssertionOnDelete(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as select * from SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
-            epService.EPAdministrator.CreateEPL("on SupportBean_A delete from MyWindow where theString = id");
+            epService.EPAdministrator.CreateEPL("on SupportBean_A delete from MyWindow where TheString = id");
     
             string[] fields = "firsteverstring,lasteverstring,counteverall".Split(',');
-            string epl = "select firstever(theString) as firsteverstring, " +
-                    "lastever(theString) as lasteverstring," +
+            string epl = "select firstever(TheString) as firsteverstring, " +
+                    "lastever(TheString) as lasteverstring," +
                     "countever(*) as counteverall from MyWindow";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -71,13 +71,13 @@ namespace com.espertech.esper.regression.resultset.aggregate
             string[] fields = "firsteverstring,firsteverint,lasteverstring,lasteverint,counteverstar,counteverexpr,counteverexprfilter".Split(',');
     
             string epl = "select " +
-                    "firstever(theString) as firsteverstring, " +
-                    "lastever(theString) as lasteverstring, " +
-                    "firstever(intPrimitive) as firsteverint, " +
-                    "lastever(intPrimitive) as lasteverint, " +
+                    "firstever(TheString) as firsteverstring, " +
+                    "lastever(TheString) as lasteverstring, " +
+                    "firstever(IntPrimitive) as firsteverint, " +
+                    "lastever(IntPrimitive) as lasteverint, " +
                     "countever(*) as counteverstar, " +
-                    "countever(intBoxed) as counteverexpr, " +
-                    "countever(intBoxed,boolPrimitive) as counteverexprfilter " +
+                    "countever(IntBoxed) as counteverexpr, " +
+                    "countever(IntBoxed,BoolPrimitive) as counteverexprfilter " +
                     "from SupportBean#length(2)";
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();

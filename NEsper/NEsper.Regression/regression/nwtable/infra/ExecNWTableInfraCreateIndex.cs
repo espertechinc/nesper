@@ -85,7 +85,7 @@ namespace com.espertech.esper.regression.nwtable.infra
 
             SupportMessageAssertUtil.TryInvalid(
                 epService, "create index MyInfraIndex on MyInfraOne(f1)",
-                "Error starting statement: An index by name 'MyInfraIndex' already Exists [");
+                "Error starting statement: An index by name 'MyInfraIndex' already exists [");
 
             SupportMessageAssertUtil.TryInvalid(
                 epService, "create index IndexTwo on MyInfraOne(fx)",
@@ -125,11 +125,11 @@ namespace com.espertech.esper.regression.nwtable.infra
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             var eplCreateTwo = namedWindow
                 ? "@Name('create') create window MyInfraTwo#keepall as SupportBean"
-                : "@Name('create') create table MyInfraTwo(theString string primary key, intPrimitive int primary key)";
+                : "@Name('create') create table MyInfraTwo(TheString string primary key, IntPrimitive int primary key)";
             epService.EPAdministrator.CreateEPL(eplCreateTwo);
             epService.EPAdministrator.CreateEPL(
-                "@Name('insert') insert into MyInfraTwo select theString, intPrimitive from SupportBean");
-            epService.EPAdministrator.CreateEPL("create unique index I1 on MyInfraTwo(theString)");
+                "@Name('insert') insert into MyInfraTwo select TheString, IntPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("create unique index I1 on MyInfraTwo(TheString)");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             try
             {
@@ -139,8 +139,8 @@ namespace com.espertech.esper.regression.nwtable.infra
             catch (Exception ex)
             {
                 var text = namedWindow
-                    ? "Unexpected exception in statement 'create': Unique index violation, index 'I1' is a unique index and key 'E1' already Exists"
-                    : "java.lang.RuntimeException: Unexpected exception in statement 'insert': Unique index violation, index 'I1' is a unique index and key 'E1' already Exists";
+                    ? "Unexpected exception in statement 'create': Unique index violation, index 'I1' is a unique index and key 'E1' already exists"
+                    : "java.lang.RuntimeException: Unexpected exception in statement 'insert': Unique index violation, index 'I1' is a unique index and key 'E1' already exists";
                 Assert.AreEqual(text, ex.Message);
             }
 
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 : "create table MyInfraONR as (f1 string primary key, f2 int primary key)";
             epService.EPAdministrator.CreateEPL(stmtTextCreateOne);
             epService.EPAdministrator.CreateEPL(
-                "insert into MyInfraONR(f1, f2) select theString, intPrimitive from SupportBean");
+                "insert into MyInfraONR(f1, f2) select TheString, IntPrimitive from SupportBean");
             var indexOne = epService.EPAdministrator.CreateEPL("create index MyInfraONRIndex1 on MyInfraONR(f2)");
             var fields = "f1,f2".Split(',');
 
@@ -198,11 +198,11 @@ namespace com.espertech.esper.regression.nwtable.infra
 
             // two-key index order test
             epService.EPAdministrator.CreateEPL("create window MyInfraFour#keepall as SupportBean");
-            epService.EPAdministrator.CreateEPL("create index idx1 on MyInfraFour (theString, intPrimitive)");
+            epService.EPAdministrator.CreateEPL("create index idx1 on MyInfraFour (TheString, IntPrimitive)");
             epService.EPAdministrator.CreateEPL(
-                "on SupportBean sb select * from MyInfraFour w where w.theString = sb.theString and w.intPrimitive = sb.intPrimitive");
+                "on SupportBean sb select * from MyInfraFour w where w.TheString = sb.TheString and w.IntPrimitive = sb.IntPrimitive");
             epService.EPAdministrator.CreateEPL(
-                "on SupportBean sb select * from MyInfraFour w where w.intPrimitive = sb.intPrimitive and w.theString = sb.theString");
+                "on SupportBean sb select * from MyInfraFour w where w.IntPrimitive = sb.IntPrimitive and w.TheString = sb.TheString");
             Assert.AreEqual(1, GetNamedWindowMgmtService(epService).GetNamedWindowIndexes("MyInfraFour").Length);
 
             epService.EPAdministrator.DestroyAllStatements();
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 : "create table MyInfraDC as (f1 string primary key, f2 int primary key, f3 string primary key, f4 string primary key)";
             epService.EPAdministrator.CreateEPL(stmtTextCreateOne);
             epService.EPAdministrator.CreateEPL(
-                "insert into MyInfraDC(f1, f2, f3, f4) select theString, intPrimitive, '>'||theString||'<', '?'||theString||'?' from SupportBean");
+                "insert into MyInfraDC(f1, f2, f3, f4) select TheString, IntPrimitive, '>'||TheString||'<', '?'||TheString||'?' from SupportBean");
             var indexOne = epService.EPAdministrator.CreateEPL("create index MyInfraDCIndex1 on MyInfraDC(f1)");
             var indexTwo = epService.EPAdministrator.CreateEPL("create index MyInfraDCIndex2 on MyInfraDC(f4)");
             var fields = "f1,f2".Split(',');
@@ -271,7 +271,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 : "create table MyInfraMCMI as (f1 string primary key, f2 int, f3 string, f4 string)";
             epService.EPAdministrator.CreateEPL(stmtTextCreateOne);
             epService.EPAdministrator.CreateEPL(
-                "insert into MyInfraMCMI(f1, f2, f3, f4) select theString, intPrimitive, '>'||theString||'<', '?'||theString||'?' from SupportBean");
+                "insert into MyInfraMCMI(f1, f2, f3, f4) select TheString, IntPrimitive, '>'||TheString||'<', '?'||TheString||'?' from SupportBean");
             epService.EPAdministrator.CreateEPL("create index MyInfraMCMIIndex1 on MyInfraMCMI(f2, f3, f1)");
             epService.EPAdministrator.CreateEPL("create index MyInfraMCMIIndex2 on MyInfraMCMI(f2, f3)");
             epService.EPAdministrator.CreateEPL("create index MyInfraMCMIIndex3 on MyInfraMCMI(f2)");
@@ -315,7 +315,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 : "create table MyInfraLC as (f1 string primary key, f2 int primary key, f3 string primary key, f4 string primary key)";
             epService.EPAdministrator.CreateEPL(stmtTextCreateOne);
             epService.EPAdministrator.CreateEPL(
-                "insert into MyInfraLC(f1, f2, f3, f4) select theString, intPrimitive, '>'||theString||'<', '?'||theString||'?' from SupportBean");
+                "insert into MyInfraLC(f1, f2, f3, f4) select TheString, IntPrimitive, '>'||TheString||'<', '?'||TheString||'?' from SupportBean");
 
             epService.EPRuntime.SendEvent(new SupportBean("E1", -4));
             epService.EPRuntime.SendEvent(new SupportBean("E1", -2));
@@ -346,8 +346,8 @@ namespace com.espertech.esper.regression.nwtable.infra
 
             epService.EPAdministrator.CreateEPL("@Name('idx') create index MyIndex on MyInfraIS (pkey, col0)");
             epService.EPAdministrator.CreateEPL(
-                "on SupportBean merge MyInfraIS where theString = pkey " +
-                "when not matched then insert select theString as pkey, intPrimitive as col0, longPrimitive as col1");
+                "on SupportBean merge MyInfraIS where TheString = pkey " +
+                "when not matched then insert select TheString as pkey, IntPrimitive as col0, LongPrimitive as col1");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("on SupportBean_S0 select col0,col1 from MyInfraIS where pkey=p00")
                 .Events += listener.Update;
@@ -376,7 +376,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 : "create table MyInfraIR (col0 string, pkey int primary key)";
             epService.EPAdministrator.CreateEPL(eplCreate);
             epService.EPAdministrator.CreateEPL(
-                "insert into MyInfraIR select theString as col0, intPrimitive as pkey from SupportBean");
+                "insert into MyInfraIR select TheString as col0, IntPrimitive as pkey from SupportBean");
 
             epService.EPAdministrator.CreateEPL("@Name('idx') create index MyIndex on MyInfraIR (col0)");
             epService.EPAdministrator.CreateEPL(
@@ -476,7 +476,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 : "create table MyInfraCI as (f1 string primary key, f2 int, f3 string, f4 string)";
             epService.EPAdministrator.CreateEPL(stmtTextCreate);
             epService.EPAdministrator.CreateEPL(
-                "insert into MyInfraCI(f1, f2, f3, f4) select theString, intPrimitive, '>'||theString||'<', '?'||theString||'?' from SupportBean");
+                "insert into MyInfraCI(f1, f2, f3, f4) select TheString, IntPrimitive, '>'||TheString||'<', '?'||TheString||'?' from SupportBean");
             var indexOne = epService.EPAdministrator.CreateEPL("create index MyInfraCIIndex on MyInfraCI(f2, f3, f1)");
             var fields = "f1,f2,f3,f4".Split(',');
 
@@ -513,7 +513,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 : "create table MyInfraW as (f1 long primary key, f2 string primary key)";
             epService.EPAdministrator.CreateEPL(stmtTextCreate);
             epService.EPAdministrator.CreateEPL(
-                "insert into MyInfraW(f1, f2) select longPrimitive, theString from SupportBean");
+                "insert into MyInfraW(f1, f2) select LongPrimitive, TheString from SupportBean");
             epService.EPAdministrator.CreateEPL("create index MyInfraWIndex1 on MyInfraW(f1)");
             var fields = "f1,f2".Split(',');
 
@@ -528,7 +528,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 : "create table MyInfraWTwo as (f1 short primary key, f2 string primary key)";
             epService.EPAdministrator.CreateEPL(stmtTextCreate);
             epService.EPAdministrator.CreateEPL(
-                "insert into MyInfraWTwo(f1, f2) select shortPrimitive, theString from SupportBean");
+                "insert into MyInfraWTwo(f1, f2) select ShortPrimitive, TheString from SupportBean");
             epService.EPAdministrator.CreateEPL("create index MyInfraWTwoIndex1 on MyInfraWTwo(f1)");
 
             SendEventShort(epService, "E1", 2);
@@ -552,7 +552,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 : "create table MyInfraHBTW as (f1 long primary key, f2 string primary key)";
             epService.EPAdministrator.CreateEPL(eplCreate);
 
-            var eplInsert = "insert into MyInfraHBTW(f1, f2) select longPrimitive, theString from SupportBean";
+            var eplInsert = "insert into MyInfraHBTW(f1, f2) select LongPrimitive, TheString from SupportBean";
             epService.EPAdministrator.CreateEPL(eplInsert);
 
             epService.EPAdministrator.CreateEPL("create index MyInfraHBTWIndex1 on MyInfraHBTW(f1 btree)");
@@ -582,7 +582,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 : "create table MyInfraHBTWTwo as (f1 short primary key, f2 string primary key)";
             epService.EPAdministrator.CreateEPL(eplCreateTwo);
 
-            var eplInsertTwo = "insert into MyInfraHBTWTwo(f1, f2) select shortPrimitive, theString from SupportBean";
+            var eplInsertTwo = "insert into MyInfraHBTWTwo(f1, f2) select ShortPrimitive, TheString from SupportBean";
             epService.EPAdministrator.CreateEPL(eplInsertTwo);
             epService.EPAdministrator.CreateEPL("create index MyInfraHBTWTwoIndex1 on MyInfraHBTWTwo(f1 btree)");
 

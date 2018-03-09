@@ -18,8 +18,8 @@ namespace com.espertech.esper.regression.expr.expr
     {
         public override void Run(EPServiceProvider epService)
         {
-            var epl = "select longBoxed % intBoxed as myMod " +
-                      " from " + typeof(SupportBean).FullName + "#length(3) where Not(longBoxed > intBoxed)";
+            var epl = "select LongBoxed % IntBoxed as myMod " +
+                      " from " + typeof(SupportBean).FullName + "#length(3) where Not(LongBoxed > IntBoxed)";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

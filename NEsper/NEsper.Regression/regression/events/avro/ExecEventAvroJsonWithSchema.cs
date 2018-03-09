@@ -32,12 +32,12 @@ namespace com.espertech.esper.regression.events.avro
                             " \"fields\": [\n" +
                             "     {\"name\": \"name\",  \"type\": {\n" +
                             "                              \"type\": \"string\",\n" +
-                            "                              \"avro.java.string\": \"string\"\n" +
+                            "                              \"avro.string\": \"string\"\n" +
                             "                            }},\n" +
                             "     {\"name\": \"favorite_number\",  \"type\": \"int\"},\n" +
                             "     {\"name\": \"favorite_color\",  \"type\": {\n" +
                             "                              \"type\": \"string\",\n" +
-                            "                              \"avro.java.string\": \"string\"\n" +
+                            "                              \"avro.string\": \"string\"\n" +
                             "                            }}\n" +
                             " ]\n" +
                             "}";

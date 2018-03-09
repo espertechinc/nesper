@@ -37,8 +37,8 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionGroupByHaving(EPServiceProvider epService, bool join) {
             string epl = !join ?
-                    "select * from SupportBean#length_batch(3) group by theString having count(*) > 1" :
-                    "select theString, intPrimitive from SupportBean_S0#lastevent, SupportBean#length_batch(3) group by theString having count(*) > 1";
+                    "select * from SupportBean#length_batch(3) group by TheString having count(*) > 1" :
+                    "select TheString, IntPrimitive from SupportBean_S0#lastevent, SupportBean#length_batch(3) group by TheString having count(*) > 1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -49,7 +49,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             epService.EPRuntime.SendEvent(new SupportBean("E2", 21));
     
             EventBean[] received = listener.GetNewDataListFlattened();
-            EPAssertionUtil.AssertPropsPerRow(received, "theString,intPrimitive".Split(','),
+            EPAssertionUtil.AssertPropsPerRow(received, "TheString,IntPrimitive".Split(','),
                     new object[][]{new object[] {"E2", 20}, new object[] {"E2", 21}});
             listener.Reset();
             stmt.Dispose();
@@ -76,9 +76,9 @@ namespace com.espertech.esper.regression.resultset.querytype
             // Every event generates a new row, this time we sum the price by symbol and output volume
             string epl = "select irstream symbol, volume, sum(price) as mySum " +
                     "from " + typeof(SupportBeanString).FullName + "#length(100) as one, " +
-                    typeof(SupportMarketDataBean).Name + "#length(3) as two " +
+                    typeof(SupportMarketDataBean).FullName + "#length(3) as two " +
                     "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                    "  and one.theString = two.symbol " +
+                    "  and one.TheString = two.symbol " +
                     "group by symbol " +
                     "having sum(price) >= 50";
     

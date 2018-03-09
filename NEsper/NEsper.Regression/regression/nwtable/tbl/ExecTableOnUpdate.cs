@@ -33,8 +33,8 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 "create table varagg as (" +
                 "keyOne string primary key, keyTwo int primary key, p0 long)");
             epService.EPAdministrator.CreateEPL(
-                "on SupportBean merge varagg where theString = keyOne and " +
-                "intPrimitive = keyTwo when not matched then insert select theString as keyOne, intPrimitive as keyTwo, 1 as p0");
+                "on SupportBean merge varagg where TheString = keyOne and " +
+                "IntPrimitive = keyTwo when not matched then insert select TheString as keyOne, IntPrimitive as keyTwo, 1 as p0");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select varagg[p00, id].p0 as value from SupportBean_S0")
                 .Events += listener.Update;

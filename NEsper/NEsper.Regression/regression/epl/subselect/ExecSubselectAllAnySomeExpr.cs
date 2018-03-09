@@ -39,11 +39,11 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionRelationalOpAll(EPServiceProvider epService) {
             string[] fields = "g,ge,l,le".Split(',');
             string stmtText = "select " +
-                    "intPrimitive > all (select intPrimitive from SupportBean(theString like \"S%\")#keepall) as g, " +
-                    "intPrimitive >= all (select intPrimitive from SupportBean(theString like \"S%\")#keepall) as ge, " +
-                    "intPrimitive < all (select intPrimitive from SupportBean(theString like \"S%\")#keepall) as l, " +
-                    "intPrimitive <= all (select intPrimitive from SupportBean(theString like \"S%\")#keepall) as le " +
-                    "from SupportBean(theString like \"E%\")";
+                    "IntPrimitive > all (select IntPrimitive from SupportBean(TheString like \"S%\")#keepall) as g, " +
+                    "IntPrimitive >= all (select IntPrimitive from SupportBean(TheString like \"S%\")#keepall) as ge, " +
+                    "IntPrimitive < all (select IntPrimitive from SupportBean(TheString like \"S%\")#keepall) as l, " +
+                    "IntPrimitive <= all (select IntPrimitive from SupportBean(TheString like \"S%\")#keepall) as le " +
+                    "from SupportBean(TheString like \"E%\")";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -74,10 +74,10 @@ namespace com.espertech.esper.regression.epl.subselect
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{false, false, true, true});
     
             try {
-                epService.EPAdministrator.CreateEPL("select intArr > all (select intPrimitive from SupportBean#keepall) from ArrayBean");
+                epService.EPAdministrator.CreateEPL("select intArr > all (select IntPrimitive from SupportBean#keepall) from ArrayBean");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr > all (select intPrimitive from SupportBean#keepall) from ArrayBean]", ex.Message);
+                Assert.AreEqual("Error starting statement: Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr > all (select IntPrimitive from SupportBean#keepall) from ArrayBean]", ex.Message);
             }
     
             // test OM
@@ -94,9 +94,9 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionRelationalOpNullOrNoRows(EPServiceProvider epService) {
             string[] fields = "vall,vany".Split(',');
             string stmtText = "select " +
-                    "intBoxed >= all (select doubleBoxed from SupportBean(theString like 'S%')#keepall) as vall, " +
-                    "intBoxed >= any (select doubleBoxed from SupportBean(theString like 'S%')#keepall) as vany " +
-                    " from SupportBean(theString like 'E%')";
+                    "IntBoxed >= all (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as vall, " +
+                    "IntBoxed >= any (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as vany " +
+                    " from SupportBean(TheString like 'E%')";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -136,11 +136,11 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionRelationalOpSome(EPServiceProvider epService) {
             string[] fields = "g,ge,l,le".Split(',');
             string stmtText = "select " +
-                    "intPrimitive > any (select intPrimitive from SupportBean(theString like 'S%')#keepall) as g, " +
-                    "intPrimitive >= any (select intPrimitive from SupportBean(theString like 'S%')#keepall) as ge, " +
-                    "intPrimitive < any (select intPrimitive from SupportBean(theString like 'S%')#keepall) as l, " +
-                    "intPrimitive <= any (select intPrimitive from SupportBean(theString like 'S%')#keepall) as le " +
-                    " from SupportBean(theString like 'E%')";
+                    "IntPrimitive > any (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as g, " +
+                    "IntPrimitive >= any (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as ge, " +
+                    "IntPrimitive < any (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as l, " +
+                    "IntPrimitive <= any (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as le " +
+                    " from SupportBean(TheString like 'E%')";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -179,11 +179,11 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionEqualsNotEqualsAll(EPServiceProvider epService) {
             string[] fields = "eq,neq,sqlneq,nneq".Split(',');
             string stmtText = "select " +
-                    "intPrimitive=All(select intPrimitive from SupportBean(theString like 'S%')#keepall) as eq, " +
-                    "intPrimitive != all (select intPrimitive from SupportBean(theString like 'S%')#keepall) as neq, " +
-                    "intPrimitive <> all (select intPrimitive from SupportBean(theString like 'S%')#keepall) as sqlneq, " +
-                    "not intPrimitive = all (select intPrimitive from SupportBean(theString like 'S%')#keepall) as nneq " +
-                    " from SupportBean(theString like 'E%')";
+                    "IntPrimitive=All(select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as eq, " +
+                    "IntPrimitive != all (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as neq, " +
+                    "IntPrimitive <> all (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as sqlneq, " +
+                    "not IntPrimitive = all (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as nneq " +
+                    " from SupportBean(TheString like 'E%')";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -214,11 +214,11 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionEqualsAnyOrSome(EPServiceProvider epService) {
             string[] fields = "r1,r2,r3,r4".Split(',');
             string stmtText = "select " +
-                    "intPrimitive = SOME (select intPrimitive from SupportBean(theString like 'S%')#keepall) as r1, " +
-                    "intPrimitive = ANY (select intPrimitive from SupportBean(theString like 'S%')#keepall) as r2, " +
-                    "intPrimitive != SOME (select intPrimitive from SupportBean(theString like 'S%')#keepall) as r3, " +
-                    "intPrimitive <> ANY (select intPrimitive from SupportBean(theString like 'S%')#keepall) as r4 " +
-                    "from SupportBean(theString like 'E%')";
+                    "IntPrimitive = SOME (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as r1, " +
+                    "IntPrimitive = ANY (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as r2, " +
+                    "IntPrimitive != SOME (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as r3, " +
+                    "IntPrimitive <> ANY (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as r4 " +
+                    "from SupportBean(TheString like 'E%')";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -246,12 +246,12 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionEqualsInNullOrNoRows(EPServiceProvider epService) {
             string[] fields = "eall,eany,neall,neany,isin".Split(',');
             string stmtText = "select " +
-                    "intBoxed = all (select doubleBoxed from SupportBean(theString like 'S%')#keepall) as eall, " +
-                    "intBoxed = any (select doubleBoxed from SupportBean(theString like 'S%')#keepall) as eany, " +
-                    "intBoxed != all (select doubleBoxed from SupportBean(theString like 'S%')#keepall) as neall, " +
-                    "intBoxed != any (select doubleBoxed from SupportBean(theString like 'S%')#keepall) as neany, " +
-                    "intBoxed in (select doubleBoxed from SupportBean(theString like 'S%')#keepall) as isin " +
-                    " from SupportBean(theString like 'E%')";
+                    "IntBoxed = all (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as eall, " +
+                    "IntBoxed = any (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as eany, " +
+                    "IntBoxed != all (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as neall, " +
+                    "IntBoxed != any (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as neany, " +
+                    "IntBoxed in (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as isin " +
+                    " from SupportBean(TheString like 'E%')";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -288,11 +288,11 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
             try {
-                string stmtText = "select intArr = all (select intPrimitive from SupportBean#keepall) as r1 from ArrayBean";
+                string stmtText = "select intArr = all (select IntPrimitive from SupportBean#keepall) as r1 from ArrayBean";
                 epService.EPAdministrator.CreateEPL(stmtText);
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr = all (select intPrimitive from SupportBean#keepall) as r1 from ArrayBean]", ex.Message);
+                Assert.AreEqual("Error starting statement: Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr = all (select IntPrimitive from SupportBean#keepall) as r1 from ArrayBean]", ex.Message);
             }
         }
     

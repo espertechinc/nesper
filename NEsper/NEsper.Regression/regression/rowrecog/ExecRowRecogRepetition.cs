@@ -161,7 +161,7 @@ namespace com.espertech.esper.regression.rowrecog
                     "  measures A as a" +
                     "  pattern (A{3}) " +
                     "  define " +
-                    "    A as A.intPrimitive > prev(A.intPrimitive)" +
+                    "    A as A.IntPrimitive > prev(A.IntPrimitive)" +
                     ")";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
@@ -444,7 +444,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             string text = "select * from SupportBean " +
                     "match_recognize (" +
-                    " partition by intPrimitive" +
+                    " partition by IntPrimitive" +
                     " measures " + measures +
                     " pattern (" + pattern + ")" +
                     " define " + defines +
@@ -512,7 +512,7 @@ namespace com.espertech.esper.regression.rowrecog
                 buf.Write(prop.ToUpperInvariant());
                 buf.Write(" as ");
                 buf.Write(prop.ToUpperInvariant());
-                buf.Write(".theString like \"");
+                buf.Write(".TheString like \"");
                 buf.Write(prop.ToUpperInvariant());
                 buf.Write("%\"");
             }
@@ -544,7 +544,7 @@ namespace com.espertech.esper.regression.rowrecog
                     " measures A as a" +
                     " pattern (" + before + ")" +
                     " define" +
-                    " A as A.theString like \"A%\"" +
+                    " A as A.TheString like \"A%\"" +
                     ")";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
             EPStatementSPI spi = (EPStatementSPI) epService.EPAdministrator.Create(model);

@@ -25,9 +25,9 @@ namespace com.espertech.esper.regression.resultset.orderby
             string statementString = "select c1.event_criteria_id as ecid, " +
                     "c1.priority as priority, " +
                     "c2.priority as prio, Cast(count(*), int) as cnt from " +
-                    typeof(SupportHierarchyEvent).Name + "#lastevent as c1, " +
-                    typeof(SupportHierarchyEvent).Name + "#groupwin(event_criteria_id)#lastevent as c2, " +
-                    typeof(SupportHierarchyEvent).Name + "#groupwin(event_criteria_id)#lastevent as p " +
+                    typeof(SupportHierarchyEvent).FullName + "#lastevent as c1, " +
+                    typeof(SupportHierarchyEvent).FullName + "#groupwin(event_criteria_id)#lastevent as c2, " +
+                    typeof(SupportHierarchyEvent).FullName + "#groupwin(event_criteria_id)#lastevent as p " +
                     "where c2.event_criteria_id in (c1.event_criteria_id,2,1) " +
                     "and p.event_criteria_id in (c1.parent_event_criteria_id, c1.event_criteria_id) " +
                     "order by c2.priority asc";

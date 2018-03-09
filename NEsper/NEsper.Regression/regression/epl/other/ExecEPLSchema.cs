@@ -93,7 +93,7 @@ namespace com.espertech.esper.regression.epl.other
             var listener = new SupportUpdateListener();
             stmtSchemaInsert.Events += listener.Update;
             epService.EPRuntime.SendEvent(theEvent);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "bean.theString,beanarray[0].id".Split(','), new object[]{"E1", 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "bean.TheString,beanarray[0].id".Split(','), new object[]{"E1", 2});
             stmtSchemaInsert.Dispose();
     
             // test named window
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regression.epl.other
     
             var stmtWindowInsert = epService.EPAdministrator.CreateEPL("insert into MyWindow select sb as bean, s0Arr as beanarray from BeanSourceEvent");
             epService.EPRuntime.SendEvent(theEvent);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "bean.theString,beanarray[0].id".Split(','), new object[]{"E1", 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "bean.TheString,beanarray[0].id".Split(','), new object[]{"E1", 2});
             stmtWindowInsert.Dispose();
     
             // insert pattern to named window
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "S0_1"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(20, "S0_2"));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "S0_3"));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "bean.theString,beanarray[0].id,beanarray[1].id".Split(','), new object[]{"E2", 10, 20});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "bean.TheString,beanarray[0].id,beanarray[1].id".Split(','), new object[]{"E2", 10, 20});
             stmtWindowPattern.Dispose();
     
             // test configured Map type
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regression.epl.other
             var stmtMapInsert = epService.EPAdministrator.CreateEPL("insert into MyConfiguredMap select sb as bean, s0Arr as beanarray from BeanSourceEvent");
             stmtMapInsert.Events += listener.Update;
             epService.EPRuntime.SendEvent(theEvent);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "bean.theString,beanarray[0].id".Split(','), new object[]{"E1", 2});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "bean.TheString,beanarray[0].id".Split(','), new object[]{"E1", 2});
             stmtMapInsert.Dispose();
         }
     
@@ -274,7 +274,7 @@ namespace com.espertech.esper.regression.epl.other
     
         private void TryAssertionInvalid(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum) {
             var expectedOne = !eventRepresentationEnum.IsAvroEvent() ?
-                    "Error starting statement: Nestable type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected Type or Map or the name of a previously-declared Map or ObjectArray type [" :
+                    "Error starting statement: Nestable type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected Type or DataMap or the name of a previously-declared Map or ObjectArray type [" :
                     "Error starting statement: Type definition encountered an unexpected property type name 'xxxx' for property 'col1', expected the name of a previously-declared Avro type";
             TryInvalid(epService, eventRepresentationEnum.GetAnnotationText() + " create schema MyEventType as (col1 xxxx)", expectedOne);
     

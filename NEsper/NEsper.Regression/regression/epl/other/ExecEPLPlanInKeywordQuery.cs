@@ -119,7 +119,7 @@ namespace com.espertech.esper.regression.epl.other
             var epl = INDEX_CALLBACK_HOOK + "select s0.id as c0," +
                       "(select * from S1#keepall as s1 " +
                       "  where s0.p00 in (s1.p10, s1.p11) and s0.p01 in (s1.p12, s1.p13))" +
-                      ".SelectFrom(a=>S1.id) as c1 " +
+                      ".selectFrom(a=>S1.id) as c1 " +
                       "from S0 as s0";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regression.epl.other
 
             // test coercion absence - types the same
             var eplCoercion = INDEX_CALLBACK_HOOK + "select *," +
-                              "(select * from S0#keepall as s0 where sb.longPrimitive in (id)) from SupportBean as sb";
+                              "(select * from S0#keepall as s0 where sb.LongPrimitive in (id)) from SupportBean as sb";
             stmt = epService.EPAdministrator.CreateEPL(eplCoercion);
             var subqueryCoercion = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
             Assert.AreEqual(
@@ -252,7 +252,7 @@ namespace com.espertech.esper.regression.epl.other
             var epl = INDEX_CALLBACK_HOOK + "select s1.id as c0," +
                       "(select * from S0#keepall as s0 " +
                       "  where s0.p00 in (s1.p10, s1.p11) and s0.p01 in (s1.p12, s1.p13))" +
-                      ".SelectFrom(a=>S0.id) as c1 " +
+                      ".selectFrom(a=>S0.id) as c1 " +
                       " from S1 as s1";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -319,7 +319,7 @@ namespace com.espertech.esper.regression.epl.other
 
             // test coercion absence - types the same
             var eplCoercion = INDEX_CALLBACK_HOOK + "select *," +
-                              "(select * from SupportBean#keepall as sb where sb.longPrimitive in (s0.id)) from S0 as s0";
+                              "(select * from SupportBean#keepall as sb where sb.LongPrimitive in (s0.id)) from S0 as s0";
             stmt = epService.EPAdministrator.CreateEPL(eplCoercion);
             var subqueryCoercion = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
             Assert.AreEqual(

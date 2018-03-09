@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
         private void RunAssertionMergeWhereWithMethodRead(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create table varaggMMR (keyOne string primary key, cnt count(*))");
             epService.EPAdministrator.CreateEPL("into table varaggMMR select count(*) as cnt " +
-                    "from SupportBean#lastevent group by theString");
+                    "from SupportBean#lastevent group by TheString");
     
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select varaggMMR[p00].keyOne as c0 from SupportBean_S0").Events += listener.Update;
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("create table varaggMS (" +
                     "eventset window(*) @Type(SupportBean), total sum(int))");
             epService.EPAdministrator.CreateEPL("into table varaggMS select window(*) as eventset, " +
-                    "sum(intPrimitive) as total from SupportBean#length(2)");
+                    "sum(IntPrimitive) as total from SupportBean#length(2)");
             epService.EPAdministrator.CreateEPL("on SupportBean_S0 merge varaggMS " +
                     "when matched then insert into ResultStream select eventset, total, eventset.TakeLast(1) as c0");
             epService.EPAdministrator.CreateEPL("select * from ResultStream").Events += listener.Update;
@@ -139,10 +139,10 @@ namespace com.espertech.esper.regression.nwtable.tbl
             // create merge
             string eplMerge = "on SupportBean merge varaggIUD" +
                     " when not matched then" +
-                    " insert select theString as p0" +
-                    " when matched and theString like \"U%\" then" +
+                    " insert select TheString as p0" +
+                    " when matched and TheString like \"U%\" then" +
                     " update set p0=\"updated\"" +
-                    " when matched and theString like \"D%\" then" +
+                    " when matched and TheString like \"D%\" then" +
                     " delete";
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplMerge);
     
@@ -195,12 +195,12 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             // create merge
             string eplMerge = "on SupportBean merge varaggMIU" +
-                    " where intPrimitive=key" +
+                    " where IntPrimitive=key" +
                     " when not matched then" +
-                    " insert select intPrimitive as key, \"v1\" as p0, 1000 as p1, {1,2} as p2" +
-                    " when matched and theString like \"U%\" then" +
+                    " insert select IntPrimitive as key, \"v1\" as p0, 1000 as p1, {1,2} as p2" +
+                    " when matched and TheString like \"U%\" then" +
                     " update set p0=\"v2\", p1=2000, p2={3,4}" +
-                    " when matched and theString like \"D%\" then" +
+                    " when matched and TheString like \"D%\" then" +
                     " delete";
             EPStatement stmtMerge = SupportModelHelper.CreateByCompileOrParse(epService, soda, eplMerge);
             var listenerMerge = new SupportUpdateListener();
@@ -260,12 +260,12 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             // create merge
             string eplMerge = "on SupportBean merge varaggMIUD" +
-                    " where intPrimitive=keyOne and theString=keyTwo" +
+                    " where IntPrimitive=keyOne and TheString=keyTwo" +
                     " when not matched then" +
-                    " insert select intPrimitive as keyOne, theString as keyTwo, \"inserted\" as prop" +
-                    " when matched and longPrimitive>0 then" +
+                    " insert select IntPrimitive as keyOne, TheString as keyTwo, \"inserted\" as prop" +
+                    " when matched and LongPrimitive>0 then" +
                     " update set prop=\"updated\"" +
-                    " when matched and longPrimitive<0 then" +
+                    " when matched and LongPrimitive<0 then" +
                     " delete";
             EPStatement stmtMerge = SupportModelHelper.CreateByCompileOrParse(epService, soda, eplMerge);
             var expectedType = new object[][]{new object[] {"keyOne", typeof(int?)}, new object[] {"keyTwo", typeof(string)}, new object[] {"prop", typeof(string)}};

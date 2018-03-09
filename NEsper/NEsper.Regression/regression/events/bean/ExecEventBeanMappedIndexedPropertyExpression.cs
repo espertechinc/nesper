@@ -32,15 +32,15 @@ namespace com.espertech.esper.regression.events.bean
     
             // test bean-type
             string eplBeans = "select " +
-                    "Mapped(theString) as val0, " +
-                    "Indexed(intPrimitive) as val1 " +
+                    "Mapped(TheString) as val0, " +
+                    "Indexed(IntPrimitive) as val1 " +
                     "from SupportBeanComplexProps#lastevent, SupportBean sb unidirectional";
             RunAssertionBean(epService, listener, eplBeans);
     
             // test bean-type prefixed
             string eplBeansPrefixed = "select " +
-                    "sbcp.Mapped(theString) as val0, " +
-                    "sbcp.Indexed(intPrimitive) as val1 " +
+                    "sbcp.Mapped(TheString) as val0, " +
+                    "sbcp.Indexed(IntPrimitive) as val1 " +
                     "from SupportBeanComplexProps#lastevent sbcp, SupportBean sb unidirectional";
             RunAssertionBean(epService, listener, eplBeansPrefixed);
     
@@ -48,14 +48,14 @@ namespace com.espertech.esper.regression.events.bean
             epService.EPAdministrator.CreateEPL("insert into SecondStream select 'a' as val0, * from SupportBeanComplexProps");
     
             string eplWrap = "select " +
-                    "Mapped(theString) as val0," +
-                    "Indexed(intPrimitive) as val1 " +
+                    "Mapped(TheString) as val0," +
+                    "Indexed(IntPrimitive) as val1 " +
                     "from SecondStream #lastevent, SupportBean unidirectional";
             RunAssertionBean(epService, listener, eplWrap);
     
             string eplWrapPrefixed = "select " +
-                    "sbcp.Mapped(theString) as val0," +
-                    "sbcp.Indexed(intPrimitive) as val1 " +
+                    "sbcp.Mapped(TheString) as val0," +
+                    "sbcp.Indexed(IntPrimitive) as val1 " +
                     "from SecondStream #lastevent sbcp, SupportBean unidirectional";
             RunAssertionBean(epService, listener, eplWrapPrefixed);
     
@@ -66,14 +66,14 @@ namespace com.espertech.esper.regression.events.bean
             epService.EPAdministrator.Configuration.AddEventType("MapEvent", def);
     
             string eplMap = "select " +
-                    "Mapped(theString) as val0," +
-                    "Indexed(intPrimitive) as val1 " +
+                    "Mapped(TheString) as val0," +
+                    "Indexed(IntPrimitive) as val1 " +
                     "from MapEvent#lastevent, SupportBean unidirectional";
             RunAssertionMap(epService, listener, eplMap);
     
             string eplMapPrefixed = "select " +
-                    "sbcp.Mapped(theString) as val0," +
-                    "sbcp.Indexed(intPrimitive) as val1 " +
+                    "sbcp.Mapped(TheString) as val0," +
+                    "sbcp.Indexed(IntPrimitive) as val1 " +
                     "from MapEvent#lastevent sbcp, SupportBean unidirectional";
             RunAssertionMap(epService, listener, eplMapPrefixed);
     
@@ -95,14 +95,14 @@ namespace com.espertech.esper.regression.events.bean
             // test Object-array-type
             epService.EPAdministrator.Configuration.AddEventType("ObjectArrayEvent", new string[]{"mapped", "indexed"}, new object[]{new Dictionary<string, object>(), typeof(int[])});
             string eplObjectArray = "select " +
-                    "Mapped(theString) as val0," +
-                    "Indexed(intPrimitive) as val1 " +
+                    "Mapped(TheString) as val0," +
+                    "Indexed(IntPrimitive) as val1 " +
                     "from ObjectArrayEvent#lastevent, SupportBean unidirectional";
             RunAssertionObjectArray(epService, listener, eplObjectArray);
     
             string eplObjectArrayPrefixed = "select " +
-                    "sbcp.Mapped(theString) as val0," +
-                    "sbcp.Indexed(intPrimitive) as val1 " +
+                    "sbcp.Mapped(TheString) as val0," +
+                    "sbcp.Indexed(IntPrimitive) as val1 " +
                     "from ObjectArrayEvent#lastevent sbcp, SupportBean unidirectional";
             RunAssertionObjectArray(epService, listener, eplObjectArrayPrefixed);
         }

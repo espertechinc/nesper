@@ -107,7 +107,7 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionRStreamInsertInto(EPServiceProvider epService) {
             EPStatement statement = epService.EPAdministrator.CreateEPL(
                     "insert into NextStream " +
-                            "select rstream s0.theString as theString from " + typeof(SupportBean).FullName + "#length(3) as s0");
+                            "select rstream s0.TheString as TheString from " + typeof(SupportBean).FullName + "#length(3) as s0");
             var testListener = new SupportUpdateListener();
             statement.Events += testListener.Update;
     
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regression.epl.other
     
             SendEvent(epService, "a", 2);
             Assert.IsFalse(testListener.IsInvoked);
-            Assert.AreEqual("a", testListenerInsertInto.AssertOneGetNewAndReset().Get("theString"));    // insert into unchanged
+            Assert.AreEqual("a", testListenerInsertInto.AssertOneGetNewAndReset().Get("TheString"));    // insert into unchanged
     
             SendEvents(epService, new string[]{"b", "c"});
             Assert.IsFalse(testListener.IsInvoked);
@@ -125,9 +125,9 @@ namespace com.espertech.esper.regression.epl.other
             testListenerInsertInto.Reset();
     
             SendEvent(epService, "d", 2);
-            Assert.AreSame("a", testListener.LastNewData[0].Get("theString"));    // receive 'a' as new data
+            Assert.AreSame("a", testListener.LastNewData[0].Get("TheString"));    // receive 'a' as new data
             Assert.IsNull(testListener.LastOldData);  // receive no more old data
-            Assert.AreEqual("d", testListenerInsertInto.LastNewData[0].Get("theString"));    // insert into unchanged
+            Assert.AreEqual("d", testListenerInsertInto.LastNewData[0].Get("TheString"));    // insert into unchanged
             Assert.IsNull(testListenerInsertInto.LastOldData);  // receive no old data in insert into
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionRStreamInsertIntoRStream(EPServiceProvider epService) {
             EPStatement statement = epService.EPAdministrator.CreateEPL(
                     "insert rstream into NextStream " +
-                            "select rstream s0.theString as theString from " + typeof(SupportBean).FullName + "#length(3) as s0");
+                            "select rstream s0.TheString as TheString from " + typeof(SupportBean).FullName + "#length(3) as s0");
             var testListener = new SupportUpdateListener();
             statement.Events += testListener.Update;
     
@@ -153,9 +153,9 @@ namespace com.espertech.esper.regression.epl.other
             Assert.IsFalse(testListenerInsertInto.IsInvoked);
     
             SendEvent(epService, "d", 2);
-            Assert.AreSame("a", testListener.LastNewData[0].Get("theString"));    // receive 'a' as new data
+            Assert.AreSame("a", testListener.LastNewData[0].Get("TheString"));    // receive 'a' as new data
             Assert.IsNull(testListener.LastOldData);  // receive no more old data
-            Assert.AreEqual("a", testListenerInsertInto.LastNewData[0].Get("theString"));    // insert into unchanged
+            Assert.AreEqual("a", testListenerInsertInto.LastNewData[0].Get("TheString"));    // insert into unchanged
             Assert.IsNull(testListener.LastOldData);  // receive no old data in insert into
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -163,10 +163,10 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionRStreamJoin(EPServiceProvider epService) {
             EPStatement statement = epService.EPAdministrator.CreateEPL(
-                    "select rstream s1.intPrimitive as aID, s2.intPrimitive as bID " +
-                            "from " + typeof(SupportBean).FullName + "(theString='a')#length(2) as s1, "
-                            + typeof(SupportBean).FullName + "(theString='b')#keepall as s2" +
-                            " where s1.intPrimitive = s2.intPrimitive");
+                    "select rstream s1.IntPrimitive as aID, s2.IntPrimitive as bID " +
+                            "from " + typeof(SupportBean).FullName + "(TheString='a')#length(2) as s1, "
+                            + typeof(SupportBean).FullName + "(TheString='b')#keepall as s2" +
+                            " where s1.IntPrimitive = s2.IntPrimitive");
             var testListener = new SupportUpdateListener();
             statement.Events += testListener.Update;
     
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionIStreamInsertIntoRStream(EPServiceProvider epService) {
             EPStatement statement = epService.EPAdministrator.CreateEPL(
                     "insert rstream into NextStream " +
-                            "select istream a.theString as theString from " + typeof(SupportBean).FullName + "#length(1) as a");
+                            "select istream a.TheString as TheString from " + typeof(SupportBean).FullName + "#length(1) as a");
             var testListener = new SupportUpdateListener();
             statement.Events += testListener.Update;
     
@@ -213,13 +213,13 @@ namespace com.espertech.esper.regression.epl.other
             statement.Events += testListenerInsertInto.Update;
     
             SendEvent(epService, "a", 2);
-            Assert.AreEqual("a", testListener.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("a", testListener.AssertOneGetNewAndReset().Get("TheString"));
             Assert.IsFalse(testListenerInsertInto.IsInvoked);
     
             SendEvent(epService, "b", 2);
-            Assert.AreEqual("b", testListener.LastNewData[0].Get("theString"));
+            Assert.AreEqual("b", testListener.LastNewData[0].Get("TheString"));
             Assert.IsNull(testListener.LastOldData);
-            Assert.AreEqual("a", testListenerInsertInto.LastNewData[0].Get("theString"));
+            Assert.AreEqual("a", testListenerInsertInto.LastNewData[0].Get("TheString"));
             Assert.IsNull(testListenerInsertInto.LastOldData);
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -227,10 +227,10 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionIStreamJoin(EPServiceProvider epService) {
             EPStatement statement = epService.EPAdministrator.CreateEPL(
-                    "select istream s1.intPrimitive as aID, s2.intPrimitive as bID " +
-                            "from " + typeof(SupportBean).FullName + "(theString='a')#length(2) as s1, "
-                            + typeof(SupportBean).FullName + "(theString='b')#keepall as s2" +
-                            " where s1.intPrimitive = s2.intPrimitive");
+                    "select istream s1.IntPrimitive as aID, s2.IntPrimitive as bID " +
+                            "from " + typeof(SupportBean).FullName + "(TheString='a')#length(2) as s1, "
+                            + typeof(SupportBean).FullName + "(TheString='b')#keepall as s2" +
+                            " where s1.IntPrimitive = s2.IntPrimitive");
             var testListener = new SupportUpdateListener();
             statement.Events += testListener.Update;
     

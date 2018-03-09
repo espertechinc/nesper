@@ -123,7 +123,7 @@ namespace com.espertech.esper.regression.spatial
                 Assert.Fail();
             } catch (Exception ex) { // we have a handler
                 SupportMessageAssertUtil.AssertMessage(ex,
-                        "Unexpected exception in statement 'win': Unique index violation, index 'Idx' is a unique index and key '(10.0,15.0,1.0,2.0)' already Exists");
+                        "Unexpected exception in statement 'win': Unique index violation, index 'Idx' is a unique index and key '(10.0,15.0,1.0,2.0)' already exists");
             }
     
             epService.EPAdministrator.DeploymentAdmin.Undeploy(deploymentId);

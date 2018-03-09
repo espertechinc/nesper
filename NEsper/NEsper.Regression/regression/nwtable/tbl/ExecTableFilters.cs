@@ -30,7 +30,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             }
     
             epService.EPAdministrator.CreateEPL("create table MyTable(pkey string primary key, col0 int)");
-            epService.EPAdministrator.CreateEPL("insert into MyTable select theString as pkey, intPrimitive as col0 from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into MyTable select TheString as pkey, IntPrimitive as col0 from SupportBean");
     
             for (int i = 0; i < 5; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean("E" + i, i));

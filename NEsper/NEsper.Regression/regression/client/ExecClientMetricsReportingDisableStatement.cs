@@ -6,21 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.metric;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.regression.client.ExecClientMetricsReportingNW;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.client
 {
@@ -46,9 +39,9 @@ namespace com.espertech.esper.regression.client
             var listenerStmtMetric = new SupportUpdateListener();
             statements[0].Events += listenerStmtMetric.Update;
     
-            statements[1] = epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive=1)#keepall where 2=2", "stmtone");
+            statements[1] = epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive=1)#keepall where 2=2", "stmtone");
             SendEvent(epService, "E1", 1, CPUGOALONENANO);
-            statements[2] = epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive>0)#lastevent where 1=1", "stmttwo");
+            statements[2] = epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive>0)#lastevent where 1=1", "stmttwo");
             SendEvent(epService, "E2", 1, CPUGOALONENANO);
     
             SendTimer(epService, 11000);

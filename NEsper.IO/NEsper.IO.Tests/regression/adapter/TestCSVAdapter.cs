@@ -37,7 +37,7 @@ namespace com.espertech.esperio.regression.adapter
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
 
             _propertyTypes = new Dictionary<String, Object>();
             _propertyTypes.Put("myInt", typeof (int?));

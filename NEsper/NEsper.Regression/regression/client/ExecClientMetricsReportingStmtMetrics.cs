@@ -6,15 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.metric;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
@@ -55,14 +51,14 @@ namespace com.espertech.esper.regression.client
             var listener = new SupportUpdateListener();
             statements[0].Events += listener.Update;
     
-            statements[1] = epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive=1)#keepall where MyMetricFunctions.TakeCPUTime(longPrimitive)", "cpuStmtOne");
+            statements[1] = epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.TakeCPUTime(LongPrimitive)", "cpuStmtOne");
             var listenerTwo = new SupportUpdateListener();
             statements[1].Events += listenerTwo.Update;
-            statements[2] = epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive=2)#keepall where MyMetricFunctions.TakeCPUTime(longPrimitive)", "cpuStmtTwo");
+            statements[2] = epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive=2)#keepall where MyMetricFunctions.TakeCPUTime(LongPrimitive)", "cpuStmtTwo");
             statements[2].Events += listenerTwo.Update;
-            statements[3] = epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive=3)#keepall where MyMetricFunctions.TakeWallTime(longPrimitive)", "wallStmtThree");
+            statements[3] = epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive=3)#keepall where MyMetricFunctions.TakeWallTime(LongPrimitive)", "wallStmtThree");
             statements[3].Events += listenerTwo.Update;
-            statements[4] = epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive=4)#keepall where MyMetricFunctions.TakeWallTime(longPrimitive)", "wallStmtFour");
+            statements[4] = epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive=4)#keepall where MyMetricFunctions.TakeWallTime(LongPrimitive)", "wallStmtFour");
             statements[4].Events += listenerTwo.Update;
     
             SendEvent(epService, "E1", 1, CPU_GOAL_ONE_NANO);
@@ -102,12 +98,12 @@ namespace com.espertech.esper.regression.client
             EPAssertionUtil.AssertProps(received[1], fields, new object[]{"default", "cpuStmtTwo"});
             EPAssertionUtil.AssertProps(received[2], fields, new object[]{"default", "wallStmtThree"});
             EPAssertionUtil.AssertProps(received[3], fields, new object[]{"default", "wallStmtFour"});
-    
-            long cpuOne = (long) received[0].Get("cpuTime");
-            long cpuTwo = (long) received[1].Get("cpuTime");
-            long wallOne = (long) received[2].Get("wallTime");
-            long wallTwo = (long) received[3].Get("wallTime");
-    
+
+            long cpuOne = received[0].Get("cpuTime").AsLong();
+            long cpuTwo = received[1].Get("cpuTime").AsLong();
+            long wallOne = received[2].Get("wallTime").AsLong();
+            long wallTwo = received[3].Get("wallTime").AsLong();
+
             Assert.IsTrue(cpuOne > CPU_GOAL_ONE_NANO, "cpuOne=" + cpuOne);
             Assert.IsTrue(cpuTwo > CPU_GOAL_TWO_NANO, "cpuTwo=" + cpuTwo);
             Assert.IsTrue((wallOne + 50) > WALL_GOAL_ONE_MSEC, "wallOne=" + wallOne);

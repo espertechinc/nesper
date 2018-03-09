@@ -25,7 +25,7 @@ namespace com.espertech.esper.regression.expr.expr
     public class ExecExprConcat : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
             string epl = "select p00 || p01 as c1, p00 || p01 || p02 as c2, p00 || '|' || p01 as c3" +
-                    " from " + typeof(SupportBean_S0).Name + "#length(10)";
+                    " from " + typeof(SupportBean_S0).FullName + "#length(10)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

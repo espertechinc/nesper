@@ -35,7 +35,7 @@ namespace com.espertech.esper.regression.multithread
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                 "select * \n" +
                 "  from " + EVENT_NAME + "#length(1000) as s0,\n" +
-                "      sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s1"
+                "      sql:MyDB ['select myvarchar from mytesttable where ${IntPrimitive} = mytesttable.mybigint'] as s1"
             );
             TrySendAndReceive(epService, 4, stmt, 1000);
             TrySendAndReceive(epService, 2, stmt, 2000);

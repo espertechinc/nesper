@@ -7,17 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
-using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.datetime
@@ -31,68 +27,75 @@ namespace com.espertech.esper.regression.expr.datetime
     
         public override void Run(EPServiceProvider epService)
         {
-            string startTime = "2002-05-30T09:01:02.003";   // use 2-digit hour, see https://bugs.openjdk.java.net/browse/JDK-8066806
+            var startTime = "2002-05-30T09:01:02.003";
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(startTime)));
     
-            string[] fields = "valmoh,valmoy,valdom,valdow,valdoy,valera,valhod,valmos,valsom,valwye,valyea,val1,val2,val3,val4,val5".Split(',');
-            string eplFragment = "select " +
-                    "current_timestamp.MinuteOfHour as valmoh," +
-                    "current_timestamp.MonthOfYear as valmoy," +
-                    "current_timestamp.DayOfMonth as valdom," +
-                    "current_timestamp.DayOfWeek as valdow," +
-                    "current_timestamp.DayOfYear as valdoy," +
-                    "current_timestamp.Era as valera," +
-                    "current_timestamp.hourOfDay as valhod," +
-                    "current_timestamp.millisOfSecond  as valmos," +
-                    "current_timestamp.secondOfMinute as valsom," +
-                    "current_timestamp.weekyear as valwye," +
-                    "current_timestamp.year as valyea," +
-                    "utildate.hourOfDay as val1," +
-                    "longdate.hourOfDay as val2," +
-                    "caldate.hourOfDay as val3," +
-                    "zoneddate.hourOfDay as val4," +
-                    "localdate.hourOfDay as val5" +
+            var fields = "valmoh,valmoy,valdom,valdow,valdoy,valhod,valmos,valsom,valwye,valyea,val1,val2,val3".Split(',');
+            var eplFragment = "select " +
+                    "current_timestamp.GetMinuteOfHour() as valmoh," +
+                    "current_timestamp.GetMonthOfYear() as valmoy," +
+                    "current_timestamp.GetDayOfMonth() as valdom," +
+                    "current_timestamp.GetDayOfWeek() as valdow," +
+                    "current_timestamp.GetDayOfYear() as valdoy," +
+                    "current_timestamp.GetHourOfDay() as valhod," +
+                    "current_timestamp.GetMillisOfSecond() as valmos," +
+                    "current_timestamp.GetSecondOfMinute() as valsom," +
+                    "current_timestamp.GetWeekYear() as valwye," +
+                    "current_timestamp.GetYear() as valyea," +
+                    "utildate.GetHourOfDay() as val1," +
+                    "longdate.GetHourOfDay() as val2," +
+                    "caldate.GetHourOfDay() as val3" +
                     " from SupportDateTime";
-            EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
+            var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            foreach (string field in fields) {
-                Assert.AreEqual(typeof(int?), stmtFragment.EventType.GetPropertyType(field));
-            }
-    
+            Assert.That(stmtFragment.EventType.GetPropertyType("valmoh"), Is.EqualTo(typeof(int)));
+            Assert.That(stmtFragment.EventType.GetPropertyType("valmoy"), Is.EqualTo(typeof(int)));
+            Assert.That(stmtFragment.EventType.GetPropertyType("valdom"), Is.EqualTo(typeof(int)));
+            Assert.That(stmtFragment.EventType.GetPropertyType("valdow"), Is.EqualTo(typeof(DayOfWeek)));
+            Assert.That(stmtFragment.EventType.GetPropertyType("valdoy"), Is.EqualTo(typeof(int)));
+            Assert.That(stmtFragment.EventType.GetPropertyType("valhod"), Is.EqualTo(typeof(int)));
+            Assert.That(stmtFragment.EventType.GetPropertyType("valmos"), Is.EqualTo(typeof(int)));
+            Assert.That(stmtFragment.EventType.GetPropertyType("valsom"), Is.EqualTo(typeof(int)));
+            Assert.That(stmtFragment.EventType.GetPropertyType("valwye"), Is.EqualTo(typeof(int)));
+            Assert.That(stmtFragment.EventType.GetPropertyType("valyea"), Is.EqualTo(typeof(int)));
+            Assert.That(stmtFragment.EventType.GetPropertyType("val1"), Is.EqualTo(typeof(int)));
+            Assert.That(stmtFragment.EventType.GetPropertyType("val2"), Is.EqualTo(typeof(int)));
+            Assert.That(stmtFragment.EventType.GetPropertyType("val3"), Is.EqualTo(typeof(int)));
+
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{
-                    1, 4, 30, 5, 150, 1, 9, 3, 2, 22, 2002, 9, 9, 9, 9, 9
+                    1, 5, 30, DayOfWeek.Thursday, 150, 9, 3, 2, 22, 2002, 9, 9, 9
             });
     
             // test Map inheritance via create-schema
-            epService.EPAdministrator.CreateEPL("create schema ParentType as (startTS long, endTS long) starttimestamp startTS endtimestamp endTS");
+            epService.EPAdministrator.CreateEPL("create schema ParentType as (StartTS long, EndTS long) starttimestamp StartTS endtimestamp EndTS");
             epService.EPAdministrator.CreateEPL("create schema ChildType as (foo string) inherits ParentType");
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from ChildType dt where Dt.Before(Current_timestamp())");
-            Assert.AreEqual("startTS", stmt.EventType.StartTimestampPropertyName);
-            Assert.AreEqual("endTS", stmt.EventType.EndTimestampPropertyName);
+            var stmt = epService.EPAdministrator.CreateEPL("select * from ChildType dt where dt.before(current_timestamp())");
+            Assert.AreEqual("StartTS", stmt.EventType.StartTimestampPropertyName);
+            Assert.AreEqual("EndTS", stmt.EventType.EndTimestampPropertyName);
     
             // test POJO inheritance via create-schema
-            epService.EPAdministrator.CreateEPL("create schema InterfaceType as " + typeof(MyInterface).Name + " starttimestamp startTS endtimestamp endTS");
-            epService.EPAdministrator.CreateEPL("create schema DerivedType as " + typeof(MyImplOne).Name);
-            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select * from DerivedType dt where Dt.Before(Current_timestamp())");
-            Assert.AreEqual("startTS", stmtTwo.EventType.StartTimestampPropertyName);
-            Assert.AreEqual("endTS", stmtTwo.EventType.EndTimestampPropertyName);
+            epService.EPAdministrator.CreateEPL("create schema InterfaceType as " + typeof(MyInterface).MaskTypeName() + " starttimestamp StartTS endtimestamp EndTS");
+            epService.EPAdministrator.CreateEPL("create schema DerivedType as " + typeof(MyImplOne).MaskTypeName());
+            var stmtTwo = epService.EPAdministrator.CreateEPL("select * from DerivedType dt where dt.before(current_timestamp())");
+            Assert.AreEqual("StartTS", stmtTwo.EventType.StartTimestampPropertyName);
+            Assert.AreEqual("EndTS", stmtTwo.EventType.EndTimestampPropertyName);
     
             // test incompatible
-            epService.EPAdministrator.CreateEPL("create schema T1 as (startTS long, endTS long) starttimestamp startTS endtimestamp endTS");
-            epService.EPAdministrator.CreateEPL("create schema T2 as (startTSOne long, endTSOne long) starttimestamp startTSOne endtimestamp endTSOne");
+            epService.EPAdministrator.CreateEPL("create schema T1 as (StartTS long, EndTS long) starttimestamp StartTS endtimestamp EndTS");
+            epService.EPAdministrator.CreateEPL("create schema T2 as (StartTSOne long, EndTSOne long) starttimestamp StartTSOne endtimestamp EndTSOne");
             try {
                 epService.EPAdministrator.CreateEPL("create schema T12 as () inherits T1,T2");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Event type declares start timestamp as property 'startTS' however inherited event type 'T2' declares start timestamp as property 'startTSOne' [create schema T12 as () inherits T1,T2]", ex.Message);
+                Assert.AreEqual("Error starting statement: Event type declares start timestamp as property 'StartTS' however inherited event type 'T2' declares start timestamp as property 'StartTSOne' [create schema T12 as () inherits T1,T2]", ex.Message);
             }
             try {
-                epService.EPAdministrator.CreateEPL("create schema T12 as (startTSOne long, endTSXXX long) inherits T2 starttimestamp startTSOne endtimestamp endTSXXX");
+                epService.EPAdministrator.CreateEPL("create schema T12 as (StartTSOne long, EndTSXXX long) inherits T2 starttimestamp StartTSOne endtimestamp EndTSXXX");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Event type declares end timestamp as property 'endTSXXX' however inherited event type 'T2' declares end timestamp as property 'endTSOne' [create schema T12 as (startTSOne long, endTSXXX long) inherits T2 starttimestamp startTSOne endtimestamp endTSXXX]", ex.Message);
+                Assert.AreEqual("Error starting statement: Event type declares end timestamp as property 'EndTSXXX' however inherited event type 'T2' declares end timestamp as property 'EndTSOne' [create schema T12 as (StartTSOne long, EndTSXXX long) inherits T2 starttimestamp StartTSOne endtimestamp EndTSXXX]", ex.Message);
             }
         }
     

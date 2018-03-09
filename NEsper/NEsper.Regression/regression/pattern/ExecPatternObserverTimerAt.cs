@@ -30,7 +30,7 @@ namespace com.espertech.esper.regression.pattern
     public class ExecPatternObserverTimerAt : RegressionExecution
     {
         public override void Configure(Configuration configuration) {
-            configuration.AddEventType("SupportBean", typeof(SupportBean).FullName);
+            configuration.AddEventType("SupportBean", typeof(SupportBean));
             configuration.AddVariable("VMIN", typeof(int), 0);
             configuration.AddVariable("VHOUR", typeof(int), 8);
         }
@@ -304,7 +304,7 @@ namespace com.espertech.esper.regression.pattern
         private void RunAssertionPropertyAndSODAAndTimezone(EPServiceProvider epService) {
             var listener = new SupportUpdateListener();
             SendTimeEvent("2008-08-3T06:00:00.000", epService);
-            var expression = "select * from pattern [a=SupportBean -> every timer:at(2*a.intPrimitive,*,*,*,*)]";
+            var expression = "select * from pattern [a=SupportBean -> every timer:at(2*a.IntPrimitive,*,*,*,*)]";
             var statement = epService.EPAdministrator.CreateEPL(expression);
             statement.Events += listener.Update;
     

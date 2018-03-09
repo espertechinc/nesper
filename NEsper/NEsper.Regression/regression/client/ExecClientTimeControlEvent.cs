@@ -12,9 +12,6 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
@@ -27,7 +24,7 @@ namespace com.espertech.esper.regression.client
         public override void Configure(Configuration configuration) {
             configuration.EngineDefaults.ViewResources.IsShareViews = false;
             configuration.EngineDefaults.Execution.IsAllowIsolatedService = true;
-            configuration.AddEventType("SupportBean", typeof(SupportBean).FullName);
+            configuration.AddEventType("SupportBean", typeof(SupportBean));
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -39,7 +36,7 @@ namespace com.espertech.esper.regression.client
         private void RunAssertionSendTimeSpan(EPServiceProvider epService) {
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select Current_timestamp() as ct from pattern[every timer:interval(1.5 sec)]");
+            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select current_timestamp() as ct from pattern[every timer:interval(1.5 sec)]");
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     
@@ -89,7 +86,7 @@ namespace com.espertech.esper.regression.client
             EPServiceProviderIsolated isolated = epService.GetEPServiceIsolated("I1");
             isolated.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
-            EPStatement stmtOne = isolated.EPAdministrator.CreateEPL("select Current_timestamp() as ct from pattern[every timer:interval(1.5 sec)]", null, null);
+            EPStatement stmtOne = isolated.EPAdministrator.CreateEPL("select current_timestamp() as ct from pattern[every timer:interval(1.5 sec)]", null, null);
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     

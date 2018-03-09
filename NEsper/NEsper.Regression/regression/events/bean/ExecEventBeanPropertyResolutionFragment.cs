@@ -75,7 +75,7 @@ namespace com.espertech.esper.regression.events.bean
             Assert.IsNull(eventType.GetFragmentType("p0intarray"));
             Assert.IsNull(eventBean.GetFragment("p0map?"));
             Assert.IsNull(eventBean.GetFragment("p0intarray[0]?"));
-            Assert.IsNull(eventBean.GetFragment("P0map('a')?"));
+            Assert.IsNull(eventBean.GetFragment("p0map('a')?"));
     
             stmt.Dispose();
         }
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regression.events.bean
             Assert.IsNull(eventType.GetFragmentType("p0intarray"));
             Assert.IsNull(eventBean.GetFragment("p0map?"));
             Assert.IsNull(eventBean.GetFragment("p0intarray[0]?"));
-            Assert.IsNull(eventBean.GetFragment("P0map('a')?"));
+            Assert.IsNull(eventBean.GetFragment("p0map('a')?"));
     
             stmt.Dispose();
         }
@@ -147,8 +147,8 @@ namespace com.espertech.esper.regression.events.bean
             Assert.AreEqual(10, innerSimpleEvent.Get("p1id"));
     
             EventBean innerBeanEvent = (EventBean) eventBean.GetFragment("mybean");
-            Assert.AreEqual("nestedNestedValue", innerBeanEvent.Get("nested.nestedNested.nestedNestedValue"));
-            Assert.AreEqual("nestedNestedValue", ((EventBean) eventBean.GetFragment("mybean.nested.nestedNested")).Get("nestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", innerBeanEvent.Get("Nested.NestedNested.NestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("mybean.Nested.NestedNested")).Get("NestedNestedValue"));
     
             stmt.Dispose();
         }
@@ -177,8 +177,8 @@ namespace com.espertech.esper.regression.events.bean
             Assert.AreEqual(10, innerSimpleEvent.Get("p1id"));
     
             EventBean innerBeanEvent = (EventBean) eventBean.GetFragment("mybean");
-            Assert.AreEqual("nestedNestedValue", innerBeanEvent.Get("nested.nestedNested.nestedNestedValue"));
-            Assert.AreEqual("nestedNestedValue", ((EventBean) eventBean.GetFragment("mybean.nested.nestedNested")).Get("nestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", innerBeanEvent.Get("Nested.NestedNested.NestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("mybean.Nested.NestedNested")).Get("NestedNestedValue"));
     
             stmt.Dispose();
         }
@@ -190,24 +190,24 @@ namespace com.espertech.esper.regression.events.bean
             stmt = epService.EPAdministrator.CreateEPL("select * from " + typeof(SupportBeanCombinedProps).FullName);
             stmt.Events += listener.Update;
     
-            // assert nested fragments
+            // assert Nested fragments
             epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
             EventBean eventBean = listener.AssertOneGetNewAndReset();
             SupportEventTypeAssertionUtil.AssertConsistency(eventBean.EventType);
             //Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));
     
-            Assert.IsTrue(eventBean.EventType.GetPropertyDescriptor("nested").IsFragment);
-            EventBean eventNested = (EventBean) eventBean.GetFragment("nested");
-            Assert.AreEqual("nestedValue", eventNested.Get("nestedValue"));
-            eventNested = (EventBean) eventBean.GetFragment("nested?");
-            Assert.AreEqual("nestedValue", eventNested.Get("nestedValue"));
+            Assert.IsTrue(eventBean.EventType.GetPropertyDescriptor("Nested").IsFragment);
+            EventBean eventNested = (EventBean) eventBean.GetFragment("Nested");
+            Assert.AreEqual("NestedValue", eventNested.Get("NestedValue"));
+            eventNested = (EventBean) eventBean.GetFragment("Nested?");
+            Assert.AreEqual("NestedValue", eventNested.Get("NestedValue"));
     
-            Assert.IsTrue(eventNested.EventType.GetPropertyDescriptor("nestedNested").IsFragment);
-            Assert.AreEqual("nestedNestedValue", ((EventBean) eventNested.GetFragment("nestedNested")).Get("nestedNestedValue"));
-            Assert.AreEqual("nestedNestedValue", ((EventBean) eventNested.GetFragment("nestedNested?")).Get("nestedNestedValue"));
+            Assert.IsTrue(eventNested.EventType.GetPropertyDescriptor("NestedNested").IsFragment);
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventNested.GetFragment("NestedNested")).Get("NestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventNested.GetFragment("NestedNested?")).Get("NestedNestedValue"));
     
-            EventBean nestedFragment = (EventBean) eventBean.GetFragment("nested.nestedNested");
-            Assert.AreEqual("nestedNestedValue", nestedFragment.Get("nestedNestedValue"));
+            EventBean NestedFragment = (EventBean) eventBean.GetFragment("Nested.NestedNested");
+            Assert.AreEqual("NestedNestedValue", NestedFragment.Get("NestedNestedValue"));
     
             // assert indexed fragments
             SupportBeanCombinedProps eventObject = SupportBeanCombinedProps.MakeDefaultBean();
@@ -405,18 +405,18 @@ namespace com.espertech.esper.regression.events.bean
             Assert.AreEqual(2, ((EventBean) eventBean.GetFragment("one[1]")).Get("id"));
             Assert.AreEqual(3, ((EventBean) eventBean.GetFragment("two")).Get("id"));
     
-            Assert.AreEqual("E1", ((EventBean) eventBean.GetFragment("one[0].bean")).Get("theString"));
-            Assert.AreEqual("E1", ((EventBean) eventBean.GetFragment("one[1].bean")).Get("theString"));
-            Assert.AreEqual("E1", ((EventBean) eventBean.GetFragment("two.bean")).Get("theString"));
+            Assert.AreEqual("E1", ((EventBean) eventBean.GetFragment("one[0].bean")).Get("TheString"));
+            Assert.AreEqual("E1", ((EventBean) eventBean.GetFragment("one[1].bean")).Get("TheString"));
+            Assert.AreEqual("E1", ((EventBean) eventBean.GetFragment("two.bean")).Get("TheString"));
     
-            Assert.AreEqual("E2", ((EventBean) eventBean.GetFragment("one[0].beanarray[1]")).Get("theString"));
-            Assert.AreEqual("E2", ((EventBean) eventBean.GetFragment("two.beanarray[1]")).Get("theString"));
+            Assert.AreEqual("E2", ((EventBean) eventBean.GetFragment("one[0].beanarray[1]")).Get("TheString"));
+            Assert.AreEqual("E2", ((EventBean) eventBean.GetFragment("two.beanarray[1]")).Get("TheString"));
     
-            Assert.AreEqual("nestedNestedValue", ((EventBean) eventBean.GetFragment("one[0].complex.nested.nestedNested")).Get("nestedNestedValue"));
-            Assert.AreEqual("nestedNestedValue", ((EventBean) eventBean.GetFragment("two.complex.nested.nestedNested")).Get("nestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("one[0].complex.Nested.NestedNested")).Get("NestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("two.complex.Nested.NestedNested")).Get("NestedNestedValue"));
     
-            Assert.AreEqual("nestedNestedValue", ((EventBean) eventBean.GetFragment("one[0].complexarray[0].nested.nestedNested")).Get("nestedNestedValue"));
-            Assert.AreEqual("nestedNestedValue", ((EventBean) eventBean.GetFragment("two.complexarray[0].nested.nestedNested")).Get("nestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("one[0].complexarray[0].Nested.NestedNested")).Get("NestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("two.complexarray[0].Nested.NestedNested")).Get("NestedNestedValue"));
     
             Assert.AreEqual(2000, ((EventBean) eventBean.GetFragment("one[0].map")).Get("p2id"));
             Assert.AreEqual(2000, ((EventBean) eventBean.GetFragment("two.map")).Get("p2id"));
@@ -468,18 +468,18 @@ namespace com.espertech.esper.regression.events.bean
             Assert.AreEqual(2, ((EventBean) eventBean.GetFragment("one[1]")).Get("id"));
             Assert.AreEqual(3, ((EventBean) eventBean.GetFragment("two")).Get("id"));
     
-            Assert.AreEqual("E1", ((EventBean) eventBean.GetFragment("one[0].bean")).Get("theString"));
-            Assert.AreEqual("E1", ((EventBean) eventBean.GetFragment("one[1].bean")).Get("theString"));
-            Assert.AreEqual("E1", ((EventBean) eventBean.GetFragment("two.bean")).Get("theString"));
+            Assert.AreEqual("E1", ((EventBean) eventBean.GetFragment("one[0].bean")).Get("TheString"));
+            Assert.AreEqual("E1", ((EventBean) eventBean.GetFragment("one[1].bean")).Get("TheString"));
+            Assert.AreEqual("E1", ((EventBean) eventBean.GetFragment("two.bean")).Get("TheString"));
     
-            Assert.AreEqual("E2", ((EventBean) eventBean.GetFragment("one[0].beanarray[1]")).Get("theString"));
-            Assert.AreEqual("E2", ((EventBean) eventBean.GetFragment("two.beanarray[1]")).Get("theString"));
+            Assert.AreEqual("E2", ((EventBean) eventBean.GetFragment("one[0].beanarray[1]")).Get("TheString"));
+            Assert.AreEqual("E2", ((EventBean) eventBean.GetFragment("two.beanarray[1]")).Get("TheString"));
     
-            Assert.AreEqual("nestedNestedValue", ((EventBean) eventBean.GetFragment("one[0].complex.nested.nestedNested")).Get("nestedNestedValue"));
-            Assert.AreEqual("nestedNestedValue", ((EventBean) eventBean.GetFragment("two.complex.nested.nestedNested")).Get("nestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("one[0].complex.Nested.NestedNested")).Get("NestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("two.complex.Nested.NestedNested")).Get("NestedNestedValue"));
     
-            Assert.AreEqual("nestedNestedValue", ((EventBean) eventBean.GetFragment("one[0].complexarray[0].nested.nestedNested")).Get("nestedNestedValue"));
-            Assert.AreEqual("nestedNestedValue", ((EventBean) eventBean.GetFragment("two.complexarray[0].nested.nestedNested")).Get("nestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("one[0].complexarray[0].Nested.NestedNested")).Get("NestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("two.complexarray[0].Nested.NestedNested")).Get("NestedNestedValue"));
     
             Assert.AreEqual(2000, ((EventBean) eventBean.GetFragment("one[0].map")).Get("p2id"));
             Assert.AreEqual(2000, ((EventBean) eventBean.GetFragment("two.map")).Get("p2id"));
@@ -524,28 +524,28 @@ namespace com.espertech.esper.regression.events.bean
             EventType eventType = eventBean.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(eventType);
     
-            Assert.AreEqual(11, ((EventBean) eventBean.GetFragment("p0simple.p1simple")).Get("intPrimitive"));
-            Assert.AreEqual("A2", ((EventBean) eventBean.GetFragment("p0simple.p1array[1]")).Get("theString"));
+            Assert.AreEqual(11, ((EventBean) eventBean.GetFragment("p0simple.p1simple")).Get("IntPrimitive"));
+            Assert.AreEqual("A2", ((EventBean) eventBean.GetFragment("p0simple.p1array[1]")).Get("TheString"));
             Assert.AreEqual("simple", ((EventBean) eventBean.GetFragment("p0simple.p1complex")).Get("simpleProperty"));
             Assert.AreEqual("simple", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0]")).Get("simpleProperty"));
-            Assert.AreEqual("nestedValue", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0].nested")).Get("nestedValue"));
-            Assert.AreEqual("nestedNestedValue", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0].nested.nestedNested")).Get("nestedNestedValue"));
+            Assert.AreEqual("NestedValue", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0].Nested")).Get("NestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0].Nested.NestedNested")).Get("NestedNestedValue"));
     
             EventBean assertEvent = (EventBean) eventBean.GetFragment("p0simple");
-            Assert.AreEqual("E1", assertEvent.Get("p1simple.theString"));
-            Assert.AreEqual(11, ((EventBean) assertEvent.GetFragment("p1simple")).Get("intPrimitive"));
-            Assert.AreEqual(22, ((EventBean) assertEvent.GetFragment("p1array[1]")).Get("intPrimitive"));
-            Assert.AreEqual("nestedNestedValue", ((EventBean) assertEvent.GetFragment("p1complex.nested.nestedNested")).Get("nestedNestedValue"));
+            Assert.AreEqual("E1", assertEvent.Get("p1simple.TheString"));
+            Assert.AreEqual(11, ((EventBean) assertEvent.GetFragment("p1simple")).Get("IntPrimitive"));
+            Assert.AreEqual(22, ((EventBean) assertEvent.GetFragment("p1array[1]")).Get("IntPrimitive"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) assertEvent.GetFragment("p1complex.Nested.NestedNested")).Get("NestedNestedValue"));
     
             assertEvent = ((EventBean[]) eventBean.GetFragment("p0array"))[0];
-            Assert.AreEqual("E1", assertEvent.Get("p1simple.theString"));
-            Assert.AreEqual(11, ((EventBean) assertEvent.GetFragment("p1simple")).Get("intPrimitive"));
-            Assert.AreEqual(22, ((EventBean) assertEvent.GetFragment("p1array[1]")).Get("intPrimitive"));
+            Assert.AreEqual("E1", assertEvent.Get("p1simple.TheString"));
+            Assert.AreEqual(11, ((EventBean) assertEvent.GetFragment("p1simple")).Get("IntPrimitive"));
+            Assert.AreEqual(22, ((EventBean) assertEvent.GetFragment("p1array[1]")).Get("IntPrimitive"));
     
             assertEvent = (EventBean) eventBean.GetFragment("p0array[0]");
-            Assert.AreEqual("E1", assertEvent.Get("p1simple.theString"));
-            Assert.AreEqual(11, ((EventBean) assertEvent.GetFragment("p1simple")).Get("intPrimitive"));
-            Assert.AreEqual(22, ((EventBean) assertEvent.GetFragment("p1array[1]")).Get("intPrimitive"));
+            Assert.AreEqual("E1", assertEvent.Get("p1simple.TheString"));
+            Assert.AreEqual(11, ((EventBean) assertEvent.GetFragment("p1simple")).Get("IntPrimitive"));
+            Assert.AreEqual(22, ((EventBean) assertEvent.GetFragment("p1array[1]")).Get("IntPrimitive"));
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -575,28 +575,28 @@ namespace com.espertech.esper.regression.events.bean
             EventType eventType = eventBean.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(eventType);
     
-            Assert.AreEqual(11, ((EventBean) eventBean.GetFragment("p0simple.p1simple")).Get("intPrimitive"));
-            Assert.AreEqual("A2", ((EventBean) eventBean.GetFragment("p0simple.p1array[1]")).Get("theString"));
+            Assert.AreEqual(11, ((EventBean) eventBean.GetFragment("p0simple.p1simple")).Get("IntPrimitive"));
+            Assert.AreEqual("A2", ((EventBean) eventBean.GetFragment("p0simple.p1array[1]")).Get("TheString"));
             Assert.AreEqual("simple", ((EventBean) eventBean.GetFragment("p0simple.p1complex")).Get("simpleProperty"));
             Assert.AreEqual("simple", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0]")).Get("simpleProperty"));
-            Assert.AreEqual("nestedValue", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0].nested")).Get("nestedValue"));
-            Assert.AreEqual("nestedNestedValue", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0].nested.nestedNested")).Get("nestedNestedValue"));
+            Assert.AreEqual("NestedValue", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0].Nested")).Get("NestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0].Nested.NestedNested")).Get("NestedNestedValue"));
     
             EventBean assertEvent = (EventBean) eventBean.GetFragment("p0simple");
-            Assert.AreEqual("E1", assertEvent.Get("p1simple.theString"));
-            Assert.AreEqual(11, ((EventBean) assertEvent.GetFragment("p1simple")).Get("intPrimitive"));
-            Assert.AreEqual(22, ((EventBean) assertEvent.GetFragment("p1array[1]")).Get("intPrimitive"));
-            Assert.AreEqual("nestedNestedValue", ((EventBean) assertEvent.GetFragment("p1complex.nested.nestedNested")).Get("nestedNestedValue"));
+            Assert.AreEqual("E1", assertEvent.Get("p1simple.TheString"));
+            Assert.AreEqual(11, ((EventBean) assertEvent.GetFragment("p1simple")).Get("IntPrimitive"));
+            Assert.AreEqual(22, ((EventBean) assertEvent.GetFragment("p1array[1]")).Get("IntPrimitive"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) assertEvent.GetFragment("p1complex.Nested.NestedNested")).Get("NestedNestedValue"));
     
             assertEvent = ((EventBean[]) eventBean.GetFragment("p0array"))[0];
-            Assert.AreEqual("E1", assertEvent.Get("p1simple.theString"));
-            Assert.AreEqual(11, ((EventBean) assertEvent.GetFragment("p1simple")).Get("intPrimitive"));
-            Assert.AreEqual(22, ((EventBean) assertEvent.GetFragment("p1array[1]")).Get("intPrimitive"));
+            Assert.AreEqual("E1", assertEvent.Get("p1simple.TheString"));
+            Assert.AreEqual(11, ((EventBean) assertEvent.GetFragment("p1simple")).Get("IntPrimitive"));
+            Assert.AreEqual(22, ((EventBean) assertEvent.GetFragment("p1array[1]")).Get("IntPrimitive"));
     
             assertEvent = (EventBean) eventBean.GetFragment("p0array[0]");
-            Assert.AreEqual("E1", assertEvent.Get("p1simple.theString"));
-            Assert.AreEqual(11, ((EventBean) assertEvent.GetFragment("p1simple")).Get("intPrimitive"));
-            Assert.AreEqual(22, ((EventBean) assertEvent.GetFragment("p1array[1]")).Get("intPrimitive"));
+            Assert.AreEqual("E1", assertEvent.Get("p1simple.TheString"));
+            Assert.AreEqual(11, ((EventBean) assertEvent.GetFragment("p1simple")).Get("IntPrimitive"));
+            Assert.AreEqual(22, ((EventBean) assertEvent.GetFragment("p1array[1]")).Get("IntPrimitive"));
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -770,15 +770,15 @@ namespace com.espertech.esper.regression.events.bean
             // Fragment-to-bean
             EventBean[] p0arrayEvents = (EventBean[]) eventBean.GetFragment("p0array");
             Assert.AreSame(p0arrayEvents[0].EventType, p0simpleEvent.EventType);
-            Assert.AreEqual("string1", eventBean.Get("p0array[0].p1bean.theString"));
-            Assert.AreEqual("string1", ((EventBean) eventBean.GetFragment("p0array[0].p1bean")).Get("theString"));
+            Assert.AreEqual("string1", eventBean.Get("p0array[0].p1bean.TheString"));
+            Assert.AreEqual("string1", ((EventBean) eventBean.GetFragment("p0array[0].p1bean")).Get("TheString"));
     
             EventBean innerOne = (EventBean) eventBean.GetFragment("p0array[0]");
-            Assert.AreEqual("string1", ((EventBean) innerOne.GetFragment("p1bean")).Get("theString"));
-            Assert.AreEqual("string1", innerOne.Get("p1bean.theString"));
+            Assert.AreEqual("string1", ((EventBean) innerOne.GetFragment("p1bean")).Get("TheString"));
+            Assert.AreEqual("string1", innerOne.Get("p1bean.TheString"));
             innerOne = (EventBean) eventBean.GetFragment("p0simple");
-            Assert.AreEqual("string1", ((EventBean) innerOne.GetFragment("p1bean")).Get("theString"));
-            Assert.AreEqual("string1", innerOne.Get("p1bean.theString"));
+            Assert.AreEqual("string1", ((EventBean) innerOne.GetFragment("p1bean")).Get("TheString"));
+            Assert.AreEqual("string1", innerOne.Get("p1bean.TheString"));
     
             epService.EPAdministrator.DestroyAllStatements();
         }

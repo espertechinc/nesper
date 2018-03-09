@@ -40,7 +40,7 @@ namespace com.espertech.esper.regression.multithread
                 return bean;
             });
 
-            var enumFilter = "select count(*) as mycount from " + typeof(SupportCollection).FullName + "(strvals.AnyOf(v => v = 'j'))";
+            var enumFilter = "select count(*) as mycount from " + typeof(SupportCollection).FullName + "(Strvals.AnyOf(v => v = 'j'))";
             TryCount(epService, 4, 1000, enumFilter, enumCallback);
         }
     

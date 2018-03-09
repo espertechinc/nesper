@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -41,20 +40,20 @@ namespace com.espertech.esper.regression.expr.enummethod
     
         private void RunAssertionEquivalentToMinByUncorrelated(EPServiceProvider epService) {
     
-            var eplFragment = "select Contained.Where(x => (x.p00 = contained.min(y => y.p00))) as val from Bean";
+            var eplFragment = "select Contained.where(x => (x.p00 = Contained.min(y => y.p00))) as val from Bean";
             var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
     
             var bean = SupportBean_ST0_Container.Make2Value("E1,2", "E2,1", "E3,2");
             epService.EPRuntime.SendEvent(bean);
-            var result = (ICollection<SupportBean_ST0>) listener.AssertOneGetNewAndReset().Get("val");
+            var result = listener.AssertOneGetNewAndReset().Get("val").Unwrap<SupportBean_ST0>();
             EPAssertionUtil.AssertEqualsExactOrder(new object[]{bean.Contained[1]}, result.ToArray());
         }
     
         private void RunAssertionMinByWhere(EPServiceProvider epService) {
     
-            var eplFragment = "select Sales.Where(x => x.buyer = persons.MinBy(y => age)) as val from PersonSales";
+            var eplFragment = "select Sales.where(x => x.buyer = persons.minBy(y => age)) as val from PersonSales";
             var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
@@ -68,7 +67,7 @@ namespace com.espertech.esper.regression.expr.enummethod
     
         private void RunAssertionCorrelated(EPServiceProvider epService) {
     
-            var eplFragment = "select Contained.Where(x => x = (contained.FirstOf(y => y.p00 = x.p00 ))) as val from Bean";
+            var eplFragment = "select Contained.where(x => x = (Contained.FirstOf(y => y.p00 = x.p00 ))) as val from Bean";
             var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;

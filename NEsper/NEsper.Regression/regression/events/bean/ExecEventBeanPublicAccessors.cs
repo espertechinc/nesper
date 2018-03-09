@@ -72,21 +72,21 @@ namespace com.espertech.esper.regression.events.bean
                     "fieldStringArray[1] as fieldArrIndexed," +
                     "fieldMapped as fieldMap," +
                     "fieldNested as fieldNested," +
-                    "fieldNested.readNestedValue as fieldNestedVal," +
-                    "readLegacyBeanVal as simple," +
-                    "readLegacyNested as nestedObject," +
-                    "readLegacyNested.readNestedValue as nested," +
-                    "readStringArray[0] as array," +
-                    "readStringIndexed[1] as indexed," +
+                    "fieldNested.ReadNestedValue as fieldNestedVal," +
+                    "ReadLegacyBeanVal as simple," +
+                    "ReadLegacyNested as nestedObject," +
+                    "ReadLegacyNested.readNestedValue as nested," +
+                    "ReadStringArray[0] as array," +
+                    "ReadStringIndexed[1] as indexed," +
                     "ReadMapByKey('key1') as mapped," +
-                    "readMap as mapItself," +
+                    "ReadMap as mapItself," +
                     "explicitFSimple, " +
                     "explicitFIndexed[0], " +
                     "explicitFNested, " +
                     "explicitMSimple, " +
                     "explicitMArray[0], " +
                     "explicitMIndexed[1], " +
-                    "ExplicitMMapped('key2')" +
+                    "explicitMMapped('key2')" +
                     " from MyLegacyEvent#length(5)";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regression.events.bean
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("explicitMSimple"));
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("explicitMArray[0]"));
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("explicitMIndexed[1]"));
-            Assert.AreEqual(typeof(string), eventType.GetPropertyType("ExplicitMMapped('key2')"));
+            Assert.AreEqual(typeof(string), eventType.GetPropertyType("explicitMMapped('key2')"));
     
             SupportLegacyBean legacyBean = MakeSampleEvent();
             epService.EPRuntime.SendEvent(legacyBean);
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regression.events.bean
             Assert.AreEqual(legacyBean.ReadStringIndexed(0), listener.LastNewData[0].Get("explicitFIndexed[0]"));
             Assert.AreEqual(legacyBean.ReadStringIndexed(0), listener.LastNewData[0].Get("explicitMArray[0]"));
             Assert.AreEqual(legacyBean.ReadStringIndexed(1), listener.LastNewData[0].Get("explicitMIndexed[1]"));
-            Assert.AreEqual(legacyBean.ReadMapByKey("key2"), listener.LastNewData[0].Get("ExplicitMMapped('key2')"));
+            Assert.AreEqual(legacyBean.ReadMapByKey("key2"), listener.LastNewData[0].Get("explicitMMapped('key2')"));
     
             EventTypeSPI stmtType = (EventTypeSPI) statement.EventType;
             Assert.AreEqual(ApplicationType.MAP, stmtType.Metadata.OptionalApplicationType);

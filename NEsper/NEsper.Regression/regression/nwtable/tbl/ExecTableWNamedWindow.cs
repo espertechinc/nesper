@@ -31,9 +31,9 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("@Name('var') create table varagg (key string primary key, total sum(int))");
             epService.EPAdministrator.CreateEPL("@Name('win') create window MyWindow#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("@Name('insert') insert into MyWindow select * from SupportBean");
-            epService.EPAdministrator.CreateEPL("@Name('populate') into table varagg select sum(intPrimitive) as total from MyWindow group by theString");
-            epService.EPAdministrator.CreateEPL("@Name('select') on SupportBean_S0 select theString, varagg[p00].total as c0 from MyWindow where theString = p00").Events += listener.Update;
-            string[] fields = "theString,c0".Split(',');
+            epService.EPAdministrator.CreateEPL("@Name('populate') into table varagg select sum(IntPrimitive) as total from MyWindow group by TheString");
+            epService.EPAdministrator.CreateEPL("@Name('select') on SupportBean_S0 select TheString, varagg[p00].total as c0 from MyWindow where TheString = p00").Events += listener.Update;
+            string[] fields = "TheString,c0".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E1"));

@@ -42,12 +42,12 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             }
     
             try {
-                string epl = "select *, (select bookId from OrderWindow[books] where sb.theString = bookId) " +
+                string epl = "select *, (select bookId from OrderWindow[books] where sb.TheString = bookId) " +
                         "from SupportBean sb";
                 epService.EPAdministrator.CreateEPL(epl);
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Failed to plan subquery number 1 querying OrderWindow: Failed to validate named window use in subquery, contained-event is only allowed for named windows when not correlated [select *, (select bookId from OrderWindow[books] where sb.theString = bookId) from SupportBean sb]", ex.Message);
+                Assert.AreEqual("Error starting statement: Failed to plan subquery number 1 querying OrderWindow: Failed to validate named window use in subquery, contained-event is only allowed for named windows when not correlated [select *, (select bookId from OrderWindow[books] where sb.TheString = bookId) from SupportBean sb]", ex.Message);
             }
         }
     }

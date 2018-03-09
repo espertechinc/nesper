@@ -47,12 +47,12 @@ namespace com.espertech.esper.regression.rowrecog
     
             string epl = "@Name('S1') select * from SupportBean " +
                     "match_recognize (" +
-                    "  partition by theString " +
-                    "  measures P1.theString as c0" +
+                    "  partition by TheString " +
+                    "  measures P1.TheString as c0" +
                     "  pattern (P1 P2) " +
                     "  define " +
-                    "    P1 as P1.intPrimitive = 1," +
-                    "    P2 as P2.intPrimitive = 2" +
+                    "    P1 as P1.IntPrimitive = 1," +
+                    "    P2 as P2.IntPrimitive = 2" +
                     ")";
     
             var listener = new SupportUpdateListener();

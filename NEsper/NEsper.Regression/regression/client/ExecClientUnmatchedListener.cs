@@ -86,12 +86,12 @@ namespace com.espertech.esper.regression.client
             epService.EPRuntime.UnmatchedEvent += listener.Update;
     
             // create insert into
-            EPStatement insertInto = epService.EPAdministrator.CreateEPL("insert into MyEvent select theString from SupportBean");
+            EPStatement insertInto = epService.EPAdministrator.CreateEPL("insert into MyEvent select TheString from SupportBean");
     
             // no statement, should be unmatched
             SendEvent(epService, "E1");
             Assert.AreEqual(1, listener.Received.Count);
-            Assert.AreEqual("E1", listener.Received[0].Get("theString"));
+            Assert.AreEqual("E1", listener.Received[0].Get("TheString"));
             listener.Reset();
     
             // stop insert into, now SupportBean itself is unmatched
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regression.client
             // start insert-into
             SendEvent(epService, "E3");
             Assert.AreEqual(1, listener.Received.Count);
-            Assert.AreEqual("E3", listener.Received[0].Get("theString"));
+            Assert.AreEqual("E3", listener.Received[0].Get("TheString"));
             listener.Reset();
         }
     

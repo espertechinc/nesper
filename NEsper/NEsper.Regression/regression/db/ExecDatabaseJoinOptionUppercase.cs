@@ -31,7 +31,7 @@ namespace com.espertech.esper.regression.db
         }
     
         public override void Run(EPServiceProvider epService) {
-            string sql = "select myint from mytesttable where ${theString} = myvarchar'" +
+            string sql = "select myint from mytesttable where ${TheString} = myvarchar'" +
                     "metadatasql 'select myint from mytesttable'";
             string stmtText = "select MYINT from " +
                     " sql:MyDB ['" + sql + "] as s0," +

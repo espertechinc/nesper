@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.view
             SendCurrentTime(epService, "2002-03-01T09:00:00.000");
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
     
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), "theString".Split(','), new object[][]{new object[] {"E1"}, new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), "TheString".Split(','), new object[][]{new object[] {"E1"}, new object[] {"E2"}});
         }
     
         private void SendCurrentTime(EPServiceProvider epService, string time) {

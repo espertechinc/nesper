@@ -33,7 +33,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("@Name('create') create table MyTable as (\n" +
                     "key string primary key, thesum sum(int))");
             epService.EPAdministrator.CreateEPL("@Name('select') into table MyTable " +
-                    "select sum(intPrimitive) as thesum from SupportBean group by theString");
+                    "select sum(IntPrimitive) as thesum from SupportBean group by TheString");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));

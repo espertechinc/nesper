@@ -35,7 +35,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
         private void RunAssertionDeleteSecondaryIndexUpd(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create table MyTable as (pkey0 string primary key, " +
                     "pkey1 int primary key, thesum sum(long))");
-            epService.EPAdministrator.CreateEPL("into table MyTable select sum(longPrimitive) as thesum from SupportBean group by theString, intPrimitive");
+            epService.EPAdministrator.CreateEPL("into table MyTable select sum(LongPrimitive) as thesum from SupportBean group by TheString, IntPrimitive");
     
             MakeSendSupportBean(epService, "E1", 10, 2L);
             MakeSendSupportBean(epService, "E2", 20, 3L);
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             string[] fields = "key,thesum".Split(',');
             epService.EPAdministrator.CreateEPL("create table varagg as (key string primary key, thesum sum(int))");
-            epService.EPAdministrator.CreateEPL("into table varagg select sum(intPrimitive) as thesum from SupportBean group by theString");
+            epService.EPAdministrator.CreateEPL("into table varagg select sum(IntPrimitive) as thesum from SupportBean group by TheString");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select varagg[p00].thesum as value from SupportBean_S0").Events += listener.Update;
             EPStatement stmtDeleteFiltered = epService.EPAdministrator.CreateEPL("on SupportBean_S1(id = 1) delete from varagg where key = p10");

@@ -33,7 +33,7 @@ namespace com.espertech.esper.regression.events.map
             _properties = new Properties();
             _properties.Put("myInt", "int");
             _properties.Put("myString", "string");
-            _properties.Put("beanA", typeof(SupportBeanComplexProps).Name);
+            _properties.Put("beanA", typeof(SupportBeanComplexProps).FullName);
             _properties.Put("myStringArray", "string[]");
     
             _map = new Dictionary<string, object>();
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regression.events.map
             Assert.IsNotNull(epService.EPAdministrator.Configuration.GetEventType("MyMap"));
     
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select lev0name.lev1name.sb.theString as val from MyMap").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select lev0name.lev1name.sb.TheString as val from MyMap").Events += listener.Update;
     
             EventAdapterService eventAdapterService = ((EPServiceProviderSPI) epService).EventAdapterService;
             var lev2data = new Dictionary<string, object>();

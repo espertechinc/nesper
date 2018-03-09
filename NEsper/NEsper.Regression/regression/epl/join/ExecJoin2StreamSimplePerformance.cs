@@ -114,9 +114,9 @@ namespace com.espertech.esper.regression.epl.join
             var updateListener = new SupportUpdateListener();
     
             string epl = "select * from " +
-                    typeof(SupportMarketDataBean).Name + "#length(1000000)," +
+                    typeof(SupportMarketDataBean).FullName + "#length(1000000)," +
                     typeof(SupportBean).FullName + "#length(1000000)" +
-                    " where symbol=theString";
+                    " where symbol=TheString";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += updateListener.Update;

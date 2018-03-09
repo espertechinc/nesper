@@ -168,7 +168,6 @@ namespace com.espertech.esper.core.deploy
             string deploymentId,
             DateTimeEx addedDate)
         {
-
             if (Log.IsDebugEnabled)
             {
                 Log.Debug("Deploying module " + module);

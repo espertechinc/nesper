@@ -46,17 +46,17 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             string eplInto = "into table varagg " +
                     "select window(*) as windowSupportBean from SupportBean#length(2)" +
-                    (grouped ? " group by theString" : "");
+                    (grouped ? " group by TheString" : "");
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplInto);
     
             string key = grouped ? "[\"E1\"]" : "";
             string eplSelect = "select " +
                     "varagg" + key + ".windowSupportBean.last(*) as c0, " +
                     "varagg" + key + ".windowSupportBean.window(*) as c1, " +
-                    "varagg" + key + ".windowSupportBean.First(*) as c2, " +
-                    "varagg" + key + ".windowSupportBean.last(intPrimitive) as c3, " +
-                    "varagg" + key + ".windowSupportBean.window(intPrimitive) as c4, " +
-                    "varagg" + key + ".windowSupportBean.First(intPrimitive) as c5" +
+                    "varagg" + key + ".windowSupportBean.first(*) as c2, " +
+                    "varagg" + key + ".windowSupportBean.last(IntPrimitive) as c3, " +
+                    "varagg" + key + ".windowSupportBean.window(IntPrimitive) as c4, " +
+                    "varagg" + key + ".windowSupportBean.first(IntPrimitive) as c5" +
                     " from SupportBean_S0";
             EPStatement stmtSelect = SupportModelHelper.CreateByCompileOrParse(epService, soda, eplSelect);
             var listener = new SupportUpdateListener();

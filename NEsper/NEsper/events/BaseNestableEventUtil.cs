@@ -861,7 +861,7 @@ namespace com.espertech.esper.events
 
             if (type is Type typeValue)
             {
-                return typeValue.Name;
+                return typeValue.FullName;
             }
 
             if (type is EventType eventType)

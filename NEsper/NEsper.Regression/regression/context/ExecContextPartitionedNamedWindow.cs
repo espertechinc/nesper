@@ -25,7 +25,7 @@ namespace com.espertech.esper.regression.context
         }
     
         public override void Run(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("create context SegmentedByString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context SegmentedByString partition by TheString from SupportBean");
     
             epService.EPAdministrator.CreateEPL("context SegmentedByString create window MyWindow#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("context SegmentedByString insert into MyWindow select * from SupportBean");

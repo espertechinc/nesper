@@ -6,13 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.deploy;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.filter;
 using com.espertech.esper.supportregression.bean;
@@ -59,7 +54,7 @@ namespace com.espertech.esper.regression.client
             // test on-merge
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             string moduleString =
-                    "@Name('S0') create window MyWindow#unique(intPrimitive) as SupportBean;\n" +
+                    "@Name('S0') create window MyWindow#unique(IntPrimitive) as SupportBean;\n" +
                             "@Name('S1') on MyWindow insert into SecondStream select *;\n" +
                             "@Name('S2') on SecondStream merge MyWindow when matched then insert into ThirdStream select * then delete\n";
             Module module = epService.EPAdministrator.DeploymentAdmin.Parse(moduleString);

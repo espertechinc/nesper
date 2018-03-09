@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
@@ -142,8 +140,8 @@ namespace com.espertech.esper.regression.pattern
             epService.EPAdministrator.Configuration.AddEventType("BBB", typeof(SupportBean));
             epService.EPAdministrator.Configuration.AddEventType("AAA", typeof(SupportMarketDataBean));
     
-            string text = "select A.theString as theString from pattern " +
-                    "[every A=BBB(intPrimitive=123) -> (timer:interval(30 seconds) and not AAA(volume=123, symbol=A.theString))]";
+            string text = "select A.TheString as TheString from pattern " +
+                    "[every A=BBB(IntPrimitive=123) -> (timer:interval(30 seconds) and not AAA(volume=123, symbol=A.TheString))]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
@@ -162,7 +160,7 @@ namespace com.espertech.esper.regression.pattern
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimer(40000, epService);
-            var fields = new string[]{"theString"};
+            var fields = new string[]{"TheString"};
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2"});
     
             statement.Stop();
@@ -172,7 +170,7 @@ namespace com.espertech.esper.regression.pattern
             epService.EPAdministrator.Configuration.AddEventType("SB", typeof(SupportBean));
             epService.EPAdministrator.Configuration.AddEventType("MD", typeof(SupportMarketDataBean));
     
-            string stmtText = "select * from pattern [ Every( SB(intPrimitive>0) -> (MD and not SB(intPrimitive=0) ) ) ]";
+            string stmtText = "select * from pattern [ Every( SB(IntPrimitive>0) -> (MD and not SB(IntPrimitive=0) ) ) ]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;

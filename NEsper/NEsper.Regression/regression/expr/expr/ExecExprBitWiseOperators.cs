@@ -34,19 +34,19 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionBitWiseOperators_OM(EPServiceProvider epService) {
             string epl = "select bytePrimitive&byteBoxed as myFirstProperty, " +
-                    "shortPrimitive|shortBoxed as mySecondProperty, " +
-                    "intPrimitive|intBoxed as myThirdProperty, " +
-                    "longPrimitive^longBoxed as myFourthProperty, " +
-                    "boolPrimitive&boolBoxed as myFifthProperty " +
+                    "ShortPrimitive|ShortBoxed as mySecondProperty, " +
+                    "IntPrimitive|IntBoxed as myThirdProperty, " +
+                    "LongPrimitive^LongBoxed as myFourthProperty, " +
+                    "BoolPrimitive&BoolBoxed as myFifthProperty " +
                     "from " + typeof(SupportBean).FullName + "#length(3)";
     
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.Create()
                     .Add(Expressions.BinaryAnd().Add("bytePrimitive").Add("byteBoxed"), "myFirstProperty")
-                    .Add(Expressions.BinaryOr().Add("shortPrimitive").Add("shortBoxed"), "mySecondProperty")
-                    .Add(Expressions.BinaryOr().Add("intPrimitive").Add("intBoxed"), "myThirdProperty")
-                    .Add(Expressions.BinaryXor().Add("longPrimitive").Add("longBoxed"), "myFourthProperty")
-                    .Add(Expressions.BinaryAnd().Add("boolPrimitive").Add("boolBoxed"), "myFifthProperty");
+                    .Add(Expressions.BinaryOr().Add("ShortPrimitive").Add("ShortBoxed"), "mySecondProperty")
+                    .Add(Expressions.BinaryOr().Add("IntPrimitive").Add("IntBoxed"), "myThirdProperty")
+                    .Add(Expressions.BinaryXor().Add("LongPrimitive").Add("LongBoxed"), "myFourthProperty")
+                    .Add(Expressions.BinaryAnd().Add("BoolPrimitive").Add("BoolBoxed"), "myFifthProperty");
 
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName).AddView("length", Expressions.Constant(3)));
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
@@ -83,10 +83,10 @@ namespace com.espertech.esper.regression.expr.expr
     
         private EPStatement SetUpBitWiseStmt(EPServiceProvider epService, SupportUpdateListener listener) {
             string epl = "select (bytePrimitive & byteBoxed) as myFirstProperty, " +
-                    "(shortPrimitive | shortBoxed) as mySecondProperty, " +
-                    "(intPrimitive | intBoxed) as myThirdProperty, " +
-                    "(longPrimitive ^ longBoxed) as myFourthProperty, " +
-                    "(boolPrimitive & boolBoxed) as myFifthProperty " +
+                    "(ShortPrimitive | ShortBoxed) as mySecondProperty, " +
+                    "(IntPrimitive | IntBoxed) as myThirdProperty, " +
+                    "(LongPrimitive ^ LongBoxed) as myFourthProperty, " +
+                    "(BoolPrimitive & BoolBoxed) as myFifthProperty " +
                     " from " + typeof(SupportBean).FullName + "#length(3) ";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += listener.Update;
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regression.expr.expr
             Assert.AreEqual(typeof(byte?), type.GetPropertyType("myFirstProperty"));
             Assert.AreEqual(typeof(short?), type.GetPropertyType("mySecondProperty"));
             Assert.AreEqual(typeof(int?), type.GetPropertyType("myThirdProperty"));
-            Assert.AreEqual(typeof(long), type.GetPropertyType("myFourthProperty"));
+            Assert.AreEqual(typeof(long?), type.GetPropertyType("myFourthProperty"));
             Assert.AreEqual(typeof(bool?), type.GetPropertyType("myFifthProperty"));
     
             return stmt;

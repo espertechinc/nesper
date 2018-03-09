@@ -119,20 +119,20 @@ namespace com.espertech.esper.regression.client
             stmtText = "insert into MyWindow select * from SupportBean";
             epService.EPAdministrator.CreateEPL(stmtText);
 
-            stmtText = "@Priority(1) on MyWindow e select e.theString as theString, 1 as prio from MyWindow";
+            stmtText = "@Priority(1) on MyWindow e select e.TheString as TheString, 1 as prio from MyWindow";
             stmt = epService.EPAdministrator.CreateEPL(stmtText, "s1");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
-            stmtText = "@Priority(3) on MyWindow e select e.theString as theString, 3 as prio from MyWindow";
+            stmtText = "@Priority(3) on MyWindow e select e.TheString as TheString, 3 as prio from MyWindow";
             stmt = epService.EPAdministrator.CreateEPL(stmtText, "s3");
             stmt.Events += listener.Update;
 
-            stmtText = "@Priority(2) on MyWindow e select e.theString as theString, 2 as prio from MyWindow";
+            stmtText = "@Priority(2) on MyWindow e select e.TheString as TheString, 2 as prio from MyWindow";
             stmt = epService.EPAdministrator.CreateEPL(stmtText, "s2");
             stmt.Events += listener.Update;
 
-            stmtText = "@Priority(4) on MyWindow e select e.theString as theString, 4 as prio from MyWindow";
+            stmtText = "@Priority(4) on MyWindow e select e.TheString as TheString, 4 as prio from MyWindow";
             stmt = epService.EPAdministrator.CreateEPL(stmtText, "s4");
             stmt.Events += listener.Update;
 
@@ -141,20 +141,20 @@ namespace com.espertech.esper.regression.client
 
             epService.EPAdministrator.GetStatement("s2").Dispose();
             stmt = epService.EPAdministrator.CreateEPL(
-                "on MyWindow e select e.theString as theString, 0 as prio from MyWindow", "s0");
+                "on MyWindow e select e.TheString as TheString, 0 as prio from MyWindow", "s0");
             stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("E2", 0));
             AssertPrio(listener, "E2", new[] {4, 3, 1, 0});
 
-            stmtText = "@Priority(2) on MyWindow e select e.theString as theString, 2 as prio from MyWindow";
+            stmtText = "@Priority(2) on MyWindow e select e.TheString as TheString, 2 as prio from MyWindow";
             stmt = epService.EPAdministrator.CreateEPL(stmtText, "s2");
             stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("E3", 0));
             AssertPrio(listener, "E3", new[] {4, 3, 2, 1, 0});
 
-            stmtText = "@Priority(3) on MyWindow e select e.theString as theString, 3 as prio from MyWindow";
+            stmtText = "@Priority(3) on MyWindow e select e.TheString as TheString, 3 as prio from MyWindow";
             stmt = epService.EPAdministrator.CreateEPL(stmtText, "sx");
             stmt.Events += listener.Update;
 
@@ -175,16 +175,16 @@ namespace com.espertech.esper.regression.client
             stmtText = "insert into MyWindow select * from SupportBean";
             epService.EPAdministrator.CreateEPL(stmtText);
 
-            stmtText = "@Drop on MyWindow e select e.theString as theString, 2 as prio from MyWindow";
+            stmtText = "@Drop on MyWindow e select e.TheString as TheString, 2 as prio from MyWindow";
             stmt = epService.EPAdministrator.CreateEPL(stmtText, "s2");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
-            stmtText = "@Priority(3) on MyWindow e select e.theString as theString, 3 as prio from MyWindow";
+            stmtText = "@Priority(3) on MyWindow e select e.TheString as TheString, 3 as prio from MyWindow";
             stmt = epService.EPAdministrator.CreateEPL(stmtText, "s3");
             stmt.Events += listener.Update;
 
-            stmtText = "on MyWindow e select e.theString as theString, 0 as prio from MyWindow";
+            stmtText = "on MyWindow e select e.TheString as TheString, 0 as prio from MyWindow";
             stmt = epService.EPAdministrator.CreateEPL(stmtText, "s2");
             stmt.Events += listener.Update;
 
@@ -242,12 +242,12 @@ namespace com.espertech.esper.regression.client
             var listener = new SupportUpdateListener();
             stmtSelect.Events += listener.Update;
 
-            string stmtOneText = "@Drop select * from SupportBean where intPrimitive = 1";
+            string stmtOneText = "@Drop select * from SupportBean where IntPrimitive = 1";
             EPStatement statementOne = epService.EPAdministrator.CreateEPL(stmtOneText);
             SupportUpdateListener[] listeners = SupportUpdateListener.MakeListeners(10);
             statementOne.Events += listeners[0].Update;
 
-            string stmtTwoText = "@Drop select * from SupportBean where intPrimitive = 2";
+            string stmtTwoText = "@Drop select * from SupportBean where IntPrimitive = 2";
             EPStatement statementTwo = epService.EPAdministrator.CreateEPL(stmtTwoText);
             statementTwo.Events += listeners[1].Update;
 
@@ -264,10 +264,10 @@ namespace com.espertech.esper.regression.client
             AssertReceivedSingle(listeners, 0, "E3");
 
             epService.EPRuntime.SendEvent(new SupportBean("E4", 3));
-            Assert.AreEqual("E4", listener.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("E4", listener.AssertOneGetNewAndReset().Get("TheString"));
             AssertReceivedNone(listeners);
 
-            string stmtThreeText = "@Drop select * from SupportBean where intPrimitive = 3";
+            string stmtThreeText = "@Drop select * from SupportBean where IntPrimitive = 3";
             EPStatement statementThree = epService.EPAdministrator.CreateEPL(stmtThreeText);
             statementThree.Events += listeners[2].Update;
 
@@ -281,7 +281,7 @@ namespace com.espertech.esper.regression.client
 
             statementOne.Dispose();
             epService.EPRuntime.SendEvent(new SupportBean("E7", 1));
-            Assert.AreEqual("E7", listener.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("E7", listener.AssertOneGetNewAndReset().Get("TheString"));
             AssertReceivedNone(listeners);
 
             string stmtSelectTextTwo = "@Priority(50) select * from SupportBean";
@@ -290,8 +290,8 @@ namespace com.espertech.esper.regression.client
             stmtSelectTwo.Events += listenerTwo.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("E8", 1));
-            Assert.AreEqual("E8", listener.AssertOneGetNewAndReset().Get("theString"));
-            Assert.AreEqual("E8", listenerTwo.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("E8", listener.AssertOneGetNewAndReset().Get("TheString"));
+            Assert.AreEqual("E8", listenerTwo.AssertOneGetNewAndReset().Get("TheString"));
             AssertReceivedNone(listeners);
 
             epService.EPRuntime.SendEvent(new SupportBean("E9", 2));
@@ -313,7 +313,7 @@ namespace com.espertech.esper.regression.client
                 Assert.IsFalse(listeners[i].IsInvoked);
             }
 
-            Assert.AreEqual(stringValue, listeners[index].AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual(stringValue, listeners[index].AssertOneGetNewAndReset().Get("TheString"));
         }
 
         private void AssertPrio(SupportUpdateListener listener, string theString, int[] prioValues)
@@ -325,7 +325,7 @@ namespace com.espertech.esper.regression.client
                 Assert.AreEqual(prioValues[i], events[i].Get("prio"));
                 if (theString != null)
                 {
-                    Assert.AreEqual(theString, events[i].Get("theString"));
+                    Assert.AreEqual(theString, events[i].Get("TheString"));
                 }
             }
 

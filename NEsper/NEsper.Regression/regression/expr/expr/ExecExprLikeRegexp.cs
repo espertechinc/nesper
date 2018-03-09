@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionRegexpFilterWithDanglingMetaCharacter(EPServiceProvider epService) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean where theString regexp \"*any*\"");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean where TheString regexp \"*any*\"");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.expr.expr
             string caseExpr = "select p00 like p01 as r1, " +
                     " p00 like p01 escape \"!\" as r2," +
                     " p02 regexp p03 as r3 " +
-                    " from " + typeof(SupportBean_S0).Name;
+                    " from " + typeof(SupportBean_S0).FullName;
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionLikeRegexEscapedChar(EPServiceProvider epService) {
-            string caseExpr = "select p00 regexp '\\\\w*-ABC' as result from " + typeof(SupportBean_S0).Name;
+            string caseExpr = "select p00 regexp '\\\\w*-ABC' as result from " + typeof(SupportBean_S0).FullName;
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regression.expr.expr
             string stmtText = "select p00 like p01 as r1, " +
                     "p00 like p01 escape \"!\" as r2, " +
                     "p02 regexp p03 as r3 " +
-                    "from " + typeof(SupportBean_S0).Name;
+                    "from " + typeof(SupportBean_S0).FullName;
     
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.Create()
@@ -99,13 +99,13 @@ namespace com.espertech.esper.regression.expr.expr
     
             stmt.Dispose();
     
-            string epl = "select * from " + typeof(SupportBean).FullName + "(theString not like \"foo%\")";
+            string epl = "select * from " + typeof(SupportBean).FullName + "(TheString not like \"foo%\")";
             EPPreparedStatement eps = epService.EPAdministrator.PrepareEPL(epl);
             EPStatement statement = epService.EPAdministrator.Create(eps);
             Assert.AreEqual(epl, statement.Text);
             statement.Dispose();
     
-            epl = "select * from " + typeof(SupportBean).FullName + "(theString not regexp \"foo\")";
+            epl = "select * from " + typeof(SupportBean).FullName + "(TheString not regexp \"foo\")";
             eps = epService.EPAdministrator.PrepareEPL(epl);
             statement = epService.EPAdministrator.Create(eps);
             Assert.AreEqual(epl, statement.Text);
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regression.expr.expr
             string stmtText = "select p00 like p01 as r1, " +
                     "p00 like p01 escape \"!\" as r2, " +
                     "p02 regexp p03 as r3 " +
-                    "from " + typeof(SupportBean_S0).Name;
+                    "from " + typeof(SupportBean_S0).FullName;
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
@@ -158,20 +158,20 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionInvalidLikeRegEx(EPServiceProvider epService) {
-            TryInvalid(epService, "intPrimitive like 'a' escape null");
-            TryInvalid(epService, "intPrimitive like boolPrimitive");
-            TryInvalid(epService, "boolPrimitive like string");
-            TryInvalid(epService, "string like string escape intPrimitive");
+            TryInvalid(epService, "IntPrimitive like 'a' escape null");
+            TryInvalid(epService, "IntPrimitive like BoolPrimitive");
+            TryInvalid(epService, "BoolPrimitive like string");
+            TryInvalid(epService, "string like string escape IntPrimitive");
     
-            TryInvalid(epService, "intPrimitive regexp doublePrimitve");
-            TryInvalid(epService, "intPrimitive regexp boolPrimitive");
-            TryInvalid(epService, "boolPrimitive regexp string");
-            TryInvalid(epService, "string regexp intPrimitive");
+            TryInvalid(epService, "IntPrimitive regexp doublePrimitve");
+            TryInvalid(epService, "IntPrimitive regexp BoolPrimitive");
+            TryInvalid(epService, "BoolPrimitive regexp string");
+            TryInvalid(epService, "string regexp IntPrimitive");
         }
     
         private void RunAssertionLikeRegexNumericAndNull(EPServiceProvider epService) {
-            string caseExpr = "select intBoxed like '%01%' as r1, " +
-                    " doubleBoxed regexp '[0-9][0-9].[0-9]' as r2 " +
+            string caseExpr = "select IntBoxed like '%01%' as r1, " +
+                    " DoubleBoxed regexp '[0-9][0-9].[0-9]' as r2 " +
                     " from " + typeof(SupportBean).FullName;
     
             EPStatement selectTestCase = epService.EPAdministrator.CreateEPL(caseExpr);

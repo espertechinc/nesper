@@ -28,17 +28,17 @@ namespace com.espertech.esper.regression.epl.join
             string eventA = typeof(SupportBean).FullName;
             string eventB = typeof(SupportBean).FullName;
     
-            string joinStatement = "select s0.doubleBoxed, s1.intPrimitive*s1.intBoxed/2.0 as div from " +
-                    eventA + "(theString='s0')#length(3) as s0," +
-                    eventB + "(theString='s1')#length(3) as s1" +
-                    " where s0.doubleBoxed = s1.doubleBoxed";
+            string joinStatement = "select s0.DoubleBoxed, s1.IntPrimitive*s1.IntBoxed/2.0 as div from " +
+                    eventA + "(TheString='s0')#length(3) as s0," +
+                    eventB + "(TheString='s1')#length(3) as s1" +
+                    " where s0.DoubleBoxed = s1.DoubleBoxed";
     
             EPStatement joinView = epService.EPAdministrator.CreateEPL(joinStatement);
             var updateListener = new SupportUpdateListener();
             joinView.Events += updateListener.Update;
     
             EventType result = joinView.EventType;
-            Assert.AreEqual(typeof(double?), result.GetPropertyType("s0.doubleBoxed"));
+            Assert.AreEqual(typeof(double?), result.GetPropertyType("s0.DoubleBoxed"));
             Assert.AreEqual(typeof(double?), result.GetPropertyType("div"));
             Assert.AreEqual(2, joinView.EventType.PropertyNames.Length);
     
@@ -48,13 +48,13 @@ namespace com.espertech.esper.regression.epl.join
             SendEvent(epService, "s1", 1, 3, 2);
     
             EventBean[] newEvents = updateListener.LastNewData;
-            Assert.AreEqual(1d, newEvents[0].Get("s0.doubleBoxed"));
+            Assert.AreEqual(1d, newEvents[0].Get("s0.DoubleBoxed"));
             Assert.AreEqual(3d, newEvents[0].Get("div"));
     
             IEnumerator<EventBean> iterator = joinView.GetEnumerator();
             Assert.IsTrue(iterator.MoveNext());
             EventBean theEvent = iterator.Current;
-            Assert.AreEqual(1d, theEvent.Get("s0.doubleBoxed"));
+            Assert.AreEqual(1d, theEvent.Get("s0.DoubleBoxed"));
             Assert.AreEqual(3d, theEvent.Get("div"));
         }
     

@@ -140,14 +140,14 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionNoWildcardWithAs(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindowNW#keepall as select theString as a, longPrimitive as b, longBoxed as c from " + typeof(SupportBean).FullName;
+            string stmtTextCreate = "create window MyWindowNW#keepall as select TheString as a, LongPrimitive as b, LongBoxed as c from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
             EPAssertionUtil.AssertEqualsAnyOrder(stmtCreate.EventType.PropertyNames, new string[]{"a", "b", "c"});
             Assert.AreEqual(typeof(string), stmtCreate.EventType.GetPropertyType("a"));
             Assert.AreEqual(typeof(long), stmtCreate.EventType.GetPropertyType("b"));
-            Assert.AreEqual(typeof(long), stmtCreate.EventType.GetPropertyType("c"));
+            Assert.AreEqual(typeof(long?), stmtCreate.EventType.GetPropertyType("c"));
     
             // assert type metadata
             EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI) epService).EventAdapterService.GetEventTypeByName("MyWindowNW");
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             Assert.AreEqual(false, type.Metadata.IsApplicationPreConfiguredStatic);
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindowNW select theString as a, longPrimitive as b, longBoxed as c from " + typeof(SupportBean).FullName;
+            string stmtTextInsertOne = "insert into MyWindowNW select TheString as a, LongPrimitive as b, LongBoxed as c from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             string stmtTextInsertTwo = "insert into MyWindowNW select symbol as a, volume as b, volume as c from " + typeof(SupportMarketDataBean).FullName;
@@ -205,29 +205,29 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionNoWildcardNoAs(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindowNWNA#keepall as select theString, longPrimitive, longBoxed from " + typeof(SupportBean).FullName;
+            string stmtTextCreate = "create window MyWindowNWNA#keepall as select TheString, LongPrimitive, LongBoxed from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindowNWNA select theString, longPrimitive, longBoxed from " + typeof(SupportBean).FullName;
+            string stmtTextInsertOne = "insert into MyWindowNWNA select TheString, LongPrimitive, LongBoxed from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
-            string stmtTextInsertTwo = "insert into MyWindowNWNA select symbol as theString, volume as longPrimitive, volume as longBoxed from " + typeof(SupportMarketDataBean).FullName;
+            string stmtTextInsertTwo = "insert into MyWindowNWNA select symbol as TheString, volume as LongPrimitive, volume as LongBoxed from " + typeof(SupportMarketDataBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertTwo);
     
-            string stmtTextInsertThree = "insert into MyWindowNWNA select key as theString, boxed as longPrimitive, primitive as longBoxed from MyMap";
+            string stmtTextInsertThree = "insert into MyWindowNWNA select key as TheString, boxed as LongPrimitive, primitive as LongBoxed from MyMap";
             epService.EPAdministrator.CreateEPL(stmtTextInsertThree);
     
             // create consumer
-            string stmtTextSelectOne = "select theString, longPrimitive, longBoxed from MyWindowNWNA";
+            string stmtTextSelectOne = "select TheString, LongPrimitive, LongBoxed from MyWindowNWNA";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
             stmtSelectOne.Events += listenerStmtOne.Update;
     
             SendSupportBean(epService, "E1", 1L, 10L);
-            var fields = new string[]{"theString", "longPrimitive", "longBoxed"};
+            var fields = new string[]{"TheString", "LongPrimitive", "LongBoxed"};
             EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L, 10L});
             EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L, 10L});
     
@@ -244,26 +244,26 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionConstantsAs(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindowCA#keepall as select '' as theString, 0L as longPrimitive, 0L as longBoxed from MyMap";
+            string stmtTextCreate = "create window MyWindowCA#keepall as select '' as TheString, 0L as LongPrimitive, 0L as LongBoxed from MyMap";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindowCA select theString, longPrimitive, longBoxed from " + typeof(SupportBean).FullName;
+            string stmtTextInsertOne = "insert into MyWindowCA select TheString, LongPrimitive, LongBoxed from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
-            string stmtTextInsertTwo = "insert into MyWindowCA select symbol as theString, volume as longPrimitive, volume as longBoxed from " + typeof(SupportMarketDataBean).FullName;
+            string stmtTextInsertTwo = "insert into MyWindowCA select symbol as TheString, volume as LongPrimitive, volume as LongBoxed from " + typeof(SupportMarketDataBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertTwo);
     
             // create consumer
-            string stmtTextSelectOne = "select theString, longPrimitive, longBoxed from MyWindowCA";
+            string stmtTextSelectOne = "select TheString, LongPrimitive, LongBoxed from MyWindowCA";
             EPStatement stmtSelectOne = epService.EPAdministrator.CreateEPL(stmtTextSelectOne);
             var listenerStmtOne = new SupportUpdateListener();
             stmtSelectOne.Events += listenerStmtOne.Update;
     
             SendSupportBean(epService, "E1", 1L, 10L);
-            var fields = new string[]{"theString", "longPrimitive", "longBoxed"};
+            var fields = new string[]{"TheString", "LongPrimitive", "LongBoxed"};
             EPAssertionUtil.AssertProps(listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L, 10L});
             EPAssertionUtil.AssertProps(listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L, 10L});
     
@@ -363,7 +363,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             Assert.AreEqual(false, type.Metadata.IsApplicationPreConfiguredStatic);
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindowCTS select theString as stringValOne, theString as stringValTwo, Cast(longPrimitive, int) as intVal, longBoxed as longVal from " + typeof(SupportBean).FullName;
+            string stmtTextInsertOne = "insert into MyWindowCTS select TheString as stringValOne, TheString as stringValTwo, Cast(LongPrimitive, int) as intVal, LongBoxed as longVal from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create consumer
@@ -401,13 +401,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionWildcardNoFieldsNoAs(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindowWNF#keepall select * from " + typeof(SupportBean_A).Name;
+            string stmtTextCreate = "create window MyWindowWNF#keepall select * from " + typeof(SupportBean_A).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindowWNF select * from " + typeof(SupportBean_A).Name;
+            string stmtTextInsertOne = "insert into MyWindowWNF select * from " + typeof(SupportBean_A).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create consumer
@@ -452,7 +452,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindowWI select * from " + typeof(SupportBean_A).Name;
+            string stmtTextInsertOne = "insert into MyWindowWI select * from " + typeof(SupportBean_A).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create insert into
@@ -479,13 +479,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionNoSpecificationBean(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindowNSB#keepall as " + typeof(SupportBean_A).Name;
+            string stmtTextCreate = "create window MyWindowNSB#keepall as " + typeof(SupportBean_A).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindowNSB select * from " + typeof(SupportBean_A).Name;
+            string stmtTextInsertOne = "insert into MyWindowNSB select * from " + typeof(SupportBean_A).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create consumer
@@ -504,13 +504,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionWildcardWithFields(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindowWWF#keepall as select *, id as myid from " + typeof(SupportBean_A).Name;
+            string stmtTextCreate = "create window MyWindowWWF#keepall as select *, id as myid from " + typeof(SupportBean_A).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindowWWF select *, id || 'A' as myid from " + typeof(SupportBean_A).Name;
+            string stmtTextInsertOne = "insert into MyWindowWWF select *, id || 'A' as myid from " + typeof(SupportBean_A).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create consumer

@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.nwtable.infra
     
         private void RunAssertion(EPServiceProvider epService, bool namedWindow, bool enableIndexShareCreate, bool disableIndexShareConsumer) {
             string stmtTextCreate = namedWindow ?
-                    "create window MyInfra#keepall as select theString as a, longPrimitive as b, longBoxed as c from " + typeof(SupportBean).FullName :
+                    "create window MyInfra#keepall as select TheString as a, LongPrimitive as b, LongBoxed as c from " + typeof(SupportBean).FullName :
                     "create table MyInfra(a string primary key, b long, c long)";
             if (enableIndexShareCreate) {
                 stmtTextCreate = "@Hint('enable_window_subquery_indexshare') " + stmtTextCreate;
@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyInfra select theString as a, longPrimitive as b, longBoxed as c from " + typeof(SupportBean).FullName;
+            string stmtTextInsertOne = "insert into MyInfra select TheString as a, LongPrimitive as b, LongBoxed as c from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create consumer
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             EPAssertionUtil.AssertProps(listenerStmtTwo.AssertOneGetNewAndReset(), fieldsStmt, new object[]{null, "M2"});
     
             // create delete stmt
-            string stmtTextDelete = "on " + typeof(SupportBean_A).Name + " delete from MyInfra where id = a";
+            string stmtTextDelete = "on " + typeof(SupportBean_A).FullName + " delete from MyInfra where id = a";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
             stmtDelete.Events += listenerStmtDelete.Update;

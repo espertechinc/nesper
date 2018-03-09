@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionInArraySubstitution(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            string stmtText = "select intPrimitive in (?) as result from SupportBean";
+            string stmtText = "select IntPrimitive in (?) as result from SupportBean";
             EPPreparedStatement prepared = epService.EPAdministrator.PrepareEPL(stmtText);
             prepared.SetObject(1, new int[]{10, 20, 30});
             EPStatement stmt = epService.EPAdministrator.Create(prepared);
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regression.expr.expr
             stmt.Dispose();
     
             // Mixed
-            stmtText = "select 1 in (longBoxed, intArr, longMap, intCol) as resOne, 1 not in (longBoxed, intArr, longMap, intCol) as resTwo from " + typeof(SupportBeanArrayCollMap).FullName;
+            stmtText = "select 1 in (LongBoxed, intArr, longMap, intCol) as resOne, 1 not in (LongBoxed, intArr, longMap, intCol) as resTwo from " + typeof(SupportBeanArrayCollMap).FullName;
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
             stmt.Events += listener.Update;
     
@@ -196,9 +196,9 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionInStringExprOM(EPServiceProvider epService) {
-            string caseExpr = "select theString in (\"a\",\"b\",\"c\") as result from " + typeof(SupportBean).FullName;
+            string caseExpr = "select TheString in (\"a\",\"b\",\"c\") as result from " + typeof(SupportBean).FullName;
             var model = new EPStatementObjectModel();
-            model.SelectClause = SelectClause.Create().Add(Expressions.In("theString", "a", "b", "c"), "result");
+            model.SelectClause = SelectClause.Create().Add(Expressions.In("TheString", "a", "b", "c"), "result");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName));
     
             TryString(epService, model, caseExpr,
@@ -206,41 +206,41 @@ namespace com.espertech.esper.regression.expr.expr
                     new bool?[]{false, true, true, true, false, null});
     
             model = new EPStatementObjectModel();
-            model.SelectClause = SelectClause.Create().Add(Expressions.NotIn("theString", "a", "b", "c"), "result");
+            model.SelectClause = SelectClause.Create().Add(Expressions.NotIn("TheString", "a", "b", "c"), "result");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName));
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
     
-            TryString(epService, "theString not in ('a', 'b', 'c')",
+            TryString(epService, "TheString not in ('a', 'b', 'c')",
                     new string[]{"0", "a", "b", "c", "d", null},
                     new bool?[]{true, false, false, false, true, null});
         }
     
         private void RunAssertionInStringExpr(EPServiceProvider epService) {
-            TryString(epService, "theString in ('a', 'b', 'c')",
+            TryString(epService, "TheString in ('a', 'b', 'c')",
                     new string[]{"0", "a", "b", "c", "d", null},
                     new bool?[]{false, true, true, true, false, null});
     
-            TryString(epService, "theString in ('a')",
+            TryString(epService, "TheString in ('a')",
                     new string[]{"0", "a", "b", "c", "d", null},
                     new bool?[]{false, true, false, false, false, null});
     
-            TryString(epService, "theString in ('a', 'b')",
+            TryString(epService, "TheString in ('a', 'b')",
                     new string[]{"0", "b", "a", "c", "d", null},
                     new bool?[]{false, true, true, false, false, null});
     
-            TryString(epService, "theString in ('a', null)",
+            TryString(epService, "TheString in ('a', null)",
                     new string[]{"0", "b", "a", "c", "d", null},
                     new bool?[]{null, null, true, null, null, null});
     
-            TryString(epService, "theString in (null)",
+            TryString(epService, "TheString in (null)",
                     new string[]{"0", null, "b"},
                     new bool?[]{null, null, null});
     
-            TryString(epService, "theString not in ('a', 'b', 'c')",
+            TryString(epService, "TheString not in ('a', 'b', 'c')",
                     new string[]{"0", "a", "b", "c", "d", null},
                     new bool?[]{true, false, false, false, true, null});
     
-            TryString(epService, "theString not in (null)",
+            TryString(epService, "TheString not in (null)",
                     new string[]{"0", null, "b"},
                     new bool?[]{null, null, null});
         }
@@ -251,41 +251,41 @@ namespace com.espertech.esper.regression.expr.expr
     
             input = new string[]{"0", "a1", "a10", "c", "d", null, "a0", "b9", "b90"};
             result = new bool?[]{false, true, true, false, false, false, true, true, false};
-            TryString(epService, "theString between 'a0' and 'b9'", input, result);
-            TryString(epService, "theString between 'b9' and 'a0'", input, result);
+            TryString(epService, "TheString between 'a0' and 'b9'", input, result);
+            TryString(epService, "TheString between 'b9' and 'a0'", input, result);
     
-            TryString(epService, "theString between null and 'b9'",
+            TryString(epService, "TheString between null and 'b9'",
                     new string[]{"0", null, "a0", "b9"},
                     new bool?[]{false, false, false, false});
     
-            TryString(epService, "theString between null and null",
+            TryString(epService, "TheString between null and null",
                     new string[]{"0", null, "a0", "b9"},
                     new bool?[]{false, false, false, false});
     
-            TryString(epService, "theString between 'a0' and null",
+            TryString(epService, "TheString between 'a0' and null",
                     new string[]{"0", null, "a0", "b9"},
                     new bool?[]{false, false, false, false});
     
             input = new string[]{"0", "a1", "a10", "c", "d", null, "a0", "b9", "b90"};
             result = new bool?[]{true, false, false, true, true, false, false, false, true};
-            TryString(epService, "theString not between 'a0' and 'b9'", input, result);
-            TryString(epService, "theString not between 'b9' and 'a0'", input, result);
+            TryString(epService, "TheString not between 'a0' and 'b9'", input, result);
+            TryString(epService, "TheString not between 'b9' and 'a0'", input, result);
         }
     
         private void RunAssertionInNumericExpr(EPServiceProvider epService) {
             var input = new double?[]{1d, null, 1.1d, 1.0d, 1.0999999999, 2d, 4d};
             var result = new bool?[]{false, null, true, false, false, true, true};
-            TryNumeric(epService, "doubleBoxed in (1.1d, 7/3.5, 2*6/3, 0)", input, result);
+            TryNumeric(epService, "DoubleBoxed in (1.1d, 7/3.5, 2*6/3, 0)", input, result);
     
-            TryNumeric(epService, "doubleBoxed in (7/3d, null)",
+            TryNumeric(epService, "DoubleBoxed in (7/3d, null)",
                     new double?[]{2d, 7 / 3d, null},
                     new bool?[]{null, true, null});
     
-            TryNumeric(epService, "doubleBoxed in (5,5,5,5,5, -1)",
+            TryNumeric(epService, "DoubleBoxed in (5,5,5,5,5, -1)",
                     new double?[]{5.0, 5d, 0d, null, -1d},
                     new bool?[]{true, true, false, null, true});
     
-            TryNumeric(epService, "doubleBoxed not in (1.1d, 7/3.5, 2*6/3, 0)",
+            TryNumeric(epService, "DoubleBoxed not in (1.1d, 7/3.5, 2*6/3, 0)",
                     new double?[]{1d, null, 1.1d, 1.0d, 1.0999999999, 2d, 4d},
                     new bool?[]{true, null, false, true, true, false, false});
         }
@@ -293,47 +293,47 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionBetweenNumericExpr(EPServiceProvider epService) {
             var input = new double?[]{1d, null, 1.1d, 2d, 1.0999999999, 2d, 4d, 15d, 15.00001d};
             var result = new bool?[]{false, false, true, true, false, true, true, true, false};
-            TryNumeric(epService, "doubleBoxed between 1.1 and 15", input, result);
-            TryNumeric(epService, "doubleBoxed between 15 and 1.1", input, result);
+            TryNumeric(epService, "DoubleBoxed between 1.1 and 15", input, result);
+            TryNumeric(epService, "DoubleBoxed between 15 and 1.1", input, result);
     
-            TryNumeric(epService, "doubleBoxed between null and 15",
+            TryNumeric(epService, "DoubleBoxed between null and 15",
                     new double?[]{1d, null, 1.1d},
                     new bool?[]{false, false, false});
     
-            TryNumeric(epService, "doubleBoxed between 15 and null",
+            TryNumeric(epService, "DoubleBoxed between 15 and null",
                     new double?[]{1d, null, 1.1d},
                     new bool?[]{false, false, false});
     
-            TryNumeric(epService, "doubleBoxed between null and null",
+            TryNumeric(epService, "DoubleBoxed between null and null",
                     new double?[]{1d, null, 1.1d},
                     new bool?[]{false, false, false});
     
             input = new double?[]{1d, null, 1.1d, 2d, 1.0999999999, 2d, 4d, 15d, 15.00001d};
             result = new bool?[]{true, false, false, false, true, false, false, false, true};
-            TryNumeric(epService, "doubleBoxed not between 1.1 and 15", input, result);
-            TryNumeric(epService, "doubleBoxed not between 15 and 1.1", input, result);
+            TryNumeric(epService, "DoubleBoxed not between 1.1 and 15", input, result);
+            TryNumeric(epService, "DoubleBoxed not between 15 and 1.1", input, result);
     
-            TryNumeric(epService, "doubleBoxed not between 15 and null",
+            TryNumeric(epService, "DoubleBoxed not between 15 and null",
                     new double?[]{1d, null, 1.1d},
                     new bool?[]{false, false, false});
         }
     
         private void RunAssertionInBoolExpr(EPServiceProvider epService) {
-            TryInBoolean(epService, "boolBoxed in (true, true)",
+            TryInBoolean(epService, "BoolBoxed in (true, true)",
                     new bool?[]{true, false},
                     new bool[]{true, false});
     
-            TryInBoolean(epService, "boolBoxed in (1>2, 2=3, 4<=2)",
+            TryInBoolean(epService, "BoolBoxed in (1>2, 2=3, 4<=2)",
                     new bool?[]{true, false},
                     new bool[]{false, true});
     
-            TryInBoolean(epService, "boolBoxed not in (1>2, 2=3, 4<=2)",
+            TryInBoolean(epService, "BoolBoxed not in (1>2, 2=3, 4<=2)",
                     new bool?[]{true, false},
                     new bool[]{true, false});
         }
     
         private void RunAssertionInNumericCoercionLong(EPServiceProvider epService) {
-            string caseExpr = "select intPrimitive in (shortBoxed, intBoxed, longBoxed) as result from " + typeof(SupportBean).FullName;
+            string caseExpr = "select IntPrimitive in (ShortBoxed, IntBoxed, LongBoxed) as result from " + typeof(SupportBean).FullName;
     
             EPStatement selectTestCase = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
@@ -352,7 +352,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionInNumericCoercionDouble(EPServiceProvider epService) {
-            string caseExpr = "select intBoxed in (floatBoxed, doublePrimitive, longBoxed) as result from " + typeof(SupportBean).FullName;
+            string caseExpr = "select IntBoxed in (FloatBoxed, DoublePrimitive, LongBoxed) as result from " + typeof(SupportBean).FullName;
     
             EPStatement selectTestCase = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
@@ -371,7 +371,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionBetweenNumericCoercionLong(EPServiceProvider epService) {
-            string caseExpr = "select intPrimitive between shortBoxed and longBoxed as result from " + typeof(SupportBean).FullName;
+            string caseExpr = "select IntPrimitive between ShortBoxed and LongBoxed as result from " + typeof(SupportBean).FullName;
     
             EPStatement selectTestCase = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
@@ -396,8 +396,8 @@ namespace com.espertech.esper.regression.expr.expr
     
             string[] fields = "ro,rc,rho,rhc,nro,nrc,nrho,nrhc".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
-                    "select intPrimitive in (2:4) as ro, intPrimitive in [2:4] as rc, intPrimitive in [2:4) as rho, intPrimitive in (2:4] as rhc, " +
-                            "intPrimitive not in (2:4) as nro, intPrimitive not in [2:4] as nrc, intPrimitive not in [2:4) as nrho, intPrimitive not in (2:4] as nrhc " +
+                    "select IntPrimitive in (2:4) as ro, IntPrimitive in [2:4] as rc, IntPrimitive in [2:4) as rho, IntPrimitive in (2:4] as rhc, " +
+                            "IntPrimitive not in (2:4) as nro, IntPrimitive not in [2:4] as nrc, IntPrimitive not in [2:4) as nrho, IntPrimitive not in (2:4] as nrhc " +
                             "from SupportBean#lastevent");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -420,7 +420,7 @@ namespace com.espertech.esper.regression.expr.expr
             // test range reversed
             stmt.Dispose();
             stmt = epService.EPAdministrator.CreateEPL(
-                    "select intPrimitive between 4 and 2 as r1, intPrimitive in [4:2] as r2 from SupportBean#lastevent");
+                    "select IntPrimitive between 4 and 2 as r1, IntPrimitive in [4:2] as r2 from SupportBean#lastevent");
             stmt.Events += listener.Update;
     
             fields = "r1,r2".Split(',');
@@ -430,7 +430,7 @@ namespace com.espertech.esper.regression.expr.expr
             // test string type
             stmt.Dispose();
             fields = "ro".Split(',');
-            stmt = epService.EPAdministrator.CreateEPL("select theString in ('a':'d') as ro from SupportBean#lastevent");
+            stmt = epService.EPAdministrator.CreateEPL("select TheString in ('a':'d') as ro from SupportBean#lastevent");
             stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("a", 5));
@@ -449,7 +449,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionBetweenNumericCoercionDouble(EPServiceProvider epService) {
-            string caseExpr = "select intBoxed between floatBoxed and doublePrimitive as result from " + typeof(SupportBean).FullName;
+            string caseExpr = "select IntBoxed between FloatBoxed and DoublePrimitive as result from " + typeof(SupportBean).FullName;
     
             EPStatement selectTestCase = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();

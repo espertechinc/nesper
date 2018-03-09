@@ -11,9 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
@@ -40,7 +38,9 @@ namespace com.espertech.esper.regression.expr.enummethod
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val".Split(','), new Type[]{typeof(Map)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val".Split(','), new Type[] {
+                typeof(IDictionary<object, object>)
+            });
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value("E1,1", "E3,12", "E2,5"));
             EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val"), "E1,E2,E3".Split(','), new object[]{1, 5, 12});
@@ -54,9 +54,9 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             // test scalar-coll with lambda
             string[] fields = "val0".Split(',');
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(ExecEnumMinMax.MyService).Name, "extractNum");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(ExecEnumMinMax.MyService), "ExtractNum");
             string eplLambda = "select " +
-                    "strvals.ToMap(c => c, c => ExtractNum(c)) as val0 " +
+                    "Strvals.ToMap(c => c, c => extractNum(c)) as val0 " +
                     "from SupportCollection";
             EPStatement stmtLambda = epService.EPAdministrator.CreateEPL(eplLambda);
             stmtLambda.Events += listener.Update;

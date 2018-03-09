@@ -74,7 +74,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "varaggPWD" + key + ".mb.MyProperty as c1, " +
                     "varaggPWD" + key + ".mbarr.TakeLast(1) as c2, " +
                     "varaggPWD" + key + ".me.p0 as c3, " +
-                    "varaggPWD" + key + ".mearr.SelectFrom(i => i.p0) as c4 " +
+                    "varaggPWD" + key + ".mearr.selectFrom(i => i.p0) as c4 " +
                     "from SupportBean_S0";
             var listener = new SupportUpdateListener();
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplSelect).Events += listener.Update;
@@ -114,15 +114,15 @@ namespace com.espertech.esper.regression.nwtable.tbl
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplDeclare);
     
             string eplInto = "into table varaggWDE " +
-                    "select lastever(longPrimitive) as a1, window(*) as a2 from SupportBean#time(10 seconds)" +
-                    (grouped ? " group by theString" : "");
+                    "select lastever(LongPrimitive) as a1, window(*) as a2 from SupportBean#time(10 seconds)" +
+                    (grouped ? " group by TheString" : "");
             EPStatement stmtInto = SupportModelHelper.CreateByCompileOrParse(epService, soda, eplInto);
             var expectedAggType = new object[][]{new object[] {"a1", typeof(long)}, new object[] {"a2", typeof(SupportBean[])}};
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedAggType, stmtInto.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
             string key = grouped ? "[\"E1\"]" : "";
-            string eplGet = "select varaggWDE" + key + ".a1.After(150L) as c0, " +
-                    "varaggWDE" + key + ".a2.CountOf() as c1 from SupportBean_S0";
+            string eplGet = "select varaggWDE" + key + ".a1.after(150L) as c0, " +
+                    "varaggWDE" + key + ".a2.countOf() as c1 from SupportBean_S0";
             EPStatement stmtGet = SupportModelHelper.CreateByCompileOrParse(epService, soda, eplGet);
             var listener = new SupportUpdateListener();
             stmtGet.Events += listener.Update;
@@ -159,14 +159,14 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             string eplInto = "into table varaggNDM " +
                     "select window(*) as windowSupportBean from SupportBean#length(2)" +
-                    (grouped ? " group by theString" : "");
+                    (grouped ? " group by TheString" : "");
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplInto);
     
             string key = grouped ? "[\"E1\"]" : "";
             string eplSelect = "select " +
-                    "varaggNDM" + key + ".windowSupportBean.last(*).intPrimitive as c0, " +
-                    "varaggNDM" + key + ".windowSupportBean.window(*).CountOf() as c1, " +
-                    "varaggNDM" + key + ".windowSupportBean.window(intPrimitive).Take(1) as c2" +
+                    "varaggNDM" + key + ".windowSupportBean.last(*).IntPrimitive as c0, " +
+                    "varaggNDM" + key + ".windowSupportBean.window(*).countOf() as c1, " +
+                    "varaggNDM" + key + ".windowSupportBean.window(IntPrimitive).take(1) as c2" +
                     " from SupportBean_S0";
             EPStatement stmtSelect = SupportModelHelper.CreateByCompileOrParse(epService, soda, eplSelect);
             var listener = new SupportUpdateListener();

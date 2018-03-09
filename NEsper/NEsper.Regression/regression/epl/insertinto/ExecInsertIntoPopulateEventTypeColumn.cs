@@ -80,7 +80,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPAdministrator.CreateEPL("@Name('out') " +
                     "expression computeNested {\n" +
                     "  sb => case\n" +
-                    "  when intPrimitive = 1 \n" +
+                    "  when IntPrimitive = 1 \n" +
                     "    then new { p0 = 'a', p1 = 1}\n" +
                     "  else new { p0 = 'b', p1 = 2 }\n" +
                     "  end\n" +
@@ -144,9 +144,9 @@ namespace com.espertech.esper.regression.epl.insertinto
         private void TryAssertionFragmentSingeColNamedWindow(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create schema AEvent (symbol string)");
             epService.EPAdministrator.CreateEPL("create window MyEventWindow#lastevent (e AEvent)");
-            epService.EPAdministrator.CreateEPL("insert into MyEventWindow select (select * from AEvent#lastevent) as e from SupportBean(theString = 'A')");
+            epService.EPAdministrator.CreateEPL("insert into MyEventWindow select (select * from AEvent#lastevent) as e from SupportBean(TheString = 'A')");
             epService.EPAdministrator.CreateEPL("create schema BEvent (e AEvent)");
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("insert into BEvent select (select e from MyEventWindow) as e from SupportBean(theString = 'B')");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("insert into BEvent select (select e from MyEventWindow) as e from SupportBean(TheString = 'B')");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -202,8 +202,8 @@ namespace com.espertech.esper.regression.epl.insertinto
                     "  (select p00 as e0_0, p01 as e0_1 from SupportBean_S0#keepall)" +
                     "} " +
                     "insert into EventOne select " +
-                    "theString as e1_0, " +
-                    "Thequery() as ez " +
+                    "TheString as e1_0, " +
+                    "thequery() as ez " +
                     "from SupportBean");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

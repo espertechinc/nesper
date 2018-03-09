@@ -6,15 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.metric;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
@@ -43,7 +38,7 @@ namespace com.espertech.esper.regression.client
             var listenerEngineMetric = new SupportUpdateListener();
             statements[1].Events += listenerEngineMetric.Update;
     
-            statements[2] = epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive=1)#keepall where MyMetricFunctions.TakeCPUTime(longPrimitive)");
+            statements[2] = epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.TakeCPUTime(LongPrimitive)");
             SendEvent(epService, "E1", 1, CPUGOALONENANO);
     
             SendTimer(epService, 11000);

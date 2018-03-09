@@ -48,15 +48,15 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionFirstUniqueAndLengthOnDelete(EPServiceProvider epService) {
-            EPStatement nwstmt = epService.EPAdministrator.CreateEPL("create window MyWindowOne#firstunique(theString)#firstlength(3) retain-union as SupportBean");
+            EPStatement nwstmt = epService.EPAdministrator.CreateEPL("create window MyWindowOne#firstunique(TheString)#firstlength(3) retain-union as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindowOne select * from SupportBean");
-            epService.EPAdministrator.CreateEPL("on SupportBean_S0 delete from MyWindowOne where theString = p00");
+            epService.EPAdministrator.CreateEPL("on SupportBean_S0 delete from MyWindowOne where TheString = p00");
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from MyWindowOne");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            var fields = new string[]{"theString", "intPrimitive"};
+            var fields = new string[]{"TheString", "IntPrimitive"};
     
             SendEvent(epService, "E1", 1);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(nwstmt.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}});
@@ -72,8 +72,8 @@ namespace com.espertech.esper.regression.view
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
             EPAssertionUtil.AssertPropsPerRowAnyOrder(nwstmt.GetEnumerator(), fields, new object[][]{new object[] {"E2", 2}});
-            EPAssertionUtil.AssertProps(listener.LastOldData[0], "theString".Split(','), new object[]{"E1"});
-            EPAssertionUtil.AssertProps(listener.LastOldData[1], "theString".Split(','), new object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.LastOldData[0], "TheString".Split(','), new object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.LastOldData[1], "TheString".Split(','), new object[]{"E1"});
             listener.Reset();
     
             SendEvent(epService, "E1", 3);
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionFirstUniqueAndFirstLength(EPServiceProvider epService) {
-            string epl = "select irstream theString, intPrimitive from SupportBean#firstlength(3)#firstunique(theString) retain-union";
+            string epl = "select irstream TheString, IntPrimitive from SupportBean#firstlength(3)#firstunique(TheString) retain-union";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regression.view
             stmt.Dispose();
             listener.Reset();
     
-            epl = "select irstream theString, intPrimitive from SupportBean#firstunique(theString)#firstlength(3) retain-union";
+            epl = "select irstream TheString, IntPrimitive from SupportBean#firstunique(TheString)#firstlength(3) retain-union";
             stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += listener.Update;
     
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regression.view
         }
     
         private void TryAssertionFirstUniqueAndFirstLength(EPServiceProvider epService, SupportUpdateListener listener, EPStatement stmt) {
-            var fields = new string[]{"theString", "intPrimitive"};
+            var fields = new string[]{"TheString", "IntPrimitive"};
     
             SendEvent(epService, "E1", 1);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1", 1}});
@@ -132,9 +132,9 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionBatchWindow(EPServiceProvider epService) {
-            var fields = new string[]{"theString"};
+            var fields = new string[]{"TheString"};
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#length_batch(3)#unique(intPrimitive) retain-union");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream TheString from SupportBean#length_batch(3)#unique(IntPrimitive) retain-union");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -182,7 +182,7 @@ namespace com.espertech.esper.regression.view
         private void RunAssertionUnionAndDerivedValue(EPServiceProvider epService) {
             var fields = new string[]{"total"};
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#unique(intPrimitive)#unique(intBoxed)#uni(doublePrimitive) retain-union");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#unique(IntPrimitive)#unique(IntBoxed)#uni(DoublePrimitive) retain-union");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -202,9 +202,9 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionUnionGroupBy(EPServiceProvider epService) {
-            var fields = new string[]{"theString"};
+            var fields = new string[]{"TheString"};
     
-            string text = "select irstream theString from SupportBean#groupwin(intPrimitive)#length(2)#unique(intBoxed) retain-union";
+            string text = "select irstream TheString from SupportBean#groupwin(IntPrimitive)#length(2)#unique(IntBoxed) retain-union";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -251,7 +251,7 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionUnionSubselect(EPServiceProvider epService) {
-            string text = "select * from SupportBean_S0 where p00 in (select theString from SupportBean#length(2)#unique(intPrimitive) retain-union)";
+            string text = "select * from SupportBean_S0 where p00 in (select TheString from SupportBean#length(2)#unique(IntPrimitive) retain-union)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -281,9 +281,9 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionUnionThreeUnique(EPServiceProvider epService) {
-            var fields = new string[]{"theString"};
+            var fields = new string[]{"TheString"};
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#unique(intPrimitive)#unique(intBoxed)#unique(doublePrimitive) retain-union");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream TheString from SupportBean#unique(IntPrimitive)#unique(IntBoxed)#unique(DoublePrimitive) retain-union");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -336,9 +336,9 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionUnionTwoUnique(EPServiceProvider epService) {
-            var fields = new string[]{"theString"};
+            var fields = new string[]{"TheString"};
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#unique(intPrimitive)#unique(intBoxed) retain-union");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream TheString from SupportBean#unique(IntPrimitive)#unique(IntBoxed) retain-union");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -398,9 +398,9 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionUnionSorted(EPServiceProvider epService) {
-            var fields = new string[]{"theString"};
+            var fields = new string[]{"TheString"};
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#sort(2, intPrimitive)#sort(2, intBoxed) retain-union");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream TheString from SupportBean#sort(2, IntPrimitive)#sort(2, IntBoxed) retain-union");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -419,7 +419,7 @@ namespace com.espertech.esper.regression.view
             SendEvent(epService, "E4", -1, -1);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E3", "E4"));
             Assert.AreEqual(2, listener.LastOldData.Length);
-            object[] result = {listener.LastOldData[0].Get("theString"), listener.LastOldData[1].Get("theString")};
+            object[] result = {listener.LastOldData[0].Get("TheString"), listener.LastOldData[1].Get("TheString")};
             EPAssertionUtil.AssertEqualsAnyOrder(result, new string[]{"E1", "E2"});
             EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[]{"E4"});
             listener.Reset();
@@ -443,7 +443,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionUnionTimeWin(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString from SupportBean#unique(intPrimitive)#time(10 sec) retain-union");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream TheString from SupportBean#unique(IntPrimitive)#time(10 sec) retain-union");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -454,7 +454,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionUnionTimeWinSODA(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string stmtText = "select irstream theString from SupportBean#time(10 seconds)#unique(intPrimitive) retain-union";
+            string stmtText = "select irstream TheString from SupportBean#time(10 seconds)#unique(IntPrimitive) retain-union";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
             Assert.AreEqual(stmtText, model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -468,9 +468,9 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionUnionTimeWinNamedWindow(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            EPStatement stmtWindow = epService.EPAdministrator.CreateEPL("create window MyWindowTwo#time(10 sec)#unique(intPrimitive) retain-union as select * from SupportBean");
+            EPStatement stmtWindow = epService.EPAdministrator.CreateEPL("create window MyWindowTwo#time(10 sec)#unique(IntPrimitive) retain-union as select * from SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindowTwo select * from SupportBean");
-            epService.EPAdministrator.CreateEPL("on SupportBean_S0 delete from MyWindowTwo where intBoxed = id");
+            epService.EPAdministrator.CreateEPL("on SupportBean_S0 delete from MyWindowTwo where IntBoxed = id");
             var listener = new SupportUpdateListener();
             stmtWindow.Events += listener.Update;
     
@@ -481,13 +481,13 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionUnionTimeWinNamedWindowDelete(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("create window MyWindowThree#time(10 sec)#unique(intPrimitive) retain-union as select * from SupportBean");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("create window MyWindowThree#time(10 sec)#unique(IntPrimitive) retain-union as select * from SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindowThree select * from SupportBean");
-            epService.EPAdministrator.CreateEPL("on SupportBean_S0 delete from MyWindowThree where intBoxed = id");
+            epService.EPAdministrator.CreateEPL("on SupportBean_S0 delete from MyWindowThree where IntBoxed = id");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            var fields = new string[]{"theString"};
+            var fields = new string[]{"TheString"};
     
             SendTimer(epService, 1000);
             SendEvent(epService, "E1", 1, 10);
@@ -525,7 +525,7 @@ namespace com.espertech.esper.regression.view
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(50));
             Assert.AreEqual(2, listener.LastOldData.Length);
-            object[] result = {listener.LastOldData[0].Get("theString"), listener.LastOldData[1].Get("theString")};
+            object[] result = {listener.LastOldData[0].Get("TheString"), listener.LastOldData[1].Get("TheString")};
             EPAssertionUtil.AssertEqualsAnyOrder(result, new string[]{"E5", "E6"});
             listener.Reset();
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, ToArr("E1", "E3", "E4"));
@@ -544,7 +544,7 @@ namespace com.espertech.esper.regression.view
         }
     
         private void TryAssertionTimeWinUnique(EPServiceProvider epService, SupportUpdateListener listener, EPStatement stmt) {
-            var fields = new string[]{"theString"};
+            var fields = new string[]{"TheString"};
     
             SendTimer(epService, 1000);
             SendEvent(epService, "E1", 1);
@@ -613,11 +613,11 @@ namespace com.espertech.esper.regression.view
         private void RunAssertionInvalid(EPServiceProvider epService) {
             string text = null;
     
-            text = "select theString from SupportBean#groupwin(theString)#unique(theString)#merge(intPrimitive) retain-union";
-            TryInvalid(epService, text, "Error starting statement: Error attaching view to parent view: Groupwin view for this merge view could not be found among parent views [select theString from SupportBean#groupwin(theString)#unique(theString)#merge(intPrimitive) retain-union]");
+            text = "select TheString from SupportBean#groupwin(TheString)#unique(TheString)#merge(IntPrimitive) retain-union";
+            TryInvalid(epService, text, "Error starting statement: Error attaching view to parent view: Groupwin view for this merge view could not be found among parent views [select TheString from SupportBean#groupwin(TheString)#unique(TheString)#merge(IntPrimitive) retain-union]");
     
-            text = "select theString from SupportBean#groupwin(theString)#groupwin(intPrimitive)#unique(theString)#unique(intPrimitive) retain-union";
-            TryInvalid(epService, text, "Error starting statement: Multiple groupwin views are not allowed in conjuntion with multiple data windows [select theString from SupportBean#groupwin(theString)#groupwin(intPrimitive)#unique(theString)#unique(intPrimitive) retain-union]");
+            text = "select TheString from SupportBean#groupwin(TheString)#groupwin(IntPrimitive)#unique(TheString)#unique(IntPrimitive) retain-union";
+            TryInvalid(epService, text, "Error starting statement: Multiple groupwin views are not allowed in conjuntion with multiple data windows [select TheString from SupportBean#groupwin(TheString)#groupwin(IntPrimitive)#unique(TheString)#unique(IntPrimitive) retain-union]");
         }
     
         private void SendEvent(EPServiceProvider epService, string theString, int intPrimitive, int intBoxed, double doublePrimitive) {

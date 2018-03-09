@@ -28,8 +28,8 @@ namespace com.espertech.esper.regression.dataflow
     public class ExecDataflowExampleVwapFilterSelectJoin : RegressionExecution {
     
         public override void Run(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddImport(typeof(DefaultSupportCaptureOp).Namespace + ".*");
-            epService.EPAdministrator.Configuration.AddImport(typeof(MyObjectArrayGraphSource).Namespace + ".*");
+            epService.EPAdministrator.Configuration.AddImport(typeof(DefaultSupportCaptureOp).Namespace);
+            epService.EPAdministrator.Configuration.AddImport(typeof(MyObjectArrayGraphSource).Namespace);
     
             string epl = "create dataflow VWAPSample\r\n" +
                     "create objectarray schema TradeQuoteType as (type string, ticker string, price double, volume long, askprice double, asksize long),\n" +

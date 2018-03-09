@@ -49,54 +49,54 @@ namespace com.espertech.esper.regression.db
         }
     
         private void RunAssertionOuterJoinLeftS0(EPServiceProvider epService) {
-            string stmtText = "select s0.intPrimitive as MyInt, " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
+            string stmtText = "select s0.IntPrimitive as MyInt, " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
                     typeof(SupportBean).FullName + " as s0 left outer join " +
-                    " sql:MyDB ['select " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 on intPrimitive = mybigint";
+                    " sql:MyDB ['select " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 on IntPrimitive = mybigint";
             TryOuterJoinResult(epService, stmtText);
         }
     
         private void RunAssertionOuterJoinRightS1(EPServiceProvider epService) {
-            string stmtText = "select s0.intPrimitive as MyInt, " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
-                    " sql:MyDB ['select " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 right outer join " +
-                    typeof(SupportBean).FullName + " as s0 on intPrimitive = mybigint";
+            string stmtText = "select s0.IntPrimitive as MyInt, " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
+                    " sql:MyDB ['select " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 right outer join " +
+                    typeof(SupportBean).FullName + " as s0 on IntPrimitive = mybigint";
             TryOuterJoinResult(epService, stmtText);
         }
     
         private void RunAssertionOuterJoinFullS0(EPServiceProvider epService) {
-            string stmtText = "select s0.intPrimitive as MyInt, " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
-                    " sql:MyDB ['select " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 full outer join " +
-                    typeof(SupportBean).FullName + " as s0 on intPrimitive = mybigint";
+            string stmtText = "select s0.IntPrimitive as MyInt, " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
+                    " sql:MyDB ['select " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 full outer join " +
+                    typeof(SupportBean).FullName + " as s0 on IntPrimitive = mybigint";
             TryOuterJoinResult(epService, stmtText);
         }
     
         private void RunAssertionOuterJoinFullS1(EPServiceProvider epService) {
-            string stmtText = "select s0.intPrimitive as MyInt, " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
+            string stmtText = "select s0.IntPrimitive as MyInt, " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
                     typeof(SupportBean).FullName + " as s0 full outer join " +
-                    " sql:MyDB ['select " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 on intPrimitive = mybigint";
+                    " sql:MyDB ['select " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 on IntPrimitive = mybigint";
             TryOuterJoinResult(epService, stmtText);
         }
     
         private void RunAssertionOuterJoinRightS0(EPServiceProvider epService) {
-            string stmtText = "select s0.intPrimitive as MyInt, " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
+            string stmtText = "select s0.IntPrimitive as MyInt, " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
                     typeof(SupportBean).FullName + " as s0 right outer join " +
-                    " sql:MyDB ['select " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 on intPrimitive = mybigint";
+                    " sql:MyDB ['select " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 on IntPrimitive = mybigint";
             TryOuterJoinNoResult(epService, stmtText);
         }
     
         private void RunAssertionOuterJoinLeftS1(EPServiceProvider epService) {
-            string stmtText = "select s0.intPrimitive as MyInt, " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
-                    " sql:MyDB ['select " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 left outer join " +
-                    typeof(SupportBean).FullName + " as s0 on intPrimitive = mybigint";
+            string stmtText = "select s0.IntPrimitive as MyInt, " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
+                    " sql:MyDB ['select " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 left outer join " +
+                    typeof(SupportBean).FullName + " as s0 on IntPrimitive = mybigint";
             TryOuterJoinNoResult(epService, stmtText);
         }
     
         private void RunAssertionLeftOuterJoinOnFilter(EPServiceProvider epService) {
             string[] fields = "MyInt,myint".Split(',');
-            string stmtText = "@IterableUnbound select s0.intPrimitive as MyInt, " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
+            string stmtText = "@IterableUnbound select s0.IntPrimitive as MyInt, " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
                     typeof(SupportBean).FullName + " as s0 " +
                     " left outer join " +
-                    " sql:MyDB ['select " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 " +
-                    "on theString = myvarchar";
+                    " sql:MyDB ['select " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 " +
+                    "on TheString = myvarchar";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -128,9 +128,9 @@ namespace com.espertech.esper.regression.db
     
         private void RunAssertionRightOuterJoinOnFilter(EPServiceProvider epService) {
             string[] fields = "MyInt,myint".Split(',');
-            string stmtText = "@IterableUnbound select s0.intPrimitive as MyInt, " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
-                    " sql:MyDB ['select " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 right outer join " +
-                    typeof(SupportBean).FullName + " as s0 on theString = myvarchar";
+            string stmtText = "@IterableUnbound select s0.IntPrimitive as MyInt, " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
+                    " sql:MyDB ['select " + ExecDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 right outer join " +
+                    typeof(SupportBean).FullName + " as s0 on TheString = myvarchar";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -162,11 +162,11 @@ namespace com.espertech.esper.regression.db
     
         private void RunAssertionOuterJoinReversedOnFilter(EPServiceProvider epService) {
             string[] fields = "MyInt,MyVarChar".Split(',');
-            string stmtText = "select s0.intPrimitive as MyInt, MyVarChar from " +
+            string stmtText = "select s0.IntPrimitive as MyInt, MyVarChar from " +
                     typeof(SupportBean).FullName + "#keepall as s0 " +
                     " right outer join " +
                     " sql:MyDB ['select myvarchar MyVarChar from mytesttable'] as s1 " +
-                    "on theString = MyVarChar";
+                    "on TheString = MyVarChar";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();

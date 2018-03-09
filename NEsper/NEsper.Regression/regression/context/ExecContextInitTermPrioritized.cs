@@ -39,10 +39,10 @@ namespace com.espertech.esper.regression.context
                     "\n @Name('ctx') create context RuleActivityTime as start (0, 9, *, *, *) end (0, 17, *, *, *);" +
                             "\n @Name('window') context RuleActivityTime create window EventsWindow#firstunique(productID) as Event;" +
                             "\n @Name('variable') create variable bool IsOutputTriggered_2 = false;" +
-                            "\n @Name('A') context RuleActivityTime insert into EventsWindow select * from Event(not Exists (select * from EventsWindow));" +
-                            "\n @Name('B') context RuleActivityTime insert into EventsWindow select * from Event(not Exists (select * from EventsWindow));" +
-                            "\n @Name('C') context RuleActivityTime insert into EventsWindow select * from Event(not Exists (select * from EventsWindow));" +
-                            "\n @Name('D') context RuleActivityTime insert into EventsWindow select * from Event(not Exists (select * from EventsWindow));" +
+                            "\n @Name('A') context RuleActivityTime insert into EventsWindow select * from Event(not exists (select * from EventsWindow));" +
+                            "\n @Name('B') context RuleActivityTime insert into EventsWindow select * from Event(not exists (select * from EventsWindow));" +
+                            "\n @Name('C') context RuleActivityTime insert into EventsWindow select * from Event(not exists (select * from EventsWindow));" +
+                            "\n @Name('D') context RuleActivityTime insert into EventsWindow select * from Event(not exists (select * from EventsWindow));" +
                             "\n @Name('out') context RuleActivityTime select * from EventsWindow";
     
             DeploymentResult result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
@@ -51,7 +51,7 @@ namespace com.espertech.esper.regression.context
             epService.EPRuntime.SendEvent(new ExecContextInitTerm.Event("A1"));
     
             // invalid - subquery not the same context
-            TryInvalid(epService, "insert into EventsWindow select * from Event(not Exists (select * from EventsWindow))",
+            TryInvalid(epService, "insert into EventsWindow select * from Event(not exists (select * from EventsWindow))",
                     "Failed to validate subquery number 1 querying EventsWindow: Named window by name 'EventsWindow' has been declared for context 'RuleActivityTime' and can only be used within the same context");
     
             epService.EPAdministrator.DeploymentAdmin.UndeployRemove(result.DeploymentId);
@@ -59,7 +59,7 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionAtNowWithSelectedEventEnding(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            string[] fields = "theString".Split(',');
+            string[] fields = "TheString".Split(',');
             epService.EPAdministrator.CreateEPL("@Priority(1) create context C1 start @now end SupportBean");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("@Priority(0) context C1 select * from SupportBean");
             var listener = new SupportUpdateListener();

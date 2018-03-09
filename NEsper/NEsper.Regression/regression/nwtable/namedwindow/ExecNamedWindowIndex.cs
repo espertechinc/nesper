@@ -24,9 +24,9 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
         public override void Run(EPServiceProvider epService) {
     
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            EPStatement stmtWindow = epService.EPAdministrator.CreateEPL("create window MyWindowOne#unique(theString) as SupportBean");
+            EPStatement stmtWindow = epService.EPAdministrator.CreateEPL("create window MyWindowOne#unique(TheString) as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindowOne select * from SupportBean");
-            epService.EPAdministrator.CreateEPL("create unique index I1 on MyWindowOne(theString)");
+            epService.EPAdministrator.CreateEPL("create unique index I1 on MyWindowOne(TheString)");
     
             epService.EPRuntime.SendEvent(new SupportBean("E0", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPRuntime.SendEvent(new SupportBean("E1", 4));
             epService.EPRuntime.SendEvent(new SupportBean("E0", 5));
     
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtWindow.GetEnumerator(), "theString,intPrimitive".Split(','), new object[][]{new object[] {"E0", 5}, new object[] {"E1", 4}, new object[] {"E2", 3}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtWindow.GetEnumerator(), "TheString,IntPrimitive".Split(','), new object[][]{new object[] {"E0", 5}, new object[] {"E1", 4}, new object[] {"E2", 3}});
         }
     }
 } // end of namespace

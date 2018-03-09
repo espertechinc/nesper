@@ -77,8 +77,8 @@ namespace com.espertech.esper.regression.expr.filter
     
             TryInArrayContextProvided(epService);
     
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[every a=MyEventInKeywordValue -> SupportBean(intPrimitive in (a.longs))]",
-                    "Implicit conversion from datatype 'long' to 'int' for property 'intPrimitive' is not allowed (strict filter type coercion)");
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[every a=MyEventInKeywordValue -> SupportBean(IntPrimitive in (a.longs))]",
+                    "Implicit conversion from datatype 'long' to 'int' for property 'IntPrimitive' is not allowed (strict filter type coercion)");
         }
     
         private void RunAssertionOptimizablePerf(EPServiceProvider epService)
@@ -94,17 +94,17 @@ namespace com.espertech.esper.regression.expr.filter
             }
     
             // Func(...) = value
-            TryOptimizableEquals(epService, "select * from SupportBean(LibSplit(theString) = !NUM!)", listeners);
+            TryOptimizableEquals(epService, "select * from SupportBean(LibSplit(TheString) = !NUM!)", listeners);
     
             // Func(...) implied true
-            TryOptimizableBoolean(epService, "select * from SupportBean(LibE1True(theString))");
+            TryOptimizableBoolean(epService, "select * from SupportBean(LibE1True(TheString))");
     
             // declared expression (...) = value
-            epService.EPAdministrator.CreateEPL("create expression thesplit {theString => LibSplit(theString)}");
+            epService.EPAdministrator.CreateEPL("create expression thesplit {TheString => LibSplit(TheString)}");
             TryOptimizableEquals(epService, "select * from SupportBean(Thesplit(*) = !NUM!)", listeners);
     
             // declared expression (...) implied true
-            epService.EPAdministrator.CreateEPL("create expression theE1Test {theString => LibE1True(theString)}");
+            epService.EPAdministrator.CreateEPL("create expression theE1Test {TheString => LibE1True(TheString)}");
             TryOptimizableBoolean(epService, "select * from SupportBean(TheE1Test(*))");
     
             // typeof(e)
@@ -142,40 +142,40 @@ namespace com.espertech.esper.regression.expr.filter
     
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
                 "funcOne", typeof(MyLib).FullName, "LibSplit", FilterOptimizableEnum.DISABLED);
-            epl = "select * from SupportBean(FuncOne(theString) = 0)";
+            epl = "select * from SupportBean(funcOne(TheString) = 0)";
             AssertFilterSingle(epService, epl, FilterSpecCompiler.PROPERTY_NAME_BOOLEAN_EXPRESSION, FilterOperator.BOOLEAN_EXPRESSION);
     
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
                 "funcOneWDefault", typeof(MyLib).FullName, "LibSplit");
-            epl = "select * from SupportBean(FuncOneWDefault(theString) = 0)";
-            AssertFilterSingle(epService, epl, "FuncOneWDefault(theString)", FilterOperator.EQUAL);
+            epl = "select * from SupportBean(funcOneWDefault(TheString) = 0)";
+            AssertFilterSingle(epService, epl, "funcOneWDefault(TheString)", FilterOperator.EQUAL);
     
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
                 "funcTwo", typeof(MyLib).FullName, "LibSplit", FilterOptimizableEnum.ENABLED);
-            epl = "select * from SupportBean(FuncTwo(theString) = 0)";
-            AssertFilterSingle(epService, epl, "FuncTwo(theString)", FilterOperator.EQUAL);
+            epl = "select * from SupportBean(funcTwo(TheString) = 0)";
+            AssertFilterSingle(epService, epl, "funcTwo(TheString)", FilterOperator.EQUAL);
     
-            epl = "select * from SupportBean(LibE1True(theString))";
-            AssertFilterSingle(epService, epl, "LibE1True(theString)", FilterOperator.EQUAL);
+            epl = "select * from SupportBean(LibE1True(TheString))";
+            AssertFilterSingle(epService, epl, "LibE1True(TheString)", FilterOperator.EQUAL);
     
-            epl = "select * from SupportBean(FuncTwo( theString ) > 10)";
-            AssertFilterSingle(epService, epl, "FuncTwo(theString)", FilterOperator.GREATER);
+            epl = "select * from SupportBean(funcTwo( TheString ) > 10)";
+            AssertFilterSingle(epService, epl, "funcTwo(TheString)", FilterOperator.GREATER);
     
-            epService.EPAdministrator.CreateEPL("create expression thesplit {theString => FuncOne(theString)}");
+            epService.EPAdministrator.CreateEPL("create expression thesplit {TheString => FuncOne(TheString)}");
     
-            epl = "select * from SupportBean(Thesplit(*) = 0)";
-            AssertFilterSingle(epService, epl, "Thesplit(*)", FilterOperator.EQUAL);
+            epl = "select * from SupportBean(thesplit(*) = 0)";
+            AssertFilterSingle(epService, epl, "thesplit(*)", FilterOperator.EQUAL);
     
-            epl = "select * from SupportBean(LibE1True(theString))";
-            AssertFilterSingle(epService, epl, "LibE1True(theString)", FilterOperator.EQUAL);
+            epl = "select * from SupportBean(LibE1True(TheString))";
+            AssertFilterSingle(epService, epl, "LibE1True(TheString)", FilterOperator.EQUAL);
     
-            epl = "select * from SupportBean(Thesplit(*) > 10)";
-            AssertFilterSingle(epService, epl, "Thesplit(*)", FilterOperator.GREATER);
+            epl = "select * from SupportBean(thesplit(*) > 10)";
+            AssertFilterSingle(epService, epl, "thesplit(*)", FilterOperator.GREATER);
     
-            epl = "expression housenumber alias for {10} select * from SupportBean(intPrimitive = housenumber)";
-            AssertFilterSingle(epService, epl, "intPrimitive", FilterOperator.EQUAL);
+            epl = "expression housenumber alias for {10} select * from SupportBean(IntPrimitive = housenumber)";
+            AssertFilterSingle(epService, epl, "IntPrimitive", FilterOperator.EQUAL);
     
-            epl = "expression housenumber alias for {intPrimitive*10} select * from SupportBean(intPrimitive = housenumber)";
+            epl = "expression housenumber alias for {IntPrimitive*10} select * from SupportBean(IntPrimitive = housenumber)";
             AssertFilterSingle(epService, epl, ".boolean_expression", FilterOperator.BOOLEAN_EXPRESSION);
     
             epl = "select * from SupportBean(typeof(e) = 'SupportBean') as e";
@@ -184,9 +184,9 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void RunAssertionPatternUDFFilterOptimizable(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("myCustomBigDecimalEquals",
-                    GetType().FullName, "MyCustomBigDecimalEquals");
+                    GetType().FullName, "MyCustomDecimalEquals");
     
-            string epl = "select * from pattern[a=SupportBean() -> b=SupportBean(MyCustomBigDecimalEquals(a.bigDecimal, b.bigDecimal))]";
+            string epl = "select * from pattern[a=SupportBean() -> b=SupportBean(MyCustomDecimalEquals(a.DecimalBoxed, b.DecimalBoxed))]";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
@@ -204,14 +204,14 @@ namespace com.espertech.esper.regression.expr.filter
         private void RunAssertionOrToInRewrite(EPServiceProvider epService) {
             // test 'or' rewrite
             var filtersAB = new[]{
-                    "theString = 'a' or theString = 'b'",
-                    "theString = 'a' or 'b' = theString",
-                    "'a' = theString or 'b' = theString",
-                    "'a' = theString or theString = 'b'",
+                    "TheString = 'a' or TheString = 'b'",
+                    "TheString = 'a' or 'b' = TheString",
+                    "'a' = TheString or 'b' = TheString",
+                    "'a' = TheString or TheString = 'b'",
             };
             foreach (string filter in filtersAB) {
                 string epl = "select * from SupportBean(" + filter + ")";
-                AssertFilterSingle(epService, epl, "theString", FilterOperator.IN_LIST_OF_VALUES);
+                AssertFilterSingle(epService, epl, "TheString", FilterOperator.IN_LIST_OF_VALUES);
                 var listener = new SupportUpdateListener();
                 epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
@@ -225,8 +225,8 @@ namespace com.espertech.esper.regression.expr.filter
                 epService.EPAdministrator.DestroyAllStatements();
             }
     
-            string eplX = "select * from SupportBean(intPrimitive = 1 and (theString='a' or theString='b'))";
-            SupportFilterHelper.AssertFilterTwo(epService, eplX, "intPrimitive", FilterOperator.EQUAL, "theString", FilterOperator.IN_LIST_OF_VALUES);
+            string eplX = "select * from SupportBean(IntPrimitive = 1 and (TheString='a' or TheString='b'))";
+            SupportFilterHelper.AssertFilterTwo(epService, eplX, "IntPrimitive", FilterOperator.EQUAL, "TheString", FilterOperator.IN_LIST_OF_VALUES);
         }
     
         private void RunAssertionOrRewrite(EPServiceProvider epService) {
@@ -273,7 +273,7 @@ namespace com.espertech.esper.regression.expr.filter
             }
             var listener = new SupportUpdateListener();
             for (int i = 0; i < 1000; i++) {
-                string epl = "select * from SupportBean(theString = '" + i + "' or intPrimitive=" + i + ")";
+                string epl = "select * from SupportBean(TheString = '" + i + "' or IntPrimitive=" + i + ")";
                 epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
             }
     
@@ -326,7 +326,7 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void TryInKeywordPattern(EPServiceProvider epService, string field, MyEventInKeywordValue prototype) {
     
-            EPStatementSPI stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("select * from pattern[every a=MyEventInKeywordValue -> SupportBean(intPrimitive in (a." + field + "))]");
+            EPStatementSPI stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("select * from pattern[every a=MyEventInKeywordValue -> SupportBean(IntPrimitive in (a." + field + "))]");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -336,7 +336,7 @@ namespace com.espertech.esper.regression.expr.filter
             AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(prototype), 3, false);
             SupportFilterHelper.AssertFilterMulti(stmt, "SupportBean", new[]
             {
-                new[]{new SupportFilterItem("intPrimitive", FilterOperator.IN_LIST_OF_VALUES)},
+                new[]{new SupportFilterItem("IntPrimitive", FilterOperator.IN_LIST_OF_VALUES)},
             });
     
             stmt.Dispose();
@@ -344,7 +344,7 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void TryNotInKeywordPattern(EPServiceProvider epService, string field, MyEventInKeywordValue prototype) {
     
-            EPStatementSPI stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("select * from pattern[every a=MyEventInKeywordValue -> SupportBean(intPrimitive not in (a." + field + "))]");
+            EPStatementSPI stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("select * from pattern[every a=MyEventInKeywordValue -> SupportBean(IntPrimitive not in (a." + field + "))]");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -354,7 +354,7 @@ namespace com.espertech.esper.regression.expr.filter
             AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(prototype), 1, false);
             SupportFilterHelper.AssertFilterMulti(stmt, "SupportBean", new[]
             {
-                new[]{new SupportFilterItem("intPrimitive", FilterOperator.NOT_IN_LIST_OF_VALUES)},
+                new[]{new SupportFilterItem("IntPrimitive", FilterOperator.NOT_IN_LIST_OF_VALUES)},
             });
     
             stmt.Dispose();
@@ -371,10 +371,10 @@ namespace com.espertech.esper.regression.expr.filter
             var listenerTwo = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("create context MyContext initiated by MyEventInKeywordValue as mie terminated after 24 hours");
     
-            EPStatement statementOne = epService.EPAdministrator.CreateEPL("context MyContext select * from SupportBean#keepall where intPrimitive in (context.mie.ints)");
+            EPStatement statementOne = epService.EPAdministrator.CreateEPL("context MyContext select * from SupportBean#keepall where IntPrimitive in (context.mie.ints)");
             statementOne.Events += listenerOne.Update;
     
-            EPStatementSPI statementTwo = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context MyContext select * from SupportBean(intPrimitive in (context.mie.ints))");
+            EPStatementSPI statementTwo = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context MyContext select * from SupportBean(IntPrimitive in (context.mie.ints))");
             statementTwo.Events += listenerTwo.Update;
     
             epService.EPRuntime.SendEvent(new MyEventInKeywordValue(new[]{1, 2}));
@@ -383,7 +383,7 @@ namespace com.espertech.esper.regression.expr.filter
     
             SupportFilterHelper.AssertFilterMulti(statementTwo, "SupportBean", new[]
             {
-                new[]{new SupportFilterItem("intPrimitive", FilterOperator.IN_LIST_OF_VALUES)},
+                new[]{new SupportFilterItem("IntPrimitive", FilterOperator.IN_LIST_OF_VALUES)},
             });
     
             statementOne.Dispose();
@@ -588,14 +588,14 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void TryOrRewriteAndRewriteInnerOr(EPServiceProvider epService) {
             var filtersAB = new[]{
-                    "theString='a' and (intPrimitive=1 or longPrimitive=10)",
+                    "TheString='a' and (IntPrimitive=1 or LongPrimitive=10)",
             };
             foreach (string filter in filtersAB) {
                 string epl = "select * from SupportBean(" + filter + ")";
                 EPStatement stmt = SupportFilterHelper.AssertFilterMulti(epService, epl, "SupportBean", new[]
                 {
-                    new[]{new SupportFilterItem("theString", FilterOperator.EQUAL), new SupportFilterItem("intPrimitive", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("theString", FilterOperator.EQUAL), new SupportFilterItem("longPrimitive", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("TheString", FilterOperator.EQUAL), new SupportFilterItem("IntPrimitive", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("TheString", FilterOperator.EQUAL), new SupportFilterItem("LongPrimitive", FilterOperator.EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
                 stmt.Events += listener.Update;
@@ -634,23 +634,23 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void TryOrRewriteOrRewriteEightOr(EPServiceProvider epService) {
             var filtersAB = new[]{
-                    "theString = 'a' or intPrimitive=1 or longPrimitive=10 or doublePrimitive=100 or boolPrimitive=true or " +
-                            "intBoxed=2 or longBoxed=20 or doubleBoxed=200",
-                    "longBoxed=20 or theString = 'a' or boolPrimitive=true or intBoxed=2 or longPrimitive=10 or doublePrimitive=100 or " +
-                            "intPrimitive=1 or doubleBoxed=200",
+                    "TheString = 'a' or IntPrimitive=1 or LongPrimitive=10 or DoublePrimitive=100 or BoolPrimitive=true or " +
+                            "IntBoxed=2 or LongBoxed=20 or DoubleBoxed=200",
+                    "LongBoxed=20 or TheString = 'a' or BoolPrimitive=true or IntBoxed=2 or LongPrimitive=10 or DoublePrimitive=100 or " +
+                            "IntPrimitive=1 or DoubleBoxed=200",
             };
             foreach (string filter in filtersAB) {
                 string epl = "select * from SupportBean(" + filter + ")";
                 EPStatement stmt = SupportFilterHelper.AssertFilterMulti(epService, epl, "SupportBean", new[]
                 {
-                    new[]{new SupportFilterItem("theString", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("intPrimitive", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("longPrimitive", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("doublePrimitive", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("boolPrimitive", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("intBoxed", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("longBoxed", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("doubleBoxed", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("TheString", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("IntPrimitive", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("LongPrimitive", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("DoublePrimitive", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("BoolPrimitive", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("IntBoxed", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("LongBoxed", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("DoubleBoxed", FilterOperator.EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
                 stmt.Events += listener.Update;
@@ -668,16 +668,16 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void TryOrRewriteOrRewriteFourOr(EPServiceProvider epService) {
             var filtersAB = new[]{
-                    "theString = 'a' or intPrimitive=1 or longPrimitive=10 or doublePrimitive=100",
+                    "TheString = 'a' or IntPrimitive=1 or LongPrimitive=10 or DoublePrimitive=100",
             };
             foreach (string filter in filtersAB) {
                 string epl = "select * from SupportBean(" + filter + ")";
                 EPStatement stmt = SupportFilterHelper.AssertFilterMulti(epService, epl, "SupportBean", new[]
                 {
-                    new[]{new SupportFilterItem("theString", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("intPrimitive", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("longPrimitive", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("doublePrimitive", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("TheString", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("IntPrimitive", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("LongPrimitive", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("DoublePrimitive", FilterOperator.EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
                 stmt.Events += listener.Update;
@@ -692,16 +692,16 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void TryOrRewriteOrRewriteThreeWithOverlap(EPServiceProvider epService) {
             var filtersAB = new[]{
-                    "theString = 'a' or theString = 'b' or intPrimitive=1",
-                    "intPrimitive = 1 or theString = 'b' or theString = 'a'",
+                    "TheString = 'a' or TheString = 'b' or IntPrimitive=1",
+                    "IntPrimitive = 1 or TheString = 'b' or TheString = 'a'",
             };
             foreach (string filter in filtersAB) {
                 string epl = "select * from SupportBean(" + filter + ")";
                 EPStatement stmt = SupportFilterHelper.AssertFilterMulti(epService, epl, "SupportBean", new[]
                 {
-                    new[]{new SupportFilterItem("theString", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("theString", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("intPrimitive", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("TheString", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("TheString", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("IntPrimitive", FilterOperator.EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
                 stmt.Events += listener.Update;
@@ -716,16 +716,16 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void TryOrRewriteOrRewriteWithAnd(EPServiceProvider epService) {
             var filtersAB = new[]{
-                    "(theString = 'a' and intPrimitive = 1) or (theString = 'b' and intPrimitive = 2)",
-                    "(intPrimitive = 1 and theString = 'a') or (intPrimitive = 2 and theString = 'b')",
-                    "(theString = 'b' and intPrimitive = 2) or (theString = 'a' and intPrimitive = 1)",
+                    "(TheString = 'a' and IntPrimitive = 1) or (TheString = 'b' and IntPrimitive = 2)",
+                    "(IntPrimitive = 1 and TheString = 'a') or (IntPrimitive = 2 and TheString = 'b')",
+                    "(TheString = 'b' and IntPrimitive = 2) or (TheString = 'a' and IntPrimitive = 1)",
             };
             foreach (string filter in filtersAB) {
                 string epl = "select * from SupportBean(" + filter + ")";
                 EPStatement stmt = SupportFilterHelper.AssertFilterMulti(epService, epl, "SupportBean", new[]
                 {
-                    new[]{new SupportFilterItem("theString", FilterOperator.EQUAL), new SupportFilterItem("intPrimitive", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("theString", FilterOperator.EQUAL), new SupportFilterItem("intPrimitive", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("TheString", FilterOperator.EQUAL), new SupportFilterItem("IntPrimitive", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("TheString", FilterOperator.EQUAL), new SupportFilterItem("IntPrimitive", FilterOperator.EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
                 stmt.Events += listener.Update;
@@ -740,16 +740,16 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void TryOrRewriteOrRewriteThreeOr(EPServiceProvider epService) {
             var filtersAB = new[]{
-                    "theString = 'a' or intPrimitive = 1 or longPrimitive = 2",
-                    "2 = longPrimitive or 1 = intPrimitive or theString = 'a'"
+                    "TheString = 'a' or IntPrimitive = 1 or LongPrimitive = 2",
+                    "2 = LongPrimitive or 1 = IntPrimitive or TheString = 'a'"
             };
             foreach (string filter in filtersAB) {
                 string epl = "select * from SupportBean(" + filter + ")";
                 EPStatement stmt = SupportFilterHelper.AssertFilterMulti(epService, epl, "SupportBean", new[]
                 {
-                    new[]{new SupportFilterItem("intPrimitive", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("theString", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("longPrimitive", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("IntPrimitive", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("TheString", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("LongPrimitive", FilterOperator.EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
                 stmt.Events += listener.Update;
@@ -778,17 +778,17 @@ namespace com.espertech.esper.regression.expr.filter
         private void TryOrRewriteTwoOr(EPServiceProvider epService) {
             // test 'or' rewrite
             var filtersAB = new[]{
-                    "theString = 'a' or intPrimitive = 1",
-                    "theString = 'a' or 1 = intPrimitive",
-                    "'a' = theString or 1 = intPrimitive",
-                    "'a' = theString or intPrimitive = 1",
+                    "TheString = 'a' or IntPrimitive = 1",
+                    "TheString = 'a' or 1 = IntPrimitive",
+                    "'a' = TheString or 1 = IntPrimitive",
+                    "'a' = TheString or IntPrimitive = 1",
             };
             foreach (string filter in filtersAB) {
                 string epl = "select * from SupportBean(" + filter + ")";
                 EPStatement stmt = SupportFilterHelper.AssertFilterMulti(epService, epl, "SupportBean", new[]
                 {
-                    new[]{new SupportFilterItem("intPrimitive", FilterOperator.EQUAL)},
-                    new[]{new SupportFilterItem("theString", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("IntPrimitive", FilterOperator.EQUAL)},
+                    new[]{new SupportFilterItem("TheString", FilterOperator.EQUAL)},
                 });
                 var listener = new SupportUpdateListener();
                 stmt.Events += listener.Update;
@@ -897,7 +897,7 @@ namespace com.espertech.esper.regression.expr.filter
         }
     
         private void TryOrRewriteContextPartitionedInitiated(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("@Name('ctx') create context MyContext initiated by SupportBean(theString='A' or intPrimitive=1) terminated after 24 hours");
+            epService.EPAdministrator.CreateEPL("@Name('ctx') create context MyContext initiated by SupportBean(TheString='A' or IntPrimitive=1) terminated after 24 hours");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("@Name('select') context MyContext select * from SupportBean").Events += listener.Update;
     
@@ -910,7 +910,7 @@ namespace com.espertech.esper.regression.expr.filter
         private void TryOrRewriteContextPartitionedInitiatedSameEvent(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create context MyContext initiated by SupportBean terminated after 24 hours");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("context MyContext select * from SupportBean(theString='A' or intPrimitive=1)").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("context MyContext select * from SupportBean(TheString='A' or IntPrimitive=1)").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 1));
             listener.AssertOneGetNewAndReset();
@@ -991,7 +991,7 @@ namespace com.espertech.esper.regression.expr.filter
             return "OK";
         }
     
-        public static bool MyCustomBigDecimalEquals(decimal first, decimal second) {
+        public static bool MyCustomDecimalEquals(decimal first, decimal second) {
             return first.CompareTo(second) == 0;
         }
     

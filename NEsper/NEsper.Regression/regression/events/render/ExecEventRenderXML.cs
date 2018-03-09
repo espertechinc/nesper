@@ -54,36 +54,36 @@ namespace com.espertech.esper.regression.events.render
             //Log.Info(result);
             string expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                     "<supportBean>\n" +
-                    "  <boolPrimitive>false</boolPrimitive>\n" +
-                    "  <bytePrimitive>0</bytePrimitive>\n" +
-                    "  <charPrimitive>x</charPrimitive>\n" +
-                    "  <doublePrimitive>0.0</doublePrimitive>\n" +
-                    "  <enumValue>ENUM_VALUE_2</enumValue>\n" +
-                    "  <floatPrimitive>0.0</floatPrimitive>\n" +
-                    "  <intBoxed>992</intBoxed>\n" +
-                    "  <intPrimitive>1</intPrimitive>\n" +
-                    "  <longPrimitive>0</longPrimitive>\n" +
-                    "  <shortPrimitive>0</shortPrimitive>\n" +
-                    "  <theString>a\\u000ac</theString>\n" +
-                    "  <this>\n" +
-                    "    <boolPrimitive>false</boolPrimitive>\n" +
-                    "    <bytePrimitive>0</bytePrimitive>\n" +
-                    "    <charPrimitive>x</charPrimitive>\n" +
-                    "    <doublePrimitive>0.0</doublePrimitive>\n" +
-                    "    <enumValue>ENUM_VALUE_2</enumValue>\n" +
-                    "    <floatPrimitive>0.0</floatPrimitive>\n" +
-                    "    <intBoxed>992</intBoxed>\n" +
-                    "    <intPrimitive>1</intPrimitive>\n" +
-                    "    <longPrimitive>0</longPrimitive>\n" +
-                    "    <shortPrimitive>0</shortPrimitive>\n" +
-                    "    <theString>a\\u000ac</theString>\n" +
-                    "  </this>\n" +
+                    "  <BoolPrimitive>false</BoolPrimitive>\n" +
+                    "  <BytePrimitive>0</BytePrimitive>\n" +
+                    "  <CharPrimitive>x</CharPrimitive>\n" +
+                    "  <DoublePrimitive>0.0</DoublePrimitive>\n" +
+                    "  <EnumValue>ENUM_VALUE_2</EnumValue>\n" +
+                    "  <FloatPrimitive>0.0</FloatPrimitive>\n" +
+                    "  <IntBoxed>992</IntBoxed>\n" +
+                    "  <IntPrimitive>1</IntPrimitive>\n" +
+                    "  <LongPrimitive>0</LongPrimitive>\n" +
+                    "  <ShortPrimitive>0</ShortPrimitive>\n" +
+                    "  <TheString>a\\u000ac</TheString>\n" +
+                    "  <This>\n" +
+                    "    <BoolPrimitive>false</BoolPrimitive>\n" +
+                    "    <BytePrimitive>0</BytePrimitive>\n" +
+                    "    <CharPrimitive>x</CharPrimitive>\n" +
+                    "    <DoublePrimitive>0.0</DoublePrimitive>\n" +
+                    "    <EnumValue>ENUM_VALUE_2</EnumValue>\n" +
+                    "    <FloatPrimitive>0.0</FloatPrimitive>\n" +
+                    "    <IntBoxed>992</IntBoxed>\n" +
+                    "    <IntPrimitive>1</IntPrimitive>\n" +
+                    "    <LongPrimitive>0</LongPrimitive>\n" +
+                    "    <ShortPrimitive>0</ShortPrimitive>\n" +
+                    "    <TheString>a\\u000ac</TheString>\n" +
+                    "  </This>\n" +
                     "</supportBean>";
             Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
     
             result = epService.EPRuntime.EventRenderer.RenderXML("supportBean", statement.First(), new XMLRenderingOptions() { IsDefaultAsAttribute = true });
             // Log.Info(result);
-            expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <supportBean boolPrimitive=\"false\" bytePrimitive=\"0\" charPrimitive=\"x\" doublePrimitive=\"0.0\" enumValue=\"ENUM_VALUE_2\" floatPrimitive=\"0.0\" intBoxed=\"992\" intPrimitive=\"1\" longPrimitive=\"0\" shortPrimitive=\"0\" theString=\"a\\u000ac\"> <this boolPrimitive=\"false\" bytePrimitive=\"0\" charPrimitive=\"x\" doublePrimitive=\"0.0\" enumValue=\"ENUM_VALUE_2\" floatPrimitive=\"0.0\" intBoxed=\"992\" intPrimitive=\"1\" longPrimitive=\"0\" shortPrimitive=\"0\" theString=\"a\\u000ac\"/> </supportBean>";
+            expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <supportBean BoolPrimitive=\"false\" BytePrimitive=\"0\" CharPrimitive=\"x\" DoublePrimitive=\"0.0\" EnumValue=\"ENUM_VALUE_2\" FloatPrimitive=\"0.0\" IntBoxed=\"992\" IntPrimitive=\"1\" LongPrimitive=\"0\" ShortPrimitive=\"0\" TheString=\"a\\u000ac\"> <This BoolPrimitive=\"false\" BytePrimitive=\"0\" CharPrimitive=\"x\" DoublePrimitive=\"0.0\" EnumValue=\"ENUM_VALUE_2\" FloatPrimitive=\"0.0\" IntBoxed=\"992\" IntPrimitive=\"1\" LongPrimitive=\"0\" ShortPrimitive=\"0\" TheString=\"a\\u000ac\"/> </supportBean>";
             Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
     
             statement.Dispose();
@@ -128,10 +128,6 @@ namespace com.espertech.esper.regression.events.render
                     "<outerMap>\n" +
                     "  <intarr>1</intarr>\n" +
                     "  <intarr>2</intarr>\n" +
-                    "  <innersimple>\n" +
-                    "    <prop1></prop1>\n" +
-                    "    <stringarr>a</stringarr>\n" +
-                    "  </innersimple>\n" +
                     "  <innerarray>\n" +
                     "    <prop1>abcdef</prop1>\n" +
                     "  </innerarray>\n" +
@@ -142,8 +138,12 @@ namespace com.espertech.esper.regression.events.render
                     "  </innerarray>\n" +
                     "  <innerarray>\n" +
                     "  </innerarray>\n" +
+                    "  <innersimple>\n" +
+                    "    <prop1></prop1>\n" +
+                    "    <stringarr>a</stringarr>\n" +
+                    "  </innersimple>\n" +
                     "  <prop0>\n" +
-                    "    <id>A1</id>\n" +
+                    "    <Id>A1</Id>\n" +
                     "  </prop0>\n" +
                     "</outerMap>";
             Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
@@ -154,16 +154,16 @@ namespace com.espertech.esper.regression.events.render
                     "<outerMap xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
                     "  <intarr>1</intarr>\n" +
                     "  <intarr>2</intarr>\n" +
-                    "  <innersimple prop1=\"\">\n" +
-                    "    <stringarr>a</stringarr>\n" +
-                    "  </innersimple>\n" +
                     "  <innerarray prop1=\"abcdef\"/>\n" +
                     "  <innerarray prop1=\"\">\n" +
                     "    <stringarr>R&amp;R</stringarr>\n" +
                     "    <stringarr>a&gt;b</stringarr>\n" +
                     "  </innerarray>\n" +
                     "  <innerarray/>\n" +
-                    "  <prop0 id=\"A1\"/>\n" +
+                    "  <innersimple prop1=\"\">\n" +
+                    "    <stringarr>a</stringarr>\n" +
+                    "  </innersimple>\n" +
+                    "  <prop0 Id=\"A1\"/>\n" +
                     "</outerMap>";
             Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
     

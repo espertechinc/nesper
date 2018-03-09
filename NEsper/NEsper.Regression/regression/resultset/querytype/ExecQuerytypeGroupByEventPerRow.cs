@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionCriteriaByDotMethod(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            string epl = "select Sb.LongPrimitive as c0, sum(intPrimitive) as c1 from SupportBean#length_batch(2) as sb group by Sb.TheString";
+            string epl = "select Sb.LongPrimitive as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by Sb.TheString";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionIterateUnbound(EPServiceProvider epService) {
             string[] fields = "c0,c1".Split(',');
-            string epl = "@IterableUnbound select theString as c0, sum(intPrimitive) as c1 from SupportBean group by theString";
+            string epl = "@IterableUnbound select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionUnaggregatedHaving(EPServiceProvider epService) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select theString from SupportBean group by theString having intPrimitive > 5");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select TheString from SupportBean group by TheString having IntPrimitive > 5");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -75,10 +75,10 @@ namespace com.espertech.esper.regression.resultset.querytype
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 6));
-            Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("TheString"));
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 7));
-            Assert.AreEqual("E3", listener.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("E3", listener.AssertOneGetNewAndReset().Get("TheString"));
     
             stmt.Dispose();
         }
@@ -86,8 +86,8 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionWildcard(EPServiceProvider epService) {
     
             // test no output limit
-            string[] fields = "theString, intPrimitive, minval".Split(',');
-            string epl = "select *, min(intPrimitive) as minval from SupportBean#length(2) group by theString";
+            string[] fields = "TheString, IntPrimitive, minval".Split(',');
+            string epl = "select *, min(IntPrimitive) as minval from SupportBean#length(2) group by TheString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -176,9 +176,9 @@ namespace com.espertech.esper.regression.resultset.querytype
             // Every event generates a new row, this time we sum the price by symbol and output volume
             string epl = "select irstream symbol, volume, sum(price) as mySum " +
                     "from " + typeof(SupportBeanString).FullName + "#length(100) as one, " +
-                    typeof(SupportMarketDataBean).Name + "#length(3) as two " +
+                    typeof(SupportMarketDataBean).FullName + "#length(3) as two " +
                     "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                    "  and one.theString = two.symbol " +
+                    "  and one.TheString = two.symbol " +
                     "group by symbol";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -195,7 +195,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionInsertInto(EPServiceProvider epService) {
             var listenerOne = new SupportUpdateListener();
-            string eventType = typeof(SupportMarketDataBean).Name;
+            string eventType = typeof(SupportMarketDataBean).FullName;
             string stmt = " select symbol as symbol, avg(price) as average, sum(volume) as sumation from " + eventType + "#length(3000)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmt);
             statement.Events += listenerOne.Update;

@@ -32,11 +32,11 @@ namespace com.espertech.esper.regression.events.bean
             var legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.AccessorStyle = AccessorStyleEnum.NATIVE;
             legacyDef.CodeGeneration = codegen ? CodeGenerationEnum.ENABLED : CodeGenerationEnum.DISABLED;
-            configuration.AddEventType("MyFinalEvent", typeof(SupportBeanFinal).Name, legacyDef);
+            configuration.AddEventType("MyFinalEvent", typeof(SupportBeanFinal).AssemblyQualifiedName, legacyDef);
         }
     
         public override void Run(EPServiceProvider epService) {
-            string statementText = "select intPrimitive " +
+            string statementText = "select IntPrimitive " +
                     "from " + typeof(SupportBeanFinal).FullName + "#length(5)";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
@@ -45,7 +45,7 @@ namespace com.espertech.esper.regression.events.bean
     
             var theEvent = new SupportBeanFinal(10);
             epService.EPRuntime.SendEvent(theEvent);
-            Assert.AreEqual(10, listener.LastNewData[0].Get("intPrimitive"));
+            Assert.AreEqual(10, listener.LastNewData[0].Get("IntPrimitive"));
         }
     }
 } // end of namespace

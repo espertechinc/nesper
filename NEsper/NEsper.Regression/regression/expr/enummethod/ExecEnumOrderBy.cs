@@ -11,16 +11,11 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.enummethod
 {
@@ -41,17 +36,24 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1,val2,val3,val4,val5".Split(',');
             string eplFragment = "select " +
-                    "contained.OrderBy(x => p00) as val0," +
-                    "contained.OrderBy(x => 10 - p00) as val1," +
-                    "contained.OrderBy(x => 0) as val2," +
-                    "contained.OrderByDesc(x => p00) as val3," +
-                    "contained.OrderByDesc(x => 10 - p00) as val4," +
-                    "contained.OrderByDesc(x => 0) as val5" +
+                    "Contained.OrderBy(x => p00) as val0," +
+                    "Contained.OrderBy(x => 10 - p00) as val1," +
+                    "Contained.OrderBy(x => 0) as val2," +
+                    "Contained.OrderByDesc(x => p00) as val3," +
+                    "Contained.OrderByDesc(x => 10 - p00) as val4," +
+                    "Contained.OrderByDesc(x => 0) as val5" +
                     " from Bean";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(ICollection<object>), typeof(ICollection<object>), typeof(ICollection<object>), typeof(ICollection<object>), typeof(ICollection<object>), typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
+                typeof(ICollection<SupportBean_ST0>),
+                typeof(ICollection<SupportBean_ST0>),
+                typeof(ICollection<SupportBean_ST0>),
+                typeof(ICollection<SupportBean_ST0>),
+                typeof(ICollection<SupportBean_ST0>),
+                typeof(ICollection<SupportBean_ST0>)
+            });
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2"));
             LambdaAssertionUtil.AssertST0Id(listener, "val0", "E1,E2");
@@ -90,8 +92,8 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1".Split(',');
             string eplFragment = "select " +
-                    "strvals.OrderBy() as val0, " +
-                    "strvals.OrderByDesc() as val1 " +
+                    "Strvals.OrderBy() as val0, " +
+                    "Strvals.OrderByDesc() as val1 " +
                     "from SupportCollection";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
@@ -107,10 +109,10 @@ namespace com.espertech.esper.regression.expr.enummethod
             stmtFragment.Dispose();
     
             // test scalar-coll with lambda
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(ExecEnumMinMax.MyService).Name, "extractNum");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(ExecEnumMinMax.MyService), "ExtractNum");
             string eplLambda = "select " +
-                    "strvals.OrderBy(v => ExtractNum(v)) as val0, " +
-                    "strvals.OrderByDesc(v => ExtractNum(v)) as val1 " +
+                    "Strvals.OrderBy(v => extractNum(v)) as val0, " +
+                    "Strvals.OrderByDesc(v => extractNum(v)) as val1 " +
                     "from SupportCollection";
             EPStatement stmtLambda = epService.EPAdministrator.CreateEPL(eplLambda);
             stmtLambda.Events += listener.Update;
@@ -130,7 +132,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             string epl;
     
             epl = "select Contained.OrderBy() from Bean";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'contained.OrderBy()': Invalid input for built-in enumeration method 'orderBy' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" + typeof(SupportBean_ST0).Name + "' [select Contained.OrderBy() from Bean]");
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.OrderBy()': Invalid input for built-in enumeration method 'orderBy' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" + typeof(SupportBean_ST0).FullName + "' [select Contained.OrderBy() from Bean]");
         }
     }
 } // end of namespace

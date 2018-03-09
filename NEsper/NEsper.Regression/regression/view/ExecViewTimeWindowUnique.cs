@@ -48,13 +48,13 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
     
             SendCurrentTime(epService, "2002-03-01T09:00:00.000");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "TheString".Split(','), new object[]{"E1"});
     
             SendCurrentTimeWithMinus(epService, "2002-03-15T09:00:00.000", 1);
             Assert.IsFalse(listener.IsInvoked);
     
             SendCurrentTime(epService, "2002-03-15T09:00:00.000");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "TheString".Split(','), new object[]{"E2"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }

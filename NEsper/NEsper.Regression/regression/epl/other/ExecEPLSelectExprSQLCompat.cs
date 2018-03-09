@@ -34,11 +34,11 @@ namespace com.espertech.esper.regression.epl.other
             RunAssertionPrefixStream(epService);
     
             // allow no as-keyword
-            epService.EPAdministrator.CreateEPL("select intPrimitive abc from SupportBean");
+            epService.EPAdministrator.CreateEPL("select IntPrimitive abc from SupportBean");
         }
     
         private void RunAssertionProperty(EPServiceProvider engine) {
-            string epl = "select default.SupportBean.theString as val1, SupportBean.intPrimitive as val2 from SupportBean";
+            string epl = "select default.SupportBean.TheString as val1, SupportBean.IntPrimitive as val2 from SupportBean";
             EPStatement stmt = engine.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
@@ -53,14 +53,14 @@ namespace com.espertech.esper.regression.epl.other
     
         // Test stream name prefixed by engine URI
         private void RunAssertionPrefixStream(EPServiceProvider engine) {
-            string epl = "select theString from default.SupportBean";
+            string epl = "select TheString from default.SupportBean";
             EPStatement stmt = engine.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
     
             SendEvent(engine, "E1", 10);
             EventBean received = testListener.GetAndResetLastNewData()[0];
-            Assert.AreEqual("E1", received.Get("theString"));
+            Assert.AreEqual("E1", received.Get("TheString"));
     
             stmt.Dispose();
         }

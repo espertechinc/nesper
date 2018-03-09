@@ -11,14 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.enummethod
 {
@@ -39,12 +34,14 @@ namespace com.espertech.esper.regression.expr.enummethod
         private void RunAssertionNew(EPServiceProvider epService) {
     
             string eplFragment = "select " +
-                    "contained.SelectFrom(x => new {c0 = id||'x', c1 = key0||'y'}) as val0 " +
+                    "Contained.selectFrom(x => new {c0 = id||'x', c1 = key0||'y'}) as val0 " +
                     "from Bean";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val0".Split(','), new Type[]{typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val0".Split(','), new Type[] {
+                typeof(ICollection<Map>)
+            });
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make3Value("E1,12,0", "E2,11,0", "E3,2,0"));
             EPAssertionUtil.AssertPropsPerRow(ToMapArray(listener.AssertOneGetNewAndReset().Get("val0")), "c0,c1".Split(','),
@@ -67,7 +64,7 @@ namespace com.espertech.esper.regression.expr.enummethod
         private void RunAssertionSelect(EPServiceProvider epService) {
     
             string eplFragment = "select " +
-                    "contained.SelectFrom(x => id) as val0 " +
+                    "Contained.selectFrom(x => id) as val0 " +
                     "from Bean";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
@@ -89,9 +86,9 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             // test scalar-coll with lambda
             string[] fields = "val0".Split(',');
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(ExecEnumMinMax.MyService).Name, "extractNum");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(ExecEnumMinMax.MyService), "ExtractNum");
             string eplLambda = "select " +
-                    "strvals.SelectFrom(v => ExtractNum(v)) as val0 " +
+                    "Strvals.selectFrom(v => extractNum(v)) as val0 " +
                     "from SupportCollection";
             EPStatement stmtLambda = epService.EPAdministrator.CreateEPL(eplLambda);
             stmtLambda.Events += listener.Update;

@@ -83,11 +83,11 @@ namespace com.espertech.esper.dataflow.util
             }
         }
 
-        public static SendableEvent[] PONOEventsSendable
+        public static SendableEvent[] PonoEventsSendable
         {
             get
             {
-                Object[] ponoEvents = PONOEvents;
+                Object[] ponoEvents = PonoEvents;
                 SendableEvent[] sendables = new SendableEvent[ponoEvents.Length];
                 for (int i = 0; i < ponoEvents.Length; i++)
                 {
@@ -112,7 +112,7 @@ namespace com.espertech.esper.dataflow.util
             get { return new Object[] {MakeMapEvent(1.1, 1, "one"), MakeMapEvent(2.2d, 2, "two")}; }
         }
 
-        public static object[] PONOEvents
+        public static object[] PonoEvents
         {
             get { return new Object[] {new MyEvent(1.1d, 1, "one"), new MyEvent(2.2d, 2, "two")}; }
         }

@@ -63,15 +63,15 @@ namespace com.espertech.esper.regression.context
     
         public void TryAssertionSegmentedOnSelect(EPServiceProvider epService, bool namedWindow) {
             epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString " +
-                    "partition by theString from SupportBean, p00 from SupportBean_S0");
+                    "partition by TheString from SupportBean, p00 from SupportBean_S0");
     
             string eplCreate = namedWindow ?
                     "@Name('named window') context SegmentedByString create window MyInfra#keepall as SupportBean" :
-                    "@Name('table') context SegmentedByString create table MyInfra(theString string primary key, intPrimitive int primary key)";
+                    "@Name('table') context SegmentedByString create table MyInfra(TheString string primary key, IntPrimitive int primary key)";
             epService.EPAdministrator.CreateEPL(eplCreate);
-            epService.EPAdministrator.CreateEPL("@Name('insert') context SegmentedByString insert into MyInfra select theString, intPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('insert') context SegmentedByString insert into MyInfra select TheString, IntPrimitive from SupportBean");
     
-            var fieldsNW = new string[]{"theString", "intPrimitive"};
+            var fieldsNW = new string[]{"TheString", "IntPrimitive"};
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("context SegmentedByString " +
                     "on SupportBean_S0 select mywin.* from MyInfra as mywin");
             var listenerSelect = new SupportUpdateListener();
@@ -99,14 +99,14 @@ namespace com.espertech.esper.regression.context
                     "@Name('create-infra') context SegmentedByCustomer\n" +
                     (namedWindow ?
                             "create window MyInfra#keepall as SupportBean;" :
-                            "create table MyInfra(theString string primary key, intPrimitive int);") +
+                            "create table MyInfra(TheString string primary key, IntPrimitive int);") +
                     "" +
                     (namedWindow ?
-                            "@Name('insert-into-window') insert into MyInfra select theString, intPrimitive from SupportBean;" :
-                            "@Name('insert-into-table') context SegmentedByCustomer insert into MyInfra select theString, intPrimitive from SupportBean;") +
+                            "@Name('insert-into-window') insert into MyInfra select TheString, IntPrimitive from SupportBean;" :
+                            "@Name('insert-into-table') context SegmentedByCustomer insert into MyInfra select TheString, IntPrimitive from SupportBean;") +
                     "" +
                     "@Name('create-index') context SegmentedByCustomer\n" +
-                    "create index MyIndex on MyInfra(intPrimitive);";
+                    "create index MyIndex on MyInfra(IntPrimitive);";
             DeploymentResult deployed = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "A"));
@@ -114,8 +114,8 @@ namespace com.espertech.esper.regression.context
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
     
-            EPOnDemandQueryResult result = epService.EPRuntime.ExecuteQuery("select * from MyInfra where intPrimitive = 1", new ContextPartitionSelector[]{new EPContextPartitionAdminImpl.CPSelectorById(1)});
-            EPAssertionUtil.AssertPropsPerRow(result.Array, "theString,intPrimitive".Split(','), new object[][]{new object[] {"E1", 1}});
+            EPOnDemandQueryResult result = epService.EPRuntime.ExecuteQuery("select * from MyInfra where IntPrimitive = 1", new ContextPartitionSelector[]{new EPContextPartitionAdminImpl.CPSelectorById(1)});
+            EPAssertionUtil.AssertPropsPerRow(result.Array, "TheString,IntPrimitive".Split(','), new object[][]{new object[] {"E1", 1}});
     
             epService.EPRuntime.SendEvent(new SupportBean_S1(3, "A"));
     
@@ -124,16 +124,16 @@ namespace com.espertech.esper.regression.context
     
         private void TryAssertionOnDeleteAndUpdate(EPServiceProvider epService, bool namedWindow) {
             epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString " +
-                    "partition by theString from SupportBean, p00 from SupportBean_S0, p10 from SupportBean_S1");
+                    "partition by TheString from SupportBean, p00 from SupportBean_S0, p10 from SupportBean_S1");
     
-            var fieldsNW = new string[]{"theString", "intPrimitive"};
+            var fieldsNW = new string[]{"TheString", "IntPrimitive"};
             string eplCreate = namedWindow ?
                     "@Name('named window') context SegmentedByString create window MyInfra#keepall as SupportBean" :
-                    "@Name('named window') context SegmentedByString create table MyInfra(theString string primary key, intPrimitive int primary key)";
+                    "@Name('named window') context SegmentedByString create table MyInfra(TheString string primary key, IntPrimitive int primary key)";
             epService.EPAdministrator.CreateEPL(eplCreate);
             string eplInsert = namedWindow ?
-                    "@Name('insert') insert into MyInfra select theString, intPrimitive from SupportBean" :
-                    "@Name('insert') context SegmentedByString insert into MyInfra select theString, intPrimitive from SupportBean";
+                    "@Name('insert') insert into MyInfra select TheString, IntPrimitive from SupportBean" :
+                    "@Name('insert') context SegmentedByString insert into MyInfra select TheString, IntPrimitive from SupportBean";
             epService.EPAdministrator.CreateEPL(eplInsert);
     
             var listenerSelect = new SupportUpdateListener();
@@ -182,7 +182,7 @@ namespace com.espertech.esper.regression.context
             stmtDelete.Dispose();
     
             // update testing
-            EPStatement stmtUpdate = epService.EPAdministrator.CreateEPL("@Name('on-merge') context SegmentedByString on SupportBean_S0 update MyInfra set intPrimitive = intPrimitive + 1");
+            EPStatement stmtUpdate = epService.EPAdministrator.CreateEPL("@Name('on-merge') context SegmentedByString on SupportBean_S0 update MyInfra set IntPrimitive = IntPrimitive + 1");
     
             epService.EPRuntime.SendEvent(new SupportBean("G4", 4));
             if (namedWindow) {
@@ -219,15 +219,15 @@ namespace com.espertech.esper.regression.context
         }
     
         private void TryAssertionAggregatedSubquery(EPServiceProvider epService, bool namedWindow) {
-            epService.EPAdministrator.CreateEPL("create context SegmentedByString partition by theString from SupportBean, p00 from SupportBean_S0");
+            epService.EPAdministrator.CreateEPL("create context SegmentedByString partition by TheString from SupportBean, p00 from SupportBean_S0");
             string eplCreate = namedWindow ?
                     "context SegmentedByString create window MyInfra#keepall as SupportBean" :
-                    "context SegmentedByString create table MyInfra (theString string primary key, intPrimitive int)";
+                    "context SegmentedByString create table MyInfra (TheString string primary key, IntPrimitive int)";
             epService.EPAdministrator.CreateEPL(eplCreate);
-            epService.EPAdministrator.CreateEPL("@Name('insert') context SegmentedByString insert into MyInfra select theString, intPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('insert') context SegmentedByString insert into MyInfra select TheString, IntPrimitive from SupportBean");
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("@Audit context SegmentedByString " +
-                    "select *, (select max(intPrimitive) from MyInfra) as mymax from SupportBean_S0");
+                    "select *, (select max(IntPrimitive) from MyInfra) as mymax from SupportBean_S0");
             var listenerSelect = new SupportUpdateListener();
             stmt.Events += listenerSelect.Update;
     
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionSegmentedNWConsumeAll(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by TheString from SupportBean");
     
             EPStatement stmtNamedWindow = epService.EPAdministrator.CreateEPL("@Name('named window') context SegmentedByString create window MyWindow#lastevent as SupportBean");
             var listenerNamedWindow = new SupportUpdateListener();
@@ -259,7 +259,7 @@ namespace com.espertech.esper.regression.context
             var listenerSelect = new SupportUpdateListener();
             stmtSelect.Events += listenerSelect.Update;
     
-            var fields = new string[]{"theString", "intPrimitive"};
+            var fields = new string[]{"TheString", "IntPrimitive"};
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
             EPAssertionUtil.AssertProps(listenerNamedWindow.AssertOneGetNewAndReset(), fields, new object[]{"G1", 10});
             EPAssertionUtil.AssertProps(listenerSelect.AssertOneGetNewAndReset(), fields, new object[]{"G1", 10});
@@ -279,16 +279,16 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionSegmentedNWConsumeSameContext(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by TheString from SupportBean");
     
             EPStatement stmtNamedWindow = epService.EPAdministrator.CreateEPL("@Name('named window') context SegmentedByString create window MyWindow#keepall as SupportBean");
             var listenerNamedWindow = new SupportUpdateListener();
             stmtNamedWindow.Events += listenerNamedWindow.Update;
             epService.EPAdministrator.CreateEPL("@Name('insert') insert into MyWindow select * from SupportBean");
     
-            var fieldsNW = new string[]{"theString", "intPrimitive"};
-            var fieldsCnt = new string[]{"theString", "cnt"};
-            EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("@Name('select') context SegmentedByString select theString, count(*) as cnt from MyWindow group by theString");
+            var fieldsNW = new string[]{"TheString", "IntPrimitive"};
+            var fieldsCnt = new string[]{"TheString", "cnt"};
+            EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("@Name('select') context SegmentedByString select TheString, count(*) as cnt from MyWindow group by TheString");
             var listenerSelect = new SupportUpdateListener();
             stmtSelect.Events += listenerSelect.Update;
     
@@ -324,19 +324,19 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionSegmentedOnMergeUpdateSubq(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString " +
-                    "partition by theString from SupportBean, p00 from SupportBean_S0, p10 from SupportBean_S1");
+                    "partition by TheString from SupportBean, p00 from SupportBean_S0, p10 from SupportBean_S1");
     
             EPStatement stmtNamedWindow = epService.EPAdministrator.CreateEPL("@Name('named window') context SegmentedByString create window MyWindow#keepall as SupportBean");
             var listenerNamedWindow = new SupportUpdateListener();
             stmtNamedWindow.Events += listenerNamedWindow.Update;
             epService.EPAdministrator.CreateEPL("@Name('insert') insert into MyWindow select * from SupportBean");
     
-            var fieldsNW = new string[]{"theString", "intPrimitive"};
+            var fieldsNW = new string[]{"TheString", "IntPrimitive"};
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("@Name('on-merge') context SegmentedByString " +
                     "on SupportBean_S0 " +
                     "merge MyWindow " +
                     "when matched then " +
-                    "  update set intPrimitive = (select id from SupportBean_S1#lastevent)");
+                    "  update set IntPrimitive = (select Id from SupportBean_S1#lastevent)");
             var listenerSelect = new SupportUpdateListener();
             stmtSelect.Events += listenerSelect.Update;
     

@@ -63,8 +63,8 @@ namespace com.espertech.esper.regression.events.variant
             Assert.IsTrue(epService.EPAdministrator.Configuration.IsVariantStreamExists("MyVariantStream"));
             epService.EPAdministrator.CreateEPL("insert into MyVariantStream select * from " + typeof(SupportBean).FullName);
             epService.EPAdministrator.CreateEPL("insert into MyVariantStream select * from " + typeof(SupportBeanVariantStream).FullName);
-            epService.EPAdministrator.CreateEPL("insert into MyVariantStream select * from " + typeof(SupportBean_A).Name);
-            epService.EPAdministrator.CreateEPL("insert into MyVariantStream select symbol as theString, volume as intPrimitive, feed as id from " + typeof(SupportMarketDataBean).FullName);
+            epService.EPAdministrator.CreateEPL("insert into MyVariantStream select * from " + typeof(SupportBean_A).FullName);
+            epService.EPAdministrator.CreateEPL("insert into MyVariantStream select symbol as TheString, volume as IntPrimitive, feed as id from " + typeof(SupportMarketDataBean).FullName);
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from MyVariantStream");
             var listener = new SupportUpdateListener();
@@ -80,13 +80,13 @@ namespace com.espertech.esper.regression.events.variant
             Assert.AreSame(eventTwo, listener.AssertOneGetNewAndReset().Underlying);
     
             stmt.Dispose();
-            stmt = epService.EPAdministrator.CreateEPL("select theString,id,intPrimitive from MyVariantStream");
+            stmt = epService.EPAdministrator.CreateEPL("select TheString,id,IntPrimitive from MyVariantStream");
             stmt.Events += listener.Update;
-            Assert.AreEqual(typeof(Object), stmt.EventType.GetPropertyType("theString"));
+            Assert.AreEqual(typeof(Object), stmt.EventType.GetPropertyType("TheString"));
             Assert.AreEqual(typeof(Object), stmt.EventType.GetPropertyType("id"));
-            Assert.AreEqual(typeof(Object), stmt.EventType.GetPropertyType("intPrimitive"));
+            Assert.AreEqual(typeof(Object), stmt.EventType.GetPropertyType("IntPrimitive"));
     
-            string[] fields = "theString,id,intPrimitive".Split(',');
+            string[] fields = "TheString,id,IntPrimitive".Split(',');
             epService.EPRuntime.SendEvent(new SupportBeanVariantStream("E1"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", null, null});
     
@@ -109,7 +109,7 @@ namespace com.espertech.esper.regression.events.variant
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             EventBean @event = listener.AssertOneGetNewAndReset();
             Assert.AreEqual("test", @event.Get("eventConfigId"));
-            Assert.AreEqual(1, @event.Get("intPrimitive"));
+            Assert.AreEqual(1, @event.Get("IntPrimitive"));
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -122,8 +122,8 @@ namespace com.espertech.esper.regression.events.variant
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.Configuration.AddEventType("SupportMarketDataBean", typeof(SupportMarketDataBean));
     
-            epService.EPAdministrator.CreateEPL("insert into MyStream select theString, intPrimitive from SupportBean");
-            epService.EPAdministrator.CreateEPL("insert into VarStream select theString as abc from MyStream");
+            epService.EPAdministrator.CreateEPL("insert into MyStream select TheString, IntPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into VarStream select TheString as abc from MyStream");
             epService.EPAdministrator.CreateEPL("@Name('Target') select * from VarStream#keepall");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));

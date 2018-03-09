@@ -79,7 +79,7 @@ namespace com.espertech.esper.regression.context
             }
     
             // invalid selector for context
-            epService.EPAdministrator.CreateEPL("create context SomeContext partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context SomeContext partition by TheString from SupportBean");
             try {
                 GetSpi(epService).DestroyContextPartitions("SomeContext", new SupportSelectorCategory("abc"));
                 Assert.Fail();
@@ -96,11 +96,11 @@ namespace com.espertech.esper.regression.context
     
             string contextName = "CategoryContext";
             string createCtx = CONTEXT_CACHE_HOOK + "create context CategoryContext as " +
-                    "group by intPrimitive < 0 as negative, group by intPrimitive > 0 as positive from SupportBean";
+                    "group by IntPrimitive < 0 as negative, group by IntPrimitive > 0 as positive from SupportBean";
             epService.EPAdministrator.CreateEPL(createCtx);
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context CategoryContext " +
-                    "select theString as c0, sum(intPrimitive) as c1, context.id as c2 from SupportBean");
+                    "select TheString as c0, sum(IntPrimitive) as c1, context.id as c2 from SupportBean");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -157,9 +157,9 @@ namespace com.espertech.esper.regression.context
                 return;
             }
     
-            epService.EPAdministrator.CreateEPL("create context CtxA partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context CtxA partition by TheString from SupportBean");
             EPStatement stmtA = epService.EPAdministrator.CreateEPL("@Name('A') context CtxA select count(*) from SupportBean");
-            EPStatement stmtB = epService.EPAdministrator.CreateEPL("@Name('B') context CtxA select sum(intPrimitive) from SupportBean");
+            EPStatement stmtB = epService.EPAdministrator.CreateEPL("@Name('B') context CtxA select sum(IntPrimitive) from SupportBean");
     
             EPAssertionUtil.AssertEqualsAnyOrder(GetSpi(epService).GetContextStatementNames("CtxA"), "A,B".Split(','));
     
@@ -362,13 +362,13 @@ namespace com.espertech.esper.regression.context
             SupportContextStateCacheImpl.Reset();
             string contextName = "CategoryContext";
             string createCtx = CONTEXT_CACHE_HOOK + "create context CategoryContext as " +
-                    "group by intPrimitive < 0 as negative, " +
-                    "group by intPrimitive = 0 as zero," +
-                    "group by intPrimitive > 0 as positive from SupportBean";
+                    "group by IntPrimitive < 0 as negative, " +
+                    "group by IntPrimitive = 0 as zero," +
+                    "group by IntPrimitive > 0 as positive from SupportBean";
             epService.EPAdministrator.CreateEPL(createCtx);
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context CategoryContext " +
-                    "select theString as c0, count(*) as c1, context.id as c2 from SupportBean");
+                    "select TheString as c0, count(*) as c1, context.id as c2 from SupportBean");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -898,7 +898,7 @@ namespace com.espertech.esper.regression.context
             // deactive partition for "E1" code
             EPContextPartitionExtract extract = GetSpi(epService).ExtractStopPaths(contextName, selector);
             AssertPathInfo(extract.Collection.Descriptors, new[] {new object[] {0, null, "+"}});
-            AssertCreateStmtNotActive(epService, "context InitAndTermCtx select * from SupportBean(theString = context.sbs0.p00)", new SupportBean("E1", -1));
+            AssertCreateStmtNotActive(epService, "context InitAndTermCtx select * from SupportBean(TheString = context.sbs0.p00)", new SupportBean("E1", -1));
             SupportContextStateCacheImpl.AssertState(new ContextState(1, 0, 1, 0, null, false), new ContextState(1, 0, 2, 1, null, true));
     
             // assert E1 inactive
@@ -935,8 +935,8 @@ namespace com.espertech.esper.regression.context
             // deactive partitions (all)
             EPContextPartitionExtract extract = GetSpi(epService).ExtractStopPaths(contextName, ContextPartitionSelectorAll.INSTANCE);
             AssertPathInfo(extract.Collection.Descriptors, new[] {new object[] {0, null, "+"}, new object[] {0, null, "+"}});
-            AssertCreateStmtNotActive(epService, "context InitAndTermCtx select * from SupportBean(theString = context.sbs0.p00)", new SupportBean("E1", -1));
-            AssertCreateStmtNotActive(epService, "context InitAndTermCtx select * from SupportBean(theString = context.sbs0.p00)", new SupportBean("E2", -1));
+            AssertCreateStmtNotActive(epService, "context InitAndTermCtx select * from SupportBean(TheString = context.sbs0.p00)", new SupportBean("E1", -1));
+            AssertCreateStmtNotActive(epService, "context InitAndTermCtx select * from SupportBean(TheString = context.sbs0.p00)", new SupportBean("E2", -1));
     
             // assert all inactive
             epService.EPRuntime.SendEvent(new SupportBean("E1", 11));
@@ -1011,14 +1011,14 @@ namespace com.espertech.esper.regression.context
         private string SetUpContextNested(EPServiceProvider epService, SupportUpdateListener listener) {
     
             string createCtx = CONTEXT_CACHE_HOOK + "create context NestedContext as " +
-                    "context ACtx partition by theString from SupportBean, " +
+                    "context ACtx partition by TheString from SupportBean, " +
                     "context BCtx " +
-                    "  group by intPrimitive < 0 as negative," +
-                    "  group by intPrimitive > 0 as positive from SupportBean";
+                    "  group by IntPrimitive < 0 as negative," +
+                    "  group by IntPrimitive > 0 as positive from SupportBean";
             epService.EPAdministrator.CreateEPL(createCtx);
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context NestedContext " +
-                    "select theString as c0, intPrimitive as c1, sum(longPrimitive) as c2, context.id as c3 from SupportBean");
+                    "select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2, context.id as c3 from SupportBean");
             stmt.Events += listener.Update;
     
             return "NestedContext";
@@ -1026,12 +1026,12 @@ namespace com.espertech.esper.regression.context
     
         private string SetUpContextHashSegmented(EPServiceProvider epService, SupportUpdateListener listener) {
     
-            string createCtx = CONTEXT_CACHE_HOOK + "create context HashSegByString as coalesce by Consistent_hash_crc32(theString) from SupportBean granularity 64";
+            string createCtx = CONTEXT_CACHE_HOOK + "create context HashSegByString as coalesce by Consistent_hash_crc32(TheString) from SupportBean granularity 64";
             epService.EPAdministrator.CreateEPL(createCtx);
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context HashSegByString " +
-                    "select theString as c0, sum(intPrimitive) as c1, context.id as c2 " +
-                    "from SupportBean group by theString");
+                    "select TheString as c0, sum(IntPrimitive) as c1, context.id as c2 " +
+                    "from SupportBean group by TheString");
             stmt.Events += listener.Update;
     
             return "HashSegByString";
@@ -1039,11 +1039,11 @@ namespace com.espertech.esper.regression.context
     
         private string SetUpContextPartitioned(EPServiceProvider epService, SupportUpdateListener listener) {
     
-            string createCtx = CONTEXT_CACHE_HOOK + "create context PartitionByString as partition by theString from SupportBean";
+            string createCtx = CONTEXT_CACHE_HOOK + "create context PartitionByString as partition by TheString from SupportBean";
             epService.EPAdministrator.CreateEPL(createCtx);
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context PartitionByString " +
-                    "select theString as c0, sum(intPrimitive) as c1, context.id as c2 " +
+                    "select TheString as c0, sum(IntPrimitive) as c1, context.id as c2 " +
                     "from SupportBean");
             stmt.Events += listener.Update;
     
@@ -1053,13 +1053,13 @@ namespace com.espertech.esper.regression.context
         private string SetUpContextCategory(EPServiceProvider epService, SupportUpdateListener listener) {
     
             string createCtx = CONTEXT_CACHE_HOOK + "create context CategoryContext as " +
-                    "group by theString = 'G1' as G1," +
-                    "group by theString = 'G2' as G2," +
-                    "group by theString = 'G3' as G3 from SupportBean";
+                    "group by TheString = 'G1' as G1," +
+                    "group by TheString = 'G2' as G2," +
+                    "group by TheString = 'G3' as G3 from SupportBean";
             epService.EPAdministrator.CreateEPL(createCtx);
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context CategoryContext " +
-                    "select theString as c0, sum(intPrimitive) as c1, context.id as c2 " +
+                    "select TheString as c0, sum(IntPrimitive) as c1, context.id as c2 " +
                     "from SupportBean");
             stmt.Events += listener.Update;
     
@@ -1080,8 +1080,8 @@ namespace com.espertech.esper.regression.context
             epService.EPAdministrator.CreateEPL(createCtx);
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context InitAndTermCtx " +
-                    "select theString as c0, sum(intPrimitive) as c1, context.id as c2 " +
-                    "from SupportBean(theString = context.sbs0.p00)");
+                    "select TheString as c0, sum(IntPrimitive) as c1, context.id as c2 " +
+                    "from SupportBean(TheString = context.sbs0.p00)");
             stmt.Events += listener.Update;
     
             return "InitAndTermCtx";

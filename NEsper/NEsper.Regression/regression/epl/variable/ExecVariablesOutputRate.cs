@@ -86,7 +86,7 @@ namespace com.espertech.esper.regression.epl.variable
             listener.Reset();
     
             // set output limit to 5
-            string stmtTextSet = "on " + typeof(SupportMarketDataBean).Name + " set var_output_limit = volume";
+            string stmtTextSet = "on " + typeof(SupportMarketDataBean).FullName + " set var_output_limit = volume";
             epService.EPAdministrator.CreateEPL(stmtTextSet);
             SendSetterBean(epService, 5L);
     
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regression.epl.variable
             listener.Reset();
     
             // set output limit to 5
-            string stmtTextSet = "on " + typeof(SupportMarketDataBean).Name + " set var_output_limit = volume";
+            string stmtTextSet = "on " + typeof(SupportMarketDataBean).FullName + " set var_output_limit = volume";
             epService.EPAdministrator.CreateEPL(stmtTextSet);
             SendSetterBean(epService, 5L);
     

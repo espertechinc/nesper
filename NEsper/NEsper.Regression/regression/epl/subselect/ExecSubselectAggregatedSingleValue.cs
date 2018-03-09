@@ -64,20 +64,20 @@ namespace com.espertech.esper.regression.epl.subselect
             TryInvalid(epService, stmtText, "Error starting statement: Failed to plan subquery number 1 querying S1: Subselect aggregation functions cannot aggregate across correlated properties");
     
             // having-clause cannot aggregate over properties from other streams
-            stmtText = "select (select last(theString) from SupportBean#keepall having sum(s0.p00) = 1) as c0 from S0 as s0";
+            stmtText = "select (select last(TheString) from SupportBean#keepall having sum(s0.p00) = 1) as c0 from S0 as s0";
             TryInvalid(epService, stmtText, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Failed to validate having-clause expression '(sum(s0.p00))=1': Implicit conversion from datatype 'string' to numeric is not allowed for aggregation function 'sum' [");
     
             // having-clause properties must be aggregated
-            stmtText = "select (select last(theString) from SupportBean#keepall having sum(intPrimitive) = intPrimitive) as c0 from S0 as s0";
+            stmtText = "select (select last(TheString) from SupportBean#keepall having sum(IntPrimitive) = IntPrimitive) as c0 from S0 as s0";
             TryInvalid(epService, stmtText, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Subselect having-clause requires that all properties are under aggregation, consider using the 'first' aggregation function instead");
     
             // having-clause not returning boolean
-            stmtText = "select (select last(theString) from SupportBean#keepall having sum(intPrimitive)) as c0 from S0";
+            stmtText = "select (select last(TheString) from SupportBean#keepall having sum(IntPrimitive)) as c0 from S0";
             TryInvalid(epService, stmtText, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Subselect having-clause expression must return a bool value ");
         }
     
         private void RunAssertionGroupedCorrelationInsideHaving(EPServiceProvider epService) {
-            string epl = "select (select theString from SupportBean#keepall group by theString having sum(intPrimitive) = s0.id) as c0 from S0 as s0";
+            string epl = "select (select TheString from SupportBean#keepall group by TheString having sum(IntPrimitive) = s0.id) as c0 from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionUngroupedCorrelationInsideHaving(EPServiceProvider epService) {
-            string epl = "select (select last(theString) from SupportBean#keepall having sum(intPrimitive) = s0.id) as c0 from S0 as s0";
+            string epl = "select (select last(TheString) from SupportBean#keepall having sum(IntPrimitive) = s0.id) as c0 from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertionUngroupedTableWHaving(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create table MyTable(total sum(int))");
-            epService.EPAdministrator.CreateEPL("into table MyTable select sum(intPrimitive) as total from SupportBean");
+            epService.EPAdministrator.CreateEPL("into table MyTable select sum(IntPrimitive) as total from SupportBean");
     
             string epl = "select (select sum(total) from MyTable having sum(total) > 100) as c0 from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -158,7 +158,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionGroupedCorrelatedWHaving(EPServiceProvider epService) {
-            string epl = "select (select sum(intPrimitive) from SupportBean#keepall where s0.id = intPrimitive group by theString having sum(intPrimitive) > 10) as c0 from S0 as s0";
+            string epl = "select (select sum(IntPrimitive) from SupportBean#keepall where s0.id = IntPrimitive group by TheString having sum(IntPrimitive) > 10) as c0 from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -181,7 +181,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionGroupedUncorrelatedWHaving(EPServiceProvider epService) {
-            string epl = "select (select sum(intPrimitive) from SupportBean#keepall group by theString having sum(intPrimitive) > 10) as c0 from S0 as s0";
+            string epl = "select (select sum(IntPrimitive) from SupportBean#keepall group by TheString having sum(IntPrimitive) > 10) as c0 from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -202,7 +202,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionUngroupedCorrelatedWHaving(EPServiceProvider epService) {
-            string epl = "select (select sum(intPrimitive) from SupportBean#keepall where theString = s0.p00 having sum(intPrimitive) > 10) as c0 from S0 as s0";
+            string epl = "select (select sum(IntPrimitive) from SupportBean#keepall where TheString = s0.p00 having sum(IntPrimitive) > 10) as c0 from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -296,7 +296,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionUngroupedUncorrelatedNoDataWindow(EPServiceProvider epService) {
-            string stmtText = "select p00 as c0, (select sum(intPrimitive) from SupportBean) as c1 from S0";
+            string stmtText = "select p00 as c0, (select sum(IntPrimitive) from SupportBean) as c1 from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -319,8 +319,8 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionUngroupedUncorrelatedWHaving(EPServiceProvider epService) {
             string[] fields = "c0,c1".Split(',');
             string epl = "select *, " +
-                    "(select sum(intPrimitive) from SupportBean#keepall having sum(intPrimitive) > 100) as c0," +
-                    "Exists (select sum(intPrimitive) from SupportBean#keepall having sum(intPrimitive) > 100) as c1 " +
+                    "(select sum(IntPrimitive) from SupportBean#keepall having sum(IntPrimitive) > 100) as c0," +
+                    "exists (select sum(IntPrimitive) from SupportBean#keepall having sum(IntPrimitive) > 100) as c1 " +
                     "from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -339,7 +339,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertionUngroupedCorrelated(EPServiceProvider epService) {
             string stmtText = "select p00, " +
-                    "(select sum(intPrimitive) from SupportBean#keepall where theString = s0.p00) as sump00 " +
+                    "(select sum(IntPrimitive) from SupportBean#keepall where TheString = s0.p00) as sump00 " +
                     "from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -367,12 +367,12 @@ namespace com.espertech.esper.regression.epl.subselect
             stmt.Dispose();
     
             // test distinct
-            fields = "theString,c0,c1,c2,c3".Split(',');
-            string epl = "select theString, " +
-                    "(select count(sb.intPrimitive) from SupportBean()#keepall as sb where bean.theString = sb.theString) as c0, " +
-                    "(select count(distinct sb.intPrimitive) from SupportBean()#keepall as sb where bean.theString = sb.theString) as c1, " +
-                    "(select count(sb.intPrimitive, true) from SupportBean()#keepall as sb where bean.theString = sb.theString) as c2, " +
-                    "(select count(distinct sb.intPrimitive, true) from SupportBean()#keepall as sb where bean.theString = sb.theString) as c3 " +
+            fields = "TheString,c0,c1,c2,c3".Split(',');
+            string epl = "select TheString, " +
+                    "(select count(sb.IntPrimitive) from SupportBean()#keepall as sb where bean.TheString = sb.TheString) as c0, " +
+                    "(select count(distinct sb.IntPrimitive) from SupportBean()#keepall as sb where bean.TheString = sb.TheString) as c1, " +
+                    "(select count(sb.IntPrimitive, true) from SupportBean()#keepall as sb where bean.TheString = sb.TheString) as c2, " +
+                    "(select count(distinct sb.IntPrimitive, true) from SupportBean()#keepall as sb where bean.TheString = sb.TheString) as c3 " +
                     "from SupportBean as bean";
             stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += listener.Update;
@@ -394,7 +394,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertionUngroupedCorrelatedInWhereClause(EPServiceProvider epService) {
             string stmtText = "select p00 from S0 as s0 where id > " +
-                    "(select sum(intPrimitive) from SupportBean#keepall where theString = s0.p00)";
+                    "(select sum(IntPrimitive) from SupportBean#keepall where TheString = s0.p00)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -402,7 +402,7 @@ namespace com.espertech.esper.regression.epl.subselect
             stmt.Dispose();
     
             stmtText = "select p00 from S0 as s0 where id > " +
-                    "(select sum(intPrimitive) from SupportBean#keepall where theString||'X' = s0.p00||'X')";
+                    "(select sum(IntPrimitive) from SupportBean#keepall where TheString||'X' = s0.p00||'X')";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
             stmt.Events += listener.Update;
             RunAssertionCorrAggWhereGreater(epService, listener);

@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL(
                 "create table MyTable(" +
                 "thewin window(*) @Type('SupportBean')," +
-                "thesort sorted(intPrimitive desc) @Type('SupportBean')" +
+                "thesort sorted(IntPrimitive desc) @Type('SupportBean')" +
                 ")");
 
             epService.EPAdministrator.CreateEPL(
@@ -125,9 +125,9 @@ namespace com.espertech.esper.regression.nwtable.tbl
         {
             var fields = "maxbyeveru,minbyeveru,sortedb".Split(',');
             var eplDeclare = "create table varagg (" +
-                             "maxbyeveru maxbyever(intPrimitive) @Type('SupportBean'), " +
-                             "minbyeveru minbyever(intPrimitive) @Type('SupportBean'), " +
-                             "sortedb sorted(intPrimitive) @Type('SupportBean'))";
+                             "maxbyeveru maxbyever(IntPrimitive) @Type('SupportBean'), " +
+                             "minbyeveru minbyever(IntPrimitive) @Type('SupportBean'), " +
+                             "sortedb sorted(IntPrimitive) @Type('SupportBean'))";
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplDeclare);
 
             var eplIterate = "select varagg from SupportBean_S0#lastevent";
@@ -148,12 +148,12 @@ namespace com.espertech.esper.regression.nwtable.tbl
 
             // invalid: bound aggregation into unbound max
             SupportMessageAssertUtil.TryInvalid(
-                epService, "into table varagg select maxby(intPrimitive) as maxbyeveru from SupportBean#length(2)",
-                "Error starting statement: Failed to validate select-clause expression 'maxby(intPrimitive)': When specifying into-table a sort expression cannot be provided [");
+                epService, "into table varagg select maxby(IntPrimitive) as maxbyeveru from SupportBean#length(2)",
+                "Error starting statement: Failed to validate select-clause expression 'maxby(IntPrimitive)': When specifying into-table a sort expression cannot be provided [");
             // invalid: unbound aggregation into bound max
             SupportMessageAssertUtil.TryInvalid(
                 epService, "into table varagg select maxbyever() as sortedb from SupportBean#length(2)",
-                "Error starting statement: Incompatible aggregation function for table 'varagg' column 'sortedb', expecting 'sorted(intPrimitive)' and received 'maxbyever()': The required aggregation function name is 'sorted' and provided is 'maxbyever' [");
+                "Error starting statement: Incompatible aggregation function for table 'varagg' column 'sortedb', expecting 'sorted(IntPrimitive)' and received 'maxbyever()': The required aggregation function name is 'sorted' and provided is 'maxbyever' [");
 
             // valid: bound with unbound variable
             var eplBoundIntoUnbound = "into table varagg select " +
@@ -178,12 +178,12 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
 
             var eplBoundInto = "into table varagg select " +
-                               "max(intPrimitive) as maxb, min(intPrimitive) as minb " +
+                               "max(IntPrimitive) as maxb, min(IntPrimitive) as minb " +
                                "from SupportBean#length(2)";
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplBoundInto);
 
             var eplUnboundInto = "into table varagg select " +
-                                 "maxever(intPrimitive) as maxu, minever(intPrimitive) as minu " +
+                                 "maxever(IntPrimitive) as maxu, minever(IntPrimitive) as minu " +
                                  "from SupportBean";
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplUnboundInto);
 
@@ -200,12 +200,12 @@ namespace com.espertech.esper.regression.nwtable.tbl
 
             // invalid: unbound aggregation into bound max
             SupportMessageAssertUtil.TryInvalid(
-                epService, "into table varagg select max(intPrimitive) as maxb from SupportBean",
-                "Error starting statement: Incompatible aggregation function for table 'varagg' column 'maxb', expecting 'max(int)' and received 'max(intPrimitive)': The aggregation declares use with data windows and provided is unbound [");
+                epService, "into table varagg select max(IntPrimitive) as maxb from SupportBean",
+                "Error starting statement: Incompatible aggregation function for table 'varagg' column 'maxb', expecting 'max(int)' and received 'max(IntPrimitive)': The aggregation declares use with data windows and provided is unbound [");
 
             // valid: bound with unbound variable
             var eplBoundIntoUnbound = "into table varagg select " +
-                                      "maxever(intPrimitive) as maxu, minever(intPrimitive) as minu " +
+                                      "maxever(IntPrimitive) as maxu, minever(IntPrimitive) as minu " +
                                       "from SupportBean#length(2)";
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplBoundIntoUnbound);
 

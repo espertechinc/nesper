@@ -97,7 +97,7 @@ namespace com.espertech.esper.regression.view
     
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.CreateEPL("@Hint('reclaim_group_aged=30,reclaim_group_freq=5') " +
-                    "select longPrimitive, count(*) from SupportBean#groupwin(theString)#time(3000000)");
+                    "select LongPrimitive, count(*) from SupportBean#groupwin(TheString)#time(3000000)");
     
             for (int i = 0; i < 10; i++) {
                 var theEvent = new SupportBean(Convert.ToString(i), i);
@@ -121,7 +121,7 @@ namespace com.espertech.esper.regression.view
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             string epl = "@Hint('reclaim_group_aged=5,reclaim_group_freq=1') " +
-                    "select * from SupportBean#groupwin(theString)#keepall";
+                    "select * from SupportBean#groupwin(TheString)#keepall";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
     
             int maxSlots = 10;

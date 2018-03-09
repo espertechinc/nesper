@@ -47,14 +47,14 @@ namespace com.espertech.esper.regression.nwtable.infra
         private void RunAssertionUncorrelatedSubqueryAggregation(EPServiceProvider epService, bool namedWindow) {
             // create window
             string stmtTextCreate = namedWindow ?
-                    "create window MyInfraUCS#keepall as select theString as a, longPrimitive as b from " + typeof(SupportBean).FullName :
+                    "create window MyInfraUCS#keepall as select TheString as a, LongPrimitive as b from " + typeof(SupportBean).FullName :
                     "create table MyInfraUCS(a string primary key, b long)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyInfraUCS select theString as a, longPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextInsertOne = "insert into MyInfraUCS select TheString as a, LongPrimitive as b from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create consumer
@@ -92,15 +92,15 @@ namespace com.espertech.esper.regression.nwtable.infra
         private void RunAssertionInvalidSubquery(EPServiceProvider epService, bool namedWindow) {
             string eplCreate = namedWindow ?
                     "create window MyInfraIS#keepall as " + typeof(SupportBean).FullName :
-                    "create table MyInfraIS(theString string)";
+                    "create table MyInfraIS(TheString string)";
             epService.EPAdministrator.CreateEPL(eplCreate);
     
             try {
-                epService.EPAdministrator.CreateEPL("select (select theString from MyInfraIS#lastevent) from MyInfraIS");
+                epService.EPAdministrator.CreateEPL("select (select TheString from MyInfraIS#lastevent) from MyInfraIS");
                 Assert.Fail();
             } catch (EPException ex) {
                 if (namedWindow) {
-                    Assert.AreEqual("Error starting statement: Failed to plan subquery number 1 querying MyInfraIS: Consuming statements to a named window cannot declare a data window view onto the named window [select (select theString from MyInfraIS#lastevent) from MyInfraIS]", ex.Message);
+                    Assert.AreEqual("Error starting statement: Failed to plan subquery number 1 querying MyInfraIS: Consuming statements to a named window cannot declare a data window view onto the named window [select (select TheString from MyInfraIS#lastevent) from MyInfraIS]", ex.Message);
                 } else {
                     SupportMessageAssertUtil.AssertMessage(ex, "Views are not supported with tables");
                 }
@@ -115,20 +115,20 @@ namespace com.espertech.esper.regression.nwtable.infra
     
             // create window
             string stmtTextCreate = namedWindow ?
-                    "create window MyInfra#keepall as select theString as key, intBoxed as value from " + typeof(SupportBean).FullName :
+                    "create window MyInfra#keepall as select TheString as key, IntBoxed as value from " + typeof(SupportBean).FullName :
                     "create table MyInfra(key string primary key, value int primary key)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
     
             // delete
-            string stmtTextDelete = "on " + typeof(SupportBean).FullName + " delete from MyInfra where key = theString";
+            string stmtTextDelete = "on " + typeof(SupportBean).FullName + " delete from MyInfra where key = TheString";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
             stmtDelete.Events += listenerStmtDelete.Update;
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyInfra select theString as key, intBoxed as value from " + typeof(SupportBean).FullName + " as s0";
+            string stmtTextInsertOne = "insert into MyInfra select TheString as key, IntBoxed as value from " + typeof(SupportBean).FullName + " as s0";
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             SendSupportBean(epService, "E1", 1);
@@ -163,15 +163,15 @@ namespace com.espertech.esper.regression.nwtable.infra
     
             // create window
             string stmtTextCreate = namedWindow ?
-                    "create window MyInfraSSS#keepall as select theString as key, intBoxed as value from " + typeof(SupportBean).FullName :
+                    "create window MyInfraSSS#keepall as select TheString as key, IntBoxed as value from " + typeof(SupportBean).FullName :
                     "create table MyInfraSSS (key string primary key, value int)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
     
-            // create insert into (not does insert if key already Exists)
-            string stmtTextInsertOne = "insert into MyInfraSSS select theString as key, intBoxed as value from " + typeof(SupportBean).FullName + " as s0" +
-                    " where not Exists (select * from MyInfraSSS as win where win.key = s0.theString)";
+            // create insert into (not does insert if key already exists)
+            string stmtTextInsertOne = "insert into MyInfraSSS select TheString as key, IntBoxed as value from " + typeof(SupportBean).FullName + " as s0" +
+                    " where not exists (select * from MyInfraSSS as win where win.key = s0.TheString)";
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             SendSupportBean(epService, "E1", 1);
@@ -201,7 +201,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             }
     
             // Add delete
-            string stmtTextDelete = "on " + typeof(SupportBean_A).Name + " delete from MyInfraSSS where key = id";
+            string stmtTextDelete = "on " + typeof(SupportBean_A).FullName + " delete from MyInfraSSS where key = id";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerStmtDelete = new SupportUpdateListener();
             stmtDelete.Events += listenerStmtDelete.Update;

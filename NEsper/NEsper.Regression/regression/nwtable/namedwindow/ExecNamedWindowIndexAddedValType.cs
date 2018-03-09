@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var revType = new ConfigurationRevisionEventType();
             revType.AddNameBaseEventType("SupportBean_S0");
             revType.AddNameDeltaEventType("SupportBean_S1");
-            revType.KeyPropertyNames = new string[]{"id"};
+            revType.KeyPropertyNames = new string[]{"Id"};
             revType.PropertyRevision = PropertyRevisionEnum.MERGE_EXISTS;
             configuration.AddRevisionEventType("RevType", revType);
         }
@@ -38,13 +38,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPAdministrator.CreateEPL("insert into MyWindowOne select * from SupportBean_S0");
             epService.EPAdministrator.CreateEPL("insert into MyWindowOne select * from SupportBean_S1");
     
-            epService.EPAdministrator.CreateEPL("create index MyWindowOneIndex1 on MyWindowOne(p10)");
-            epService.EPAdministrator.CreateEPL("create index MyWindowOneIndex2 on MyWindowOne(p00)");
+            epService.EPAdministrator.CreateEPL("create index MyWindowOneIndex1 on MyWindowOne(P10)");
+            epService.EPAdministrator.CreateEPL("create index MyWindowOneIndex2 on MyWindowOne(P00)");
     
-            epService.EPRuntime.SendEvent(new SupportBean_S0(1, "p00"));
-            epService.EPRuntime.SendEvent(new SupportBean_S1(1, "p10"));
+            epService.EPRuntime.SendEvent(new SupportBean_S0(1, "P00"));
+            epService.EPRuntime.SendEvent(new SupportBean_S1(1, "P10"));
     
-            epService.EPRuntime.ExecuteQuery("select * from MyWindowOne where p10='1'");
+            epService.EPRuntime.ExecuteQuery("select * from MyWindowOne where P10='1'");
         }
     }
 } // end of namespace

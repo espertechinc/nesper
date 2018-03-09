@@ -62,7 +62,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string eplDeclare = "create table varaggIIP (key int primary key, myevents window(*) @Type('SupportBean'))";
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplDeclare);
     
-            string eplInto = "into table varaggIIP select window(*) as myevents from SupportBean#length(3) group by intPrimitive";
+            string eplInto = "into table varaggIIP select window(*) as myevents from SupportBean#length(3) group by IntPrimitive";
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplInto);
     
             string eplSelect = "select varaggIIP[1] as c0, varaggIIP[1].myevents as c1, varaggIIP[1].myevents.last(*) as c2 from SupportBean_S0";
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("create table varaggFB (total count(*))");
             epService.EPAdministrator.CreateEPL("into table varaggFB select count(*) as total from SupportBean_S0");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from SupportBean(varaggFB.total = intPrimitive)").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean(varaggFB.total = IntPrimitive)").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
     
@@ -117,14 +117,14 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "varaggESC[p00].theEvents," +
                     "varaggESC[p00]," +
                     "varaggESC[p00].theEvents.last(*)," +
-                    "varaggESC[p00].theEvents.window(*).Take(1) from SupportBean_S0");
+                    "varaggESC[p00].theEvents.window(*).take(1) from SupportBean_S0");
     
             var expectedAggType = new object[][]{
                     new object[] {"varaggESC.Keys()", typeof(object[])},
                     new object[] {"varaggESC[p00].theEvents", typeof(SupportBean[])},
                     new object[] {"varaggESC[p00]", typeof(Map)},
                     new object[] {"varaggESC[p00].theEvents.last(*)", typeof(SupportBean)},
-                    new object[] {"varaggESC[p00].theEvents.window(*).Take(1)", typeof(ICollection<object>)},
+                    new object[] {"varaggESC[p00].theEvents.window(*).take(1)", typeof(ICollection<object>)},
             };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedAggType, stmtSelect.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
             epService.EPAdministrator.DestroyAllStatements();
@@ -230,9 +230,9 @@ namespace com.espertech.esper.regression.nwtable.tbl
         }
     
         private void TryAssertionSubqueryWithExpressionHasTableAccess(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("create table MyTableTwo(theString string primary key, intPrimitive int)");
-            epService.EPAdministrator.CreateEPL("create expression getMyValue{o => (select MyTableTwo[o.p00].intPrimitive from SupportBean_S1#lastevent)}");
-            epService.EPAdministrator.CreateEPL("insert into MyTableTwo select theString, intPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("create table MyTableTwo(TheString string primary key, IntPrimitive int)");
+            epService.EPAdministrator.CreateEPL("create expression getMyValue{o => (select MyTableTwo[o.p00].IntPrimitive from SupportBean_S1#lastevent)}");
+            epService.EPAdministrator.CreateEPL("insert into MyTableTwo select TheString, IntPrimitive from SupportBean");
             epService.EPAdministrator.CreateEPL("@Name('s0') select GetMyValue(s0) as c0 from SupportBean_S0 as s0");
     
             var listener = new SupportUpdateListener();
@@ -249,9 +249,9 @@ namespace com.espertech.esper.regression.nwtable.tbl
         }
     
         private void TryAssertionExpressionHasTableAccess(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("create table MyTableOne(theString string primary key, intPrimitive int)");
-            epService.EPAdministrator.CreateEPL("create expression getMyValue{o => MyTableOne[o.p00].intPrimitive}");
-            epService.EPAdministrator.CreateEPL("insert into MyTableOne select theString, intPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("create table MyTableOne(TheString string primary key, IntPrimitive int)");
+            epService.EPAdministrator.CreateEPL("create expression getMyValue{o => MyTableOne[o.p00].IntPrimitive}");
+            epService.EPAdministrator.CreateEPL("insert into MyTableOne select TheString, IntPrimitive from SupportBean");
             epService.EPAdministrator.CreateEPL("@Name('s0') select GetMyValue(s0) as c0 from SupportBean_S0 as s0");
     
             var listener = new SupportUpdateListener();
@@ -267,13 +267,13 @@ namespace com.espertech.esper.regression.nwtable.tbl
         }
     
         private void TryAssertionIntoTableFromExpression(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("create expression sumi {a -> sum(intPrimitive)}");
-            epService.EPAdministrator.CreateEPL("create expression sumd alias for {sum(doublePrimitive)}");
+            epService.EPAdministrator.CreateEPL("create expression sumi {a -> sum(IntPrimitive)}");
+            epService.EPAdministrator.CreateEPL("create expression sumd alias for {sum(DoublePrimitive)}");
             epService.EPAdministrator.CreateEPL("create table varaggITFE (" +
                     "sumi sum(int), sumd sum(double), sumf sum(float), suml sum(long))");
-            epService.EPAdministrator.CreateEPL("expression suml alias for {sum(longPrimitive)} " +
+            epService.EPAdministrator.CreateEPL("expression suml alias for {sum(LongPrimitive)} " +
                     "into table varaggITFE " +
-                    "select suml, sum(floatPrimitive) as sumf, sumd, Sumi(sb) from SupportBean as sb");
+                    "select suml, sum(FloatPrimitive) as sumf, sumd, Sumi(sb) from SupportBean as sb");
     
             MakeSendBean(epService, "E1", 10, 100L, 1000d, 10000f);
     
@@ -298,8 +298,8 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             string eplBind =
                     "into table varTotalG2K " +
-                            "select sum(longPrimitive) as total, count(*) as cnt " +
-                            "from SupportBean group by theString, intPrimitive";
+                            "select sum(LongPrimitive) as total, count(*) as cnt " +
+                            "from SupportBean group by TheString, IntPrimitive";
             epService.EPAdministrator.CreateEPL(eplBind);
     
             string eplUse = "select varTotalG2K[p00, id].total as c0, varTotalG2K[p00, id].cnt as c1 from SupportBean_S0";
@@ -325,8 +325,8 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL(eplDeclare);
     
             string eplBind = "into table varTotalG3K " +
-                    "select sum(doublePrimitive) as total, count(*) as cnt " +
-                    "from SupportBean group by theString, intPrimitive, longPrimitive";
+                    "select sum(DoublePrimitive) as total, count(*) as cnt " +
+                    "from SupportBean group by TheString, IntPrimitive, LongPrimitive";
             epService.EPAdministrator.CreateEPL(eplBind);
     
             string[] fields = "c0,c1".Split(',');
@@ -357,7 +357,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplDeclare);
     
             string eplBind = "into table varTotalG1K " +
-                    "select theString, sum(intPrimitive) as total from SupportBean group by theString";
+                    "select TheString, sum(IntPrimitive) as total from SupportBean group by TheString";
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplBind);
     
             string eplUse = "select p00 as c0, varTotalG1K[p00].total as c1 from SupportBean_S0";
@@ -371,9 +371,9 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
         private void RunAssertionUngroupedWContext(EPServiceProvider epService) {
             string eplPart =
-                    "create context PartitionedByString partition by theString from SupportBean, p00 from SupportBean_S0;\n" +
+                    "create context PartitionedByString partition by TheString from SupportBean, p00 from SupportBean_S0;\n" +
                             "context PartitionedByString create table varTotalUG (total sum(int));\n" +
-                            "context PartitionedByString into table varTotalUG select sum(intPrimitive) as total from SupportBean;\n" +
+                            "context PartitionedByString into table varTotalUG select sum(IntPrimitive) as total from SupportBean;\n" +
                             "@Name('L') context PartitionedByString select p00 as c0, varTotalUG.total as c1 from SupportBean_S0;\n";
             DeploymentResult result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(eplPart);
             var listener = new SupportUpdateListener();
@@ -400,7 +400,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "select p00 as c0, sum(id) as total from SupportBean_S0").Events += listener.Update;
             epService.EPAdministrator.CreateEPL("into table sharedagg " +
                     "select p10 as c0, sum(id) as total from SupportBean_S1").Events += listener.Update;
-            epService.EPAdministrator.CreateEPL("select theString as c0, sharedagg.total as total from SupportBean").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select TheString as c0, sharedagg.total as total from SupportBean").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "A"));
             AssertMultiStmtContributingTotal(epService, listener, "A", 10);
@@ -434,9 +434,9 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string eplSelectUngrouped = "select varaggMSC.s0sum as c0, varaggMSC.s0cnt as c1," +
                     "varaggMSC.s0win as c2, varaggMSC.s1sum as c3, varaggMSC.s1cnt as c4," +
                     "varaggMSC.s1win as c5 from SupportBean";
-            string eplSelectGrouped = "select varaggMSC[theString].s0sum as c0, varaggMSC[theString].s0cnt as c1," +
-                    "varaggMSC[theString].s0win as c2, varaggMSC[theString].s1sum as c3, varaggMSC[theString].s1cnt as c4," +
-                    "varaggMSC[theString].s1win as c5 from SupportBean";
+            string eplSelectGrouped = "select varaggMSC[TheString].s0sum as c0, varaggMSC[TheString].s0cnt as c1," +
+                    "varaggMSC[TheString].s0win as c2, varaggMSC[TheString].s1sum as c3, varaggMSC[TheString].s1cnt as c4," +
+                    "varaggMSC[TheString].s1win as c5 from SupportBean";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(grouped ? eplSelectGrouped : eplSelectUngrouped).Events += listener.Update;
     
@@ -510,7 +510,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string eplDeclare = "create table varaggOOA (" + (ungrouped ? "" : "key string primary key, ") +
                     "sumint sum(int), " +
                     "sumlong sum(long), " +
-                    "mysort sorted(intPrimitive) @Type(SupportBean)," +
+                    "mysort sorted(IntPrimitive) @Type(SupportBean)," +
                     "mywindow window(*) @Type(SupportBean)" +
                     ")";
             epService.EPAdministrator.CreateEPL(eplDeclare);
@@ -518,12 +518,12 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string[] fieldsTable = "sumint,sumlong,mywindow,mysort".Split(',');
             var listenerIntoTable = new SupportUpdateListener();
             string eplSelect = "into table varaggOOA select " +
-                    "sum(longPrimitive) as sumlong, " +
-                    "sum(intPrimitive) as sumint, " +
+                    "sum(LongPrimitive) as sumlong, " +
+                    "sum(IntPrimitive) as sumint, " +
                     "window(*) as mywindow," +
                     "sorted() as mysort " +
                     "from SupportBean#length(2) " +
-                    (ungrouped ? "" : "group by theString ");
+                    (ungrouped ? "" : "group by TheString ");
             epService.EPAdministrator.CreateEPL(eplSelect).Events += listenerIntoTable.Update;
     
             string[] fieldsSelect = "c0,c1,c2,c3".Split(',');
@@ -569,22 +569,22 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string epl = "create window MyWindow#length(2) as SupportBean;\n" +
                     "insert into MyWindow select * from SupportBean;\n" +
                     "create table varaggNWFAF (total sum(int));\n" +
-                    "into table varaggNWFAF select sum(intPrimitive) as total from MyWindow;\n";
+                    "into table varaggNWFAF select sum(IntPrimitive) as total from MyWindow;\n";
             DeploymentResult deployment = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             EPOnDemandQueryResult resultSelect = epService.EPRuntime.ExecuteQuery("select varaggNWFAF.total as c0 from MyWindow");
             Assert.AreEqual(10, resultSelect.Array[0].Get("c0"));
     
-            EPOnDemandQueryResult resultDelete = epService.EPRuntime.ExecuteQuery("delete from MyWindow where varaggNWFAF.total = intPrimitive");
+            EPOnDemandQueryResult resultDelete = epService.EPRuntime.ExecuteQuery("delete from MyWindow where varaggNWFAF.total = IntPrimitive");
             Assert.AreEqual(1, resultDelete.Array.Length);
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
-            EPOnDemandQueryResult resultUpdate = epService.EPRuntime.ExecuteQuery("update MyWindow set doublePrimitive = 100 where varaggNWFAF.total = intPrimitive");
-            Assert.AreEqual(100d, resultUpdate.Array[0].Get("doublePrimitive"));
+            EPOnDemandQueryResult resultUpdate = epService.EPRuntime.ExecuteQuery("update MyWindow set DoublePrimitive = 100 where varaggNWFAF.total = IntPrimitive");
+            Assert.AreEqual(100d, resultUpdate.Array[0].Get("DoublePrimitive"));
     
-            EPOnDemandQueryResult resultInsert = epService.EPRuntime.ExecuteQuery("insert into MyWindow (theString, intPrimitive) values ('A', varaggNWFAF.total)");
-            EPAssertionUtil.AssertProps(resultInsert.Array[0], "theString,intPrimitive".Split(','), new object[]{"A", 20});
+            EPOnDemandQueryResult resultInsert = epService.EPRuntime.ExecuteQuery("insert into MyWindow (TheString, IntPrimitive) values ('A', varaggNWFAF.total)");
+            EPAssertionUtil.AssertProps(resultInsert.Array[0], "TheString,IntPrimitive".Split(','), new object[]{"A", 20});
     
             epService.EPAdministrator.DeploymentAdmin.UndeployRemove(deployment.DeploymentId);
         }
@@ -594,7 +594,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select (select subquery_var_agg[p00].total from SupportBean_S0#lastevent) as c0 " +
                     "from SupportBean_S1").Events += listener.Update;
-            epService.EPAdministrator.CreateEPL("into table subquery_var_agg select count(*) as total from SupportBean group by theString");
+            epService.EPAdministrator.CreateEPL("into table subquery_var_agg select count(*) as total from SupportBean group by TheString");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", -1));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E1"));
@@ -610,7 +610,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
         private void RunAssertionOnMergeExpressions(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create table the_table (key string primary key, total count(*), value int)");
-            epService.EPAdministrator.CreateEPL("into table the_table select count(*) as total from SupportBean group by theString");
+            epService.EPAdministrator.CreateEPL("into table the_table select count(*) as total from SupportBean group by TheString");
             epService.EPAdministrator.CreateEPL("on SupportBean_S0 as s0 " +
                     "merge the_table as tt " +
                     "where s0.p00 = tt.key " +
@@ -640,10 +640,10 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             string eplBind = "into table varMyAgg select " +
                     "count(*) as c0, " +
-                    "count(distinct intPrimitive) as c1, " +
+                    "count(distinct IntPrimitive) as c1, " +
                     "window(*) as c2, " +
-                    "sum(longPrimitive) as c3 " +
-                    "from SupportBean#length(3) group by theString";
+                    "sum(LongPrimitive) as c3 " +
+                    "from SupportBean#length(3) group by TheString";
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplBind);
     
             string eplSelect = "select " +

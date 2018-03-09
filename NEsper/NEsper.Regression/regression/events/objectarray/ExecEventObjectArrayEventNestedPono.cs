@@ -51,7 +51,7 @@ namespace com.espertech.esper.regression.events.objectarray
     
             // test all properties exist
             EventBean received = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(received, "simple,@object,nodefmap,map".Split(','),
+            EPAssertionUtil.AssertProps(received, "simple,object,nodefmap,map".Split(','),
                     new[]{"abc", new SupportBean_A("A1"), testdata[2], testdata[3]});
             EPAssertionUtil.AssertProps(received, "a1,a2,a3,a4".Split(','),
                     new object[]{"A1", "val1", null, null});

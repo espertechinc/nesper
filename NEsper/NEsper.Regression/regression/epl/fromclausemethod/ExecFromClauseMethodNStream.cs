@@ -6,13 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
@@ -26,7 +21,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         public override void Configure(Configuration configuration) {
             configuration.EngineDefaults.Logging.IsEnableQueryPlan = true;
             configuration.AddEventType(typeof(SupportBeanInt));
-            configuration.AddImport(typeof(SupportJoinMethods).Name);
+            configuration.AddImport(typeof(SupportJoinMethods));
             configuration.AddVariable("var1", typeof(int?), 0);
             configuration.AddVariable("var2", typeof(int?), 0);
             configuration.AddVariable("var3", typeof(int?), 0);

@@ -31,7 +31,7 @@ namespace com.espertech.esper.supportregression.context {
         public bool Filter(ContextPartitionIdentifier contextPartitionIdentifier) {
             var id = (ContextPartitionIdentifierInitiatedTerminated) contextPartitionIdentifier;
             if (_matchP00Value == null && _cpids.Contains(id.ContextPartitionId)) {
-                throw new EPRuntimeException("Already Exists context id: " + id.ContextPartitionId);
+                throw new EPRuntimeException("Already exists context id: " + id.ContextPartitionId);
             }
 
             _cpids.Add(id.ContextPartitionId);

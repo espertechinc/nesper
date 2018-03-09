@@ -55,13 +55,13 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionExprNameAndTypeAndSODA(EPServiceProvider epService) {
             string epl = "select " +
-                    "prev(1,intPrimitive), " +
+                    "prev(1,IntPrimitive), " +
                     "prev(1,sb), " +
-                    "prevtail(1,intPrimitive), " +
+                    "prevtail(1,IntPrimitive), " +
                     "prevtail(1,sb), " +
-                    "prevwindow(intPrimitive), " +
+                    "prevwindow(IntPrimitive), " +
                     "prevwindow(sb), " +
-                    "prevcount(intPrimitive), " +
+                    "prevcount(IntPrimitive), " +
                     "prevcount(sb) " +
                     "from SupportBean#time(1 minutes) as sb";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -73,13 +73,13 @@ namespace com.espertech.esper.regression.expr.expr
             EventBean resultBean = listener.GetNewDataListFlattened()[1];
     
             var rows = new object[][]{
-                new object[] {"prev(1,intPrimitive)", typeof(int?)},
+                new object[] {"prev(1,IntPrimitive)", typeof(int)},
                 new object[] {"prev(1,sb)", typeof(SupportBean)},
-                new object[] {"prevtail(1,intPrimitive)", typeof(int?)},
+                new object[] {"prevtail(1,IntPrimitive)", typeof(int)},
                 new object[] {"prevtail(1,sb)", typeof(SupportBean)},
-                new object[] {"prevwindow(intPrimitive)", typeof(int?[])},
+                new object[] {"prevwindow(IntPrimitive)", typeof(int[])},
                 new object[] {"prevwindow(sb)", typeof(SupportBean[])},
-                new object[] {"prevcount(intPrimitive)", typeof(long)},
+                new object[] {"prevcount(IntPrimitive)", typeof(long)},
                 new object[] {"prevcount(sb)", typeof(long)}
             };
             for (int i = 0; i < rows.Length; i++) {
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionPrevCountStarWithStaticMethod(EPServiceProvider epService) {
             string text = "select irstream count(*) as total, " +
-                    "prev(" + typeof(ExecExprPrevious).Name + ".IntToLong(count(*)) - 1, price) as firstPrice from " + typeof(SupportMarketDataBean).FullName + "#time(60)";
+                    "prev(" + typeof(ExecExprPrevious).FullName + ".IntToLong(count(*)) - 1, price) as firstPrice from " + typeof(SupportMarketDataBean).FullName + "#time(60)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             // test length window overflow
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            epService.EPAdministrator.CreateEPL("select prev(5,intPrimitive) as val0 from SupportBean#groupwin(theString)#length(5)").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select prev(5,IntPrimitive) as val0 from SupportBean#groupwin(TheString)#length(5)").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 11));
             Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("val0"));
@@ -652,7 +652,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionPreviousTimeBatchWindowJoin(EPServiceProvider epService) {
-            string epl = "select theString as currSymbol, " +
+            string epl = "select TheString as currSymbol, " +
                     " prev(2, symbol) as prevSymbol, " +
                     " prev(1, price) as prevPrice, " +
                     " prevtail(0, symbol) as prevTailSymbol, " +
@@ -662,7 +662,7 @@ namespace com.espertech.esper.regression.expr.expr
                     " prevcount(price) as prevCountPrice, " +
                     " prevwindow(price) as prevWindowPrice " +
                     "from " + typeof(SupportBean).FullName + "#keepall, " +
-                    typeof(SupportMarketDataBean).Name + "#time_batch(1 min)";
+                    typeof(SupportMarketDataBean).FullName + "#time_batch(1 min)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -815,7 +815,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionPreviousLengthWindowDynamic(EPServiceProvider epService) {
-            string epl = "select prev(intPrimitive, theString) as sPrev " +
+            string epl = "select prev(IntPrimitive, TheString) as sPrev " +
                     "from " + typeof(SupportBean).FullName + "#length(100)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -949,11 +949,11 @@ namespace com.espertech.esper.regression.expr.expr
                             "from " + typeof(SupportMarketDataBean).FullName + "#length(100)#uni(price)",
                     "Error starting statement: Previous function requires a single data window view onto the stream [");
     
-            TryInvalid(epService, "select count(*) from SupportBean#keepall where prev(0, intPrimitive) = 5",
-                    "Error starting statement: The 'prev' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provide remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead [select count(*) from SupportBean#keepall where prev(0, intPrimitive) = 5]");
+            TryInvalid(epService, "select count(*) from SupportBean#keepall where prev(0, IntPrimitive) = 5",
+                    "Error starting statement: The 'prev' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provide remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead [select count(*) from SupportBean#keepall where prev(0, IntPrimitive) = 5]");
     
-            TryInvalid(epService, "select count(*) from SupportBean#keepall having prev(0, intPrimitive) = 5",
-                    "Error starting statement: The 'prev' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provide remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead [select count(*) from SupportBean#keepall having prev(0, intPrimitive) = 5]");
+            TryInvalid(epService, "select count(*) from SupportBean#keepall having prev(0, IntPrimitive) = 5",
+                    "Error starting statement: The 'prev' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provide remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead [select count(*) from SupportBean#keepall having prev(0, IntPrimitive) = 5]");
         }
 
         private void AssertEventWTail(

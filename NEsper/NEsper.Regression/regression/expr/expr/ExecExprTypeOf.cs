@@ -101,7 +101,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create schema EventOne as (key string)");
             epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create schema EventTwo as (key string)");
-            epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create schema S0 as " + typeof(SupportBean_S0).Name);
+            epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create schema S0 as " + typeof(SupportBean_S0).FullName);
             epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create variant schema VarSchema as *");
     
             epService.EPAdministrator.CreateEPL("insert into VarSchema select * from EventOne");

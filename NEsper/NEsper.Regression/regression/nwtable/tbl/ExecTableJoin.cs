@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("create table varaggFC as (" +
                     "key string primary key, total sum(int))");
             epService.EPAdministrator.CreateEPL("into table varaggFC " +
-                    "select sum(intPrimitive) as total from SupportBean group by theString");
+                    "select sum(IntPrimitive) as total from SupportBean group by TheString");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select total as value from SupportBean_S0 as s0, varaggFC as va " +
                     "where va.key = s0.p00").Events += listener.Update;
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
         private void RunAssertionJoinIndexChoice(EPServiceProvider epService) {
     
             string eplDeclare = "create table varagg as (k0 string primary key, k1 int primary key, v1 string, total sum(long))";
-            string eplPopulate = "into table varagg select sum(longPrimitive) as total from SupportBean group by theString, intPrimitive";
+            string eplPopulate = "into table varagg select sum(LongPrimitive) as total from SupportBean group by TheString, IntPrimitive";
             string eplQuery = "select total as value from SupportBean_S0 as s0 unidirectional";
     
             var createIndexEmpty = new string[]{};
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBeanRange));
             string eplDeclare = "create table varagg as (k0 int primary key, total sum(long))";
-            string eplPopulate = "into table varagg select sum(longPrimitive) as total from SupportBean group by intPrimitive";
+            string eplPopulate = "into table varagg select sum(LongPrimitive) as total from SupportBean group by IntPrimitive";
             string eplQuery = "select total as value from SupportBeanRange unidirectional";
     
             var createIndexEmpty = new string[]{};
@@ -218,7 +218,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
         private void RunAssertionUnkeyedTable(EPServiceProvider epService) {
             // Prepare
             epService.EPAdministrator.CreateEPL("create table MyTable (sumint sum(int))");
-            epService.EPAdministrator.CreateEPL("@Name('into') into table MyTable select sum(intPrimitive) as sumint from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('into') into table MyTable select sum(IntPrimitive) as sumint from SupportBean");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 100));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 101));
             epService.EPAdministrator.GetStatement("into").Dispose();

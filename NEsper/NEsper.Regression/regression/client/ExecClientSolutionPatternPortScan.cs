@@ -6,15 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.deploy;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
-using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
@@ -121,7 +117,7 @@ namespace com.espertech.esper.regression.client
                             "when matched and (select cnt from ScanCountTable where src = sw.src and dst = sw.dst) < 10\n" +
                             "  then delete\n" +
                             "  then insert into OutputAlerts select 'DONE' as type, ScanCountTable[src, dst].cnt as cnt, null as contributors \n" +
-                            "when matched and DetectionTime.After(current_timestamp, 16 hours)\n" +
+                            "when matched and DetectionTime.after(current_timestamp, 16 hours)\n" +
                             "  then delete\n" +
                             "  then insert into OutputAlerts select 'EXPIRED' as type, -1L as cnt, null as contributors;\n" +
                             "\n" +

@@ -149,7 +149,7 @@ namespace com.espertech.esper.regression.epl.other
             }
 
             epService.EPAdministrator.CreateEPL(
-                "on SupportBean update MyWindow set simple='A', Mymap('abc') = intPrimitive, myarray[2] = intPrimitive");
+                "on SupportBean update MyWindow set simple='A', Mymap('abc') = IntPrimitive, myarray[2] = IntPrimitive");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             EPAssertionUtil.AssertPropsPerRow(
                 stmtWin.GetEnumerator(), "simple,Mymap('abc'),myarray[2]".Split(','),

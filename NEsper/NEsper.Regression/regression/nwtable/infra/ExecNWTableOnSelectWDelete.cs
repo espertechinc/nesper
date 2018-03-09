@@ -36,17 +36,17 @@ namespace com.espertech.esper.regression.nwtable.infra
     
         private void RunAssertionWindowAgg(EPServiceProvider epService, bool namedWindow) {
     
-            string[] fieldsWin = "theString,intPrimitive".Split(',');
+            string[] fieldsWin = "TheString,IntPrimitive".Split(',');
             string[] fieldsSelect = "c0".Split(',');
     
             string eplCreate = namedWindow ?
                     "create window MyInfra#keepall as SupportBean" :
-                    "create table MyInfra (theString string primary key, intPrimitive int primary key)";
+                    "create table MyInfra (TheString string primary key, IntPrimitive int primary key)";
             EPStatement stmtWin = epService.EPAdministrator.CreateEPL(eplCreate);
-            epService.EPAdministrator.CreateEPL("insert into MyInfra select theString, intPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into MyInfra select TheString, IntPrimitive from SupportBean");
             string eplSelectDelete = "on S0 as s0 " +
-                    "select and delete window(win.*).Aggregate(0,(result,value) => result+value.intPrimitive) as c0 " +
-                    "from MyInfra as win where s0.p00=win.theString";
+                    "select and delete window(win.*).aggregate(0,(result,value) => result+value.IntPrimitive) as c0 " +
+                    "from MyInfra as win where s0.p00=win.TheString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(eplSelectDelete);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

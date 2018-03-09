@@ -6,18 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
-
 
 using NUnit.Framework;
 
@@ -32,9 +26,9 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
         }
     
         public override void Run(EPServiceProvider epService) {
-            string joinStatement = "select id, p00, theString from " +
+            string joinStatement = "select id, p00, TheString from " +
                     typeof(SupportBean).FullName + "()#length(100) as s1, " +
-                    " method:SupportStaticMethodInvocations.FetchObjectLog(theString, intPrimitive)";
+                    " method:SupportStaticMethodInvocations.FetchObjectLog(TheString, IntPrimitive)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(joinStatement);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -43,7 +37,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             SupportStaticMethodInvocations.GetInvocationSizeAndReset();
     
             SendTimer(epService, 1000);
-            var fields = new string[]{"id", "p00", "theString"};
+            var fields = new string[]{"id", "p00", "TheString"};
             SendBeanEvent(epService, "E1", 1);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1, "|E1|", "E1"});
     

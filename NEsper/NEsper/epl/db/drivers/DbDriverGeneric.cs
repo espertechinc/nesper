@@ -22,15 +22,44 @@ namespace com.espertech.esper.epl.db.drivers
         private readonly String _paramPrefix;
 
         /// <summary>
-        /// Initializes the <see cref="DbDriverGeneric"/> class.
+        /// Initializes the <see cref="DbDriverGeneric" /> class.
         /// </summary>
-        public DbDriverGeneric(DbProviderFactoryManager dbProviderFactoryManager)
+        /// <param name="dbProviderFactoryManager">The database provider factory manager.</param>
+        /// <param name="factoryName">Name of the factory.</param>
+        public DbDriverGeneric(DbProviderFactoryManager dbProviderFactoryManager, string factoryName)
+            : this(dbProviderFactoryManager, factoryName, false, "@")
         {
-            _dbProviderFactory = dbProviderFactoryManager.GetFactory("MySql.Data.MySqlClient.MySqlClientFactory");
-            _isPositional = false;
-            _paramPrefix = "@";
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DbDriverGeneric"/> class.
+        /// </summary>
+        /// <param name="dbProviderFactoryManager">The database provider factory manager.</param>
+        /// <param name="factoryName">Name of the factory.</param>
+        /// <param name="isPositional">if set to <c>true</c> [is positional].</param>
+        /// <param name="paramPrefix">The parameter prefix.</param>
+        public DbDriverGeneric(
+            DbProviderFactoryManager dbProviderFactoryManager,
+            string factoryName,
+            bool isPositional,
+            string paramPrefix)
+            : this(dbProviderFactoryManager.GetFactory(factoryName), isPositional, paramPrefix)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DbDriverGeneric"/> class.
+        /// </summary>
+        /// <param name="dbProviderFactory">The database provider factory.</param>
+        /// <param name="isPositional">if set to <c>true</c> [is positional].</param>
+        /// <param name="paramPrefix">The parameter prefix.</param>
+        public DbDriverGeneric(DbProviderFactory dbProviderFactory, bool isPositional, string paramPrefix)
+        {
+            _dbProviderFactory = dbProviderFactory;
+            _isPositional = isPositional;
+            _paramPrefix = paramPrefix;
+        }
+        
         /// <summary>
         /// Factory method that is used to create instance of a connection.
         /// </summary>
@@ -59,19 +88,13 @@ namespace com.espertech.esper.epl.db.drivers
         /// <value>
         /// 	<c>true</c> if [use position parameters]; otherwise, <c>false</c>.
         /// </value>
-        protected override bool UsePositionalParameters
-        {
-            get { return _isPositional; }
-        }
+        protected override bool UsePositionalParameters => _isPositional;
 
         /// <summary>
         /// Gets the parameter prefix.
         /// </summary>
         /// <value>The param prefix.</value>
-        protected override string ParamPrefix
-        {
-            get { return _paramPrefix; }
-        }
+        protected override string ParamPrefix => _paramPrefix;
 
         /// <summary>
         /// Creates a connection string builder.

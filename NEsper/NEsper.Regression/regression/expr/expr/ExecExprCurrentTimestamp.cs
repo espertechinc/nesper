@@ -33,9 +33,9 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionGetTimestamp(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string stmtText = "select Current_timestamp(), " +
+            string stmtText = "select current_timestamp(), " +
                     " current_timestamp as t0, " +
-                    " Current_timestamp() as t1, " +
+                    " current_timestamp() as t1, " +
                     " current_timestamp + 1 as t2 " +
                     " from " + typeof(SupportBean).FullName;
     
@@ -43,10 +43,10 @@ namespace com.espertech.esper.regression.expr.expr
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("Current_timestamp()"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("t0"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("t1"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("t2"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("current_timestamp()"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("t0"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("t1"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("t2"));
     
             SendTimer(epService, 100);
             epService.EPRuntime.SendEvent(new SupportBean());
@@ -57,14 +57,14 @@ namespace com.espertech.esper.regression.expr.expr
             epService.EPRuntime.SendEvent(new SupportBean());
             theEvent = listener.AssertOneGetNewAndReset();
             AssertResults(theEvent, new object[]{999L, 999L, 1000L});
-            Assert.AreEqual(theEvent.Get("Current_timestamp()"), theEvent.Get("t0"));
+            Assert.AreEqual(theEvent.Get("current_timestamp()"), theEvent.Get("t0"));
     
             stmt.Dispose();
         }
     
         private void RunAssertionGetTimestamp_OM(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string stmtText = "select Current_timestamp() as t0 from " + typeof(SupportBean).FullName;
+            string stmtText = "select current_timestamp() as t0 from " + typeof(SupportBean).FullName;
     
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.Create().Add(Expressions.CurrentTimestamp(), "t0");
@@ -76,7 +76,7 @@ namespace com.espertech.esper.regression.expr.expr
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("t0"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("t0"));
     
             SendTimer(epService, 777);
             epService.EPRuntime.SendEvent(new SupportBean());
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionGetTimestamp_Compile(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string stmtText = "select Current_timestamp() as t0 from " + typeof(SupportBean).FullName;
+            string stmtText = "select current_timestamp() as t0 from " + typeof(SupportBean).FullName;
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);

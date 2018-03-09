@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
         private void RunAssertionAfterWithOutputLast(EPServiceProvider epService, bool hinted) {
             string hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
-            string epl = hint + "select sum(intPrimitive) as thesum " +
+            string epl = hint + "select sum(IntPrimitive) as thesum " +
                     "from SupportBean#keepall " +
                     "output after 4 events last every 2 events";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
         private void RunAssertionEveryPolicy(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string stmtText = "select theString from SupportBean#keepall output after 0 days 0 hours 0 minutes 20 seconds 0 milliseconds every 0 days 0 hours 0 minutes 5 seconds 0 milliseconds";
+            string stmtText = "select TheString from SupportBean#keepall output after 0 days 0 hours 0 minutes 20 seconds 0 milliseconds every 0 days 0 hours 0 minutes 5 seconds 0 milliseconds";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             stmt.Dispose();
     
             var model = new EPStatementObjectModel();
-            model.SelectClause = SelectClause.Create("theString");
+            model.SelectClause = SelectClause.Create("TheString");
             model.FromClause = FromClause.Create(FilterStream.Create("SupportBean").AddView("keepall"));
             model.OutputLimitClause = OutputLimitClause.Create(Expressions.TimePeriod(0, 0, 0, 5, 0))
                 .SetAfterTimePeriodExpression(Expressions.TimePeriod(0, 0, 0, 20, 0));
@@ -95,13 +95,13 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             SendCurrentTime(epService, "2002-03-01T09:00:00.000");
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "TheString".Split(','), new object[]{"E3"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
         private void TryAssertionEveryPolicy(EPServiceProvider epService, SupportUpdateListener listener) {
-            string[] fields = "theString".Split(',');
+            string[] fields = "TheString".Split(',');
             SendTimer(epService, 1);
             SendEvent(epService, "E1");
     
@@ -133,8 +133,8 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         }
     
         private void RunAssertionDirectNumberOfEvents(EPServiceProvider epService) {
-            string[] fields = "theString".Split(',');
-            string stmtText = "select theString from SupportBean#keepall output after 3 events";
+            string[] fields = "TheString".Split(',');
+            string stmtText = "select TheString from SupportBean#keepall output after 3 events";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -153,10 +153,10 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             stmt.Dispose();
     
             var model = new EPStatementObjectModel();
-            model.SelectClause = SelectClause.Create("theString");
+            model.SelectClause = SelectClause.Create("TheString");
             model.FromClause = FromClause.Create(FilterStream.Create("SupportBean").AddView("keepall"));
             model.OutputLimitClause = OutputLimitClause.CreateAfter(3);
-            Assert.AreEqual("select theString from SupportBean#keepall output after 3 events ", model.ToEPL());
+            Assert.AreEqual("select TheString from SupportBean#keepall output after 3 events ", model.ToEPL());
     
             stmt = epService.EPAdministrator.Create(model);
             stmt.Events += listener.Update;
@@ -172,16 +172,16 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendEvent(epService, "E5");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E5"});
     
-            model = epService.EPAdministrator.CompileEPL("select theString from SupportBean#keepall output after 3 events");
-            Assert.AreEqual("select theString from SupportBean#keepall output after 3 events ", model.ToEPL());
+            model = epService.EPAdministrator.CompileEPL("select TheString from SupportBean#keepall output after 3 events");
+            Assert.AreEqual("select TheString from SupportBean#keepall output after 3 events ", model.ToEPL());
     
             stmt.Dispose();
         }
     
         private void RunAssertionDirectTimePeriod(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string[] fields = "theString".Split(',');
-            string stmtText = "select theString from SupportBean#keepall output after 20 seconds ";
+            string[] fields = "TheString".Split(',');
+            string stmtText = "select TheString from SupportBean#keepall output after 20 seconds ";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -211,7 +211,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             epService.EPAdministrator.CreateEPL("create variable int myvar = 1");
     
             SendTimer(epService, 0);
-            string stmtText = "select theString from SupportBean#keepall output after 20 seconds snapshot when myvar=1";
+            string stmtText = "select TheString from SupportBean#keepall output after 20 seconds snapshot when myvar=1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -264,7 +264,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             SendTimer(epService, 20000);
             SendEvent(epService, "E4");
-            string[] fields = "theString".Split(',');
+            string[] fields = "TheString".Split(',');
             EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}, new object[] {"E4"}});
             listener.Reset();
     

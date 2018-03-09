@@ -300,12 +300,16 @@ namespace com.espertech.esper.epl.join.plan
             if (indexedStream < 0 || indexedStream >= _numStreams)
                 throw new ArgumentException("Invalid indexed stream " + indexedStream);
 
-            if (_numStreams > 1)
-                for (var i = 0; i < _numStreams; i++)
-                    if (i != indexedStream)
+            if (_numStreams > 1) {
+                for (var i = 0; i < _numStreams; i++) {
+                    if (i != indexedStream) {
                         InternalAddEqualsUnkeyed(i, indexedStream, indexedProp, exprNodeNoIdent);
-            else
+                    }
+                }
+            }
+            else {
                 InternalAddEqualsUnkeyed(SELF_STREAM, indexedStream, indexedProp, exprNodeNoIdent);
+            }
         }
 
         public void AddKeyedExpression(
@@ -320,10 +324,12 @@ namespace com.espertech.esper.epl.join.plan
         {
             if (indexedStream < 0 || indexedStream >= _numStreams)
                 throw new ArgumentException("Invalid indexed stream " + indexedStream);
-            if (keyStream >= _numStreams) throw new ArgumentException("Invalid key stream " + keyStream);
+            if (keyStream >= _numStreams)
+                throw new ArgumentException("Invalid key stream " + keyStream);
             if (_numStreams > 1)
             {
-                if (keyStream < 0) throw new ArgumentException("Invalid key stream " + keyStream);
+                if (keyStream < 0)
+                    throw new ArgumentException("Invalid key stream " + keyStream);
             }
             else
             {

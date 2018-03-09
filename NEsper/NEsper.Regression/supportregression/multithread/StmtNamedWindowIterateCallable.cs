@@ -32,7 +32,7 @@ namespace com.espertech.esper.supportregression.multithread
             this._numRepeats = numRepeats;
             this._threadKey = threadKey;
     
-            _statement = engine.EPAdministrator.CreateEPL("select theString, sum(longPrimitive) as sumLong from MyWindow group by theString");
+            _statement = engine.EPAdministrator.CreateEPL("select TheString, sum(LongPrimitive) as sumLong from MyWindow group by TheString");
         }
     
         public bool Call() {
@@ -49,7 +49,7 @@ namespace com.espertech.esper.supportregression.multithread
                     safeIter.Dispose();
     
                     for (int i = 0; i < received.Length; i++) {
-                        if (received[i].Get("theString").Equals(_threadKey)) {
+                        if (received[i].Get("TheString").Equals(_threadKey)) {
                             long sum = (long) received[i].Get("sumLong");
                             Assert.AreEqual(total, sum);
                         }

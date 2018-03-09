@@ -37,20 +37,20 @@ namespace com.espertech.esper.regression.nwtable.tbl
         private void RunAssertionEarlyUniqueIndexViolation(EPServiceProvider epService) {
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL("create table MyTableEUIV as (pkey0 string primary key, pkey1 int primary key, thecnt count(*))");
     
-            epService.EPAdministrator.CreateEPL("into table MyTableEUIV select count(*) as thecnt from SupportBean group by theString, intPrimitive");
+            epService.EPAdministrator.CreateEPL("into table MyTableEUIV select count(*) as thecnt from SupportBean group by TheString, IntPrimitive");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 20));
     
             // invalid index being created
             SupportMessageAssertUtil.TryInvalid(epService, "create unique index SecIndex on MyTableEUIV(pkey0)",
-                    "Unexpected exception starting statement: Unique index violation, index 'SecIndex' is a unique index and key 'E1' already Exists [create unique index SecIndex on MyTableEUIV(pkey0)]");
+                    "Unexpected exception starting statement: Unique index violation, index 'SecIndex' is a unique index and key 'E1' already exists [create unique index SecIndex on MyTableEUIV(pkey0)]");
     
             // try fire-and-forget update of primary key to non-unique value
             try {
                 epService.EPRuntime.ExecuteQuery("update MyTableEUIV set pkey1 = 0");
                 Assert.Fail();
             } catch (EPException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex, "Error executing statement: Unique index violation, index 'primary-MyTableEUIV' is a unique index and key 'MultiKeyUntyped[E1, 0]' already Exists [");
+                SupportMessageAssertUtil.AssertMessage(ex, "Error executing statement: Unique index violation, index 'primary-MyTableEUIV' is a unique index and key 'MultiKeyUntyped[E1, 0]' already exists [");
                 // assert events are unchanged - no update actually performed
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "pkey0,pkey1".Split(','), new object[][]{new object[] {"E1", 10}, new object[] {"E1", 20}});
             }
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 epService.EPRuntime.SendEvent(new SupportBean_S1(0));
                 Assert.Fail();
             } catch (EPException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex.InnerException, "Unexpected exception in statement 'on-update': Unique index violation, index 'primary-MyTableEUIV' is a unique index and key 'MultiKeyUntyped[E1, 0]' already Exists");
+                SupportMessageAssertUtil.AssertMessage(ex.InnerException, "Unexpected exception in statement 'on-update': Unique index violation, index 'primary-MyTableEUIV' is a unique index and key 'MultiKeyUntyped[E1, 0]' already exists");
                 // assert events are unchanged - no update actually performed
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "pkey0,pkey1".Split(','), new object[][]{new object[] {"E1", 10}, new object[] {"E1", 20}});
             }
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "col0 int, " +
                     "thecnt count(*))");
     
-            epService.EPAdministrator.CreateEPL("into table MyTableLUIV select count(*) as thecnt from SupportBean group by theString, intPrimitive");
+            epService.EPAdministrator.CreateEPL("into table MyTableLUIV select count(*) as thecnt from SupportBean group by TheString, IntPrimitive");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
     
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 epService.EPRuntime.SendEvent(new SupportBean_S1(0));
                 Assert.Fail();
             } catch (EPException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex.InnerException, "Unexpected exception in statement 'on-update': Unique index violation, index 'MyUniqueSecondary' is a unique index and key '0' already Exists");
+                SupportMessageAssertUtil.AssertMessage(ex.InnerException, "Unexpected exception in statement 'on-update': Unique index violation, index 'MyUniqueSecondary' is a unique index and key '0' already exists");
                 // assert events are unchanged - no update actually performed
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "pkey0,pkey1".Split(','), new object[][]{new object[] {"E1", 10}, new object[] {"E2", 20}});
             }
@@ -120,7 +120,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("create table MyTableFAFU as (pkey0 string primary key, col0 int, col1 int, thecnt count(*))");
             epService.EPAdministrator.CreateEPL("create index MyIndex on MyTableFAFU(col0)");
     
-            epService.EPAdministrator.CreateEPL("into table MyTableFAFU select count(*) as thecnt from SupportBean group by theString");
+            epService.EPAdministrator.CreateEPL("into table MyTableFAFU select count(*) as thecnt from SupportBean group by TheString");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 0));
     

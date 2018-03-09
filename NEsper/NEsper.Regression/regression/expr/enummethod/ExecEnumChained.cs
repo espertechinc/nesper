@@ -10,9 +10,6 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.bean.sales;
@@ -32,7 +29,7 @@ namespace com.espertech.esper.regression.expr.enummethod
     
         public override void Run(EPServiceProvider epService) {
     
-            string eplFragment = "select Sales.Where(x => x.cost > 1000).min(y => y.buyer.age) as val from PersonSales";
+            string eplFragment = "select Sales.where(x => x.cost > 1000).min(y => y.buyer.age) as val from PersonSales";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;

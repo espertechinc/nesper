@@ -86,7 +86,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion2NoneNoHavingJoin(EPServiceProvider epService) {
             string stmtText = "select sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol";
+                    "SupportBean#keepall where TheString=symbol";
             TryAssertion12(epService, stmtText, "none");
         }
     
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion4NoneHavingJoin(EPServiceProvider epService) {
             string stmtText = "select sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     " having sum(price) > 100";
             TryAssertion34(epService, stmtText, "none");
         }
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion6DefaultNoHavingJoin(EPServiceProvider epService) {
             string stmtText = "select sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "output every 1 seconds";
             TryAssertion56(epService, stmtText, "default");
         }
@@ -131,7 +131,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion8DefaultHavingJoin(EPServiceProvider epService) {
             string stmtText = "select sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "having sum(price) > 100" +
                     "output every 1 seconds";
             TryAssertion78(epService, stmtText, "default");
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion10AllNoHavingJoin(EPServiceProvider epService) {
             string stmtText = "select sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "output all every 1 seconds";
             TryAssertion56(epService, stmtText, "all");
         }
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion10AllNoHavingJoinHinted(EPServiceProvider epService) {
             string stmtText = "@Hint('enable_outputlimit_opt') select sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "output all every 1 seconds";
             TryAssertion56(epService, stmtText, "all");
         }
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion12AllHavingJoin(EPServiceProvider epService) {
             string stmtText = "select sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "having sum(price) > 100" +
                     "output all every 1 seconds";
             TryAssertion78(epService, stmtText, "all");
@@ -195,7 +195,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion12AllHavingJoinHinted(EPServiceProvider epService) {
             string stmtText = "@Hint('enable_outputlimit_opt') select sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "having sum(price) > 100" +
                     "output all every 1 seconds";
             TryAssertion78(epService, stmtText, "all");
@@ -218,7 +218,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion14LastNoHavingJoin(EPServiceProvider epService) {
             string stmtText = "select sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "output last every 1 seconds";
             TryAssertion13_14(epService, stmtText, "last");
         }
@@ -226,7 +226,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion14LastNoHavingJoinHinted(EPServiceProvider epService) {
             string stmtText = "@Hint('enable_outputlimit_opt') select sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "output last every 1 seconds";
             TryAssertion13_14(epService, stmtText, "last");
         }
@@ -250,7 +250,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion16LastHavingJoin(EPServiceProvider epService) {
             string stmtText = "select sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "having sum(price) > 100 " +
                     "output last every 1 seconds";
             TryAssertion15_16(epService, stmtText, "last");
@@ -259,7 +259,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertion16LastHavingJoinHinted(EPServiceProvider epService) {
             string stmtText = "@Hint('enable_outputlimit_opt') select sum(price) " +
                     "from MarketData#time(5.5 sec), " +
-                    "SupportBean#keepall where theString=symbol " +
+                    "SupportBean#keepall where TheString=symbol " +
                     "having sum(price) > 100 " +
                     "output last every 1 seconds";
             TryAssertion15_16(epService, stmtText, "last");
@@ -286,7 +286,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
         private void TryAssertionOuputLastWithInsertInto(EPServiceProvider epService, bool hinted) {
             string hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
-            string eplInsert = hint + "insert into MyStream select sum(intPrimitive) as thesum from SupportBean#keepall " +
+            string eplInsert = hint + "insert into MyStream select sum(IntPrimitive) as thesum from SupportBean#keepall " +
                     "output last every 2 events";
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL(eplInsert);
     
@@ -491,7 +491,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             string stmtText = "select sum(volume) as result " +
                     "from " + typeof(SupportMarketDataBean).FullName + "#length(10) as one," +
                     typeof(SupportBean).FullName + "#length(10) as two " +
-                    "where one.symbol=two.theString " +
+                    "where one.symbol=two.TheString " +
                     "having sum(volume) > 0 " +
                     "output every 5 events";
     
@@ -520,7 +520,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             string epl = "select irstream max(price) as maxVol" +
                     " from " + typeof(SupportMarketDataBean).FullName + "#sort(1,volume desc) as s0, " +
-                    typeof(SupportBean).FullName + "#keepall as s1 where s1.theString=s0.symbol " +
+                    typeof(SupportBean).FullName + "#keepall as s1 where s1.TheString=s0.symbol " +
                     "output every 1.0d seconds";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -649,7 +649,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             var listener = new SupportUpdateListener();
     
             SendTimer(epService, 0);
-            string selectStmt = "select count(*) as cnt from " + typeof(SupportBean).FullName + "#time(10 seconds) where intPrimitive > 0 output snapshot every 1 seconds";
+            string selectStmt = "select count(*) as cnt from " + typeof(SupportBean).FullName + "#time(10 seconds) where IntPrimitive > 0 output snapshot every 1 seconds";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(selectStmt);
             stmt.Events += listener.Update;
@@ -705,7 +705,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             string selectStmt = "select count(*) as cnt from " +
                     typeof(SupportBean).FullName + "#time(10 seconds) as s, " +
-                    typeof(SupportMarketDataBean).Name + "#keepall as m where m.symbol = s.theString and intPrimitive > 0 output snapshot every 1 seconds";
+                    typeof(SupportMarketDataBean).FullName + "#keepall as m where m.symbol = s.TheString and IntPrimitive > 0 output snapshot every 1 seconds";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(selectStmt);
             stmt.Events += listener.Update;
@@ -764,7 +764,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         }
     
         private void RunAssertionOutputSnapshotGetValue(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddPlugInAggregationFunctionFactory("customagg", typeof(MyContextAggFuncFactory).Name);
+            epService.EPAdministrator.Configuration.AddPlugInAggregationFunctionFactory("customagg", typeof(MyContextAggFuncFactory));
             epService.EPAdministrator.Configuration.AddEventType<SupportBean_S0>();
     
             TryAssertionOutputSnapshotGetValue(epService, true);
@@ -773,7 +773,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
         private void TryAssertionOutputSnapshotGetValue(EPServiceProvider epService, bool join) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
-                    "select Customagg(intPrimitive) as c0 from SupportBean" +
+                    "select Customagg(IntPrimitive) as c0 from SupportBean" +
                             (join ? "#keepall, SupportBean_S0#lastevent" : "") +
                             " output snapshot every 3 events");
             var listener = new SupportUpdateListener();

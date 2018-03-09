@@ -39,12 +39,12 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
     
-            TryInvalid(epService, "select * from S0(Exists (select * from S1))",
-                    "Failed to validate subquery number 1 querying S1: Subqueries require one or more views to limit the stream, consider declaring a length or time window [select * from S0(Exists (select * from S1))]");
+            TryInvalid(epService, "select * from S0(exists (select * from S1))",
+                    "Failed to validate subquery number 1 querying S1: Subqueries require one or more views to limit the stream, consider declaring a length or time window [select * from S0(exists (select * from S1))]");
     
             epService.EPAdministrator.CreateEPL("create window MyWindowInvalid#lastevent as select * from S0");
-            TryInvalid(epService, "select * from S0(Exists (select * from MyWindowInvalid#lastevent))",
-                    "Failed to validate subquery number 1 querying MyWindowInvalid: Consuming statements to a named window cannot declare a data window view onto the named window [select * from S0(Exists (select * from MyWindowInvalid#lastevent))]");
+            TryInvalid(epService, "select * from S0(exists (select * from MyWindowInvalid#lastevent))",
+                    "Failed to validate subquery number 1 querying MyWindowInvalid: Consuming statements to a named window cannot declare a data window view onto the named window [select * from S0(exists (select * from MyWindowInvalid#lastevent))]");
     
             TryInvalid(epService, "select * from S0(id in ((select p00 from MyWindowInvalid)))",
                     "Failed to validate filter expression 'id in (subselect_1)': Implicit conversion not allowed: Cannot coerce types " + Name.Of<int>() + " and System.String [select * from S0(id in ((select p00 from MyWindowInvalid)))]");
@@ -52,9 +52,9 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertionSubqueryAgainstNamedWindowInUDFInPattern(EPServiceProvider epService) {
     
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("supportSingleRowFunction", typeof(ExecSubselectWithinPattern).Name, "supportSingleRowFunction");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("supportSingleRowFunction", typeof(ExecSubselectWithinPattern).Name, "SupportSingleRowFunction");
             epService.EPAdministrator.CreateEPL("create window MyWindowSNW#unique(p00)#keepall as S0");
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from pattern[S1(SupportSingleRowFunction((select * from MyWindowSNW)))]");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from pattern[S1(supportSingleRowFunction((select * from MyWindowSNW)))]");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S1(1));
@@ -102,14 +102,14 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertionCorrelated(EPServiceProvider epService) {
     
-            string stmtTextTwo = "select sp1.id as myid from pattern[every sp1=S0(Exists (select * from S1#keepall as stream1 where stream1.p10 = sp1.p00))]";
+            string stmtTextTwo = "select sp1.id as myid from pattern[every sp1=S0(exists (select * from S1#keepall as stream1 where stream1.p10 = sp1.p00))]";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listener = new SupportUpdateListener();
             stmtTwo.Events += listener.Update;
             TryAssertionCorrelated(epService, listener);
             stmtTwo.Dispose();
     
-            string stmtTextOne = "select id as myid from S0(Exists (select stream1.id from S1#keepall as stream1 where stream1.p10 = stream0.p00)) as stream0";
+            string stmtTextOne = "select id as myid from S0(exists (select stream1.id from S1#keepall as stream1 where stream1.p10 = stream0.p00)) as stream0";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
             stmtOne.Events += listener.Update;
             TryAssertionCorrelated(epService, listener);

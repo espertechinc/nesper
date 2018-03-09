@@ -46,7 +46,7 @@ namespace com.espertech.esper.regression.dataflow
     
             var legacy = new ConfigurationEventTypeLegacy();
             legacy.CodeGeneration = CodeGenerationEnum.DISABLED;
-            epService.EPAdministrator.Configuration.AddEventType("MyLegacyEvent", typeof(MyLegacyEvent).FullName, legacy);
+            epService.EPAdministrator.Configuration.AddEventType("MyLegacyEvent", typeof(MyLegacyEvent).AssemblyQualifiedName, legacy);
             var resultLegacy = (MyLegacyEvent) RunAssertionBeans(epService, "MyLegacyEvent");
             Assert.AreEqual("abc", resultLegacy.Myfield);
 
@@ -60,11 +60,12 @@ namespace com.espertech.esper.regression.dataflow
         private void RunAssertionVariable(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create Schema SomeEvent()");
             epService.EPAdministrator.CreateEPL("create variable int var_iterations=3");
-            var stmtGraph = epService.EPAdministrator.CreateEPL("create dataflow MyDataFlowOne " +
-                    "BeaconSource -> BeaconStream<SomeEvent> {" +
-                    "  iterations : var_iterations" +
-                    "}" +
-                    "DefaultSupportCaptureOp(BeaconStream) {}");
+            var stmtGraph = epService.EPAdministrator.CreateEPL(
+                "create dataflow MyDataFlowOne " +
+                "BeaconSource -> BeaconStream<SomeEvent> {" +
+                "  iterations : var_iterations" +
+                "}" +
+                "DefaultSupportCaptureOp(BeaconStream) {}");
     
             var future = new DefaultSupportCaptureOp(3, SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions()
@@ -77,12 +78,12 @@ namespace com.espertech.esper.regression.dataflow
         }
     
         private Object RunAssertionBeans(EPServiceProvider epService, string typeName) {
-            var stmtGraph = epService.EPAdministrator.CreateEPL("create dataflow MyDataFlowOne " +
-                    "" +
-                    "BeaconSource -> BeaconStream<" + typeName + "> {" +
-                    "  myfield : 'abc', iterations : 1" +
-                    "}" +
-                    "DefaultSupportCaptureOp(BeaconStream) {}");
+            var stmtGraph = epService.EPAdministrator.CreateEPL(
+                "create dataflow MyDataFlowOne " +
+                "BeaconSource -> BeaconStream<" + typeName + "> {" +
+                "  myfield : 'abc', iterations : 1" +
+                "}" +
+                "DefaultSupportCaptureOp(BeaconStream) {}");
     
             var future = new DefaultSupportCaptureOp(1, SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions()
@@ -102,7 +103,7 @@ namespace com.espertech.esper.regression.dataflow
             }
     
             // test doc samples
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("generateTagId", GetType().FullName, "generateTagId");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("generateTagId", GetType().FullName, "GenerateTagId");
             var epl = "create dataflow MyDataFlow\n" +
                     "  create schema SampleSchema(tagId string, locX double, locY double)," +
                     "  " +
@@ -114,7 +115,7 @@ namespace com.espertech.esper.regression.dataflow
                     "  // from a user-defined function \"generateTagId\" and values.\n" +
                     "  BeaconSource -> stream.two<SampleSchema> {\n" +
                     "    iterations : 1,\n" +
-                    "    tagId : GenerateTagId(),\n" +
+                    "    tagId : generateTagId(),\n" +
                     "    locX : 10,\n" +
                     "    locY : 20 \n" +
                     "  }\n" +
@@ -138,14 +139,14 @@ namespace com.espertech.esper.regression.dataflow
             epService.EPAdministrator.CreateEPL(eplMinimal);
     
             var options = new EPDataFlowInstantiationOptions();
-            options.AddParameterURI("BeaconSource/theString", "E1");
+            options.AddParameterURI("BeaconSource/TheString", "E1");
             var instance = epService.EPRuntime.DataFlowRuntime.Instantiate("MyGraph", options);
     
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select * from SupportBean").Events += listener.Update;
             instance.Run();
             Thread.Sleep(200);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "TheString".Split(','), new object[]{"E1"});
     
             // invalid: no output stream
             SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "DF1", "create dataflow DF1 BeaconSource {}",

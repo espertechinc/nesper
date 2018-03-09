@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.multithread
     /// Test for multithread-safety for creating and stopping various statements.
     /// </summary>
     public class ExecMTStmtMgmt : RegressionExecution {
-        private static readonly string EVENT_NAME = typeof(SupportMarketDataBean).Name;
+        private static readonly string EVENT_NAME = typeof(SupportMarketDataBean).FullName;
         private static readonly object[][] STMT = new object[][]{
                 // true for EPL, false for Pattern; Statement text
                 new object[] {true, "select * from " + EVENT_NAME + " where symbol = 'IBM'"},

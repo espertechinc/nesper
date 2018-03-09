@@ -32,24 +32,24 @@ namespace com.espertech.esper.regression.epl.insertinto
         private void RunAssertionThisAsColumn(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("create window OneWindow#time(1 day) as select theString as alertId, this from SupportBean");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("create window OneWindow#time(1 day) as select TheString as alertId, this from SupportBean");
             epService.EPAdministrator.CreateEPL("insert into OneWindow select '1' as alertId, stream0.quote.this as this " +
-                    " from pattern [every quote=SupportBean(theString='A')] as stream0");
+                    " from pattern [every quote=SupportBean(TheString='A')] as stream0");
             epService.EPAdministrator.CreateEPL("insert into OneWindow select '2' as alertId, stream0.quote as this " +
-                    " from pattern [every quote=SupportBean(theString='B')] as stream0");
+                    " from pattern [every quote=SupportBean(TheString='B')] as stream0");
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 10));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"alertId", "this.intPrimitive"}, new object[][]{new object[] {"1", 10}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"alertId", "this.IntPrimitive"}, new object[][]{new object[] {"1", 10}});
     
             epService.EPRuntime.SendEvent(new SupportBean("B", 20));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"alertId", "this.intPrimitive"}, new object[][]{new object[] {"1", 10}, new object[] {"2", 20}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"alertId", "this.IntPrimitive"}, new object[][]{new object[] {"1", 10}, new object[] {"2", 20}});
     
-            stmt = epService.EPAdministrator.CreateEPL("create window TwoWindow#time(1 day) as select theString as alertId, * from SupportBean");
+            stmt = epService.EPAdministrator.CreateEPL("create window TwoWindow#time(1 day) as select TheString as alertId, * from SupportBean");
             epService.EPAdministrator.CreateEPL("insert into TwoWindow select '3' as alertId, quote.* " +
-                    " from pattern [every quote=SupportBean(theString='C')] as stream0");
+                    " from pattern [every quote=SupportBean(TheString='C')] as stream0");
     
             epService.EPRuntime.SendEvent(new SupportBean("C", 30));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"alertId", "intPrimitive"}, new object[][]{new object[] {"3", 30}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), new string[]{"alertId", "IntPrimitive"}, new object[][]{new object[] {"3", 30}});
     
             stmt.Dispose();
         }

@@ -30,16 +30,16 @@ namespace com.espertech.esper.regression.multithread
     public class ExecMTStmtNamedWindowConsume : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
             EPStatement stmtWindow = epService.EPAdministrator.CreateEPL(
-                    "create window MyWindow#keepall as select theString, longPrimitive from " + typeof(SupportBean).FullName);
+                    "create window MyWindow#keepall as select TheString, LongPrimitive from " + typeof(SupportBean).FullName);
             var listenerWindow = new SupportMTUpdateListener();
             stmtWindow.Events += listenerWindow.Update;
     
             epService.EPAdministrator.CreateEPL(
-                    "insert into MyWindow(theString, longPrimitive) " +
+                    "insert into MyWindow(TheString, LongPrimitive) " +
                             " select symbol, volume \n" +
                             " from " + typeof(SupportMarketDataBean).FullName);
     
-            string stmtTextDelete = "on " + typeof(SupportBean_A).FullName + " as s0 delete from MyWindow as win where win.theString = s0.id";
+            string stmtTextDelete = "on " + typeof(SupportBean_A).FullName + " as s0 delete from MyWindow as win where win.TheString = s0.id";
             epService.EPAdministrator.CreateEPL(stmtTextDelete);
     
             TrySend(epService, listenerWindow, 4, 1000, 8);
@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.multithread
         private void TrySend(EPServiceProvider epService, SupportMTUpdateListener listenerWindow, int numThreads, int numRepeats, int numConsumers) {
             var listenerConsumers = new SupportMTUpdateListener[numConsumers];
             for (int i = 0; i < listenerConsumers.Length; i++) {
-                EPStatement stmtConsumer = epService.EPAdministrator.CreateEPL("select theString, longPrimitive from MyWindow");
+                EPStatement stmtConsumer = epService.EPAdministrator.CreateEPL("select TheString, LongPrimitive from MyWindow");
                 listenerConsumers[i] = new SupportMTUpdateListener();
                 stmtConsumer.Events += listenerConsumers[i].Update;
             }
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regression.multithread
                 EventBean[] newEvents = listenerConsumers[i].GetNewDataListFlattened();
                 var receivedIds = new string[newEvents.Length];
                 for (int j = 0; j < newEvents.Length; j++) {
-                    receivedIds[j] = (string) newEvents[j].Get("theString");
+                    receivedIds[j] = (string) newEvents[j].Get("TheString");
                 }
                 Assert.AreEqual(receivedIds.Length, expectedIds.Length);
     

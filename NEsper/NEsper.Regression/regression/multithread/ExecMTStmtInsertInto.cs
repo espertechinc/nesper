@@ -31,9 +31,9 @@ namespace com.espertech.esper.regression.multithread
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL(
                     "insert into XStream " +
-                            " select theString as key, count(*) as mycount\n" +
+                            " select TheString as key, count(*) as mycount\n" +
                             " from " + typeof(SupportBean).FullName + "#time(5 min)" +
-                            " group by theString"
+                            " group by TheString"
             );
             epService.EPAdministrator.CreateEPL(
                     "insert into XStream " +

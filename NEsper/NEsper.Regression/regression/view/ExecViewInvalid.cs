@@ -80,16 +80,16 @@ namespace com.espertech.esper.regression.view
     
             // property near to spelling
             exception = GetStatementExceptionView(epService, "select s0.intPrimitv from " + typeof(SupportBean).FullName + " as s0");
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 's0.intPrimitv': Property named 'intPrimitv' is not valid in stream 's0' (did you mean 'intPrimitive'?) [");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 's0.intPrimitv': Property named 'intPrimitv' is not valid in stream 's0' (did you mean 'IntPrimitive'?) [");
     
             exception = GetStatementExceptionView(epService, "select INTPRIMITIVE from " + typeof(SupportBean).FullName);
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'INTPRIMITIVE': Property named 'INTPRIMITIVE' is not valid in any stream (did you mean 'intPrimitive'?) [");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'INTPRIMITIVE': Property named 'INTPRIMITIVE' is not valid in any stream (did you mean 'IntPrimitive'?) [");
     
             exception = GetStatementExceptionView(epService, "select theStrring from " + typeof(SupportBean).FullName);
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'theStrring': Property named 'theStrring' is not valid in any stream (did you mean 'theString'?) [");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'theStrring': Property named 'theStrring' is not valid in any stream (did you mean 'TheString'?) [");
     
             // aggregation in where clause known
-            exception = GetStatementExceptionView(epService, "select * from " + typeof(SupportBean).FullName + " where sum(intPrimitive) > 10");
+            exception = GetStatementExceptionView(epService, "select * from " + typeof(SupportBean).FullName + " where sum(IntPrimitive) > 10");
             AssertMessage(exception, "Aggregation functions not allowed within filters [");
     
             // class not found
@@ -109,11 +109,11 @@ namespace com.espertech.esper.regression.view
             AssertMessage(exception, "Error starting statement: Error in view 'length', Length view requires a single integer-type parameter [");
     
             // where-clause relational op has invalid type
-            exception = GetStatementExceptionView(epService, "select * from " + EVENT_ALLTYPES + "#length(1) where theString > 5");
-            AssertMessage(exception, "Error validating expression: Failed to validate filter expression 'theString>5': Implicit conversion from datatype 'string' to numeric is not allowed [");
+            exception = GetStatementExceptionView(epService, "select * from " + EVENT_ALLTYPES + "#length(1) where TheString > 5");
+            AssertMessage(exception, "Error validating expression: Failed to validate filter expression 'TheString>5': Implicit conversion from datatype 'string' to numeric is not allowed [");
     
             // where-clause has aggregation function
-            exception = GetStatementExceptionView(epService, "select * from " + EVENT_ALLTYPES + "#length(1) where sum(intPrimitive) > 5");
+            exception = GetStatementExceptionView(epService, "select * from " + EVENT_ALLTYPES + "#length(1) where sum(IntPrimitive) > 5");
             AssertMessage(exception, "Error validating expression: An aggregate function may not appear in a WHERE clause (use the HAVING clause) [");
     
             // invalid numerical expression
@@ -137,24 +137,24 @@ namespace com.espertech.esper.regression.view
             AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'Math.UnknownMethod()': Failed to resolve 'Math.unknownMethod' to a property, single-row function, aggregation function, script, stream or class name [");
     
             // invalid property in group-by
-            exception = GetStatementExceptionView(epService, "select intPrimitive from " + EVENT_ALLTYPES + "#length(1) group by xxx");
+            exception = GetStatementExceptionView(epService, "select IntPrimitive from " + EVENT_ALLTYPES + "#length(1) group by xxx");
             AssertMessage(exception, "Error starting statement: Failed to validate group-by-clause expression 'xxx': Property named 'xxx' is not valid in any stream [");
     
             // group-by not specifying a property
-            exception = GetStatementExceptionView(epService, "select intPrimitive from " + EVENT_ALLTYPES + "#length(1) group by 5");
+            exception = GetStatementExceptionView(epService, "select IntPrimitive from " + EVENT_ALLTYPES + "#length(1) group by 5");
             AssertMessage(exception, "Error starting statement: Group-by expressions must refer to property names [");
     
             // group-by specifying aggregates
-            exception = GetStatementExceptionView(epService, "select intPrimitive from " + EVENT_ALLTYPES + "#length(1) group by sum(intPrimitive)");
+            exception = GetStatementExceptionView(epService, "select IntPrimitive from " + EVENT_ALLTYPES + "#length(1) group by sum(IntPrimitive)");
             AssertMessage(exception, "Error starting statement: Group-by expressions cannot contain aggregate functions [");
     
             // invalid property in having clause
-            exception = GetStatementExceptionView(epService, "select 2 * 's' from " + EVENT_ALLTYPES + "#length(1) group by intPrimitive having xxx > 5");
+            exception = GetStatementExceptionView(epService, "select 2 * 's' from " + EVENT_ALLTYPES + "#length(1) group by IntPrimitive having xxx > 5");
             AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression '2*\"s\"': Implicit conversion from datatype 'string' to numeric is not allowed [");
     
             // invalid having clause - not a symbol in the group-by (non-aggregate)
-            exception = GetStatementExceptionView(epService, "select sum(intPrimitive) from " + EVENT_ALLTYPES + "#length(1) group by intBoxed having doubleBoxed > 5");
-            AssertMessage(exception, "Error starting statement: Non-aggregated property 'doubleBoxed' in the HAVING clause must occur in the group-by clause [");
+            exception = GetStatementExceptionView(epService, "select sum(IntPrimitive) from " + EVENT_ALLTYPES + "#length(1) group by IntBoxed having DoubleBoxed > 5");
+            AssertMessage(exception, "Error starting statement: Non-aggregated property 'DoubleBoxed' in the HAVING clause must occur in the group-by clause [");
     
             // invalid outer join - not a symbol
             exception = GetStatementExceptionView(epService, "select * from " + EVENT_ALLTYPES + "#length(1) as aStr " +
@@ -163,25 +163,25 @@ namespace com.espertech.esper.regression.view
     
             // invalid outer join for 3 streams - not a symbol
             exception = GetStatementExceptionView(epService, "select * from " + EVENT_ALLTYPES + "#length(1) as s0 " +
-                    "left outer join " + EVENT_ALLTYPES + "#length(1) as s1 on s0.intPrimitive = s1.intPrimitive " +
-                    "left outer join " + EVENT_ALLTYPES + "#length(1) as s2 on s0.intPrimitive = s2.yyyy");
-            AssertMessage(exception, "Error validating expression: Failed to validate on-clause join expression 's0.intPrimitive=s2.yyyy': Failed to resolve property 's2.yyyy' to a stream or nested property in a stream [");
+                    "left outer join " + EVENT_ALLTYPES + "#length(1) as s1 on s0.IntPrimitive = s1.IntPrimitive " +
+                    "left outer join " + EVENT_ALLTYPES + "#length(1) as s2 on s0.IntPrimitive = s2.yyyy");
+            AssertMessage(exception, "Error validating expression: Failed to validate on-clause join expression 's0.IntPrimitive=s2.yyyy': Failed to resolve property 's2.yyyy' to a stream or nested property in a stream [");
     
             // invalid outer join for 3 streams - wrong stream, the properties in on-clause don't refer to streams
             exception = GetStatementExceptionView(epService, "select * from " + EVENT_ALLTYPES + "#length(1) as s0 " +
-                    "left outer join " + EVENT_ALLTYPES + "#length(1) as s1 on s0.intPrimitive = s1.intPrimitive " +
-                    "left outer join " + EVENT_ALLTYPES + "#length(1) as s2 on s0.intPrimitive = s1.intPrimitive");
+                    "left outer join " + EVENT_ALLTYPES + "#length(1) as s1 on s0.IntPrimitive = s1.IntPrimitive " +
+                    "left outer join " + EVENT_ALLTYPES + "#length(1) as s2 on s0.IntPrimitive = s1.IntPrimitive");
             AssertMessage(exception, "Error validating expression: Outer join ON-clause must refer to at least one property of the joined stream for stream 2 [");
     
             // invalid outer join - referencing next stream
             exception = GetStatementExceptionView(epService, "select * from " + EVENT_ALLTYPES + "#length(1) as s0 " +
-                    "left outer join " + EVENT_ALLTYPES + "#length(1) as s1 on s2.intPrimitive = s1.intPrimitive " +
-                    "left outer join " + EVENT_ALLTYPES + "#length(1) as s2 on s1.intPrimitive = s2.intPrimitive");
-            AssertMessage(exception, "Error validating expression: Outer join ON-clause invalid scope for property 'intPrimitive', expecting the current or a prior stream scope [");
+                    "left outer join " + EVENT_ALLTYPES + "#length(1) as s1 on s2.IntPrimitive = s1.IntPrimitive " +
+                    "left outer join " + EVENT_ALLTYPES + "#length(1) as s2 on s1.IntPrimitive = s2.IntPrimitive");
+            AssertMessage(exception, "Error validating expression: Outer join ON-clause invalid scope for property 'IntPrimitive', expecting the current or a prior stream scope [");
     
             // invalid outer join - same properties
             exception = GetStatementExceptionView(epService, "select * from " + EVENT_NUM + "#length(1) as aStr " +
-                    "left outer join " + EVENT_ALLTYPES + "#length(1) on theString=theString");
+                    "left outer join " + EVENT_ALLTYPES + "#length(1) on TheString=TheString");
             AssertMessage(exception, "Error validating expression: Outer join ON-clause cannot refer to properties of the same stream [");
     
             // invalid order by
@@ -193,24 +193,24 @@ namespace com.espertech.esper.regression.view
             AssertMessage(exception, "Error starting statement: Wildcard not allowed when insert-into specifies column order [");
     
             // insert into with duplicate column names
-            exception = GetStatementExceptionView(epService, "insert into Google (a, b, a) select boolBoxed, boolPrimitive, intBoxed from " + EVENT_NUM + "#length(1) as aStr");
+            exception = GetStatementExceptionView(epService, "insert into Google (a, b, a) select BoolBoxed, BoolPrimitive, IntBoxed from " + EVENT_NUM + "#length(1) as aStr");
             AssertMessage(exception, "Error starting statement: Property name 'a' appears more then once in insert-into clause [");
     
             // insert into mismatches selected columns
-            exception = GetStatementExceptionView(epService, "insert into Google (a, b, c) select boolBoxed, boolPrimitive from " + EVENT_NUM + "#length(1) as aStr");
+            exception = GetStatementExceptionView(epService, "insert into Google (a, b, c) select BoolBoxed, BoolPrimitive from " + EVENT_NUM + "#length(1) as aStr");
             AssertMessage(exception, "Error starting statement: Number of supplied values in the select or values clause does not match insert-into clause [");
     
             // mismatched type on coalesce columns
-            exception = GetStatementExceptionView(epService, "select coalesce(boolBoxed, theString) from " + typeof(SupportBean).FullName + "#length(1) as aStr");
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'coalesce(boolBoxed,theString)': Implicit conversion not allowed: Cannot coerce to bool? type System.String [");
+            exception = GetStatementExceptionView(epService, "select coalesce(BoolBoxed, TheString) from " + typeof(SupportBean).FullName + "#length(1) as aStr");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'coalesce(BoolBoxed,TheString)': Implicit conversion not allowed: Cannot coerce to bool? type System.String [");
     
             // mismatched case compare type
-            exception = GetStatementExceptionView(epService, "select case boolPrimitive when 1 then true end from " + typeof(SupportBean).FullName + "#length(1) as aStr");
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'case boolPrimitive when 1 then true end': Implicit conversion not allowed: Cannot coerce to bool? type " + Name.Of<int>() + " [");
+            exception = GetStatementExceptionView(epService, "select case BoolPrimitive when 1 then true end from " + typeof(SupportBean).FullName + "#length(1) as aStr");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'case BoolPrimitive when 1 then true end': Implicit conversion not allowed: Cannot coerce to bool? type " + Name.Clean<int>() + " [");
     
             // mismatched case result type
             exception = GetStatementExceptionView(epService, "select case when 1=2 then 1 when 1=3 then true end from " + typeof(SupportBean).FullName + "#length(1) as aStr");
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'case when 1=2 then 1 when 1=3 then ...(43 chars)': Implicit conversion not allowed: Cannot coerce types " + Name.Of<int>() + " and java.lang.bool? [");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'case when 1=2 then 1 when 1=3 then ...(43 chars)': Implicit conversion not allowed: Cannot coerce types " + Name.Clean<int>() + " and " + Name.Clean<bool>() + " [");
     
             // case expression not returning bool
             exception = GetStatementExceptionView(epService, "select case when 3 then 1 end from " + typeof(SupportBean).FullName + "#length(1) as aStr");
@@ -230,17 +230,17 @@ namespace com.espertech.esper.regression.view
             string eventClass = typeof(SupportBean).FullName;
     
             TryInvalid(epService, "select * from " + eventClass + "(dummy='a')#length(3)");
-            TryValid(epService, "select * from " + eventClass + "(theString='a')#length(3)");
+            TryValid(epService, "select * from " + eventClass + "(TheString='a')#length(3)");
             TryInvalid(epService, "select * from " + eventClass + ".dummy:Length(3)");
     
             TryInvalid(epService, "select djdjdj from " + eventClass + "#length(3)");
-            TryValid(epService, "select boolBoxed as xx, intPrimitive from " + eventClass + "#length(3)");
-            TryInvalid(epService, "select boolBoxed as xx, intPrimitive as xx from " + eventClass + "#length(3)");
-            TryValid(epService, "select boolBoxed as xx, intPrimitive as yy from " + eventClass + "()#length(3)");
+            TryValid(epService, "select BoolBoxed as xx, IntPrimitive from " + eventClass + "#length(3)");
+            TryInvalid(epService, "select BoolBoxed as xx, IntPrimitive as xx from " + eventClass + "#length(3)");
+            TryValid(epService, "select BoolBoxed as xx, IntPrimitive as yy from " + eventClass + "()#length(3)");
     
-            TryValid(epService, "select boolBoxed as xx, intPrimitive as yy from " + eventClass + "()#length(3)" +
-                    " where boolBoxed = true");
-            TryInvalid(epService, "select boolBoxed as xx, intPrimitive as yy from " + eventClass + "()#length(3)" +
+            TryValid(epService, "select BoolBoxed as xx, IntPrimitive as yy from " + eventClass + "()#length(3)" +
+                    " where BoolBoxed = true");
+            TryInvalid(epService, "select BoolBoxed as xx, IntPrimitive as yy from " + eventClass + "()#length(3)" +
                     " where xx = true");
         }
     

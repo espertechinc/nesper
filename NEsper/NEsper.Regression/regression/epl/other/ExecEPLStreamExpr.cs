@@ -114,10 +114,10 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionInstanceMethodOuterJoin(EPServiceProvider epService) {
-            string textOne = "select symbol, s1.TheString as theString from " +
-                    typeof(SupportMarketDataBean).Name + "#keepall as s0 " +
+            string textOne = "select symbol, s1.TheString as TheString from " +
+                    typeof(SupportMarketDataBean).FullName + "#keepall as s0 " +
                     "left outer join " +
-                    typeof(SupportBean).FullName + "#keepall as s1 on s0.symbol=s1.theString";
+                    typeof(SupportBean).FullName + "#keepall as s1 on s0.symbol=s1.TheString";
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(textOne);
             var listenerOne = new SupportUpdateListener();
@@ -125,16 +125,16 @@ namespace com.espertech.esper.regression.epl.other
     
             var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
             epService.EPRuntime.SendEvent(eventA);
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), new string[]{"symbol", "theString"}, new object[]{"ACME", null});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), new string[]{"symbol", "TheString"}, new object[]{"ACME", null});
     
             stmtOne.Dispose();
         }
     
         private void RunAssertionInstanceMethodStatic(EPServiceProvider epService) {
             string textOne = "select symbol, s1.SimpleProperty as simpleprop, s1.MakeDefaultBean() as def from " +
-                    typeof(SupportMarketDataBean).Name + "#keepall as s0 " +
+                    typeof(SupportMarketDataBean).FullName + "#keepall as s0 " +
                     "left outer join " +
-                    typeof(SupportBeanComplexProps).Name + "#keepall as s1 on s0.symbol=s1.simpleProperty";
+                    typeof(SupportBeanComplexProps).FullName + "#keepall as s1 on s0.symbol=s1.simpleProperty";
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(textOne);
             var listenerOne = new SupportUpdateListener();
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionStreamInstanceMethodAliased(EPServiceProvider epService) {
-            string textOne = "select S0.Volume as volume, s0.Symbol as symbol, s0.GetPriceTimesVolume(2) as pvf from " +
+            string textOne = "select s0.Volume as volume, s0.Symbol as symbol, s0.GetPriceTimesVolume(2) as pvf from " +
                     typeof(SupportMarketDataBean).FullName + " as s0 ";
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(textOne);
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regression.epl.other
     
             EventType type = stmtOne.EventType;
             Assert.AreEqual(3, type.PropertyNames.Length);
-            Assert.AreEqual(typeof(long), type.GetPropertyType("volume"));
+            Assert.AreEqual(typeof(long?), type.GetPropertyType("volume"));
             Assert.AreEqual(typeof(string), type.GetPropertyType("symbol"));
             Assert.AreEqual(typeof(double), type.GetPropertyType("pvf"));
     
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionStreamInstanceMethodNoAlias(EPServiceProvider epService) {
-            string textOne = "select S0.Volume, s0.GetPriceTimesVolume(3) from " +
+            string textOne = "select s0.Volume, s0.GetPriceTimesVolume(3) from " +
                     typeof(SupportMarketDataBean).FullName + " as s0 ";
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(textOne);
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regression.epl.other
     
             EventType type = stmtOne.EventType;
             Assert.AreEqual(2, type.PropertyNames.Length);
-            Assert.AreEqual(typeof(long), type.GetPropertyType("s0.Volume"));
+            Assert.AreEqual(typeof(long?), type.GetPropertyType("s0.Volume"));
             Assert.AreEqual(typeof(double), type.GetPropertyType("s0.GetPriceTimesVolume(3)"));
     
             var eventA = new SupportMarketDataBean("ACME", 4, 2L, null);
@@ -211,7 +211,7 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionJoinStreamSelectNoWildcard(EPServiceProvider epService) {
             // try with alias
             string textOne = "select s0 as s0stream, s1 as s1stream from " +
-                    typeof(SupportMarketDataBean).Name + "#keepall as s0, " +
+                    typeof(SupportMarketDataBean).FullName + "#keepall as s0, " +
                     typeof(SupportBean).FullName + "#keepall as s1";
     
             // Attach listener to feed
@@ -237,7 +237,7 @@ namespace com.espertech.esper.regression.epl.other
     
             // try no alias
             textOne = "select s0, s1 from " +
-                    typeof(SupportMarketDataBean).Name + "#keepall as s0, " +
+                    typeof(SupportMarketDataBean).FullName + "#keepall as s0, " +
                     typeof(SupportBean).FullName + "#keepall as s1";
     
             // Attach listener to feed
@@ -258,7 +258,7 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionPatternStreamSelectNoWildcard(EPServiceProvider epService) {
             // try with alias
-            string textOne = "select * from pattern [every e1=" + typeof(SupportMarketDataBean).Name + " -> e2=" +
+            string textOne = "select * from pattern [every e1=" + typeof(SupportMarketDataBean).FullName + " -> e2=" +
                     typeof(SupportBean).FullName + "(" + typeof(SupportStaticMethodLib).FullName + ".CompareEvents(e1, e2))]";
     
             // Attach listener to feed
@@ -277,14 +277,14 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionInvalidSelect(EPServiceProvider epService) {
-            TryInvalid(epService, "select S0.GetString(1,2,3) from " + typeof(SupportBean).FullName + " as s0", null);
+            TryInvalid(epService, "select s0.GetString(1,2,3) from " + typeof(SupportBean).FullName + " as s0", null);
     
-            TryInvalid(epService, "select S0.Abc() from " + typeof(SupportBean).FullName + " as s0",
-                    "Error starting statement: Failed to validate select-clause expression 's0.Abc()': Failed to solve 'abc' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'abc': Could not find enumeration method, date-time method or instance method named 'abc' in class '" + typeof(SupportBean).FullName + "' taking no parameters [");
+            TryInvalid(epService, "select s0.abc() from " + typeof(SupportBean).FullName + " as s0",
+                    "Error starting statement: Failed to validate select-clause expression 's0.abc()': Failed to solve 'abc' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'abc': Could not find enumeration method, date-time method or instance method named 'abc' in class '" + typeof(SupportBean).FullName + "' taking no parameters [");
     
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            TryInvalid(epService, "select s.theString from pattern [every [2] s=SupportBean] ee",
-                    "Error starting statement: Failed to validate select-clause expression 's.theString': Failed to resolve property 's.theString' (property 's' is an indexed property and requires an index or enumeration method to access values) [select s.theString from pattern [every [2] s=SupportBean] ee]");
+            TryInvalid(epService, "select s.TheString from pattern [every [2] s=SupportBean] ee",
+                    "Error starting statement: Failed to validate select-clause expression 's.TheString': Failed to resolve property 's.TheString' (property 's' is an indexed property and requires an index or enumeration method to access values) [select s.TheString from pattern [every [2] s=SupportBean] ee]");
         }
     
         private void TryInvalid(EPServiceProvider epService, string clause, string message) {

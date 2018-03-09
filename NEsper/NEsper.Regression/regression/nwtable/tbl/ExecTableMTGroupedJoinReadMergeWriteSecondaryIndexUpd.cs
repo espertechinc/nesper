@@ -56,7 +56,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string epl =
                     "create table MyTable (key1 string primary key, value int);\n" +
                             "create index MyIndex on MyTable (value);\n" +
-                            "on SupportBean merge MyTable where theString = key1 when not matched then insert select theString as key1, intPrimitive as value;\n" +
+                            "on SupportBean merge MyTable where TheString = key1 when not matched then insert select TheString as key1, IntPrimitive as value;\n" +
                             "@Name('out') select * from SupportBean_S0, MyTable where value = id;\n" +
                             "on SupportBean_S1 delete from MyTable where key1 like 'B%';\n";
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);

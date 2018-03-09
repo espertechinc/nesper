@@ -70,7 +70,7 @@ namespace com.espertech.esper.regression.db
     
             string stmtText = "select * from SupportBean#lastevent sb, SupportBeanTwo#lastevent sbt, " +
                     "sql:MyDB ['select myint from mytesttable'] as s1 " +
-                    "  where sb.theString = sbt.stringTwo and s1.myint = sbt.intPrimitiveTwo";
+                    "  where sb.TheString = sbt.stringTwo and s1.myint = sbt.IntPrimitiveTwo";
     
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL(stmtText);
             Assert.IsFalse(statement.StatementContext.IsStatelessSelect);
@@ -82,29 +82,29 @@ namespace com.espertech.esper.regression.db
     
             epService.EPRuntime.SendEvent(new SupportBeanTwo("T2", 30));
             epService.EPRuntime.SendEvent(new SupportBean("T2", -1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T2", "T2", 30});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.TheString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T2", "T2", 30});
     
             epService.EPRuntime.SendEvent(new SupportBean("T3", -1));
             epService.EPRuntime.SendEvent(new SupportBeanTwo("T3", 40));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T3", "T3", 40});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.TheString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T3", "T3", 40});
     
             statement.Dispose();
         }
     
         private void RunAssertionTimeBatchEPL(EPServiceProvider epService) {
             string stmtText = "select " + ALL_FIELDS + " from " +
-                    " sql:MyDB ['select " + ALL_FIELDS + " from mytesttable \n\r where ${intPrimitive} = mytesttable.mybigint'] as s0," +
+                    " sql:MyDB ['select " + ALL_FIELDS + " from mytesttable \n\r where ${IntPrimitive} = mytesttable.mybigint'] as s0," +
                     typeof(SupportBean).FullName + "#time_batch(10 sec) as s1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             RuntestTimeBatch(epService, stmt);
         }
     
         private void RunAssertion2HistoricalStar(EPServiceProvider epService) {
-            string[] fields = "intPrimitive,myint,myvarchar".Split(',');
-            string stmtText = "select intPrimitive, myint, myvarchar from " +
+            string[] fields = "IntPrimitive,myint,myvarchar".Split(',');
+            string stmtText = "select IntPrimitive, myint, myvarchar from " +
                     typeof(SupportBean).FullName + "#keepall as s0, " +
-                    " sql:MyDB ['select myint from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s1," +
-                    " sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s2 ";
+                    " sql:MyDB ['select myint from mytesttable where ${IntPrimitive} = mytesttable.mybigint'] as s1," +
+                    " sql:MyDB ['select myvarchar from mytesttable where ${IntPrimitive} = mytesttable.mybigint'] as s2 ";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -127,14 +127,14 @@ namespace com.espertech.esper.regression.db
     
         private void RunAssertion2HistoricalStarInner(EPServiceProvider epService) {
             string[] fields = "a,b,c,d".Split(',');
-            string stmtText = "select theString as a, intPrimitive as b, s1.myvarchar as c, s2.myvarchar as d from " +
+            string stmtText = "select TheString as a, IntPrimitive as b, s1.myvarchar as c, s2.myvarchar as d from " +
                     typeof(SupportBean).FullName + "#keepall as s0 " +
                     " inner join " +
-                    " sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} <> mytesttable.mybigint'] as s1 " +
-                    " on s1.myvarchar=s0.theString " +
+                    " sql:MyDB ['select myvarchar from mytesttable where ${IntPrimitive} <> mytesttable.mybigint'] as s1 " +
+                    " on s1.myvarchar=s0.TheString " +
                     " inner join " +
-                    " sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} <> mytesttable.myint'] as s2 " +
-                    " on s2.myvarchar=s0.theString ";
+                    " sql:MyDB ['select myvarchar from mytesttable where ${IntPrimitive} <> mytesttable.myint'] as s2 " +
+                    " on s2.myvarchar=s0.TheString ";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -158,7 +158,7 @@ namespace com.espertech.esper.regression.db
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportBean_A));
             epService.EPAdministrator.CreateEPL("create variable int queryvar");
-            epService.EPAdministrator.CreateEPL("on SupportBean set queryvar=intPrimitive");
+            epService.EPAdministrator.CreateEPL("on SupportBean set queryvar=IntPrimitive");
     
             string stmtText = "select myint from " +
                     " sql:MyDB ['select myint from mytesttable where ${queryvar} = mytesttable.mybigint'] as s0, " +
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regression.db
     
         private void RunAssertionTimeBatchOM(EPServiceProvider epService) {
             string[] fields = ALL_FIELDS.Split(',');
-            string sql = "select " + ALL_FIELDS + " from mytesttable where ${intPrimitive} = mytesttable.mybigint";
+            string sql = "select " + ALL_FIELDS + " from mytesttable where ${IntPrimitive} = mytesttable.mybigint";
     
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.Create(fields);
@@ -205,7 +205,7 @@ namespace com.espertech.esper.regression.db
             model.FromClause = fromClause;
             SerializableObjectCopier.Copy(model);
     
-            Assert.AreEqual("select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from sql:MyDB[\"select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from mytesttable where ${intPrimitive} = mytesttable.mybigint\"] as s0, " + typeof(SupportBean).FullName + "#time_batch(10) as s1",
+            Assert.AreEqual("select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from sql:MyDB[\"select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from mytesttable where ${IntPrimitive} = mytesttable.mybigint\"] as s0, " + typeof(SupportBean).FullName + "#time_batch(10) as s1",
                     model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -215,7 +215,7 @@ namespace com.espertech.esper.regression.db
     
         private void RunAssertionTimeBatchCompile(EPServiceProvider epService) {
             string stmtText = "select " + ALL_FIELDS + " from " +
-                    " sql:MyDB ['select " + ALL_FIELDS + " from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s0," +
+                    " sql:MyDB ['select " + ALL_FIELDS + " from mytesttable where ${IntPrimitive} = mytesttable.mybigint'] as s0," +
                     typeof(SupportBean).FullName + "#time_batch(10 sec) as s1";
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
@@ -322,7 +322,7 @@ namespace com.espertech.esper.regression.db
         }
     
         private void RunAssertionInvalidSubviews(EPServiceProvider epService) {
-            string sql = "sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} = mytesttable.myint']#time(30 sec)";
+            string sql = "sql:MyDB ['select myvarchar from mytesttable where ${IntPrimitive} = mytesttable.myint']#time(30 sec)";
             string stmtText = "select myvarchar as s0Name from " +
                     sql + " as s0, " + typeof(SupportBean).FullName + " as s1";
             SupportMessageAssertUtil.TryInvalid(epService, stmtText,

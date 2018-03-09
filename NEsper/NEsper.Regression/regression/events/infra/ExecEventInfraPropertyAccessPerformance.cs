@@ -26,7 +26,7 @@ namespace com.espertech.esper.regression.events.infra
             string methodName = ".testPerfPropertyAccess";
     
             string joinStatement = "select * from " +
-                    typeof(SupportBeanCombinedProps).Name + "#length(1)" +
+                    typeof(SupportBeanCombinedProps).FullName + "#length(1)" +
                     " where indexed[0].Mapped('a').value = 'dummy'";
     
             EPStatement joinView = epService.EPAdministrator.CreateEPL(joinStatement);

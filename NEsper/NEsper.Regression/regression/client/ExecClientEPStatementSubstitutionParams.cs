@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
@@ -43,7 +44,7 @@ namespace com.espertech.esper.regression.client
         private void RunAssertionNamedParameter(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
-            string epl = "select ?:my/value/int as c0 from SupportBean(theString = ?:somevalue, intPrimitive=?:my/value/int, longPrimitive=?:/my/value/long)";
+            string epl = "select ?:my/value/int as c0 from SupportBean(TheString = ?:somevalue, IntPrimitive=?:my/value/int, LongPrimitive=?:/my/value/long)";
             EPPreparedStatement prepared = epService.EPAdministrator.PrepareEPL(epl);
             prepared.SetObject("somevalue", "E1");
             prepared.SetObject("my/value/int", 10);
@@ -67,7 +68,7 @@ namespace com.espertech.esper.regression.client
     
         private void RunAssertionMethodInvocation(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            EPPreparedStatement prepared = epService.EPAdministrator.PrepareEPL("select * from SupportBean(theString = ?.TheString)");
+            EPPreparedStatement prepared = epService.EPAdministrator.PrepareEPL("select * from SupportBean(TheString = ?.TheString)");
             prepared.SetObject(1, new SupportBean("E1", 0));
             var listenerOne = new SupportUpdateListener();
             epService.EPAdministrator.Create(prepared).Events += listenerOne.Update;
@@ -79,20 +80,20 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionPattern(EPServiceProvider epService) {
-            string stmt = typeof(SupportBean).FullName + "(theString=?)";
+            string stmt = typeof(SupportBean).FullName + "(TheString=?)";
             EPPreparedStatement prepared = epService.EPAdministrator.PreparePattern(stmt);
     
             prepared.SetObject(1, "e1");
             EPStatement statement = epService.EPAdministrator.Create(prepared);
             var listenerOne = new SupportUpdateListener();
             statement.Events += listenerOne.Update;
-            Assert.AreEqual("select * from pattern [" + typeof(SupportBean).FullName + "(theString=\"e1\")]", statement.Text);
+            Assert.AreEqual("select * from pattern [" + typeof(SupportBean).FullName + "(TheString=\"e1\")]", statement.Text);
     
             prepared.SetObject(1, "e2");
             statement = epService.EPAdministrator.Create(prepared);
             var listenerTwo = new SupportUpdateListener();
             statement.Events += listenerTwo.Update;
-            Assert.AreEqual("select * from pattern [com.espertech.esper.supportregression.bean.SupportBean(theString=\"e2\")]", statement.Text);
+            Assert.AreEqual("select * from pattern [com.espertech.esper.supportregression.bean.SupportBean(TheString=\"e2\")]", statement.Text);
     
             epService.EPRuntime.SendEvent(new SupportBean("e2", 10));
             Assert.IsFalse(listenerOne.IsInvoked);
@@ -153,20 +154,20 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionSimpleOneParameter(EPServiceProvider epService) {
-            string stmt = "select * from " + typeof(SupportBean).FullName + "(theString=?)";
+            string stmt = "select * from " + typeof(SupportBean).FullName + "(TheString=?)";
             EPPreparedStatement prepared = epService.EPAdministrator.PrepareEPL(stmt);
     
             prepared.SetObject(1, "e1");
             EPStatement statement = epService.EPAdministrator.Create(prepared);
             var listenerOne = new SupportUpdateListener();
             statement.Events += listenerOne.Update;
-            Assert.AreEqual("select * from " + typeof(SupportBean).FullName + "(theString=\"e1\")", statement.Text);
+            Assert.AreEqual("select * from " + typeof(SupportBean).FullName + "(TheString=\"e1\")", statement.Text);
     
             prepared.SetObject(1, "e2");
             statement = epService.EPAdministrator.Create(prepared);
             var listenerTwo = new SupportUpdateListener();
             statement.Events += listenerTwo.Update;
-            Assert.AreEqual("select * from Com.espertech.esper.supportregression.bean.SupportBean(theString=\"e2\")", statement.Text);
+            Assert.AreEqual("select * from Com.espertech.esper.supportregression.bean.SupportBean(TheString=\"e2\")", statement.Text);
     
             epService.EPRuntime.SendEvent(new SupportBean("e2", 10));
             Assert.IsFalse(listenerOne.IsInvoked);
@@ -204,17 +205,17 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionSimpleTwoParameterFilter(EPServiceProvider epService) {
-            string stmt = "select * from " + typeof(SupportBean).FullName + "(theString=?,intPrimitive=?)";
+            string stmt = "select * from " + typeof(SupportBean).FullName + "(TheString=?,IntPrimitive=?)";
             RunSimpleTwoParameter(epService, stmt, null, true);
         }
     
         private void RunAssertionSimpleTwoParameterWhere(EPServiceProvider epService) {
-            string stmt = "select * from " + typeof(SupportBean).FullName + " where theString=? and intPrimitive=?";
+            string stmt = "select * from " + typeof(SupportBean).FullName + " where TheString=? and IntPrimitive=?";
             RunSimpleTwoParameter(epService, stmt, null, false);
         }
     
         private void RunAssertionSimpleTwoParameterWhereNamed(EPServiceProvider epService) {
-            string stmt = "select * from " + typeof(SupportBean).FullName + " where theString=? and intPrimitive=?";
+            string stmt = "select * from " + typeof(SupportBean).FullName + " where TheString=? and IntPrimitive=?";
             RunSimpleTwoParameter(epService, stmt, "s1", false);
         }
     
@@ -232,7 +233,7 @@ namespace com.espertech.esper.regression.client
             var listenerOne = new SupportUpdateListener();
             statement.Events += listenerOne.Update;
             if (compareText) {
-                Assert.AreEqual("select * from " + typeof(SupportBean).FullName + "(theString=\"e1\" and intPrimitive=1)", statement.Text);
+                Assert.AreEqual("select * from " + typeof(SupportBean).FullName + "(TheString=\"e1\" and IntPrimitive=1)", statement.Text);
             }
     
             prepared.SetObject(1, "e2");
@@ -245,7 +246,7 @@ namespace com.espertech.esper.regression.client
             var listenerTwo = new SupportUpdateListener();
             statement.Events += listenerTwo.Update;
             if (compareText) {
-                Assert.AreEqual("select * from " + typeof(SupportBean).FullName + "(theString=\"e2\" and intPrimitive=2)", statement.Text);
+                Assert.AreEqual("select * from " + typeof(SupportBean).FullName + "(TheString=\"e2\" and IntPrimitive=2)", statement.Text);
             }
     
             epService.EPRuntime.SendEvent(new SupportBean("e2", 2));
@@ -264,18 +265,18 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionSimpleNoParameter(EPServiceProvider epService) {
-            string stmt = "select * from " + typeof(SupportBean).FullName + "(theString=\"e1\")";
+            string stmt = "select * from " + typeof(SupportBean).FullName + "(TheString=\"e1\")";
             EPPreparedStatement prepared = epService.EPAdministrator.PrepareEPL(stmt);
     
             EPStatement statement = epService.EPAdministrator.Create(prepared);
             var listenerOne = new SupportUpdateListener();
             statement.Events += listenerOne.Update;
-            Assert.AreEqual("select * from " + typeof(SupportBean).FullName + "(theString=\"e1\")", statement.Text);
+            Assert.AreEqual("select * from " + typeof(SupportBean).FullName + "(TheString=\"e1\")", statement.Text);
     
             statement = epService.EPAdministrator.Create(prepared);
             var listenerTwo = new SupportUpdateListener();
             statement.Events += listenerTwo.Update;
-            Assert.AreEqual("select * from Com.espertech.esper.supportregression.bean.SupportBean(theString=\"e1\")", statement.Text);
+            Assert.AreEqual("select * from Com.espertech.esper.supportregression.bean.SupportBean(TheString=\"e1\")", statement.Text);
     
             epService.EPRuntime.SendEvent(new SupportBean("e2", 10));
             Assert.IsFalse(listenerOne.IsInvoked);
@@ -289,7 +290,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionInvalidParameterNotSet(EPServiceProvider epService) {
-            string stmt = "select * from " + typeof(SupportBean).FullName + "(theString=?)";
+            string stmt = "select * from " + typeof(SupportBean).FullName + "(TheString=?)";
             EPPreparedStatement prepared = epService.EPAdministrator.PrepareEPL(stmt);
     
             try {
@@ -299,7 +300,7 @@ namespace com.espertech.esper.regression.client
                 Assert.AreEqual("Substitution parameter value for index 1 not set, please provide a value for this parameter", ex.Message);
             }
     
-            stmt = "select * from " + typeof(SupportBean).FullName + "(theString in (?, ?))";
+            stmt = "select * from " + typeof(SupportBean).FullName + "(TheString in (?, ?))";
             prepared = epService.EPAdministrator.PrepareEPL(stmt);
     
             try {
@@ -323,7 +324,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionInvalidParameterType(EPServiceProvider epService) {
-            string stmt = "select * from " + typeof(SupportBean).FullName + "(theString=?)";
+            string stmt = "select * from " + typeof(SupportBean).FullName + "(TheString=?)";
             EPPreparedStatement prepared = epService.EPAdministrator.PrepareEPL(stmt);
     
             try {
@@ -331,12 +332,12 @@ namespace com.espertech.esper.regression.client
                 epService.EPAdministrator.Create(prepared);
                 Assert.Fail();
             } catch (EPException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex, "Failed to validate filter expression 'theString=-1': Implicit conversion from datatype 'int?' to 'string' is not allowed [");
+                SupportMessageAssertUtil.AssertMessage(ex, "Failed to validate filter expression 'TheString=-1': Implicit conversion from datatype '" + Name.Of<int>() + "' to 'string' is not allowed [");
             }
         }
     
         private void RunAssertionInvalidNoParameters(EPServiceProvider epService) {
-            string stmt = "select * from " + typeof(SupportBean).FullName + "(theString='ABC')";
+            string stmt = "select * from " + typeof(SupportBean).FullName + "(TheString='ABC')";
             EPPreparedStatement prepared = epService.EPAdministrator.PrepareEPL(stmt);
     
             try {
@@ -348,7 +349,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionInvalidSetObject(EPServiceProvider epService) {
-            string stmt = "select * from " + typeof(SupportBean).FullName + "(theString=?)";
+            string stmt = "select * from " + typeof(SupportBean).FullName + "(TheString=?)";
             EPPreparedStatement prepared = epService.EPAdministrator.PrepareEPL(stmt);
     
             try {
@@ -367,26 +368,26 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionInvalidCreateEPL(EPServiceProvider epService) {
-            string stmt = "select * from " + typeof(SupportBean).FullName + "(theString=?)";
+            string stmt = "select * from " + typeof(SupportBean).FullName + "(TheString=?)";
             try {
                 epService.EPAdministrator.CreateEPL(stmt);
             } catch (EPException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex, "Failed to validate filter expression 'theString=?': Invalid use of substitution parameters marked by '?' in statement, use the prepare method to prepare statements with substitution parameters");
+                SupportMessageAssertUtil.AssertMessage(ex, "Failed to validate filter expression 'TheString=?': Invalid use of substitution parameters marked by '?' in statement, use the prepare method to prepare statements with substitution parameters");
             }
         }
     
         private void RunAssertionInvalidCreatePattern(EPServiceProvider epService) {
-            string stmt = typeof(SupportBean).FullName + "(theString=?)";
+            string stmt = typeof(SupportBean).FullName + "(TheString=?)";
             try {
                 epService.EPAdministrator.CreatePattern(stmt);
             } catch (EPException ex) {
                 SupportMessageAssertUtil.AssertMessage(ex,
-                        "Failed to validate filter expression 'theString=?': Invalid use of substitution parameters marked by '?' in statement, use the prepare method to prepare statements");
+                        "Failed to validate filter expression 'TheString=?': Invalid use of substitution parameters marked by '?' in statement, use the prepare method to prepare statements");
             }
         }
     
         private void RunAssertionInvalidCompile(EPServiceProvider epService) {
-            string stmt = "select * from " + typeof(SupportBean).FullName + "(theString=?)";
+            string stmt = "select * from " + typeof(SupportBean).FullName + "(TheString=?)";
             try {
                 epService.EPAdministrator.CompileEPL(stmt);
             } catch (EPException ex) {

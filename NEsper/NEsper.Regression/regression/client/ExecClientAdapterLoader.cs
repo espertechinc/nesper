@@ -7,12 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.plugin;
@@ -34,11 +31,11 @@ namespace com.espertech.esper.regression.client
             var props = new Properties();
             props.Put("name", "val");
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddPluginLoader("MyLoader", typeof(SupportPluginLoader).Name, props);
+            config.AddPluginLoader("MyLoader", typeof(SupportPluginLoader).FullName, props);
     
             props = new Properties();
             props.Put("name2", "val2");
-            config.AddPluginLoader("MyLoader2", typeof(SupportPluginLoader).Name, props);
+            config.AddPluginLoader("MyLoader2", typeof(SupportPluginLoader).FullName, props);
     
             EPServiceProvider service = EPServiceProviderManager.GetProvider(
                 SupportContainer.Instance, "ExecClientAdapterLoader", config);
@@ -70,7 +67,7 @@ namespace com.espertech.esper.regression.client
             SupportPluginLoader.Reset();
     
             Configuration cf = SupportConfigFactory.GetConfiguration();
-            cf.AddPluginLoader("AP", typeof(SupportPluginLoader).Name, null);
+            cf.AddPluginLoader("AP", typeof(SupportPluginLoader).FullName, null);
             EPServiceProviderManager.GetProvider(SupportContainer.Instance, "ExecClientAdapterLoader", cf);
             EPServiceProvider ep = EPServiceProviderManager.GetProvider("ExecClientAdapterLoader");
             ep.Dispose();

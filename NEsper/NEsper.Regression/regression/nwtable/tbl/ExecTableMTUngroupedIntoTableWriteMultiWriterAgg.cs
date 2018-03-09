@@ -90,7 +90,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 Log.Info("Started event send for write");
     
                 try {
-                    string eplInto = "into table varagg select window(*) as theEvents from SupportBean(theString='E" + _threadNum + "')#length(3)";
+                    string eplInto = "into table varagg select window(*) as theEvents from SupportBean(TheString='E" + _threadNum + "')#length(3)";
                     _epService.EPAdministrator.CreateEPL(eplInto);
     
                     for (int i = 0; i < _numEvents; i++) {

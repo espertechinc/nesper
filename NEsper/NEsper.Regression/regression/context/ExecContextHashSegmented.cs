@@ -102,8 +102,8 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionContextPartitionSelection(EPServiceProvider epService) {
             string[] fields = "c0,c1,c2".Split(',');
-            epService.EPAdministrator.CreateEPL("create context MyCtx as coalesce Consistent_hash_crc32(theString) from SupportBean granularity 16 preallocate");
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("context MyCtx select context.id as c0, theString as c1, sum(intPrimitive) as c2 from SupportBean#keepall group by theString");
+            epService.EPAdministrator.CreateEPL("create context MyCtx as coalesce Consistent_hash_crc32(TheString) from SupportBean granularity 16 preallocate");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("context MyCtx select context.id as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean#keepall group by TheString");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), stmt.GetSafeEnumerator(), fields, new[] {new object[] {5, "E1", 1}});
@@ -152,11 +152,11 @@ namespace com.espertech.esper.regression.context
             string epl;
     
             // invalid filter spec
-            epl = "create context ACtx coalesce Hash_code(intPrimitive) from SupportBean(dummy = 1) granularity 10";
+            epl = "create context ACtx coalesce Hash_code(IntPrimitive) from SupportBean(dummy = 1) granularity 10";
             TryInvalid(epService, epl, "Error starting statement: Failed to validate filter expression 'dummy=1': Property named 'dummy' is not valid in any stream [");
     
             // invalid hash code function
-            epl = "create context ACtx coalesce Hash_code_xyz(intPrimitive) from SupportBean granularity 10";
+            epl = "create context ACtx coalesce Hash_code_xyz(IntPrimitive) from SupportBean granularity 10";
             TryInvalid(epService, epl, "Error starting statement: For context 'ACtx' expected a hash function that is any of {consistent_hash_crc32, hash_code} or a plug-in single-row function or script but received 'hash_code_xyz' [");
     
             // invalid no-param hash code function
@@ -164,14 +164,14 @@ namespace com.espertech.esper.regression.context
             TryInvalid(epService, epl, "Error starting statement: For context 'ACtx' expected one or more parameters to the hash function, but found no parameter list [");
     
             // validate statement not applicable filters
-            epService.EPAdministrator.CreateEPL("create context ACtx coalesce Hash_code(intPrimitive) from SupportBean granularity 10");
+            epService.EPAdministrator.CreateEPL("create context ACtx coalesce Hash_code(IntPrimitive) from SupportBean granularity 10");
             epl = "context ACtx select * from SupportBean_S0";
             TryInvalid(epService, epl, "Error starting statement: Segmented context 'ACtx' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type 'SupportBean_S0' is not one of the types listed [");
     
             // invalid attempt to partition a named window's streams
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportBean");
-            epl = "create context SegmentedByWhat partition by theString from MyWindow";
-            TryInvalid(epService, epl, "Error starting statement: Partition criteria may not include named windows [create context SegmentedByWhat partition by theString from MyWindow]");
+            epl = "create context SegmentedByWhat partition by TheString from MyWindow";
+            TryInvalid(epService, epl, "Error starting statement: Partition criteria may not include named windows [create context SegmentedByWhat partition by TheString from MyWindow]");
         }
     
         private void RunAssertionHashSegmentedFilter(EPServiceProvider epService) {
@@ -179,12 +179,12 @@ namespace com.espertech.esper.regression.context
             string ctx = "HashSegmentedContext";
             string eplCtx = "@Name('context') create context " + ctx + " as " +
                     "coalesce " +
-                    " Consistent_hash_crc32(theString) from SupportBean(intPrimitive > 10) " +
+                    " Consistent_hash_crc32(TheString) from SupportBean(IntPrimitive > 10) " +
                     "granularity 4 " +
                     "preallocate";
             epService.EPAdministrator.CreateEPL(eplCtx);
     
-            string eplStmt = "context " + ctx + " " + "select context.name as c0, intPrimitive as c1 from SupportBean#lastevent";
+            string eplStmt = "context " + ctx + " " + "select context.name as c0, IntPrimitive as c1 from SupportBean#lastevent";
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplStmt);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
@@ -211,8 +211,8 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionHashSegmentedManyArg(EPServiceProvider epService) {
-            TryHash(epService, "Consistent_hash_crc32(theString, intPrimitive)");
-            TryHash(epService, "Hash_code(theString, intPrimitive)");
+            TryHash(epService, "Consistent_hash_crc32(TheString, IntPrimitive)");
+            TryHash(epService, "Hash_code(TheString, IntPrimitive)");
         }
     
         private void TryHash(EPServiceProvider epService, string hashFunc) {
@@ -222,8 +222,8 @@ namespace com.espertech.esper.regression.context
             epService.EPAdministrator.CreateEPL(eplCtxCRC32);
     
             string[] fields = "c1,c2,c3,c4,c5".Split(',');
-            string eplStmt = "context Ctx1 select intPrimitive as c1, " +
-                    "sum(longPrimitive) as c2, prev(1, longPrimitive) as c3, prior(1, longPrimitive) as c4," +
+            string eplStmt = "context Ctx1 select IntPrimitive as c1, " +
+                    "sum(LongPrimitive) as c2, prev(1, LongPrimitive) as c3, prior(1, LongPrimitive) as c4," +
                     "(select p00 from SupportBean_S0#length(2)) as c5 " +
                     "from SupportBean#length(3)";
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplStmt);
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regression.context
             string ctx = "HashSegmentedContext";
             string eplCtx = "@Name('context') create context " + ctx + " as " +
                     "coalesce " +
-                    " Consistent_hash_crc32(theString) from SupportBean, " +
+                    " Consistent_hash_crc32(TheString) from SupportBean, " +
                     " Consistent_hash_crc32(p00) from SupportBean_S0 " +
                     "granularity 4 " +
                     "preallocate";
@@ -256,7 +256,7 @@ namespace com.espertech.esper.regression.context
             // comment-me-in: var codeFunc = new SupportHashCodeFuncGranularCRC32(4);
     
             string eplStmt = "context " + ctx + " " +
-                    "select context.name as c0, intPrimitive as c1, id as c2 from SupportBean#keepall as t1, SupportBean_S0#keepall as t2 where t1.theString = t2.p00";
+                    "select context.name as c0, IntPrimitive as c1, id as c2 from SupportBean#keepall as t1, SupportBean_S0#keepall as t2 where t1.TheString = t2.p00";
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplStmt);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
@@ -298,13 +298,13 @@ namespace com.espertech.esper.regression.context
             FilterServiceSPI filterSPI = (FilterServiceSPI) ((EPServiceProviderSPI) epService).FilterService;
             string ctx = "HashSegmentedContext";
             string eplCtx = "@Name('context') create context " + ctx + " as " +
-                    "coalesce Consistent_hash_crc32(theString) from SupportBean " +
+                    "coalesce Consistent_hash_crc32(TheString) from SupportBean " +
                     "granularity 4 " +
                     "preallocate";
             epService.EPAdministrator.CreateEPL(eplCtx);
     
             string eplStmt = "context " + ctx + " " +
-                    "select context.name as c0, theString as c1, sum(intPrimitive) as c2 from SupportBean#keepall group by theString";
+                    "select context.name as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean#keepall group by TheString";
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplStmt);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
@@ -326,12 +326,12 @@ namespace com.espertech.esper.regression.context
     
             // test with Java-hashCode string hash
             epService.EPAdministrator.CreateEPL("@Name('context') create context " + ctx + " " +
-                    "coalesce Hash_code(theString) from SupportBean " +
+                    "coalesce Hash_code(TheString) from SupportBean " +
                     "granularity 6 " +
                     "preallocate");
     
             statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context " + ctx + " " +
-                    "select context.name as c0, theString as c1, sum(intPrimitive) as c2 from SupportBean#keepall group by theString");
+                    "select context.name as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean#keepall group by TheString");
             statement.Events += listener.Update;
             Assert.AreEqual(6, filterSPI.FilterCountApprox);
             AgentInstanceAssertionUtil.AssertInstanceCounts(statement.StatementContext, 6, 0, 0, 0);
@@ -341,11 +341,11 @@ namespace com.espertech.esper.regression.context
     
             // test no pre-allocate
             epService.EPAdministrator.CreateEPL("@Name('context') create context " + ctx + " " +
-                    "coalesce Hash_code(theString) from SupportBean " +
+                    "coalesce Hash_code(TheString) from SupportBean " +
                     "granularity 16 ");
     
             statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context " + ctx + " " +
-                    "select context.name as c0, theString as c1, sum(intPrimitive) as c2 from SupportBean#keepall group by theString");
+                    "select context.name as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean#keepall group by TheString");
             statement.Events += listener.Update;
             Assert.AreEqual(1, filterSPI.FilterCountApprox);
             AgentInstanceAssertionUtil.AssertInstanceCounts(statement.StatementContext, 0, 0, 0, 0);
@@ -419,8 +419,8 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionHashSegmentedBySingleRowFunc(EPServiceProvider epService) {
     
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("myHash", GetType().FullName, "myHashFunc");
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("mySecond", GetType().FullName, "mySecondFunc");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("myHash", GetType().FullName, "MyHashFunc");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("mySecond", GetType().FullName, "MySecondFunc");
             epService.EPAdministrator.Configuration.AddImport(GetType().FullName);
     
             string eplCtx = "@Name('context') create context HashSegmentedContext as " +
@@ -429,8 +429,8 @@ namespace com.espertech.esper.regression.context
                     "preallocate";
             epService.EPAdministrator.CreateEPL(eplCtx);
     
-            string eplStmt = "context HashSegmentedContext select context.id as c1, MyHash(*) as c2, MySecond(*, theString) as c3, "
-                    + this.GetType().Name + ".MySecondFunc(*, theString) as c4 from SupportBean";
+            string eplStmt = "context HashSegmentedContext select context.id as c1, MyHash(*) as c2, MySecond(*, TheString) as c3, "
+                    + this.GetType().Name + ".MySecondFunc(*, TheString) as c4 from SupportBean";
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplStmt);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
@@ -499,7 +499,7 @@ namespace com.espertech.esper.regression.context
             public bool Filter(ContextPartitionIdentifier contextPartitionIdentifier) {
                 var id = (ContextPartitionIdentifierHash) contextPartitionIdentifier;
                 if (_match == null && _cpids.Contains(id.ContextPartitionId)) {
-                    throw new EPRuntimeException("Already Exists context id: " + id.ContextPartitionId);
+                    throw new EPRuntimeException("Already exists context id: " + id.ContextPartitionId);
                 }
                 _cpids.Add(id.ContextPartitionId);
                 _contexts.Add(id.Hash);

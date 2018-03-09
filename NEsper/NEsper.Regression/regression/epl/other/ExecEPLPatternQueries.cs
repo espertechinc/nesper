@@ -32,8 +32,8 @@ namespace com.espertech.esper.regression.epl.other
             model.SelectClause = SelectClause.Create()
                 .AddWithAsProvidedName("s0.id", "idS0").AddWithAsProvidedName("s1.id", "idS1");
             PatternExpr pattern = Patterns.Or()
-                    .Add(Patterns.EveryFilter(typeof(SupportBean_S0).Name, "s0"))
-                    .Add(Patterns.EveryFilter(typeof(SupportBean_S1).Name, "s1")
+                    .Add(Patterns.EveryFilter(typeof(SupportBean_S0).FullName, "s0"))
+                    .Add(Patterns.EveryFilter(typeof(SupportBean_S1).FullName, "s1")
                     );
             model.FromClause = FromClause.Create(PatternStream.Create(pattern));
             model.WhereClause = Expressions.Or()
@@ -49,8 +49,8 @@ namespace com.espertech.esper.regression.epl.other
     
             string reverse = model.ToEPL();
             string stmtText = "select s0.id as idS0, s1.id as idS1 " +
-                    "from pattern [every s0=" + typeof(SupportBean_S0).Name +
-                    " or every s1=" + typeof(SupportBean_S1).Name + "] " +
+                    "from pattern [every s0=" + typeof(SupportBean_S0).FullName +
+                    " or every s1=" + typeof(SupportBean_S1).FullName + "] " +
                     "where s0.id is not null and s0.id<100 or s1.id is not null and s1.id>=100";
             Assert.AreEqual(stmtText, reverse);
     
@@ -75,8 +75,8 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionWhere_Compile(EPServiceProvider epService) {
             string stmtText = "select s0.id as idS0, s1.id as idS1 " +
-                    "from pattern [every s0=" + typeof(SupportBean_S0).Name +
-                    " or every s1=" + typeof(SupportBean_S1).Name + "] " +
+                    "from pattern [every s0=" + typeof(SupportBean_S0).FullName +
+                    " or every s1=" + typeof(SupportBean_S1).FullName + "] " +
                     "where s0.id is not null and s0.id<100 or s1.id is not null and s1.id>=100";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
@@ -105,8 +105,8 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionWhere(EPServiceProvider epService) {
             string stmtText = "select s0.id as idS0, s1.id as idS1 " +
-                    "from pattern [every s0=" + typeof(SupportBean_S0).Name +
-                    " or every s1=" + typeof(SupportBean_S1).Name + "] " +
+                    "from pattern [every s0=" + typeof(SupportBean_S0).FullName +
+                    " or every s1=" + typeof(SupportBean_S1).FullName + "] " +
                     "where (s0.id is not null and s0.id < 100) or (s1.id is not null and s1.id >= 100)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var updateListener = new SupportUpdateListener();
@@ -129,8 +129,8 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionAggregation(EPServiceProvider epService) {
             string stmtText = "select sum(s0.id) as sumS0, sum(s1.id) as sumS1, sum(s0.id + s1.id) as sumS0S1 " +
-                    "from pattern [every s0=" + typeof(SupportBean_S0).Name +
-                    " or every s1=" + typeof(SupportBean_S1).Name + "]";
+                    "from pattern [every s0=" + typeof(SupportBean_S0).FullName +
+                    " or every s1=" + typeof(SupportBean_S1).FullName + "]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var updateListener = new SupportUpdateListener();
             statement.Events += updateListener.Update;
@@ -152,8 +152,8 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionFollowedByAndWindow(EPServiceProvider epService) {
             string stmtText = "select irstream a.id as idA, b.id as idB, " +
-                    "a.p00 as p00A, b.p00 as p00B from pattern [every a=" + typeof(SupportBean_S0).Name +
-                    " -> every b=" + typeof(SupportBean_S0).Name + "(p00=a.p00)]#time(1)";
+                    "a.p00 as p00A, b.p00 as p00B from pattern [every a=" + typeof(SupportBean_S0).FullName +
+                    " -> every b=" + typeof(SupportBean_S0).FullName + "(p00=a.p00)]#time(1)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var updateListener = new SupportUpdateListener();
     

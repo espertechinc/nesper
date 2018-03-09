@@ -78,7 +78,7 @@ namespace com.espertech.esper.regression.script
                   "};" +
                   "return fib(num); " +
                   "]" +
-                  "select fib(intPrimitive) from SupportBean";
+                  "select fib(IntPrimitive) from SupportBean";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -91,12 +91,12 @@ namespace com.espertech.esper.regression.script
             epService.EPRuntime.SendEvent(new ColorEvent());
             epService.EPAdministrator.DestroyAllStatements();
 
-            epl = "expression bool js:setFlag(name, value, returnValue) [\n" +
-                  "  if (returnValue) epl.SetScriptAttribute(name, value);\n" +
-                  "  return returnValue;\n" +
+            epl = "expression boolean jscript:setFlag(name, value, returnValue) [\n" +
+                  "if (returnValue) epl.SetScriptAttribute(name, value);\n" +
+                  "return returnValue;\n" +
                   "]\n" +
-                  "expression js:getFlag(name) [\n" +
-                  "  epl.GetScriptAttribute(name);\n" +
+                  "expression jscript:getFlag(name) [\n" +
+                  "  return epl.GetScriptAttribute(name);\n" +
                   "]\n" +
                   "select getFlag('loc') as flag from RFIDEvent(zone = 'Z1' and \n" +
                   "  (setFlag('loc', true, loc = 'A') or setFlag('loc', false, loc = 'B')) )";
@@ -107,8 +107,8 @@ namespace com.espertech.esper.regression.script
         private void RunAssertionInvalidRegardlessDialect(EPServiceProvider epService) {
             // parameter defined twice
             TryInvalidExact(
-                epService, "expression js:abc(p1, p1) [/* text */] select * from SupportBean",
-                "Invalid script parameters for script 'abc', parameter 'p1' is defined more then once [expression js:abc(p1, p1) [/* text */] select * from SupportBean]");
+                epService, "expression jscript:abc(p1, p1) [/* text */] select * from SupportBean",
+                "Invalid script parameters for script 'abc', parameter 'p1' is defined more then once [expression jscript:abc(p1, p1) [/* text */] select * from SupportBean]");
 
             // invalid dialect
             TryInvalidExact(
@@ -122,28 +122,28 @@ namespace com.espertech.esper.regression.script
 
             // test incorrect number of parameters
             TryInvalidExact(
-                epService, "expression js:abc() [10] select abc(1) from SupportBean",
-                "Error starting statement: Failed to validate select-clause expression 'abc(1)': Invalid number of parameters for script 'abc', expected 0 parameters but received 1 parameters [expression js:abc() [10] select abc(1) from SupportBean]");
+                epService, "expression jscript:abc() [10] select abc(1) from SupportBean",
+                "Error starting statement: Failed to validate select-clause expression 'abc(1)': Invalid number of parameters for script 'abc', expected 0 parameters but received 1 parameters [expression jscript:abc() [10] select abc(1) from SupportBean]");
 
             // test expression name overlap
             TryInvalidExact(
-                epService, "expression js:abc() [10] expression js:abc() [10] select abc() from SupportBean",
-                "Script name 'abc' has already been defined with the same number of parameters [expression js:abc() [10] expression js:abc() [10] select abc() from SupportBean]");
+                epService, "expression jscript:abc() [10] expression jscript:abc() [10] select abc() from SupportBean",
+                "Script name 'abc' has already been defined with the same number of parameters [expression jscript:abc() [10] expression jscript:abc() [10] select abc() from SupportBean]");
 
             // test expression name overlap with parameters
             TryInvalidExact(
-                epService, "expression js:abc(p1) [10] expression js:abc(p2) [10] select abc() from SupportBean",
-                "Script name 'abc' has already been defined with the same number of parameters [expression js:abc(p1) [10] expression js:abc(p2) [10] select abc() from SupportBean]");
+                epService, "expression jscript:abc(p1) [10] expression jscript:abc(p2) [10] select abc() from SupportBean",
+                "Script name 'abc' has already been defined with the same number of parameters [expression jscript:abc(p1) [10] expression jscript:abc(p2) [10] select abc() from SupportBean]");
 
             // test script name overlap with expression declaration
             TryInvalidExact(
-                epService, "expression js:abc() [10] expression abc {10} select abc() from SupportBean",
-                "Script name 'abc' overlaps with another expression of the same name [expression js:abc() [10] expression abc {10} select abc() from SupportBean]");
+                epService, "expression jscript:abc() [10] expression abc {10} select abc() from SupportBean",
+                "Script name 'abc' overlaps with another expression of the same name [expression jscript:abc() [10] expression abc {10} select abc() from SupportBean]");
 
             // fails to resolve return type
             TryInvalidExact(
-                epService, "expression dummy js:abc() [10] select abc() from SupportBean",
-                "Error starting statement: Failed to validate select-clause expression 'abc()': Failed to resolve return type 'dummy' specified for script 'abc' [expression dummy js:abc() [10] select abc() from SupportBean]");
+                epService, "expression dummy jscript:abc() [10] select abc() from SupportBean",
+                "Error starting statement: Failed to validate select-clause expression 'abc()': Failed to resolve return type 'dummy' specified for script 'abc' [expression dummy jscript:abc() [10] select abc() from SupportBean]");
         }
 
         private void RunAssertionInvalidScriptJS(EPServiceProvider epService) {
@@ -161,12 +161,12 @@ namespace com.espertech.esper.regression.script
                 "Incorrect syntax near ']' at line 1 column 23 near reserved keyword 'select' [expression jscript:abc[] select * from SupportBean]");
 
             // empty script
-            epService.EPAdministrator.CreateEPL("expression js:abc[\n] select * from SupportBean");
+            epService.EPAdministrator.CreateEPL("expression jscript:abc[\n] select * from SupportBean");
 
             // execution problem
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.CreateEPL(
-                "expression js:abc() [throw new Error(\"Some error\");] select * from SupportBean#keepall where abc() = 1");
+                "expression jscript:abc() [throw new Error(\"Some error\");] select * from SupportBean#keepall where abc() = 1");
             try {
                 epService.EPRuntime.SendEvent(new SupportBean());
                 Assert.Fail();
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regression.script
             // execution problem
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.CreateEPL(
-                "expression js:abc[dummy;] select * from SupportBean#keepall where abc() = 1");
+                "expression jscript:abc[dummy;] select * from SupportBean#keepall where abc() = 1");
             try {
                 epService.EPRuntime.SendEvent(new SupportBean());
                 Assert.Fail();
@@ -191,7 +191,7 @@ namespace com.espertech.esper.regression.script
             epService.EPAdministrator.DestroyAllStatements();
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(
-                    "@Name('ABC') expression int[] js:callIt() [ var myarr = new Array(2, 8, 5, 9); myarr; ] select callIt().CountOf(v => v < 6) from SupportBean")
+                    "@Name('ABC') expression int[] jscript:callIt() [ var myarr = new Array(2, 8, 5, 9); return myarr; ] select callIt().countOf(v => v < 6) from SupportBean")
                 .Events += listener.Update;
             try {
                 epService.EPRuntime.SendEvent(new SupportBean());
@@ -230,31 +230,31 @@ namespace com.espertech.esper.regression.script
         private void RunAssertionScripts(EPServiceProvider epService) {
 
             // test different return types
-            TryReturnTypes(epService, "js");
+            TryReturnTypes(epService, "jscript");
 
             // test void return type
-            TryVoidReturnType(epService, "js");
+            TryVoidReturnType(epService, "jscript");
 
             // test enumeration method
-            // Not supported: TryEnumeration("expression int[] js:callIt() [ var myarr = new Array(2, 8, 5, 9); myarr; ]"); returns NativeArray which is a Rhino-specific array wrapper
+            // Not supported: TryEnumeration("expression int[] jscript:callIt() [ var myarr = new Array(2, 8, 5, 9); myarr; ]"); returns NativeArray which is a Rhino-specific array wrapper
 
             // test script props
-            TrySetScriptProp(epService, "js");
+            TrySetScriptProp(epService, "jscript");
 
             // test variable
-            TryPassVariable(epService, "js");
+            TryPassVariable(epService, "jscript");
 
             // test passing an event
-            TryPassEvent(epService, "js");
+            TryPassEvent(epService, "jscript");
 
             // test returning an object
-            TryReturnObject(epService, "js");
+            TryReturnObject(epService, "jscript");
 
             // test datetime method
-            TryDatetime(epService, "js");
+            TryDatetime(epService, "jscript");
 
             // test unnamed expression
-            TryUnnamedInSelectClause(epService, "js");
+            TryUnnamedInSelectClause(epService, "jscript");
 
             // test import
             epService.EPAdministrator.Configuration.AddImport(typeof(MyImportedClass));
@@ -268,10 +268,10 @@ namespace com.espertech.esper.regression.script
 
             // test overloading script
             epService.EPAdministrator.Configuration.AddImport(typeof(MyImportedClass));
-            TryOverloaded(epService, "js");
+            TryOverloaded(epService, "jscript");
 
             // test nested invocation
-            TryNested(epService, "js");
+            TryNested(epService, "jscript");
 
             TryAggregation(epService);
 
@@ -281,7 +281,7 @@ namespace com.espertech.esper.regression.script
         }
 
         private void TryCreateExpressionWArrayAllocate(EPServiceProvider epService) {
-            var epl = "@Name('first') create expression double js:test(bar) [\n" +
+            var epl = "@Name('first') create expression double jscript:test(bar) [\n" +
                          "function test(bar) {\n" +
                          "  var test=[];\n" +
                          "  return -1.0;\n" +
@@ -300,27 +300,27 @@ namespace com.espertech.esper.regression.script
         }
 
         private void TryDeployArrayInScript(EPServiceProvider epService) {
-            var epl = "expression string js:myFunc(arg) [\n" +
+            var epl = "expression string jscript:myFunc(arg) [\n" +
                          "  function replace(text, values, replacement){\n" +
-                         "    return text.Replace(replacement, values[0]);\n" +
+                         "    return text.replace(replacement, values[0]);\n" +
                          "  }\n" +
-                         "  replace(\"A B C\", [\"X\"], \"B\")\n" +
+                         "  return replace(\"A B C\", [\"X\"], \"B\");\n" +
                          "]\n" +
                          "select\n" +
-                         "MyFunc(*)\n" +
+                         "myFunc(*)\n" +
                          "from SupportBean;";
             var result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             epService.EPAdministrator.DeploymentAdmin.UndeployRemove(result.DeploymentId);
         }
 
         private void RunAssertionParserSelectNoArgConstant(EPServiceProvider epService) {
-            TryParseJS(epService, "\n\t  10.0    \n\n\t\t", typeof(Object), 10.0);
-            TryParseJS(epService, "10.0", typeof(Object), 10.0);
-            TryParseJS(epService, "5*5.0", typeof(Object), 25.0);
-            TryParseJS(epService, "\"abc\"", typeof(Object), "abc");
-            TryParseJS(epService, " \"abc\"     ", typeof(Object), "abc");
-            TryParseJS(epService, "'def'", typeof(Object), "def");
-            TryParseJS(epService, " 'def' ", typeof(Object), "def");
+            TryParseJS(epService, "\n\t  return 10.0;    \n\n\t\t", typeof(Object), 10.0);
+            TryParseJS(epService, "return 10.0;", typeof(Object), 10.0);
+            TryParseJS(epService, "return 5*5.0;", typeof(Object), 25.0);
+            TryParseJS(epService, "return \"abc\";", typeof(Object), "abc");
+            TryParseJS(epService, "return  \"abc\"     ;", typeof(Object), "abc");
+            TryParseJS(epService, "return 'def';", typeof(Object), "def");
+            TryParseJS(epService, "return  'def' ;", typeof(Object), "def");
         }
 
         private void RunAssertionJavaScriptStatelessReturnPassArgs(EPServiceProvider epService) {
@@ -337,7 +337,7 @@ namespace com.espertech.esper.regression.script
                 new object[] {new SupportBean("E1", 20), 6765.0},
             };
             TrySelect(
-                epService, "expression double js:abc(num) [ " + expression + " ]", "abc(intPrimitive)", typeof(double?),
+                epService, "expression double jscript:abc(num) [ " + expression + " ]", "abc(IntPrimitive)", typeof(double?),
                 testData);
 
             testData = new object[][] {
@@ -345,19 +345,19 @@ namespace com.espertech.esper.regression.script
                 new object[] {new SupportBean("E1", 6), 60.0}
             };
             TrySelect(
-                epService, "expression js:abc(myint) [ myint * 10 ]", "abc(intPrimitive)", typeof(Object), testData);
+                epService, "expression jscript:abc(myint) [ return myint * 10; ]", "abc(IntPrimitive)", typeof(Object), testData);
         }
 
         private void TryVoidReturnType(EPServiceProvider epService, string dialect) {
             object[][] testData;
             string expression;
 
-            expression = "expression void " + dialect + ":Mysetter() [ epl.SetScriptAttribute('a', 1); ]";
+            expression = "expression void " + dialect + ":mysetter() [ return epl.SetScriptAttribute('a', 1); ]";
             testData = new object[][] {
                 new object[] {new SupportBean("E1", 20), null},
                 new object[] {new SupportBean("E1", 10), null},
             };
-            TrySelect(epService, expression, "Mysetter()", typeof(Object), testData);
+            TrySelect(epService, expression, "mysetter()", typeof(Object), testData);
 
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -371,7 +371,7 @@ namespace com.espertech.esper.regression.script
                 "  epl.SetScriptAttribute('flag', flagValue);" +
                 "  return flagValue;" +
                 "]" +
-                "select getFlag() as val from SupportBean(theString = 'E1' or setFlag(intPrimitive > 0))");
+                "select getFlag() as val from SupportBean(TheString = 'E1' or setFlag(IntPrimitive > 0))");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -393,14 +393,14 @@ namespace com.espertech.esper.regression.script
                 new object[] {new SupportBean("E1", 20), 120L},
                 new object[] {new SupportBean("E1", 10), 110L},
             };
-            TrySelect(epService, expression, "thresholdAdder(intPrimitive, THRESHOLD)", typeof(long), testData);
+            TrySelect(epService, expression, "thresholdAdder(IntPrimitive, THRESHOLD)", typeof(long), testData);
 
             epService.EPRuntime.SetVariableValue("THRESHOLD", 1);
             testData = new object[][] {
                 new object[] {new SupportBean("E1", 20), 21L},
                 new object[] {new SupportBean("E1", 10), 11L},
             };
-            TrySelect(epService, expression, "thresholdAdder(intPrimitive, THRESHOLD)", typeof(long), testData);
+            TrySelect(epService, expression, "thresholdAdder(IntPrimitive, THRESHOLD)", typeof(long), testData);
 
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -437,7 +437,7 @@ namespace com.espertech.esper.regression.script
 
             epService.EPRuntime.SendEvent(new SupportBean());
             EPAssertionUtil.AssertProps(
-                listener.AssertOneGetNewAndReset(), "val0.theString,val0.intPrimitive,val1".Split(','),
+                listener.AssertOneGetNewAndReset(), "val0.TheString,val0.IntPrimitive,val1".Split(','),
                 new object[] {"E1", 10, "E1"});
 
             stmt.Dispose();
@@ -447,7 +447,7 @@ namespace com.espertech.esper.regression.script
 
             var msecDate = DateTimeParser.ParseDefaultMSec("2002-05-30T09:00:00.000");
             var expression = "expression long " + dialect + ":callIt() [ return " + msecDate + "; ]";
-            var epl = expression + " select callIt().HourOfDay as val0, callIt().DayOfWeek as val1 from SupportBean";
+            var epl = expression + " select callIt().GetHourOfDay() as val0, callIt().GetDayOfWeek() as val1 from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -556,7 +556,7 @@ namespace com.espertech.esper.regression.script
 
         private void TryEnumeration(EPServiceProvider epService, string expression) {
 
-            var epl = expression + " select (callIt()).CountOf(v => v < 6) as val0 from SupportBean";
+            var epl = expression + " select (callIt()).countOf(v => v < 6) as val0 from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -602,7 +602,7 @@ namespace com.espertech.esper.regression.script
 
         private void TryParseJS(EPServiceProvider epService, string js, Type type, Object value) {
             var stmt = epService.EPAdministrator.CreateEPL(
-                "expression js:getResultOne [" +
+                "expression jscript:getResultOne [" +
                 js +
                 "] " +
                 "select getResultOne() from SupportBean");
@@ -620,7 +620,7 @@ namespace com.espertech.esper.regression.script
             epService.EPAdministrator.CreateEPL(
                 "create expression change(open, close) [ return (open - close) / close; ]");
             var stmt = epService.EPAdministrator.CreateEPL(
-                "select change(First(intPrimitive), last(intPrimitive)) as ch from SupportBean#time(1 day)");
+                "select change(first(IntPrimitive), last(IntPrimitive)) as ch from SupportBean#time(1 day)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));

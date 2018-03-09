@@ -162,23 +162,23 @@ namespace com.espertech.esper.regression.resultset.querytype
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             // invalid use of function
-            string expected = "Failed to validate select-clause expression 'Grouping(theString)': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select Grouping(theString) from SupportBean]";
-            TryInvalid(epService, "select Grouping(theString) from SupportBean", "Error starting statement: " + expected);
-            TryInvalid(epService, "select theString, sum(intPrimitive) from SupportBean(Grouping(theString) = 1) group by Rollup(theString)",
-                    "Failed to validate filter expression 'Grouping(theString)=1': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select theString, sum(intPrimitive) from SupportBean(Grouping(theString) = 1) group by Rollup(theString)]");
-            TryInvalid(epService, "select theString, sum(intPrimitive) from SupportBean where Grouping(theString) = 1 group by Rollup(theString)",
-                    "Failed to validate filter expression 'Grouping(theString)=1': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select theString, sum(intPrimitive) from SupportBean where Grouping(theString) = 1 group by Rollup(theString)]");
-            TryInvalid(epService, "select theString, sum(intPrimitive) from SupportBean group by Rollup(Grouping(theString))",
-                    "Error starting statement: The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select theString, sum(intPrimitive) from SupportBean group by Rollup(Grouping(theString))]");
+            string expected = "Failed to validate select-clause expression 'Grouping(TheString)': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select Grouping(TheString) from SupportBean]";
+            TryInvalid(epService, "select Grouping(TheString) from SupportBean", "Error starting statement: " + expected);
+            TryInvalid(epService, "select TheString, sum(IntPrimitive) from SupportBean(Grouping(TheString) = 1) group by Rollup(TheString)",
+                    "Failed to validate filter expression 'Grouping(TheString)=1': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select TheString, sum(IntPrimitive) from SupportBean(Grouping(TheString) = 1) group by Rollup(TheString)]");
+            TryInvalid(epService, "select TheString, sum(IntPrimitive) from SupportBean where Grouping(TheString) = 1 group by Rollup(TheString)",
+                    "Failed to validate filter expression 'Grouping(TheString)=1': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select TheString, sum(IntPrimitive) from SupportBean where Grouping(TheString) = 1 group by Rollup(TheString)]");
+            TryInvalid(epService, "select TheString, sum(IntPrimitive) from SupportBean group by Rollup(Grouping(TheString))",
+                    "Error starting statement: The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select TheString, sum(IntPrimitive) from SupportBean group by Rollup(Grouping(TheString))]");
     
             // invalid parameters
-            TryInvalid(epService, "select theString, sum(intPrimitive), Grouping(longPrimitive) from SupportBean group by Rollup(theString)",
-                    "Error starting statement: Group-by with rollup requires a fully-aggregated query, the query is not full-aggregated because of property 'longPrimitive' [select theString, sum(intPrimitive), Grouping(longPrimitive) from SupportBean group by Rollup(theString)]");
-            TryInvalid(epService, "select theString, sum(intPrimitive), Grouping(theString||'x') from SupportBean group by Rollup(theString)",
-                    "Error starting statement: Failed to find expression 'theString||\"x\"' among group-by expressions [select theString, sum(intPrimitive), Grouping(theString||'x') from SupportBean group by Rollup(theString)]");
+            TryInvalid(epService, "select TheString, sum(IntPrimitive), Grouping(LongPrimitive) from SupportBean group by Rollup(TheString)",
+                    "Error starting statement: Group-by with rollup requires a fully-aggregated query, the query is not full-aggregated because of property 'LongPrimitive' [select TheString, sum(IntPrimitive), Grouping(LongPrimitive) from SupportBean group by Rollup(TheString)]");
+            TryInvalid(epService, "select TheString, sum(IntPrimitive), Grouping(TheString||'x') from SupportBean group by Rollup(TheString)",
+                    "Error starting statement: Failed to find expression 'TheString||\"x\"' among group-by expressions [select TheString, sum(IntPrimitive), Grouping(TheString||'x') from SupportBean group by Rollup(TheString)]");
     
-            TryInvalid(epService, "select theString, sum(intPrimitive), Grouping_id(theString, theString) from SupportBean group by Rollup(theString)",
-                    "Error starting statement: Duplicate expression 'theString' among grouping function parameters [select theString, sum(intPrimitive), Grouping_id(theString, theString) from SupportBean group by Rollup(theString)]");
+            TryInvalid(epService, "select TheString, sum(IntPrimitive), Grouping_id(TheString, TheString) from SupportBean group by Rollup(TheString)",
+                    "Error starting statement: Duplicate expression 'TheString' among grouping function parameters [select TheString, sum(IntPrimitive), Grouping_id(TheString, TheString) from SupportBean group by Rollup(TheString)]");
         }
     
         public class GroupingSupportFunc {

@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
         private void RunAssertionAliasesAggregationCompile(EPServiceProvider epService) {
             string statementString = "select symbol, volume, sum(price) as mySum from " +
-                    typeof(SupportMarketDataBean).Name + "#length(20) " +
+                    typeof(SupportMarketDataBean).FullName + "#length(20) " +
                     "group by symbol " +
                     "output every 6 events " +
                     "order by sum(price), symbol";
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
     
             string statementString = "select symbol, volume, sum(price) as mySum from " +
-                    typeof(SupportMarketDataBean).Name + "#length(20) " +
+                    typeof(SupportMarketDataBean).FullName + "#length(20) " +
                     "group by symbol " +
                     "output every 6 events " +
                     "order by sum(price), symbol";
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
         private void RunAssertionAliases(EPServiceProvider epService) {
             string statementString = "select symbol, volume, sum(price) as mySum from " +
-                    typeof(SupportMarketDataBean).Name + "#length(20) " +
+                    typeof(SupportMarketDataBean).FullName + "#length(20) " +
                     "group by symbol " +
                     "output every 6 events " +
                     "order by mySum, symbol";
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             // get row-per-event behavior since there are properties
             // in the order-by that are not in the select expression.
             string statementString = "select symbol, sum(price) from " +
-                    typeof(SupportMarketDataBean).Name + "#length(20) " +
+                    typeof(SupportMarketDataBean).FullName + "#length(20) " +
                     "group by symbol " +
                     "output every 6 events " +
                     "order by sum(price), symbol, volume";
@@ -118,9 +118,9 @@ namespace com.espertech.esper.regression.resultset.orderby
     
         private void RunAssertionGroupBySwitchJoin(EPServiceProvider epService) {
             string statementString = "select symbol, sum(price) from " +
-                    typeof(SupportMarketDataBean).Name + "#length(20) as one, " +
-                    typeof(SupportBeanString).Name + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    typeof(SupportMarketDataBean).FullName + "#length(20) as one, " +
+                    typeof(SupportBeanString).FullName + "#length(100) as two " +
+                    "where one.symbol = two.TheString " +
                     "group by symbol " +
                     "output every 6 events " +
                     "order by sum(price), symbol, volume";
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
         private void RunAssertionLast(EPServiceProvider epService) {
             string statementString = "select symbol, volume, sum(price) from " +
-                    typeof(SupportMarketDataBean).Name + "#length(20) " +
+                    typeof(SupportMarketDataBean).FullName + "#length(20) " +
                     "group by symbol " +
                     "output last every 6 events " +
                     "order by sum(price)";
@@ -158,9 +158,9 @@ namespace com.espertech.esper.regression.resultset.orderby
     
         private void RunAssertionLastJoin(EPServiceProvider epService) {
             string statementString = "select symbol, volume, sum(price) from " +
-                    typeof(SupportMarketDataBean).Name + "#length(20) as one, " +
-                    typeof(SupportBeanString).Name + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    typeof(SupportMarketDataBean).FullName + "#length(20) as one, " +
+                    typeof(SupportBeanString).FullName + "#length(100) as two " +
+                    "where one.symbol = two.TheString " +
                     "group by symbol " +
                     "output last every 6 events " +
                     "order by sum(price)";
@@ -207,11 +207,11 @@ namespace com.espertech.esper.regression.resultset.orderby
     
     
         private void RunAssertionIteratorGroupByEventPerRow(EPServiceProvider epService) {
-            var fields = new string[]{"symbol", "theString", "sumPrice"};
-            string statementString = "select symbol, theString, sum(price) as sumPrice from " +
-                    typeof(SupportMarketDataBean).Name + "#length(10) as one, " +
-                    typeof(SupportBeanString).Name + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+            var fields = new string[]{"symbol", "TheString", "sumPrice"};
+            string statementString = "select symbol, TheString, sum(price) as sumPrice from " +
+                    typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
+                    typeof(SupportBeanString).FullName + "#length(100) as two " +
+                    "where one.symbol = two.TheString " +
                     "group by symbol " +
                     "order by symbol";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementString);

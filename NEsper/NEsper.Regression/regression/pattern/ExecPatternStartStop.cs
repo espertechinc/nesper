@@ -7,13 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
@@ -32,7 +29,7 @@ namespace com.espertech.esper.regression.pattern
     
         private void RunAssertionStartStopTwo(EPServiceProvider epService) {
             string stmtText = "select * from pattern [Every(a=" + typeof(SupportBean).FullName +
-                    " or b=" + typeof(SupportBeanComplexProps).Name + ")]";
+                    " or b=" + typeof(SupportBeanComplexProps).FullName + ")]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var updateListener = new SupportUpdateListener();
             statement.Events += updateListener.Update;

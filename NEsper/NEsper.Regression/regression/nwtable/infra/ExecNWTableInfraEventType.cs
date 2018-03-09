@@ -28,12 +28,12 @@ namespace com.espertech.esper.regression.nwtable.infra
             // name cannot be the same as an existing event type
             epService.EPAdministrator.CreateEPL("create schema SchemaOne as (p0 string)");
             SupportMessageAssertUtil.TryInvalid(epService, "create window SchemaOne.win:keepall as SchemaOne",
-                    "Error starting statement: An event type or schema by name 'SchemaOne' already Exists"
+                    "Error starting statement: An event type or schema by name 'SchemaOne' already exists"
             );
     
             epService.EPAdministrator.CreateEPL("create schema SchemaTwo as (p0 string)");
             SupportMessageAssertUtil.TryInvalid(epService, "create table SchemaTwo(c0 int)",
-                    "Error starting statement: An event type or schema by name 'SchemaTwo' already Exists"
+                    "Error starting statement: An event type or schema by name 'SchemaTwo' already exists"
             );
         }
     

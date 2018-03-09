@@ -79,7 +79,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             var epl =
-                "select theString, intPrimitive as intp from SupportBean group by theString output last every 1 seconds order by theString asc";
+                "select TheString, IntPrimitive as intp from SupportBean group by TheString output last every 1 seconds order by TheString asc";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
 
             EPAssertionUtil.AssertPropsPerRow(
-                listener.GetAndResetLastNewData(), new[] {"theString", "intp"},
+                listener.GetAndResetLastNewData(), new[] {"TheString", "intp"},
                 new[] {new object[] {"E1", 3}, new object[] {"E2", 21}, new object[] {"E3", 31}});
 
             epService.EPRuntime.SendEvent(new SupportBean("E3", 31));
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(2000));
 
             EPAssertionUtil.AssertPropsPerRow(
-                listener.GetAndResetLastNewData(), new[] {"theString", "intp"},
+                listener.GetAndResetLastNewData(), new[] {"TheString", "intp"},
                 new[] {new object[] {"E1", 5}, new object[] {"E3", 33}});
 
             stmt.Dispose();
@@ -114,31 +114,31 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
 
             var stmtText =
-                "select theString, sum(intPrimitive) as value from MyWindow group by theString having sum(intPrimitive) > 20 output first every 2 events";
+                "select TheString, sum(IntPrimitive) as value from MyWindow group by TheString having sum(IntPrimitive) > 20 output first every 2 events";
             TryOutputFirstHaving(epService, stmtText);
 
             var stmtTextJoin =
-                "select theString, sum(intPrimitive) as value from MyWindow mv, SupportBean_A#keepall a where a.id = mv.theString " +
-                "group by theString having sum(intPrimitive) > 20 output first every 2 events";
+                "select TheString, sum(IntPrimitive) as value from MyWindow mv, SupportBean_A#keepall a where a.id = mv.TheString " +
+                "group by TheString having sum(IntPrimitive) > 20 output first every 2 events";
             TryOutputFirstHaving(epService, stmtTextJoin);
 
             var stmtTextOrder =
-                "select theString, sum(intPrimitive) as value from MyWindow group by theString having sum(intPrimitive) > 20 output first every 2 events order by theString asc";
+                "select TheString, sum(IntPrimitive) as value from MyWindow group by TheString having sum(IntPrimitive) > 20 output first every 2 events order by TheString asc";
             TryOutputFirstHaving(epService, stmtTextOrder);
 
             var stmtTextOrderJoin =
-                "select theString, sum(intPrimitive) as value from MyWindow mv, SupportBean_A#keepall a where a.id = mv.theString " +
-                "group by theString having sum(intPrimitive) > 20 output first every 2 events order by theString asc";
+                "select TheString, sum(IntPrimitive) as value from MyWindow mv, SupportBean_A#keepall a where a.id = mv.TheString " +
+                "group by TheString having sum(IntPrimitive) > 20 output first every 2 events order by TheString asc";
             TryOutputFirstHaving(epService, stmtTextOrderJoin);
         }
 
         private void TryOutputFirstHaving(EPServiceProvider epService, string statementText)
         {
-            var fields = "theString,value".Split(',');
+            var fields = "TheString,value".Split(',');
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
             epService.EPAdministrator.CreateEPL(
-                "on MarketData md delete from MyWindow mw where mw.intPrimitive = md.price");
+                "on MarketData md delete from MyWindow mw where mw.IntPrimitive = md.price");
             var stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -203,13 +203,13 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertionOutputFirstCrontab(EPServiceProvider epService)
         {
             SendTimer(epService, 0);
-            var fields = "theString,value".Split(',');
+            var fields = "TheString,value".Split(',');
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
             epService.EPAdministrator.CreateEPL(
-                "on MarketData md delete from MyWindow mw where mw.intPrimitive = md.price");
+                "on MarketData md delete from MyWindow mw where mw.IntPrimitive = md.price");
             var stmt = epService.EPAdministrator.CreateEPL(
-                "select theString, sum(intPrimitive) as value from MyWindow group by theString output first at (*/2, *, *, *, *)");
+                "select TheString, sum(IntPrimitive) as value from MyWindow group by TheString output first at (*/2, *, *, *, *)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -244,14 +244,14 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
         private void RunAssertionOutputFirstWhenThen(EPServiceProvider epService)
         {
-            var fields = "theString,value".Split(',');
+            var fields = "TheString,value".Split(',');
             epService.EPAdministrator.Configuration.AddVariable("varoutone", typeof(bool), false);
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
             epService.EPAdministrator.CreateEPL(
-                "on MarketData md delete from MyWindow mw where mw.intPrimitive = md.price");
+                "on MarketData md delete from MyWindow mw where mw.IntPrimitive = md.price");
             var stmt = epService.EPAdministrator.CreateEPL(
-                "select theString, sum(intPrimitive) as value from MyWindow group by theString output first when varoutone then set varoutone = false");
+                "select TheString, sum(IntPrimitive) as value from MyWindow group by TheString output first when varoutone then set varoutone = false");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -278,13 +278,13 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
         private void RunAssertionOutputFirstEveryNEvents(EPServiceProvider epService)
         {
-            var fields = "theString,value".Split(',');
+            var fields = "TheString,value".Split(',');
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
             epService.EPAdministrator.CreateEPL(
-                "on MarketData md delete from MyWindow mw where mw.intPrimitive = md.price");
+                "on MarketData md delete from MyWindow mw where mw.IntPrimitive = md.price");
             var stmt = epService.EPAdministrator.CreateEPL(
-                "select theString, sum(intPrimitive) as value from MyWindow group by theString output first every 3 events");
+                "select TheString, sum(IntPrimitive) as value from MyWindow group by TheString output first every 3 events");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -316,7 +316,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             epService.EPAdministrator.CreateEPL("create variable int myvar = 1");
             stmt.Dispose();
             stmt = epService.EPAdministrator.CreateEPL(
-                "select theString, sum(intPrimitive) as value from MyWindow group by theString output first every myvar events");
+                "select TheString, sum(IntPrimitive) as value from MyWindow group by TheString output first every myvar events");
             stmt.Events += listener.Update;
 
             SendBeanEvent(epService, "E3", 10);
@@ -349,7 +349,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertionWildcardEventPerGroup(EPServiceProvider epService)
         {
             var stmt = epService.EPAdministrator.CreateEPL(
-                "select * from SupportBean group by theString output last every 3 events order by theString asc");
+                "select * from SupportBean group by TheString output last every 3 events order by TheString asc");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -360,15 +360,15 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             var events = listener.GetNewDataListFlattened();
             listener.Reset();
             Assert.AreEqual(2, events.Length);
-            Assert.AreEqual("ATT", events[0].Get("theString"));
-            Assert.AreEqual(11, events[0].Get("intPrimitive"));
-            Assert.AreEqual("IBM", events[1].Get("theString"));
-            Assert.AreEqual(100, events[1].Get("intPrimitive"));
+            Assert.AreEqual("ATT", events[0].Get("TheString"));
+            Assert.AreEqual(11, events[0].Get("IntPrimitive"));
+            Assert.AreEqual("IBM", events[1].Get("TheString"));
+            Assert.AreEqual(100, events[1].Get("IntPrimitive"));
             stmt.Dispose();
 
             // All means each event
             stmt = epService.EPAdministrator.CreateEPL(
-                "select * from SupportBean group by theString output all every 3 events");
+                "select * from SupportBean group by TheString output all every 3 events");
             stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("IBM", 10));
@@ -377,12 +377,12 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             events = listener.GetNewDataListFlattened();
             Assert.AreEqual(3, events.Length);
-            Assert.AreEqual("IBM", events[0].Get("theString"));
-            Assert.AreEqual(10, events[0].Get("intPrimitive"));
-            Assert.AreEqual("ATT", events[1].Get("theString"));
-            Assert.AreEqual(11, events[1].Get("intPrimitive"));
-            Assert.AreEqual("IBM", events[2].Get("theString"));
-            Assert.AreEqual(100, events[2].Get("intPrimitive"));
+            Assert.AreEqual("IBM", events[0].Get("TheString"));
+            Assert.AreEqual(10, events[0].Get("IntPrimitive"));
+            Assert.AreEqual("ATT", events[1].Get("TheString"));
+            Assert.AreEqual(11, events[1].Get("IntPrimitive"));
+            Assert.AreEqual("IBM", events[2].Get("TheString"));
+            Assert.AreEqual(100, events[2].Get("IntPrimitive"));
 
             stmt.Dispose();
         }
@@ -400,7 +400,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, sum(price) " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "group by symbol " +
                            "order by symbol asc";
             TryAssertion12(epService, stmtText, "none");
@@ -419,7 +419,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, sum(price) " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "group by symbol " +
                            "having sum(price) > 50";
             TryAssertion34(epService, stmtText, "none");
@@ -438,7 +438,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, sum(price) " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "group by symbol " +
                            "output every 1 seconds order by symbol asc";
             TryAssertion56(epService, stmtText, "default");
@@ -458,7 +458,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, sum(price) " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "group by symbol " +
                            "having sum(price) > 50" +
                            "output every 1 seconds";
@@ -479,7 +479,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, sum(price) " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "group by symbol " +
                            "output all every 1 seconds " +
                            "order by symbol";
@@ -510,7 +510,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, sum(price) " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "group by symbol " +
                            "having sum(price) > 50 " +
                            "output all every 1 seconds";
@@ -521,7 +521,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "@Hint('enable_outputlimit_opt') select symbol, sum(price) " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "group by symbol " +
                            "having sum(price) > 50 " +
                            "output all every 1 seconds";
@@ -542,7 +542,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, sum(price) " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "group by symbol " +
                            "output last every 1 seconds " +
                            "order by symbol";
@@ -573,7 +573,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, sum(price) " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "group by symbol " +
                            "having sum(price) > 50 " +
                            "output last every 1 seconds";
@@ -584,7 +584,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "@Hint('enable_outputlimit_opt') select symbol, sum(price) " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "group by symbol " +
                            "having sum(price) > 50 " +
                            "output last every 1 seconds";
@@ -604,7 +604,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, sum(price) " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "group by symbol " +
                            "output first every 1 seconds";
             TryAssertion17(epService, stmtText, "first");
@@ -624,7 +624,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, sum(price) " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "group by symbol " +
                            "output snapshot every 1 seconds " +
                            "order by symbol";
@@ -975,7 +975,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 0);
             var selectStmt = "select symbol, min(price) as minprice from " + typeof(SupportMarketDataBean).FullName +
                              "#time(10 seconds) as m, " +
-                             typeof(SupportBean).FullName + "#keepall as s where s.theString = m.symbol " +
+                             typeof(SupportBean).FullName + "#keepall as s where s.TheString = m.symbol " +
                              "group by symbol output snapshot every 1 seconds order by symbol asc";
 
             var stmt = epService.EPAdministrator.CreateEPL(selectStmt);
@@ -1195,7 +1195,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                       "from " + typeof(SupportBeanString).FullName + "#length(100) as one, " +
                       typeof(SupportMarketDataBean).FullName + "#length(3) as two " +
                       "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                      "       and one.theString = two.symbol " +
+                      "       and one.TheString = two.symbol " +
                       "group by symbol";
 
             var stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -1252,7 +1252,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                       "from " + typeof(SupportBeanString).FullName + "#length(100) as one, " +
                       typeof(SupportMarketDataBean).FullName + "#length(3) as two " +
                       "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                      "       and one.theString = two.symbol " +
+                      "       and one.TheString = two.symbol " +
                       "group by symbol " +
                       "output last every 2 events";
 
@@ -1284,7 +1284,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                       "from " + typeof(SupportBeanString).FullName + "#length(100) as one, " +
                       typeof(SupportMarketDataBean).FullName + "#length(5) as two " +
                       "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                      "       and one.theString = two.symbol " +
+                      "       and one.TheString = two.symbol " +
                       "group by symbol " +
                       "output all every 2 events";
 

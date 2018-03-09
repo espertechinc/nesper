@@ -41,11 +41,11 @@ namespace com.espertech.esper.regression.multithread
         public override void Run(EPServiceProvider epService)
         {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            epService.EPAdministrator.CreateEPL("create context CtxEachString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context CtxEachString partition by TheString from SupportBean");
             epService.EPAdministrator.CreateEPL(
                 "@Name('select') context CtxEachString " +
                 "select * from SupportBean, " +
-                "  sql:MyDB ['select mycol3 from mytesttable_large where ${theString} = mycol1']");
+                "  sql:MyDB ['select mycol3 from mytesttable_large where ${TheString} = mycol1']");
 
             // up to 10 threads, up to 1000 combinations (1 to 1000)
             TryThreadSafetyHistoricalJoin(epService, 8, 20);

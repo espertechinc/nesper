@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.metric;
 using com.espertech.esper.client.scopetest;
@@ -50,10 +48,10 @@ namespace com.espertech.esper.regression.client
         {
             SendTimer(epService, 0);
     
-            epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive = 1)#keepall", "GroupOne");
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive = 2)#keepall", "GroupTwo");
+            epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive = 1)#keepall", "GroupOne");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive = 2)#keepall", "GroupTwo");
             stmt.Subscriber = new SupportSubscriber();
-            epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive = 3)#keepall", "Default");   // no listener
+            epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive = 3)#keepall", "Default");   // no listener
     
             stmt = epService.EPAdministrator.CreateEPL("select * from " + typeof(StatementMetric).FullName, "StmtMetrics");
             var listener = new SupportUpdateListener();
@@ -64,7 +62,7 @@ namespace com.espertech.esper.regression.client
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimer(epService, 8000);
-            string[] fields = "statementName,numOutputIStream,numInput".Split(',');
+            string[] fields = "StatementName,NumOutputIStream,NumInput".Split(',');
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"GroupOne", 0L, 0L});
     
             SendTimer(epService, 12000);

@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
@@ -16,8 +14,6 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
-using com.espertech.esper.view;
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.client
@@ -44,7 +40,7 @@ namespace com.espertech.esper.regression.client
             listener.Reset();
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("TheString"));
             stmt.Dispose();
             listener.Reset();
     
@@ -52,7 +48,7 @@ namespace com.espertech.esper.regression.client
             stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("select * from SupportBean#length(2)");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             stmt.AddEventHandlerWithReplay(listener.Update);
-            Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("TheString"));
             stmt.Dispose();
             listener.Reset();
     
@@ -61,7 +57,7 @@ namespace com.espertech.esper.regression.client
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
             stmt.AddEventHandlerWithReplay(listener.Update);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, new string[]{"theString"}, new object[][]{new object[] {"E1"}, new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, new string[]{"TheString"}, new object[][]{new object[] {"E1"}, new object[] {"E2"}});
     
             // test stopped statement and destroyed statement
             listener.Reset();
@@ -111,7 +107,7 @@ namespace com.espertech.esper.regression.client
                     "create window SupportBeanWindow#keepall as SupportBean;\n" +
                             "insert into SupportBeanWindow select * from SupportBean;\n");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPStatement stmtWHaving = epService.EPAdministrator.CreateEPL("select theString, intPrimitive from SupportBeanWindow having intPrimitive > 4000");
+            EPStatement stmtWHaving = epService.EPAdministrator.CreateEPL("select TheString, IntPrimitive from SupportBeanWindow having IntPrimitive > 4000");
             stmtWHaving.AddEventHandlerWithReplay(listener.Update);
     
             epService.EPAdministrator.DestroyAllStatements();

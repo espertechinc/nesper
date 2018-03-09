@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
@@ -14,7 +13,6 @@ using com.espertech.esper.client.hook;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.client.time;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
@@ -22,8 +20,6 @@ using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-using static com.espertech.esper.supportregression.bean.SupportBeanConstants;
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.pattern
@@ -44,8 +40,8 @@ namespace com.espertech.esper.regression.pattern
             RunAssertionSinglePermFalseAndQuit(epService);
             RunAssertionSingleMaxSimple(epService);
     
-            TryInvalid(epService, "select * from pattern[a=SupportBean_A -[a.intPrimitive]> SupportBean_B]",
-                    "Invalid maximum expression in followed-by, event properties are not allowed within the expression [select * from pattern[a=SupportBean_A -[a.intPrimitive]> SupportBean_B]]");
+            TryInvalid(epService, "select * from pattern[a=SupportBean_A -[a.IntPrimitive]> SupportBean_B]",
+                    "Invalid maximum expression in followed-by, event properties are not allowed within the expression [select * from pattern[a=SupportBean_A -[a.IntPrimitive]> SupportBean_B]]");
             TryInvalid(epService, "select * from pattern[a=SupportBean_A -[false]> SupportBean_B]",
                     "Invalid maximum expression in followed-by, the expression must return an integer value [select * from pattern[a=SupportBean_A -[false]> SupportBean_B]]");
         }

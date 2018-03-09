@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionExistsInSelect(EPServiceProvider epService) {
-            string stmtText = "select Exists (select * from S1#length(1000)) as value from S0";
+            string stmtText = "select exists (select * from S1#length(1000)) as value from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regression.epl.subselect
                 .Add(Expressions.SubqueryExists(subquery), "value");
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
     
-            string stmtText = "select Exists (select * from S1#length(1000)) as value from S0";
+            string stmtText = "select exists (select * from S1#length(1000)) as value from S0";
             Assert.AreEqual(stmtText, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionExistsInSelectCompile(EPServiceProvider epService) {
-            string stmtText = "select Exists (select * from S1#length(1000)) as value from S0";
+            string stmtText = "select exists (select * from S1#length(1000)) as value from S0";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
             Assert.AreEqual(stmtText, model.ToEPL());
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionExists(EPServiceProvider epService) {
-            string stmtText = "select id from S0 where Exists (select * from S1#length(1000))";
+            string stmtText = "select id from S0 where exists (select * from S1#length(1000))";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionExistsFiltered(EPServiceProvider epService) {
-            string stmtText = "select id from S0 as s0 where Exists (select * from S1#length(1000) as s1 where s1.id=s0.id)";
+            string stmtText = "select id from S0 as s0 where exists (select * from S1#length(1000) as s1 where s1.id=s0.id)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -146,9 +146,9 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertionTwoExistsFiltered(EPServiceProvider epService) {
             string stmtText = "select id from S0 as s0 where " +
-                    "Exists (select * from S1#length(1000) as s1 where s1.id=s0.id) " +
+                    "exists (select * from S1#length(1000) as s1 where s1.id=s0.id) " +
                     "and " +
-                    "Exists (select * from S2#length(1000) as s2 where s2.id=s0.id) ";
+                    "exists (select * from S2#length(1000) as s2 where s2.id=s0.id) ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -190,7 +190,7 @@ namespace com.espertech.esper.regression.epl.subselect
             model.WhereClause = Expressions.Not(Expressions.SubqueryExists(subquery));
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
     
-            string stmtText = "select id from S0 where not Exists (select * from S1#length(1000))";
+            string stmtText = "select id from S0 where not exists (select * from S1#length(1000))";
             Assert.AreEqual(stmtText, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionNotExists_Compile(EPServiceProvider epService) {
-            string stmtText = "select id from S0 where not Exists (select * from S1#length(1000))";
+            string stmtText = "select id from S0 where not exists (select * from S1#length(1000))";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
             Assert.AreEqual(stmtText, model.ToEPL());
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionNotExists(EPServiceProvider epService) {
-            string stmtText = "select id from S0 where not Exists (select * from S1#length(1000))";
+            string stmtText = "select id from S0 where not exists (select * from S1#length(1000))";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();

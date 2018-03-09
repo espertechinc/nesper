@@ -29,16 +29,16 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             string epl = "select distinct * from " +
-                    "SupportBean(intPrimitive=0) as fooB unidirectional " +
+                    "SupportBean(IntPrimitive=0) as fooB unidirectional " +
                     "inner join " +
                     "pattern [" +
-                    "every-Distinct(fooA.theString) fooA=SupportBean(intPrimitive=1)" +
+                    "every-distinct(fooA.TheString) fooA=SupportBean(IntPrimitive=1)" +
                     "->" +
-                    "every-Distinct(wooA.theString) wooA=SupportBean(intPrimitive=2)" +
+                    "every-distinct(wooA.TheString) wooA=SupportBean(IntPrimitive=2)" +
                     " where timer:within(1 hour)" +
                     "]#time(1 hour) as fooWooPair " +
-                    "on fooB.longPrimitive = fooWooPair.fooA.longPrimitive" +
-                    " order by fooWooPair.wooA.theString asc";
+                    "on fooB.LongPrimitive = fooWooPair.fooA.LongPrimitive" +
+                    " order by fooWooPair.wooA.TheString asc";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var subscriber = new SupportSubscriberMRD();
@@ -56,11 +56,11 @@ namespace com.espertech.esper.regression.epl.other
             Assert.AreEqual("Query", ((SupportBean) inserted[0][0]).TheString);
             Assert.AreEqual("Query", ((SupportBean) inserted[1][0]).TheString);
             Map mapOne = (Map) inserted[0][1];
-            Assert.AreEqual("E2", ((EventBean) mapOne.Get("wooA")).Get("theString"));
-            Assert.AreEqual("E1", ((EventBean) mapOne.Get("fooA")).Get("theString"));
+            Assert.AreEqual("E2", ((EventBean) mapOne.Get("wooA")).Get("TheString"));
+            Assert.AreEqual("E1", ((EventBean) mapOne.Get("fooA")).Get("TheString"));
             Map mapTwo = (Map) inserted[1][1];
-            Assert.AreEqual("E3", ((EventBean) mapTwo.Get("wooA")).Get("theString"));
-            Assert.AreEqual("E1", ((EventBean) mapTwo.Get("fooA")).Get("theString"));
+            Assert.AreEqual("E3", ((EventBean) mapTwo.Get("wooA")).Get("TheString"));
+            Assert.AreEqual("E1", ((EventBean) mapTwo.Get("fooA")).Get("TheString"));
         }
     
         private void SendEvent(EPServiceProvider epService, string theString, int intPrimitive, long longPrimitive) {

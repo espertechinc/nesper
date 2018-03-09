@@ -50,8 +50,8 @@ namespace com.espertech.esper.regression.multithread
             var listenerSetOne = new SupportMTUpdateListener();
             var listenerSetTwo = new SupportMTUpdateListener();
     
-            string stmtSetOneText = "on " + typeof(SupportBean).FullName + " set var1=longPrimitive, var2=longPrimitive, var3=var3+1";
-            string stmtSetTwoText = "on " + typeof(SupportMarketDataBean).Name + " set var1=volume, var2=volume, var3=var3+1";
+            string stmtSetOneText = "on " + typeof(SupportBean).FullName + " set var1=LongPrimitive, var2=LongPrimitive, var3=var3+1";
+            string stmtSetTwoText = "on " + typeof(SupportMarketDataBean).FullName + " set var1=volume, var2=volume, var3=var3+1";
             epService.EPAdministrator.CreateEPL(stmtSetOneText).Events += listenerSetOne.Update;
             epService.EPAdministrator.CreateEPL(stmtSetTwoText).Events += listenerSetTwo.Update;
     

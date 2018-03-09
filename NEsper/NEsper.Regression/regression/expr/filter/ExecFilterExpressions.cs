@@ -65,8 +65,8 @@ namespace com.espertech.esper.regression.expr.filter
         private void RunAssertionPromoteIndexToSetNotIn(EPServiceProvider epService) {
             var listenerOne = new SupportUpdateListener();
             var listenerTwo = new SupportUpdateListener();
-            string eplOne = "select * from SupportBean(theString != 'x' and theString != 'y' and doubleBoxed is not null)";
-            string eplTwo = "select * from SupportBean(theString != 'x' and theString != 'y' and longBoxed is not null)";
+            string eplOne = "select * from SupportBean(TheString != 'x' and TheString != 'y' and DoubleBoxed is not null)";
+            string eplTwo = "select * from SupportBean(TheString != 'x' and TheString != 'y' and LongBoxed is not null)";
     
             EPStatement stmeOne = epService.EPAdministrator.CreateEPL(eplOne);
             stmeOne.Events += listenerOne.Update;
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regression.expr.filter
             Assert.IsFalse(listener.IsInvoked, "Subscriber should not have received result(s)");
             stmt.Dispose();
     
-            stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean(theString='A' and theString='B')");
+            stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean(TheString='A' and TheString='B')");
             stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A", 0));
@@ -187,13 +187,13 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void TryRewriteWhereNamedWindow(EPServiceProvider epService) {
             EPStatement stmtWindow = epService.EPAdministrator.CreateEPL("create window NamedWindowA#length(1) as SupportBean");
-            EPStatement stmtWithMethod = epService.EPAdministrator.CreateEPL("select * from NamedWindowA mywindow WHERE (mywindow.theString.Trim() is 'abc')");
+            EPStatement stmtWithMethod = epService.EPAdministrator.CreateEPL("select * from NamedWindowA mywindow WHERE (mywindow.TheString.Trim() is 'abc')");
             stmtWindow.Dispose();
             stmtWithMethod.Dispose();
         }
     
         private void TryRewriteWhere(EPServiceProvider epService, string prefix) {
-            string epl = prefix + " select * from SupportBean as A0 where A0.intPrimitive = 3";
+            string epl = prefix + " select * from SupportBean as A0 where A0.IntPrimitive = 3";
             EPStatement statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
@@ -243,7 +243,7 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void RunAssertionConstant(EPServiceProvider epService) {
             string text = "select * from pattern [" +
-                    typeof(SupportBean).FullName + "(intPrimitive=" + typeof(ISupportA).Name + ".VALUE_1)]";
+                    typeof(SupportBean).FullName + "(IntPrimitive=" + typeof(ISupportA).FullName + ".VALUE_1)]";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -261,7 +261,7 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void RunAssertionEnumSyntaxOne(EPServiceProvider epService) {
             string text = "select * from pattern [" +
-                    typeof(SupportBeanWithEnum).Name + "(supportEnum=" + typeof(SupportEnum).Name + ".ValueOf('ENUM_VALUE_1'))]";
+                    typeof(SupportBeanWithEnum).FullName + "(supportEnum=" + typeof(SupportEnum).FullName + ".ValueOf('ENUM_VALUE_1'))]";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -279,7 +279,7 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void RunAssertionEnumSyntaxTwo(EPServiceProvider epService) {
             string text = "select * from pattern [" +
-                    typeof(SupportBeanWithEnum).Name + "(supportEnum=" + typeof(SupportEnum).Name + ".ENUM_VALUE_2)]";
+                    typeof(SupportBeanWithEnum).FullName + "(supportEnum=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_2)]";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -295,7 +295,7 @@ namespace com.espertech.esper.regression.expr.filter
             stmt.Dispose();
     
             // test where clause
-            text = "select * from " + typeof(SupportBeanWithEnum).FullName + " where supportEnum=" + typeof(SupportEnum).Name + ".ENUM_VALUE_2";
+            text = "select * from " + typeof(SupportBeanWithEnum).FullName + " where supportEnum=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_2";
             stmt = epService.EPAdministrator.CreateEPL(text);
             stmt.Events += listener.Update;
     
@@ -311,9 +311,9 @@ namespace com.espertech.esper.regression.expr.filter
         }
     
         private void RunAssertionNotEqualsConsolidate(EPServiceProvider epService) {
-            TryNotEqualsConsolidate(epService, "intPrimitive not in (1, 2)");
-            TryNotEqualsConsolidate(epService, "intPrimitive != 1, intPrimitive != 2");
-            TryNotEqualsConsolidate(epService, "intPrimitive != 1 and intPrimitive != 2");
+            TryNotEqualsConsolidate(epService, "IntPrimitive not in (1, 2)");
+            TryNotEqualsConsolidate(epService, "IntPrimitive != 1, IntPrimitive != 2");
+            TryNotEqualsConsolidate(epService, "IntPrimitive != 1 and IntPrimitive != 2");
         }
     
         private void TryNotEqualsConsolidate(EPServiceProvider epService, string filter) {
@@ -355,7 +355,7 @@ namespace com.espertech.esper.regression.expr.filter
         private void RunAssertionEqualsSemanticExpr(EPServiceProvider epService) {
             // Test for Esper-114
             string text = "select * from " + typeof(SupportBeanComplexProps).FullName + "(simpleProperty='1')#keepall as s0" +
-                    ", " + typeof(SupportBeanComplexProps).Name + "(simpleProperty='2')#keepall as s1" +
+                    ", " + typeof(SupportBeanComplexProps).FullName + "(simpleProperty='2')#keepall as s1" +
                     " where s0.nested = s1.nested";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
@@ -385,10 +385,10 @@ namespace com.espertech.esper.regression.expr.filter
             }
     
             // test equals&where-clause (can be optimized into filter)
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString != 'A'").Events += listeners[0].Update;
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString != 'A' or intPrimitive != 0").Events += listeners[1].Update;
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString = 'A'").Events += listeners[2].Update;
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString = 'A' or intPrimitive != 0").Events += listeners[3].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where TheString != 'A'").Events += listeners[0].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where TheString != 'A' or IntPrimitive != 0").Events += listeners[1].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where TheString = 'A'").Events += listeners[2].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where TheString = 'A' or IntPrimitive != 0").Events += listeners[3].Update;
     
             epService.EPRuntime.SendEvent(new SupportBean(null, 0));
             AssertListeners(listeners, new[]{false, false, false, false});
@@ -413,12 +413,12 @@ namespace com.espertech.esper.regression.expr.filter
             // test equals&selection
             string[] fields = "val0,val1,val2,val3,val4,val5".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select " +
-                    "theString != 'A' as val0, " +
-                    "theString != 'A' or intPrimitive != 0 as val1, " +
-                    "theString != 'A' and intPrimitive != 0 as val2, " +
-                    "theString = 'A' as val3," +
-                    "theString = 'A' or intPrimitive != 0 as val4, " +
-                    "theString = 'A' and intPrimitive != 0 as val5 from SupportBean");
+                    "TheString != 'A' as val0, " +
+                    "TheString != 'A' or IntPrimitive != 0 as val1, " +
+                    "TheString != 'A' and IntPrimitive != 0 as val2, " +
+                    "TheString = 'A' as val3," +
+                    "TheString = 'A' or IntPrimitive != 0 as val4, " +
+                    "TheString = 'A' and IntPrimitive != 0 as val5 from SupportBean");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -443,10 +443,10 @@ namespace com.espertech.esper.regression.expr.filter
             epService.EPAdministrator.DestroyAllStatements();
     
             // test is-and-isnot&where-clause
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString is null").Events += listeners[0].Update;
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString is null or intPrimitive != 0").Events += listeners[1].Update;
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString is not null").Events += listeners[2].Update;
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString is not null or intPrimitive != 0").Events += listeners[3].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where TheString is null").Events += listeners[0].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where TheString is null or IntPrimitive != 0").Events += listeners[1].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where TheString is not null").Events += listeners[2].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where TheString is not null or IntPrimitive != 0").Events += listeners[3].Update;
     
             epService.EPRuntime.SendEvent(new SupportBean(null, 0));
             AssertListeners(listeners, new[]{true, true, false, false});
@@ -464,12 +464,12 @@ namespace com.espertech.esper.regression.expr.filter
     
             // test is-and-isnot&selection
             epService.EPAdministrator.CreateEPL("select " +
-                    "theString is null as val0, " +
-                    "theString is null or intPrimitive != 0 as val1, " +
-                    "theString is null and intPrimitive != 0 as val2, " +
-                    "theString is not null as val3," +
-                    "theString is not null or intPrimitive != 0 as val4, " +
-                    "theString is not null and intPrimitive != 0 as val5 " +
+                    "TheString is null as val0, " +
+                    "TheString is null or IntPrimitive != 0 as val1, " +
+                    "TheString is null and IntPrimitive != 0 as val2, " +
+                    "TheString is not null as val3," +
+                    "TheString is not null or IntPrimitive != 0 as val4, " +
+                    "TheString is not null and IntPrimitive != 0 as val5 " +
                     "from SupportBean").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean(null, 0));
@@ -487,12 +487,12 @@ namespace com.espertech.esper.regression.expr.filter
             epService.EPAdministrator.DestroyAllStatements();
     
             // filter expression
-            epService.EPAdministrator.CreateEPL("select * from SupportBean(theString is null)").Events += listeners[0].Update;
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString = null").Events += listeners[1].Update;
-            epService.EPAdministrator.CreateEPL("select * from SupportBean(theString = null)").Events += listeners[2].Update;
-            epService.EPAdministrator.CreateEPL("select * from SupportBean(theString is not null)").Events += listeners[3].Update;
-            epService.EPAdministrator.CreateEPL("select * from SupportBean where theString != null").Events += listeners[4].Update;
-            epService.EPAdministrator.CreateEPL("select * from SupportBean(theString != null)").Events += listeners[5].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean(TheString is null)").Events += listeners[0].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where TheString = null").Events += listeners[1].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean(TheString = null)").Events += listeners[2].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean(TheString is not null)").Events += listeners[3].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean where TheString != null").Events += listeners[4].Update;
+            epService.EPAdministrator.CreateEPL("select * from SupportBean(TheString != null)").Events += listeners[5].Update;
     
             epService.EPRuntime.SendEvent(new SupportBean(null, 0));
             AssertListeners(listeners, new[]{true, false, false, false, false, false});
@@ -515,10 +515,10 @@ namespace com.espertech.esper.regression.expr.filter
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null, null, null});
     
             // test SODA
-            string epl = "select intBoxed is null, intBoxed is not null, intBoxed=1, intBoxed!=1 from SupportBean";
+            string epl = "select IntBoxed is null, IntBoxed is not null, IntBoxed=1, IntBoxed!=1 from SupportBean";
             stmt = SupportModelHelper.CompileCreate(epService, epl);
-            EPAssertionUtil.AssertEqualsExactOrder(new[]{"intBoxed is null", "intBoxed is not null",
-                    "intBoxed=1", "intBoxed!=1"}, stmt.EventType.PropertyNames);
+            EPAssertionUtil.AssertEqualsExactOrder(new[]{"IntBoxed is null", "IntBoxed is not null",
+                    "IntBoxed=1", "IntBoxed!=1"}, stmt.EventType.PropertyNames);
             epService.EPAdministrator.DestroyAllStatements();
         }
     
@@ -528,7 +528,7 @@ namespace com.espertech.esper.regression.expr.filter
             text = "select * from pattern [" +
                     "a=" + typeof(SupportBean).FullName + " -> " +
                     "b=" + typeof(SupportBean).FullName + " -> " +
-                    "c=" + typeof(SupportBean).FullName + "(intBoxed=a.intBoxed, intBoxed=b.intBoxed and intBoxed != null)]";
+                    "c=" + typeof(SupportBean).FullName + "(IntBoxed=a.IntBoxed, IntBoxed=b.IntBoxed and IntBoxed != null)]";
             TryPattern3Stream(epService, text, new int?[]{null, 2, 1, null, 8, 1, 2}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{null, 3, 1, 8, null, 4, -2}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{null, 3, 1, 8, null, 5, null}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
@@ -537,7 +537,7 @@ namespace com.espertech.esper.regression.expr.filter
             text = "select * from pattern [" +
                     "a=" + typeof(SupportBean).FullName + " -> " +
                     "b=" + typeof(SupportBean).FullName + " -> " +
-                    "c=" + typeof(SupportBean).FullName + "(intBoxed is a.intBoxed, intBoxed is b.intBoxed and intBoxed is not null)]";
+                    "c=" + typeof(SupportBean).FullName + "(IntBoxed is a.IntBoxed, IntBoxed is b.IntBoxed and IntBoxed is not null)]";
             TryPattern3Stream(epService, text, new int?[]{null, 2, 1, null, 8, 1, 2}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{null, 3, 1, 8, null, 4, -2}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{null, 3, 1, 8, null, 5, null}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
@@ -546,7 +546,7 @@ namespace com.espertech.esper.regression.expr.filter
             text = "select * from pattern [" +
                     "a=" + typeof(SupportBean).FullName + " -> " +
                     "b=" + typeof(SupportBean).FullName + " -> " +
-                    "c=" + typeof(SupportBean).FullName + "(intBoxed=a.intBoxed or intBoxed=b.intBoxed)]";
+                    "c=" + typeof(SupportBean).FullName + "(IntBoxed=a.IntBoxed or IntBoxed=b.IntBoxed)]";
             TryPattern3Stream(epService, text, new int?[]{null, 2, 1, null, 8, 1, 2}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{null, 3, 1, 8, null, 4, -2}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{null, 3, 1, 8, null, 5, null}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
@@ -555,7 +555,7 @@ namespace com.espertech.esper.regression.expr.filter
             text = "select * from pattern [" +
                     "a=" + typeof(SupportBean).FullName + " -> " +
                     "b=" + typeof(SupportBean).FullName + " -> " +
-                    "c=" + typeof(SupportBean).FullName + "(intBoxed=a.intBoxed, intBoxed=b.intBoxed)]";
+                    "c=" + typeof(SupportBean).FullName + "(IntBoxed=a.IntBoxed, IntBoxed=b.IntBoxed)]";
             TryPattern3Stream(epService, text, new int?[]{null, 2, 1, null, 8, 1, 2}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{null, 3, 1, 8, null, 4, -2}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{null, 3, 1, 8, null, 5, null}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
@@ -564,7 +564,7 @@ namespace com.espertech.esper.regression.expr.filter
             text = "select * from pattern [" +
                     "a=" + typeof(SupportBean).FullName + " -> " +
                     "b=" + typeof(SupportBean).FullName + " -> " +
-                    "c=" + typeof(SupportBean).FullName + "(intBoxed!=a.intBoxed, intBoxed!=b.intBoxed)]";
+                    "c=" + typeof(SupportBean).FullName + "(IntBoxed!=a.IntBoxed, IntBoxed!=b.IntBoxed)]";
             TryPattern3Stream(epService, text, new int?[]{null, 2, 1, null, 8, 1, 2}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{null, 3, 1, 8, null, 4, -2}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{null, 3, 1, 8, null, 5, null}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
@@ -573,7 +573,7 @@ namespace com.espertech.esper.regression.expr.filter
             text = "select * from pattern [" +
                     "a=" + typeof(SupportBean).FullName + " -> " +
                     "b=" + typeof(SupportBean).FullName + " -> " +
-                    "c=" + typeof(SupportBean).FullName + "(intBoxed!=a.intBoxed)]";
+                    "c=" + typeof(SupportBean).FullName + "(IntBoxed!=a.IntBoxed)]";
             TryPattern3Stream(epService, text, new int?[]{2, 8, null, 2, 1, null, 1}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{-2, null, null, 3, 1, 8, 4}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{null, null, null, 3, 1, 8, 5}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
@@ -582,7 +582,7 @@ namespace com.espertech.esper.regression.expr.filter
             text = "select * from pattern [" +
                     "a=" + typeof(SupportBean).FullName + " -> " +
                     "b=" + typeof(SupportBean).FullName + " -> " +
-                    "c=" + typeof(SupportBean).FullName + "(intBoxed is not a.intBoxed)]";
+                    "c=" + typeof(SupportBean).FullName + "(IntBoxed is not a.IntBoxed)]";
             TryPattern3Stream(epService, text, new int?[]{2, 8, null, 2, 1, null, 1}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{-2, null, null, 3, 1, 8, 4}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{null, null, null, 3, 1, 8, 5}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
@@ -591,7 +591,7 @@ namespace com.espertech.esper.regression.expr.filter
             text = "select * from pattern [" +
                     "a=" + typeof(SupportBean).FullName + " -> " +
                     "b=" + typeof(SupportBean).FullName + " -> " +
-                    "c=" + typeof(SupportBean).FullName + "(intBoxed=a.intBoxed, doubleBoxed=b.doubleBoxed)]";
+                    "c=" + typeof(SupportBean).FullName + "(IntBoxed=a.IntBoxed, DoubleBoxed=b.DoubleBoxed)]";
             TryPattern3Stream(epService, text, new int?[]{2, 2, 1, 2, 1, 7, 1}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{0, 0, 0, 0, 0, 0, 0}, new double?[]{1d, 2d, 0d, 2d, 0d, 1d, 0d},
                     new int?[]{2, 2, 3, 2, 1, 7, 5}, new double?[]{1d, 1d, 1d, 2d, 1d, 1d, 1d},
@@ -600,7 +600,7 @@ namespace com.espertech.esper.regression.expr.filter
             text = "select * from pattern [" +
                     "a=" + typeof(SupportBean).FullName + " -> " +
                     "b=" + typeof(SupportBean).FullName + " -> " +
-                    "c=" + typeof(SupportBean).FullName + "(intBoxed in (a.intBoxed, b.intBoxed))]";
+                    "c=" + typeof(SupportBean).FullName + "(IntBoxed in (a.IntBoxed, b.IntBoxed))]";
             TryPattern3Stream(epService, text, new int?[]{2, 1, 1, null, 1, null, 1}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{1, 2, 1, null, null, 2, 0}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{2, 2, 3, null, 1, null, null}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
@@ -609,7 +609,7 @@ namespace com.espertech.esper.regression.expr.filter
             text = "select * from pattern [" +
                     "a=" + typeof(SupportBean).FullName + " -> " +
                     "b=" + typeof(SupportBean).FullName + " -> " +
-                    "c=" + typeof(SupportBean).FullName + "(intBoxed in [a.intBoxed:b.intBoxed])]";
+                    "c=" + typeof(SupportBean).FullName + "(IntBoxed in [a.IntBoxed:b.IntBoxed])]";
             TryPattern3Stream(epService, text, new int?[]{2, 1, 1, null, 1, null, 1}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{1, 2, 1, null, null, 2, 0}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{2, 1, 3, null, 1, null, null}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
@@ -618,7 +618,7 @@ namespace com.espertech.esper.regression.expr.filter
             text = "select * from pattern [" +
                     "a=" + typeof(SupportBean).FullName + " -> " +
                     "b=" + typeof(SupportBean).FullName + " -> " +
-                    "c=" + typeof(SupportBean).FullName + "(intBoxed not in [a.intBoxed:b.intBoxed])]";
+                    "c=" + typeof(SupportBean).FullName + "(IntBoxed not in [a.IntBoxed:b.IntBoxed])]";
             TryPattern3Stream(epService, text, new int?[]{2, 1, 1, null, 1, null, 1}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{1, 2, 1, null, null, 2, 0}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[]{2, 1, 3, null, 1, null, null}, new double?[]{0d, 0d, 0d, 0d, 0d, 0d, 0d},
@@ -629,122 +629,122 @@ namespace com.espertech.esper.regression.expr.filter
             string text;
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(intBoxed = a.intBoxed and doubleBoxed = a.doubleBoxed)]";
+                    typeof(SupportBean).FullName + "(IntBoxed = a.IntBoxed and DoubleBoxed = a.DoubleBoxed)]";
             TryPattern(epService, text, new int?[]{null, 2, 1, null, 8, 1, 2}, new double?[]{2d, 2d, 2d, 1d, 5d, 6d, 7d},
                     new int?[]{null, 3, 1, 8, null, 1, 2}, new double?[]{2d, 3d, 2d, 1d, 5d, 6d, 8d},
                     new[]{false, false, true, false, false, true, false});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(intBoxed is a.intBoxed and doubleBoxed = a.doubleBoxed)]";
+                    typeof(SupportBean).FullName + "(IntBoxed is a.IntBoxed and DoubleBoxed = a.DoubleBoxed)]";
             TryPattern(epService, text, new int?[]{null, 2, 1, null, 8, 1, 2}, new double?[]{2d, 2d, 2d, 1d, 5d, 6d, 7d},
                     new int?[]{null, 3, 1, 8, null, 1, 2}, new double?[]{2d, 3d, 2d, 1d, 5d, 6d, 8d},
                     new[]{true, false, true, false, false, true, false});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(a.doubleBoxed = doubleBoxed)]";
+                    typeof(SupportBean).FullName + "(a.DoubleBoxed = DoubleBoxed)]";
             TryPattern(epService, text, new int?[]{0, 0}, new double?[]{2d, 2d},
                     new int?[]{0, 0}, new double?[]{2d, 3d},
                     new[]{true, false});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(a.doubleBoxed = b.doubleBoxed)]";
+                    typeof(SupportBean).FullName + "(a.DoubleBoxed = b.DoubleBoxed)]";
             TryPattern(epService, text, new int?[]{0, 0}, new double?[]{2d, 2d},
                     new int?[]{0, 0}, new double?[]{2d, 3d},
                     new[]{true, false});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(a.doubleBoxed != doubleBoxed)]";
+                    typeof(SupportBean).FullName + "(a.DoubleBoxed != DoubleBoxed)]";
             TryPattern(epService, text, new int?[]{0, 0}, new double?[]{2d, 2d},
                     new int?[]{0, 0}, new double?[]{2d, 3d},
                     new[]{false, true});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(a.doubleBoxed != b.doubleBoxed)]";
+                    typeof(SupportBean).FullName + "(a.DoubleBoxed != b.DoubleBoxed)]";
             TryPattern(epService, text, new int?[]{0, 0}, new double?[]{2d, 2d},
                     new int?[]{0, 0}, new double?[]{2d, 3d},
                     new[]{false, true});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(doubleBoxed in [a.doubleBoxed:a.intBoxed])]";
+                    typeof(SupportBean).FullName + "(DoubleBoxed in [a.DoubleBoxed:a.IntBoxed])]";
             TryPattern(epService, text, new int?[]{1, 1, 1, 1, 1, 1}, new double?[]{10d, 10d, 10d, 10d, 10d, 10d},
                     new int?[]{0, 0, 0, 0, 0, 0}, new double?[]{0d, 1d, 2d, 9d, 10d, 11d},
                     new[]{false, true, true, true, true, false});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(doubleBoxed in (a.doubleBoxed:a.intBoxed])]";
+                    typeof(SupportBean).FullName + "(DoubleBoxed in (a.DoubleBoxed:a.IntBoxed])]";
             TryPattern(epService, text, new int?[]{1, 1, 1, 1, 1, 1}, new double?[]{10d, 10d, 10d, 10d, 10d, 10d},
                     new int?[]{0, 0, 0, 0, 0, 0}, new double?[]{0d, 1d, 2d, 9d, 10d, 11d},
                     new[]{false, false, true, true, true, false});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(b.doubleBoxed in (a.doubleBoxed:a.intBoxed))]";
+                    typeof(SupportBean).FullName + "(b.DoubleBoxed in (a.DoubleBoxed:a.IntBoxed))]";
             TryPattern(epService, text, new int?[]{1, 1, 1, 1, 1, 1}, new double?[]{10d, 10d, 10d, 10d, 10d, 10d},
                     new int?[]{0, 0, 0, 0, 0, 0}, new double?[]{0d, 1d, 2d, 9d, 10d, 11d},
                     new[]{false, false, true, true, false, false});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(doubleBoxed in [a.doubleBoxed:a.intBoxed))]";
+                    typeof(SupportBean).FullName + "(DoubleBoxed in [a.DoubleBoxed:a.IntBoxed))]";
             TryPattern(epService, text, new int?[]{1, 1, 1, 1, 1, 1}, new double?[]{10d, 10d, 10d, 10d, 10d, 10d},
                     new int?[]{0, 0, 0, 0, 0, 0}, new double?[]{0d, 1d, 2d, 9d, 10d, 11d},
                     new[]{false, true, true, true, false, false});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(doubleBoxed not in [a.doubleBoxed:a.intBoxed])]";
+                    typeof(SupportBean).FullName + "(DoubleBoxed not in [a.DoubleBoxed:a.IntBoxed])]";
             TryPattern(epService, text, new int?[]{1, 1, 1, 1, 1, 1}, new double?[]{10d, 10d, 10d, 10d, 10d, 10d},
                     new int?[]{0, 0, 0, 0, 0, 0}, new double?[]{0d, 1d, 2d, 9d, 10d, 11d},
                     new[]{true, false, false, false, false, true});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(doubleBoxed not in (a.doubleBoxed:a.intBoxed])]";
+                    typeof(SupportBean).FullName + "(DoubleBoxed not in (a.DoubleBoxed:a.IntBoxed])]";
             TryPattern(epService, text, new int?[]{1, 1, 1, 1, 1, 1}, new double?[]{10d, 10d, 10d, 10d, 10d, 10d},
                     new int?[]{0, 0, 0, 0, 0, 0}, new double?[]{0d, 1d, 2d, 9d, 10d, 11d},
                     new[]{true, true, false, false, false, true});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(b.doubleBoxed not in (a.doubleBoxed:a.intBoxed))]";
+                    typeof(SupportBean).FullName + "(b.DoubleBoxed not in (a.DoubleBoxed:a.IntBoxed))]";
             TryPattern(epService, text, new int?[]{1, 1, 1, 1, 1, 1}, new double?[]{10d, 10d, 10d, 10d, 10d, 10d},
                     new int?[]{0, 0, 0, 0, 0, 0}, new double?[]{0d, 1d, 2d, 9d, 10d, 11d},
                     new[]{true, true, false, false, true, true});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(doubleBoxed not in [a.doubleBoxed:a.intBoxed))]";
+                    typeof(SupportBean).FullName + "(DoubleBoxed not in [a.DoubleBoxed:a.IntBoxed))]";
             TryPattern(epService, text, new int?[]{1, 1, 1, 1, 1, 1}, new double?[]{10d, 10d, 10d, 10d, 10d, 10d},
                     new int?[]{0, 0, 0, 0, 0, 0}, new double?[]{0d, 1d, 2d, 9d, 10d, 11d},
                     new[]{true, false, false, false, true, true});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(doubleBoxed not in (a.doubleBoxed, a.intBoxed, 9))]";
+                    typeof(SupportBean).FullName + "(DoubleBoxed not in (a.DoubleBoxed, a.IntBoxed, 9))]";
             TryPattern(epService, text, new int?[]{1, 1, 1, 1, 1, 1}, new double?[]{10d, 10d, 10d, 10d, 10d, 10d},
                     new int?[]{0, 0, 0, 0, 0, 0}, new double?[]{0d, 1d, 2d, 9d, 10d, 11d},
                     new[]{true, false, true, false, false, true});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(doubleBoxed in (a.doubleBoxed, a.intBoxed, 9))]";
+                    typeof(SupportBean).FullName + "(DoubleBoxed in (a.DoubleBoxed, a.IntBoxed, 9))]";
             TryPattern(epService, text, new int?[]{1, 1, 1, 1, 1, 1}, new double?[]{10d, 10d, 10d, 10d, 10d, 10d},
                     new int?[]{0, 0, 0, 0, 0, 0}, new double?[]{0d, 1d, 2d, 9d, 10d, 11d},
                     new[]{false, true, false, true, true, false});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(b.doubleBoxed in (doubleBoxed, a.intBoxed, 9))]";
+                    typeof(SupportBean).FullName + "(b.DoubleBoxed in (DoubleBoxed, a.IntBoxed, 9))]";
             TryPattern(epService, text, new int?[]{1, 1, 1, 1, 1, 1}, new double?[]{10d, 10d, 10d, 10d, 10d, 10d},
                     new int?[]{0, 0, 0, 0, 0, 0}, new double?[]{0d, 1d, 2d, 9d, 10d, 11d},
                     new[]{true, true, true, true, true, true});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(doubleBoxed not in (doubleBoxed, a.intBoxed, 9))]";
+                    typeof(SupportBean).FullName + "(DoubleBoxed not in (DoubleBoxed, a.IntBoxed, 9))]";
             TryPattern(epService, text, new int?[]{1, 1, 1, 1, 1, 1}, new double?[]{10d, 10d, 10d, 10d, 10d, 10d},
                     new int?[]{0, 0, 0, 0, 0, 0}, new double?[]{0d, 1d, 2d, 9d, 10d, 11d},
                     new[]{false, false, false, false, false, false});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(doubleBoxed = " + typeof(SupportStaticMethodLib).FullName + ".MinusOne(a.doubleBoxed))]";
+                    typeof(SupportBean).FullName + "(DoubleBoxed = " + typeof(SupportStaticMethodLib).FullName + ".MinusOne(a.DoubleBoxed))]";
             TryPattern(epService, text, new int?[]{0, 0, 0}, new double?[]{10d, 10d, 10d},
                     new int?[]{0, 0, 0}, new double?[]{9d, 10d, 11d},
                     new[]{true, false, false});
     
             text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                    typeof(SupportBean).FullName + "(doubleBoxed = " + typeof(SupportStaticMethodLib).FullName + ".MinusOne(a.doubleBoxed) or " +
-                    "doubleBoxed = " + typeof(SupportStaticMethodLib).FullName + ".MinusOne(a.intBoxed))]";
+                    typeof(SupportBean).FullName + "(DoubleBoxed = " + typeof(SupportStaticMethodLib).FullName + ".MinusOne(a.DoubleBoxed) or " +
+                    "DoubleBoxed = " + typeof(SupportStaticMethodLib).FullName + ".MinusOne(a.IntBoxed))]";
             TryPattern(epService, text, new int?[]{0, 0, 12}, new double?[]{10d, 10d, 10d},
                     new int?[]{0, 0, 0}, new double?[]{9d, 10d, 11d},
                     new[]{true, false, true});
@@ -804,29 +804,29 @@ namespace com.espertech.esper.regression.expr.filter
         private void RunAssertionIn3ValuesAndNull(EPServiceProvider epService) {
             string text;
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intPrimitive in (intBoxed, doubleBoxed))";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntPrimitive in (IntBoxed, DoubleBoxed))";
             Try3Fields(epService, text, new[]{1, 1, 1}, new int?[]{0, 1, 0}, new double?[]{2d, 2d, 1d}, new[]{false, true, true});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intPrimitive in (intBoxed, " +
-                    typeof(SupportStaticMethodLib).FullName + ".MinusOne(doubleBoxed)))";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntPrimitive in (IntBoxed, " +
+                    typeof(SupportStaticMethodLib).FullName + ".MinusOne(DoubleBoxed)))";
             Try3Fields(epService, text, new[]{1, 1, 1}, new int?[]{0, 1, 0}, new double?[]{2d, 2d, 1d}, new[]{true, true, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intPrimitive not in (intBoxed, doubleBoxed))";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntPrimitive not in (IntBoxed, DoubleBoxed))";
             Try3Fields(epService, text, new[]{1, 1, 1}, new int?[]{0, 1, 0}, new double?[]{2d, 2d, 1d}, new[]{true, false, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed = doubleBoxed)";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed = DoubleBoxed)";
             Try3Fields(epService, text, new[]{1, 1, 1}, new int?[]{null, 1, null}, new double?[]{null, null, 1d}, new[]{false, false, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (doubleBoxed))";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (DoubleBoxed))";
             Try3Fields(epService, text, new[]{1, 1, 1}, new int?[]{null, 1, null}, new double?[]{null, null, 1d}, new[]{false, false, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed not in (doubleBoxed))";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed not in (DoubleBoxed))";
             Try3Fields(epService, text, new[]{1, 1, 1}, new int?[]{null, 1, null}, new double?[]{null, null, 1d}, new[]{false, false, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed in [doubleBoxed:10))";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in [DoubleBoxed:10))";
             Try3Fields(epService, text, new[]{1, 1, 1}, new int?[]{null, 1, 2}, new double?[]{null, null, 1d}, new[]{false, false, true});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed not in [doubleBoxed:10))";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed not in [DoubleBoxed:10))";
             Try3Fields(epService, text, new[]{1, 1, 1}, new int?[]{null, 1, 2}, new double?[]{null, null, 1d}, new[]{false, true, false});
         }
     
@@ -834,89 +834,89 @@ namespace com.espertech.esper.regression.expr.filter
             string text;
     
             text = "select * from " + typeof(SupportBean).FullName + "(" +
-                    typeof(SupportStaticMethodLib).FullName + ".IsStringEquals('b', theString))";
+                    typeof(SupportStaticMethodLib).FullName + ".IsStringEquals('b', TheString))";
             TryFilter(epService, text, true);
     
             text = "select * from " + typeof(SupportBean).FullName + "(" +
-                    typeof(SupportStaticMethodLib).FullName + ".IsStringEquals('bx', theString || 'x'))";
+                    typeof(SupportStaticMethodLib).FullName + ".IsStringEquals('bx', TheString || 'x'))";
             TryFilter(epService, text, true);
     
-            text = "select * from " + typeof(SupportBean).FullName + "('b'=theString," +
-                    typeof(SupportStaticMethodLib).FullName + ".IsStringEquals('bx', theString || 'x'))";
+            text = "select * from " + typeof(SupportBean).FullName + "('b'=TheString," +
+                    typeof(SupportStaticMethodLib).FullName + ".IsStringEquals('bx', TheString || 'x'))";
             TryFilter(epService, text, true);
     
-            text = "select * from " + typeof(SupportBean).FullName + "('b'=theString, theString='b', theString != 'a')";
+            text = "select * from " + typeof(SupportBean).FullName + "('b'=TheString, TheString='b', TheString != 'a')";
             TryFilter(epService, text, true);
     
-            text = "select * from " + typeof(SupportBean).FullName + "(theString != 'a', theString != 'c')";
+            text = "select * from " + typeof(SupportBean).FullName + "(TheString != 'a', TheString != 'c')";
             TryFilter(epService, text, true);
     
-            text = "select * from " + typeof(SupportBean).FullName + "(theString = 'b', theString != 'c')";
+            text = "select * from " + typeof(SupportBean).FullName + "(TheString = 'b', TheString != 'c')";
             TryFilter(epService, text, true);
     
-            text = "select * from " + typeof(SupportBean).FullName + "(theString != 'a' and theString != 'c')";
+            text = "select * from " + typeof(SupportBean).FullName + "(TheString != 'a' and TheString != 'c')";
             TryFilter(epService, text, true);
     
-            text = "select * from " + typeof(SupportBean).FullName + "(theString = 'a' and theString = 'c' and " +
-                    typeof(SupportStaticMethodLib).FullName + ".IsStringEquals('bx', theString || 'x'))";
+            text = "select * from " + typeof(SupportBean).FullName + "(TheString = 'a' and TheString = 'c' and " +
+                    typeof(SupportStaticMethodLib).FullName + ".IsStringEquals('bx', TheString || 'x'))";
             TryFilter(epService, text, false);
         }
     
         private void RunAssertionFilterRelationalOpRange(EPServiceProvider epService) {
             string text;
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed in [2:3])";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in [2:3])";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{false, true, true, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed in [2:3] and intBoxed in [2:3])";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in [2:3] and IntBoxed in [2:3])";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{false, true, true, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed in [2:3] and intBoxed in [2:2])";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in [2:3] and IntBoxed in [2:2])";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{false, true, false, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed in [1:10] and intBoxed in [3:2])";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in [1:10] and IntBoxed in [3:2])";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{false, true, true, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed in [3:3] and intBoxed in [1:3])";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in [3:3] and IntBoxed in [1:3])";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{false, false, true, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed in [3:3] and intBoxed in [1:3] and intBoxed in [4:5])";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in [3:3] and IntBoxed in [1:3] and IntBoxed in [4:5])";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{false, false, false, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed not in [3:3] and intBoxed not in [1:3])";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed not in [3:3] and IntBoxed not in [1:3])";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{false, false, false, true});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed not in (2:4) and intBoxed not in (1:3))";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed not in (2:4) and IntBoxed not in (1:3))";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{true, false, false, true});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed not in [2:4) and intBoxed not in [1:3))";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed not in [2:4) and IntBoxed not in [1:3))";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{false, false, false, true});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed not in (2:4] and intBoxed not in (1:3])";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed not in (2:4] and IntBoxed not in (1:3])";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{true, false, false, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + " where intBoxed not in (2:4)";
+            text = "select * from " + typeof(SupportBean).FullName + " where IntBoxed not in (2:4)";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{true, true, false, true});
     
-            text = "select * from " + typeof(SupportBean).FullName + " where intBoxed not in [2:4]";
+            text = "select * from " + typeof(SupportBean).FullName + " where IntBoxed not in [2:4]";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{true, false, false, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + " where intBoxed not in [2:4)";
+            text = "select * from " + typeof(SupportBean).FullName + " where IntBoxed not in [2:4)";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{true, false, false, true});
     
-            text = "select * from " + typeof(SupportBean).FullName + " where intBoxed not in (2:4]";
+            text = "select * from " + typeof(SupportBean).FullName + " where IntBoxed not in (2:4]";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{true, true, false, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + " where intBoxed in (2:4)";
+            text = "select * from " + typeof(SupportBean).FullName + " where IntBoxed in (2:4)";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{false, false, true, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + " where intBoxed in [2:4]";
+            text = "select * from " + typeof(SupportBean).FullName + " where IntBoxed in [2:4]";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{false, true, true, true});
     
-            text = "select * from " + typeof(SupportBean).FullName + " where intBoxed in [2:4)";
+            text = "select * from " + typeof(SupportBean).FullName + " where IntBoxed in [2:4)";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{false, true, true, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + " where intBoxed in (2:4]";
+            text = "select * from " + typeof(SupportBean).FullName + " where IntBoxed in (2:4]";
             TryFilterRelationalOpRange(epService, text, new[]{1, 2, 3, 4}, new[]{false, false, true, true});
         }
     
@@ -972,7 +972,7 @@ namespace com.espertech.esper.regression.expr.filter
         }
     
         private void RunAssertionFilterBooleanExpr(EPServiceProvider epService) {
-            string text = "select * from " + typeof(SupportBean).FullName + "(2*intBoxed=doubleBoxed)";
+            string text = "select * from " + typeof(SupportBean).FullName + "(2*IntBoxed=DoubleBoxed)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -982,7 +982,7 @@ namespace com.espertech.esper.regression.expr.filter
             SendBeanIntDouble(epService, 25, 50d);
             Assert.IsTrue(listener.GetAndClearIsInvoked());
     
-            text = "select * from " + typeof(SupportBean).FullName + "(2*intBoxed=doubleBoxed, theString='s')";
+            text = "select * from " + typeof(SupportBean).FullName + "(2*IntBoxed=DoubleBoxed, TheString='s')";
             stmt = epService.EPAdministrator.CreateEPL(text);
             var listenerTwo = new SupportUpdateListener();
             stmt.Events += listenerTwo.Update;
@@ -995,8 +995,8 @@ namespace com.espertech.esper.regression.expr.filter
     
             // test priority of equals and boolean
             epService.EPAdministrator.Configuration.AddImport(typeof(SupportStaticMethodLib));
-            epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive = 1 or intPrimitive = 2)");
-            epService.EPAdministrator.CreateEPL("select * from SupportBean(intPrimitive = 3, SupportStaticMethodLib.AlwaysTrue({}))");
+            epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive = 1 or IntPrimitive = 2)");
+            epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive = 3, SupportStaticMethodLib.AlwaysTrue({}))");
     
             SupportStaticMethodLib.Invocations.Clear();
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -1006,25 +1006,25 @@ namespace com.espertech.esper.regression.expr.filter
         private void RunAssertionFilterWithEqualsSameCompare(EPServiceProvider epService) {
             string text;
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed=doubleBoxed)";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed=DoubleBoxed)";
             TryFilterWithEqualsSameCompare(epService, text, new[]{1, 1}, new double[]{1, 10}, new[]{true, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed=intBoxed and doubleBoxed=doubleBoxed)";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed=IntBoxed and DoubleBoxed=DoubleBoxed)";
             TryFilterWithEqualsSameCompare(epService, text, new[]{1, 1}, new double[]{1, 10}, new[]{true, true});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(doubleBoxed=intBoxed)";
+            text = "select * from " + typeof(SupportBean).FullName + "(DoubleBoxed=IntBoxed)";
             TryFilterWithEqualsSameCompare(epService, text, new[]{1, 1}, new double[]{1, 10}, new[]{true, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(doubleBoxed in (intBoxed))";
+            text = "select * from " + typeof(SupportBean).FullName + "(DoubleBoxed in (IntBoxed))";
             TryFilterWithEqualsSameCompare(epService, text, new[]{1, 1}, new double[]{1, 10}, new[]{true, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed in (doubleBoxed))";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed in (DoubleBoxed))";
             TryFilterWithEqualsSameCompare(epService, text, new[]{1, 1}, new double[]{1, 10}, new[]{true, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(doubleBoxed not in (10, intBoxed))";
+            text = "select * from " + typeof(SupportBean).FullName + "(DoubleBoxed not in (10, IntBoxed))";
             TryFilterWithEqualsSameCompare(epService, text, new[]{1, 1, 1}, new double[]{1, 5, 10}, new[]{false, true, false});
     
-            text = "select * from " + typeof(SupportBean).FullName + "(doubleBoxed in (intBoxed:20))";
+            text = "select * from " + typeof(SupportBean).FullName + "(DoubleBoxed in (IntBoxed:20))";
             TryFilterWithEqualsSameCompare(epService, text, new[]{0, 1, 2}, new double[]{1, 1, 1}, new[]{true, false, false});
         }
     
@@ -1045,42 +1045,42 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
             TryInvalid(epService, "select * from pattern [every a=" + typeof(SupportBean).FullName + " -> " +
-                            "b=" + typeof(SupportMarketDataBean).Name + "(sum(a.longBoxed) = 2)]",
+                            "b=" + typeof(SupportMarketDataBean).FullName + "(sum(a.LongBoxed) = 2)]",
                     "Aggregation functions not allowed within filters [");
     
-            TryInvalid(epService, "select * from pattern [every a=" + typeof(SupportBean).FullName + "(Prior(1, a.longBoxed))]",
-                    "Failed to validate filter expression 'Prior(1,a.longBoxed)': Prior function cannot be used in this context [");
+            TryInvalid(epService, "select * from pattern [every a=" + typeof(SupportBean).FullName + "(Prior(1, a.LongBoxed))]",
+                    "Failed to validate filter expression 'Prior(1,a.LongBoxed)': Prior function cannot be used in this context [");
     
-            TryInvalid(epService, "select * from pattern [every a=" + typeof(SupportBean).FullName + "(Prev(1, a.longBoxed))]",
-                    "Failed to validate filter expression 'Prev(1,a.longBoxed)': Previous function cannot be used in this context [");
+            TryInvalid(epService, "select * from pattern [every a=" + typeof(SupportBean).FullName + "(Prev(1, a.LongBoxed))]",
+                    "Failed to validate filter expression 'Prev(1,a.LongBoxed)': Previous function cannot be used in this context [");
     
             TryInvalid(epService, "select * from " + typeof(SupportBean).FullName + "(5 - 10)",
                     "Filter expression not returning a bool value: '5-10' [");
     
-            TryInvalid(epService, "select * from " + typeof(SupportBeanWithEnum).FullName + "(theString=" + typeof(SupportEnum).Name + ".ENUM_VALUE_1)",
-                    "Failed to validate filter expression 'theString=ENUM_VALUE_1': Implicit conversion from datatype 'SupportEnum' to 'string' is not allowed [");
+            TryInvalid(epService, "select * from " + typeof(SupportBeanWithEnum).FullName + "(TheString=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_1)",
+                    "Failed to validate filter expression 'TheString=ENUM_VALUE_1': Implicit conversion from datatype 'SupportEnum' to 'string' is not allowed [");
     
             TryInvalid(epService, "select * from " + typeof(SupportBeanWithEnum).FullName + "(supportEnum=A.b)",
                     "Failed to validate filter expression 'supportEnum=A.b': Failed to resolve property 'A.b' to a stream or nested property in a stream [");
     
             TryInvalid(epService, "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-                            typeof(SupportBean).FullName + "(doubleBoxed not in (doubleBoxed, x.intBoxed, 9))]",
-                    "Failed to validate filter expression 'doubleBoxed not in (doubleBoxed,x.i...(45 chars)': Failed to find a stream named 'x' (did you mean 'b'?) [");
+                            typeof(SupportBean).FullName + "(DoubleBoxed not in (DoubleBoxed, x.IntBoxed, 9))]",
+                    "Failed to validate filter expression 'DoubleBoxed not in (DoubleBoxed,x.i...(45 chars)': Failed to find a stream named 'x' (did you mean 'b'?) [");
     
             TryInvalid(epService, "select * from pattern [a=" + typeof(SupportBean).FullName
-                            + " -> b=" + typeof(SupportBean).FullName + "(cluedo.intPrimitive=a.intPrimitive)"
+                            + " -> b=" + typeof(SupportBean).FullName + "(cluedo.IntPrimitive=a.IntPrimitive)"
                             + " -> c=" + typeof(SupportBean).FullName
                             + "]",
-                    "Failed to validate filter expression 'cluedo.intPrimitive=a.intPrimitive': Failed to resolve property 'cluedo.intPrimitive' to a stream or nested property in a stream [");
+                    "Failed to validate filter expression 'cluedo.IntPrimitive=a.IntPrimitive': Failed to resolve property 'cluedo.IntPrimitive' to a stream or nested property in a stream [");
         }
     
         private void RunAssertionPatternWithExpr(EPServiceProvider epService) {
             string text = "select * from pattern [every a=" + typeof(SupportBean).FullName + " -> " +
-                    "b=" + typeof(SupportMarketDataBean).Name + "(a.longBoxed=volume*2)]";
+                    "b=" + typeof(SupportMarketDataBean).FullName + "(a.LongBoxed=volume*2)]";
             TryPatternWithExpr(epService, text);
     
             text = "select * from pattern [every a=" + typeof(SupportBean).FullName + " -> " +
-                    "b=" + typeof(SupportMarketDataBean).Name + "(volume*2=a.longBoxed)]";
+                    "b=" + typeof(SupportMarketDataBean).FullName + "(volume*2=a.LongBoxed)]";
             TryPatternWithExpr(epService, text);
         }
     
@@ -1113,31 +1113,31 @@ namespace com.espertech.esper.regression.expr.filter
         private void RunAssertionMathExpression(EPServiceProvider epService) {
             string text;
     
-            text = "select * from " + typeof(SupportBean).FullName + "(intBoxed*doubleBoxed > 20)";
+            text = "select * from " + typeof(SupportBean).FullName + "(IntBoxed*DoubleBoxed > 20)";
             TryArithmetic(epService, text);
     
-            text = "select * from " + typeof(SupportBean).FullName + "(20 < intBoxed*doubleBoxed)";
+            text = "select * from " + typeof(SupportBean).FullName + "(20 < IntBoxed*DoubleBoxed)";
             TryArithmetic(epService, text);
     
-            text = "select * from " + typeof(SupportBean).FullName + "(20/intBoxed < doubleBoxed)";
+            text = "select * from " + typeof(SupportBean).FullName + "(20/IntBoxed < DoubleBoxed)";
             TryArithmetic(epService, text);
     
-            text = "select * from " + typeof(SupportBean).FullName + "(20/intBoxed/doubleBoxed < 1)";
+            text = "select * from " + typeof(SupportBean).FullName + "(20/IntBoxed/DoubleBoxed < 1)";
             TryArithmetic(epService, text);
         }
     
         private void RunAssertionShortAndByteArithmetic(EPServiceProvider epService) {
             string epl = "select " +
-                    "shortPrimitive + shortBoxed as c0," +
+                    "ShortPrimitive + ShortBoxed as c0," +
                     "bytePrimitive + byteBoxed as c1, " +
-                    "shortPrimitive - shortBoxed as c2," +
+                    "ShortPrimitive - ShortBoxed as c2," +
                     "bytePrimitive - byteBoxed as c3, " +
-                    "shortPrimitive * shortBoxed as c4," +
+                    "ShortPrimitive * ShortBoxed as c4," +
                     "bytePrimitive * byteBoxed as c5, " +
-                    "shortPrimitive / shortBoxed as c6," +
+                    "ShortPrimitive / ShortBoxed as c6," +
                     "bytePrimitive / byteBoxed as c7," +
-                    "shortPrimitive + longPrimitive as c8," +
-                    "bytePrimitive + longPrimitive as c9 " +
+                    "ShortPrimitive + LongPrimitive as c8," +
+                    "bytePrimitive + LongPrimitive as c9 " +
                     "from SupportBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -1193,12 +1193,12 @@ namespace com.espertech.esper.regression.expr.filter
         }
     
         private void RunAssertionExpressionReversed(EPServiceProvider epService) {
-            string expr = "select * from " + typeof(SupportBean).FullName + "(5 = intBoxed)";
+            string expr = "select * from " + typeof(SupportBean).FullName + "(5 = IntBoxed)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(expr);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            SendBean(epService, "intBoxed", 5);
+            SendBean(epService, "IntBoxed", 5);
             Assert.IsTrue(listener.GetAndClearIsInvoked());
     
             stmt.Dispose();

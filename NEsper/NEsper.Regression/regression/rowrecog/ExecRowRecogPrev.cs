@@ -43,10 +43,10 @@ namespace com.espertech.esper.regression.rowrecog
             string[] fields = "a_string,b_string".Split(',');
             string text = "select * from MyEvent#time(5) " +
                     "match_recognize (" +
-                    "  measures A.theString as a_string, B.theString as b_string" +
+                    "  measures A.TheString as a_string, B.TheString as b_string" +
                     "  all matches pattern (A B) " +
                     "  define " +
-                    "    A as PREV(A.theString, 3) = 'P3' and PREV(A.theString, 2) = 'P2' and PREV(A.theString, 4) = 'P4' and Math.Abs(Prev(A.value, 0)) >= 0," +
+                    "    A as PREV(A.TheString, 3) = 'P3' and PREV(A.TheString, 2) = 'P2' and PREV(A.TheString, 4) = 'P4' and Math.Abs(Prev(A.value, 0)) >= 0," +
                     "    B as B.value in (PREV(B.value, 4), PREV(B.value, 2))" +
                     ")";
     
@@ -115,10 +115,10 @@ namespace com.espertech.esper.regression.rowrecog
             string text = "select * from MyEvent#time(5) " +
                     "match_recognize (" +
                     "  partition by cat" +
-                    "  measures A.cat as cat, A.theString as a_string, B.theString as b_string" +
+                    "  measures A.cat as cat, A.TheString as a_string, B.TheString as b_string" +
                     "  all matches pattern (A B) " +
                     "  define " +
-                    "    A as PREV(A.theString, 3) = 'P3' and PREV(A.theString, 2) = 'P2' and PREV(A.theString, 4) = 'P4'," +
+                    "    A as PREV(A.TheString, 3) = 'P3' and PREV(A.TheString, 2) = 'P2' and PREV(A.TheString, 4) = 'P4'," +
                     "    B as B.value in (PREV(B.value, 4), PREV(B.value, 2))" +
                     ") order by cat";
     
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regression.rowrecog
             string text = "select * from MyEvent#time(5 sec) " +
                     "match_recognize (" +
                     "  partition by cat " +
-                    "  measures A.cat as cat, A.theString as a_string" +
+                    "  measures A.cat as cat, A.TheString as a_string" +
                     "  all matches pattern (A) " +
                     "  define " +
                     "    A as PREV(A.value) = (A.value - 1)" +
@@ -262,8 +262,8 @@ namespace com.espertech.esper.regression.rowrecog
             string[] fields = "a_string,a_cat,a_value,b_value".Split(',');
             string text = "select * from MyEvent#keepall " +
                     "match_recognize (" +
-                    "  partition by theString, cat" +
-                    "  measures A.theString as a_string, A.cat as a_cat, A.value as a_value, B.value as b_value " +
+                    "  partition by TheString, cat" +
+                    "  measures A.TheString as a_string, A.cat as a_cat, A.value as a_value, B.value as b_value " +
                     "  all matches pattern (A B) " +
                     "  define " +
                     "    A as (A.value > PREV(A.value))," +
@@ -320,7 +320,7 @@ namespace com.espertech.esper.regression.rowrecog
             string[] fields = "a_string".Split(',');
             string text = "select * from MyEvent#keepall " +
                     "match_recognize (" +
-                    "  measures A.theString as a_string" +
+                    "  measures A.TheString as a_string" +
                     "  all matches pattern (A) " +
                     "  define A as (A.value > PREV(A.value))" +
                     ") " +
@@ -368,7 +368,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             text = "select * from MyEvent#keepall " +
                     "match_recognize (" +
-                    "  measures A.theString as a_string" +
+                    "  measures A.TheString as a_string" +
                     "  all matches pattern (A) " +
                     "  define A as (PREV(A.value, 2) = 5)" +
                     ") " +

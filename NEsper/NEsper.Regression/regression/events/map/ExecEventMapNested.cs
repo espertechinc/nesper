@@ -94,7 +94,7 @@ namespace com.espertech.esper.regression.events.map
     
             // test all properties exist
             EventBean received = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(received, "simple,@object,nodefmap,map".Split(','),
+            EPAssertionUtil.AssertProps(received, "simple,object,nodefmap,map".Split(','),
                     new object[]{"abc", new SupportBean_A("A1"), testdata.Get("nodefmap"), testdata.Get("map")});
             EPAssertionUtil.AssertProps(received, "a1,a2,a3,a4".Split(','),
                     new object[]{"A1", "val1", null, null});
@@ -130,13 +130,13 @@ namespace com.espertech.esper.regression.events.map
     
         private void RunAssertionIsExists(EPServiceProvider epService) {
             string statementText = "select " +
-                    "Exists(map.mapOne?) as a," +
-                    "Exists(map.mapOne?.simpleOne) as b," +
-                    "Exists(map.mapOne?.simpleTwo) as c," +
-                    "Exists(map.mapOne?.mapTwo) as d," +
-                    "Exists(map.mapOne.mapTwo?) as e," +
-                    "Exists(map.mapOne.mapTwo.simpleThree?) as f," +
-                    "Exists(map.mapOne.mapTwo.objectThree?) as g " +
+                    "exists(map.mapOne?) as a," +
+                    "exists(map.mapOne?.simpleOne) as b," +
+                    "exists(map.mapOne?.simpleTwo) as c," +
+                    "exists(map.mapOne?.mapTwo) as d," +
+                    "exists(map.mapOne.mapTwo?) as e," +
+                    "exists(map.mapOne.mapTwo.simpleThree?) as f," +
+                    "exists(map.mapOne.mapTwo.objectThree?) as g " +
                     " from NestedMap#length(5)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();

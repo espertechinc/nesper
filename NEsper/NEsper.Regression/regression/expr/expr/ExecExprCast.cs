@@ -93,9 +93,9 @@ namespace com.espertech.esper.regression.expr.expr
                       "cast('1997-07-16T19:20:30.45',dto,dateformat:'iso') as c5," +
                       "cast('1997-07-16T19:20:30.45',long,dateformat:'iso') as c6," +
                       "cast('1997-07-16T19:20:30.45',dto,dateformat:'iso') as c7," +
-                      "cast(theString,dto,dateformat:'iso') as c8," +
-                      "cast(theString,long,dateformat:'iso') as c9," +
-                      "cast(theString,dto,dateformat:'iso') as c10" +
+                      "cast(TheString,dto,dateformat:'iso') as c8," +
+                      "cast(TheString,long,dateformat:'iso') as c9," +
+                      "cast(TheString,dto,dateformat:'iso') as c10" +
                       " from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -202,24 +202,24 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionDatetimeInvalid(EPServiceProvider epService) {
             // not a valid named parameter
-            SupportMessageAssertUtil.TryInvalid(epService, "select cast(theString, date, x:1) from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'cast(theString,date,x:1)': Unexpected named parameter 'x', expecting any of the following: [dateformat]");
+            SupportMessageAssertUtil.TryInvalid(epService, "select cast(TheString, date, x:1) from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'cast(TheString,date,x:1)': Unexpected named parameter 'x', expecting any of the following: [dateformat]");
 
             // invalid date format
 #if NO_ERROR_IN_CLR
-            SupportMessageAssertUtil.TryInvalid(epService, "select cast(theString, date, dateformat:'BBBBMMDD') from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'cast(theString,date,dateformat:\"BBB...(42 chars)': Invalid date format 'BBBBMMDD' (as obtained from new SimpleDateFormat): Illegal pattern character 'B'");
+            SupportMessageAssertUtil.TryInvalid(epService, "select cast(TheString, date, dateformat:'BBBBMMDD') from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'cast(TheString,date,dateformat:\"BBB...(42 chars)': Invalid date format 'BBBBMMDD' (as obtained from new SimpleDateFormat): Illegal pattern character 'B'");
 #endif
-            SupportMessageAssertUtil.TryInvalid(epService, "select cast(theString, date, dateformat:1) from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'cast(theString,date,dateformat:1)': Failed to validate named parameter 'dateformat', expected a single expression returning any of the following types: string,DateFormat,DateTimeFormatter");
+            SupportMessageAssertUtil.TryInvalid(epService, "select cast(TheString, date, dateformat:1) from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'cast(TheString,date,dateformat:1)': Failed to validate named parameter 'dateformat', expected a single expression returning any of the following types: string,DateFormat,DateTimeFormatter");
     
             // invalid input
-            SupportMessageAssertUtil.TryInvalid(epService, "select cast(intPrimitive, date, dateformat:'yyyyMMdd') from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'cast(intPrimitive,date,dateformat:\"...(45 chars)': Use of the 'dateformat' named parameter requires a string-type input");
+            SupportMessageAssertUtil.TryInvalid(epService, "select cast(IntPrimitive, date, dateformat:'yyyyMMdd') from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'cast(IntPrimitive,date,dateformat:\"...(45 chars)': Use of the 'dateformat' named parameter requires a string-type input");
     
             // invalid target
-            SupportMessageAssertUtil.TryInvalid(epService, "select cast(theString, int, dateformat:'yyyyMMdd') from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'cast(theString,int,dateformat:\"yyyy...(41 chars)': Use of the 'dateformat' named parameter requires a target type of calendar, date, long, localdatetime, localdate, localtime or zoneddatetime");
+            SupportMessageAssertUtil.TryInvalid(epService, "select cast(TheString, int, dateformat:'yyyyMMdd') from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'cast(TheString,int,dateformat:\"yyyy...(41 chars)': Use of the 'dateformat' named parameter requires a target type of calendar, date, long, localdatetime, localdate, localtime or zoneddatetime");
     
             // invalid parser
             SupportMessageAssertUtil.TryInvalid(epService, "select cast('xx', date, dateformat:java.time.format.DateTimeFormatter.OfPattern(\"yyyyMMddHHmmssVV\")) from SupportBean",
@@ -376,7 +376,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCastAsParse(EPServiceProvider epService) {
-            var stmtText = "select cast(theString, int) as t0 from " + typeof(SupportBean).FullName;
+            var stmtText = "select cast(TheString, int) as t0 from " + typeof(SupportBean).FullName;
             var selectTestCase = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             selectTestCase.Events += listener.Update;
@@ -513,9 +513,9 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionCastBoolean(EPServiceProvider epService) {
-            var stmtText = "select cast(boolPrimitive as java.lang.bool?) as t0, " +
-                    " cast(boolBoxed | boolPrimitive, bool) as t1, " +
-                    " cast(boolBoxed, string) as t2 " +
+            var stmtText = "select cast(BoolPrimitive as " + Name.Clean<bool>() + ") as t0, " +
+                    " cast(BoolBoxed | BoolPrimitive, bool) as t1, " +
+                    " cast(BoolBoxed, string) as t2 " +
                     " from " + typeof(SupportBean).FullName;
     
             var selectTestCase = epService.EPAdministrator.CreateEPL(stmtText);

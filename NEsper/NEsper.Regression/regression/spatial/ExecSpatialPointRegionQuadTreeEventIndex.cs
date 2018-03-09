@@ -137,7 +137,7 @@ namespace com.espertech.esper.regression.spatial
                 Assert.Fail();
             } catch (Exception ex) { // we have a handler
                 SupportMessageAssertUtil.AssertMessage(ex,
-                        "Unexpected exception in statement 'win': Unique index violation, index 'Idx' is a unique index and key '(10.0,15.0)' already Exists");
+                        "Unexpected exception in statement 'win': Unique index violation, index 'Idx' is a unique index and key '(10.0,15.0)' already exists");
             }
     
             epService.EPAdministrator.DeploymentAdmin.Undeploy(deploymentId);
@@ -261,7 +261,7 @@ namespace com.espertech.esper.regression.spatial
                     "create index MyIndex on MyWindow((px,py) Pointregionquadtree(0,0,100,100));\n" +
                     "insert into MyWindow select * from SupportSpatialPoint;\n" +
                     IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
-                    "@Name('out') select (select id from MyWindow as mw where Point(mw.px,mw.py).Inside(Rectangle(aabb.x,aabb.y,aabb.width,aabb.height))).Aggregate('', \n" +
+                    "@Name('out') select (select id from MyWindow as mw where Point(mw.px,mw.py).Inside(Rectangle(aabb.x,aabb.y,aabb.width,aabb.height))).aggregate('', \n" +
                     "  (result, item) => result || (case when result='' then '' else ',' end) || item) as c0 from SupportSpatialAABB aabb";
             DeploymentResult deploymentResult = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();

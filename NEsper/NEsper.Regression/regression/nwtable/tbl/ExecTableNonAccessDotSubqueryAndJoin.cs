@@ -37,13 +37,13 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string eplCreate = "create table MyTable (" +
                     "col0 string, " +
                     "col1 sum(int), " +
-                    "col2 sorted(intPrimitive) @Type('SupportBean'), " +
+                    "col2 sorted(IntPrimitive) @Type('SupportBean'), " +
                     "col3 int[], " +
                     "col4 window(*) @Type('SupportBean')" +
                     ")";
             SupportModelHelper.CreateByCompileOrParse(epService, soda, eplCreate);
     
-            string eplIntoTable = "into table MyTable select sum(intPrimitive) as col1, sorted() as col2, " +
+            string eplIntoTable = "into table MyTable select sum(IntPrimitive) as col1, sorted() as col2, " +
                     "window(*) as col4 from SupportBean#length(3)";
             EPStatement stmtIntoTable = SupportModelHelper.CreateByCompileOrParse(epService, soda, eplIntoTable);
             var sentSB = new SupportBean[2];
@@ -60,9 +60,9 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "col0 as c0_1, mt.col0 as c0_2, " +
                     "col1 as c1_1, mt.col1 as c1_2, " +
                     "col2 as c2_1, mt.col2 as c2_2, " +
-                    "col2.MinBy() as c2_3, mt.col2.MaxBy() as c2_4, " +
+                    "col2.minBy() as c2_3, mt.col2.MaxBy() as c2_4, " +
                     "col2.sorted().FirstOf() as c2_5, mt.col2.sorted().FirstOf() as c2_6, " +
-                    "col3.MostFrequent() as c3_1, mt.col3.MostFrequent() as c3_2, " +
+                    "col3.mostFrequent() as c3_1, mt.col3.mostFrequent() as c3_2, " +
                     "col4 as c4_1 " +
                     "from SupportBean unidirectional, MyTable as mt";
             EPStatement stmtSelect = SupportModelHelper.CreateByCompileOrParse(epService, soda, eplSelect);

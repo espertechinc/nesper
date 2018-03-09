@@ -44,21 +44,21 @@ namespace com.espertech.esper.regression.nwtable.infra
         private void RunAssertionDeleteAll(EPServiceProvider epService, bool namedWindow) {
             // create window
             string stmtTextCreate = namedWindow ?
-                    "@Name('CreateInfra') create window MyInfra#keepall as select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName :
+                    "@Name('CreateInfra') create window MyInfra#keepall as select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName :
                     "@Name('CreateInfra') create table MyInfra (a string primary key, b int)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerInfra = new SupportUpdateListener();
             stmtCreate.Events += listenerInfra.Update;
     
             // create delete stmt
-            string stmtTextDelete = "@Name('OnDelete') on " + typeof(SupportBean_A).Name + " delete from MyInfra";
+            string stmtTextDelete = "@Name('OnDelete') on " + typeof(SupportBean_A).FullName + " delete from MyInfra";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerDelete = new SupportUpdateListener();
             stmtDelete.Events += listenerDelete.Update;
             EPAssertionUtil.AssertEqualsAnyOrder(stmtDelete.EventType.PropertyNames, new string[]{"a", "b"});
     
             // create insert into
-            string stmtTextInsertOne = "@Name('Insert') insert into MyInfra select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextInsertOne = "@Name('Insert') insert into MyInfra select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create consumer
@@ -130,20 +130,20 @@ namespace com.espertech.esper.regression.nwtable.infra
         private void RunAssertionDeletePattern(EPServiceProvider epService, bool isNamedWindow) {
             // create infra
             string stmtTextCreate = isNamedWindow ?
-                    "create window MyInfra#keepall as select theString as a, intPrimitive as b from SupportBean" :
+                    "create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean" :
                     "create table MyInfra(a string primary key, b int)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerInfra = new SupportUpdateListener();
             stmtCreate.Events += listenerInfra.Update;
     
             // create delete stmt
-            string stmtTextDelete = "on pattern [every ea=" + typeof(SupportBean_A).Name + " or every eb=" + typeof(SupportBean_B).Name + "] " + " delete from MyInfra";
+            string stmtTextDelete = "on pattern [every ea=" + typeof(SupportBean_A).FullName + " or every eb=" + typeof(SupportBean_B).FullName + "] " + " delete from MyInfra";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             var listenerDelete = new SupportUpdateListener();
             stmtDelete.Events += listenerDelete.Update;
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyInfra select theString as a, intPrimitive as b from SupportBean";
+            string stmtTextInsertOne = "insert into MyInfra select TheString as a, IntPrimitive as b from SupportBean";
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // send 1 event
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regression.nwtable.infra
     
             // create infra
             string stmtTextCreate = isNamedWindow ?
-                    "create window MyInfra#keepall as select theString as a, intPrimitive as b from SupportBean" :
+                    "create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean" :
                     "create table MyInfra (a string primary key, b int)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerInfra = new SupportUpdateListener();
@@ -209,7 +209,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             epService.EPAdministrator.CreateEPL(stmtTextDelete);
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyInfra select theString as a, intPrimitive as b from SupportBean";
+            string stmtTextInsertOne = "insert into MyInfra select TheString as a, IntPrimitive as b from SupportBean";
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // send 3 event

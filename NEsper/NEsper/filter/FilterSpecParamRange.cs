@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.compat;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.pattern;
 
@@ -47,8 +47,9 @@ namespace com.espertech.esper.filter
             {
                 return new StringRange((String)_min.GetFilterValue(matchedEvents, agentInstanceContext), (String)_max.GetFilterValue(matchedEvents, agentInstanceContext));
             }
-            var begin = (double?)_min.GetFilterValue(matchedEvents, agentInstanceContext);
-            var end = (double?)_max.GetFilterValue(matchedEvents, agentInstanceContext);
+
+            var begin = _min.GetFilterValue(matchedEvents, agentInstanceContext).AsBoxedDouble();
+            var end = _max.GetFilterValue(matchedEvents, agentInstanceContext).AsBoxedDouble();
             return new DoubleRange(begin, end);
         }
 

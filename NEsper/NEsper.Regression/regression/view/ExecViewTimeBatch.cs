@@ -42,18 +42,18 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
     
             SendCurrentTime(epService, "2002-03-01T09:00:00.000");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "TheString".Split(','), new object[]{"E1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
             SendCurrentTimeWithMinus(epService, "2002-04-01T09:00:00.000", 1);
             Assert.IsFalse(listener.IsInvoked);
     
             SendCurrentTime(epService, "2002-04-01T09:00:00.000");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "TheString".Split(','), new object[]{"E2"});
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 1));
             SendCurrentTime(epService, "2002-05-01T09:00:00.000");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "TheString".Split(','), new object[]{"E3"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -82,10 +82,10 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.GetAndClearIsInvoked());
     
             SendTimer(epService, 4000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "TheString".Split(','), new object[]{"E1"});
     
             SendTimer(epService, 5000);
-            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), "theString".Split(','), new object[]{"E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetOldAndReset(), "TheString".Split(','), new object[]{"E1"});
     
             SendTimer(epService, 5999);
             Assert.IsFalse(listener.GetAndClearIsInvoked());

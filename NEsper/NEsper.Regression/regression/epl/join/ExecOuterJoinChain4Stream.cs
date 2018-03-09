@@ -23,10 +23,10 @@ using NUnit.Framework;
 namespace com.espertech.esper.regression.epl.join
 {
     public class ExecOuterJoinChain4Stream : RegressionExecution {
-        private static readonly string EVENT_S0 = typeof(SupportBean_S0).Name;
-        private static readonly string EVENT_S1 = typeof(SupportBean_S1).Name;
-        private static readonly string EVENT_S2 = typeof(SupportBean_S2).Name;
-        private static readonly string EVENT_S3 = typeof(SupportBean_S3).Name;
+        private static readonly string EVENT_S0 = typeof(SupportBean_S0).FullName;
+        private static readonly string EVENT_S1 = typeof(SupportBean_S1).FullName;
+        private static readonly string EVENT_S2 = typeof(SupportBean_S2).FullName;
+        private static readonly string EVENT_S3 = typeof(SupportBean_S3).FullName;
     
         public override void Run(EPServiceProvider epService) {
             RunAssertionLeftOuterJoin_root_s0(epService);

@@ -9,9 +9,9 @@
 using System;
 
 using com.espertech.esper.client;
-using com.espertech.esper.client.deploy;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
@@ -41,17 +41,17 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("create schema WordEvent (word string)");
             epService.EPAdministrator.CreateEPL("create schema EstimateWordCountEvent (word string)");
     
-            epService.EPAdministrator.CreateEPL("create table WordCountTable(wordcms CountMinSketch())");
-            epService.EPAdministrator.CreateEPL("create table WordCountTable2(wordcms CountMinSketch({\n" +
+            epService.EPAdministrator.CreateEPL("create table WordCountTable(wordcms countMinSketch())");
+            epService.EPAdministrator.CreateEPL("create table WordCountTable2(wordcms countMinSketch({\n" +
                     "  epsOfTotalCount: 0.000002,\n" +
                     "  confidence: 0.999,\n" +
                     "  seed: 38576,\n" +
                     "  topk: 20,\n" +
-                    "  agent: '" + typeof(CountMinSketchAgentStringUTF16).Name + "'" +
+                    "  agent: '" + typeof(CountMinSketchAgentStringUTF16).FullName + "'" +
                     "}))");
-            epService.EPAdministrator.CreateEPL("into table WordCountTable select CountMinSketchAdd(word) as wordcms from WordEvent");
-            epService.EPAdministrator.CreateEPL("select WordCountTable.wordcms.CountMinSketchFrequency(word) from EstimateWordCountEvent");
-            epService.EPAdministrator.CreateEPL("select WordCountTable.wordcms.CountMinSketchTopk() from pattern[every timer:interval(10 sec)]");
+            epService.EPAdministrator.CreateEPL("into table WordCountTable select countMinSketchAdd(word) as wordcms from WordEvent");
+            epService.EPAdministrator.CreateEPL("select WordCountTable.wordcms.countMinSketchFrequency(word) from EstimateWordCountEvent");
+            epService.EPAdministrator.CreateEPL("select WordCountTable.wordcms.countMinSketchTopk() from pattern[every timer:interval(10 sec)]");
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -60,19 +60,19 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.Configuration.AddEventType(typeof(MyByteArrayEventRead));
             epService.EPAdministrator.Configuration.AddEventType(typeof(MyByteArrayEventCount));
     
-            var eplTable = "create table MyApproxNS(bytefreq CountMinSketch({" +
+            var eplTable = "create table MyApproxNS(bytefreq countMinSketch({" +
                     "  epsOfTotalCount: 0.02," +
                     "  confidence: 0.98," +
                     "  topk: null," +
-                    "  agent: '" + typeof(MyBytesPassthruAgent).Name + "'" +
+                    "  agent: '" + typeof(MyBytesPassthruAgent).FullName + "'" +
                     "}))";
             epService.EPAdministrator.CreateEPL(eplTable);
     
-            var eplInto = "into table MyApproxNS select CountMinSketchAdd(data) as bytefreq from MyByteArrayEventCount";
+            var eplInto = "into table MyApproxNS select countMinSketchAdd(data) as bytefreq from MyByteArrayEventCount";
             epService.EPAdministrator.CreateEPL(eplInto);
     
             var listener = new SupportUpdateListener();
-            var eplRead = "select MyApproxNS.bytefreq.CountMinSketchFrequency(data) as freq from MyByteArrayEventRead";
+            var eplRead = "select MyApproxNS.bytefreq.countMinSketchFrequency(data) as freq from MyByteArrayEventRead";
             var stmtRead = epService.EPAdministrator.CreateEPL(eplRead);
             stmtRead.Events += listener.Update;
     
@@ -88,10 +88,10 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
         private void RunAssertionFrequencyAndTopk(EPServiceProvider epService) {
             var epl =
-                    "create table MyApproxFT(wordapprox CountMinSketch({topk:3}));\n" +
-                            "into table MyApproxFT select CountMinSketchAdd(theString) as wordapprox from SupportBean;\n" +
-                            "@Name('frequency') select MyApproxFT.wordapprox.CountMinSketchFrequency(p00) as freq from SupportBean_S0;\n" +
-                            "@Name('topk') select MyApproxFT.wordapprox.CountMinSketchTopk() as topk from SupportBean_S1;\n";
+                    "create table MyApproxFT(wordapprox countMinSketch({topk:3}));\n" +
+                    "into table MyApproxFT select countMinSketchAdd(TheString) as wordapprox from SupportBean;\n" +
+                    "@Name('frequency') select MyApproxFT.wordapprox.countMinSketchFrequency(p00) as freq from SupportBean_S0;\n" +
+                    "@Name('topk') select MyApproxFT.wordapprox.countMinSketchTopk() as topk from SupportBean_S1;\n";
             var deploymentResult = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
     
             var listenerFreq = new SupportUpdateListener();
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             AssertOutput(epService, listenerFreq, "E1=1,E2=2,E3=1,E4=2", listenerTopk, "E1=1,E2=2,E4=2");
     
             // test join
-            var eplJoin = "select Wordapprox.CountMinSketchFrequency(s2.p20) as c0 from MyApproxFT, SupportBean_S2 s2 unidirectional";
+            var eplJoin = "select wordapprox.countMinSketchFrequency(s2.p20) as c0 from MyApproxFT, SupportBean_S2 s2 unidirectional";
             var stmtJoin = epService.EPAdministrator.CreateEPL(eplJoin);
             stmtJoin.Events += listenerFreq.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S2(0, "E3"));
@@ -126,7 +126,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             stmtJoin.Dispose();
     
             // test subquery
-            var eplSubquery = "select (select Wordapprox.CountMinSketchFrequency(s2.p20) from MyApproxFT) as c0 from SupportBean_S2 s2";
+            var eplSubquery = "select (select wordapprox.countMinSketchFrequency(s2.p20) from MyApproxFT) as c0 from SupportBean_S2 s2";
             var stmtSubquery = epService.EPAdministrator.CreateEPL(eplSubquery);
             stmtSubquery.Events += listenerFreq.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S2(0, "E3"));
@@ -139,47 +139,47 @@ namespace com.espertech.esper.regression.nwtable.tbl
         private void RunAssertionInvalid(EPServiceProvider epService) {
     
             epService.EPAdministrator.Configuration.AddEventType(typeof(MyByteArrayEventCount));
-            epService.EPAdministrator.CreateEPL("create table MyCMS(wordcms CountMinSketch())");
+            epService.EPAdministrator.CreateEPL("create table MyCMS(wordcms countMinSketch())");
     
             // invalid "countMinSketch" declarations
             //
-            TryInvalid(epService, "select CountMinSketch() from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'CountMinSketch()': Count-min-sketch aggregation function 'countMinSketch' can only be used in create-table statements [");
-            TryInvalid(epService, "create table MyTable(cms CountMinSketch(5))",
-                    "Error starting statement: Failed to validate table-column expression 'CountMinSketch(5)': Count-min-sketch aggregation function 'countMinSketch'  expects either no parameter or a single json parameter object [");
-            TryInvalid(epService, "create table MyTable(cms CountMinSketch({xxx:3}))",
-                    "Error starting statement: Failed to validate table-column expression 'CountMinSketch({xxx=3})': Unrecognized parameter 'xxx' [");
-            TryInvalid(epService, "create table MyTable(cms CountMinSketch({epsOfTotalCount:'a'}))",
-                    "Error starting statement: Failed to validate table-column expression 'CountMinSketch({epsOfTotalCount=a})': Property 'epsOfTotalCount' expects an java.lang.double? but receives a value of type System.String [");
-            TryInvalid(epService, "create table MyTable(cms CountMinSketch({agent:'a'}))",
-                    "Error starting statement: Failed to validate table-column expression 'CountMinSketch({agent=a})': Failed to instantiate agent provider: Could not load class by name 'a', please check imports [");
-            TryInvalid(epService, "create table MyTable(cms CountMinSketch({agent:'System.String'}))",
-                    "Error starting statement: Failed to validate table-column expression 'CountMinSketch({agent=System.String})': Failed to instantiate agent provider: Type 'System.String' does not implement interface 'com.espertech.esper.client.util.CountMinSketchAgent' [");
+            TryInvalid(epService, "select countMinSketch() from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'countMinSketch()': Count-min-sketch aggregation function 'countMinSketch' can only be used in create-table statements [");
+            TryInvalid(epService, "create table MyTable(cms countMinSketch(5))",
+                    "Error starting statement: Failed to validate table-column expression 'countMinSketch(5)': Count-min-sketch aggregation function 'countMinSketch'  expects either no parameter or a single json parameter object [");
+            TryInvalid(epService, "create table MyTable(cms countMinSketch({xxx:3}))",
+                    "Error starting statement: Failed to validate table-column expression 'countMinSketch({xxx=3})': Unrecognized parameter 'xxx' [");
+            TryInvalid(epService, "create table MyTable(cms countMinSketch({epsOfTotalCount:'a'}))",
+                    "Error starting statement: Failed to validate table-column expression 'countMinSketch({epsOfTotalCount=a})': Property 'epsOfTotalCount' expects an " + Name.Clean<double>() + " but receives a value of type System.String [");
+            TryInvalid(epService, "create table MyTable(cms countMinSketch({agent:'a'}))",
+                    "Error starting statement: Failed to validate table-column expression 'countMinSketch({agent=a})': Failed to instantiate agent provider: Could not load class by name 'a', please check imports [");
+            TryInvalid(epService, "create table MyTable(cms countMinSketch({agent:'System.String'}))",
+                    "Error starting statement: Failed to validate table-column expression 'countMinSketch({agent=System.String})': Failed to instantiate agent provider: Type 'System.String' does not implement interface 'com.espertech.esper.client.util.countMinSketchAgent' [");
     
             // invalid "countMinSketchAdd" declarations
             //
-            TryInvalid(epService, "select CountMinSketchAdd(theString) from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'CountMinSketchAdd(theString)': Count-min-sketch aggregation function 'countMinSketchAdd' can only be used with into-table");
-            TryInvalid(epService, "into table MyCMS select CountMinSketchAdd() as wordcms from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'CountMinSketchAdd()': Count-min-sketch aggregation function 'countMinSketchAdd' requires a single parameter expression");
-            TryInvalid(epService, "into table MyCMS select CountMinSketchAdd(data) as wordcms from MyByteArrayEventCount",
-                    "Error starting statement: Incompatible aggregation function for table 'MyCMS' column 'wordcms', expecting 'CountMinSketch()' and received 'CountMinSketchAdd(data)': Mismatching parameter return type, expected any of [class System.String] but received Byte(Array) [");
-            TryInvalid(epService, "into table MyCMS select CountMinSketchAdd(distinct 'abc') as wordcms from MyByteArrayEventCount",
-                    "Error starting statement: Failed to validate select-clause expression 'CountMinSketchAdd(distinct \"abc\")': Count-min-sketch aggregation function 'countMinSketchAdd' is not supported with distinct [");
+            TryInvalid(epService, "select countMinSketchAdd(TheString) from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'countMinSketchAdd(TheString)': Count-min-sketch aggregation function 'countMinSketchAdd' can only be used with into-table");
+            TryInvalid(epService, "into table MyCMS select countMinSketchAdd() as wordcms from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'countMinSketchAdd()': Count-min-sketch aggregation function 'countMinSketchAdd' requires a single parameter expression");
+            TryInvalid(epService, "into table MyCMS select countMinSketchAdd(data) as wordcms from MyByteArrayEventCount",
+                    "Error starting statement: Incompatible aggregation function for table 'MyCMS' column 'wordcms', expecting 'countMinSketch()' and received 'countMinSketchAdd(data)': Mismatching parameter return type, expected any of [class System.String] but received Byte(Array) [");
+            TryInvalid(epService, "into table MyCMS select countMinSketchAdd(distinct 'abc') as wordcms from MyByteArrayEventCount",
+                    "Error starting statement: Failed to validate select-clause expression 'countMinSketchAdd(distinct \"abc\")': Count-min-sketch aggregation function 'countMinSketchAdd' is not supported with distinct [");
     
             // invalid "countMinSketchFrequency" declarations
             //
-            TryInvalid(epService, "into table MyCMS select CountMinSketchFrequency(theString) as wordcms from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'CountMinSketchFrequency(theString)': Count-min-sketch aggregation function 'countMinSketchFrequency' requires the use of a table-access expression [");
-            TryInvalid(epService, "select CountMinSketchFrequency() from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'CountMinSketchFrequency()': Count-min-sketch aggregation function 'countMinSketchFrequency' requires a single parameter expression");
+            TryInvalid(epService, "into table MyCMS select countMinSketchFrequency(TheString) as wordcms from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'countMinSketchFrequency(TheString)': Count-min-sketch aggregation function 'countMinSketchFrequency' requires the use of a table-access expression [");
+            TryInvalid(epService, "select countMinSketchFrequency() from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'countMinSketchFrequency()': Count-min-sketch aggregation function 'countMinSketchFrequency' requires a single parameter expression");
     
             // invalid "countMinSketchTopk" declarations
             //
-            TryInvalid(epService, "select CountMinSketchTopk() from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'CountMinSketchTopk()': Count-min-sketch aggregation function 'countMinSketchTopk' requires the use of a table-access expression");
-            TryInvalid(epService, "select MyCMS.wordcms.CountMinSketchTopk(theString) from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'MyCMS.wordcms.CountMinSketchTopk(th...(43 chars)': Count-min-sketch aggregation function 'countMinSketchTopk' requires a no parameter expressions [");
+            TryInvalid(epService, "select countMinSketchTopk() from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'countMinSketchTopk()': Count-min-sketch aggregation function 'countMinSketchTopk' requires the use of a table-access expression");
+            TryInvalid(epService, "select MyCMS.wordcms.countMinSketchTopk(TheString) from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'MyCMS.wordcms.countMinSketchTopk(th...(43 chars)': Count-min-sketch aggregation function 'countMinSketchTopk' requires a no parameter expressions [");
         }
     
         private void AssertOutput(EPServiceProvider epService, SupportUpdateListener listenerFrequency, string frequencyList,

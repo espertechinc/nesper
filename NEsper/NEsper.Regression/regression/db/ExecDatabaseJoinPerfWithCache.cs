@@ -197,10 +197,10 @@ namespace com.espertech.esper.regression.db {
         }
 
         private void RunAssertionSelectLargeResultSetCoercion(EPServiceProvider epService) {
-            var stmtText = "select theString, mycol3, mycol4 from " +
+            var stmtText = "select TheString, mycol3, mycol4 from " +
                               " sql:MyDB ['select mycol3, mycol4 from mytesttable_large'] as s0, " +
                               typeof(SupportBean).FullName +
-                              "#keepall as s1 where s1.doubleBoxed = s0.mycol3 and s1.byteBoxed = s0.mycol4";
+                              "#keepall as s1 where s1.DoubleBoxed = s0.mycol3 and s1.byteBoxed = s0.mycol4";
 
             var statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -215,7 +215,7 @@ namespace com.espertech.esper.regression.db {
                 bean.TheString = ("E" + i);
                 epService.EPRuntime.SendEvent(bean);
                 EPAssertionUtil.AssertProps(
-                    listener.AssertOneGetNewAndReset(), new string[] {"theString", "mycol3", "mycol4"},
+                    listener.AssertOneGetNewAndReset(), new string[] {"TheString", "mycol3", "mycol4"},
                     new object[] {"E" + i, 100, 10});
             }
 
@@ -228,9 +228,9 @@ namespace com.espertech.esper.regression.db {
         }
 
         private void RunAssertion2StreamOuterJoin(EPServiceProvider epService) {
-            var stmtText = "select theString, mycol3, mycol1 from " +
+            var stmtText = "select TheString, mycol3, mycol1 from " +
                               " sql:MyDB ['select mycol1, mycol3 from mytesttable_large'] as s1 right outer join " +
-                              typeof(SupportBean).FullName + " as s0 on theString = mycol1";
+                              typeof(SupportBean).FullName + " as s0 on TheString = mycol1";
 
             var statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -243,7 +243,7 @@ namespace com.espertech.esper.regression.db {
                 beanX.TheString = ("50");
                 epService.EPRuntime.SendEvent(beanX);
                 EPAssertionUtil.AssertProps(
-                    listener.AssertOneGetNewAndReset(), new string[] {"theString", "mycol3", "mycol1"},
+                    listener.AssertOneGetNewAndReset(), new string[] {"TheString", "mycol3", "mycol1"},
                     new object[] {"50", 50, "50"});
             }
 
@@ -254,7 +254,7 @@ namespace com.espertech.esper.regression.db {
             bean.TheString = ("-1");
             epService.EPRuntime.SendEvent(bean);
             EPAssertionUtil.AssertProps(
-                listener.AssertOneGetNewAndReset(), new string[] {"theString", "mycol3", "mycol1"},
+                listener.AssertOneGetNewAndReset(), new string[] {"TheString", "mycol3", "mycol1"},
                 new object[] {"-1", null, null});
 
             Log.Info("delta=" + (endTime - startTime));
@@ -264,10 +264,10 @@ namespace com.espertech.esper.regression.db {
         }
 
         private void RunAssertionOuterJoinPlusWhere(EPServiceProvider epService) {
-            var stmtText = "select theString, mycol3, mycol1 from " +
+            var stmtText = "select TheString, mycol3, mycol1 from " +
                               " sql:MyDB ['select mycol1, mycol3 from mytesttable_large'] as s1 right outer join " +
                               typeof(SupportBean).FullName +
-                              " as s0 on theString = mycol1 where s1.mycol3 = s0.intPrimitive";
+                              " as s0 on TheString = mycol1 where s1.mycol3 = s0.IntPrimitive";
 
             var statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -281,7 +281,7 @@ namespace com.espertech.esper.regression.db {
                 beanX.IntPrimitive = (50);
                 epService.EPRuntime.SendEvent(beanX);
                 EPAssertionUtil.AssertProps(
-                    listener.AssertOneGetNewAndReset(), new string[] {"theString", "mycol3", "mycol1"},
+                    listener.AssertOneGetNewAndReset(), new string[] {"TheString", "mycol3", "mycol1"},
                     new object[] {"50", 50, "50"});
             }
 

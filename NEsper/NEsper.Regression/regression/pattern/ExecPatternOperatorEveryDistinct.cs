@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
@@ -15,9 +13,6 @@ using com.espertech.esper.client.time;
 using com.espertech.esper.compat;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
-using static com.espertech.esper.supportregression.bean.SupportBeanConstants;
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.pattern
@@ -47,19 +42,19 @@ namespace com.espertech.esper.regression.pattern
     
         private void RunAssertionExpireSeenBeforeKey(EPServiceProvider epService) {
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
-            string expression = "select * from pattern [every-Distinct(a.intPrimitive, 1 sec) a=SupportBean(theString like 'A%')]";
+            string expression = "select * from pattern [every-distinct(a.IntPrimitive, 1 sec) a=SupportBean(TheString like 'A%')]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"A1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString".Split(','), new object[]{"A1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A2", 1));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("A3", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"A3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString".Split(','), new object[]{"A3"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A4", 1));
             epService.EPRuntime.SendEvent(new SupportBean("A5", 2));
@@ -68,9 +63,9 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
     
             epService.EPRuntime.SendEvent(new SupportBean("A4", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"A4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString".Split(','), new object[]{"A4"});
             epService.EPRuntime.SendEvent(new SupportBean("A5", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"A5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString".Split(','), new object[]{"A5"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A6", 1));
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1999));
@@ -79,16 +74,16 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(2000));
             epService.EPRuntime.SendEvent(new SupportBean("A7", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"A7"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString".Split(','), new object[]{"A7"});
     
             statement.Dispose();
         }
     
         private void RunAssertionEveryDistinctOverFilter(EPServiceProvider epService) {
-            string expression = "select * from pattern [every-Distinct(intPrimitive) a=SupportBean]";
+            string expression = "select * from pattern [every-distinct(IntPrimitive) a=SupportBean]";
             RunEveryDistinctOverFilter(epService, expression);
     
-            expression = "select * from pattern [every-Distinct(intPrimitive,2 minutes) a=SupportBean]";
+            expression = "select * from pattern [every-distinct(IntPrimitive,2 minutes) a=SupportBean]";
             RunEveryDistinctOverFilter(epService, expression);
         }
     
@@ -98,16 +93,16 @@ namespace com.espertech.esper.regression.pattern
             statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("a.theString"));
+            Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("a.TheString"));
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 2));
-            Assert.AreEqual("E3", listener.AssertOneGetNewAndReset().Get("a.theString"));
+            Assert.AreEqual("E3", listener.AssertOneGetNewAndReset().Get("a.TheString"));
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 3));
-            Assert.AreEqual("E4", listener.AssertOneGetNewAndReset().Get("a.theString"));
+            Assert.AreEqual("E4", listener.AssertOneGetNewAndReset().Get("a.TheString"));
     
             epService.EPRuntime.SendEvent(new SupportBean("E5", 2));
             epService.EPRuntime.SendEvent(new SupportBean("E6", 3));
@@ -115,7 +110,7 @@ namespace com.espertech.esper.regression.pattern
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E8", 0));
-            Assert.AreEqual("E8", listener.AssertOneGetNewAndReset().Get("a.theString"));
+            Assert.AreEqual("E8", listener.AssertOneGetNewAndReset().Get("a.TheString"));
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(expression);
             Assert.AreEqual(expression, model.ToEPL());
@@ -125,10 +120,10 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionRepeatOverDistinct(EPServiceProvider epService) {
-            string expression = "select * from pattern [[2] every-Distinct(a.intPrimitive) a=SupportBean]";
+            string expression = "select * from pattern [[2] every-distinct(a.IntPrimitive) a=SupportBean]";
             RunRepeatOverDistinct(epService, expression);
     
-            expression = "select * from pattern [[2] every-Distinct(a.intPrimitive, 1 hour) a=SupportBean]";
+            expression = "select * from pattern [[2] every-distinct(a.IntPrimitive, 1 hour) a=SupportBean]";
             RunRepeatOverDistinct(epService, expression);
         }
     
@@ -144,8 +139,8 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 2));
             EventBean theEvent = listener.AssertOneGetNewAndReset();
-            Assert.AreEqual("E1", theEvent.Get("a[0].theString"));
-            Assert.AreEqual("E3", theEvent.Get("a[1].theString"));
+            Assert.AreEqual("E1", theEvent.Get("a[0].TheString"));
+            Assert.AreEqual("E3", theEvent.Get("a[1].TheString"));
     
             epService.EPRuntime.SendEvent(new SupportBean("E4", 3));
             epService.EPRuntime.SendEvent(new SupportBean("E5", 2));
@@ -155,10 +150,10 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionEveryDistinctOverRepeat(EPServiceProvider epService) {
-            string expression = "select * from pattern [every-Distinct(a[0].intPrimitive) [2] a=SupportBean]";
+            string expression = "select * from pattern [every-distinct(a[0].IntPrimitive) [2] a=SupportBean]";
             RunEveryDistinctOverRepeat(epService, expression);
     
-            expression = "select * from pattern [every-Distinct(a[0].intPrimitive, a[0].intPrimitive, 1 hour) [2] a=SupportBean]";
+            expression = "select * from pattern [every-distinct(a[0].IntPrimitive, a[0].IntPrimitive, 1 hour) [2] a=SupportBean]";
             RunEveryDistinctOverRepeat(epService, expression);
         }
     
@@ -171,8 +166,8 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
             EventBean theEvent = listener.AssertOneGetNewAndReset();
-            Assert.AreEqual("E1", theEvent.Get("a[0].theString"));
-            Assert.AreEqual("E2", theEvent.Get("a[1].theString"));
+            Assert.AreEqual("E1", theEvent.Get("a[0].TheString"));
+            Assert.AreEqual("E2", theEvent.Get("a[1].TheString"));
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E4", 2));
@@ -181,18 +176,18 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(new SupportBean("E5", 2));
             epService.EPRuntime.SendEvent(new SupportBean("E6", 1));
             theEvent = listener.AssertOneGetNewAndReset();
-            Assert.AreEqual("E5", theEvent.Get("a[0].theString"));
-            Assert.AreEqual("E6", theEvent.Get("a[1].theString"));
+            Assert.AreEqual("E5", theEvent.Get("a[0].TheString"));
+            Assert.AreEqual("E6", theEvent.Get("a[1].TheString"));
     
             statement.Dispose();
         }
     
         private void RunAssertionTimerWithinOverDistinct(EPServiceProvider epService) {
             // for 10 seconds, look for every distinct A
-            string expression = "select * from pattern [(every-Distinct(a.intPrimitive) a=SupportBean) where timer:within(10 sec)]";
+            string expression = "select * from pattern [(every-distinct(a.IntPrimitive) a=SupportBean) where timer:within(10 sec)]";
             RunTimerWithinOverDistinct(epService, expression);
     
-            expression = "select * from pattern [(every-Distinct(a.intPrimitive, 2 days 2 minutes) a=SupportBean) where timer:within(10 sec)]";
+            expression = "select * from pattern [(every-distinct(a.IntPrimitive, 2 days 2 minutes) a=SupportBean) where timer:within(10 sec)]";
             RunTimerWithinOverDistinct(epService, expression);
         }
     
@@ -204,13 +199,13 @@ namespace com.espertech.esper.regression.pattern
             statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("a.theString"));
+            Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("a.TheString"));
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 2));
-            Assert.AreEqual("E3", listener.AssertOneGetNewAndReset().Get("a.theString"));
+            Assert.AreEqual("E3", listener.AssertOneGetNewAndReset().Get("a.TheString"));
     
             SendTimer(11000, epService);
             epService.EPRuntime.SendEvent(new SupportBean("E4", 3));
@@ -223,10 +218,10 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionEveryDistinctOverTimerWithin(EPServiceProvider epService) {
-            string expression = "select * from pattern [every-Distinct(a.intPrimitive) (a=SupportBean where timer:within(10 sec))]";
+            string expression = "select * from pattern [every-distinct(a.IntPrimitive) (a=SupportBean where timer:within(10 sec))]";
             RunEveryDistinctOverTimerWithin(epService, expression);
     
-            expression = "select * from pattern [every-Distinct(a.intPrimitive, 1 hour) (a=SupportBean where timer:within(10 sec))]";
+            expression = "select * from pattern [every-distinct(a.IntPrimitive, 1 hour) (a=SupportBean where timer:within(10 sec))]";
             RunEveryDistinctOverTimerWithin(epService, expression);
         }
     
@@ -238,14 +233,14 @@ namespace com.espertech.esper.regression.pattern
             statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("a.theString"));
+            Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("a.TheString"));
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimer(5000, epService);
             epService.EPRuntime.SendEvent(new SupportBean("E3", 2));
-            Assert.AreEqual("E3", listener.AssertOneGetNewAndReset().Get("a.theString"));
+            Assert.AreEqual("E3", listener.AssertOneGetNewAndReset().Get("a.TheString"));
     
             SendTimer(10000, epService);
             epService.EPRuntime.SendEvent(new SupportBean("E4", 1));
@@ -271,13 +266,13 @@ namespace com.espertech.esper.regression.pattern
     
             SendTimer(50000, epService);
             epService.EPRuntime.SendEvent(new SupportBean("E10", 1));
-            Assert.AreEqual("E10", listener.AssertOneGetNewAndReset().Get("a.theString"));
+            Assert.AreEqual("E10", listener.AssertOneGetNewAndReset().Get("a.TheString"));
     
             epService.EPRuntime.SendEvent(new SupportBean("E11", 1));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E12", 2));
-            Assert.AreEqual("E12", listener.AssertOneGetNewAndReset().Get("a.theString"));
+            Assert.AreEqual("E12", listener.AssertOneGetNewAndReset().Get("a.TheString"));
     
             epService.EPRuntime.SendEvent(new SupportBean("E13", 2));
             Assert.IsFalse(listener.IsInvoked);
@@ -286,10 +281,10 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionEveryDistinctOverAnd(EPServiceProvider epService) {
-            string expression = "select * from pattern [every-Distinct(a.intPrimitive, b.intPrimitive) (a=SupportBean(theString like 'A%') and b=SupportBean(theString like 'B%'))]";
+            string expression = "select * from pattern [every-distinct(a.IntPrimitive, b.IntPrimitive) (a=SupportBean(TheString like 'A%') and b=SupportBean(TheString like 'B%'))]";
             RunEveryDistinctOverAnd(epService, expression);
     
-            expression = "select * from pattern [every-Distinct(a.intPrimitive, b.intPrimitive, 1 hour) (a=SupportBean(theString like 'A%') and b=SupportBean(theString like 'B%'))]";
+            expression = "select * from pattern [every-distinct(a.IntPrimitive, b.IntPrimitive, 1 hour) (a=SupportBean(TheString like 'A%') and b=SupportBean(TheString like 'B%'))]";
             RunEveryDistinctOverAnd(epService, expression);
         }
     
@@ -302,7 +297,7 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
             Assert.IsFalse(listener.IsInvoked);
             epService.EPRuntime.SendEvent(new SupportBean("B1", 10));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A1", "B1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{"A1", "B1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A2", 1));
             epService.EPRuntime.SendEvent(new SupportBean("B2", 10));
@@ -310,11 +305,11 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new SupportBean("A3", 2));
             epService.EPRuntime.SendEvent(new SupportBean("B3", 10));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A3", "B3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{"A3", "B3"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A4", 1));
             epService.EPRuntime.SendEvent(new SupportBean("B4", 20));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A4", "B4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{"A4", "B4"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A5", 2));
             epService.EPRuntime.SendEvent(new SupportBean("B5", 10));
@@ -322,7 +317,7 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new SupportBean("A6", 2));
             epService.EPRuntime.SendEvent(new SupportBean("B6", 20));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A6", "B6"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{"A6", "B6"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A7", 2));
             epService.EPRuntime.SendEvent(new SupportBean("B7", 20));
@@ -332,10 +327,10 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionEveryDistinctOverOr(EPServiceProvider epService) {
-            string expression = "select * from pattern [every-Distinct(coalesce(a.intPrimitive, 0) + coalesce(b.intPrimitive, 0)) (a=SupportBean(theString like 'A%') or b=SupportBean(theString like 'B%'))]";
+            string expression = "select * from pattern [every-distinct(coalesce(a.IntPrimitive, 0) + coalesce(b.IntPrimitive, 0)) (a=SupportBean(TheString like 'A%') or b=SupportBean(TheString like 'B%'))]";
             RunEveryDistinctOverOr(epService, expression);
     
-            expression = "select * from pattern [every-Distinct(coalesce(a.intPrimitive, 0) + coalesce(b.intPrimitive, 0), 1 hour) (a=SupportBean(theString like 'A%') or b=SupportBean(theString like 'B%'))]";
+            expression = "select * from pattern [every-distinct(coalesce(a.IntPrimitive, 0) + coalesce(b.IntPrimitive, 0), 1 hour) (a=SupportBean(TheString like 'A%') or b=SupportBean(TheString like 'B%'))]";
             RunEveryDistinctOverOr(epService, expression);
         }
     
@@ -346,10 +341,10 @@ namespace com.espertech.esper.regression.pattern
             statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A1", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{"A1", null});
     
             epService.EPRuntime.SendEvent(new SupportBean("B1", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{null, "B1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{null, "B1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("B2", 1));
             epService.EPRuntime.SendEvent(new SupportBean("A2", 2));
@@ -358,10 +353,10 @@ namespace com.espertech.esper.regression.pattern
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("B4", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{null, "B4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{null, "B4"});
     
             epService.EPRuntime.SendEvent(new SupportBean("B5", 4));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{null, "B5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{null, "B5"});
     
             epService.EPRuntime.SendEvent(new SupportBean("B6", 3));
             epService.EPRuntime.SendEvent(new SupportBean("A4", 3));
@@ -372,10 +367,10 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionEveryDistinctOverNot(EPServiceProvider epService) {
-            string expression = "select * from pattern [every-Distinct(a.intPrimitive) (a=SupportBean(theString like 'A%') and not SupportBean(theString like 'B%'))]";
+            string expression = "select * from pattern [every-distinct(a.IntPrimitive) (a=SupportBean(TheString like 'A%') and not SupportBean(TheString like 'B%'))]";
             RunEveryDistinctOverNot(epService, expression);
     
-            expression = "select * from pattern [every-Distinct(a.intPrimitive, 1 hour) (a=SupportBean(theString like 'A%') and not SupportBean(theString like 'B%'))]";
+            expression = "select * from pattern [every-distinct(a.IntPrimitive, 1 hour) (a=SupportBean(TheString like 'A%') and not SupportBean(TheString like 'B%'))]";
             RunEveryDistinctOverNot(epService, expression);
         }
     
@@ -386,19 +381,19 @@ namespace com.espertech.esper.regression.pattern
             statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"A1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString".Split(','), new object[]{"A1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A2", 1));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("A3", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"A3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString".Split(','), new object[]{"A3"});
     
             epService.EPRuntime.SendEvent(new SupportBean("B1", 1));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("A4", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString".Split(','), new object[]{"A4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString".Split(','), new object[]{"A4"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A5", 1));
             Assert.IsFalse(listener.IsInvoked);
@@ -407,10 +402,10 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionEveryDistinctOverFollowedBy(EPServiceProvider epService) {
-            string expression = "select * from pattern [every-Distinct(a.intPrimitive + b.intPrimitive) (a=SupportBean(theString like 'A%') -> b=SupportBean(theString like 'B%'))]";
+            string expression = "select * from pattern [every-distinct(a.IntPrimitive + b.IntPrimitive) (a=SupportBean(TheString like 'A%') -> b=SupportBean(TheString like 'B%'))]";
             RunEveryDistinctOverFollowedBy(epService, expression);
     
-            expression = "select * from pattern [every-Distinct(a.intPrimitive + b.intPrimitive, 1 hour) (a=SupportBean(theString like 'A%') -> b=SupportBean(theString like 'B%'))]";
+            expression = "select * from pattern [every-distinct(a.IntPrimitive + b.IntPrimitive, 1 hour) (a=SupportBean(TheString like 'A%') -> b=SupportBean(TheString like 'B%'))]";
             RunEveryDistinctOverFollowedBy(epService, expression);
         }
     
@@ -422,7 +417,7 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
             Assert.IsFalse(listener.IsInvoked);
             epService.EPRuntime.SendEvent(new SupportBean("B1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A1", "B1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{"A1", "B1"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A2", 1));
             epService.EPRuntime.SendEvent(new SupportBean("B2", 1));
@@ -434,7 +429,7 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new SupportBean("A4", 2));
             epService.EPRuntime.SendEvent(new SupportBean("B4", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A4", "B4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{"A4", "B4"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A5", 3));
             epService.EPRuntime.SendEvent(new SupportBean("B5", 0));
@@ -444,10 +439,10 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionEveryDistinctWithinFollowedBy(EPServiceProvider epService) {
-            string expression = "select * from pattern [(every-Distinct(a.intPrimitive) a=SupportBean(theString like 'A%')) -> b=SupportBean(intPrimitive=a.intPrimitive)]";
+            string expression = "select * from pattern [(every-distinct(a.IntPrimitive) a=SupportBean(TheString like 'A%')) -> b=SupportBean(IntPrimitive=a.IntPrimitive)]";
             RunEveryDistinctWithinFollowedBy(epService, expression);
     
-            expression = "select * from pattern [(every-Distinct(a.intPrimitive, 2 hours 1 minute) a=SupportBean(theString like 'A%')) -> b=SupportBean(intPrimitive=a.intPrimitive)]";
+            expression = "select * from pattern [(every-distinct(a.IntPrimitive, 2 hours 1 minute) a=SupportBean(TheString like 'A%')) -> b=SupportBean(IntPrimitive=a.IntPrimitive)]";
             RunEveryDistinctWithinFollowedBy(epService, expression);
         }
     
@@ -460,7 +455,7 @@ namespace com.espertech.esper.regression.pattern
             epService.EPRuntime.SendEvent(new SupportBean("B1", 0));
             Assert.IsFalse(listener.IsInvoked);
             epService.EPRuntime.SendEvent(new SupportBean("B2", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A1", "B2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{"A1", "B2"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A2", 2));
             epService.EPRuntime.SendEvent(new SupportBean("A3", 3));
@@ -468,13 +463,13 @@ namespace com.espertech.esper.regression.pattern
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("B3", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A3", "B3"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{"A3", "B3"});
     
             epService.EPRuntime.SendEvent(new SupportBean("B4", 1));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("B5", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A2", "B5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{"A2", "B5"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A5", 2));
             epService.EPRuntime.SendEvent(new SupportBean("B6", 2));
@@ -482,16 +477,16 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new SupportBean("A6", 4));
             epService.EPRuntime.SendEvent(new SupportBean("B7", 4));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A6", "B7"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{"A6", "B7"});
     
             statement.Dispose();
         }
     
         private void RunAssertionFollowedByWithDistinct(EPServiceProvider epService) {
-            string expression = "select * from pattern [every-Distinct(a.intPrimitive) a=SupportBean(theString like 'A%') -> every-Distinct(b.intPrimitive) b=SupportBean(theString like 'B%')]";
+            string expression = "select * from pattern [every-distinct(a.IntPrimitive) a=SupportBean(TheString like 'A%') -> every-distinct(b.IntPrimitive) b=SupportBean(TheString like 'B%')]";
             RunFollowedByWithDistinct(epService, expression);
     
-            expression = "select * from pattern [every-Distinct(a.intPrimitive, 1 day) a=SupportBean(theString like 'A%') -> every-Distinct(b.intPrimitive) b=SupportBean(theString like 'B%')]";
+            expression = "select * from pattern [every-distinct(a.IntPrimitive, 1 day) a=SupportBean(TheString like 'A%') -> every-distinct(b.IntPrimitive) b=SupportBean(TheString like 'B%')]";
             RunFollowedByWithDistinct(epService, expression);
         }
     
@@ -502,47 +497,47 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new SupportBean("A1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("B1", 0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A1", "B1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{"A1", "B1"});
             epService.EPRuntime.SendEvent(new SupportBean("B2", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A1", "B2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{"A1", "B2"});
             epService.EPRuntime.SendEvent(new SupportBean("B3", 0));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("A2", 1));
             epService.EPRuntime.SendEvent(new SupportBean("B4", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A1", "B4"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{"A1", "B4"});
     
             epService.EPRuntime.SendEvent(new SupportBean("A3", 2));
             epService.EPRuntime.SendEvent(new SupportBean("B5", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.theString,b.theString".Split(','), new object[]{"A3", "B5"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.TheString,b.TheString".Split(','), new object[]{"A3", "B5"});
             epService.EPRuntime.SendEvent(new SupportBean("B6", 1));
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("B7", 3));
             EventBean[] events = listener.GetAndResetLastNewData();
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(events, "a.theString,b.theString".Split(','),
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(events, "a.TheString,b.TheString".Split(','),
                     new object[][]{new object[] {"A1", "B7"}, new object[] {"A3", "B7"}});
     
             statement.Dispose();
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            TryInvalid(epService, "a=A->every-Distinct(a.intPrimitive) B",
-                    "Failed to validate pattern every-distinct expression 'a.intPrimitive': Failed to resolve property 'a.intPrimitive' to a stream or nested property in a stream [a=A->every-Distinct(a.intPrimitive) B]");
+            TryInvalid(epService, "a=A->every-distinct(a.IntPrimitive) B",
+                    "Failed to validate pattern every-distinct expression 'a.IntPrimitive': Failed to resolve property 'a.IntPrimitive' to a stream or nested property in a stream [a=A->every-distinct(a.IntPrimitive) B]");
     
-            TryInvalid(epService, "every-Distinct(dummy) A",
-                    "Failed to validate pattern every-distinct expression 'dummy': Property named 'dummy' is not valid in any stream [every-Distinct(dummy) A]");
+            TryInvalid(epService, "every-distinct(dummy) A",
+                    "Failed to validate pattern every-distinct expression 'dummy': Property named 'dummy' is not valid in any stream [every-distinct(dummy) A]");
     
-            TryInvalid(epService, "every-Distinct(2 sec) A",
-                    "Every-distinct node requires one or more distinct-value expressions that each return non-constant result values [every-Distinct(2 sec) A]");
+            TryInvalid(epService, "every-distinct(2 sec) A",
+                    "Every-distinct node requires one or more distinct-value expressions that each return non-constant result values [every-distinct(2 sec) A]");
         }
     
         private void RunAssertionMonthScoped(EPServiceProvider epService) {
-            string[] fields = "a.theString,a.intPrimitive".Split(',');
+            string[] fields = "a.TheString,a.IntPrimitive".Split(',');
             var listener = new SupportUpdateListener();
     
             SendCurrentTime(epService, "2002-02-01T09:00:00.000");
-            epService.EPAdministrator.CreateEPL("select * from pattern [every-Distinct(theString, 1 month) a=SupportBean]").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select * from pattern [every-distinct(TheString, 1 month) a=SupportBean]").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1});

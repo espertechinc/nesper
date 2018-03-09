@@ -40,11 +40,11 @@ namespace com.espertech.esper.regression.nwtable.tbl
         private void TryMT(EPServiceProvider epService, int numThreads, int numLoops, int numGroups) {
             string eplDeclare =
                     "create context ByStringHash\n" +
-                            "  coalesce by Consistent_hash_crc32(theString) from SupportBean, " +
+                            "  coalesce by Consistent_hash_crc32(TheString) from SupportBean, " +
                             "    Consistent_hash_crc32(p00) from SupportBean_S0 " +
                             "  granularity 16 preallocate\n;" +
                             "context ByStringHash create table varTotal (key string primary key, total sum(int));\n" +
-                            "context ByStringHash into table varTotal select theString, sum(intPrimitive) as total from SupportBean group by theString;\n";
+                            "context ByStringHash into table varTotal select TheString, sum(IntPrimitive) as total from SupportBean group by TheString;\n";
             string eplAssert = "context ByStringHash select varTotal[p00].total as c0 from SupportBean_S0";
     
             ExecTableMTGroupedWContextIntoTableWriteAsSharedTable.RunAndAssert(epService, eplDeclare, eplAssert, numThreads, numLoops, numGroups);

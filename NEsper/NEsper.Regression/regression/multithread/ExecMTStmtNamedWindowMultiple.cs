@@ -23,8 +23,8 @@ namespace com.espertech.esper.regression.multithread
     {
         public override void Configure(Configuration configuration)
         {
-            configuration.AddEventType("OrderEvent", typeof(OrderEvent).Name);
-            configuration.AddEventType("OrderCancelEvent", typeof(OrderCancelEvent).Name);
+            configuration.AddEventType("OrderEvent", typeof(OrderEvent));
+            configuration.AddEventType("OrderCancelEvent", typeof(OrderCancelEvent));
         }
 
         public override void Run(EPServiceProvider epService)

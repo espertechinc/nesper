@@ -55,7 +55,7 @@ namespace com.espertech.esper.regression.dataflow
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.AreEqual(0, captureOp.Current.Length);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("@Name('MyStatement') select theString as id from SupportBean");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("@Name('MyStatement') select TheString as id from SupportBean");
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             captureOp.WaitForInvocation(100, 1);
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regression.dataflow
             epService.EPRuntime.SendEvent(new SupportBean("E5", 5));
             Assert.AreEqual(0, captureOp.Current.Length);
     
-            epService.EPAdministrator.CreateEPL("@Name('MyStatement') select 'X'||theString||'X' as id from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('MyStatement') select 'X'||TheString||'X' as id from SupportBean");
     
             epService.EPRuntime.SendEvent(new SupportBean("E6", 6));
             captureOp.WaitForInvocation(100, 1);
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regression.dataflow
     
             RunAssertionStatementNameExists(epService, "MyMapEvent", DefaultSupportGraphEventUtil.MapEvents);
             RunAssertionStatementNameExists(epService, "MyOAEvent", DefaultSupportGraphEventUtil.OAEvents);
-            RunAssertionStatementNameExists(epService, "MyEvent", DefaultSupportGraphEventUtil.PONOEvents);
+            RunAssertionStatementNameExists(epService, "MyEvent", DefaultSupportGraphEventUtil.PonoEvents);
             RunAssertionStatementNameExists(epService, "MyXMLEvent", DefaultSupportGraphEventUtil.XMLEvents);
     
             // test doc samples
@@ -166,11 +166,11 @@ namespace com.espertech.esper.regression.dataflow
             EPAssertionUtil.AssertProps(
                 epService.Container, captureOp.GetCurrentAndReset()[0], "id".Split(','), new object[]{"B1"});
     
-            epService.EPAdministrator.CreateEPL("select theString, intPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("select TheString, IntPrimitive from SupportBean");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             captureOp.WaitForInvocation(200, 1);
             EPAssertionUtil.AssertProps(
-                epService.Container, captureOp.GetCurrentAndReset()[0], "theString,intPrimitive".Split(','), new object[]{"E1", 1});
+                epService.Container, captureOp.GetCurrentAndReset()[0], "TheString,IntPrimitive".Split(','), new object[]{"E1", 1});
     
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select id from SupportBean_A");
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));

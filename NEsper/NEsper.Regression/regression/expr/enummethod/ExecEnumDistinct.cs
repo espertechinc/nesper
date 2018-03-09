@@ -11,14 +11,9 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.enummethod
 {
@@ -38,12 +33,14 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0".Split(',');
             string eplFragment = "select " +
-                    "contained.DistinctOf(x => p00) as val0 " +
+                    "Contained.distinctOf(x => p00) as val0 " +
                     " from Bean";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
+                typeof(ICollection<SupportBean_ST0>)
+            });
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2", "E3,1"));
             LambdaAssertionUtil.AssertST0Id(listener, "val0", "E1,E2");
@@ -70,17 +67,19 @@ namespace com.espertech.esper.regression.expr.enummethod
     
         private void RunAssertionDistinctScalar(EPServiceProvider epService) {
     
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(ExecEnumMinMax.MyService).Name, "extractNum");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(ExecEnumMinMax.MyService), "ExtractNum");
     
             string[] fields = "val0,val1".Split(',');
             string eplFragment = "select " +
-                    "strvals.DistinctOf() as val0, " +
-                    "strvals.DistinctOf(v => ExtractNum(v)) as val1 " +
+                    "Strvals.distinctOf() as val0, " +
+                    "Strvals.distinctOf(v => extractNum(v)) as val1 " +
                     "from SupportCollection";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(ICollection<object>), typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
+                typeof(ICollection<string>), typeof(ICollection<string>)
+            });
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E2,E1,E2,E2"));
             LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val0", "E2", "E1");

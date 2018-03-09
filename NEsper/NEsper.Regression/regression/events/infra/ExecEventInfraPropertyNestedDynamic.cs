@@ -71,7 +71,7 @@ namespace com.espertech.esper.regression.events.infra
             RunAssertion(epService, EventRepresentationChoice.MAP, "");
             RunAssertion(
                 epService, EventRepresentationChoice.AVRO,
-                "@AvroSchemaField(name='myid',schema='[\"int\",{\"type\":\"string\",\"avro.java.string\":\"string\"},\"null\"]')");
+                "@AvroSchemaField(name='myid',schema='[\"int\",{\"type\":\"string\",\"avro.string\":\"string\"},\"null\"]')");
             RunAssertion(epService, EventRepresentationChoice.DEFAULT, "");
         }
 
@@ -152,7 +152,7 @@ namespace com.espertech.esper.regression.events.infra
         {
             var stmtText = eventRepresentationEnum.GetAnnotationText() + additionalAnnotations + " select " +
                            "item.id? as myid, " +
-                           "Exists(item.id?) as exists_myid " +
+                           "exists(item.id?) as exists_myid " +
                            "from " + typename;
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();

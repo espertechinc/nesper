@@ -58,8 +58,8 @@ namespace com.espertech.esper.regression.nwtable.tbl
 
             epService.EPAdministrator.CreateEPL(
                 "into table MyTable " +
-                "select sum(intPrimitive) as totalInt, sum(longPrimitive) as totalLong," +
-                "window(*) as winsb from SupportBean#keepall group by theString");
+                "select sum(IntPrimitive) as totalInt, sum(LongPrimitive) as totalLong," +
+                "window(*) as winsb from SupportBean#keepall group by TheString");
             epService.EPAdministrator.CreateEPL(
                 "into table MyTable " +
                 "select window(*) as winsb0 from SupportBean_S0#keepall group by p00");
@@ -223,7 +223,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
 
         private void RunAssertionSubquerySelectWEnumMethod(EPServiceProvider epService, object[] rowValues)
         {
-            var epl = "select (select * from MyTable).Where(v=>v.key = 'G1') as mt from SupportBean_S2";
+            var epl = "select (select * from MyTable).where(v=>v.key = 'G1') as mt from SupportBean_S2";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

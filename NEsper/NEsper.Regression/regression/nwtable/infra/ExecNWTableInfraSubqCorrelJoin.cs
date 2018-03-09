@@ -38,15 +38,15 @@ namespace com.espertech.esper.regression.nwtable.infra
     
         private void RunAssertion(EPServiceProvider epService, bool namedWindow, bool enableIndexShareCreate) {
             string createEpl = namedWindow ?
-                    "create window MyInfra#unique(theString) as select * from SupportBean" :
-                    "create table MyInfra(theString string primary key, intPrimitive int primary key)";
+                    "create window MyInfra#unique(TheString) as select * from SupportBean" :
+                    "create table MyInfra(TheString string primary key, IntPrimitive int primary key)";
             if (enableIndexShareCreate) {
                 createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
             }
             epService.EPAdministrator.CreateEPL(createEpl);
-            epService.EPAdministrator.CreateEPL("insert into MyInfra select theString, intPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into MyInfra select TheString, IntPrimitive from SupportBean");
     
-            string consumeEpl = "select (select intPrimitive from MyInfra where theString = s1.p10) as val from S0Bean#lastevent as s0, S1Bean#lastevent as s1";
+            string consumeEpl = "select (select IntPrimitive from MyInfra where TheString = s1.p10) as val from S0Bean#lastevent as s0, S1Bean#lastevent as s1";
             EPStatement consumeStmt = epService.EPAdministrator.CreateEPL(consumeEpl);
             var listener = new SupportUpdateListener();
             consumeStmt.Events += listener.Update;

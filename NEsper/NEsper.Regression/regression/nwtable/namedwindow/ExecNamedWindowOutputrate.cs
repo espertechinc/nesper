@@ -25,13 +25,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create schema SupportBean as " + typeof(SupportBean).FullName);
     
-            epService.EPAdministrator.CreateEPL("create window MyWindowOne#keepall as (theString string, intv int)");
-            epService.EPAdministrator.CreateEPL("insert into MyWindowOne select theString, intPrimitive as intv from SupportBean");
+            epService.EPAdministrator.CreateEPL("create window MyWindowOne#keepall as (TheString string, intv int)");
+            epService.EPAdministrator.CreateEPL("insert into MyWindowOne select TheString, IntPrimitive as intv from SupportBean");
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
-            var fields = new string[]{"theString", "c"};
-            EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("select irstream theString, count(*) as c from MyWindowOne group by theString output snapshot every 1 second");
+            var fields = new string[]{"TheString", "c"};
+            EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("select irstream TheString, count(*) as c from MyWindowOne group by TheString output snapshot every 1 second");
             var listener = new SupportUpdateListener();
             stmtSelect.Events += listener.Update;
     

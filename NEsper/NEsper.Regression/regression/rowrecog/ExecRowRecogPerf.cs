@@ -29,7 +29,7 @@ namespace com.espertech.esper.regression.rowrecog
             string text = "select * from MyEvent " +
                     "match_recognize (" +
                     "  partition by value " +
-                    "  measures A.theString as a_string, C.theString as c_string " +
+                    "  measures A.TheString as a_string, C.TheString as c_string " +
                     "  all matches " +
                     "  pattern (A B*? C) " +
                     "  define A as A.cat = '1'," +

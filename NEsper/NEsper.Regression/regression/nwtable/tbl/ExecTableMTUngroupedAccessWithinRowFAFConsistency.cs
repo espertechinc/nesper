@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string eplCreateVariable = "create table vartotal (cnt count(*), sumint sum(int), avgint avg(int))";
             epService.EPAdministrator.CreateEPL(eplCreateVariable);
     
-            string eplInto = "into table vartotal select count(*) as cnt, sum(intPrimitive) as sumint, avg(intPrimitive) as avgint from SupportBean";
+            string eplInto = "into table vartotal select count(*) as cnt, sum(IntPrimitive) as sumint, avg(IntPrimitive) as avgint from SupportBean";
             epService.EPAdministrator.CreateEPL(eplInto);
     
             epService.EPAdministrator.CreateEPL("create window MyWindow#lastevent as SupportBean_S0");

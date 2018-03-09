@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.client
         private void RunAssertionPerformanceSyntheticUndelivered(EPServiceProvider epService)
         {
             var numLoop = 100000;
-            epService.EPAdministrator.CreateEPL("select theString, intPrimitive from SupportBean(intPrimitive > 10)");
+            epService.EPAdministrator.CreateEPL("select TheString, IntPrimitive from SupportBean(IntPrimitive > 10)");
 
             var start = PerformanceObserver.MilliTime;
             for (var i = 0; i < numLoop; i++)
@@ -52,15 +52,15 @@ namespace com.espertech.esper.regression.client
         {
             var numLoop = 100000;
             var stmt = epService.EPAdministrator.CreateEPL(
-                "select theString, intPrimitive from SupportBean(intPrimitive > 10)");
+                "select TheString, IntPrimitive from SupportBean(IntPrimitive > 10)");
             var results = new List<object[]>();
 
             var listener = new UpdateEventHandler(
                 (sender, args) =>
                 {
                     var newEvents = args.NewEvents;
-                    var theString = (string) newEvents[0].Get("theString");
-                    var val = newEvents[0].Get("intPrimitive").AsInt();
+                    var theString = (string) newEvents[0].Get("TheString");
+                    var val = newEvents[0].Get("IntPrimitive").AsInt();
                     results.Add(new object[] {theString, val});
                 });
             stmt.Events += listener;

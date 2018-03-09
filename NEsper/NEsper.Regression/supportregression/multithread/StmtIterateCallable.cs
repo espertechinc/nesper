@@ -54,7 +54,7 @@ namespace com.espertech.esper.supportregression.multithread
                         for (; it.MoveNext();)
                         {
                             var theEvent = it.Current;
-                            if (theEvent.Get("theString").Equals(id))
+                            if (theEvent.Get("TheString").Equals(id))
                             {
                                 found = true;
                             }

@@ -7,12 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Linq.Expressions;
 using System.Reflection;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.magic;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.util

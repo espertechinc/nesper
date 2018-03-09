@@ -27,8 +27,8 @@ namespace com.espertech.esper.regression.dataflow
     public class ExecDataflowExampleWordCount : RegressionExecution {
     
         public override void Run(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddImport(typeof(MyTokenizerCounter).Namespace + ".*");
-            epService.EPAdministrator.Configuration.AddImport(typeof(DefaultSupportCaptureOp).Namespace + ".*");
+            epService.EPAdministrator.Configuration.AddImport(typeof(MyTokenizerCounter).Namespace);
+            epService.EPAdministrator.Configuration.AddImport(typeof(DefaultSupportCaptureOp).Namespace);
     
             var epl = "create dataflow WordCount " +
                     "MyLineFeedSource -> LineOfTextStream {} " +

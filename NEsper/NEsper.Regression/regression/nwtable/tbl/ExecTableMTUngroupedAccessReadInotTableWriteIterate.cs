@@ -39,8 +39,8 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string eplCreateVariable = "create table vartotal (s0 sum(int), s1 sum(double), s2 sum(long))";
             epService.EPAdministrator.CreateEPL(eplCreateVariable);
     
-            string eplInto = "into table vartotal select sum(intPrimitive) as s0, " +
-                    "sum(doublePrimitive) as s1, sum(longPrimitive) as s2 from SupportBean";
+            string eplInto = "into table vartotal select sum(IntPrimitive) as s0, " +
+                    "sum(DoublePrimitive) as s1, sum(LongPrimitive) as s2 from SupportBean";
             epService.EPAdministrator.CreateEPL(eplInto);
             epService.EPRuntime.SendEvent(MakeSupportBean("E", 1, 1, 1));
     

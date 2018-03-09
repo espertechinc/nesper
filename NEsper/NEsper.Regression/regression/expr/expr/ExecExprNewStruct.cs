@@ -43,9 +43,9 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionDefaultColumnsAndSODA(EPServiceProvider epService) {
             string epl = "select " +
-                    "case theString" +
-                    " when \"A\" then new{theString=\"Q\",intPrimitive,col2=theString||\"A\"}" +
-                    " when \"B\" then new{theString,intPrimitive=10,col2=theString||\"B\"} " +
+                    "case TheString" +
+                    " when \"A\" then new{TheString=\"Q\",IntPrimitive,col2=TheString||\"A\"}" +
+                    " when \"B\" then new{TheString,IntPrimitive=10,col2=TheString||\"B\"} " +
                     "end as val0 from SupportBean as sb";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -61,13 +61,13 @@ namespace com.espertech.esper.regression.expr.expr
     
             // test to-expression string
             epl = "select " +
-                    "case theString" +
-                    " when \"A\" then new{theString=\"Q\",intPrimitive,col2=theString||\"A\" }" +
-                    " when \"B\" then new{theString,intPrimitive = 10,col2=theString||\"B\" } " +
+                    "case TheString" +
+                    " when \"A\" then new{TheString=\"Q\",IntPrimitive,col2=TheString||\"A\" }" +
+                    " when \"B\" then new{TheString,IntPrimitive = 10,col2=TheString||\"B\" } " +
                     "end from SupportBean as sb";
             stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += listener.Update;
-            Assert.AreEqual("case theString when \"A\" then new{theString=\"Q\",intPrimitive,col2=theString||\"A\"} when \"B\" then new{theString,intPrimitive=10,col2=theString||\"B\"} end", stmt.EventType.PropertyNames[0]);
+            Assert.AreEqual("case TheString when \"A\" then new{TheString=\"Q\",IntPrimitive,col2=TheString||\"A\"} when \"B\" then new{TheString,IntPrimitive=10,col2=TheString||\"B\"} end", stmt.EventType.PropertyNames[0]);
             stmt.Dispose();
         }
     
@@ -77,11 +77,11 @@ namespace com.espertech.esper.regression.expr.expr
             FragmentEventType fragType = stmt.EventType.GetFragmentType("val0");
             Assert.IsFalse(fragType.IsIndexed);
             Assert.IsFalse(fragType.IsNative);
-            Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("theString"));
-            Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("intPrimitive"));
+            Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("TheString"));
+            Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("IntPrimitive"));
             Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("col2"));
     
-            string[] fieldsInner = "theString,intPrimitive,col2".Split(',');
+            string[] fieldsInner = "TheString,IntPrimitive,col2".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), fieldsInner, new object[]{null, null, null});
     
@@ -97,15 +97,15 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionNewWithCase(EPServiceProvider epService) {
             string epl = "select " +
                     "case " +
-                    "  when theString = 'A' then new { col1 = 'X', col2 = 10 } " +
-                    "  when theString = 'B' then new { col1 = 'Y', col2 = 20 } " +
-                    "  when theString = 'C' then new { col1 = null, col2 = null } " +
+                    "  when TheString = 'A' then new { col1 = 'X', col2 = 10 } " +
+                    "  when TheString = 'B' then new { col1 = 'Y', col2 = 20 } " +
+                    "  when TheString = 'C' then new { col1 = null, col2 = null } " +
                     "  else new { col1 = 'Z', col2 = 30 } " +
                     "end as val0 from SupportBean sb";
             TryAssertion(epService, epl);
     
             epl = "select " +
-                    "case theString " +
+                    "case TheString " +
                     "  when 'A' then new { col1 = 'X', col2 = 10 } " +
                     "  when 'B' then new { col1 = 'Y', col2 = 20 } " +
                     "  when 'C' then new { col1 = null, col2 = null } " +
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void TryAssertionNewWRepresentation(EPServiceProvider epService, EventRepresentationChoice rep) {
-            string epl = rep.GetAnnotationText() + "select new { theString = 'x' || theString || 'x', intPrimitive = intPrimitive + 2} as val0 from SupportBean as sb";
+            string epl = rep.GetAnnotationText() + "select new { TheString = 'x' || TheString || 'x', IntPrimitive = IntPrimitive + 2} as val0 from SupportBean as sb";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -171,17 +171,17 @@ namespace com.espertech.esper.regression.expr.expr
             FragmentEventType fragType = stmt.EventType.GetFragmentType("val0");
             Assert.IsFalse(fragType.IsIndexed);
             Assert.IsFalse(fragType.IsNative);
-            Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("theString"));
-            Assert.AreEqual(typeof(int?), TypeHelper.GetBoxedType(fragType.FragmentType.GetPropertyType("intPrimitive")));
+            Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("TheString"));
+            Assert.AreEqual(typeof(int?), TypeHelper.GetBoxedType(fragType.FragmentType.GetPropertyType("IntPrimitive")));
     
-            string[] fieldsInner = "theString,intPrimitive".Split(',');
+            string[] fieldsInner = "TheString,IntPrimitive".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean("E1", -5));
             EventBean @event = listener.AssertOneGetNewAndReset();
             if (rep.IsAvroEvent()) {
                 SupportAvroUtil.AvroToJson(@event);
                 GenericRecord inner = (GenericRecord) @event.Get("val0");
-                Assert.AreEqual("xE1x", inner.Get("theString"));
-                Assert.AreEqual(-3, inner.Get("intPrimitive"));
+                Assert.AreEqual("xE1x", inner.Get("TheString"));
+                Assert.AreEqual(-3, inner.Get("IntPrimitive"));
             } else {
                 EPAssertionUtil.AssertPropsMap((Map) @event.Get("val0"), fieldsInner, new object[]{"xE1x", -3});
             }

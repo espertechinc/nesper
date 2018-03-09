@@ -24,13 +24,13 @@ namespace com.espertech.esper.regression.epl.other
     public class ExecEPLComments : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
             string lineSeparator = Environment.NewLine;
-            string statement = "select theString, /* this is my string */\n" +
-                    "intPrimitive, // same line comment\n" +
+            string statement = "select TheString, /* this is my string */\n" +
+                    "IntPrimitive, // same line comment\n" +
                     "/* comment taking one line */\n" +
                     "// another comment taking a line\n" +
-                    "intPrimitive as /* rename */ myPrimitive\n" +
+                    "IntPrimitive as /* rename */ myPrimitive\n" +
                     "from " + typeof(SupportBean).FullName + lineSeparator +
-                    " where /* inside a where */ intPrimitive /* */ = /* */ 100";
+                    " where /* inside a where */ IntPrimitive /* */ = /* */ 100";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statement);
             var updateListener = new SupportUpdateListener();
@@ -39,8 +39,8 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPRuntime.SendEvent(new SupportBean("e1", 100));
     
             EventBean theEvent = updateListener.AssertOneGetNewAndReset();
-            Assert.AreEqual("e1", theEvent.Get("theString"));
-            Assert.AreEqual(100, theEvent.Get("intPrimitive"));
+            Assert.AreEqual("e1", theEvent.Get("TheString"));
+            Assert.AreEqual(100, theEvent.Get("IntPrimitive"));
             Assert.AreEqual(100, theEvent.Get("myPrimitive"));
             updateListener.Reset();
     

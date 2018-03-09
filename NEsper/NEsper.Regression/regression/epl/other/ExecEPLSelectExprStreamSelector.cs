@@ -68,7 +68,7 @@ namespace com.espertech.esper.regression.epl.other
 
         private void RunAssertionInsertTransposeNestedProperty(EPServiceProvider epService)
         {
-            string stmtOneText = "insert into StreamA select nested.* from " +
+            string stmtOneText = "insert into StreamA select Nested.* from " +
                                  typeof(SupportBeanComplexProps).FullName + " as s0";
             var listenerOne = new SupportUpdateListener();
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtOneText);
@@ -76,16 +76,16 @@ namespace com.espertech.esper.regression.epl.other
             Assert.AreEqual(
                 typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested), stmtOne.EventType.UnderlyingType);
 
-            string stmtTwoText = "select nestedValue from StreamA";
+            string stmtTwoText = "select NestedValue from StreamA";
             var listenerTwo = new SupportUpdateListener();
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTwoText);
             stmtTwo.Events += listenerTwo.Update;
-            Assert.AreEqual(typeof(string), stmtTwo.EventType.GetPropertyType("nestedValue"));
+            Assert.AreEqual(typeof(string), stmtTwo.EventType.GetPropertyType("NestedValue"));
 
             epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
 
-            Assert.AreEqual("nestedValue", listenerOne.AssertOneGetNewAndReset().Get("nestedValue"));
-            Assert.AreEqual("nestedValue", listenerTwo.AssertOneGetNewAndReset().Get("nestedValue"));
+            Assert.AreEqual("NestedValue", listenerOne.AssertOneGetNewAndReset().Get("NestedValue"));
+            Assert.AreEqual("NestedValue", listenerTwo.AssertOneGetNewAndReset().Get("NestedValue"));
 
             stmtOne.Dispose();
             stmtTwo.Dispose();
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regression.epl.other
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL(stmtThreeText);
             Assert.AreEqual(typeof(Pair<object, Map>), stmtThree.EventType.UnderlyingType);
             Assert.AreEqual(typeof(string), stmtThree.EventType.GetPropertyType("abc"));
-            Assert.AreEqual(typeof(string), stmtThree.EventType.GetPropertyType("theString"));
+            Assert.AreEqual(typeof(string), stmtThree.EventType.GetPropertyType("TheString"));
 
             stmtOne.Dispose();
             stmtTwo.Dispose();
@@ -131,16 +131,16 @@ namespace com.espertech.esper.regression.epl.other
             model.SelectClause = SelectClause.Create()
                 .AddStreamWildcard("s0")
                 .AddStreamWildcard("s1", "s1stream")
-                .AddWithAsProvidedName("theString", "sym");
+                .AddWithAsProvidedName("TheString", "sym");
             model.FromClause = FromClause.Create()
                 .Add(FilterStream.Create(typeof(SupportBean).FullName, "s0").AddView("keepall"))
-                .Add(FilterStream.Create(typeof(SupportMarketDataBean).Name, "s1").AddView("keepall"));
+                .Add(FilterStream.Create(typeof(SupportMarketDataBean).FullName, "s1").AddView("keepall"));
 
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
 
-            string epl = "select s0.*, s1.* as s1stream, theString as sym from " + typeof(SupportBean).FullName +
+            string epl = "select s0.*, s1.* as s1stream, TheString as sym from " + typeof(SupportBean).FullName +
                          "#keepall as s0, " +
                          typeof(SupportMarketDataBean).FullName + "#keepall as s1";
             Assert.AreEqual(epl, model.ToEPL());
@@ -181,14 +181,14 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionJoinWildcardNoAlias(EPServiceProvider epService)
         {
             string epl = "select *, s1.* from " + typeof(SupportBean).FullName + "#length(3) as s0, " +
-                         typeof(SupportMarketDataBean).Name + "#keepall as s1";
+                         typeof(SupportMarketDataBean).FullName + "#keepall as s1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
 
             EventType type = stmt.EventType;
             Assert.AreEqual(7, type.PropertyNames.Length);
-            Assert.AreEqual(typeof(long), type.GetPropertyType("volume"));
+            Assert.AreEqual(typeof(long?), type.GetPropertyType("volume"));
             Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0"));
             Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1"));
             Assert.AreEqual(typeof(Pair<object, Map>), type.UnderlyingType);
@@ -217,7 +217,7 @@ namespace com.espertech.esper.regression.epl.other
             Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0"));
 
             object theEvent = SendBeanEvent(epService, "E1", 15);
-            var fields = new string[] {"theString", "intPrimitive", "s0"};
+            var fields = new string[] {"TheString", "IntPrimitive", "s0"};
             EPAssertionUtil.AssertProps(
                 testListener.AssertOneGetNewAndReset(), fields, new object[] {"E1", 15, theEvent});
 
@@ -228,7 +228,7 @@ namespace com.espertech.esper.regression.epl.other
         {
             string epl = "select *, s1.* as s1stream, s0.* as s0stream from " + typeof(SupportBean).FullName +
                          "#length(3) as s0, " +
-                         typeof(SupportMarketDataBean).Name + "#keepall as s1";
+                         typeof(SupportMarketDataBean).FullName + "#keepall as s1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
@@ -254,8 +254,8 @@ namespace com.espertech.esper.regression.epl.other
 
         private void RunAssertionNoJoinWithAliasWithProperties(EPServiceProvider epService)
         {
-            string epl = "select theString.* as s0, intPrimitive as a, theString.* as s1, intPrimitive as b from " +
-                         typeof(SupportBean).FullName + "#length(3) as theString";
+            string epl = "select TheString.* as s0, IntPrimitive as a, TheString.* as s1, IntPrimitive as b from " +
+                         typeof(SupportBean).FullName + "#length(3) as TheString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
@@ -278,27 +278,27 @@ namespace com.espertech.esper.regression.epl.other
 
         private void RunAssertionJoinWithAliasWithProperties(EPServiceProvider epService)
         {
-            string epl = "select intPrimitive, s1.* as s1stream, theString, symbol as sym, s0.* as s0stream from " +
+            string epl = "select IntPrimitive, s1.* as s1stream, TheString, symbol as sym, s0.* as s0stream from " +
                          typeof(SupportBean).FullName + "#length(3) as s0, " +
-                         typeof(SupportMarketDataBean).Name + "#keepall as s1";
+                         typeof(SupportMarketDataBean).FullName + "#keepall as s1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
 
             EventType type = stmt.EventType;
             Assert.AreEqual(5, type.PropertyNames.Length);
-            Assert.AreEqual(typeof(int), type.GetPropertyType("intPrimitive"));
+            Assert.AreEqual(typeof(int), type.GetPropertyType("IntPrimitive"));
             Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1stream"));
             Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0stream"));
             Assert.AreEqual(typeof(string), type.GetPropertyType("sym"));
-            Assert.AreEqual(typeof(string), type.GetPropertyType("theString"));
+            Assert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
             Assert.AreEqual(typeof(Map), type.UnderlyingType);
 
             object eventOne = SendBeanEvent(epService, "E1", 13);
             Assert.IsFalse(testListener.IsInvoked);
 
             object eventTwo = SendMarketEvent(epService, "E2");
-            var fields = new string[] {"intPrimitive", "sym", "theString", "s0stream", "s1stream"};
+            var fields = new string[] {"IntPrimitive", "sym", "TheString", "s0stream", "s1stream"};
             EventBean received = testListener.AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(received, fields, new object[] {13, "E2", "E1", eventOne, eventTwo});
             EventBean theEvent = (EventBean) ((Map) received.Underlying).Get("s0stream");
@@ -309,7 +309,7 @@ namespace com.espertech.esper.regression.epl.other
 
         private void RunAssertionNoJoinNoAliasWithProperties(EPServiceProvider epService)
         {
-            string epl = "select intPrimitive as a, string.*, intPrimitive as b from " + typeof(SupportBean).FullName +
+            string epl = "select IntPrimitive as a, string.*, IntPrimitive as b from " + typeof(SupportBean).FullName +
                          "#length(3) as string";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
@@ -320,10 +320,10 @@ namespace com.espertech.esper.regression.epl.other
             Assert.AreEqual(typeof(Pair<object, Map>), type.UnderlyingType);
             Assert.AreEqual(typeof(int), type.GetPropertyType("a"));
             Assert.AreEqual(typeof(int), type.GetPropertyType("b"));
-            Assert.AreEqual(typeof(string), type.GetPropertyType("theString"));
+            Assert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
 
             SendBeanEvent(epService, "E1", 10);
-            var fields = new string[] {"a", "theString", "intPrimitive", "b"};
+            var fields = new string[] {"a", "TheString", "IntPrimitive", "b"};
             EPAssertionUtil.AssertProps(
                 testListener.AssertOneGetNewAndReset(), fields, new object[] {10, "E1", 10, 10});
 
@@ -332,23 +332,23 @@ namespace com.espertech.esper.regression.epl.other
 
         private void RunAssertionJoinNoAliasWithProperties(EPServiceProvider epService)
         {
-            string epl = "select intPrimitive, s1.*, symbol as sym from " + typeof(SupportBean).FullName +
+            string epl = "select IntPrimitive, s1.*, symbol as sym from " + typeof(SupportBean).FullName +
                          "#length(3) as s0, " +
-                         typeof(SupportMarketDataBean).Name + "#keepall as s1";
+                         typeof(SupportMarketDataBean).FullName + "#keepall as s1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
 
             EventType type = stmt.EventType;
             Assert.AreEqual(7, type.PropertyNames.Length);
-            Assert.AreEqual(typeof(int), type.GetPropertyType("intPrimitive"));
+            Assert.AreEqual(typeof(int), type.GetPropertyType("IntPrimitive"));
             Assert.AreEqual(typeof(Pair<object, Map>), type.UnderlyingType);
 
             SendBeanEvent(epService, "E1", 11);
             Assert.IsFalse(testListener.IsInvoked);
 
             object theEvent = SendMarketEvent(epService, "E1");
-            var fields = new string[] {"intPrimitive", "sym", "symbol"};
+            var fields = new string[] {"IntPrimitive", "sym", "symbol"};
             EventBean received = testListener.AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(received, fields, new object[] {11, "E1", "E1"});
             Assert.AreSame(theEvent, ((Pair<object, Map>) received.Underlying).First);
@@ -358,7 +358,7 @@ namespace com.espertech.esper.regression.epl.other
 
         private void RunAssertionAloneNoJoinNoAlias(EPServiceProvider epService)
         {
-            string epl = "select theString.* from " + typeof(SupportBean).FullName + "#length(3) as theString";
+            string epl = "select TheString.* from " + typeof(SupportBean).FullName + "#length(3) as TheString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
@@ -375,7 +375,7 @@ namespace com.espertech.esper.regression.epl.other
 
         private void RunAssertionAloneNoJoinAlias(EPServiceProvider epService)
         {
-            string epl = "select theString.* as s0 from " + typeof(SupportBean).FullName + "#length(3) as theString";
+            string epl = "select TheString.* as s0 from " + typeof(SupportBean).FullName + "#length(3) as TheString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
@@ -394,7 +394,7 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionAloneJoinAlias(EPServiceProvider epService)
         {
             string epl = "select s1.* as s1 from " + typeof(SupportBean).FullName + "#length(3) as s0, " +
-                         typeof(SupportMarketDataBean).Name + "#keepall as s1";
+                         typeof(SupportMarketDataBean).FullName + "#keepall as s1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
@@ -413,7 +413,7 @@ namespace com.espertech.esper.regression.epl.other
 
             // reverse streams
             epl = "select s0.* as szero from " + typeof(SupportBean).FullName + "#length(3) as s0, " +
-                  typeof(SupportMarketDataBean).Name + "#keepall as s1";
+                  typeof(SupportMarketDataBean).FullName + "#keepall as s1";
             stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += testListener.Update;
 
@@ -433,13 +433,13 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionAloneJoinNoAlias(EPServiceProvider epService)
         {
             string epl = "select s1.* from " + typeof(SupportBean).FullName + "#length(3) as s0, " +
-                         typeof(SupportMarketDataBean).Name + "#keepall as s1";
+                         typeof(SupportMarketDataBean).FullName + "#keepall as s1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
 
             EventType type = stmt.EventType;
-            Assert.AreEqual(typeof(long), type.GetPropertyType("volume"));
+            Assert.AreEqual(typeof(long?), type.GetPropertyType("volume"));
             Assert.AreEqual(typeof(SupportMarketDataBean), type.UnderlyingType);
 
             SendBeanEvent(epService, "E1");
@@ -452,12 +452,12 @@ namespace com.espertech.esper.regression.epl.other
 
             // reverse streams
             epl = "select s0.* from " + typeof(SupportBean).FullName + "#length(3) as s0, " +
-                  typeof(SupportMarketDataBean).Name + "#keepall as s1";
+                  typeof(SupportMarketDataBean).FullName + "#keepall as s1";
             stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += testListener.Update;
 
             type = stmt.EventType;
-            Assert.AreEqual(typeof(string), type.GetPropertyType("theString"));
+            Assert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
             Assert.AreEqual(typeof(SupportBean), type.UnderlyingType);
 
             SendMarketEvent(epService, "E1");
@@ -473,9 +473,9 @@ namespace com.espertech.esper.regression.epl.other
         {
             SupportMessageAssertUtil.TryInvalid(
                 epService,
-                "select theString.* as theString, theString from " + typeof(SupportBean).FullName +
-                "#length(3) as theString",
-                "Error starting statement: Column name 'theString' appears more then once in select clause");
+                "select TheString.* as TheString, TheString from " + typeof(SupportBean).FullName +
+                "#length(3) as TheString",
+                "Error starting statement: Column name 'TheString' appears more then once in select clause");
 
             SupportMessageAssertUtil.TryInvalid(
                 epService, "select s1.* as abc from " + typeof(SupportBean).FullName + "#length(3) as s0",

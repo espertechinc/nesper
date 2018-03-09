@@ -42,14 +42,14 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "Error starting statement: Table by name 'MyTable' has been declared for context 'SimpleCtx' and can only be used within the same context [");
             SupportMessageAssertUtil.TryInvalid(epService, "select (select * from MyTable) from SupportBean",
                     "Error starting statement: Failed to plan subquery number 1 querying MyTable: Mismatch in context specification, the context for the table 'MyTable' is 'SimpleCtx' and the query specifies no context  [select (select * from MyTable) from SupportBean]");
-            SupportMessageAssertUtil.TryInvalid(epService, "insert into MyTable select theString as pkey from SupportBean",
+            SupportMessageAssertUtil.TryInvalid(epService, "insert into MyTable select TheString as pkey from SupportBean",
                     "Error starting statement: Table by name 'MyTable' has been declared for context 'SimpleCtx' and can only be used within the same context [");
         }
     
         private void RunAssertionNonOverlapping(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create context CtxNowTillS0 start @now end SupportBean_S0");
             epService.EPAdministrator.CreateEPL("context CtxNowTillS0 create table MyTable(pkey string primary key, thesum sum(int), col0 string)");
-            epService.EPAdministrator.CreateEPL("context CtxNowTillS0 into table MyTable select sum(intPrimitive) as thesum from SupportBean group by theString");
+            epService.EPAdministrator.CreateEPL("context CtxNowTillS0 into table MyTable select sum(IntPrimitive) as thesum from SupportBean group by TheString");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("context CtxNowTillS0 select pkey as c0, thesum as c1 from MyTable output snapshot when terminated").Events += listener.Update;
     
@@ -75,9 +75,9 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
         private void RunAssertionPartitioned(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create context CtxPerString " +
-                    "partition by theString from SupportBean, p00 from SupportBean_S0");
+                    "partition by TheString from SupportBean, p00 from SupportBean_S0");
             epService.EPAdministrator.CreateEPL("context CtxPerString create table MyTable(thesum sum(int))");
-            epService.EPAdministrator.CreateEPL("context CtxPerString into table MyTable select sum(intPrimitive) as thesum from SupportBean");
+            epService.EPAdministrator.CreateEPL("context CtxPerString into table MyTable select sum(IntPrimitive) as thesum from SupportBean");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("context CtxPerString select MyTable.thesum as c0 from SupportBean_S0").Events += listener.Update;
     

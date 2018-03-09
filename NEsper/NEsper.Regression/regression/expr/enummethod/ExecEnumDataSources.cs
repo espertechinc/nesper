@@ -81,7 +81,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
 
             var stmt = epService.EPAdministrator.CreateEPL(
-                "select MyTableUnkeyed.theWindow.AnyOf(v=>intPrimitive=10) as c0 from SupportBean_A");
+                "select MyTableUnkeyed.theWindow.AnyOf(v=>IntPrimitive=10) as c0 from SupportBean_A");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regression.expr.enummethod
         private void RunAssertionPatternFilter(EPServiceProvider epService)
         {
             var stmt = epService.EPAdministrator.CreateEPL(
-                "select * from pattern [ ([2]a=SupportBean_ST0) -> b=SupportBean(intPrimitive > a.max(i -> p00))]");
+                "select * from pattern [ ([2]a=SupportBean_ST0) -> b=SupportBean(IntPrimitive > a.max(i -> p00))]");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -104,12 +104,12 @@ namespace com.espertech.esper.regression.expr.enummethod
 
             epService.EPRuntime.SendEvent(new SupportBean("E4", 16));
             EPAssertionUtil.AssertProps(
-                listener.AssertOneGetNewAndReset(), "a[0].id,a[1].id,b.theString".Split(','),
+                listener.AssertOneGetNewAndReset(), "a[0].id,a[1].id,b.TheString".Split(','),
                 new object[] {"E1", "E2", "E4"});
             stmt.Dispose();
 
             stmt = epService.EPAdministrator.CreateEPL(
-                "select * from pattern [ a=SupportBean_ST0 until b=SupportBean -> c=SupportBean(intPrimitive > a.SumOf(i => p00))]");
+                "select * from pattern [ a=SupportBean_ST0 until b=SupportBean -> c=SupportBean(IntPrimitive > a.sumOf(i => p00))]");
             stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean_ST0("E10", 10));
@@ -120,7 +120,7 @@ namespace com.espertech.esper.regression.expr.enummethod
 
             epService.EPRuntime.SendEvent(new SupportBean("E14", 26));
             EPAssertionUtil.AssertProps(
-                listener.AssertOneGetNewAndReset(), "a[0].id,a[1].id,b.theString,c.theString".Split(','),
+                listener.AssertOneGetNewAndReset(), "a[0].id,a[1].id,b.TheString,c.TheString".Split(','),
                 new object[] {"E10", "E11", "E12", "E14"});
 
             stmt.Dispose();
@@ -129,13 +129,13 @@ namespace com.espertech.esper.regression.expr.enummethod
         private void RunAssertionMatchRecognize(EPServiceProvider epService)
         {
             // try define-clause
-            var fieldsOne = "a_array[0].theString,a_array[1].theString,b.theString".Split(',');
+            var fieldsOne = "a_array[0].TheString,a_array[1].TheString,b.TheString".Split(',');
             var textOne = "select * from SupportBean " +
                           "match_recognize (" +
                           " measures A as a_array, B as b " +
                           " pattern (A* B)" +
                           " define" +
-                          " B as A.AnyOf(v=> v.intPrimitive = B.intPrimitive)" +
+                          " B as A.AnyOf(v=> v.IntPrimitive = B.IntPrimitive)" +
                           ")";
 
             var stmtOne = epService.EPAdministrator.CreateEPL(textOne);
@@ -160,11 +160,11 @@ namespace com.espertech.esper.regression.expr.enummethod
             var fieldsTwo = "c0".Split(',');
             var textTwo = "select * from SupportBean " +
                           "match_recognize (" +
-                          " measures A.AnyOf(v=> v.intPrimitive = B.intPrimitive) as c0 " +
+                          " measures A.AnyOf(v=> v.IntPrimitive = B.IntPrimitive) as c0 " +
                           " pattern (A* B)" +
                           " define" +
-                          " A as A.theString like 'A%'," +
-                          " B as B.theString like 'B%'" +
+                          " A as A.TheString like 'A%'," +
+                          " B as B.TheString like 'B%'" +
                           ")";
 
             var stmtTwo = epService.EPAdministrator.CreateEPL(textTwo);
@@ -213,11 +213,11 @@ namespace com.espertech.esper.regression.expr.enummethod
             var fields = "c0,c1,c2,c3,c4".Split(',');
 
             var eplWindowAgg = "select " +
-                               "sorted(theString).AllOf(x => x.intPrimitive < 5) as c0," +
-                               "maxby(theString).AllOf(x => x.intPrimitive < 5) as c1," +
-                               "minby(theString).AllOf(x => x.intPrimitive < 5) as c2," +
-                               "maxbyever(theString).AllOf(x => x.intPrimitive < 5) as c3," +
-                               "minbyever(theString).AllOf(x => x.intPrimitive < 5) as c4" +
+                               "sorted(TheString).allOf(x => x.IntPrimitive < 5) as c0," +
+                               "maxby(TheString).allOf(x => x.IntPrimitive < 5) as c1," +
+                               "minby(TheString).allOf(x => x.IntPrimitive < 5) as c2," +
+                               "maxbyever(TheString).allOf(x => x.IntPrimitive < 5) as c3," +
+                               "minbyever(TheString).allOf(x => x.IntPrimitive < 5) as c4" +
                                " from SupportBean#length(5)";
             var stmtWindowAgg = epService.EPAdministrator.CreateEPL(eplWindowAgg);
             var listener = new SupportUpdateListener();
@@ -279,7 +279,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             // Scalar version
             var fields = new[] {"val0"};
             var stmtScalar = epService.EPAdministrator.CreateEPL(
-                "select prevwindow(id).Where(x => x not like '%ignore%') as val0 " +
+                "select prevwindow(id).where(x => x not like '%ignore%') as val0 " +
                 "from SupportBean_ST0#keepall as st0");
             stmtScalar.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtScalar.EventType, fields, new[] {typeof(ICollection<object>)});
@@ -309,7 +309,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportBean_ST0");
             epService.EPAdministrator.CreateEPL("on SupportBean_A delete from MyWindow");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean_ST0");
-            var eplNamedWindow = "select MyWindow.AllOf(x => x.p00 < 5) as allOfX from SupportBean#keepall";
+            var eplNamedWindow = "select MyWindow.allOf(x => x.p00 < 5) as allOfX from SupportBean#keepall";
             var stmtNamedWindow = epService.EPAdministrator.CreateEPL(eplNamedWindow);
             var listener = new SupportUpdateListener();
             stmtNamedWindow.Events += listener.Update;
@@ -327,7 +327,7 @@ namespace com.espertech.esper.regression.expr.enummethod
 
             // test named window correlated
             var eplNamedWindowCorrelated =
-                "select MyWindow(key0 = sb.theString).AllOf(x => x.p00 < 5) as allOfX from SupportBean#keepall sb";
+                "select MyWindow(key0 = sb.TheString).allOf(x => x.p00 < 5) as allOfX from SupportBean#keepall sb";
             var stmtNamedWindowCorrelated = epService.EPAdministrator.CreateEPL(eplNamedWindowCorrelated);
             stmtNamedWindowCorrelated.Events += listener.Update;
 
@@ -347,7 +347,7 @@ namespace com.espertech.esper.regression.expr.enummethod
         {
             // test subselect-wildcard
             var eplSubselect =
-                "select (select * from SupportBean_ST0#keepall).AllOf(x => x.p00 < 5) as allOfX from SupportBean#keepall";
+                "select (select * from SupportBean_ST0#keepall).allOf(x => x.p00 < 5) as allOfX from SupportBean#keepall";
             var stmtSubselect = epService.EPAdministrator.CreateEPL(eplSubselect);
             var listener = new SupportUpdateListener();
             stmtSubselect.Events += listener.Update;
@@ -363,7 +363,7 @@ namespace com.espertech.esper.regression.expr.enummethod
 
             // test subselect scalar return
             var eplSubselectScalar =
-                "select (select id from SupportBean_ST0#keepall).AllOf(x => x  like '%B%') as allOfX from SupportBean#keepall";
+                "select (select id from SupportBean_ST0#keepall).allOf(x => x  like '%B%') as allOfX from SupportBean#keepall";
             var stmtSubselectScalar = epService.EPAdministrator.CreateEPL(eplSubselectScalar);
             stmtSubselectScalar.Events += listener.Update;
 
@@ -378,7 +378,7 @@ namespace com.espertech.esper.regression.expr.enummethod
 
             // test subselect-correlated scalar return
             var eplSubselectScalarCorrelated =
-                "select (select key0 from SupportBean_ST0#keepall st0 where st0.id = sb.theString).AllOf(x => x  like '%hello%') as allOfX from SupportBean#keepall sb";
+                "select (select key0 from SupportBean_ST0#keepall st0 where st0.id = sb.TheString).allOf(x => x  like '%hello%') as allOfX from SupportBean#keepall sb";
             var stmtSubselectScalarCorrelated = epService.EPAdministrator.CreateEPL(eplSubselectScalarCorrelated);
             stmtSubselectScalarCorrelated.Events += listener.Update;
 
@@ -398,7 +398,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             // test subselect multivalue return
             var fields = new[] {"id", "p00"};
             var eplSubselectMultivalue =
-                "select (select id, p00 from SupportBean_ST0#keepall).Take(10) as c0 from SupportBean";
+                "select (select id, p00 from SupportBean_ST0#keepall).take(10) as c0 from SupportBean";
             var stmtSubselectMultivalue = epService.EPAdministrator.CreateEPL(eplSubselectMultivalue);
             stmtSubselectMultivalue.Events += listener.Update;
 
@@ -438,7 +438,7 @@ namespace com.espertech.esper.regression.expr.enummethod
         {
             epService.EPAdministrator.CreateEPL("create variable string[] myvar = { 'E1', 'E3' }");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from SupportBean(myvar.AnyOf(v => v = theString))")
+            epService.EPAdministrator.CreateEPL("select * from SupportBean(myvar.AnyOf(v => v = TheString))")
                 .Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -455,11 +455,11 @@ namespace com.espertech.esper.regression.expr.enummethod
 
             // test window(*) and first(*)
             var eplWindowAgg = "select " +
-                               "window(*).AllOf(x => x.intPrimitive < 5) as val0," +
-                               "first(*).AllOf(x => x.intPrimitive < 5) as val1," +
-                               "first(*, 1).AllOf(x => x.intPrimitive < 5) as val2," +
-                               "last(*).AllOf(x => x.intPrimitive < 5) as val3," +
-                               "last(*, 1).AllOf(x => x.intPrimitive < 5) as val4" +
+                               "window(*).allOf(x => x.IntPrimitive < 5) as val0," +
+                               "first(*).allOf(x => x.IntPrimitive < 5) as val1," +
+                               "first(*, 1).allOf(x => x.IntPrimitive < 5) as val2," +
+                               "last(*).allOf(x => x.IntPrimitive < 5) as val3," +
+                               "last(*, 1).allOf(x => x.IntPrimitive < 5) as val4" +
                                " from SupportBean#length(2)";
             var stmtWindowAgg = epService.EPAdministrator.CreateEPL(eplWindowAgg);
             var listener = new SupportUpdateListener();
@@ -481,11 +481,11 @@ namespace com.espertech.esper.regression.expr.enummethod
 
             // test scalar: window(*) and first(*)
             var eplWindowAggScalar = "select " +
-                                     "window(intPrimitive).AllOf(x => x < 5) as val0," +
-                                     "first(intPrimitive).AllOf(x => x < 5) as val1," +
-                                     "first(intPrimitive, 1).AllOf(x => x < 5) as val2," +
-                                     "last(intPrimitive).AllOf(x => x < 5) as val3," +
-                                     "last(intPrimitive, 1).AllOf(x => x < 5) as val4" +
+                                     "window(IntPrimitive).allOf(x => x < 5) as val0," +
+                                     "first(IntPrimitive).allOf(x => x < 5) as val1," +
+                                     "first(IntPrimitive, 1).allOf(x => x < 5) as val2," +
+                                     "last(IntPrimitive).allOf(x => x < 5) as val3," +
+                                     "last(IntPrimitive, 1).allOf(x => x < 5) as val4" +
                                      " from SupportBean#length(2)";
             var stmtWindowAggScalar = epService.EPAdministrator.CreateEPL(eplWindowAggScalar);
             stmtWindowAggScalar.Events += listener.Update;
@@ -508,7 +508,7 @@ namespace com.espertech.esper.regression.expr.enummethod
         private void RunAssertionProperty(EPServiceProvider epService)
         {
             // test fragment type - collection inside
-            var eplFragment = "select Contained.AllOf(x => x.p00 < 5) as allOfX from SupportBean_ST0_Container#keepall";
+            var eplFragment = "select Contained.allOf(x => x.p00 < 5) as allOfX from SupportBean_ST0_Container#keepall";
             var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
@@ -522,8 +522,8 @@ namespace com.espertech.esper.regression.expr.enummethod
 
             // test array and iterable
             var fields = "val0,val1".Split(',');
-            eplFragment = "select Intarray.Sumof() as val0, " +
-                          "intiterable.SumOf() as val1 " +
+            eplFragment = "select Intarray.sumof() as val0, " +
+                          "intiterable.sumOf() as val1 " +
                           " from SupportCollection#keepall";
             stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             stmtFragment.Events += listener.Update;
@@ -586,9 +586,9 @@ namespace com.espertech.esper.regression.expr.enummethod
             // test prevwindow(*) etc
             var fields = new[] {"val0", "val1", "val2"};
             var epl = "select " +
-                      "prevwindow(sb).AllOf(x => x.intPrimitive < 5) as val0," +
-                      "prev(sb,1).AllOf(x => x.intPrimitive < 5) as val1," +
-                      "prevtail(sb,1).AllOf(x => x.intPrimitive < 5) as val2" +
+                      "prevwindow(sb).allOf(x => x.IntPrimitive < 5) as val0," +
+                      "prev(sb,1).allOf(x => x.IntPrimitive < 5) as val1," +
+                      "prevtail(sb,1).allOf(x => x.IntPrimitive < 5) as val2" +
                       " from SupportBean#length(2) as sb";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -609,9 +609,9 @@ namespace com.espertech.esper.regression.expr.enummethod
 
             // test scalar prevwindow(property) etc
             var eplScalar = "select " +
-                            "prevwindow(intPrimitive).AllOf(x => x < 5) as val0," +
-                            "prev(intPrimitive,1).AllOf(x => x < 5) as val1," +
-                            "prevtail(intPrimitive,1).AllOf(x => x < 5) as val2" +
+                            "prevwindow(IntPrimitive).allOf(x => x < 5) as val0," +
+                            "prev(IntPrimitive,1).allOf(x => x < 5) as val1," +
+                            "prevtail(IntPrimitive,1).allOf(x => x < 5) as val2" +
                             " from SupportBean#length(2) as sb";
             var stmtScalar = epService.EPAdministrator.CreateEPL(eplScalar);
             stmtScalar.Events += listener.Update;
@@ -636,10 +636,10 @@ namespace com.espertech.esper.regression.expr.enummethod
             var fields = "val1,val2,val3,val4".Split(',');
             epService.EPAdministrator.Configuration.AddImport(typeof(SupportBean_ST0_Container));
             var epl = "select " +
-                      "SupportBean_ST0_Container.MakeSampleList().Where(x => x.p00 < 5) as val1, " +
-                      "SupportBean_ST0_Container.MakeSampleArray().Where(x => x.p00 < 5) as val2, " +
-                      "MakeSampleList().Where(x => x.p00 < 5) as val3, " +
-                      "MakeSampleArray().Where(x => x.p00 < 5) as val4 " +
+                      "SupportBean_ST0_Container.MakeSampleList().where(x => x.p00 < 5) as val1, " +
+                      "SupportBean_ST0_Container.MakeSampleArray().where(x => x.p00 < 5) as val2, " +
+                      "MakeSampleList().where(x => x.p00 < 5) as val3, " +
+                      "MakeSampleArray().where(x => x.p00 < 5) as val4 " +
                       "from SupportBean#length(2) as sb";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -679,10 +679,10 @@ namespace com.espertech.esper.regression.expr.enummethod
             fields = "val0,val1,val2,val3".Split(',');
             epService.EPAdministrator.Configuration.AddImport(typeof(SupportCollection));
             var eplScalar = "select " +
-                            "SupportCollection.MakeSampleListString().Where(x => x != 'E1') as val0, " +
-                            "SupportCollection.MakeSampleArrayString().Where(x => x != 'E1') as val1, " +
-                            "MakeSampleListString().Where(x => x != 'E1') as val2, " +
-                            "MakeSampleArrayString().Where(x => x != 'E1') as val3 " +
+                            "SupportCollection.MakeSampleListString().where(x => x != 'E1') as val0, " +
+                            "SupportCollection.MakeSampleArrayString().where(x => x != 'E1') as val1, " +
+                            "MakeSampleListString().where(x => x != 'E1') as val2, " +
+                            "MakeSampleArrayString().where(x => x != 'E1') as val3 " +
                             "from SupportBean#length(2) as sb";
             var stmtScalar = epService.EPAdministrator.CreateEPL(eplScalar);
             stmtScalar.Events += listener.Update;
@@ -730,7 +730,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             var prepared = epService.EPAdministrator.PrepareEPL(
-                "select * from SupportBean(?.SequenceEqual({1, intPrimitive, 100}))");
+                "select * from SupportBean(?.sequenceEqual({1, IntPrimitive, 100}))");
             prepared.SetObject(1, parameter);
             epService.EPAdministrator.Create(prepared).Events += listener.Update;
 

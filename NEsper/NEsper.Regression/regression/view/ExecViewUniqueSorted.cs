@@ -44,12 +44,12 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionExpressionParameter(EPServiceProvider epService) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#unique(Math.Abs(intPrimitive))");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#unique(Math.Abs(IntPrimitive))");
             SendEvent(epService, "E1", 10);
             SendEvent(epService, "E2", -10);
             SendEvent(epService, "E3", -5);
             SendEvent(epService, "E4", 5);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "theString".Split(','), new[] {new object[] {"E2"}, new object[] {"E4"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "TheString".Split(','), new[] {new object[] {"E2"}, new object[] {"E4"}});
     
             stmt.Dispose();
         }
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regression.view
             string stmtString =
                     "SELECT irstream * " +
                             "FROM\n " +
-                            typeof(SupportSensorEvent).Name + "#groupwin(type)#time(1 hour)#unique(device)#sort(1, measurement desc) as high ";
+                            typeof(SupportSensorEvent).FullName + "#groupwin(type)#time(1 hour)#unique(device)#sort(1, measurement desc) as high ";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtString);
             var testListener = new SupportUpdateListener();
@@ -135,7 +135,7 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionReuseUnique(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#unique(intBoxed)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#unique(IntBoxed)");
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
     
@@ -143,7 +143,7 @@ namespace com.espertech.esper.regression.view
             epService.EPRuntime.SendEvent(beanOne);
             testListener.Reset();
     
-            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#unique(intBoxed)");
+            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select irstream * from SupportBean#unique(IntBoxed)");
             var testListenerTwo = new SupportUpdateListener();
             stmtTwo.Events += testListenerTwo.Update;
             stmt.Start(); // no effect

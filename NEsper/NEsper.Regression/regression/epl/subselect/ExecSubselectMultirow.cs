@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPAdministrator.CreateEPL("create window SupportWindow#length(3) as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into SupportWindow select * from SupportBean");
     
-            string stmtText = "select p00, (select window(intPrimitive) from SupportBean#keepall sb) as val from S0 as s0";
+            string stmtText = "select p00, (select window(IntPrimitive) from SupportBean#keepall sb) as val from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.epl.subselect
             // test named window and late start
             stmt.Dispose();
     
-            stmtText = "select p00, (select window(intPrimitive) from SupportWindow) as val from S0 as s0";
+            stmtText = "select p00, (select window(IntPrimitive) from SupportWindow) as val from S0 as s0";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
             stmt.Events += listener.Update;
     
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertionMultirowUnderlyingCorrelated(EPServiceProvider epService) {
             string stmtText = "select p00, " +
-                    "(select window(sb.*) from SupportBean#keepall sb where theString = s0.p00) as val " +
+                    "(select window(sb.*) from SupportBean#keepall sb where TheString = s0.p00) as val " +
                     "from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();

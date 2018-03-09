@@ -27,9 +27,9 @@ using NUnit.Framework;
 namespace com.espertech.esper.regression.epl.join
 {
     public class ExecOuterJoinVarA3Stream : RegressionExecution {
-        private static readonly string EVENT_S0 = typeof(SupportBean_S0).Name;
-        private static readonly string EVENT_S1 = typeof(SupportBean_S1).Name;
-        private static readonly string EVENT_S2 = typeof(SupportBean_S2).Name;
+        private static readonly string EVENT_S0 = typeof(SupportBean_S0).FullName;
+        private static readonly string EVENT_S1 = typeof(SupportBean_S1).FullName;
+        private static readonly string EVENT_S2 = typeof(SupportBean_S2).FullName;
     
         public override void Configure(Configuration configuration) {
             configuration.AddEventType("P1", typeof(SupportBean_S1));
@@ -150,7 +150,7 @@ namespace com.espertech.esper.regression.epl.join
             model.FromClause = fromClause;
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
     
-            Assert.AreEqual("select * from " + typeof(SupportBean_S0).Name + "#keepall as s0 left outer join " + typeof(SupportBean_S1).Name + "#keepall as s1 on s0.p00 = s1.p10 left outer join " + typeof(SupportBean_S2).Name + "#keepall as s2 on s0.p00 = s2.p20", model.ToEPL());
+            Assert.AreEqual("select * from " + typeof(SupportBean_S0).FullName + "#keepall as s0 left outer join " + typeof(SupportBean_S1).FullName + "#keepall as s1 on s0.p00 = s1.p10 left outer join " + typeof(SupportBean_S2).FullName + "#keepall as s2 on s0.p00 = s2.p20", model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

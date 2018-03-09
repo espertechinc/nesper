@@ -39,17 +39,17 @@ namespace com.espertech.esper.epl.expression.ops
         {
             _sumNode.AddChildNode(new SupportExprNode(typeof(int)));
             SupportExprNodeFactory.Validate3Stream(_sumNode);
-            Assert.AreEqual(typeof(int?), _sumNode.ReturnType);
+            Assert.AreEqual(typeof(int), _sumNode.ReturnType);
     
             _sumNode = new ExprSumNode(false);
             _sumNode.AddChildNode(new SupportExprNode(typeof(float?)));
             SupportExprNodeFactory.Validate3Stream(_sumNode);
-            Assert.AreEqual(typeof(float?), _sumNode.ReturnType);
+            Assert.AreEqual(typeof(float), _sumNode.ReturnType);
     
             _sumNode = new ExprSumNode(false);
             _sumNode.AddChildNode(new SupportExprNode(typeof(short)));
             SupportExprNodeFactory.Validate3Stream(_sumNode);
-            Assert.AreEqual(typeof(int?), _sumNode.ReturnType);
+            Assert.AreEqual(typeof(int), _sumNode.ReturnType);
         }
     
         [Test]

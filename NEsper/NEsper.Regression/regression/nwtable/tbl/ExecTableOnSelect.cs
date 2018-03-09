@@ -31,7 +31,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("create table varagg as (" +
                     "key string primary key, total sum(int))");
             epService.EPAdministrator.CreateEPL("into table varagg " +
-                    "select sum(intPrimitive) as total from SupportBean group by theString");
+                    "select sum(IntPrimitive) as total from SupportBean group by TheString");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("on SupportBean_S0 select total as value from varagg where key = p00").Events += listener.Update;
     

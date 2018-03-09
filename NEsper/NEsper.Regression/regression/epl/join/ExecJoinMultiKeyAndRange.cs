@@ -36,12 +36,12 @@ namespace com.espertech.esper.regression.epl.join
             epService.EPAdministrator.Configuration.AddEventType("SupportBeanRange", typeof(SupportBeanRange));
             epService.EPAdministrator.Configuration.AddEventType("SupportBeanComplexProps", typeof(SupportBeanComplexProps));
     
-            string eplOne = "select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where intBoxed between rangeStart and rangeEnd";
+            string eplOne = "select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where IntBoxed between rangeStart and rangeEnd";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(eplOne);
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     
-            string eplTwo = "select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where theString = key and intBoxed in [rangeStart: rangeEnd]";
+            string eplTwo = "select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where TheString = key and IntBoxed in [rangeStart: rangeEnd]";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(eplTwo);
             var listenerTwo = new SupportUpdateListener();
             stmtTwo.Events += listenerTwo.Update;
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regression.epl.join
             EPAssertionUtil.AssertEqualsAnyOrder(new object[]{eventOne, eventTwo}, EPAssertionUtil.GetUnderlying(events));
     
             // test string compare
-            string eplThree = "select sb.* from SupportBeanRange#keepall sb, SupportBean#lastevent where theString in [rangeStartStr:rangeEndStr]";
+            string eplThree = "select sb.* from SupportBeanRange#keepall sb, SupportBean#lastevent where TheString in [rangeStartStr:rangeEndStr]";
             epService.EPAdministrator.CreateEPL(eplThree);
     
             SendSupportBean(epService, "P", 1, 1);
@@ -81,10 +81,10 @@ namespace com.espertech.esper.regression.epl.join
             string eventClass = typeof(SupportBean).FullName;
     
             string joinStatement = "select * from " +
-                    eventClass + "(theString='A')#length(3) as streamA," +
-                    eventClass + "(theString='B')#length(3) as streamB" +
-                    " where streamA.intPrimitive = streamB.intPrimitive " +
-                    "and streamA.intBoxed = streamB.intBoxed";
+                    eventClass + "(TheString='A')#length(3) as streamA," +
+                    eventClass + "(TheString='B')#length(3) as streamB" +
+                    " where streamA.IntPrimitive = streamB.IntPrimitive " +
+                    "and streamA.IntBoxed = streamB.IntBoxed";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(joinStatement);
             var listener = new SupportUpdateListener();

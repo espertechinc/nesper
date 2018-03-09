@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.db
             epService.EPAdministrator.CreateEPL("create variable bool queryvar_bool");
             epService.EPAdministrator.CreateEPL("create variable int lower");
             epService.EPAdministrator.CreateEPL("create variable int upper");
-            epService.EPAdministrator.CreateEPL("on SupportBean set queryvar_bool=boolPrimitive, lower=intPrimitive,upper=intBoxed");
+            epService.EPAdministrator.CreateEPL("on SupportBean set queryvar_bool=BoolPrimitive, lower=IntPrimitive,upper=IntBoxed");
     
             string stmtText = "select * from sql:MyDB ['select mybigint, mybool from mytesttable where ${queryvar_bool} = mytesttable.mybool and myint between ${lower} and ${upper} order by mybigint']";
             var fields = new string[]{"mybigint", "mybool"};

@@ -62,8 +62,9 @@ namespace com.espertech.esper.regression.events.avro
             epService.EPAdministrator.Configuration.AddEventTypeAvro("MyEvent", new ConfigurationEventTypeAvro(schema));
     
             // invalid without explicit conversion
-            SupportMessageAssertUtil.TryInvalid(epService, "insert into MyEvent(isodate) select zdt from MyEventWithZonedDateTime",
-                    "Error starting statement: Invalid assignment of column 'isodate' of type 'java.time.ZonedDateTime' to event property 'isodate' typed as 'java.lang.CharSequence', column and parameter types mismatch");
+            SupportMessageAssertUtil.TryInvalid(epService,
+                "insert into MyEvent(isodate) select zdt from MyEventWithZonedDateTime",
+                "Error starting statement: Invalid assignment of column 'isodate' of type 'java.time.ZonedDateTime' to event property 'isodate' typed as 'java.lang.CharSequence', column and parameter types mismatch");
     
             // with hook
             EPStatement stmt = epService.EPAdministrator.CreateEPL("insert into MyEvent(isodate) select ldt from MyEventWithLocalDateTime");
@@ -99,8 +100,8 @@ namespace com.espertech.esper.regression.events.avro
         /// <summary>Mapping of Type to GenericRecord</summary>
         private void RunAssertionPopulate(EPServiceProvider epService) {
             MySupportBeanWidener.supportBeanSchema = SchemaBuilder.Record("SupportBeanSchema",
-                TypeBuilder.Field("theString", "string"),
-                TypeBuilder.Field("intPrimitive", "int"));
+                TypeBuilder.Field("TheString", "string"),
+                TypeBuilder.Field("IntPrimitive", "int"));
             var schema = SchemaBuilder.Record("MyEventSchema",
                 TypeBuilder.Field("sb", MySupportBeanWidener.supportBeanSchema));
             epService.EPAdministrator.Configuration.AddEventTypeAvro("MyEventPopulate", new ConfigurationEventTypeAvro(schema));
@@ -112,13 +113,13 @@ namespace com.espertech.esper.regression.events.avro
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(10));
             EventBean @event = listener.AssertOneGetNewAndReset();
-            Assert.AreEqual("{\"sb\":{\"theString\":\"E1\",\"intPrimitive\":10}}", SupportAvroUtil.AvroToJson(@event));
+            Assert.AreEqual("{\"sb\":{\"TheString\":\"E1\",\"IntPrimitive\":10}}", SupportAvroUtil.AvroToJson(@event));
         }
     
         private void RunAssertionNamedWindowPropertyAssignment(EPServiceProvider epService) {
             MySupportBeanWidener.supportBeanSchema = SchemaBuilder.Record("SupportBeanSchema",
-                TypeBuilder.Field("theString", "string"),
-                TypeBuilder.Field("intPrimitive", "int"));
+                TypeBuilder.Field("TheString", "string"),
+                TypeBuilder.Field("IntPrimitive", "int"));
             var schema = SchemaBuilder.Record("MyEventSchema",
                 TypeBuilder.Field((string)"sb", TypeBuilder.Union(
                     TypeBuilder.NullType(), MySupportBeanWidener.supportBeanSchema)));
@@ -133,7 +134,7 @@ namespace com.espertech.esper.regression.events.avro
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
     
             EventBean eventBean = epService.EPAdministrator.GetStatement("NamedWindow").First();
-            Assert.AreEqual("{\"sb\":{\"SupportBeanSchema\":{\"theString\":\"E1\",\"intPrimitive\":10}}}", SupportAvroUtil.AvroToJson(eventBean));
+            Assert.AreEqual("{\"sb\":{\"SupportBeanSchema\":{\"TheString\":\"E1\",\"IntPrimitive\":10}}}", SupportAvroUtil.AvroToJson(eventBean));
         }
 
         public static DateTimeEx MakeDateTime()
@@ -213,8 +214,8 @@ namespace com.espertech.esper.regression.events.avro
             {
                 var sb = (SupportBean)input;
                 var record = new GenericRecord(supportBeanSchema);
-                record.Put("theString", sb.TheString);
-                record.Put("intPrimitive", sb.IntPrimitive);
+                record.Put("TheString", sb.TheString);
+                record.Put("IntPrimitive", sb.IntPrimitive);
                 return record;
             }
         }

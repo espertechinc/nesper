@@ -49,7 +49,9 @@ namespace com.espertech.esper.regression.expr.enummethod
             var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val".Split(','), new[] {typeof(Map)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val".Split(','), new[] {
+                typeof(IDictionary<object, ICollection<object>>)
+            });
             var extractorEvents = new EPAssertionUtil.ProxyAssertionCollectionValueString
             {
                 ProcExtractValue = collectionItem =>
@@ -61,7 +63,8 @@ namespace com.espertech.esper.regression.expr.enummethod
 
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value("E1,1", "E1,2", "E2,5"));
             EPAssertionUtil.AssertMapOfCollection(
-                (Map) listener.AssertOneGetNewAndReset().Get("val"), "E1,E2".Split(','), new[] {"1,2", "5"},
+                (IDictionary<object, ICollection<object>>) listener.AssertOneGetNewAndReset().Get("val"),
+                "E1,E2".Split(','), new[] {"1,2", "5"},
                 extractorEvents);
 
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value(null));
@@ -72,7 +75,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             stmtFragment.Dispose();
 
             // test scalar
-            var eplScalar = "select Strvals.GroupBy(c => ExtractAfterUnderscore(c)) as val from SupportCollection";
+            var eplScalar = "select Strvals.GroupBy(c => extractAfterUnderscore(c)) as val from SupportCollection";
             var stmtScalar = epService.EPAdministrator.CreateEPL(eplScalar);
             stmtScalar.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtScalar.EventType, "val".Split(','), new[] {typeof(Map)});
@@ -119,7 +122,7 @@ namespace com.espertech.esper.regression.expr.enummethod
 
             // test scalar
             var eplScalar =
-                "select Strvals.GroupBy(k => ExtractAfterUnderscore(k), v => v) as val from SupportCollection";
+                "select Strvals.GroupBy(k => extractAfterUnderscore(k), v => v) as val from SupportCollection";
             var stmtScalar = epService.EPAdministrator.CreateEPL(eplScalar);
             stmtScalar.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtScalar.EventType, "val".Split(','), new[] {typeof(Map)});

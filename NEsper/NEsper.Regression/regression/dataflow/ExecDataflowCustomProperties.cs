@@ -79,8 +79,8 @@ namespace com.espertech.esper.regression.dataflow {
             // test simple properties
             MyOperatorOne.Operators.Clear();
             EPStatement stmtGraph = epService.EPAdministrator.CreateEPL(
-                "create dataflow MyGraph " + typeof(MyOperatorOne).Name + " {" +
-                "  theString = 'a'," +
+                "create dataflow MyGraph " + typeof(MyOperatorOne).FullName + " {" +
+                "  TheString = 'a'," +
                 "  theInt: 1," +
                 "  theBool: true," +
                 "  theLongOne: 1L," +
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regression.dataflow {
                 "  theDoubleTwo: 2," +
                 "  theFloatOne: 1f," +
                 "  theFloatTwo: 2," +
-                "  theStringWithSetter: 'b'," +
+                "  TheStringWithSetter: 'b'," +
                 "  theSystemProperty: systemProperties('log4j.configuration')" +
                 "}");
             epService.EPRuntime.DataFlowRuntime.Instantiate("MyGraph");
@@ -115,8 +115,8 @@ namespace com.espertech.esper.regression.dataflow {
             // test array etc. properties
             MyOperatorTwo.Operators.Clear();
             epService.EPAdministrator.CreateEPL(
-                "create dataflow MyGraph " + typeof(MyOperatorTwo).Name + " {\n" +
-                "  theStringArray: ['a', \"b\"],\n" +
+                "create dataflow MyGraph " + typeof(MyOperatorTwo).FullName + " {\n" +
+                "  TheStringArray: ['a', \"b\"],\n" +
                 "  theIntArray: [1, 2, 3],\n" +
                 "  theObjectArray: ['a', 1],\n" +
                 "  theMap: {\n" +
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regression.dataflow {
 
             public string TheStringWithSetter {
                 get => theStringWithSetter;
-                set => theStringWithSetter = ">" + value + "<";
+                set => TheStringWithSetter = ">" + value + "<";
             }
 
             public string TheSystemProperty => theSystemProperty;

@@ -17,8 +17,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
-
-
+using com.espertech.esper.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.epl.insertinto
@@ -77,8 +76,9 @@ namespace com.espertech.esper.regression.epl.insertinto
             TryAssertionInsertBean(epService);
         }
     
-        private void TryAssertionInsertBean(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("create schema MyBeanWithoutProps as " + typeof(MyBeanWithoutProps).Name);
+        private void TryAssertionInsertBean(EPServiceProvider epService)
+        {
+            epService.EPAdministrator.CreateEPL("create schema MyBeanWithoutProps as " + typeof(MyBeanWithoutProps).MaskTypeName());
             epService.EPAdministrator.CreateEPL("insert into MyBeanWithoutProps select null from SupportBean");
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from MyBeanWithoutProps");
@@ -126,7 +126,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPAdministrator.DestroyAllStatements();
         }
     
-        private static class MyBeanWithoutProps {
+        private class MyBeanWithoutProps {
         }
     }
 } // end of namespace

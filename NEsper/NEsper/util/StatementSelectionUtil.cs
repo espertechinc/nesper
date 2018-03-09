@@ -16,7 +16,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
-using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events;

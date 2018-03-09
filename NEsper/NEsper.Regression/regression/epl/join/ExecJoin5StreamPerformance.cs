@@ -24,11 +24,11 @@ namespace com.espertech.esper.regression.epl.join
     public class ExecJoin5StreamPerformance : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
             string statement = "select * from " +
-                    typeof(SupportBean_S0).Name + "#length(100000) as s0," +
-                    typeof(SupportBean_S1).Name + "#length(100000) as s1," +
-                    typeof(SupportBean_S2).Name + "#length(100000) as s2," +
-                    typeof(SupportBean_S3).Name + "#length(100000) as s3," +
-                    typeof(SupportBean_S4).Name + "#length(100000) as s4" +
+                    typeof(SupportBean_S0).FullName + "#length(100000) as s0," +
+                    typeof(SupportBean_S1).FullName + "#length(100000) as s1," +
+                    typeof(SupportBean_S2).FullName + "#length(100000) as s2," +
+                    typeof(SupportBean_S3).FullName + "#length(100000) as s3," +
+                    typeof(SupportBean_S4).FullName + "#length(100000) as s4" +
                     " where s0.p00 = s1.p10 " +
                     "and s1.p10 = s2.p20 " +
                     "and s2.p20 = s3.p30 " +

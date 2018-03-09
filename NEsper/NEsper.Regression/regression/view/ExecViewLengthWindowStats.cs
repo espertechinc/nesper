@@ -112,15 +112,15 @@ namespace com.espertech.esper.regression.view
     
             // Test copying all properties
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            string eplWildcard = "select * from SupportBean#length(3)#uni(intPrimitive, *)";
+            string eplWildcard = "select * from SupportBean#length(3)#uni(IntPrimitive, *)";
             statement = epService.EPAdministrator.CreateEPL(eplWildcard);
             statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             EventBean theEvent = listener.AssertOneGetNewAndReset();
             Assert.AreEqual(1.0, theEvent.Get("average"));
-            Assert.AreEqual("E1", theEvent.Get("theString"));
-            Assert.AreEqual(1, theEvent.Get("intPrimitive"));
+            Assert.AreEqual("E1", theEvent.Get("TheString"));
+            Assert.AreEqual(1, theEvent.Get("IntPrimitive"));
         }
     
         private void SendEvent(EPServiceProvider epService, string symbol, double price) {

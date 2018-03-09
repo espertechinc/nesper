@@ -47,10 +47,10 @@ namespace com.espertech.esper.regression.db
             string stmtText = "select * from SupportBean#lastevent sb" +
                     " inner join " +
                     " SupportBeanTwo#lastevent sbt" +
-                    " on sb.theString = sbt.stringTwo " +
+                    " on sb.TheString = sbt.stringTwo " +
                     " inner join " +
                     " sql:MyDB ['select myint from mytesttable'] as s1 " +
-                    "  on s1.myint = sbt.intPrimitiveTwo";
+                    "  on s1.myint = sbt.IntPrimitiveTwo";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -61,11 +61,11 @@ namespace com.espertech.esper.regression.db
     
             epService.EPRuntime.SendEvent(new SupportBeanTwo("T2", 30));
             epService.EPRuntime.SendEvent(new SupportBean("T2", -1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T2", "T2", 30});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.TheString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T2", "T2", 30});
     
             epService.EPRuntime.SendEvent(new SupportBean("T3", -1));
             epService.EPRuntime.SendEvent(new SupportBeanTwo("T3", 40));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T3", "T3", 40});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.TheString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T3", "T3", 40});
     
             statement.Dispose();
         }
@@ -76,10 +76,10 @@ namespace com.espertech.esper.regression.db
             string stmtText = "select * from SupportBean#lastevent sb" +
                     " left outer join " +
                     " SupportBeanTwo#lastevent sbt" +
-                    " on sb.theString = sbt.stringTwo " +
+                    " on sb.TheString = sbt.stringTwo " +
                     " left outer join " +
                     " sql:MyDB ['select myint from mytesttable'] as s1 " +
-                    "  on s1.myint = sbt.intPrimitiveTwo";
+                    "  on s1.myint = sbt.IntPrimitiveTwo";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -87,17 +87,17 @@ namespace com.espertech.esper.regression.db
     
             epService.EPRuntime.SendEvent(new SupportBeanTwo("T1", 2));
             epService.EPRuntime.SendEvent(new SupportBean("T1", 3));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T1", "T1", null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.TheString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T1", "T1", null});
     
             epService.EPRuntime.SendEvent(new SupportBeanTwo("T2", 30));
             epService.EPRuntime.SendEvent(new SupportBean("T2", -2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T2", "T2", 30});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.TheString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T2", "T2", 30});
     
             epService.EPRuntime.SendEvent(new SupportBean("T3", -1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T3", null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.TheString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T3", null, null});
     
             epService.EPRuntime.SendEvent(new SupportBeanTwo("T3", 40));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T3", "T3", 40});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.TheString,sbt.stringTwo,s1.myint".Split(','), new object[]{"T3", "T3", 40});
     
             statement.Dispose();
         }

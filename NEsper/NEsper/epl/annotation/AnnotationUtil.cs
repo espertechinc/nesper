@@ -74,8 +74,7 @@ namespace com.espertech.esper.epl.annotation
         {
             try
             {
-                var attributes = CompileAnnotations(annotationSpec, engineImportService);
-                return attributes;
+                return CompileAnnotations(annotationSpec, engineImportService);
             }
             catch (AttributeException ex)
             {
@@ -136,8 +135,6 @@ namespace com.espertech.esper.epl.annotation
             {
                 throw new AttributeException("Failed to resolve @-annotation class: " + e.Message);
             }
-
-            return null;
         }
 
         /// <summary>

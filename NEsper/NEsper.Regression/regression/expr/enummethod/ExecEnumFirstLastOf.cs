@@ -10,9 +10,6 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
@@ -40,10 +37,10 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1,val2,val3".Split(',');
             string eplFragment = "select " +
-                    "strvals.FirstOf() as val0, " +
-                    "strvals.LastOf() as val1, " +
-                    "strvals.FirstOf(x => x like '%1%') as val2, " +
-                    "strvals.LastOf(x => x like '%1%') as val3 " +
+                    "Strvals.FirstOf() as val0, " +
+                    "Strvals.LastOf() as val1, " +
+                    "Strvals.FirstOf(x => x like '%1%') as val2, " +
+                    "Strvals.LastOf(x => x like '%1%') as val3 " +
                     " from SupportCollection";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
@@ -72,8 +69,8 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1".Split(',');
             string eplFragment = "select " +
-                    "contained.FirstOf().p00 as val0, " +
-                    "contained.LastOf().p00 as val1 " +
+                    "Contained.FirstOf().p00 as val0, " +
+                    "Contained.LastOf().p00 as val1 " +
                     " from Bean";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
@@ -98,8 +95,8 @@ namespace com.espertech.esper.regression.expr.enummethod
         private void RunAssertionFirstLastNoPred(EPServiceProvider epService) {
     
             string eplFragment = "select " +
-                    "contained.FirstOf() as val0, " +
-                    "contained.LastOf() as val1 " +
+                    "Contained.FirstOf() as val0, " +
+                    "Contained.LastOf() as val1 " +
                     " from Bean";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();

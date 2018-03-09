@@ -47,15 +47,15 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionWildcardJoinPattern(EPServiceProvider epService) {
             string epl = "select distinct * from " +
-                    "SupportBean(intPrimitive=0) as fooB unidirectional " +
+                    "SupportBean(IntPrimitive=0) as fooB unidirectional " +
                     "inner join " +
                     "pattern [" +
-                    "every-Distinct(fooA.theString) fooA=SupportBean(intPrimitive=1)" +
+                    "every-distinct(fooA.TheString) fooA=SupportBean(IntPrimitive=1)" +
                     "->" +
-                    "every-Distinct(wooA.theString) wooA=SupportBean(intPrimitive=2)" +
+                    "every-distinct(wooA.TheString) wooA=SupportBean(IntPrimitive=2)" +
                     " where timer:within(1 hour)" +
                     "]#time(1 hour) as fooWooPair " +
-                    "on fooB.longPrimitive = fooWooPair.fooA.longPrimitive";
+                    "on fooB.LongPrimitive = fooWooPair.fooA.LongPrimitive";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionOnDemandAndOnSelect(EPServiceProvider epService) {
-            var fields = new string[]{"theString", "intPrimitive"};
+            var fields = new string[]{"TheString", "IntPrimitive"};
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as select * from SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
     
@@ -92,11 +92,11 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
     
-            string query = "select distinct theString, intPrimitive from MyWindow order by theString, intPrimitive";
+            string query = "select distinct TheString, IntPrimitive from MyWindow order by TheString, IntPrimitive";
             EPOnDemandQueryResult result = epService.EPRuntime.ExecuteQuery(query);
             EPAssertionUtil.AssertPropsPerRow(result.Array, fields, new object[][]{new object[] {"E1", 1}, new object[] {"E1", 2}, new object[] {"E2", 2}});
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("on SupportBean_A select distinct theString, intPrimitive from MyWindow order by theString, intPrimitive asc");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("on SupportBean_A select distinct TheString, IntPrimitive from MyWindow order by TheString, IntPrimitive asc");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -107,8 +107,8 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionSubquery(EPServiceProvider epService) {
-            var fields = new string[]{"theString", "intPrimitive"};
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean where theString in (select distinct id from SupportBean_A#keepall)");
+            var fields = new string[]{"TheString", "IntPrimitive"};
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean where TheString in (select distinct id from SupportBean_A#keepall)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regression.epl.other
     
         // Since the "this" property will always be unique, this test verifies that condition
         private void RunAssertionBeanEventWildcardThisProperty(EPServiceProvider epService) {
-            var fields = new string[]{"theString", "intPrimitive"};
+            var fields = new string[]{"TheString", "IntPrimitive"};
             string statementText = "select distinct * from SupportBean#keepall";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
@@ -171,8 +171,8 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionBeanEventWildcardPlusCols(EPServiceProvider epService) {
-            var fields = new string[]{"intPrimitive", "val1", "val2"};
-            string statementText = "select distinct *, intBoxed%5 as val1, intBoxed as val2 from SupportBean_N#keepall";
+            var fields = new string[]{"IntPrimitive", "val1", "val2"};
+            string statementText = "select distinct *, IntBoxed%5 as val1, IntBoxed as val2 from SupportBean_N#keepall";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -214,8 +214,8 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionOutputSimpleColumn(EPServiceProvider epService) {
-            var fields = new string[]{"theString", "intPrimitive"};
-            string statementText = "select distinct theString, intPrimitive from SupportBean#keepall";
+            var fields = new string[]{"TheString", "IntPrimitive"};
+            string statementText = "select distinct TheString, IntPrimitive from SupportBean#keepall";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -224,7 +224,7 @@ namespace com.espertech.esper.regression.epl.other
             stmt.Dispose();
     
             // test join
-            statementText = "select distinct theString, intPrimitive from SupportBean#keepall a, SupportBean_A#keepall b where a.theString = b.id";
+            statementText = "select distinct TheString, IntPrimitive from SupportBean#keepall a, SupportBean_A#keepall b where a.TheString = b.id";
             stmt = epService.EPAdministrator.CreateEPL(statementText);
             stmt.Events += listener.Update;
     
@@ -236,8 +236,8 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionOutputLimitEveryColumn(EPServiceProvider epService) {
-            var fields = new string[]{"theString", "intPrimitive"};
-            string statementText = "@IterableUnbound select distinct theString, intPrimitive from SupportBean output every 3 events";
+            var fields = new string[]{"TheString", "IntPrimitive"};
+            string statementText = "@IterableUnbound select distinct TheString, IntPrimitive from SupportBean output every 3 events";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -246,7 +246,7 @@ namespace com.espertech.esper.regression.epl.other
             stmt.Dispose();
     
             // test join
-            statementText = "select distinct theString, intPrimitive from SupportBean#lastevent a, SupportBean_A#keepall b where a.theString = b.id output every 3 events";
+            statementText = "select distinct TheString, IntPrimitive from SupportBean#lastevent a, SupportBean_A#keepall b where a.TheString = b.id output every 3 events";
             stmt = epService.EPAdministrator.CreateEPL(statementText);
             stmt.Events += listener.Update;
     
@@ -258,8 +258,8 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionOutputRateSnapshotColumn(EPServiceProvider epService) {
-            var fields = new string[]{"theString", "intPrimitive"};
-            string statementText = "select distinct theString, intPrimitive from SupportBean#keepall output snapshot every 3 events order by theString asc";
+            var fields = new string[]{"TheString", "IntPrimitive"};
+            string statementText = "select distinct TheString, IntPrimitive from SupportBean#keepall output snapshot every 3 events order by TheString asc";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regression.epl.other
             TryAssertionSnapshotColumn(epService, listener, stmt, fields);
             stmt.Dispose();
     
-            statementText = "select distinct theString, intPrimitive from SupportBean#keepall a, SupportBean_A#keepall b where a.theString = b.id output snapshot every 3 events order by theString asc";
+            statementText = "select distinct TheString, IntPrimitive from SupportBean#keepall a, SupportBean_A#keepall b where a.TheString = b.id output snapshot every 3 events order by TheString asc";
             stmt = epService.EPAdministrator.CreateEPL(statementText);
             stmt.Events += listener.Update;
     
@@ -280,8 +280,8 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionBatchWindow(EPServiceProvider epService) {
-            var fields = new string[]{"theString", "intPrimitive"};
-            string statementText = "select distinct theString, intPrimitive from SupportBean#length_batch(3)";
+            var fields = new string[]{"TheString", "IntPrimitive"};
+            string statementText = "select distinct TheString, IntPrimitive from SupportBean#length_batch(3)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -309,7 +309,7 @@ namespace com.espertech.esper.regression.epl.other
             // test batch window with aggregation
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             var fieldsTwo = new string[]{"c1", "c2"};
-            string epl = "insert into ABC select distinct theString as c1, first(intPrimitive) as c2 from SupportBean#time_batch(1 second)";
+            string epl = "insert into ABC select distinct TheString as c1, first(IntPrimitive) as c2 from SupportBean#time_batch(1 second)";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(epl);
             stmtTwo.Events += listener.Update;
     
@@ -326,8 +326,8 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionBatchWindowJoin(EPServiceProvider epService) {
-            var fields = new string[]{"theString", "intPrimitive"};
-            string statementText = "select distinct theString, intPrimitive from SupportBean#length_batch(3) a, SupportBean_A#keepall b where a.theString = b.id";
+            var fields = new string[]{"TheString", "IntPrimitive"};
+            string statementText = "select distinct TheString, IntPrimitive from SupportBean#length_batch(3) a, SupportBean_A#keepall b where a.TheString = b.id";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -356,8 +356,8 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionBatchWindowInsertInto(EPServiceProvider epService) {
-            var fields = new string[]{"theString", "intPrimitive"};
-            string statementText = "insert into MyStream select distinct theString, intPrimitive from SupportBean#length_batch(3)";
+            var fields = new string[]{"TheString", "IntPrimitive"};
+            string statementText = "insert into MyStream select distinct TheString, IntPrimitive from SupportBean#length_batch(3)";
             epService.EPAdministrator.CreateEPL(statementText);
     
             statementText = "select * from MyStream";

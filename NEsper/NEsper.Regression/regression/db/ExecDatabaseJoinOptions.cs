@@ -35,17 +35,17 @@ namespace com.espertech.esper.regression.db
         }
     
         private void RunAssertionNoMetaLexAnalysis(EPServiceProvider epService) {
-            string sql = "select mydouble from mytesttable where ${intPrimitive} = myint";
+            string sql = "select mydouble from mytesttable where ${IntPrimitive} = myint";
             Run(epService, sql);
         }
     
         private void RunAssertionNoMetaLexAnalysisGroup(EPServiceProvider epService) {
-            string sql = "select mydouble, sum(myint) from mytesttable where ${intPrimitive} = myint group by mydouble";
+            string sql = "select mydouble, sum(myint) from mytesttable where ${IntPrimitive} = myint group by mydouble";
             Run(epService, sql);
         }
     
         private void RunAssertionPlaceholderWhere(EPServiceProvider epService) {
-            string sql = "select mydouble from mytesttable ${$ESPER-SAMPLE-WHERE} where ${intPrimitive} = myint";
+            string sql = "select mydouble from mytesttable ${$ESPER-SAMPLE-WHERE} where ${IntPrimitive} = myint";
             Run(epService, sql);
         }
     

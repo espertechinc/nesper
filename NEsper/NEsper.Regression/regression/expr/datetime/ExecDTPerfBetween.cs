@@ -6,13 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
@@ -29,8 +25,8 @@ namespace com.espertech.esper.regression.expr.datetime
     
         public override void Run(EPServiceProvider epService) {
     
-            epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportTimeStartEndA).Name);
-            epService.EPAdministrator.Configuration.AddEventType("SupportDateTime", typeof(SupportDateTime).Name);
+            epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportTimeStartEndA));
+            epService.EPAdministrator.Configuration.AddEventType("SupportDateTime", typeof(SupportDateTime));
     
             epService.EPAdministrator.CreateEPL("create window AWindow#keepall as A");
             epService.EPAdministrator.CreateEPL("insert into AWindow select * from A");
@@ -42,7 +38,7 @@ namespace com.espertech.esper.regression.expr.datetime
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("AEarlier", "2002-05-30T08:00:00.000", 100));
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("ALater", "2002-05-30T10:00:00.000", 100));
     
-            string epl = "select a.key as c0 from SupportDateTime unidirectional, AWindow as a where Longdate.Between(longdateStart, longdateEnd, false, true)";
+            string epl = "select a.key as c0 from SupportDateTime unidirectional, AWindow as a where Longdate.Between(LongdateStart, LongdateEnd, false, true)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
@@ -29,14 +30,14 @@ namespace com.espertech.esper.regression.client
     
         private void RunAssertionBindWildcardJoin(EPServiceProvider epService) {
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select * from SupportBean");
-            TryInvalid(this, stmtOne, "Subscriber object does not provide a public method by name 'update'");
-            TryInvalid(new DummySubscriberEmptyUpd(), stmtOne, "No suitable subscriber method named 'update' found, expecting a method that takes 1 parameter of type SupportBean");
-            TryInvalid(new DummySubscriberMultipleUpdate(), stmtOne, "No suitable subscriber method named 'update' found, expecting a method that takes 1 parameter of type SupportBean");
-            TryInvalid(new DummySubscriberUpdate(), stmtOne, "Subscriber method named 'update' for parameter number 1 is not assignable, expecting type 'SupportBean' but found type 'SupportMarketDataBean'");
-            TryInvalid(new DummySubscriberPrivateUpd(), stmtOne, "Subscriber object does not provide a public method by name 'update'");
+            TryInvalid(this, stmtOne, "Subscriber object does not provide a public method by name 'Update'");
+            TryInvalid(new DummySubscriberEmptyUpd(), stmtOne, "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type " + Name.Of<SupportBean>());
+            TryInvalid(new DummySubscriberMultipleUpdate(), stmtOne, "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type " + Name.Of<SupportBean>());
+            TryInvalid(new DummySubscriberUpdate(), stmtOne, "Subscriber method named 'Update' for parameter number 1 is not assignable, expecting type '" + Name.Of<SupportBean>() + "' but found type '" + Name.Of<SupportMarketDataBean>() + "'");
+            TryInvalid(new DummySubscriberPrivateUpd(), stmtOne, "Subscriber object does not provide a public method by name 'Update'");
     
-            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select intPrimitive from SupportBean");
-            string message = "Subscriber 'updateRStream' method footprint must match 'update' method footprint";
+            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select IntPrimitive from SupportBean");
+            string message = "Subscriber 'UpdateRStream' method footprint must match 'Update' method footprint";
             TryInvalid(new DummySubscriberMismatchUpdateRStreamOne(), stmtTwo, message);
             TryInvalid(new DummySubscriberMismatchUpdateRStreamTwo(), stmtTwo, message);
         }

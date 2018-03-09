@@ -35,7 +35,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
         private void RunAssertionNoHavingNoJoin(EPServiceProvider epService) {
             string statementString = "select irstream symbol, sum(price) as mysum from " +
-                    typeof(SupportMarketDataBean).Name + "#length(20) " +
+                    typeof(SupportMarketDataBean).FullName + "#length(20) " +
                     "group by symbol " +
                     "output every 6 events " +
                     "order by sum(price), symbol";
@@ -46,7 +46,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
         private void RunAssertionHavingNoJoin(EPServiceProvider epService) {
             string statementString = "select irstream symbol, sum(price) as mysum from " +
-                    typeof(SupportMarketDataBean).Name + "#length(20) " +
+                    typeof(SupportMarketDataBean).FullName + "#length(20) " +
                     "group by symbol " +
                     "having sum(price) > 0 " +
                     "output every 6 events " +
@@ -58,9 +58,9 @@ namespace com.espertech.esper.regression.resultset.orderby
     
         private void RunAssertionNoHavingJoin(EPServiceProvider epService) {
             string statementString = "select irstream symbol, sum(price) as mysum from " +
-                    typeof(SupportMarketDataBean).Name + "#length(20) as one, " +
-                    typeof(SupportBeanString).Name + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    typeof(SupportMarketDataBean).FullName + "#length(20) as one, " +
+                    typeof(SupportBeanString).FullName + "#length(100) as two " +
+                    "where one.symbol = two.TheString " +
                     "group by symbol " +
                     "output every 6 events " +
                     "order by sum(price), symbol";
@@ -79,9 +79,9 @@ namespace com.espertech.esper.regression.resultset.orderby
     
         private void RunAssertionHavingJoin(EPServiceProvider epService) {
             string statementString = "select irstream symbol, sum(price) as mysum from " +
-                    typeof(SupportMarketDataBean).Name + "#length(20) as one, " +
-                    typeof(SupportBeanString).Name + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    typeof(SupportMarketDataBean).FullName + "#length(20) as one, " +
+                    typeof(SupportBeanString).FullName + "#length(100) as two " +
+                    "where one.symbol = two.TheString " +
                     "group by symbol " +
                     "having sum(price) > 0 " +
                     "output every 6 events " +
@@ -101,9 +101,9 @@ namespace com.espertech.esper.regression.resultset.orderby
     
         private void RunAssertionHavingJoinAlias(EPServiceProvider epService) {
             string statementString = "select irstream symbol, sum(price) as mysum from " +
-                    typeof(SupportMarketDataBean).Name + "#length(20) as one, " +
-                    typeof(SupportBeanString).Name + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    typeof(SupportMarketDataBean).FullName + "#length(20) as one, " +
+                    typeof(SupportBeanString).FullName + "#length(100) as two " +
+                    "where one.symbol = two.TheString " +
                     "group by symbol " +
                     "having sum(price) > 0 " +
                     "output every 6 events " +
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
         private void RunAssertionLast(EPServiceProvider epService) {
             string statementString = "select irstream symbol, sum(price) as mysum from " +
-                    typeof(SupportMarketDataBean).Name + "#length(20) " +
+                    typeof(SupportMarketDataBean).FullName + "#length(20) " +
                     "group by symbol " +
                     "output last every 6 events " +
                     "order by sum(price), symbol";
@@ -134,9 +134,9 @@ namespace com.espertech.esper.regression.resultset.orderby
     
         private void RunAssertionLastJoin(EPServiceProvider epService) {
             string statementString = "select irstream symbol, sum(price) as mysum from " +
-                    typeof(SupportMarketDataBean).Name + "#length(20) as one, " +
-                    typeof(SupportBeanString).Name + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    typeof(SupportMarketDataBean).FullName + "#length(20) as one, " +
+                    typeof(SupportBeanString).FullName + "#length(100) as two " +
+                    "where one.symbol = two.TheString " +
                     "group by symbol " +
                     "output last every 6 events " +
                     "order by sum(price), symbol";
@@ -157,9 +157,9 @@ namespace com.espertech.esper.regression.resultset.orderby
         private void RunAssertionIteratorGroupByEventPerGroup(EPServiceProvider epService) {
             var fields = new string[]{"symbol", "sumPrice"};
             string statementString = "select symbol, sum(price) as sumPrice from " +
-                    typeof(SupportMarketDataBean).Name + "#length(10) as one, " +
-                    typeof(SupportBeanString).Name + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
+                    typeof(SupportBeanString).FullName + "#length(100) as two " +
+                    "where one.symbol = two.TheString " +
                     "group by symbol " +
                     "order by symbol";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementString);

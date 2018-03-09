@@ -34,14 +34,14 @@ namespace com.espertech.esper.regression.nwtable.infra
         private void RunAssertionStartStopInserter(EPServiceProvider epService, bool namedWindow) {
             // create window
             string stmtTextCreate = namedWindow ?
-                    "create window MyInfra#keepall as select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName :
+                    "create window MyInfra#keepall as select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName :
                     "create table MyInfra(a string primary key, b int primary key)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyInfra select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextInsertOne = "insert into MyInfra select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName;
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create consumer
@@ -89,14 +89,14 @@ namespace com.espertech.esper.regression.nwtable.infra
         private void RunAssertionStartStopConsumer(EPServiceProvider epService, bool namedWindow) {
             // create window
             string stmtTextCreate = namedWindow ?
-                    "create window MyInfra#keepall as select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName :
+                    "create window MyInfra#keepall as select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName :
                     "create table MyInfra(a string primary key, b int primary key)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyInfra select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextInsertOne = "insert into MyInfra select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create consumer
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regression.nwtable.infra
     
             // create window
             string stmtTextCreate = namedWindow ?
-                    "create window MyInfra#keepall as select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName :
+                    "create window MyInfra#keepall as select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName :
                     "create table MyInfra(a string primary key, b int primary key)";
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             Assert.AreEqual(namedWindow ? StatementType.CREATE_WINDOW : StatementType.CREATE_TABLE, ((EPStatementSPI) stmtCreate).StatementMetadata.StatementType);
@@ -183,11 +183,11 @@ namespace com.espertech.esper.regression.nwtable.infra
             }
     
             // create delete stmt
-            string stmtTextDelete = "on " + typeof(SupportBean_A).Name + " delete from MyInfra";
+            string stmtTextDelete = "on " + typeof(SupportBean_A).FullName + " delete from MyInfra";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete);
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyInfra select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextInsertOne = "insert into MyInfra select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create consumer

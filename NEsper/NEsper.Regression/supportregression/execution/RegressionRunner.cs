@@ -19,6 +19,8 @@ namespace com.espertech.esper.supportregression.execution
     {
         public static void Run(RegressionExecution execution)
         {
+            SupportContainer.Reset();
+
             var configuration = SupportConfigFactory.GetConfiguration();
             try {
                 execution.Configure(configuration);

@@ -28,7 +28,7 @@ namespace com.espertech.esper.regression.events.avro
             var epl = EventRepresentationChoice.AVRO.GetAnnotationText() + "select 1 as carId, 'abc' as carType from System.Object";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var schema = (Schema) ((AvroSchemaEventType) stmt.EventType).Schema;
-            Assert.AreEqual("{\"type\":\"record\",\"name\":\"anonymous_1_result_\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"string\"}}]}", schema.ToString());
+            Assert.AreEqual("{\"type\":\"record\",\"name\":\"anonymous_1_result_\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}", schema.ToString());
             stmt.Dispose();
     
             // schema to-string Avro
@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.events.avro
                         TypeBuilder.StringType(
                             TypeBuilder.Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE))));
 
-            Assert.AreEqual("{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"string\"}}]}", schemaTwo.ToString());
+            Assert.AreEqual("{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}", schemaTwo.ToString());
     
             // Define CarLocUpdateEvent event type (example for runtime-configuration interface)
             var schemaThree = SchemaBuilder.Record("CarLocUpdateEvent",

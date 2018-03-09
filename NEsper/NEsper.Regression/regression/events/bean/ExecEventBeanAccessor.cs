@@ -21,25 +21,25 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regression.events.bean
 {
-    public class ExecEventBeanJavaBeanAccessor : RegressionExecution {
-        private readonly bool codegen;
+    public class ExecEventBeanAccessor : RegressionExecution {
+        private readonly bool _codegen;
     
-        public ExecEventBeanJavaBeanAccessor(bool codegen) {
-            this.codegen = codegen;
+        public ExecEventBeanAccessor(bool codegen) {
+            this._codegen = codegen;
         }
     
         public override void Configure(Configuration configuration) {
             var legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.AccessorStyle = AccessorStyleEnum.NATIVE;
-            legacyDef.CodeGeneration = codegen ? CodeGenerationEnum.ENABLED : CodeGenerationEnum.DISABLED;
+            legacyDef.CodeGeneration = _codegen ? CodeGenerationEnum.ENABLED : CodeGenerationEnum.DISABLED;
             legacyDef.AddFieldProperty("explicitFInt", "fieldIntPrimitive");
-            legacyDef.AddMethodProperty("explicitMGetInt", "getIntPrimitive");
-            legacyDef.AddMethodProperty("explicitMReadInt", "readIntPrimitive");
-            configuration.AddEventType("MyLegacyEvent", typeof(SupportLegacyBeanInt).Name, legacyDef);
+            legacyDef.AddMethodProperty("explicitMGetInt", "get_IntPrimitive");
+            legacyDef.AddMethodProperty("explicitMReadInt", "ReadIntPrimitive");
+            configuration.AddEventType("MyLegacyEvent", typeof(SupportLegacyBeanInt).AssemblyQualifiedName, legacyDef);
         }
     
         public override void Run(EPServiceProvider epService) {
-            string statementText = "select intPrimitive, explicitFInt, explicitMGetInt, explicitMReadInt " +
+            string statementText = "select IntPrimitive, explicitFInt, explicitMGetInt, explicitMReadInt " +
                     " from MyLegacyEvent#length(5)";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
@@ -50,7 +50,7 @@ namespace com.espertech.esper.regression.events.bean
             var theEvent = new SupportLegacyBeanInt(10);
             epService.EPRuntime.SendEvent(theEvent);
     
-            foreach (string name in new string[]{"intPrimitive", "explicitFInt", "explicitMGetInt", "explicitMReadInt"}) {
+            foreach (string name in new string[]{"IntPrimitive", "explicitFInt", "explicitMGetInt", "explicitMReadInt"}) {
                 Assert.AreEqual(typeof(int), eventType.GetPropertyType(name));
                 Assert.AreEqual(10, listener.LastNewData[0].Get(name));
             }

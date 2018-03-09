@@ -11,15 +11,11 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.enummethod
 {
@@ -40,10 +36,10 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             var fields = "val0,val1,val2,val3".Split(',');
             var eplFragment = "select " +
-                    "beans.Average(x => intBoxed) as val0," +
-                    "beans.Average(x => doubleBoxed) as val1," +
-                    "beans.Average(x => longBoxed) as val2," +
-                    "beans.Average(x => decimalBoxed) as val3 " +
+                    "beans.average(x => IntBoxed) as val0," +
+                    "beans.average(x => DoubleBoxed) as val1," +
+                    "beans.average(x => LongBoxed) as val2," +
+                    "beans.average(x => decimalBoxed) as val3 " +
                     "from Bean";
             var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
@@ -72,8 +68,8 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             var fields = "val0,val1".Split(',');
             var eplFragment = "select " +
-                    "intvals.Average() as val0," +
-                    "bdvals.Average() as val1 " +
+                    "Intvals.average() as val0," +
+                    "Bdvals.average() as val1 " +
                     "from SupportCollection";
             var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
@@ -91,13 +87,13 @@ namespace com.espertech.esper.regression.expr.enummethod
             stmtFragment.Dispose();
     
             // test average with lambda
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(ExecEnumMinMax.MyService).FullName, "ExtractNum");
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractBigDecimal", typeof(ExecEnumMinMax.MyService).FullName, "ExtractBigDecimal");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(ExecEnumMinMax.MyService), "ExtractNum");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractDecimal", typeof(ExecEnumMinMax.MyService), "ExtractDecimal");
     
             var fieldsLambda = "val0,val1".Split(',');
             var eplLambda = "select " +
-                    "strvals.Average(v => ExtractNum(v)) as val0, " +
-                    "strvals.Average(v => ExtractBigDecimal(v)) as val1 " +
+                    "Strvals.average(v => extractNum(v)) as val0, " +
+                    "Strvals.average(v => extractDecimal(v)) as val1 " +
                     "from SupportCollection";
             var stmtLambda = epService.EPAdministrator.CreateEPL(eplLambda);
             stmtLambda.Events += listener.Update;
@@ -121,11 +117,11 @@ namespace com.espertech.esper.regression.expr.enummethod
         private void RunAssertionInvalid(EPServiceProvider epService) {
             string epl;
     
-            epl = "select Strvals.Average() from SupportCollection";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'strvals.Average()': Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of numeric values as input, received collection of string [select Strvals.Average() from SupportCollection]");
+            epl = "select Strvals.average() from SupportCollection";
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Strvals.Average()': Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of numeric values as input, received collection of string [select Strvals.average() from SupportCollection]");
     
-            epl = "select Beans.Average() from Bean";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'beans.Average()': Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" + typeof(SupportBean).FullName + "'");
+            epl = "select Beans.average() from Bean";
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'beans.average()': Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" + typeof(SupportBean).FullName + "'");
         }
     
         private SupportBean Make(int? intBoxed, double? doubleBoxed, long longBoxed, int decimalBoxed) {

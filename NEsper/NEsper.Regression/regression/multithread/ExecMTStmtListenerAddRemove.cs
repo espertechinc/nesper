@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.multithread
     /// Test for multithread-safety for adding and removing listener.
     /// </summary>
     public class ExecMTStmtListenerAddRemove : RegressionExecution {
-        private static readonly string EVENT_NAME = typeof(SupportMarketDataBean).Name;
+        private static readonly string EVENT_NAME = typeof(SupportMarketDataBean).FullName;
     
         public override void Configure(Configuration configuration) {
             configuration.EngineDefaults.Threading.ListenerDispatchTimeout = Int64.MaxValue;

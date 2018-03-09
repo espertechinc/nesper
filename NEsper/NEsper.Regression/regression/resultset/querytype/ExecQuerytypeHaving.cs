@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             string epl = "select * " +
                     "from SupportBean#length_batch(2) " +
-                    "where intPrimitive>0 " +
+                    "where IntPrimitive>0 " +
                     "having count(*)=2";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -104,8 +104,8 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionStatementJoin(EPServiceProvider epService) {
             string epl = "select irstream symbol, price, avg(price) as avgPrice " +
                     "from " + typeof(SupportBeanString).FullName + "#length(100) as one, " +
-                    typeof(SupportMarketDataBean).Name + "#length(5) as two " +
-                    "where one.theString = two.symbol " +
+                    typeof(SupportMarketDataBean).FullName + "#length(5) as two " +
+                    "where one.TheString = two.symbol " +
                     "having price < avg(price)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionSubstreamSelectHaving(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            string stmtText = "insert into MyStream select quote.* from SupportBean#length(14) quote having avg(intPrimitive) >= 3\n";
+            string stmtText = "insert into MyStream select quote.* from SupportBean#length(14) quote having avg(IntPrimitive) >= 3\n";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -156,7 +156,7 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunNoAggregationJoin(EPServiceProvider epService, string filterClause) {
             string epl = "select irstream a.price as aPrice, b.price as bPrice, Math.max(a.price, b.price) - Math.min(a.price, b.price) as spread " +
                     "from " + typeof(SupportMarketDataBean).FullName + "(symbol='SYM1')#length(1) as a, " +
-                    typeof(SupportMarketDataBean).Name + "(symbol='SYM2')#length(1) as b " +
+                    typeof(SupportMarketDataBean).FullName + "(symbol='SYM2')#length(1) as b " +
                     filterClause + " Math.max(a.price, b.price) - Math.min(a.price, b.price) >= 1.4";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -274,8 +274,8 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionHavingSum(EPServiceProvider epService) {
-            string epl = "select irstream sum(myEvent.intPrimitive) as mysum from pattern [every myEvent=" + typeof(SupportBean).FullName +
-                    "] having sum(myEvent.intPrimitive) = 2";
+            string epl = "select irstream sum(myEvent.IntPrimitive) as mysum from pattern [every myEvent=" + typeof(SupportBean).FullName +
+                    "] having sum(myEvent.IntPrimitive) = 2";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -291,8 +291,8 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionHavingSumIStream(EPServiceProvider epService) {
-            string epl = "select istream sum(myEvent.intPrimitive) as mysum from pattern [every myEvent=" + typeof(SupportBean).FullName +
-                    "] having sum(myEvent.intPrimitive) = 2";
+            string epl = "select istream sum(myEvent.IntPrimitive) as mysum from pattern [every myEvent=" + typeof(SupportBean).FullName +
+                    "] having sum(myEvent.IntPrimitive) = 2";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

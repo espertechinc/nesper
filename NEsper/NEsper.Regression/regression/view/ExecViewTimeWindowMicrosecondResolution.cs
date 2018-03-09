@@ -56,7 +56,7 @@ namespace com.espertech.esper.regression.view
             EPServiceProviderIsolated isolated = epService.GetEPServiceIsolated("isolated");
             isolated.EPRuntime.SendEvent(new CurrentTimeEvent(startTime));
     
-            string[] fields = "theString".Split(',');
+            string[] fields = "TheString".Split(',');
             EPStatement stmt = isolated.EPAdministrator.CreateEPL("select * from SupportBean#time(" + size + ")", "s0", 0);
     
             isolated.EPRuntime.SendEvent(new SupportBean("E1", 1));

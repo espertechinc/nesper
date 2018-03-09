@@ -41,13 +41,13 @@ namespace com.espertech.esper.regression.multithread
         private void TrySend(EPServiceProvider epService, int numThreads, int numEventsPerThread) {
             // setup statements
             epService.EPAdministrator.CreateEPL("create schema MyUpdateEvent as (key string, intupd int)");
-            epService.EPAdministrator.CreateEPL("create schema MySchema as (theString string, intval int)");
+            epService.EPAdministrator.CreateEPL("create schema MySchema as (TheString string, intval int)");
             EPStatement namedWindow = epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as MySchema");
             epService.EPAdministrator.CreateEPL("on MyUpdateEvent mue merge MyWindow mw " +
-                    "where mw.theString = mue.key " +
-                    "when not matched then insert select key as theString, intupd as intval " +
+                    "where mw.TheString = mue.key " +
+                    "when not matched then insert select key as TheString, intupd as intval " +
                     "when matched then delete");
-            EPStatement targetStatement = epService.EPAdministrator.CreateEPL("select (select intval from MyWindow mw where mw.theString = sb.theString) as val from SupportBean sb");
+            EPStatement targetStatement = epService.EPAdministrator.CreateEPL("select (select intval from MyWindow mw where mw.TheString = sb.TheString) as val from SupportBean sb");
     
             // execute
             var threadPool = Executors.NewFixedThreadPool(numThreads);

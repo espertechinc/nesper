@@ -6,13 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
@@ -37,7 +32,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionPlugInViewFlushed(EPServiceProvider epService) {
-            string text = "select * from A.mynamespace:Flushedsimple(price)";
+            string text = "select * from A.mynamespace:flushedsimple(price)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
@@ -51,8 +46,8 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionPlugInViewTrend(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddPlugInView("mynamespace", "trendspotter", typeof(MyTrendSpotterViewFactory).Name);
-            string text = "select irstream * from A.mynamespace:Trendspotter(price)";
+            epService.EPAdministrator.Configuration.AddPlugInView("mynamespace", "trendspotter", typeof(MyTrendSpotterViewFactory));
+            string text = "select irstream * from A.mynamespace:trendspotter(price)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
@@ -93,10 +88,12 @@ namespace com.espertech.esper.regression.client
             stmt.Dispose();
         }
     
-        private void RunAssertionInvalid(EPServiceProvider epService) {
-            TryInvalid(epService, "select * from A.mynamespace:Xxx()",
-                    "Error starting statement: View name 'mynamespace:xxx' is not a known view name [select * from A.mynamespace:Xxx()]");
-            TryInvalid(epService, "select * from A.mynamespace:Invalid()", "Error starting statement: Error casting view factory instance to com.espertech.esper.view.ViewFactory interface for view 'invalid' [select * from A.mynamespace:Invalid()]");
+        private void RunAssertionInvalid(EPServiceProvider epService)
+        {
+            TryInvalid(epService, "select * from A.mynamespace:xxx()",
+                "Error starting statement: View name 'mynamespace:xxx' is not a known view name [select * from A.mynamespace:xxx()]");
+            TryInvalid(epService, "select * from A.mynamespace:invalid()",
+                "Error starting statement: Error invoking view factory constructor for view 'invalid', no invocation access for Activator.CreateInstance [select * from A.mynamespace:invalid()]");
         }
     
         private void SendEvent(EPServiceProvider epService, double price) {

@@ -66,22 +66,22 @@ namespace com.espertech.esper.regression.expr.expr
             var container = epService.Container;
 
             var epl = "select " +
-                    "new SupportBean(\"A\",intPrimitive) as c0, " +
-                    "new SupportBean(\"B\",intPrimitive+10), " +
+                    "new SupportBean(\"A\",IntPrimitive) as c0, " +
+                    "new SupportBean(\"B\",IntPrimitive+10), " +
                     "new SupportBean() as c2, " +
                     "new SupportBean(\"ABC\",0).TheString as c3 " +
                     "from SupportBean";
             var stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            var expectedAggType = new object[][]{new object[] {"c0", typeof(SupportBean)}, new object[] {"new SupportBean(\"B\",intPrimitive+10)", typeof(SupportBean)}};
+            var expectedAggType = new object[][]{new object[] {"c0", typeof(SupportBean)}, new object[] {"new SupportBean(\"B\",IntPrimitive+10)", typeof(SupportBean)}};
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedAggType, stmt.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
-            var fields = "theString,intPrimitive".Split(',');
+            var fields = "TheString,IntPrimitive".Split(',');
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             var @event = listener.AssertOneGetNewAndReset();
             EPAssertionUtil.AssertPropsPono(container, @event.Get("c0"), fields, new object[]{"A", 10});
-            EPAssertionUtil.AssertPropsPono(container, ((Map) @event.Underlying).Get("new SupportBean(\"B\",intPrimitive+10)"), fields, new object[]{"B", 20});
+            EPAssertionUtil.AssertPropsPono(container, ((Map) @event.Underlying).Get("new SupportBean(\"B\",IntPrimitive+10)"), fields, new object[]{"B", 20});
             EPAssertionUtil.AssertPropsPono(container, @event.Get("c2"), fields, new object[]{null, 0});
             Assert.AreEqual("ABC", @event.Get("c3"));
     

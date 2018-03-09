@@ -24,7 +24,7 @@ namespace com.espertech.esper.regression.epl.join
 {
     public class ExecJoin20Stream : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddEventType("S0", typeof(SupportBean_S0).Name);
+            epService.EPAdministrator.Configuration.AddEventType("S0", typeof(SupportBean_S0));
     
             var buf = new StringWriter();
             buf.Write("select * from ");

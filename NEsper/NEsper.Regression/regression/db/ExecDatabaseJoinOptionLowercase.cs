@@ -26,7 +26,7 @@ namespace com.espertech.esper.regression.db
         }
     
         public override void Run(EPServiceProvider epService) {
-            string sql = "select myint from mytesttable where ${intPrimitive} = myint'" +
+            string sql = "select myint from mytesttable where ${IntPrimitive} = myint'" +
                     "metadatasql 'select myint from mytesttable'";
             string stmtText = "select myint from " +
                     " sql:MyDB ['" + sql + "] as s0," +

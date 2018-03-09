@@ -44,10 +44,10 @@ namespace com.espertech.esper.regression.events.objectarray
                 epService.EPAdministrator.Configuration.AddEventType("ABC", new string[]{"p0"}, new Type[]{typeof(long)});
                 Assert.Fail();
             } catch (ConfigurationException ex) {
-                Assert.AreEqual("Event type named 'ABC' has already been declared with differing column name or type information: Type by name 'ABC' in property 'p0' expected class " + Name.Of<int>() + " but receives class java.lang.long", ex.Message);
+                Assert.AreEqual("Event type named 'ABC' has already been declared with differing column name or type information: Type by name 'ABC' in property 'p0' expected " + Name.Of<int>() + " but receives class " + Name.Clean<long>(), ex.Message);
             }
     
-            TryInvalid(epService, new string[]{"a"}, new object[]{new SupportBean()}, "Nestable type configuration encountered an unexpected property type of 'SupportBean' for property 'a', expected Type or Map or the name of a previously-declared Map or ObjectArray type");
+            TryInvalid(epService, new string[]{"a"}, new object[]{new SupportBean()}, "Nestable type configuration encountered an unexpected property type of 'SupportBean' for property 'a', expected Type or DataMap or the name of a previously-declared Map or ObjectArray type");
         }
     
         private void RunAssertionArrayProperty(EPServiceProvider epService) {
@@ -57,7 +57,7 @@ namespace com.espertech.esper.regression.events.objectarray
             object[] types = {typeof(int[]), typeof(SupportBean[])};
             epService.EPAdministrator.Configuration.AddEventType("MyArrayOA", props, types);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select p0[0] as a, p0[1] as b, p1[0].intPrimitive as c, p1[1] as d, p0 as e from MyArrayOA");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select p0[0] as a, p0[1] as b, p1[0].IntPrimitive as c, p1[1] as d, p0 as e from MyArrayOA");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regression.events.objectarray
             // test map at the second level of a nested map that is an array of primitive or .GetType()
             epService.EPAdministrator.Configuration.AddEventType("MyArrayOAMapOuter", new string[]{"outer"}, new object[]{"MyArrayOA"});
     
-            stmt = epService.EPAdministrator.CreateEPL("select outer.p0[0] as a, outer.p0[1] as b, outer.p1[0].intPrimitive as c, outer.p1[1] as d, outer.p0 as e from MyArrayOAMapOuter");
+            stmt = epService.EPAdministrator.CreateEPL("select outer.p0[0] as a, outer.p0[1] as b, outer.p1[0].IntPrimitive as c, outer.p1[1] as d, outer.p0 as e from MyArrayOAMapOuter");
             stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new object[]{eventData}, "MyArrayOAMapOuter");

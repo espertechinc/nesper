@@ -62,7 +62,7 @@ namespace com.espertech.esper.regression.epl.subselect
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
-            string epl = "select * from SupportBean(intPrimitive<10) where intPrimitive not in (select intPrimitive from SupportBean#unique(intPrimitive))";
+            string epl = "select * from SupportBean(IntPrimitive<10) where IntPrimitive not in (select IntPrimitive from SupportBean#unique(IntPrimitive))";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(epl);
             stmtOne.Events += listener.Update;
     
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             stmtOne.Dispose();
     
-            string eplTwo = "select * from SupportBean where intPrimitive not in (select intPrimitive from SupportBean(intPrimitive<10)#unique(intPrimitive))";
+            string eplTwo = "select * from SupportBean where IntPrimitive not in (select IntPrimitive from SupportBean(IntPrimitive<10)#unique(IntPrimitive))";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(eplTwo);
             stmtTwo.Events += listener.Update;
     

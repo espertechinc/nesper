@@ -29,9 +29,9 @@ namespace com.espertech.esper.regression.multithread
     
         public override void Run(EPServiceProvider epService) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select istream * \n" +
-                    "  from " + EVENT_NAME + "(theString='s0')#length(1000000) as s0,\n" +
-                    "       " + EVENT_NAME + "(theString='s1')#length(1000000) as s1\n" +
-                    "where s0.longPrimitive = s1.longPrimitive\n"
+                    "  from " + EVENT_NAME + "(TheString='s0')#length(1000000) as s0,\n" +
+                    "       " + EVENT_NAME + "(TheString='s1')#length(1000000) as s1\n" +
+                    "where s0.LongPrimitive = s1.LongPrimitive\n"
             );
             TrySendAndReceive(epService, 4, stmt, 1000);
             TrySendAndReceive(epService, 2, stmt, 2000);

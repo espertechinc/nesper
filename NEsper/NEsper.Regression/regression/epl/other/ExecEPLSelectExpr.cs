@@ -130,23 +130,23 @@ namespace com.espertech.esper.regression.epl.other
             EPAssertionUtil.AssertProps(testListener.AssertOneGetNewAndReset(), new string[]{"field1", "field2", "unicodeA"}, new object[]{"volume", "sleep", "A"});
             stmt.Dispose();
     
-            TryStatementMatch(epService, "John's", "select * from SupportBean(theString='John\\'s')");
-            TryStatementMatch(epService, "John's", "select * from SupportBean(theString='John\\u0027s')");
-            TryStatementMatch(epService, "Quote \"Hello\"", "select * from SupportBean(theString like \"Quote \\\"Hello\\\"\")");
-            TryStatementMatch(epService, "Quote \"Hello\"", "select * from SupportBean(theString like \"Quote \\u0022Hello\\u0022\")");
+            TryStatementMatch(epService, "John's", "select * from SupportBean(TheString='John\\'s')");
+            TryStatementMatch(epService, "John's", "select * from SupportBean(TheString='John\\u0027s')");
+            TryStatementMatch(epService, "Quote \"Hello\"", "select * from SupportBean(TheString like \"Quote \\\"Hello\\\"\")");
+            TryStatementMatch(epService, "Quote \"Hello\"", "select * from SupportBean(TheString like \"Quote \\u0022Hello\\u0022\")");
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
         private void TryEscapeMatch(EPServiceProvider epService, string property, string escaped) {
-            string epl = "select * from SupportBean(theString=" + escaped + ")";
+            string epl = "select * from SupportBean(TheString=" + escaped + ")";
             string text = "trying >" + escaped + "< (" + escaped.Length + " chars) EPL " + epl;
             Log.Info("tryEscapeMatch for " + text);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
             epService.EPRuntime.SendEvent(new SupportBean(property, 1));
-            Assert.AreEqual(testListener.AssertOneGetNewAndReset().Get("intPrimitive"), 1);
+            Assert.AreEqual(testListener.AssertOneGetNewAndReset().Get("IntPrimitive"), 1);
             stmt.Dispose();
         }
     
@@ -157,33 +157,33 @@ namespace com.espertech.esper.regression.epl.other
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
             epService.EPRuntime.SendEvent(new SupportBean(property, 1));
-            Assert.AreEqual(testListener.AssertOneGetNewAndReset().Get("intPrimitive"), 1);
+            Assert.AreEqual(testListener.AssertOneGetNewAndReset().Get("IntPrimitive"), 1);
             stmt.Dispose();
         }
     
         private void RunAssertionGetEventType(EPServiceProvider epService) {
-            string epl = "select theString, boolBoxed aBool, 3*intPrimitive, floatBoxed+floatPrimitive result" +
+            string epl = "select TheString, BoolBoxed aBool, 3*IntPrimitive, FloatBoxed+FloatPrimitive result" +
                     " from " + typeof(SupportBean).FullName + "#length(3) " +
-                    " where boolBoxed = true";
+                    " where BoolBoxed = true";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
     
             EventType type = stmt.EventType;
             Log.Debug(".testGetEventType properties=" + CompatExtensions.Render(type.PropertyNames));
-            EPAssertionUtil.AssertEqualsAnyOrder(type.PropertyNames, new string[]{"3*intPrimitive", "theString", "result", "aBool"});
-            Assert.AreEqual(typeof(string), type.GetPropertyType("theString"));
+            EPAssertionUtil.AssertEqualsAnyOrder(type.PropertyNames, new string[]{"3*IntPrimitive", "TheString", "result", "aBool"});
+            Assert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
             Assert.AreEqual(typeof(bool?), type.GetPropertyType("aBool"));
             Assert.AreEqual(typeof(float?), type.GetPropertyType("result"));
-            Assert.AreEqual(typeof(int?), type.GetPropertyType("3*intPrimitive"));
+            Assert.AreEqual(typeof(int?), type.GetPropertyType("3*IntPrimitive"));
     
             stmt.Dispose();
         }
     
         private void RunAssertionWindowStats(EPServiceProvider epService) {
-            string epl = "select theString, boolBoxed as aBool, 3*intPrimitive, floatBoxed+floatPrimitive as result" +
+            string epl = "select TheString, BoolBoxed as aBool, 3*IntPrimitive, FloatBoxed+FloatPrimitive as result" +
                     " from " + typeof(SupportBean).FullName + "#length(3) " +
-                    " where boolBoxed = true";
+                    " where BoolBoxed = true";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regression.epl.other
             SendEvent(epService, "c", true, 3, 10, 20);
     
             EventBean received = testListener.GetAndResetLastNewData()[0];
-            Assert.AreEqual("c", received.Get("theString"));
+            Assert.AreEqual("c", received.Get("TheString"));
             Assert.AreEqual(true, received.Get("aBool"));
             Assert.AreEqual(30f, received.Get("result"));
     

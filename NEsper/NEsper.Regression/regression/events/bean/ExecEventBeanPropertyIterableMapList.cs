@@ -27,19 +27,19 @@ namespace com.espertech.esper.regression.events.bean
         {
             var configField = new ConfigurationEventTypeLegacy();
             configField.AccessorStyle = AccessorStyleEnum.PUBLIC;
-            epService.EPAdministrator.Configuration.AddEventType(typeof(MyEventWithField).FullName, typeof(MyEventWithField).Name, configField);
+            epService.EPAdministrator.Configuration.AddEventType(typeof(MyEventWithField).Name, typeof(MyEventWithField).AssemblyQualifiedName, configField);
             var eventField = new MyEventWithField();
             eventField.otherEventsIterable = Collections.List(new OtherEvent("id1"));
             eventField.otherEventsMap = Collections.SingletonMap("key", new OtherEvent("id2"));
             eventField.otherEventsList = Collections.List(new OtherEvent("id3"));
     
             var configCglib = new ConfigurationEventTypeLegacy();
-            epService.EPAdministrator.Configuration.AddEventType(typeof(MyEventWithMethodWCGLIB).FullName, typeof(MyEventWithMethodWCGLIB).Name, configCglib);
+            epService.EPAdministrator.Configuration.AddEventType(typeof(MyEventWithMethodWCGLIB).Name, typeof(MyEventWithMethodWCGLIB).AssemblyQualifiedName, configCglib);
             var eventMethodCglib = new MyEventWithMethodWCGLIB(Collections.List(new OtherEvent("id1")), Collections.SingletonMap("key", new OtherEvent("id2")), Collections.List(new OtherEvent("id3")));
     
             var configNoCglib = new ConfigurationEventTypeLegacy();
             configNoCglib.CodeGeneration = CodeGenerationEnum.DISABLED;
-            epService.EPAdministrator.Configuration.AddEventType(typeof(MyEventWithMethodNoCGLIB).FullName, typeof(MyEventWithMethodNoCGLIB).Name, configNoCglib);
+            epService.EPAdministrator.Configuration.AddEventType(typeof(MyEventWithMethodNoCGLIB).Name, typeof(MyEventWithMethodNoCGLIB).AssemblyQualifiedName, configNoCglib);
             var eventMethodNocglib = new MyEventWithMethodNoCGLIB(Collections.List(new OtherEvent("id1")), Collections.SingletonMap("key", new OtherEvent("id2")), Collections.List(new OtherEvent("id3")));
     
             TryAssertionIterable(epService, typeof(MyEventWithField), eventField);

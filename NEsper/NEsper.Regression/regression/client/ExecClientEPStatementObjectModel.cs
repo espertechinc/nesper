@@ -6,14 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
@@ -176,10 +171,10 @@ namespace com.espertech.esper.regression.client
                 var eplAfter = modelBefore.ToEPL();
     
                 if (expected == null) {
-                    Assert.AreEqual(failText, epl, eplAfter);
+                    Assert.AreEqual(epl, eplAfter, failText);
                 } else {
                     var expectedEPL = "select * from pattern [" + expected + "]";
-                    Assert.AreEqual(failText, expectedEPL, eplAfter);
+                    Assert.AreEqual(expectedEPL, eplAfter, failText);
                 }
     
                 // get where clause root expression of both models

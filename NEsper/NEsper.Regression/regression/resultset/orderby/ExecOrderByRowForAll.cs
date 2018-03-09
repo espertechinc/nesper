@@ -25,9 +25,9 @@ namespace com.espertech.esper.regression.resultset.orderby
         public override void Run(EPServiceProvider epService) {
             var fields = new string[]{"sumPrice"};
             string statementString = "select sum(price) as sumPrice from " +
-                    typeof(SupportMarketDataBean).Name + "#length(10) as one, " +
-                    typeof(SupportBeanString).Name + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
+                    typeof(SupportBeanString).FullName + "#length(100) as two " +
+                    "where one.symbol = two.TheString " +
                     "order by price";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementString);
             SendJoinEvents(epService);

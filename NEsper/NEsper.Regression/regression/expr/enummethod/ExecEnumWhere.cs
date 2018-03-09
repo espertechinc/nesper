@@ -11,14 +11,9 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.enummethod
 {
@@ -37,12 +32,14 @@ namespace com.espertech.esper.regression.expr.enummethod
         private void RunAssertionWhereEvents(EPServiceProvider epService) {
     
             string epl = "select " +
-                    "contained.Where(x => p00 = 9) as val0," +
-                    "contained.Where((x, i) => x.p00 = 9 and i >= 1) as val1 from Bean";
+                    "Contained.where(x => p00 = 9) as val0," +
+                    "Contained.where((x, i) => x.p00 = 9 and i >= 1) as val1 from Bean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0,val1".Split(','), new Type[]{typeof(ICollection<object>), typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0,val1".Split(','), new Type[] {
+                typeof(ICollection<SupportBean_ST0>), typeof(ICollection<SupportBean_ST0>)
+            });
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E3,1"));
             LambdaAssertionUtil.AssertST0Id(listener, "val0", "E2");
@@ -76,13 +73,15 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1".Split(',');
             string eplFragment = "select " +
-                    "strvals.Where(x => x not like '%1%') as val0, " +
-                    "strvals.Where((x, i) => x not like '%1%' and i > 1) as val1 " +
+                    "Strvals.where(x => x not like '%1%') as val0, " +
+                    "Strvals.where((x, i) => x not like '%1%' and i > 1) as val1 " +
                     "from SupportCollection";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(ICollection<object>), typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
+                typeof(ICollection<object>), typeof(ICollection<object>)
+            });
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2,E3"));
             LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val0", "E2", "E3");
@@ -103,7 +102,7 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             // test boolean
             eplFragment = "select " +
-                    "boolvals.Where(x => x) as val0 " +
+                    "boolvals.where(x => x) as val0 " +
                     "from SupportCollection";
             stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             stmtFragment.Events += listener.Update;

@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
         private void RunAssertionBlackWhitePercent(EPServiceProvider epService) {
             string[] fields = "cb,cnb,c,pct".Split(',');
-            string epl = "select count(*,black) as cb, count(*,not black) as cnb, count(*) as c, count(*,black)/count(*) as pct from BlackWhiteEvent#length(3)";
+            string epl = "select count(*,IsBlack) as cb, count(*,not IsBlack) as cnb, count(*) as c, count(*,IsBlack)/count(*) as pct from BlackWhiteEvent#length(3)";
             EPStatementSPI stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -56,7 +56,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{0L, 3L, 3L, 0d});
     
             SupportModelHelper.CompileCreate(epService, epl);
-            SupportModelHelper.CompileCreate(epService, "select count(distinct black,not black), count(black,black) from BlackWhiteEvent");
+            SupportModelHelper.CompileCreate(epService, "select count(distinct IsBlack,not IsBlack), count(IsBlack,IsBlack) from BlackWhiteEvent");
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -64,8 +64,8 @@ namespace com.espertech.esper.regression.resultset.aggregate
         private void RunAssertionCountVariations(EPServiceProvider epService) {
             string[] fields = "c1,c2".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select " +
-                    "count(intBoxed, boolPrimitive) as c1," +
-                    "count(distinct intBoxed, boolPrimitive) as c2 " +
+                    "count(IntBoxed, BoolPrimitive) as c1," +
+                    "count(distinct IntBoxed, BoolPrimitive) as c2 " +
                     "from SupportBean#length(3)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -98,15 +98,15 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             string[] fields = "cavedev,cavg,cmax,cmedian,cmin,cstddev,csum,cfmaxever,cfminever".Split(',');
             EPStatementSPI stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("select " +
-                    "avedev(intBoxed, boolPrimitive) as cavedev," +
-                    "avg(intBoxed, boolPrimitive) as cavg, " +
-                    "fmax(intBoxed, boolPrimitive) as cmax, " +
-                    "median(intBoxed, boolPrimitive) as cmedian, " +
-                    "fmin(intBoxed, boolPrimitive) as cmin, " +
-                    "stddev(intBoxed, boolPrimitive) as cstddev, " +
-                    "sum(intBoxed, boolPrimitive) as csum," +
-                    "fmaxever(intBoxed, boolPrimitive) as cfmaxever, " +
-                    "fminever(intBoxed, boolPrimitive) as cfminever " +
+                    "avedev(IntBoxed, BoolPrimitive) as cavedev," +
+                    "avg(IntBoxed, BoolPrimitive) as cavg, " +
+                    "fmax(IntBoxed, BoolPrimitive) as cmax, " +
+                    "median(IntBoxed, BoolPrimitive) as cmedian, " +
+                    "fmin(IntBoxed, BoolPrimitive) as cmin, " +
+                    "stddev(IntBoxed, BoolPrimitive) as cstddev, " +
+                    "sum(IntBoxed, BoolPrimitive) as csum," +
+                    "fmaxever(IntBoxed, BoolPrimitive) as cfmaxever, " +
+                    "fminever(IntBoxed, BoolPrimitive) as cfminever " +
                     "from SupportBean#length(3)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -130,10 +130,10 @@ namespace com.espertech.esper.regression.resultset.aggregate
             stmt.Dispose();
             fields = "c1,c2,c3,c4".Split(',');
             stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("select " +
-                    "sum(floatPrimitive, boolPrimitive) as c1," +
-                    "sum(doublePrimitive, boolPrimitive) as c2, " +
-                    "sum(longPrimitive, boolPrimitive) as c3, " +
-                    "sum(shortPrimitive, boolPrimitive) as c4 " +
+                    "sum(FloatPrimitive, BoolPrimitive) as c1," +
+                    "sum(DoublePrimitive, BoolPrimitive) as c2, " +
+                    "sum(LongPrimitive, BoolPrimitive) as c3, " +
+                    "sum(ShortPrimitive, BoolPrimitive) as c4 " +
                     "from SupportBean#length(2)");
             stmt.Events += listener.Update;
     
@@ -153,8 +153,8 @@ namespace com.espertech.esper.regression.resultset.aggregate
             stmt.Dispose();
             fields = "c1,c2".Split(',');
             stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("select " +
-                    "fmax(intBoxed, boolPrimitive) as c1," +
-                    "fmin(intBoxed, boolPrimitive) as c2 " +
+                    "fmax(IntBoxed, BoolPrimitive) as c1," +
+                    "fmin(IntBoxed, BoolPrimitive) as c2 " +
                     "from SupportBean");
             stmt.Events += listener.Update;
             Assert.IsFalse(stmt.StatementContext.IsStatelessSelect);
@@ -181,9 +181,9 @@ namespace com.espertech.esper.regression.resultset.aggregate
             stmt.Dispose();
             fields = "c1,c2,c3".Split(',');
             stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("select " +
-                    "avg(bigdec, bigint < 100) as c1," +
-                    "sum(bigdec, bigint < 100) as c2, " +
-                    "sum(bigint, bigint < 100) as c3 " +
+                    "avg(DecimalOne, BigInt < 100) as c1," +
+                    "sum(DecimalOne, BigInt < 100) as c2, " +
+                    "sum(BigInt, BigInt < 100) as c3 " +
                     "from SupportBeanNumeric#length(2)");
             stmt.Events += listener.Update;
     
@@ -201,13 +201,13 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             stmt.Dispose();
             string epl = "select " +
-                    "avedev(distinct intBoxed,boolPrimitive) as cavedev, " +
-                    "avg(distinct intBoxed,boolPrimitive) as cavg, " +
-                    "fmax(distinct intBoxed,boolPrimitive) as cmax, " +
-                    "median(distinct intBoxed,boolPrimitive) as cmedian, " +
-                    "fmin(distinct intBoxed,boolPrimitive) as cmin, " +
-                    "stddev(distinct intBoxed,boolPrimitive) as cstddev, " +
-                    "sum(distinct intBoxed,boolPrimitive) as csum " +
+                    "avedev(distinct IntBoxed,BoolPrimitive) as cavedev, " +
+                    "avg(distinct IntBoxed,BoolPrimitive) as cavg, " +
+                    "fmax(distinct IntBoxed,BoolPrimitive) as cmax, " +
+                    "median(distinct IntBoxed,BoolPrimitive) as cmedian, " +
+                    "fmin(distinct IntBoxed,BoolPrimitive) as cmin, " +
+                    "stddev(distinct IntBoxed,BoolPrimitive) as cstddev, " +
+                    "sum(distinct IntBoxed,BoolPrimitive) as csum " +
                     "from SupportBean#length(3)";
             stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += listener.Update;
@@ -254,9 +254,9 @@ namespace com.espertech.esper.regression.resultset.aggregate
         private void TryAssertionFirstLastEver(EPServiceProvider epService, bool soda) {
             string[] fields = "c1,c2,c3".Split(',');
             string epl = "select " +
-                    "firstever(intBoxed,boolPrimitive) as c1, " +
-                    "lastever(intBoxed,boolPrimitive) as c2, " +
-                    "countever(*,boolPrimitive) as c3 " +
+                    "firstever(IntBoxed,BoolPrimitive) as c1, " +
+                    "lastever(IntBoxed,BoolPrimitive) as c2, " +
+                    "countever(*,BoolPrimitive) as c3 " +
                     "from SupportBean#length(3)";
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();
@@ -278,11 +278,11 @@ namespace com.espertech.esper.regression.resultset.aggregate
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            TryInvalid(epService, "select count(*, intPrimitive) from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'count(*,intPrimitive)': Invalid filter expression parameter to the aggregation function 'count' is expected to return a bool value but returns int [select count(*, intPrimitive) from SupportBean]");
+            TryInvalid(epService, "select count(*, IntPrimitive) from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'count(*,IntPrimitive)': Invalid filter expression parameter to the aggregation function 'count' is expected to return a bool value but returns int [select count(*, IntPrimitive) from SupportBean]");
     
-            TryInvalid(epService, "select fmin(intPrimitive) from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'min(intPrimitive)': MIN-filtered aggregation function must have a filter expression as a second parameter [select fmin(intPrimitive) from SupportBean]");
+            TryInvalid(epService, "select fmin(IntPrimitive) from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'min(IntPrimitive)': MIN-filtered aggregation function must have a filter expression as a second parameter [select fmin(IntPrimitive) from SupportBean]");
         }
     
         private SupportBean MakeBean(float floatPrimitive, double doublePrimitive, long longPrimitive, short shortPrimitive, bool boolPrimitive) {

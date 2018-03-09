@@ -83,7 +83,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
 
             // create window
             var stmtTextCreate = namedWindow
-                ? "create window MyInfraPC#keepall as select theString as a, intPrimitive as b from " +
+                ? "create window MyInfraPC#keepall as select TheString as a, IntPrimitive as b from " +
                   typeof(SupportBean).FullName
                 : "create table MyInfraPC(a string primary key, b int primary key)";
             var stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             stmtSelect.Events += listenerSelect.Update;
 
             // create insert into
-            var stmtTextInsertOne = "insert into MyInfraPC select theString as a, intPrimitive as b from " +
+            var stmtTextInsertOne = "insert into MyInfraPC select TheString as a, IntPrimitive as b from " +
                                     typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
 
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
 
             // create window
             var stmtTextCreate = namedWindow
-                ? "create window MyInfraSCD#keepall as select theString as a, intPrimitive as b from " +
+                ? "create window MyInfraSCD#keepall as select TheString as a, IntPrimitive as b from " +
                   typeof(SupportBean).FullName
                 : "create table MyInfraSCD(a string primary key, b int primary key)";
             var stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             stmtSelect.Events += listenerSelect.Update;
 
             // create insert into
-            var stmtTextInsertOne = "insert into MyInfraSCD select theString as a, intPrimitive as b from " +
+            var stmtTextInsertOne = "insert into MyInfraSCD select TheString as a, IntPrimitive as b from " +
                                     typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
 
@@ -233,7 +233,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
 
             // create window
             var stmtTextCreate = namedWindow
-                ? "create window MyInfraSAG#keepall as select theString as a, intPrimitive as b from " +
+                ? "create window MyInfraSAG#keepall as select TheString as a, IntPrimitive as b from " +
                   typeof(SupportBean).FullName
                 : "create table MyInfraSAG(a string primary key, b int primary key)";
             var stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
@@ -252,7 +252,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             stmtSelectTwo.Events += listenerSelectTwo.Update;
 
             // create insert into
-            var stmtTextInsertOne = "insert into MyInfraSAG select theString as a, intPrimitive as b from " +
+            var stmtTextInsertOne = "insert into MyInfraSAG select TheString as a, IntPrimitive as b from " +
                                     typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
 
@@ -319,7 +319,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
 
             // create window
             var stmtTextCreate = namedWindow
-                ? "create window MyInfraSAC#keepall as select theString as a, intPrimitive as b from " +
+                ? "create window MyInfraSAC#keepall as select TheString as a, IntPrimitive as b from " +
                   typeof(SupportBean).FullName
                 : "create table MyInfraSAC(a string primary key, b int primary key)";
             var stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
@@ -332,7 +332,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             stmtSelect.Events += listenerSelect.Update;
 
             // create insert into
-            var stmtTextInsertOne = "insert into MyInfraSAC select theString as a, intPrimitive as b from " +
+            var stmtTextInsertOne = "insert into MyInfraSAC select TheString as a, IntPrimitive as b from " +
                                     typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
 
@@ -378,7 +378,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
 
             // create window
             var stmtTextCreate = namedWindow
-                ? "create window MyInfraSA#keepall as select theString as a, intPrimitive as b from " +
+                ? "create window MyInfraSA#keepall as select TheString as a, IntPrimitive as b from " +
                   typeof(SupportBean).FullName
                 : "create table MyInfraSA (a string primary key, b int primary key)";
             var stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
@@ -390,7 +390,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             stmtSelect.Events += listenerSelect.Update;
 
             // create insert into
-            var stmtTextInsertOne = "insert into MyInfraSA select theString as a, intPrimitive as b from " +
+            var stmtTextInsertOne = "insert into MyInfraSA select TheString as a, IntPrimitive as b from " +
                                     typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
 
@@ -445,7 +445,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
 
             // create window
             var stmtTextCreate = namedWindow
-                ? "create window MyInfraSA#keepall as select theString as a, intPrimitive as b from " +
+                ? "create window MyInfraSA#keepall as select TheString as a, IntPrimitive as b from " +
                   typeof(SupportBean).FullName
                 : "create table MyInfraSA (a string primary key, b int)";
             var stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
@@ -458,7 +458,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             stmtSelect.Events += listenerSelect.Update;
 
             // create insert into
-            var stmtTextInsertOne = "insert into MyInfraSA select theString as a, intPrimitive as b from " +
+            var stmtTextInsertOne = "insert into MyInfraSA select TheString as a, IntPrimitive as b from " +
                                     typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
 
@@ -503,7 +503,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
 
             // create window
             var stmtTextCreate = namedWindow
-                ? "create window MyInfraSC#keepall as select theString as a, intPrimitive as b from " +
+                ? "create window MyInfraSC#keepall as select TheString as a, IntPrimitive as b from " +
                   typeof(SupportBean).FullName
                 : "create table MyInfraSC (a string primary key, b int)";
             var stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
@@ -517,7 +517,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             Assert.AreEqual(StatementType.ON_SELECT, ((EPStatementSPI) stmtSelect).StatementMetadata.StatementType);
 
             // create insert into
-            var stmtTextInsertOne = "insert into MyInfraSC select theString as a, intPrimitive as b from " +
+            var stmtTextInsertOne = "insert into MyInfraSC select TheString as a, IntPrimitive as b from " +
                                     typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
 
@@ -565,12 +565,12 @@ namespace com.espertech.esper.regression.nwtable.infra {
         private void RunAssertionInvalid(EPServiceProvider epService, bool namedWindow) {
             var stmtTextCreate = namedWindow
                 ? "create window MyInfraInvalid#keepall as select * from " + typeof(SupportBean).FullName
-                : "create table MyInfraInvalid (theString string, intPrimitive int)";
+                : "create table MyInfraInvalid (TheString string, IntPrimitive int)";
             epService.EPAdministrator.CreateEPL(stmtTextCreate);
 
             SupportMessageAssertUtil.TryInvalid(
                 epService,
-                "on " + typeof(SupportBean_A).FullName + " select * from MyInfraInvalid where sum(intPrimitive) > 100",
+                "on " + typeof(SupportBean_A).FullName + " select * from MyInfraInvalid where sum(IntPrimitive) > 100",
                 "Error validating expression: An aggregate function may not appear in a WHERE clause (use the HAVING clause) [");
 
             SupportMessageAssertUtil.TryInvalid(
@@ -578,8 +578,8 @@ namespace com.espertech.esper.regression.nwtable.infra {
                 "Named window or table 'DUMMY' has not been declared [");
 
             SupportMessageAssertUtil.TryInvalid(
-                epService, "on " + typeof(SupportBean_A).FullName + " select prev(1, theString) from MyInfraInvalid",
-                "Error starting statement: Failed to validate select-clause expression 'Prev(1,theString)': Previous function cannot be used in this context [");
+                epService, "on " + typeof(SupportBean_A).FullName + " select prev(1, TheString) from MyInfraInvalid",
+                "Error starting statement: Failed to validate select-clause expression 'Prev(1,TheString)': Previous function cannot be used in this context [");
 
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfraInvalid", false);
@@ -591,21 +591,21 @@ namespace com.espertech.esper.regression.nwtable.infra {
 
             var stmtTextCreate = namedWindow
                 ? "create window MyInfraPTS#keepall as select * from " + typeof(SupportBean).FullName
-                : "create table MyInfraPTS as (theString string)";
+                : "create table MyInfraPTS as (TheString string)";
             epService.EPAdministrator.CreateEPL(stmtTextCreate);
 
             var stmtCount = "on pattern[every timer:interval(10 sec)] select count(eve), eve from MyInfraPTS as eve";
             epService.EPAdministrator.CreateEPL(stmtCount);
 
             var stmtTextOnSelect =
-                "on pattern [ every timer:interval(10 sec)] select theString from MyInfraPTS having count(theString) > 0";
+                "on pattern [ every timer:interval(10 sec)] select TheString from MyInfraPTS having count(TheString) > 0";
             var stmt = epService.EPAdministrator.CreateEPL(stmtTextOnSelect);
             var listenerSelect = new SupportUpdateListener();
             stmt.Events += listenerSelect.Update;
 
             var stmtTextInsertOne = namedWindow
                 ? "insert into MyInfraPTS select * from " + typeof(SupportBean).FullName
-                : "insert into MyInfraPTS select theString from " + typeof(SupportBean).FullName;
+                : "insert into MyInfraPTS select TheString from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
 
             SendTimer(11000, epService);
@@ -616,7 +616,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
 
             SendSupportBean(epService, "E1", 1);
             SendTimer(31000, epService);
-            Assert.AreEqual("E1", listenerSelect.AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual("E1", listenerSelect.AssertOneGetNewAndReset().Get("TheString"));
 
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfraPTS", false);
@@ -629,7 +629,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
                 : "create table MyInfraSHS as (a string primary key, b int primary key)";
             epService.EPAdministrator.CreateEPL(stmtTextCreate);
 
-            var stmtTextInsertOne = "insert into MyInfraSHS select theString as a, intPrimitive as b from SupportBean";
+            var stmtTextInsertOne = "insert into MyInfraSHS select TheString as a, IntPrimitive as b from SupportBean";
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
 
             var stmtTextSelect =
@@ -658,19 +658,19 @@ namespace com.espertech.esper.regression.nwtable.infra {
         private void RunAssertionWindowAgg(EPServiceProvider epService, bool namedWindow) {
             var eplCreate = namedWindow
                 ? "create window MyInfraWA#keepall as SupportBean"
-                : "create table MyInfraWA(theString string primary key, intPrimitive int)";
+                : "create table MyInfraWA(TheString string primary key, IntPrimitive int)";
             epService.EPAdministrator.CreateEPL(eplCreate);
             var eplInsert = namedWindow
                 ? "insert into MyInfraWA select * from SupportBean"
-                : "insert into MyInfraWA select theString, intPrimitive from SupportBean";
+                : "insert into MyInfraWA select TheString, IntPrimitive from SupportBean";
             epService.EPAdministrator.CreateEPL(eplInsert);
-            epService.EPAdministrator.CreateEPL("on S1 as s1 delete from MyInfraWA where s1.p10 = theString");
+            epService.EPAdministrator.CreateEPL("on S1 as s1 delete from MyInfraWA where s1.p10 = TheString");
 
             var stmt = epService.EPAdministrator.CreateEPL(
                 "on S0 as s0 " +
                 "select window(win.*) as c0," +
-                "window(win.*).Where(v => v.intPrimitive < 2) as c1, " +
-                "window(win.*).ToMap(k=>k.theString,v=>v.intPrimitive) as c2 " +
+                "window(win.*).where(v => v.IntPrimitive < 2) as c1, " +
+                "window(win.*).ToMap(k=>k.TheString,v=>v.IntPrimitive) as c2 " +
                 "from MyInfraWA as win");
             var listenerSelect = new SupportUpdateListener();
             stmt.Events += listenerSelect.Update;
@@ -767,9 +767,9 @@ namespace com.espertech.esper.regression.nwtable.infra {
                         listener.AssertOneGetNewAndReset(), fields, new object[] {"E1", "E1", 10});
                 });
 
-            // single index one field (std:Unique(s1))
+            // single index one field (std:unique(s1))
             AssertIndexChoice(
-                epService, listener, isNamedWindow, new string[0], preloadedEventsOne, "std:Unique(s1)",
+                epService, listener, isNamedWindow, new string[0], preloadedEventsOne, "std:unique(s1)",
                 new[] {
                     new IndexAssertion(null, "s1 = s2", expectedIdxNameS1, backingUniqueS1, eventSendAssertion),
                     new IndexAssertion(
@@ -780,11 +780,11 @@ namespace com.espertech.esper.regression.nwtable.infra {
                     new IndexAssertion("@Hint('Index(Two,bust)')", "s1 = ssb2.s2 and l1 = ssb2.l2") // busted
                 });
 
-            // single index one field (std:Unique(s1))
+            // single index one field (std:unique(s1))
             if (isNamedWindow) {
                 var indexOneField = new[] {"create unique index One on MyInfra (s1)"};
                 AssertIndexChoice(
-                    epService, listener, isNamedWindow, indexOneField, preloadedEventsOne, "std:Unique(s1)",
+                    epService, listener, isNamedWindow, indexOneField, preloadedEventsOne, "std:unique(s1)",
                     new[] {
                         new IndexAssertion(null, "s1 = s2", "One", backingUniqueS1, eventSendAssertion),
                         new IndexAssertion(
@@ -796,17 +796,17 @@ namespace com.espertech.esper.regression.nwtable.infra {
                     });
             }
 
-            // single index two field  (std:Unique(s1))
+            // single index two field  (std:unique(s1))
             var indexTwoField = new[] {"create unique index One on MyInfra (s1, l1)"};
             AssertIndexChoice(
-                epService, listener, isNamedWindow, indexTwoField, preloadedEventsOne, "std:Unique(s1)",
+                epService, listener, isNamedWindow, indexTwoField, preloadedEventsOne, "std:unique(s1)",
                 new[] {
                     new IndexAssertion(null, "s1 = ssb2.s2", expectedIdxNameS1, backingUniqueS1, eventSendAssertion),
                     new IndexAssertion(
                         null, "s1 = ssb2.s2 and l1 = ssb2.l2", "One", backingUniqueS1L1, eventSendAssertion)
                 });
             AssertIndexChoice(
-                epService, listener, isNamedWindow, indexTwoField, preloadedEventsOne, "win:Keepall()",
+                epService, listener, isNamedWindow, indexTwoField, preloadedEventsOne, "win:keepall()",
                 new[] {
                     new IndexAssertion(
                         null, "s1 = ssb2.s2", expectedIdxNameS1, isNamedWindow ? backingNonUniqueS1 : backingUniqueS1,
@@ -815,13 +815,13 @@ namespace com.espertech.esper.regression.nwtable.infra {
                         null, "s1 = ssb2.s2 and l1 = ssb2.l2", "One", backingUniqueS1L1, eventSendAssertion)
                 });
 
-            // two index one unique  (std:Unique(s1))
+            // two index one unique  (std:unique(s1))
             var indexSetTwo = new[] {
                 "create index One on MyInfra (s1)",
                 "create unique index Two on MyInfra (s1, d1)"
             };
             AssertIndexChoice(
-                epService, listener, isNamedWindow, indexSetTwo, preloadedEventsOne, "std:Unique(s1)",
+                epService, listener, isNamedWindow, indexSetTwo, preloadedEventsOne, "std:unique(s1)",
                 new[] {
                     new IndexAssertion(
                         null, "s1 = ssb2.s2", isNamedWindow ? "One" : "MyInfra",
@@ -848,7 +848,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
 
             // two index one unique  (win:keepall)
             AssertIndexChoice(
-                epService, listener, isNamedWindow, indexSetTwo, preloadedEventsOne, "win:Keepall()",
+                epService, listener, isNamedWindow, indexSetTwo, preloadedEventsOne, "win:keepall()",
                 new[] {
                     new IndexAssertion(
                         null, "s1 = ssb2.s2", isNamedWindow ? "One" : "MyInfra",
@@ -873,14 +873,14 @@ namespace com.espertech.esper.regression.nwtable.infra {
                     new IndexAssertion("@Hint('Index(explicit,bust)')", "d1 = ssb2.d2 and l1 = ssb2.l2") // busted
                 });
 
-            // range  (std:Unique(s1))
+            // range  (std:unique(s1))
             var noAssertion = new IndexAssertionEventSend(() => { });
             var indexSetThree = new[] {
                 "create index One on MyInfra (i1 btree)",
                 "create index Two on MyInfra (d1 btree)"
             };
             AssertIndexChoice(
-                epService, listener, isNamedWindow, indexSetThree, preloadedEventsOne, "std:Unique(s1)",
+                epService, listener, isNamedWindow, indexSetThree, preloadedEventsOne, "std:unique(s1)",
                 new[] {
                     new IndexAssertion(null, "i1 between 1 and 10", "One", backingBtreeI1, noAssertion),
                     new IndexAssertion(null, "d1 between 1 and 10", "Two", backingBtreeD1, noAssertion),
@@ -898,7 +898,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
                 });
 
             AssertIndexChoice(
-                epService, listener, isNamedWindow, new string[0], preloadedEventsRelOp, "win:Keepall()",
+                epService, listener, isNamedWindow, new string[0], preloadedEventsRelOp, "win:keepall()",
                 new[] {
                     new IndexAssertion(null, "9 < i1", null, isNamedWindow ? backingBtreeI1 : null, relOpAssertion),
                     new IndexAssertion(null, "10 <= i1", null, isNamedWindow ? backingBtreeI1 : null, relOpAssertion),

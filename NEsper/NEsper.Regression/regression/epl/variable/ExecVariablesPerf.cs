@@ -34,21 +34,21 @@ namespace com.espertech.esper.regression.epl.variable
             }
     
             // test join
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean_S0 s0 unidirectional, MyWindow sb where theString = MYCONST");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean_S0 s0 unidirectional, MyWindow sb where TheString = MYCONST");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
             long start = PerformanceObserver.MilliTime;
             for (int i = 0; i < 10000; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean_S0(i, "E" + i));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.theString,sb.intPrimitive".Split(','), new object[]{"E331", -331});
+                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.TheString,sb.IntPrimitive".Split(','), new object[]{"E331", -331});
             }
             long delta = DateTimeHelper.CurrentTimeMillis - start;
             Assert.IsTrue(delta < 500, "delta=" + delta);
             stmt.Dispose();
     
             // test subquery
-            EPStatement stmtSubquery = epService.EPAdministrator.CreateEPL("select * from SupportBean_S0 where Exists (select * from MyWindow where theString = MYCONST)");
+            EPStatement stmtSubquery = epService.EPAdministrator.CreateEPL("select * from SupportBean_S0 where exists (select * from MyWindow where TheString = MYCONST)");
             stmtSubquery.Events += listener.Update;
     
             start = PerformanceObserver.MilliTime;

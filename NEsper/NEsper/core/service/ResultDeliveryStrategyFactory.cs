@@ -444,7 +444,7 @@ namespace com.espertech.esper.core.service
             if (m != null)
             {
                 throw new EPSubscriberException(
-                    "Subscriber 'updateRStream' method footprint must match 'update' method footprint");
+                    "Subscriber 'UpdateRStream' method footprint must match 'Update' method footprint");
             }
         }
 

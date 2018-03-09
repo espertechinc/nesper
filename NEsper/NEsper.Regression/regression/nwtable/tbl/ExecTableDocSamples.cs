@@ -82,7 +82,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "  myCount count(*), // column holds a number of values\n" +
                     "  myMax max(int), // column holds a highest int-typed value\n" +
                     "  myMedian median(float), // column holds the median of float-typed values\n" +
-                    "  myStddev stddev(java.math.BigDecimal), // column holds a standard deviation for BigDecimal values\n" +
+                    "  myStddev stddev(decimal), // column holds a standard deviation for BigDecimal values\n" +
                     "  mySum sum(long), // column holds a sum of long values\n" +
                     "  myFirstEver firstever(string), // column holds the first ever string value\n" +
                     "  myCountEver countever(*) // column holds the count-ever\n" +
@@ -132,7 +132,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "theWindow window(*) @Type(MyEvent),\n" +
                     "theSorted sorted(mySortValue) @Type(MyEvent)\n" +
                     ")");
-            epService.EPAdministrator.CreateEPL("select MyTable.theWindow.First(), MyTable.theSorted.MaxBy() from SupportBean");
+            epService.EPAdministrator.CreateEPL("select MyTable.theWindow.first(), MyTable.theSorted.maxBy() from SupportBean");
     
             epService.EPAdministrator.CreateEPL("select\n" +
                     "  (select * from IntrusionCountTable as intr\n" +
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "where intr.fromAddress = firewall.fromAddress and intr.toAddress = firewall.toAddress");
     
             epService.EPAdministrator.CreateEPL("create table MyWindowTable (theWindow window(*) @Type(MyEvent))");
-            epService.EPAdministrator.CreateEPL("select TheWindow.First(), theWindow.last(), theWindow.window() from MyEvent, MyWindowTable");
+            epService.EPAdministrator.CreateEPL("select theWindow.first(), theWindow.last(), theWindow.window() from MyEvent, MyWindowTable");
         }
     
         public class MyEvent {

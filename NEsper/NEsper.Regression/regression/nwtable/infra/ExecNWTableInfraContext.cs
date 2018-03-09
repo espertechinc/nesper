@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "context ContextOne create table MyInfra as (pkey0 string primary key, pkey1 int primary key, c0 long)";
             epService.EPAdministrator.CreateEPL(eplCreate);
     
-            epService.EPAdministrator.CreateEPL("context ContextOne insert into MyInfra select theString as pkey0, intPrimitive as pkey1, longPrimitive as c0 from SupportBean");
+            epService.EPAdministrator.CreateEPL("context ContextOne insert into MyInfra select TheString as pkey0, IntPrimitive as pkey1, LongPrimitive as c0 from SupportBean");
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));  // start
     

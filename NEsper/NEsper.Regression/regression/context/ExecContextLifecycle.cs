@@ -28,7 +28,7 @@ namespace com.espertech.esper.regression.context
         public override void Configure(Configuration configuration) {
             configuration.AddEventType<SupportBean>();
             configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
-            configuration.AddPlugInVirtualDataWindow("test", "vdw", typeof(SupportVirtualDWFactory).Name, SupportVirtualDW.ITERATE);    // configure with iteration
+            configuration.AddPlugInVirtualDataWindow("test", "vdw", typeof(SupportVirtualDWFactory), SupportVirtualDW.ITERATE);    // configure with iteration
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -40,8 +40,8 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionSplitStream(EPServiceProvider epService) {
-            string eplOne = "create context CtxSegmentedByTarget partition by theString from SupportBean;" +
-                    "@Name('out') context CtxSegmentedByTarget on SupportBean insert into NewSupportBean select * where intPrimitive = 100;";
+            string eplOne = "create context CtxSegmentedByTarget partition by TheString from SupportBean;" +
+                    "@Name('out') context CtxSegmentedByTarget on SupportBean insert into NewSupportBean select * where IntPrimitive = 100;";
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(eplOne);
     
             var listener = new SupportUpdateListener();
@@ -57,11 +57,11 @@ namespace com.espertech.esper.regression.context
     
             // test with subquery
             string[] fields = "mymax".Split(',');
-            string eplTwo = "create context CtxSegmentedByTarget partition by theString from SupportBean;" +
-                    "context CtxSegmentedByTarget create window NewEvent#unique(theString) as SupportBean;" +
+            string eplTwo = "create context CtxSegmentedByTarget partition by TheString from SupportBean;" +
+                    "context CtxSegmentedByTarget create window NewEvent#unique(TheString) as SupportBean;" +
                     "@Name('out') context CtxSegmentedByTarget on SupportBean " +
-                    "insert into NewEvent select * where intPrimitive = 100 " +
-                    "insert into NewEventTwo select (select max(intPrimitive) from NewEvent) as mymax  " +
+                    "insert into NewEvent select * where IntPrimitive = 100 " +
+                    "insert into NewEventTwo select (select max(IntPrimitive) from NewEvent) as mymax  " +
                     "output all;";
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(eplTwo);
     
@@ -82,8 +82,8 @@ namespace com.espertech.esper.regression.context
             SupportVirtualDWFactory.Windows.Clear();
             SupportVirtualDWFactory.IsDestroyed = false;
     
-            epService.EPAdministrator.CreateEPL("create context CtxSegmented as partition by theString from SupportBean");
-            epService.EPAdministrator.CreateEPL("context CtxSegmented create window TestVDWWindow.test:Vdw() as SupportBean");
+            epService.EPAdministrator.CreateEPL("create context CtxSegmented as partition by TheString from SupportBean");
+            epService.EPAdministrator.CreateEPL("context CtxSegmented create window TestVDWWindow.test:vdw() as SupportBean");
             epService.EPAdministrator.CreateEPL("select * from TestVDWWindow");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -104,28 +104,28 @@ namespace com.espertech.esper.regression.context
             // Trigger not in context
             EPStatement stmtNamedWindow = epService.EPAdministrator.CreateEPL("context NineToFive create window MyWindow#keepall as SupportBean");
             try {
-                epService.EPAdministrator.CreateEPL("on SupportBean_S0 s0 merge MyWindow mw when matched then update set intPrimitive = 1");
+                epService.EPAdministrator.CreateEPL("on SupportBean_S0 s0 merge MyWindow mw when matched then update set IntPrimitive = 1");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Cannot create on-trigger expression: Named window 'MyWindow' was declared with context 'NineToFive', please declare the same context name [on SupportBean_S0 s0 merge MyWindow mw when matched then update set intPrimitive = 1]", ex.Message);
+                Assert.AreEqual("Error starting statement: Cannot create on-trigger expression: Named window 'MyWindow' was declared with context 'NineToFive', please declare the same context name [on SupportBean_S0 s0 merge MyWindow mw when matched then update set IntPrimitive = 1]", ex.Message);
             }
     
             // Trigger in different context
             try {
-                epService.EPAdministrator.CreateEPL("context TenToFive on SupportBean_S0 s0 merge MyWindow mw when matched then update set intPrimitive = 1");
+                epService.EPAdministrator.CreateEPL("context TenToFive on SupportBean_S0 s0 merge MyWindow mw when matched then update set IntPrimitive = 1");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Cannot create on-trigger expression: Named window 'MyWindow' was declared with context 'NineToFive', please use the same context instead [context TenToFive on SupportBean_S0 s0 merge MyWindow mw when matched then update set intPrimitive = 1]", ex.Message);
+                Assert.AreEqual("Error starting statement: Cannot create on-trigger expression: Named window 'MyWindow' was declared with context 'NineToFive', please use the same context instead [context TenToFive on SupportBean_S0 s0 merge MyWindow mw when matched then update set IntPrimitive = 1]", ex.Message);
             }
     
             // Named window not in context, trigger in different context
             stmtNamedWindow.Dispose();
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportBean");
             try {
-                epService.EPAdministrator.CreateEPL("context TenToFive on SupportBean_S0 s0 merge MyWindow mw when matched then update set intPrimitive = 1");
+                epService.EPAdministrator.CreateEPL("context TenToFive on SupportBean_S0 s0 merge MyWindow mw when matched then update set IntPrimitive = 1");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Cannot create on-trigger expression: Named window 'MyWindow' was declared with context 'null', please use the same context instead [context TenToFive on SupportBean_S0 s0 merge MyWindow mw when matched then update set intPrimitive = 1]", ex.Message);
+                Assert.AreEqual("Error starting statement: Cannot create on-trigger expression: Named window 'MyWindow' was declared with context 'null', please use the same context instead [context TenToFive on SupportBean_S0 s0 merge MyWindow mw when matched then update set IntPrimitive = 1]", ex.Message);
             }
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regression.context
             // same context twice
             string eplCreateCtx = "create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)";
             EPStatement stmtContext = epService.EPAdministrator.CreateEPL(eplCreateCtx);
-            TryInvalid(epService, eplCreateCtx, "Error starting statement: Context by name 'NineToFive' already Exists [");
+            TryInvalid(epService, eplCreateCtx, "Error starting statement: Context by name 'NineToFive' already exists [");
     
             // still in use
             epService.EPAdministrator.CreateEPL("context NineToFive select * from SupportBean");
@@ -188,12 +188,12 @@ namespace com.espertech.esper.regression.context
     
             // test update: update is not allowed as it is processed out-of-context by runtime
             epService.EPAdministrator.CreateEPL("insert into ABCStream select * from SupportBean");
-            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByAString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByAString partition by TheString from SupportBean");
             try {
-                epService.EPAdministrator.CreateEPL("context SegmentedByAString update istream ABCStream set intPrimitive = (select id from SupportBean_S0#lastevent) where intPrimitive < 0");
+                epService.EPAdministrator.CreateEPL("context SegmentedByAString update istream ABCStream set IntPrimitive = (select id from SupportBean_S0#lastevent) where IntPrimitive < 0");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Update IStream is not supported in conjunction with a context [context SegmentedByAString update istream ABCStream set intPrimitive = (select id from SupportBean_S0#lastevent) where intPrimitive < 0]", ex.Message);
+                Assert.AreEqual("Error starting statement: Update IStream is not supported in conjunction with a context [context SegmentedByAString update istream ABCStream set IntPrimitive = (select id from SupportBean_S0#lastevent) where IntPrimitive < 0]", ex.Message);
             }
     
             // context declaration for create-context

@@ -36,10 +36,10 @@ namespace com.espertech.esper.regression.nwtable.tbl
         private void RunAssertionRollupOneDim(EPServiceProvider epService) {
             var listenerQuery = new SupportUpdateListener();
             var listenerOut = new SupportUpdateListener();
-            string[] fieldsOut = "theString,total".Split(',');
+            string[] fieldsOut = "TheString,total".Split(',');
     
             epService.EPAdministrator.CreateEPL("create table MyTableR1D(pk string primary key, total sum(int))");
-            epService.EPAdministrator.CreateEPL("into table MyTableR1D insert into MyStreamOne select theString, sum(intPrimitive) as total from SupportBean#length(4) group by Rollup(theString)").Events += listenerOut.Update;
+            epService.EPAdministrator.CreateEPL("into table MyTableR1D insert into MyStreamOne select TheString, sum(IntPrimitive) as total from SupportBean#length(4) group by Rollup(TheString)").Events += listenerOut.Update;
             epService.EPAdministrator.CreateEPL("select MyTableR1D[p00].total as c0 from SupportBean_S0").Events += listenerQuery.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));

@@ -40,7 +40,7 @@ namespace com.espertech.esper.regression.client
         }
     
         public override void Run(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddImport("com.espertech.esper.regression.client.*");
+            epService.EPAdministrator.Configuration.AddImport("com.espertech.esper.regression.client");
             epService.EPAdministrator.Configuration.AddImport(typeof(SupportEnum));
     
             RunAssertionAnnotationSpecificImport(epService);
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void TryAssertionNoClassNameRequired(EPServiceProvider epService, SupportEnum expected, string text) {
-            var stmt = epService.EPAdministrator.CreateEPL("@MyAnnotationValueEnum(supportEnum = " + text + ") select * from SupportBean");
+            var stmt = epService.EPAdministrator.CreateEPL("@MyAnnotationValueEnum(SupportEnum = " + text + ") select * from SupportBean");
             var anno = (MyAnnotationValueEnumAttribute) stmt.Annotations.First();
             Assert.That(expected, Is.EqualTo(anno.SupportEnum));
             stmt.Dispose();
@@ -71,43 +71,43 @@ namespace com.espertech.esper.regression.client
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
             TryInvalid(epService, "@MyAnnotationNested(NestableSimple=@MyAnnotationNestableSimple, NestableValues=@MyAnnotationNestableValues, NestableNestable=@MyAnnotationNestableNestable) select * from Bean", false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationNestableNestable' requires a value for attribute 'value' [@MyAnnotationNested(NestableSimple=@MyAnnotationNestableSimple, NestableValues=@MyAnnotationNestableValues, NestableNestable=@MyAnnotationNestableNestable) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationNestableNestable' requires a value for attribute 'Value' [@MyAnnotationNested(NestableSimple=@MyAnnotationNestableSimple, NestableValues=@MyAnnotationNestableValues, NestableNestable=@MyAnnotationNestableNestable) select * from Bean]");
     
             TryInvalid(epService, "@MyAnnotationNested(NestableNestable=@MyAnnotationNestableNestable('A'), NestableSimple=1) select * from Bean", false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationNested' requires a MyAnnotationNestableSimple-typed value for attribute 'NestableSimple' but received a int?-typed value [@MyAnnotationNested(NestableNestable=@MyAnnotationNestableNestable('A'), NestableSimple=1) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationNested' requires a MyAnnotationNestableSimpleAttribute-typed value for attribute 'NestableSimple' but received a System.Int32-typed value [@MyAnnotationNested(NestableNestable=@MyAnnotationNestableNestable('A'), NestableSimple=1) select * from Bean]");
     
-            TryInvalid(epService, "@MyAnnotationValuePair(stringVal='abc') select * from Bean", false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValuePair' requires a value for attribute 'booleanVal' [@MyAnnotationValuePair(stringVal='abc') select * from Bean]");
+            TryInvalid(epService, "@MyAnnotationValuePair(StringVal='abc') select * from Bean", false,
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValuePair' requires a value for attribute 'BooleanVal' [@MyAnnotationValuePair(StringVal='abc') select * from Bean]");
     
-            TryInvalid(epService, "MyAnnotationValueArray(value=5) select * from Bean", true,
-                    "Incorrect syntax near 'MyAnnotationValueArray' [MyAnnotationValueArray(value=5) select * from Bean]");
+            TryInvalid(epService, "MyAnnotationValueArray(Value=5) select * from Bean", true,
+                    "Incorrect syntax near 'MyAnnotationValueArray' [MyAnnotationValueArray(Value=5) select * from Bean]");
     
-            TryInvalid(epService, "@MyAnnotationValueArray(value=null) select * from Bean", false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a value for attribute 'doubleArray' [@MyAnnotationValueArray(value=null) select * from Bean]");
+            TryInvalid(epService, "@MyAnnotationValueArray(Value=null) select * from Bean", false,
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a value for attribute 'DoubleArray' [@MyAnnotationValueArray(Value=null) select * from Bean]");
     
-            TryInvalid(epService, "@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={null},value={}) select * from Bean", false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a non-null value for array elements for attribute 'stringArray' [@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={null},value={}) select * from Bean]");
+            TryInvalid(epService, "@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={null},Value={}) select * from Bean", false,
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a non-null value for array elements for attribute 'StringArray' [@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={null},Value={}) select * from Bean]");
     
-            TryInvalid(epService, "@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={1},value={}) select * from Bean", false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a string-typed value for array elements for attribute 'stringArray' but received a int?-typed value [@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={1},value={}) select * from Bean]");
+            TryInvalid(epService, "@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={1},Value={}) select * from Bean", false,
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a System.String-typed value for array elements for attribute 'StringArray' but received a System.Int32-typed value [@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={1},Value={}) select * from Bean]");
     
-            TryInvalid(epService, "@MyAnnotationValue(value='a', value='a') select * from Bean", false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValue' has duplicate attribute values for attribute 'value' [@MyAnnotationValue(value='a', value='a') select * from Bean]");
+            TryInvalid(epService, "@MyAnnotationValue(Value='a', Value='a') select * from Bean", false,
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValue' has duplicate attribute values for attribute 'Value' [@MyAnnotationValue(Value='a', Value='a') select * from Bean]");
             TryInvalid(epService, "@ABC select * from Bean", false,
-                    "Failed to process statement annotations: Failed to resolve @-annotation class: Could not load annotation class by name 'ABC', please check imports [@ABC select * from Bean]");
+                    "Failed to process statement annotations: Failed to resolve @-annotation class: Could not load annotation class by name 'ABCAttribute', please check imports [@ABC select * from Bean]");
     
             TryInvalid(epService, "@MyAnnotationSimple(5) select * from Bean", false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationSimple' does not have an attribute 'value' [@MyAnnotationSimple(5) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationSimple' does not have an attribute 'Value' [@MyAnnotationSimple(5) select * from Bean]");
             TryInvalid(epService, "@MyAnnotationSimple(null) select * from Bean", false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationSimple' does not have an attribute 'value' [@MyAnnotationSimple(null) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationSimple' does not have an attribute 'Value' [@MyAnnotationSimple(null) select * from Bean]");
     
             TryInvalid(epService, "@MyAnnotationValue select * from Bean", false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValue' requires a value for attribute 'value' [@MyAnnotationValue select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValue' requires a value for attribute 'Value' [@MyAnnotationValue select * from Bean]");
     
             TryInvalid(epService, "@MyAnnotationValue(5) select * from Bean", false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValue' requires a string-typed value for attribute 'value' but received a int?-typed value [@MyAnnotationValue(5) select * from Bean]");
-            TryInvalid(epService, "@MyAnnotationValueArray(value=\"ABC\", intArray={}, doubleArray={}, stringArray={}) select * from Bean", false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a long[]-typed value for attribute 'value' but received a string-typed value [@MyAnnotationValueArray(value=\"ABC\", intArray={}, doubleArray={}, stringArray={}) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValue' requires a string-typed value for attribute 'Value' but received a System.Int32-typed value [@MyAnnotationValue(5) select * from Bean]");
+            TryInvalid(epService, "@MyAnnotationValueArray(Value=\"ABC\", IntArray={}, DoubleArray={}, StringArray={}) select * from Bean", false,
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a long[]-typed value for attribute 'Value' but received a string-typed value [@MyAnnotationValueArray(Value=\"ABC\", IntArray={}, DoubleArray={}, StringArray={}) select * from Bean]");
             TryInvalid(epService, "@MyAnnotationValueEnum(a.b.CC) select * from Bean", false,
                     "Annotation enumeration value 'a.b.CC' not recognized as an enumeration class, please check imports or type used [@MyAnnotationValueEnum(a.b.CC) select * from Bean]");
     
@@ -138,12 +138,13 @@ namespace com.espertech.esper.regression.client
                 Assert.AreEqual(message, ex.Message);
             } catch (EPStatementException ex) {
                 Assert.IsFalse(isSyntax);
+
                 Assert.AreEqual(message, ex.Message);
             }
         }
     
         private void RunAssertionBuiltin(EPServiceProvider epService) {
-            var stmtText = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(name=\"UserId\", value=\"value\") select * from Bean";
+            var stmtText = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") select * from Bean";
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             Assert.IsTrue(((EPStatementSPI) stmt).IsNameProvided);
             TryAssertion(stmt);
@@ -152,18 +153,18 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual("MyTestStmt", name.Value);
     
             // try lowercase
-            var stmtTextLower = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(name=\"UserId\", value=\"value\") select * from Bean";
+            var stmtTextLower = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") select * from Bean";
             stmt = epService.EPAdministrator.CreateEPL(stmtTextLower);
             TryAssertion(stmt);
             stmt.Dispose();
     
             // try pattern
-            stmtText = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(name='UserId', value='value') every Bean";
+            stmtText = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(Name='UserId', Value='Value') every Bean";
             stmt = epService.EPAdministrator.CreatePattern(stmtText);
             TryAssertion(stmt);
             stmt.Dispose();
     
-            stmtText = "@" + typeof(Name).Name + "('MyTestStmt') @Description('MyTestStmt description') @Tag(name=\"UserId\", value=\"value\") every Bean";
+            stmtText = "@" + typeof(Name).FullName + "('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") every Bean";
             stmt = epService.EPAdministrator.CreatePattern(stmtText);
             TryAssertion(stmt);
     
@@ -226,7 +227,7 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(typeof(TagAttribute), annotations[2].GetType());
             Assert.AreEqual("UserId", ((TagAttribute) annotations[2]).Name);
             Assert.AreEqual("value", ((TagAttribute) annotations[2]).Value);
-            Assert.AreEqual("@Tag(name=\"UserId\", value=\"value\")", annotations[2].ToString());
+            Assert.AreEqual("@Tag(Name=\"UserId\", Value=\"value\")", annotations[2].ToString());
     
             Assert.IsFalse(annotations[2].Equals(annotations[1]));
             Assert.IsTrue(annotations[1].Equals(annotations[1]));
@@ -238,15 +239,15 @@ namespace com.espertech.esper.regression.client
                     "@MyAnnotationSimple " +
                             "@MyAnnotationValue('abc') " +
                             "@MyAnnotationValueDefaulted " +
-                            "@MyAnnotationValueEnum(supportEnum=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_3) " +
-                            "@MyAnnotationValuePair(stringVal='a',intVal=-1,longVal=2,booleanVal=true,charVal='x',byteVal=10,shortVal=20,doubleVal=2.5) " +
+                            "@MyAnnotationValueEnum(SupportEnum=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_3) " +
+                            "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=true,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5) " +
                             "@Name('STMTONE') " +
                             "select * from Bean";
             var stmtTextFormatted = "@MyAnnotationSimple" + NEWLINE +
                     "@MyAnnotationValue('abc')" + NEWLINE +
                     "@MyAnnotationValueDefaulted" + NEWLINE +
-                    "@MyAnnotationValueEnum(supportEnum=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_3)" + NEWLINE +
-                    "@MyAnnotationValuePair(stringVal='a',intVal=-1,longVal=2,booleanVal=true,charVal='x',byteVal=10,shortVal=20,doubleVal=2.5)" + NEWLINE +
+                    "@MyAnnotationValueEnum(SupportEnum=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_3)" + NEWLINE +
+                    "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=true,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5)" + NEWLINE +
                     "@Name('STMTONE')" + NEWLINE +
                     "select *" + NEWLINE +
                     "from Bean";
@@ -295,7 +296,7 @@ namespace com.espertech.esper.regression.client
     
             // test array
             stmtText =
-                    "@MyAnnotationValueArray(value={1, 2, 3}, intArray={4, 5}, doubleArray={}, \nstringArray={\"X\"})\n" +
+                    "@MyAnnotationValueArray(Value={1, 2, 3}, IntArray={4, 5}, DoubleArray={}, \nStringArray={\"X\"})\n" +
                             "/* Test */ select * \nfrom Bean";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
     
@@ -312,7 +313,7 @@ namespace com.espertech.esper.regression.client
     
             // statement model
             model = epService.EPAdministrator.CompileEPL(stmtText);
-            Assert.AreEqual("@MyAnnotationValueArray(value={1,2,3},intArray={4,5},doubleArray={},stringArray={'X'}) select * from Bean", model.ToEPL());
+            Assert.AreEqual("@MyAnnotationValueArray(Value={1,2,3},IntArray={4,5},DoubleArray={},StringArray={'X'}) select * from Bean", model.ToEPL());
             stmtTwo = epService.EPAdministrator.Create(model);
             Assert.AreEqual(stmtTwo.Text, model.ToEPL());
             Assert.AreEqual(1, stmtTwo.Annotations.Count);
@@ -326,13 +327,13 @@ namespace com.espertech.esper.regression.client
                             "/* test */ select * from Bean"},
                 new string[]{"/* test */ select * from Bean",
                             "/* test */ select * from Bean"},
-                new string[]{"@MyAnnotationValueArray(value={1, 2, 3}, intArray={4, 5}, doubleArray={}, stringArray={\"X\"})    select * from Bean",
+                new string[]{"@MyAnnotationValueArray(Value={1, 2, 3}, IntArray={4, 5}, DoubleArray={}, StringArray={\"X\"})    select * from Bean",
                             "select * from Bean"},
                 new string[]{"@MyAnnotationSimple\nselect * from Bean",
                             "select * from Bean"},
                 new string[]{"@MyAnnotationSimple\n@MyAnnotationSimple\nselect * from Bean",
                             "select * from Bean"},
-                new string[]{"@MyAnnotationValueArray(value={1, 2, 3}, intArray={4, 5}, doubleArray={}, \nstringArray={\"X\"})\n" +
+                new string[]{"@MyAnnotationValueArray(Value={1, 2, 3}, IntArray={4, 5}, DoubleArray={}, \nStringArray={\"X\"})\n" +
                             "/* Test */ select * \nfrom Bean",
                             "/* Test */ select * \r\nfrom Bean"},
             };

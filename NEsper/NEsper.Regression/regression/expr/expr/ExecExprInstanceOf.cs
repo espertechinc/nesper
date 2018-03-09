@@ -33,14 +33,14 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionInstanceofSimple(EPServiceProvider epService) {
-            string stmtText = "select instanceof(theString, string) as t0, " +
-                    " instanceof(intBoxed, int) as t1, " +
-                    " instanceof(floatBoxed, System.Single) as t2, " +
-                    " instanceof(theString, System.Single, char, byte) as t3, " +
-                    " instanceof(intPrimitive, System.Int32) as t4, " +
-                    " instanceof(intPrimitive, long) as t5, " +
-                    " instanceof(intPrimitive, long, long, object) as t6, " +
-                    " instanceof(floatBoxed, long, float) as t7 " +
+            string stmtText = "select instanceof(TheString, string) as t0, " +
+                    " instanceof(IntBoxed, int) as t1, " +
+                    " instanceof(FloatBoxed, System.Single) as t2, " +
+                    " instanceof(TheString, System.Single, char, byte) as t3, " +
+                    " instanceof(IntPrimitive, System.Int32) as t4, " +
+                    " instanceof(IntPrimitive, long) as t5, " +
+                    " instanceof(IntPrimitive, long, long, object) as t6, " +
+                    " instanceof(FloatBoxed, long, float) as t7 " +
                     " from " + typeof(SupportBean).FullName;
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
@@ -65,14 +65,14 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionInstanceofStringAndNull_OM(EPServiceProvider epService) {
-            string stmtText = "select instanceof(theString,string) as t0, " +
-                    "instanceof(theString,float,string,int) as t1 " +
+            string stmtText = "select instanceof(TheString,string) as t0, " +
+                    "instanceof(TheString,float,string,int) as t1 " +
                     "from " + typeof(SupportBean).FullName;
     
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.Create()
-                    .Add(Expressions.InstanceOf("theString", "string"), "t0")
-                    .Add(Expressions.InstanceOf(Expressions.Property("theString"), "float", "string", "int"), "t1");
+                    .Add(Expressions.InstanceOf("TheString", "string"), "t0")
+                    .Add(Expressions.InstanceOf(Expressions.Property("TheString"), "float", "string", "int"), "t1");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName));
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
             Assert.AreEqual(stmtText, model.ToEPL());
@@ -95,8 +95,8 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionInstanceofStringAndNull_Compile(EPServiceProvider epService) {
-            string stmtText = "select instanceof(theString,string) as t0, " +
-                    "instanceof(theString,float,string,int) as t1 " +
+            string stmtText = "select instanceof(TheString,string) as t0, " +
+                    "instanceof(TheString,float,string,int) as t1 " +
                     "from " + typeof(SupportBean).FullName;
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);

@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.db
             string stmtText = "select * from SupportBean as sb " +
                     "left outer join " +
                     "sql:MyDB ['select myint from mytesttable'] as t " +
-                    "on sb.intPrimitive = t.myint " +
+                    "on sb.IntPrimitive = t.myint " +
                     "where myint is null";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);

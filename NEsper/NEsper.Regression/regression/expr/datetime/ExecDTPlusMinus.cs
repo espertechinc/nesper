@@ -7,20 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
-using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.datetime
 {
@@ -59,25 +52,27 @@ namespace com.espertech.esper.regression.expr.datetime
             });
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null,
-                    SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{
+                SupportDateTime.GetValueCoerced(startTime, "long"), null, null,
+                SupportDateTime.GetValueCoerced(startTime, "long"), null, null
+            });
     
-            object[] expectedPlus = SupportDateTime.GetArrayCoerced(startTime, "long", "util", "long", "cal", "ldt", "zdt");
-            object[] expectedMinus = SupportDateTime.GetArrayCoerced(startTime, "long", "util", "long", "cal", "ldt", "zdt");
+            object[] expectedPlus = SupportDateTime.GetArrayCoerced(startTime, "long", "util", "long");
+            object[] expectedMinus = SupportDateTime.GetArrayCoerced(startTime, "long", "util", "long");
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, EPAssertionUtil.ConcatenateArray(expectedPlus, expectedMinus));
     
             epService.EPRuntime.SetVariableValue("varmsec", 1000);
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
             //Log.Info("===> " + SupportDateTime.Print(listener.AssertOneGetNew().Get("val4")));
-            expectedPlus = SupportDateTime.GetArrayCoerced("2002-05-30T09:00:01.000", "long", "util", "long", "cal", "ldt", "zdt");
-            expectedMinus = SupportDateTime.GetArrayCoerced("2002-05-30T08:59:59.000", "long", "util", "long", "cal", "ldt", "zdt");
+            expectedPlus = SupportDateTime.GetArrayCoerced("2002-05-30T09:00:01.000", "long", "util", "long");
+            expectedMinus = SupportDateTime.GetArrayCoerced("2002-05-30T08:59:59.000", "long", "util", "long");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, EPAssertionUtil.ConcatenateArray(expectedPlus, expectedMinus));
     
             epService.EPRuntime.SetVariableValue("varmsec", 2 * 24 * 60 * 60 * 1000);
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            expectedMinus = SupportDateTime.GetArrayCoerced("2002-05-28T09:00:00.000", "long", "util", "long", "cal", "ldt", "zdt");
-            expectedPlus = SupportDateTime.GetArrayCoerced("2002-06-1T09:00:00.000", "long", "util", "long", "cal", "ldt", "zdt");
+            expectedMinus = SupportDateTime.GetArrayCoerced("2002-05-28T09:00:00.000", "long", "util", "long");
+            expectedPlus = SupportDateTime.GetArrayCoerced("2002-06-1T09:00:00.000", "long", "util", "long");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, EPAssertionUtil.ConcatenateArray(expectedPlus, expectedMinus));
     
             stmtFragment.Dispose();
@@ -106,13 +101,13 @@ namespace com.espertech.esper.regression.expr.datetime
             });
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            object[] expectedPlus = SupportDateTime.GetArrayCoerced("2002-05-30T010:00:10.020", "long", "util", "long", "cal", "ldt", "zdt");
-            object[] expectedMinus = SupportDateTime.GetArrayCoerced("2002-05-30T07:59:49.980", "long", "util", "long", "cal", "ldt", "zdt");
+            object[] expectedPlus = SupportDateTime.GetArrayCoerced("2002-05-30T010:00:10.020", "long", "util", "long");
+            object[] expectedMinus = SupportDateTime.GetArrayCoerced("2002-05-30T07:59:49.980", "long", "util", "long");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, EPAssertionUtil.ConcatenateArray(expectedPlus, expectedMinus));
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(null));
-            expectedPlus = SupportDateTime.GetArrayCoerced("2002-05-30T010:00:10.020", "long", "null", "null", "null", "null", "null");
-            expectedMinus = SupportDateTime.GetArrayCoerced("2002-05-30T07:59:49.980", "long", "null", "null", "null", "null", "null");
+            expectedPlus = SupportDateTime.GetArrayCoerced("2002-05-30T010:00:10.020", "long", "null", "null");
+            expectedMinus = SupportDateTime.GetArrayCoerced("2002-05-30T07:59:49.980", "long", "null", "null");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, EPAssertionUtil.ConcatenateArray(expectedPlus, expectedMinus));
     
             stmtFragment.Dispose();

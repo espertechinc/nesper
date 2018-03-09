@@ -49,25 +49,25 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_S1));
     
             // batch-window assertions
-            string eplWithBatchSingleKey = "select theString from SupportBean#length_batch(10) order by theString limit 1";
+            string eplWithBatchSingleKey = "select TheString from SupportBean#length_batch(10) order by TheString limit 1";
             TryAssertionLimitOneSingleKeySortBatch(epService, eplWithBatchSingleKey);
     
-            string eplWithBatchMultiKey = "select theString, intPrimitive from SupportBean#length_batch(5) order by theString asc, intPrimitive desc limit 1";
+            string eplWithBatchMultiKey = "select TheString, IntPrimitive from SupportBean#length_batch(5) order by TheString asc, IntPrimitive desc limit 1";
             TryAssertionLimitOneMultiKeySortBatch(epService, eplWithBatchMultiKey);
     
             // context output-when-terminated assertions
             epService.EPAdministrator.CreateEPL("create context StartS0EndS1 as start SupportBean_S0 end SupportBean_S1");
     
             string eplContextSingleKey = "context StartS0EndS1 " +
-                    "select theString from SupportBean#keepall " +
+                    "select TheString from SupportBean#keepall " +
                     "output snapshot when terminated " +
-                    "order by theString limit 1";
+                    "order by TheString limit 1";
             TryAssertionLimitOneSingleKeySortBatch(epService, eplContextSingleKey);
     
             string eplContextMultiKey = "context StartS0EndS1 " +
-                    "select theString, intPrimitive from SupportBean#keepall " +
+                    "select TheString, IntPrimitive from SupportBean#keepall " +
                     "output snapshot when terminated " +
-                    "order by theString asc, intPrimitive desc limit 1";
+                    "order by TheString asc, IntPrimitive desc limit 1";
             TryAssertionLimitOneMultiKeySortBatch(epService, eplContextMultiKey);
         }
     
@@ -132,11 +132,11 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         }
     
         private void RunAssertionOrderBy(EPServiceProvider epService) {
-            string statementString = "select * from SupportBean#length(5) output every 5 events order by intPrimitive limit 2 offset 2";
+            string statementString = "select * from SupportBean#length(5) output every 5 events order by IntPrimitive limit 2 offset 2";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementString);
             var listener = new SupportUpdateListener();
     
-            string[] fields = "theString".Split(',');
+            string[] fields = "TheString".Split(',');
             stmt.Events += listener.Update;
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, null);
     
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         }
     
         private void TryAssertionVariable(EPServiceProvider epService, EPStatement stmt, SupportUpdateListener listener) {
-            string[] fields = "theString".Split(',');
+            string[] fields = "TheString".Split(',');
             stmt.Events += listener.Update;
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, null);
     
@@ -262,11 +262,11 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         }
     
         private void RunAssertionFullyGroupedOrdered(EPServiceProvider epService) {
-            string statementString = "select theString, sum(intPrimitive) as mysum from SupportBean#length(5) group by theString order by sum(intPrimitive) limit 2";
+            string statementString = "select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString order by sum(IntPrimitive) limit 2";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementString);
             var listener = new SupportUpdateListener();
     
-            string[] fields = "theString,mysum".Split(',');
+            string[] fields = "TheString,mysum".Split(',');
             stmt.Events += listener.Update;
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, null);
     
@@ -288,11 +288,11 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
         private void RunAssertionEventPerRowUnGrouped(EPServiceProvider epService) {
             SendTimer(epService, 1000);
-            string statementString = "select theString, sum(intPrimitive) as mysum from SupportBean#length(5) output every 10 seconds order by theString desc limit 2";
+            string statementString = "select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) output every 10 seconds order by TheString desc limit 2";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementString);
             var listener = new SupportUpdateListener();
     
-            string[] fields = "theString,mysum".Split(',');
+            string[] fields = "TheString,mysum".Split(',');
             stmt.Events += listener.Update;
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, null);
     
@@ -309,11 +309,11 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
         private void RunAssertionGroupedSnapshot(EPServiceProvider epService) {
             SendTimer(epService, 1000);
-            string statementString = "select theString, sum(intPrimitive) as mysum from SupportBean#length(5) group by theString output snapshot every 10 seconds order by sum(intPrimitive) desc limit 2";
+            string statementString = "select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString output snapshot every 10 seconds order by sum(IntPrimitive) desc limit 2";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementString);
             var listener = new SupportUpdateListener();
     
-            string[] fields = "theString,mysum".Split(',');
+            string[] fields = "TheString,mysum".Split(',');
             stmt.Events += listener.Update;
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, null);
     
@@ -330,11 +330,11 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
         private void RunAssertionGroupedSnapshotNegativeRowcount(EPServiceProvider epService) {
             SendTimer(epService, 1000);
-            string statementString = "select theString, sum(intPrimitive) as mysum from SupportBean#length(5) group by theString output snapshot every 10 seconds order by sum(intPrimitive) desc limit -1 offset 1";
+            string statementString = "select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString output snapshot every 10 seconds order by sum(IntPrimitive) desc limit -1 offset 1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statementString);
             var listener = new SupportUpdateListener();
     
-            string[] fields = "theString,mysum".Split(',');
+            string[] fields = "TheString,mysum".Split(',');
             stmt.Events += listener.Update;
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, null);
     
@@ -368,7 +368,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         }
     
         private void TryAssertion(EPServiceProvider epService, EPStatement stmt, SupportUpdateListener listener) {
-            string[] fields = "theString".Split(',');
+            string[] fields = "TheString".Split(',');
             stmt.Events += listener.Update;
             SendEvent(epService, "E1", 1);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new object[][]{new object[] {"E1"}});
@@ -403,7 +403,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                 SendEvent(epService, theString, 0);
             }
             epService.EPRuntime.SendEvent(new SupportBean_S1(0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString".Split(','), new object[]{expected});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "TheString".Split(','), new object[]{expected});
         }
     
         private void SendSBSequenceAndAssert(EPServiceProvider epService, SupportUpdateListener listener, string expectedString, int expectedInt, object[][] rows) {
@@ -412,7 +412,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                 SendEvent(epService, row[0].ToString(), (int) row[1]);
             }
             epService.EPRuntime.SendEvent(new SupportBean_S1(0));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString,intPrimitive".Split(','), new object[]{expectedString, expectedInt});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "TheString,IntPrimitive".Split(','), new object[]{expectedString, expectedInt});
         }
     }
 } // end of namespace

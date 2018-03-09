@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.events.map
             TryInvalid(epService, invalid, typeof(SupportBean).FullName + " cannot be cast to System.String");
     
             invalid = ExecEventMap.MakeMap(new object[][]{new object[] {"abc", new SupportBean()}});
-            TryInvalid(epService, invalid, "Nestable type configuration encountered an unexpected property type of 'SupportBean' for property 'abc', expected Type or Map or the name of a previously-declared Map or ObjectArray type");
+            TryInvalid(epService, invalid, "Nestable type configuration encountered an unexpected property type of 'SupportBean' for property 'abc', expected Type or DataMap or the name of a previously-declared Map or ObjectArray type");
         }
     
         private void TryInvalid(EPServiceProvider epService, IDictionary<string, Object> config, string message) {

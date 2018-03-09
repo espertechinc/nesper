@@ -46,12 +46,14 @@ namespace com.espertech.esper.regression.expr.datetime
             });
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(null));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {
+                SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null
+            });
     
             string expectedTime = "2002-05-30T09:00:00.000";
             epService.EPRuntime.SetVariableValue("varhour", null); // variable is null
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, SupportDateTime.GetArrayCoerced(expectedTime, "long", "util", "long", "cal", "ldt", "zdt"));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, SupportDateTime.GetArrayCoerced(expectedTime, "long", "util", "long", "cal"));
     
             expectedTime = "2002-05-30T01:02:03.004";
             epService.EPRuntime.SetVariableValue("varhour", 1);
@@ -59,7 +61,7 @@ namespace com.espertech.esper.regression.expr.datetime
             epService.EPRuntime.SetVariableValue("varsec", 3);
             epService.EPRuntime.SetVariableValue("varmsec", 4);
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, SupportDateTime.GetArrayCoerced(expectedTime, "long", "util", "long", "cal", "ldt", "zdt"));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, SupportDateTime.GetArrayCoerced(expectedTime, "long", "util", "long", "cal"));
     
             expectedTime = "2002-05-30T00:00:00.006";
             epService.EPRuntime.SetVariableValue("varhour", 0);
@@ -67,7 +69,7 @@ namespace com.espertech.esper.regression.expr.datetime
             epService.EPRuntime.SetVariableValue("varsec", null);
             epService.EPRuntime.SetVariableValue("varmsec", 6);
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, SupportDateTime.GetArrayCoerced(expectedTime, "long", "util", "long", "cal", "ldt", "zdt"));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, SupportDateTime.GetArrayCoerced(expectedTime, "long", "util", "long", "cal"));
         }
     }
 } // end of namespace

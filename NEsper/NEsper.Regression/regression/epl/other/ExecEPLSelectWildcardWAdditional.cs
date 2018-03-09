@@ -26,7 +26,7 @@ namespace com.espertech.esper.regression.epl.other
         public override void Configure(Configuration configuration) {
             var typeMap = new Dictionary<string, object>();
             typeMap.Put("int", typeof(int?));
-            typeMap.Put("theString", typeof(string));
+            typeMap.Put("TheString", typeof(string));
             configuration.AddEventType("mapEvent", typeMap);
         }
     
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.epl.other
                 .AddView(View.Create("win", "length", Expressions.Constant(5))));
             model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
     
-            string text = "select *, myString||myString as concat from " + eventName + ".win:Length(5)";
+            string text = "select *, myString||myString as concat from " + eventName + ".win:length(5)";
             Assert.AreEqual(text, model.ToEPL());
     
             EPStatement statement = epService.EPAdministrator.Create(model);
@@ -191,7 +191,7 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionMapEvents(EPServiceProvider epService) {
-            string text = "select *, theString||theString as concat from mapEvent#length(5)";
+            string text = "select *, TheString||TheString as concat from mapEvent#length(5)";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
@@ -200,13 +200,13 @@ namespace com.espertech.esper.regression.epl.other
             // The map to send into the runtime
             var props = new Dictionary<string, object>();
             props.Put("int", 1);
-            props.Put("theString", "xx");
+            props.Put("TheString", "xx");
             epService.EPRuntime.SendEvent(props, "mapEvent");
     
             // The map of expected results
             var properties = new Dictionary<string, object>();
             properties.Put("int", 1);
-            properties.Put("theString", "xx");
+            properties.Put("TheString", "xx");
             properties.Put("concat", "xxxx");
     
             AssertProperties(properties, listener);

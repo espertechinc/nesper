@@ -119,17 +119,17 @@ namespace com.espertech.esper.regression.events.infra
     
             var stmtText = "select " +
                     "item?.indexed[0] as indexed1, " +
-                    "Exists(item?.indexed[0]) as exists_indexed1, " +
+                    "exists(item?.indexed[0]) as exists_indexed1, " +
                     "item?.indexed[1]? as indexed2, " +
-                    "Exists(item?.indexed[1]?) as exists_indexed2, " +
+                    "exists(item?.indexed[1]?) as exists_indexed2, " +
                     "item?.arrayProperty[1]? as array, " +
-                    "Exists(item?.arrayProperty[1]?) as exists_array, " +
+                    "exists(item?.arrayProperty[1]?) as exists_array, " +
                     "item?.Mapped('keyOne') as mapped1, " +
-                    "Exists(item?.Mapped('keyOne')) as exists_mapped1, " +
+                    "exists(item?.Mapped('keyOne')) as exists_mapped1, " +
                     "item?.Mapped('keyTwo')? as mapped2,  " +
-                    "Exists(item?.Mapped('keyTwo')?) as exists_mapped2,  " +
+                    "exists(item?.Mapped('keyTwo')?) as exists_mapped2,  " +
                     "item?.MapProperty('xOne')? as map, " +
-                    "Exists(item?.MapProperty('xOne')?) as exists_map " +
+                    "exists(item?.MapProperty('xOne')?) as exists_map " +
                     " from " + typename;
     
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);

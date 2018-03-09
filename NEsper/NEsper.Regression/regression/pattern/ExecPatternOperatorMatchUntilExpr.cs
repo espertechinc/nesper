@@ -7,32 +7,25 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.regression.support;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-using static com.espertech.esper.supportregression.bean.SupportBeanConstants;
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.pattern
 {
     public class ExecPatternOperatorMatchUntilExpr : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.AddEventType("A", typeof(SupportBean_A).Name);
-            configuration.AddEventType("B", typeof(SupportBean_B).Name);
-            configuration.AddEventType("C", typeof(SupportBean_C).Name);
-            configuration.AddEventType("SupportBean", typeof(SupportBean).FullName);
+            configuration.AddEventType("A", typeof(SupportBean_A));
+            configuration.AddEventType("B", typeof(SupportBean_B));
+            configuration.AddEventType("C", typeof(SupportBean_C));
+            configuration.AddEventType("SupportBean", typeof(SupportBean));
             configuration.AddImport(typeof(SupportStaticMethodLib));
         }
     
@@ -366,7 +359,7 @@ namespace com.espertech.esper.regression.pattern
             statement.Dispose();
     
             // Test equals-optimization with array event
-            stmt = "select * from pattern [a=A until b=B -> c=SupportBean(theString = a[1].id)]";
+            stmt = "select * from pattern [a=A until b=B -> c=SupportBean(TheString = a[1].id)]";
             listener = new SupportUpdateListener();
             statement = epService.EPAdministrator.CreateEPL(stmt);
             statement.Events += listener.Update;
@@ -380,11 +373,11 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new SupportBean("A2", 10));
             theEvent = listener.AssertOneGetNewAndReset();
-            Assert.AreEqual(10, theEvent.Get("c.intPrimitive"));
+            Assert.AreEqual(10, theEvent.Get("c.IntPrimitive"));
             statement.Dispose();
     
             // Test in-optimization
-            stmt = "select * from pattern [a=A until b=B -> c=SupportBean(theString In(a[2].id))]";
+            stmt = "select * from pattern [a=A until b=B -> c=SupportBean(TheString In(a[2].id))]";
             listener = new SupportUpdateListener();
             statement = epService.EPAdministrator.CreateEPL(stmt);
             statement.Events += listener.Update;
@@ -399,11 +392,11 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new SupportBean("A3", 5));
             theEvent = listener.AssertOneGetNewAndReset();
-            Assert.AreEqual(5, theEvent.Get("c.intPrimitive"));
+            Assert.AreEqual(5, theEvent.Get("c.IntPrimitive"));
             statement.Dispose();
     
             // Test not-in-optimization
-            stmt = "select * from pattern [a=A until b=B -> c=SupportBean(theString!=a[0].id and theString!=a[1].id and theString!=a[2].id)]";
+            stmt = "select * from pattern [a=A until b=B -> c=SupportBean(TheString!=a[0].id and TheString!=a[1].id and TheString!=a[2].id)]";
             listener = new SupportUpdateListener();
             statement = epService.EPAdministrator.CreateEPL(stmt);
             statement.Events += listener.Update;
@@ -420,11 +413,11 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new SupportBean("A6", 5));
             theEvent = listener.AssertOneGetNewAndReset();
-            Assert.AreEqual(5, theEvent.Get("c.intPrimitive"));
+            Assert.AreEqual(5, theEvent.Get("c.IntPrimitive"));
             statement.Dispose();
     
             // Test range-optimization
-            stmt = "select * from pattern [a=SupportBean(theString like 'A%') until b=SupportBean(theString like 'B%') -> c=SupportBean(intPrimitive between a[0].intPrimitive and a[1].intPrimitive)]";
+            stmt = "select * from pattern [a=SupportBean(TheString like 'A%') until b=SupportBean(TheString like 'B%') -> c=SupportBean(IntPrimitive between a[0].IntPrimitive and a[1].IntPrimitive)]";
             listener = new SupportUpdateListener();
             statement = epService.EPAdministrator.CreateEPL(stmt);
             statement.Events += listener.Update;
@@ -440,7 +433,7 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 5));
             theEvent = listener.AssertOneGetNewAndReset();
-            Assert.AreEqual(5, theEvent.Get("c.intPrimitive"));
+            Assert.AreEqual(5, theEvent.Get("c.IntPrimitive"));
     
             statement.Dispose();
         }
@@ -462,7 +455,7 @@ namespace com.espertech.esper.regression.pattern
             // test with timer:interval
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
-            string query = "select * from pattern [every ([2:]e1=SupportBean(theString='2') until timer:interval(5))->([2:]e2=SupportBean(theString='3') until timer:interval(2))]";
+            string query = "select * from pattern [every ([2:]e1=SupportBean(TheString='2') until timer:interval(5))->([2:]e2=SupportBean(TheString='3') until timer:interval(2))]";
             epService.EPAdministrator.CreateEPL(query);
     
             epService.EPRuntime.SendEvent(new SupportBean("2", 0));
@@ -482,9 +475,9 @@ namespace com.espertech.esper.regression.pattern
             // test followed by 3 streams
             epService.EPAdministrator.DestroyAllStatements();
             listener.Reset();
-            string epl = "select * from pattern [ every [2] A=SupportBean(theString='1') " +
-                    "-> [2] B=SupportBean(theString='2' and intPrimitive=A[0].intPrimitive)" +
-                    "-> [2] C=SupportBean(theString='3' and intPrimitive=A[0].intPrimitive)]";
+            string epl = "select * from pattern [ every [2] A=SupportBean(TheString='1') " +
+                    "-> [2] B=SupportBean(TheString='2' and IntPrimitive=A[0].IntPrimitive)" +
+                    "-> [2] C=SupportBean(TheString='3' and IntPrimitive=A[0].IntPrimitive)]";
             epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("1", 10));
@@ -499,7 +492,7 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionArrayFunctionRepeat(EPServiceProvider epService) {
-            string stmt = "select SupportStaticMethodLib.ArrayLength(a) as length, java.lang.reflect.Array.GetLength(a) as l2 from pattern [[1:] a=A until B]";
+            string stmt = "select SupportStaticMethodLib.ArrayLength(a) as length, FakeSystem.Array.GetLength(a) as l2 from pattern [[1:] a=A until B]";
             var listener = new SupportUpdateListener();
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmt);
             statement.Events += listener.Update;
@@ -526,7 +519,7 @@ namespace com.espertech.esper.regression.pattern
             // test variables - closed bounds
             epService.EPRuntime.SetVariableValue("lower", 2);
             epService.EPRuntime.SetVariableValue("upper", 3);
-            string stmtOne = "[lower:upper] a=SupportBean (theString = 'A') until b=SupportBean (theString = 'B')";
+            string stmtOne = "[lower:upper] a=SupportBean (TheString = 'A') until b=SupportBean (TheString = 'B')";
             ValidateStmt(epService, stmtOne, 0, false, null);
             ValidateStmt(epService, stmtOne, 1, false, null);
             ValidateStmt(epService, stmtOne, 2, true, 2);
@@ -537,7 +530,7 @@ namespace com.espertech.esper.regression.pattern
             // test variables - half open
             epService.EPRuntime.SetVariableValue("lower", 3);
             epService.EPRuntime.SetVariableValue("upper", null);
-            string stmtTwo = "[lower:] a=SupportBean (theString = 'A') until b=SupportBean (theString = 'B')";
+            string stmtTwo = "[lower:] a=SupportBean (TheString = 'A') until b=SupportBean (TheString = 'B')";
             ValidateStmt(epService, stmtTwo, 0, false, null);
             ValidateStmt(epService, stmtTwo, 1, false, null);
             ValidateStmt(epService, stmtTwo, 2, false, null);
@@ -548,7 +541,7 @@ namespace com.espertech.esper.regression.pattern
             // test variables - half closed
             epService.EPRuntime.SetVariableValue("lower", null);
             epService.EPRuntime.SetVariableValue("upper", 2);
-            string stmtThree = "[:upper] a=SupportBean (theString = 'A') until b=SupportBean (theString = 'B')";
+            string stmtThree = "[:upper] a=SupportBean (TheString = 'A') until b=SupportBean (TheString = 'B')";
             ValidateStmt(epService, stmtThree, 0, true, null);
             ValidateStmt(epService, stmtThree, 1, true, 1);
             ValidateStmt(epService, stmtThree, 2, true, 2);
@@ -563,7 +556,7 @@ namespace com.espertech.esper.regression.pattern
             Assert.IsFalse(listener.IsInvoked);
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "b[0].theString,b[1].theString".Split(','), new object[]{"E1", "E2"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "b[0].TheString,b[1].TheString".Split(','), new object[]{"E1", "E2"});
     
             // test substitution parameter
             string epl = "select * from pattern[[?] SupportBean]";
@@ -622,8 +615,8 @@ namespace com.espertech.esper.regression.pattern
     
         private void RunAssertionBoundRepeatWithNot(EPServiceProvider epService) {
     
-            string[] fields = "e[0].intPrimitive,e[1].intPrimitive".Split(',');
-            string epl = "select * from pattern [every [2] (e = SupportBean(theString='A') and not SupportBean(theString='B'))]";
+            string[] fields = "e[0].IntPrimitive,e[1].IntPrimitive".Split(',');
+            string epl = "select * from pattern [every [2] (e = SupportBean(TheString='A') and not SupportBean(TheString='B'))]";
             EPStatement statement = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
@@ -678,11 +671,22 @@ namespace com.espertech.esper.regression.pattern
             TryInvalidPattern(epService, "[0] A", "Incorrect range specification, a bounds value of zero or negative value is not allowed [[0] A]");
             TryInvalidPattern(epService, "[1] a=A(a[0].id='a')", "Failed to validate filter expression 'a[0].id=\"a\"': Property named 'a[0].id' is not valid in any stream [[1] a=A(a[0].id='a')]");
             TryInvalidPattern(epService, "a=A -> B(a[0].id='a')", "Failed to validate filter expression 'a[0].id=\"a\"': Property named 'a[0].id' is not valid in any stream [a=A -> B(a[0].id='a')]");
-            TryInvalidPattern(epService, "(a=A until c=B) -> c=C", "Tag 'c' for event 'C' has already been declared for events of type " + typeof(SupportBean_B).Name + " [(a=A until c=B) -> c=C]");
+            TryInvalidPattern(epService, "(a=A until c=B) -> c=C", "Tag 'c' for event 'C' has already been declared for events of type " + typeof(SupportBean_B).FullName + " [(a=A until c=B) -> c=C]");
             TryInvalidPattern(epService, "((a=A until b=B) until a=A)", "Tag 'a' for event 'A' used in the repeat-until operator cannot also appear in other filter expressions [((a=A until b=B) until a=A)]");
-            TryInvalidPattern(epService, "a=SupportBean -> [a.theString] b=SupportBean", "Match-until bounds value expressions must return a numeric value [a=SupportBean -> [a.theString] b=SupportBean]");
-            TryInvalidPattern(epService, "a=SupportBean -> [:a.theString] b=SupportBean", "Match-until bounds value expressions must return a numeric value [a=SupportBean -> [:a.theString] b=SupportBean]");
-            TryInvalidPattern(epService, "a=SupportBean -> [a.theString:1] b=SupportBean", "Match-until bounds value expressions must return a numeric value [a=SupportBean -> [a.theString:1] b=SupportBean]");
+            TryInvalidPattern(epService, "a=SupportBean -> [a.TheString] b=SupportBean", "Match-until bounds value expressions must return a numeric value [a=SupportBean -> [a.TheString] b=SupportBean]");
+            TryInvalidPattern(epService, "a=SupportBean -> [:a.TheString] b=SupportBean", "Match-until bounds value expressions must return a numeric value [a=SupportBean -> [:a.TheString] b=SupportBean]");
+            TryInvalidPattern(epService, "a=SupportBean -> [a.TheString:1] b=SupportBean", "Match-until bounds value expressions must return a numeric value [a=SupportBean -> [a.TheString:1] b=SupportBean]");
         }
     }
 } // end of namespace
+
+namespace FakeSystem
+{
+    public static class Array
+    {
+        public static int GetLength(System.Array array)
+        {
+            return array.Length;
+        }
+    }
+}

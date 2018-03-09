@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionSumOneView(EPServiceProvider epService) {
-            string epl = "select irstream sum(longBoxed) as mySum " +
+            string epl = "select irstream sum(LongBoxed) as mySum " +
                     "from " + typeof(SupportBean).FullName + "#time(10 sec)";
     
             SendTimerEvent(epService, 0);
@@ -51,10 +51,10 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionSumJoin(EPServiceProvider epService) {
-            string epl = "select irstream sum(longBoxed) as mySum " +
+            string epl = "select irstream sum(LongBoxed) as mySum " +
                     "from " + typeof(SupportBeanString).FullName + "#keepall as one, " +
                     typeof(SupportBean).FullName + "#time(10 sec) as two " +
-                    "where one.theString = two.theString";
+                    "where one.TheString = two.TheString";
     
             SendTimerEvent(epService, 0);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);

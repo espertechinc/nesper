@@ -10,14 +10,9 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.enummethod
 {
@@ -37,8 +32,8 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1".Split(',');
             string eplFragment = "select " +
-                    "contained.MostFrequent(x => p00) as val0," +
-                    "contained.LeastFrequent(x => p00) as val1 " +
+                    "Contained.mostFrequent(x => p00) as val0," +
+                    "Contained.leastFrequent(x => p00) as val1 " +
                     "from Bean";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
@@ -72,8 +67,8 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1".Split(',');
             string eplFragment = "select " +
-                    "strvals.MostFrequent() as val0, " +
-                    "strvals.LeastFrequent() as val1 " +
+                    "Strvals.mostFrequent() as val0, " +
+                    "Strvals.leastFrequent() as val1 " +
                     "from SupportCollection";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
@@ -93,10 +88,10 @@ namespace com.espertech.esper.regression.expr.enummethod
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, null});
             stmtFragment.Dispose();
     
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(ExecEnumMinMax.MyService).Name, "extractNum");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(ExecEnumMinMax.MyService), "ExtractNum");
             string eplLambda = "select " +
-                    "strvals.MostFrequent(v => ExtractNum(v)) as val0, " +
-                    "strvals.LeastFrequent(v => ExtractNum(v)) as val1 " +
+                    "Strvals.mostFrequent(v => extractNum(v)) as val0, " +
+                    "Strvals.leastFrequent(v => extractNum(v)) as val1 " +
                     "from SupportCollection";
             EPStatement stmtLambda = epService.EPAdministrator.CreateEPL(eplLambda);
             stmtLambda.Events += listener.Update;

@@ -138,7 +138,7 @@ namespace com.espertech.esper.regression.rowrecog
             string delimiter = "";
             foreach (string measure in testDesc.Measures.Split(',')) {
                 buf.Append(delimiter);
-                buf.Append(measure.ToUpperInvariant()).Append(".theString as ").Append(ReplaceBrackets(measure)).Append("val");
+                buf.Append(measure.ToUpperInvariant()).Append(".TheString as ").Append(ReplaceBrackets(measure)).Append("val");
                 delimiter = ",";
             }
             buf.Append("\n all matches ");
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regression.rowrecog
             delimiter = "";
             foreach (string define in defines) {
                 buf.Append(delimiter);
-                buf.Append(define).Append(" as (").Append(define).Append(".theString like '").Append(define.ToLowerInvariant()).Append("%')");
+                buf.Append(define).Append(" as (").Append(define).Append(".TheString like '").Append(define.ToLowerInvariant()).Append("%')");
                 delimiter = ",\n";
             }
             buf.Append(")");

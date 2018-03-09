@@ -30,7 +30,7 @@ namespace com.espertech.esper.regression.view
         private void RunAssertionNotEqualsOp(EPServiceProvider epService) {
             EPStatement statement = epService.EPAdministrator.CreateEPL(
                     "select * from " + typeof(SupportBean).FullName +
-                            "(theString != 'a')");
+                            "(TheString != 'a')");
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
     
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.view
         private void RunAssertionCombinationEqualsOp(EPServiceProvider epService) {
             EPStatement statement = epService.EPAdministrator.CreateEPL(
                     "select * from " + typeof(SupportBean).FullName +
-                            "(theString != 'a', intPrimitive=0)");
+                            "(TheString != 'a', IntPrimitive=0)");
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
     

@@ -29,15 +29,15 @@ namespace com.espertech.esper.regression.nwtable.infra
             }
     
             string eplNamedWindow =
-                    "create window TotalsWindow#unique(theString) as (theString string, total int);" +
-                            "insert into TotalsWindow select theString, sum(intPrimitive) as total from SupportBean group by theString;" +
+                    "create window TotalsWindow#unique(TheString) as (TheString string, total int);" +
+                            "insert into TotalsWindow select TheString, sum(IntPrimitive) as total from SupportBean group by TheString;" +
                             "@Name('Listen') select p00 as c0, " +
-                            "    (select total from TotalsWindow tw where tw.theString = s0.p00) as c1 from SupportBean_S0 as s0;";
+                            "    (select total from TotalsWindow tw where tw.TheString = s0.p00) as c1 from SupportBean_S0 as s0;";
             TryAssertionComparativeGroupByTopLevelSingleAgg(epService, "named window", 1000, eplNamedWindow, 1);
     
             string eplTable =
                     "create table varTotal (key string primary key, total sum(int));\n" +
-                            "into table varTotal select theString, sum(intPrimitive) as total from SupportBean group by theString;\n" +
+                            "into table varTotal select TheString, sum(IntPrimitive) as total from SupportBean group by TheString;\n" +
                             "@Name('Listen') select p00 as c0, varTotal[p00].total as c1 from SupportBean_S0;\n";
             TryAssertionComparativeGroupByTopLevelSingleAgg(epService, "table", 1000, eplTable, 1);
         }

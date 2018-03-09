@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
         private void RunAssertionInsertIntoSelfAccess(EPServiceProvider epService) {
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL("create table MyTableIISA(pkey string primary key)");
-            epService.EPAdministrator.CreateEPL("insert into MyTableIISA select theString as pkey from SupportBean where MyTableIISA[theString] is null");
+            epService.EPAdministrator.CreateEPL("insert into MyTableIISA select TheString as pkey from SupportBean where MyTableIISA[TheString] is null");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
@@ -59,7 +59,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL("create table MyTableNWM(pkey string)");
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("on SupportBean as sb merge MyWindow when not matched " +
-                    "then insert into MyTableNWM select sb.theString as pkey");
+                    "then insert into MyTableNWM select sb.TheString as pkey");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "pkey".Split(','), new object[][]{new object[] {"E1"}});
@@ -74,9 +74,9 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "create table MyTableTwo(pkey string primary key, col int)");
     
             string eplSplit = "on SupportBean \n" +
-                    "  insert into MyTableOne select theString as pkey, intPrimitive as col where intPrimitive > 0\n" +
-                    "  insert into MyTableTwo select theString as pkey, intPrimitive as col where intPrimitive < 0\n" +
-                    "  insert into OtherStream select theString as pkey, intPrimitive as col where intPrimitive = 0\n";
+                    "  insert into MyTableOne select TheString as pkey, IntPrimitive as col where IntPrimitive > 0\n" +
+                    "  insert into MyTableTwo select TheString as pkey, IntPrimitive as col where IntPrimitive < 0\n" +
+                    "  insert into OtherStream select TheString as pkey, IntPrimitive as col where IntPrimitive = 0\n";
             epService.EPAdministrator.CreateEPL(eplSplit);
     
             var otherStreamListener = new SupportUpdateListener();
@@ -106,10 +106,10 @@ namespace com.espertech.esper.regression.nwtable.tbl
         }
     
         private void RunAssertionInsertIntoFromNamedWindow(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("create window MyWindow#unique(theString) as SupportBean");
+            epService.EPAdministrator.CreateEPL("create window MyWindow#unique(TheString) as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL("create table MyTableIIF(pkey0 string primary key, pkey1 int primary key)");
-            epService.EPAdministrator.CreateEPL("on SupportBean_S1 insert into MyTableIIF select theString as pkey0, intPrimitive as pkey1 from MyWindow");
+            epService.EPAdministrator.CreateEPL("on SupportBean_S1 insert into MyTableIIF select TheString as pkey0, IntPrimitive as pkey1 from MyWindow");
             string[] fields = "pkey0,pkey1".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
@@ -131,9 +131,9 @@ namespace com.espertech.esper.regression.nwtable.tbl
         }
     
         private void RunInsertIntoUnKeyed(EPServiceProvider epService) {
-            string[] fields = "theString".Split(',');
-            EPStatement stmtCreate = epService.EPAdministrator.CreateEPL("create table MyTableIIU(theString string)");
-            epService.EPAdministrator.CreateEPL("@Name('tbl-insert') insert into MyTableIIU select theString from SupportBean");
+            string[] fields = "TheString".Split(',');
+            EPStatement stmtCreate = epService.EPAdministrator.CreateEPL("create table MyTableIIU(TheString string)");
+            epService.EPAdministrator.CreateEPL("@Name('tbl-insert') insert into MyTableIIU select TheString from SupportBean");
     
             EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new Object[0][]);
     
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 epService.EPRuntime.SendEvent(new SupportBean("E2", 0));
                 Assert.Fail();
             } catch (EPException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex, "java.lang.RuntimeException: Unexpected exception in statement 'tbl-insert': Unique index violation, table 'MyTableIIU' is a declared to hold a single un-keyed row");
+                SupportMessageAssertUtil.AssertMessage(ex, "com.espertech.esper.client.EPException: Unexpected exception in statement 'tbl-insert': Unique index violation, table 'MyTableIIU' is a declared to hold a single un-keyed row");
             }
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -155,7 +155,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL("create table MyTableIIK(" +
                     "pkey string primary key," +
                     "thesum sum(int))");
-            epService.EPAdministrator.CreateEPL("insert into MyTableIIK select theString as pkey from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into MyTableIIK select TheString as pkey from SupportBean");
             epService.EPAdministrator.CreateEPL("into table MyTableIIK select sum(id) as thesum from SupportBean_S0 group by p00");
             epService.EPAdministrator.CreateEPL("on SupportBean_S1 insert into MyTableIIK select p10 as pkey");
             epService.EPAdministrator.CreateEPL("on SupportBean_S2 merge MyTableIIK where p20 = pkey when not matched then insert into MyTableIIK select p20 as pkey");

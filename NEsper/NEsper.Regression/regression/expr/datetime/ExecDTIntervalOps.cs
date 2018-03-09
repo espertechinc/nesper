@@ -10,10 +10,7 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
@@ -61,108 +58,108 @@ namespace com.espertech.esper.regression.expr.datetime
             object[][] expected = {
                     new object[] {"2999-01-01T09:00:00.001", 0, true},       // sending in A
             };
-            AssertExpression(epService, seedTime, 0, "a.WithDate(2001, 1, 1).Before(b)", expected, null);
+            AssertExpression(epService, seedTime, 0, "a.WithDate(2001, 1, 1).before(b)", expected, null);
     
             expected = new object[][]{
                     new object[] {"2999-01-01T10:00:00.001", 0, false},
                     new object[] {"2999-01-01T08:00:00.001", 0, true},
             };
-            AssertExpression(epService, seedTime, 0, "a.WithDate(2001, 1, 1).Before(b.WithDate(2001, 1, 1))", expected, null);
+            AssertExpression(epService, seedTime, 0, "a.WithDate(2001, 1, 1).before(b.WithDate(2001, 1, 1))", expected, null);
     
             // Test end-timestamp preserved when using calendar ops
             expected = new object[][]{
                     new object[] {"2002-05-30T08:59:59.000", 2000, false},
             };
-            AssertExpression(epService, seedTime, 0, "a.Before(b)", expected, null);
+            AssertExpression(epService, seedTime, 0, "a.before(b)", expected, null);
             expected = new object[][]{
                     new object[] {"2002-05-30T08:59:59.000", 2000, false},
             };
-            AssertExpression(epService, seedTime, 0, "a.WithTime(8, 59, 59, 0).Before(b)", expected, null);
+            AssertExpression(epService, seedTime, 0, "a.withTime(8, 59, 59, 0).before(b)", expected, null);
     
             // Test end-timestamp preserved when using calendar ops
             expected = new object[][]{
                     new object[] {"2002-05-30T09:00:01.000", 0, false},
                     new object[] {"2002-05-30T09:00:01.001", 0, true},
             };
-            AssertExpression(epService, seedTime, 1000, "a.After(b)", expected, null);
+            AssertExpression(epService, seedTime, 1000, "a.after(b)", expected, null);
     
             // NOT YET SUPPORTED (a documented limitation of datetime methods)
-            // AssertExpression(seedTime, 0, "a.After(b.WithTime(9, 0, 0, 0))", expected, null);   // the "b.WithTime(...) must retain the end-timestamp correctness (a documented limitation)
+            // AssertExpression(seedTime, 0, "a.after(b.withTime(9, 0, 0, 0))", expected, null);   // the "b.withTime(...) must retain the end-timestamp correctness (a documented limitation)
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean).FullName);
+            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
             RegisterBeanType(epService);
     
             // wrong 1st parameter - string
-            TryInvalid(epService, "select A.Before('x') from A as a",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Before('x')': Failed to resolve enumeration method, date-time method or mapped property 'a.Before('x')': For date-time method 'before' the first parameter expression returns 'class System.String', however requires a Date, Calendar, long-type return value or event (with timestamp) [select A.Before('x') from A as a]");
+            TryInvalid(epService, "select a.before('x') from A as a",
+                    "Error starting statement: Failed to validate select-clause expression 'a.before('x')': Failed to resolve enumeration method, date-time method or mapped property 'a.before('x')': For date-time method 'before' the first parameter expression returns 'class System.String', however requires a DateTime or Long-type return value or event (with timestamp) [select a.before('x') from A as a]");
     
             // wrong 1st parameter - event not defined with timestamp expression
-            TryInvalid(epService, "select A.Before(b) from A#lastevent as a, SupportBean#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Before(b)': For date-time method 'before' the first parameter is event type 'SupportBean', however no timestamp property has been defined for this event type [select A.Before(b) from A#lastevent as a, SupportBean#lastevent as b]");
+            TryInvalid(epService, "select a.before(b) from A#lastevent as a, SupportBean#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.before(b)': For date-time method 'before' the first parameter is event type 'SupportBean', however no timestamp property has been defined for this event type [select a.before(b) from A#lastevent as a, SupportBean#lastevent as b]");
     
             // wrong 1st parameter - boolean
-            TryInvalid(epService, "select A.Before(true) from A#lastevent as a, SupportBean#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Before(true)': For date-time method 'before' the first parameter expression returns 'class java.lang.bool?', however requires a Date, Calendar, long-type return value or event (with timestamp) [select A.Before(true) from A#lastevent as a, SupportBean#lastevent as b]");
+            TryInvalid(epService, "select a.before(true) from A#lastevent as a, SupportBean#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.before(true)': For date-time method 'before' the first parameter expression returns 'class " + Name.Clean<bool>() + ", however requires a DateTime or Long-type return value or event (with timestamp) [select a.before(true) from A#lastevent as a, SupportBean#lastevent as b]");
     
             // wrong zero parameters
-            TryInvalid(epService, "select A.Before() from A#lastevent as a, SupportBean#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Before()': Parameters mismatch for date-time method 'before', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing interval start value, or an expression providing timestamp or timestamped-event and an expression providing interval start value and an expression providing interval finishes value, but receives no parameters [select A.Before() from A#lastevent as a, SupportBean#lastevent as b]");
+            TryInvalid(epService, "select a.before() from A#lastevent as a, SupportBean#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.before()': Parameters mismatch for date-time method 'before', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing interval start value, or an expression providing timestamp or timestamped-event and an expression providing interval start value and an expression providing interval finishes value, but receives no parameters [select a.before() from A#lastevent as a, SupportBean#lastevent as b]");
     
             // wrong target
-            TryInvalid(epService, "select TheString.Before(a) from A#lastevent as a, SupportBean#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'theString.Before(a)': Date-time enumeration method 'before' requires either a Calendar, Date, long, LocalDateTime or ZonedDateTime value as input or events of an event type that declares a timestamp property but received System.String [select TheString.Before(a) from A#lastevent as a, SupportBean#lastevent as b]");
-            TryInvalid(epService, "select B.Before(a) from A#lastevent as a, SupportBean#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'b.Before(a)': Date-time enumeration method 'before' requires either a Calendar, Date, long, LocalDateTime or ZonedDateTime value as input or events of an event type that declares a timestamp property [select B.Before(a) from A#lastevent as a, SupportBean#lastevent as b]");
-            TryInvalid(epService, "select A.Get('month').Before(a) from A#lastevent as a, SupportBean#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Get(\"month\").Before(a)': Invalid input for date-time method 'before' [select A.Get('month').Before(a) from A#lastevent as a, SupportBean#lastevent as b]");
+            TryInvalid(epService, "select TheString.before(a) from A#lastevent as a, SupportBean#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'TheString.before(a)': Date-time enumeration method 'before' requires either a DateTime, DateTimeEx or long value as input or events of an event type that declares a timestamp property but received System.String [select TheString.before(a) from A#lastevent as a, SupportBean#lastevent as b]");
+            TryInvalid(epService, "select b.before(a) from A#lastevent as a, SupportBean#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'b.before(a)': Date-time enumeration method 'before' requires either a DateTime, DateTimeEx or long value as input or events of an event type that declares a timestamp property [select b.before(a) from A#lastevent as a, SupportBean#lastevent as b]");
+            TryInvalid(epService, "select a.get('month').before(a) from A#lastevent as a, SupportBean#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.get(\"month\").before(a)': Invalid input for date-time method 'before' [select a.get('month').before(a) from A#lastevent as a, SupportBean#lastevent as b]");
     
             // test before/after
-            TryInvalid(epService, "select A.Before(b, 'abc') from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Before(b,\"abc\")': Error validating date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 1 but received System.String [select A.Before(b, 'abc') from A#lastevent as a, B#lastevent as b]");
-            TryInvalid(epService, "select A.Before(b, 1, 'def') from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Before(b,1,\"def\")': Error validating date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 2 but received System.String [select A.Before(b, 1, 'def') from A#lastevent as a, B#lastevent as b]");
-            TryInvalid(epService, "select A.Before(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Before(b,1,2,3)': Parameters mismatch for date-time method 'before', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing interval start value, or an expression providing timestamp or timestamped-event and an expression providing interval start value and an expression providing interval finishes value, but receives 4 expressions [select A.Before(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b]");
+            TryInvalid(epService, "select a.before(b, 'abc') from A#lastevent as a, B#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.before(b,\"abc\")': Error validating date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 1 but received System.String [select a.before(b, 'abc') from A#lastevent as a, B#lastevent as b]");
+            TryInvalid(epService, "select a.before(b, 1, 'def') from A#lastevent as a, B#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.before(b,1,\"def\")': Error validating date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 2 but received System.String [select a.before(b, 1, 'def') from A#lastevent as a, B#lastevent as b]");
+            TryInvalid(epService, "select a.before(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.before(b,1,2,3)': Parameters mismatch for date-time method 'before', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing interval start value, or an expression providing timestamp or timestamped-event and an expression providing interval start value and an expression providing interval finishes value, but receives 4 expressions [select a.before(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b]");
     
             // test coincides
-            TryInvalid(epService, "select A.Coincides(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Coincides(b,1,2,3)': Parameters mismatch for date-time method 'coincides', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing threshold for start and end value, or an expression providing timestamp or timestamped-event and an expression providing threshold for start value and an expression providing threshold for end value, but receives 4 expressions [select A.Coincides(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b]");
-            TryInvalid(epService, "select A.Coincides(b, -1) from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Coincides(b,-1)': The coincides date-time method does not allow negative start and end values [select A.Coincides(b, -1) from A#lastevent as a, B#lastevent as b]");
+            TryInvalid(epService, "select a.coincides(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.coincides(b,1,2,3)': Parameters mismatch for date-time method 'coincides', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing threshold for start and end value, or an expression providing timestamp or timestamped-event and an expression providing threshold for start value and an expression providing threshold for end value, but receives 4 expressions [select a.coincides(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b]");
+            TryInvalid(epService, "select a.coincides(b, -1) from A#lastevent as a, B#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.coincides(b,-1)': The coincides date-time method does not allow negative start and end values [select a.coincides(b, -1) from A#lastevent as a, B#lastevent as b]");
     
             // test during+interval
-            TryInvalid(epService, "select A.During(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.During(b,1,2,3)': Parameters mismatch for date-time method 'during', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance interval both start and end, or an expression providing timestamp or timestamped-event and an expression providing minimum distance interval both start and end and an expression providing maximum distance interval both start and end, or an expression providing timestamp or timestamped-event and an expression providing minimum distance start and an expression providing maximum distance start and an expression providing minimum distance end and an expression providing maximum distance end, but receives 4 expressions [select A.During(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b]");
+            TryInvalid(epService, "select a.during(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.during(b,1,2,3)': Parameters mismatch for date-time method 'during', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance interval both start and end, or an expression providing timestamp or timestamped-event and an expression providing minimum distance interval both start and end and an expression providing maximum distance interval both start and end, or an expression providing timestamp or timestamped-event and an expression providing minimum distance start and an expression providing maximum distance start and an expression providing minimum distance end and an expression providing maximum distance end, but receives 4 expressions [select a.during(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b]");
     
             // test finishes+finished-by
-            TryInvalid(epService, "select A.Finishes(b, 1, 2) from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Finishes(b,1,2)': Parameters mismatch for date-time method 'finishes', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance between end timestamps, but receives 3 expressions [select A.Finishes(b, 1, 2) from A#lastevent as a, B#lastevent as b]");
-            TryInvalid(epService, "select A.Finishes(b, -1) from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Finishes(b,-1)': The finishes date-time method does not allow negative threshold value [select A.Finishes(b, -1) from A#lastevent as a, B#lastevent as b]");
-            TryInvalid(epService, "select A.Finishedby(b, -1) from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Finishedby(b,-1)': The finishedby date-time method does not allow negative threshold value [select A.Finishedby(b, -1) from A#lastevent as a, B#lastevent as b]");
+            TryInvalid(epService, "select a.finishes(b, 1, 2) from A#lastevent as a, B#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.finishes(b,1,2)': Parameters mismatch for date-time method 'finishes', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance between end timestamps, but receives 3 expressions [select a.finishes(b, 1, 2) from A#lastevent as a, B#lastevent as b]");
+            TryInvalid(epService, "select a.finishes(b, -1) from A#lastevent as a, B#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.finishes(b,-1)': The finishes date-time method does not allow negative threshold value [select a.finishes(b, -1) from A#lastevent as a, B#lastevent as b]");
+            TryInvalid(epService, "select a.finishedby(b, -1) from A#lastevent as a, B#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.finishedby(b,-1)': The finishedby date-time method does not allow negative threshold value [select a.finishedby(b, -1) from A#lastevent as a, B#lastevent as b]");
     
             // test meets+met-by
-            TryInvalid(epService, "select A.Meets(b, 1, 2) from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Meets(b,1,2)': Parameters mismatch for date-time method 'meets', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance between start and end timestamps, but receives 3 expressions [select A.Meets(b, 1, 2) from A#lastevent as a, B#lastevent as b]");
-            TryInvalid(epService, "select A.Meets(b, -1) from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Meets(b,-1)': The meets date-time method does not allow negative threshold value [select A.Meets(b, -1) from A#lastevent as a, B#lastevent as b]");
-            TryInvalid(epService, "select A.MetBy(b, -1) from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.MetBy(b,-1)': The metBy date-time method does not allow negative threshold value [select A.MetBy(b, -1) from A#lastevent as a, B#lastevent as b]");
+            TryInvalid(epService, "select a.meets(b, 1, 2) from A#lastevent as a, B#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.meets(b,1,2)': Parameters mismatch for date-time method 'meets', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance between start and end timestamps, but receives 3 expressions [select a.meets(b, 1, 2) from A#lastevent as a, B#lastevent as b]");
+            TryInvalid(epService, "select a.meets(b, -1) from A#lastevent as a, B#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.meets(b,-1)': The meets date-time method does not allow negative threshold value [select a.meets(b, -1) from A#lastevent as a, B#lastevent as b]");
+            TryInvalid(epService, "select a.metBy(b, -1) from A#lastevent as a, B#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.metBy(b,-1)': The metBy date-time method does not allow negative threshold value [select a.metBy(b, -1) from A#lastevent as a, B#lastevent as b]");
     
             // test overlaps+overlapped-by
-            TryInvalid(epService, "select A.Overlaps(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Overlaps(b,1,2,3)': Parameters mismatch for date-time method 'overlaps', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance interval both start and end, or an expression providing timestamp or timestamped-event and an expression providing minimum distance interval both start and end and an expression providing maximum distance interval both start and end, but receives 4 expressions [select A.Overlaps(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b]");
+            TryInvalid(epService, "select a.overlaps(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.overlaps(b,1,2,3)': Parameters mismatch for date-time method 'overlaps', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance interval both start and end, or an expression providing timestamp or timestamped-event and an expression providing minimum distance interval both start and end and an expression providing maximum distance interval both start and end, but receives 4 expressions [select a.overlaps(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b]");
     
             // test start/startedby
-            TryInvalid(epService, "select A.Starts(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Starts(b,1,2,3)': Parameters mismatch for date-time method 'starts', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance between start timestamps, but receives 4 expressions [select A.Starts(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b]");
-            TryInvalid(epService, "select A.Starts(b, -1) from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.Starts(b,-1)': The starts date-time method does not allow negative threshold value [select A.Starts(b, -1) from A#lastevent as a, B#lastevent as b]");
-            TryInvalid(epService, "select A.StartedBy(b, -1) from A#lastevent as a, B#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.StartedBy(b,-1)': The startedBy date-time method does not allow negative threshold value [select A.StartedBy(b, -1) from A#lastevent as a, B#lastevent as b]");
+            TryInvalid(epService, "select a.starts(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.starts(b,1,2,3)': Parameters mismatch for date-time method 'starts', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance between start timestamps, but receives 4 expressions [select a.starts(b, 1, 2, 3) from A#lastevent as a, B#lastevent as b]");
+            TryInvalid(epService, "select a.starts(b, -1) from A#lastevent as a, B#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.starts(b,-1)': The starts date-time method does not allow negative threshold value [select a.starts(b, -1) from A#lastevent as a, B#lastevent as b]");
+            TryInvalid(epService, "select a.startedBy(b, -1) from A#lastevent as a, B#lastevent as b",
+                    "Error starting statement: Failed to validate select-clause expression 'a.startedBy(b,-1)': The startedBy date-time method does not allow negative threshold value [select a.startedBy(b, -1) from A#lastevent as a, B#lastevent as b]");
         }
     
         private void RunAssertionBeforeInSelectClause(EPServiceProvider epService) {
@@ -172,8 +169,8 @@ namespace com.espertech.esper.regression.expr.datetime
             string[] fields = "c0,c1".Split(',');
             string epl =
                     "select " +
-                            "a.longdateStart.Before(b.longdateStart) as c0," +
-                            "a.Before(b) as c1 " +
+                            "a.LongdateStart.before(b.LongdateStart) as c0," +
+                            "a.before(b) as c1 " +
                             " from A#lastevent as a, " +
                             "      B#lastevent as b";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -203,25 +200,23 @@ namespace com.espertech.esper.regression.expr.datetime
             };
     
             var expressions = new string[]{
-                    "a.Before(b)",
-                    "a.Before(b, 1 millisecond)",
-                    "a.Before(b, 1 millisecond, 1000000000L)",
-                    "a.longdateStart.Before(b)",
-                    "a.utildateStart.Before(b)",
-                    "a.caldateStart.Before(b)",
-                    "a.Before(b.longdateStart)",
-                    "a.Before(b.utildateStart)",
-                    "a.Before(b.caldateStart)",
-                    "a.longdateStart.Before(b.longdateStart)",
-                    "a.longdateStart.Before(b.longdateStart)",
-                    "a.utildateStart.Before(b.utildateStart)",
-                    "a.caldateStart.Before(b.caldateStart)",
-                    "a.utildateStart.Before(b.caldateStart)",
-                    "a.utildateStart.Before(b.longdateStart)",
-                    "a.caldateStart.Before(b.utildateStart)",
-                    "a.caldateStart.Before(b.longdateStart)",
-                    "a.ldtStart.Before(b.ldtStart)",
-                    "a.zdtStart.Before(b.zdtStart)"
+                    "a.before(b)",
+                    "a.before(b, 1 millisecond)",
+                    "a.before(b, 1 millisecond, 1000000000L)",
+                    "a.LongdateStart.before(b)",
+                    "a.UtildateStart.before(b)",
+                    "a.CaldateStart.before(b)",
+                    "a.before(b.LongdateStart)",
+                    "a.before(b.UtildateStart)",
+                    "a.before(b.CaldateStart)",
+                    "a.LongdateStart.before(b.LongdateStart)",
+                    "a.LongdateStart.before(b.LongdateStart)",
+                    "a.UtildateStart.before(b.UtildateStart)",
+                    "a.CaldateStart.before(b.CaldateStart)",
+                    "a.UtildateStart.before(b.CaldateStart)",
+                    "a.UtildateStart.before(b.LongdateStart)",
+                    "a.CaldateStart.before(b.UtildateStart)",
+                    "a.CaldateStart.before(b.LongdateStart)"
             };
             string seedTime = "2002-05-30T09:00:00.000";
             foreach (string expression in expressions) {
@@ -243,8 +238,8 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
             };
-            AssertExpression(epService, seedTime, 0, "a.Before(b)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 100000, "a.Before(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.before(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100000, "a.before(b)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-05-30T08:59:59.000", 0, true},
@@ -255,8 +250,8 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
             };
             expectedValidator = new BeforeValidator(100L, Int64.MaxValue);
-            AssertExpression(epService, seedTime, 0, "a.Before(b, 100 milliseconds)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 100000, "a.Before(b, 100 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.before(b, 100 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100000, "a.before(b, 100 milliseconds)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-05-30T08:59:59.000", 0, false},
@@ -275,12 +270,12 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
             };
             expectedValidator = new BeforeValidator(100L, 500L);
-            AssertExpression(epService, seedTime, 0, "a.Before(b, 100 milliseconds, 500 milliseconds)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 100000, "a.Before(b, 100 milliseconds, 500 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.before(b, 100 milliseconds, 500 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100000, "a.before(b, 100 milliseconds, 500 milliseconds)", expected, expectedValidator);
     
             // test expression params
             SetVStartEndVariables(epService, 100, 500);
-            AssertExpression(epService, seedTime, 0, "a.Before(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.before(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
     
             SetVStartEndVariables(epService, 200, 800);
             expected = new object[][]{
@@ -292,7 +287,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T08:59:59.801", 0, false},
             };
             expectedValidator = new BeforeValidator(200L, 800L);
-            AssertExpression(epService, seedTime, 0, "a.Before(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.before(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
     
             // test negative and reversed max and min
             expected = new object[][]{
@@ -303,8 +298,8 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.501", 0, false},
             };
             expectedValidator = new BeforeValidator(-500L, -100L);
-            AssertExpression(epService, seedTime, 0, "a.Before(b, -100 milliseconds, -500 milliseconds)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 0, "a.Before(b, -500 milliseconds, -100 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.before(b, -100 milliseconds, -500 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.before(b, -500 milliseconds, -100 milliseconds)", expected, expectedValidator);
     
             // test month logic
             seedTime = "2002-03-01T09:00:00.000";
@@ -313,7 +308,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-02-01T09:00:00.001", 0, false}
             };
             expectedValidator = new BeforeValidator(GetMillisecForDays(28), Int64.MaxValue);
-            AssertExpression(epService, seedTime, 100, "a.Before(b, 1 month)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.before(b, 1 month)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-01-01T08:59:59.999", 0, false},
@@ -323,7 +318,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-02-01T09:00:00.001", 0, false}
             };
             expectedValidator = new BeforeValidator(GetMillisecForDays(28), GetMillisecForDays(28 + 31));
-            AssertExpression(epService, seedTime, 100, "a.Before(b, 1 month, 2 month)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.before(b, 1 month, 2 month)", expected, expectedValidator);
         }
     
         private void RunAssertionAfterWhereClause(EPServiceProvider epService) {
@@ -335,20 +330,20 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
                     new object[] {"2002-05-30T09:00:00.001", 0, true},
             };
-            AssertExpression(epService, seedTime, 0, "a.After(b)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 0, "a.After(b, 1 millisecond)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 0, "a.After(b, 1 millisecond, 1000000000L)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 0, "a.After(b, 1000000000L, 1 millisecond)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 0, "a.startTS.After(b)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 0, "a.After(b.startTS)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.after(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.after(b, 1 millisecond)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.after(b, 1 millisecond, 1000000000L)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.after(b, 1000000000L, 1 millisecond)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.startTS.after(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.after(b.startTS)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
                     new object[] {"2002-05-30T09:00:00.002", 0, true},
             };
-            AssertExpression(epService, seedTime, 1, "a.After(b)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 1, "a.After(b, 1 millisecond, 1000000000L)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 1, "a.after(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 1, "a.after(b, 1 millisecond, 1000000000L)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
@@ -357,8 +352,8 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.101", 0, true},
             };
             expectedValidator = new AfterValidator(100L, Int64.MaxValue);
-            AssertExpression(epService, seedTime, 0, "a.After(b, 100 milliseconds)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 0, "a.After(b, 100 milliseconds, 1000000000L)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.after(b, 100 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.after(b, 100 milliseconds, 1000000000L)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
@@ -368,12 +363,12 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.501", 0, false},
             };
             expectedValidator = new AfterValidator(100L, 500L);
-            AssertExpression(epService, seedTime, 0, "a.After(b, 100 milliseconds, 500 milliseconds)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 0, "a.After(b, 100 milliseconds, 500 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.after(b, 100 milliseconds, 500 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.after(b, 100 milliseconds, 500 milliseconds)", expected, expectedValidator);
     
             // test expression params
             SetVStartEndVariables(epService, 100, 500);
-            AssertExpression(epService, seedTime, 0, "a.After(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.after(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
     
             SetVStartEndVariables(epService, 200, 800);
             expected = new object[][]{
@@ -384,7 +379,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.801", 0, false},
             };
             expectedValidator = new AfterValidator(200L, 800L);
-            AssertExpression(epService, seedTime, 0, "a.After(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.after(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
     
             // test negative distances
             expected = new object[][]{
@@ -394,8 +389,8 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
             };
             expectedValidator = new AfterValidator(-500L, -100L);
-            AssertExpression(epService, seedTime, 100, "a.After(b, -100 milliseconds, -500 milliseconds)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 100, "a.After(b, -500 milliseconds, -100 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.after(b, -100 milliseconds, -500 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.after(b, -500 milliseconds, -100 milliseconds)", expected, expectedValidator);
     
             // test month logic
             seedTime = "2002-02-01T09:00:00.000";
@@ -404,7 +399,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-03-01T09:00:00.100", 0, true}
             };
             expectedValidator = new AfterValidator(GetMillisecForDays(28), Int64.MaxValue);
-            AssertExpression(epService, seedTime, 100, "a.After(b, 1 month)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.after(b, 1 month)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-03-01T09:00:00.099", 0, false},
@@ -412,7 +407,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-04-01T09:00:00.100", 0, true},
                     new object[] {"2002-04-01T09:00:00.101", 0, false}
             };
-            AssertExpression(epService, seedTime, 100, "a.After(b, 1 month, 2 month)", expected, null);
+            AssertExpression(epService, seedTime, 100, "a.after(b, 1 month, 2 month)", expected, null);
         }
     
         private void RunAssertionCoincidesWhereClause(EPServiceProvider epService) {
@@ -424,11 +419,11 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.000", 0, true},
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
             };
-            AssertExpression(epService, seedTime, 0, "a.Coincides(b)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 0, "a.Coincides(b, 0 millisecond)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 0, "a.Coincides(b, 0, 0)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 0, "a.startTS.Coincides(b)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 0, "a.Coincides(b.startTS)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.coincides(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.coincides(b, 0 millisecond)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.coincides(b, 0, 0)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.startTS.coincides(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.coincides(b.startTS)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-05-30T09:00:00.000", 1, true},
@@ -436,8 +431,8 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
                     new object[] {"2002-05-30T09:00:00.001", 1, false},
             };
-            AssertExpression(epService, seedTime, 1, "a.Coincides(b)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 1, "a.Coincides(b, 0, 0)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 1, "a.coincides(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 1, "a.coincides(b, 0, 0)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-05-30T08:59:59.899", 0, false},
@@ -451,8 +446,8 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.101", 0, false},
             };
             expectedValidator = new CoincidesValidator(100L);
-            AssertExpression(epService, seedTime, 0, "a.Coincides(b, 100 milliseconds)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 0, "a.Coincides(b, 100 milliseconds, 0.1 sec)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.coincides(b, 100 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.coincides(b, 100 milliseconds, 0.1 sec)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-05-30T08:59:59.799", 0, false},
@@ -464,7 +459,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.201", 0, false},
             };
             expectedValidator = new CoincidesValidator(200L, 500L);
-            AssertExpression(epService, seedTime, 0, "a.Coincides(b, 200 milliseconds, 500 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.coincides(b, 200 milliseconds, 500 milliseconds)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-05-30T08:59:59.799", 0, false},
@@ -481,11 +476,11 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.101", 0, false},
             };
             expectedValidator = new CoincidesValidator(200L, 50L);
-            AssertExpression(epService, seedTime, 50, "a.Coincides(b, 200 milliseconds, 50 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 50, "a.coincides(b, 200 milliseconds, 50 milliseconds)", expected, expectedValidator);
     
             // test expression params
             SetVStartEndVariables(epService, 200, 50);
-            AssertExpression(epService, seedTime, 50, "a.Coincides(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 50, "a.coincides(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
     
             SetVStartEndVariables(epService, 200, 70);
             expected = new object[][]{
@@ -497,7 +492,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T08:59:59.800", 321, false},
             };
             expectedValidator = new CoincidesValidator(200L, 70L);
-            AssertExpression(epService, seedTime, 50, "a.Coincides(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 50, "a.coincides(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
     
             // test month logic
             seedTime = "2002-02-01T09:00:00.000";    // lasts to "2002-04-01T09:00:00.000" (28+31 days)
@@ -506,7 +501,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-01-01T08:00:00.000", GetMillisecForDays(28 + 30), false}
             };
             expectedValidator = new CoincidesValidator(GetMillisecForDays(28));
-            AssertExpression(epService, seedTime, GetMillisecForDays(28 + 31), "a.Coincides(b, 1 month)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, GetMillisecForDays(28 + 31), "a.coincides(b, 1 month)", expected, expectedValidator);
         }
     
         private void RunAssertionDuringWhereClause(EPServiceProvider epService) {
@@ -523,7 +518,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.099", 1, false},
                     new object[] {"2002-05-30T09:00:00.100", 0, false},
             };
-            AssertExpression(epService, seedTime, 100, "a.During(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.during(b)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-05-30T08:59:59.000", 0, false},
@@ -531,13 +526,13 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
                     new object[] {"2002-05-30T09:00:00.001", 1, false},
             };
-            AssertExpression(epService, seedTime, 0, "a.During(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.during(b)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-05-30T09:00:00.001", 0, true},
                     new object[] {"2002-05-30T09:00:00.001", 2000000, true},
             };
-            AssertExpression(epService, seedTime, 100, "a.startTS.During(b)", expected, null);    // want to use null-validator here
+            AssertExpression(epService, seedTime, 100, "a.startTS.during(b)", expected, null);    // want to use null-validator here
     
             // test 1-parameter footprint
             expected = new object[][]{
@@ -556,7 +551,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.099", 0, false},
             };
             expectedValidator = new DuringValidator(15L);
-            AssertExpression(epService, seedTime, 100, "a.During(b, 15 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.during(b, 15 milliseconds)", expected, expectedValidator);
     
             // test 2-parameter footprint
             expected = new object[][]{
@@ -579,7 +574,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.099", 0, false},
             };
             expectedValidator = new DuringValidator(5L, 20L);
-            AssertExpression(epService, seedTime, 100, "a.During(b, 5 milliseconds, 20 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.during(b, 5 milliseconds, 20 milliseconds)", expected, expectedValidator);
     
             // test 4-parameter footprint
             expected = new object[][]{
@@ -597,7 +592,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.021", 55, false},
             };
             expectedValidator = new DuringValidator(5L, 20L, 10L, 30L);
-            AssertExpression(epService, seedTime, 100, "a.During(b, 5 milliseconds, 20 milliseconds, 10 milliseconds, 30 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.during(b, 5 milliseconds, 20 milliseconds, 10 milliseconds, 30 milliseconds)", expected, expectedValidator);
         }
     
         private void RunAssertionFinishesWhereClause(EPServiceProvider epService) {
@@ -617,9 +612,9 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.100", 0, true},
                     new object[] {"2002-05-30T09:00:00.101", 0, false},
             };
-            AssertExpression(epService, seedTime, 100, "a.Finishes(b)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 100, "a.Finishes(b, 0)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 100, "a.Finishes(b, 0 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.finishes(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.finishes(b, 0)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.finishes(b, 0 milliseconds)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
@@ -636,7 +631,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.105", 1, false},
             };
             expectedValidator = new FinishesValidator(5L);
-            AssertExpression(epService, seedTime, 100, "a.Finishes(b, 5 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.finishes(b, 5 milliseconds)", expected, expectedValidator);
         }
     
         private void RunAssertionFinishedByWhereClause(EPServiceProvider epService) {
@@ -655,9 +650,9 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.000", 50, false},
                     new object[] {"2002-05-30T09:00:00.000", 100, false},
             };
-            AssertExpression(epService, seedTime, 100, "a.FinishedBy(b)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 100, "a.FinishedBy(b, 0)", expected, expectedValidator);
-            AssertExpression(epService, seedTime, 100, "a.FinishedBy(b, 0 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.finishedBy(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.finishedBy(b, 0)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.finishedBy(b, 0 milliseconds)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-05-30T08:59:59.000", 0, false},
@@ -675,7 +670,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.000", 105, false},
             };
             expectedValidator = new FinishedByValidator(5L);
-            AssertExpression(epService, seedTime, 100, "a.FinishedBy(b, 5 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.finishedBy(b, 5 milliseconds)", expected, expectedValidator);
         }
     
         private void RunAssertionIncludesByWhereClause(EPServiceProvider epService) {
@@ -692,7 +687,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.000", 50, false},
                     new object[] {"2002-05-30T09:00:00.000", 102, false},
             };
-            AssertExpression(epService, seedTime, 100, "a.Includes(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.includes(b)", expected, expectedValidator);
     
             // test 1-parameter form
             expected = new object[][]{
@@ -713,7 +708,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.000", 106, false},
             };
             expectedValidator = new IncludesValidator(5L);
-            AssertExpression(epService, seedTime, 100, "a.Includes(b, 5 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.includes(b, 5 milliseconds)", expected, expectedValidator);
     
             // test 2-parameter form
             expected = new object[][]{
@@ -732,7 +727,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T08:59:59.996", 112, false},
             };
             expectedValidator = new IncludesValidator(5L, 20L);
-            AssertExpression(epService, seedTime, 100, "a.Includes(b, 5 milliseconds, 20 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.includes(b, 5 milliseconds, 20 milliseconds)", expected, expectedValidator);
     
             // test 4-parameter form
             expected = new object[][]{
@@ -751,7 +746,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T08:59:59.996", 124, false},
             };
             expectedValidator = new IncludesValidator(5L, 20L, 10L, 30L);
-            AssertExpression(epService, seedTime, 100, "a.Includes(b, 5 milliseconds, 20 milliseconds, 10 milliseconds, 30 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.includes(b, 5 milliseconds, 20 milliseconds, 10 milliseconds, 30 milliseconds)", expected, expectedValidator);
         }
     
         private void RunAssertionMeetsWhereClause(EPServiceProvider epService) {
@@ -767,7 +762,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.000", 1, false},
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
             };
-            AssertExpression(epService, seedTime, 0, "a.Meets(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.meets(b)", expected, expectedValidator);
     
             // test 1-parameter form
             expected = new object[][]{
@@ -790,7 +785,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.005", 1, false},
             };
             expectedValidator = new MeetsValidator(5L);
-            AssertExpression(epService, seedTime, 0, "a.Meets(b, 5 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.meets(b, 5 milliseconds)", expected, expectedValidator);
         }
     
         private void RunAssertionMetByWhereClause(EPServiceProvider epService) {
@@ -803,14 +798,14 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.100", 500, true},
                     new object[] {"2002-05-30T09:00:00.101", 0, false},
             };
-            AssertExpression(epService, seedTime, 100, "a.MetBy(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.metBy(b)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-05-30T08:59:59.999", 1, false},
                     new object[] {"2002-05-30T09:00:00.000", 0, true},
                     new object[] {"2002-05-30T09:00:00.000", 1, true},
             };
-            AssertExpression(epService, seedTime, 0, "a.MetBy(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.metBy(b)", expected, expectedValidator);
     
             // test 1-parameter form
             expected = new object[][]{
@@ -824,7 +819,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.006", 0, false},
             };
             expectedValidator = new MetByValidator(5L);
-            AssertExpression(epService, seedTime, 0, "a.MetBy(b, 5 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 0, "a.metBy(b, 5 milliseconds)", expected, expectedValidator);
     
             expected = new object[][]{
                     new object[] {"2002-05-30T08:59:59.994", 0, false},
@@ -837,7 +832,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.106", 0, false},
             };
             expectedValidator = new MetByValidator(5L);
-            AssertExpression(epService, seedTime, 100, "a.MetBy(b, 5 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.metBy(b, 5 milliseconds)", expected, expectedValidator);
         }
     
         private void RunAssertionOverlapsWhereClause(EPServiceProvider epService) {
@@ -856,7 +851,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T08:59:59.999", 101, false},
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
             };
-            AssertExpression(epService, seedTime, 100, "a.Overlaps(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.overlaps(b)", expected, expectedValidator);
     
             // test 1-parameter form (overlap by not more then X msec)
             expected = new object[][]{
@@ -873,7 +868,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.000", 5, false},
             };
             expectedValidator = new OverlapsValidator(5L);
-            AssertExpression(epService, seedTime, 100, "a.Overlaps(b, 5 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.overlaps(b, 5 milliseconds)", expected, expectedValidator);
     
             // test 2-parameter form (overlap by min X and not more then Y msec)
             expected = new object[][]{
@@ -890,7 +885,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.000", 5, false},
             };
             expectedValidator = new OverlapsValidator(5L, 10L);
-            AssertExpression(epService, seedTime, 100, "a.Overlaps(b, 5 milliseconds, 10 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.overlaps(b, 5 milliseconds, 10 milliseconds)", expected, expectedValidator);
         }
     
         private void RunAssertionOverlappedByWhereClause(EPServiceProvider epService) {
@@ -908,7 +903,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.100", 0, false},
                     new object[] {"2002-05-30T09:00:00.100", 1, false},
             };
-            AssertExpression(epService, seedTime, 100, "a.OverlappedBy(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.overlappedBy(b)", expected, expectedValidator);
     
             // test 1-parameter form (overlap by not more then X msec)
             expected = new object[][]{
@@ -927,7 +922,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.100", 100, false},
             };
             expectedValidator = new OverlappedByValidator(5L);
-            AssertExpression(epService, seedTime, 100, "a.OverlappedBy(b, 5 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.overlappedBy(b, 5 milliseconds)", expected, expectedValidator);
     
             // test 2-parameter form (overlap by min X and not more then Y msec)
             expected = new object[][]{
@@ -946,7 +941,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.100", 100, false},
             };
             expectedValidator = new OverlappedByValidator(5L, 10L);
-            AssertExpression(epService, seedTime, 100, "a.OverlappedBy(b, 5 milliseconds, 10 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.overlappedBy(b, 5 milliseconds, 10 milliseconds)", expected, expectedValidator);
         }
     
         private void RunAssertionStartsWhereClause(EPServiceProvider epService) {
@@ -961,7 +956,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.000", 100, false},
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
             };
-            AssertExpression(epService, seedTime, 100, "a.Starts(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.starts(b)", expected, expectedValidator);
     
             // test 1-parameter form (max distance between start times)
             expected = new object[][]{
@@ -979,7 +974,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.005", 100, false},
             };
             expectedValidator = new StartsValidator(5L);
-            AssertExpression(epService, seedTime, 100, "a.Starts(b, 5 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.starts(b, 5 milliseconds)", expected, expectedValidator);
         }
     
         private void RunAssertionStartedByWhereClause(EPServiceProvider epService) {
@@ -994,7 +989,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
                     new object[] {"2002-05-30T09:00:00.001", 101, false},
             };
-            AssertExpression(epService, seedTime, 100, "a.StartedBy(b)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.startedBy(b)", expected, expectedValidator);
     
             // test 1-parameter form (max distance between start times)
             expected = new object[][]{
@@ -1012,7 +1007,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.005", 96, true},
             };
             expectedValidator = new StartedByValidator(5L);
-            AssertExpression(epService, seedTime, 100, "a.StartedBy(b, 5 milliseconds)", expected, expectedValidator);
+            AssertExpression(epService, seedTime, 100, "a.startedBy(b, 5 milliseconds)", expected, expectedValidator);
         }
     
         private void SetVStartEndVariables(EPServiceProvider epService, long vstart, long vend) {
@@ -1028,10 +1023,10 @@ namespace com.espertech.esper.regression.expr.datetime
     
         private void RegisterBeanType(EPServiceProvider epService) {
             var configBean = new ConfigurationEventTypeLegacy();
-            configBean.StartTimestampPropertyName = "longdateStart";
-            configBean.EndTimestampPropertyName = "longdateEnd";
-            epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportTimeStartEndA).FullName, configBean);
-            epService.EPAdministrator.Configuration.AddEventType("B", typeof(SupportTimeStartEndB).FullName, configBean);
+            configBean.StartTimestampPropertyName = "LongdateStart";
+            configBean.EndTimestampPropertyName = "LongdateEnd";
+            epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportTimeStartEndA), configBean);
+            epService.EPAdministrator.Configuration.AddEventType("B", typeof(SupportTimeStartEndB), configBean);
         }
     
         private void AssertExpression(EPServiceProvider epService, string seedTime, long seedDuration, string whereClause, object[][] timestampsAndResult, Validator validator) {

@@ -11,9 +11,6 @@ using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean.bookexample;
 using com.espertech.esper.supportregression.bean.word;
 using com.espertech.esper.supportregression.execution;
@@ -55,7 +52,7 @@ namespace com.espertech.esper.regression.epl.contained
             stmt.Events += listener.Update;
     
             EPStatement stmtNW = epService.EPAdministrator.CreateEPL("create window MyWindow#lastevent as BookDesc");
-            epService.EPAdministrator.CreateEPL("insert into MyWindow select * from BookStream bs where not Exists (select * from MyWindow mw where mw.price > bs.price)");
+            epService.EPAdministrator.CreateEPL("insert into MyWindow select * from BookStream bs where not exists (select * from MyWindow mw where mw.price > bs.price)");
     
             epService.EPRuntime.SendEvent(MakeEventOne());
             EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, new object[][]{new object[] {"10020"}, new object[] {"10021"}, new object[] {"10022"}});

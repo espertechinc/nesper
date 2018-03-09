@@ -59,12 +59,12 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             epService.EPAdministrator.CreateEPL("create window MyWindowWUJ#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindowWUJ select * from SupportBean");
-            epService.EPAdministrator.CreateEPL("on S1 as s1 delete from MyWindowWUJ where s1.p10 = theString");
+            epService.EPAdministrator.CreateEPL("on S1 as s1 delete from MyWindowWUJ where s1.p10 = TheString");
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select window(win.*) as c0," +
-                            "window(win.*).Where(v => v.intPrimitive < 2) as c1, " +
-                            "window(win.*).ToMap(k=>k.theString,v=>v.intPrimitive) as c2 " +
+                            "window(win.*).where(v => v.IntPrimitive < 2) as c1, " +
+                            "window(win.*).ToMap(k=>k.TheString,v=>v.IntPrimitive) as c2 " +
                             "from S0 as s0 unidirectional, MyWindowWUJ as win");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             EventBean received = listenerStmtOne.AssertOneGetNewAndReset();
             EPAssertionUtil.AssertEqualsExactOrder(SupportBean.GetBeansPerIndex(beans, indexesAll), received.Get("c0").UnwrapIntoArray<object>());
             EPAssertionUtil.AssertEqualsExactOrder(SupportBean.GetBeansPerIndex(beans, indexesWhere), received.Get("c1").UnwrapIntoList<object>());
-            EPAssertionUtil.AssertPropsMap((Map) received.Get("c2"), mapKeys, mapValues);
+            EPAssertionUtil.AssertPropsMap((IDictionary<object, object>) received.Get("c2"), mapKeys, mapValues);
         }
     
         private void RunAssertionJoinIndexChoice(EPServiceProvider epService) {
@@ -130,7 +130,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             // no index, since this is "Unique(s1)" we don't need one
             var noindexes = new string[]{};
-            AssertIndexChoice(epService, listener, noindexes, preloadedEventsOne, "std:Unique(s1)",
+            AssertIndexChoice(epService, listener, noindexes, preloadedEventsOne, "std:unique(s1)",
                     new IndexAssertion[]{
                             new IndexAssertion(null, "s1 = s2", true, eventSendAssertion),
                             new IndexAssertion(null, "s1 = s2 and l1 = l2", true, eventSendAssertion),
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             // single index one field (duplicate in essence, since "Unique(s1)"
             var indexOneField = new string[]{"create unique index One on MyWindow (s1)"};
-            AssertIndexChoice(epService, listener, indexOneField, preloadedEventsOne, "std:Unique(s1)",
+            AssertIndexChoice(epService, listener, indexOneField, preloadedEventsOne, "std:unique(s1)",
                     new IndexAssertion[]{
                             new IndexAssertion(null, "s1 = s2", true, eventSendAssertion),
                             new IndexAssertion(null, "s1 = s2 and l1 = l2", true, eventSendAssertion),
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             // single index two field (includes "Unique(s1)")
             var indexTwoField = new string[]{"create unique index One on MyWindow (s1, l1)"};
-            AssertIndexChoice(epService, listener, indexTwoField, preloadedEventsOne, "std:Unique(s1)",
+            AssertIndexChoice(epService, listener, indexTwoField, preloadedEventsOne, "std:unique(s1)",
                     new IndexAssertion[]{
                             new IndexAssertion(null, "s1 = s2", true, eventSendAssertion),
                             new IndexAssertion(null, "d1 = d2", false, eventSendAssertion),
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var indexSetTwo = new string[]{
                     "create index One on MyWindow (s1)",
                     "create unique index Two on MyWindow (s1, d1)"};
-            AssertIndexChoice(epService, listener, indexSetTwo, preloadedEventsOne, "std:Unique(s1)",
+            AssertIndexChoice(epService, listener, indexSetTwo, preloadedEventsOne, "std:unique(s1)",
                     new IndexAssertion[]{
                             new IndexAssertion(null, "d1 = d2", false, eventSendAssertion),
                             new IndexAssertion(null, "s1 = s2", true, eventSendAssertion),
@@ -165,8 +165,8 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                             new IndexAssertion(null, "s1 = s2 and d1 = d2 and l1 = l2", true, eventSendAssertion),
                     });
     
-            // two index one unique ("win:Keepall()")
-            AssertIndexChoice(epService, listener, indexSetTwo, preloadedEventsOne, "win:Keepall()",
+            // two index one unique ("win:keepall()")
+            AssertIndexChoice(epService, listener, indexSetTwo, preloadedEventsOne, "win:keepall()",
                     new IndexAssertion[]{
                             new IndexAssertion(null, "d1 = d2", false, eventSendAssertion),
                             new IndexAssertion(null, "s1 = s2", false, eventSendAssertion),
@@ -368,11 +368,11 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionFullOuterJoinNamedAggregationLateStart(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindowFO#groupwin(theString, intPrimitive)#length(3) as select theString, intPrimitive, boolPrimitive from " + typeof(SupportBean).FullName;
+            string stmtTextCreate = "create window MyWindowFO#groupwin(TheString, IntPrimitive)#length(3) as select TheString, IntPrimitive, BoolPrimitive from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
     
             // create insert into
-            string stmtTextInsert = "insert into MyWindowFO select theString, intPrimitive, boolPrimitive from " + typeof(SupportBean).FullName;
+            string stmtTextInsert = "insert into MyWindowFO select TheString, IntPrimitive, BoolPrimitive from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsert);
     
             // fill window
@@ -394,10 +394,10 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             Assert.AreEqual(19, received.Length);
     
             // create select stmt
-            string stmtTextSelect = "select theString, intPrimitive, count(boolPrimitive) as cntBool, symbol " +
-                    "from MyWindowFO full outer join " + typeof(SupportMarketDataBean).Name + "#keepall " +
-                    "on theString = symbol " +
-                    "group by theString, intPrimitive, symbol order by theString, intPrimitive, symbol";
+            string stmtTextSelect = "select TheString, IntPrimitive, count(BoolPrimitive) as cntBool, symbol " +
+                    "from MyWindowFO full outer join " + typeof(SupportMarketDataBean).FullName + "#keepall " +
+                    "on TheString = symbol " +
+                    "group by TheString, IntPrimitive, symbol order by TheString, IntPrimitive, symbol";
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
     
             // send outer join events
@@ -406,7 +406,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             // get iterator results
             received = EPAssertionUtil.EnumeratorToArray(stmtSelect.GetEnumerator());
-            EPAssertionUtil.AssertPropsPerRow(received, "theString,intPrimitive,cntBool,symbol".Split(','),
+            EPAssertionUtil.AssertPropsPerRow(received, "TheString,IntPrimitive,cntBool,symbol".Split(','),
                     new object[][]{
                         new object[] {null, null, 0L, "c3"},
                         new object[] {"c0", 0, 2L, "c0"},
@@ -423,7 +423,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             for (int i = 0; i < received.Length; i++)
             {
                 Log.Info("string=" + received[i].Get("string") +
-                        " intPrimitive=" + received[i].Get("intPrimitive") +
+                        " IntPrimitive=" + received[i].Get("IntPrimitive") +
                         " cntBool=" + received[i].Get("cntBool") +
                         " symbol=" + received[i].Get("symbol"));
             }
@@ -435,17 +435,17 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionJoinNamedAndStream(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindowJNS#keepall as select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextCreate = "create window MyWindowJNS#keepall as select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
     
             // create delete stmt
-            string stmtTextDelete = "on " + typeof(SupportBean_A).Name + " delete from MyWindowJNS where id = a";
+            string stmtTextDelete = "on " + typeof(SupportBean_A).FullName + " delete from MyWindowJNS where id = a";
             epService.EPAdministrator.CreateEPL(stmtTextDelete);
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindowJNS select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextInsertOne = "insert into MyWindowJNS select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create consumer
@@ -499,29 +499,29 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var fields = new string[]{"a1", "b1", "a2", "b2"};
     
             // create window
-            string stmtTextCreateOne = "create window MyWindowOne#keepall as select theString as a1, intPrimitive as b1 from " + typeof(SupportBean).FullName;
+            string stmtTextCreateOne = "create window MyWindowOne#keepall as select TheString as a1, IntPrimitive as b1 from " + typeof(SupportBean).FullName;
             EPStatement stmtCreateOne = epService.EPAdministrator.CreateEPL(stmtTextCreateOne);
             var listenerWindow = new SupportUpdateListener();
             stmtCreateOne.Events += listenerWindow.Update;
     
             // create window
-            string stmtTextCreateTwo = "create window MyWindowTwo#keepall as select theString as a2, intPrimitive as b2 from " + typeof(SupportBean).FullName;
+            string stmtTextCreateTwo = "create window MyWindowTwo#keepall as select TheString as a2, IntPrimitive as b2 from " + typeof(SupportBean).FullName;
             EPStatement stmtCreateTwo = epService.EPAdministrator.CreateEPL(stmtTextCreateTwo);
             var listenerWindowTwo = new SupportUpdateListener();
             stmtCreateTwo.Events += listenerWindowTwo.Update;
     
             // create delete stmt
-            string stmtTextDelete = "on " + typeof(SupportMarketDataBean).Name + "(volume=1) delete from MyWindowOne where symbol = a1";
+            string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + "(volume=1) delete from MyWindowOne where symbol = a1";
             epService.EPAdministrator.CreateEPL(stmtTextDelete);
     
-            stmtTextDelete = "on " + typeof(SupportMarketDataBean).Name + "(volume=0) delete from MyWindowTwo where symbol = a2";
+            stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + "(volume=0) delete from MyWindowTwo where symbol = a2";
             epService.EPAdministrator.CreateEPL(stmtTextDelete);
     
             // create insert into
-            string stmtTextInsert = "insert into MyWindowOne select theString as a1, intPrimitive as b1 from " + typeof(SupportBean).FullName + "(boolPrimitive = true)";
+            string stmtTextInsert = "insert into MyWindowOne select TheString as a1, IntPrimitive as b1 from " + typeof(SupportBean).FullName + "(BoolPrimitive = true)";
             epService.EPAdministrator.CreateEPL(stmtTextInsert);
     
-            stmtTextInsert = "insert into MyWindowTwo select theString as a2, intPrimitive as b2 from " + typeof(SupportBean).FullName + "(boolPrimitive = false)";
+            stmtTextInsert = "insert into MyWindowTwo select TheString as a2, IntPrimitive as b2 from " + typeof(SupportBean).FullName + "(BoolPrimitive = false)";
             epService.EPAdministrator.CreateEPL(stmtTextInsert);
     
             // create consumers
@@ -570,17 +570,17 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var fields = new string[]{"a0", "b0", "a1", "b1"};
     
             // create window
-            string stmtTextCreateOne = "create window MyWindowJSN#keepall as select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextCreateOne = "create window MyWindowJSN#keepall as select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName;
             EPStatement stmtCreateOne = epService.EPAdministrator.CreateEPL(stmtTextCreateOne);
             var listenerWindow = new SupportUpdateListener();
             stmtCreateOne.Events += listenerWindow.Update;
     
             // create delete stmt
-            string stmtTextDelete = "on " + typeof(SupportMarketDataBean).Name + " delete from MyWindowJSN where symbol = a";
+            string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " delete from MyWindowJSN where symbol = a";
             epService.EPAdministrator.CreateEPL(stmtTextDelete);
     
             // create insert into
-            string stmtTextInsert = "insert into MyWindowJSN select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextInsert = "insert into MyWindowJSN select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsert);
     
             // create consumers
@@ -608,29 +608,29 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var fields = new string[]{"a1", "b1", "a2", "b2"};
     
             // create window
-            string stmtTextCreateOne = "create window MyWindowJSIOne#keepall as select theString as a1, intPrimitive as b1 from " + typeof(SupportBean).FullName;
+            string stmtTextCreateOne = "create window MyWindowJSIOne#keepall as select TheString as a1, IntPrimitive as b1 from " + typeof(SupportBean).FullName;
             EPStatement stmtCreateOne = epService.EPAdministrator.CreateEPL(stmtTextCreateOne);
             var listenerWindow = new SupportUpdateListener();
             stmtCreateOne.Events += listenerWindow.Update;
     
             // create window
-            string stmtTextCreateTwo = "create window MyWindowJSITwo#keepall as select theString as a2, intPrimitive as b2 from " + typeof(SupportBean).FullName;
+            string stmtTextCreateTwo = "create window MyWindowJSITwo#keepall as select TheString as a2, IntPrimitive as b2 from " + typeof(SupportBean).FullName;
             EPStatement stmtCreateTwo = epService.EPAdministrator.CreateEPL(stmtTextCreateTwo);
             var listenerWindowTwo = new SupportUpdateListener();
             stmtCreateTwo.Events += listenerWindowTwo.Update;
     
             // create delete stmt
-            string stmtTextDelete = "on " + typeof(SupportMarketDataBean).Name + "(volume=1) delete from MyWindowJSIOne where symbol = a1";
+            string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + "(volume=1) delete from MyWindowJSIOne where symbol = a1";
             epService.EPAdministrator.CreateEPL(stmtTextDelete);
     
-            stmtTextDelete = "on " + typeof(SupportMarketDataBean).Name + "(volume=0) delete from MyWindowJSITwo where symbol = a2";
+            stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + "(volume=0) delete from MyWindowJSITwo where symbol = a2";
             epService.EPAdministrator.CreateEPL(stmtTextDelete);
     
             // create insert into
-            string stmtTextInsert = "insert into MyWindowJSIOne select theString as a1, intPrimitive as b1 from " + typeof(SupportBean).FullName + "(boolPrimitive = true)";
+            string stmtTextInsert = "insert into MyWindowJSIOne select TheString as a1, IntPrimitive as b1 from " + typeof(SupportBean).FullName + "(BoolPrimitive = true)";
             epService.EPAdministrator.CreateEPL(stmtTextInsert);
     
-            stmtTextInsert = "insert into MyWindowJSITwo select theString as a2, intPrimitive as b2 from " + typeof(SupportBean).FullName + "(boolPrimitive = false)";
+            stmtTextInsert = "insert into MyWindowJSITwo select TheString as a2, IntPrimitive as b2 from " + typeof(SupportBean).FullName + "(BoolPrimitive = false)";
             epService.EPAdministrator.CreateEPL(stmtTextInsert);
     
             // create consumers
@@ -681,7 +681,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             epService.EPAdministrator.CreateEPL("create window MyWindowU#keepall select * from SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindowU select * from SupportBean");
     
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select w.* from MyWindowU w unidirectional, SupportBean_A#lastevent s where s.id = w.theString");
+            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select w.* from MyWindowU w unidirectional, SupportBean_A#lastevent s where s.id = w.TheString");
             var listenerStmtOne = new SupportUpdateListener();
             stmtOne.Events += listenerStmtOne.Update;
     

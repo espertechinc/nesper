@@ -89,28 +89,28 @@ namespace com.espertech.esper.regression.nwtable.infra
         }
     
         private void RunAssertionFlow(EPServiceProvider epService, bool namedWindow) {
-            var fields = "theString,intPrimitive,intBoxed".Split(',');
+            var fields = "TheString,IntPrimitive,IntBoxed".Split(',');
             var createEPL = namedWindow ?
-                    "@Name('Window') create window MyMergeInfra#unique(theString) as SupportBean" :
-                    "@Name('Window') create table MyMergeInfra (theString string primary key, intPrimitive int, intBoxed int)";
+                    "@Name('Window') create window MyMergeInfra#unique(TheString) as SupportBean" :
+                    "@Name('Window') create table MyMergeInfra (TheString string primary key, IntPrimitive int, IntBoxed int)";
             var createStmt = epService.EPAdministrator.CreateEPL(createEPL);
             var createListener = new SupportUpdateListener();
             createStmt.Events += createListener.Update;
     
-            epService.EPAdministrator.CreateEPL("@Name('Insert') insert into MyMergeInfra select theString, intPrimitive, intBoxed from SupportBean(boolPrimitive)");
+            epService.EPAdministrator.CreateEPL("@Name('Insert') insert into MyMergeInfra select TheString, IntPrimitive, IntBoxed from SupportBean(BoolPrimitive)");
             epService.EPAdministrator.CreateEPL("@Name('Delete') on SupportBean_A delete from MyMergeInfra");
     
-            var epl = "@Name('Merge') on SupportBean(boolPrimitive=false) as up " +
+            var epl = "@Name('Merge') on SupportBean(BoolPrimitive=false) as up " +
                     "merge MyMergeInfra as mv " +
-                    "where mv.theString=up.theString " +
-                    "when matched and up.intPrimitive<0 then " +
+                    "where mv.TheString=up.TheString " +
+                    "when matched and up.IntPrimitive<0 then " +
                     "delete " +
-                    "when matched and up.intPrimitive=0 then " +
-                    "update set intPrimitive=0, intBoxed=0 " +
+                    "when matched and up.IntPrimitive=0 then " +
+                    "update set IntPrimitive=0, IntBoxed=0 " +
                     "when matched then " +
-                    "update set intPrimitive=up.intPrimitive, intBoxed=up.intBoxed+mv.intBoxed " +
+                    "update set IntPrimitive=up.IntPrimitive, IntBoxed=up.IntBoxed+mv.IntBoxed " +
                     "when not matched then " +
-                    "insert select " + (namedWindow ? "*" : "theString, intPrimitive, intBoxed");
+                    "insert select " + (namedWindow ? "*" : "TheString, IntPrimitive, IntBoxed");
             var merged = epService.EPAdministrator.CreateEPL(epl);
             var mergeListener = new SupportUpdateListener();
             merged.Events += mergeListener.Update;
@@ -133,11 +133,11 @@ namespace com.espertech.esper.regression.nwtable.infra
             // test stream wildcard
             epService.EPRuntime.SendEvent(new SupportBean_A("A2"));
             merged.Dispose();
-            epl = "on SupportBean(boolPrimitive = false) as up " +
+            epl = "on SupportBean(BoolPrimitive = false) as up " +
                     "merge MyMergeInfra as mv " +
-                    "where mv.theString = up.theString " +
+                    "where mv.TheString = up.TheString " +
                     "when not matched then " +
-                    "insert select " + (namedWindow ? "up.*" : "theString, intPrimitive, intBoxed");
+                    "insert select " + (namedWindow ? "up.*" : "TheString, IntPrimitive, IntBoxed");
             merged = epService.EPAdministrator.CreateEPL(epl);
             merged.Events += mergeListener.Update;
     
@@ -273,7 +273,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "merge MyInfraMI " +
                     "where col1=in1 " +
                     "when not matched and in1 like \"A%\" then " +
-                    "Insert(col1, col2) select in1, in2 " +
+                    "insert(col1, col2) select in1, in2 " +
                     "when not matched and in1 like \"B%\" then " +
                     "insert select in1 as col1, in2 as col2 " +
                     "when not matched and in1 like \"C%\" then " +
@@ -326,7 +326,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             var epl = "on MyEvent me " +
                     "merge MyInfraNWC mw " +
                     "when not matched and me.in1 like \"A%\" then " +
-                    "Insert(col1, col2) select me.in1, me.in2 " +
+                    "insert(col1, col2) select me.in1, me.in2 " +
                     "when not matched and me.in1 like \"B%\" then " +
                     "insert select me.in1 as col1, me.in2 as col2 " +
                     "when matched and me.in1 like \"C%\" then " +
@@ -368,8 +368,8 @@ namespace com.espertech.esper.regression.nwtable.infra
         private void RunAssertionInvalid(EPServiceProvider epService, bool namedWindow) {
             string epl;
             var eplCreateMergeInfra = namedWindow ?
-                    "create window MergeInfra#unique(theString) as SupportBean" :
-                    "create table MergeInfra as (theString string, intPrimitive int, boolPrimitive bool)";
+                    "create window MergeInfra#unique(TheString) as SupportBean" :
+                    "create table MergeInfra as (TheString string, IntPrimitive int, BoolPrimitive bool)";
             epService.EPAdministrator.CreateEPL(eplCreateMergeInfra);
             epService.EPAdministrator.CreateEPL("create schema ABCSchema as (val int)");
             var eplCreateABCInfra = namedWindow ?
@@ -377,8 +377,8 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "create table ABCInfra (val int)";
             epService.EPAdministrator.CreateEPL(eplCreateABCInfra);
     
-            epl = "on SupportBean_A merge MergeInfra as windowevent where id = theString when not matched and Exists(select * from MergeInfra mw where mw.theString = windowevent.theString) is not null then insert into ABC select '1'";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: On-Merge not-matched filter expression may not use properties that are provided by the named window event [on SupportBean_A merge MergeInfra as windowevent where id = theString when not matched and Exists(select * from MergeInfra mw where mw.theString = windowevent.theString) is not null then insert into ABC select '1']");
+            epl = "on SupportBean_A merge MergeInfra as windowevent where id = TheString when not matched and Exists(select * from MergeInfra mw where mw.TheString = windowevent.TheString) is not null then insert into ABC select '1'";
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: On-Merge not-matched filter expression may not use properties that are provided by the named window event [on SupportBean_A merge MergeInfra as windowevent where id = TheString when not matched and Exists(select * from MergeInfra mw where mw.TheString = windowevent.TheString) is not null then insert into ABC select '1']");
     
             epl = "on SupportBean_A as up merge ABCInfra as mv when not matched then insert (col) select 1";
             if (namedWindow) {
@@ -387,12 +387,12 @@ namespace com.espertech.esper.regression.nwtable.infra
                 SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Validation failed in when-not-matched (clause 1): Column 'col' could not be assigned to any of the properties of the underlying type (missing column names, event property, setter method or constructor?) [");
             }
     
-            epl = "on SupportBean_A as up merge MergeInfra as mv where mv.boolPrimitive=true when not matched then update set intPrimitive = 1";
+            epl = "on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then update set IntPrimitive = 1";
             SupportMessageAssertUtil.TryInvalid(epService, epl, "Incorrect syntax near 'update' (a reserved keyword) expecting 'insert' but found 'update' at line 1 column 9");
     
             if (namedWindow) {
-                epl = "on SupportBean_A as up merge MergeInfra as mv where mv.theString=id when matched then insert select *";
-                SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Validation failed in when-not-matched (clause 1): Expression-returned event type 'SupportBean_A' with underlying type '" + typeof(SupportBean_A).Name + "' cannot be converted to target event type 'MergeInfra' with underlying type '" + typeof(SupportBean).FullName + "' [on SupportBean_A as up merge MergeInfra as mv where mv.theString=id when matched then insert select *]");
+                epl = "on SupportBean_A as up merge MergeInfra as mv where mv.TheString=id when matched then insert select *";
+                SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Validation failed in when-not-matched (clause 1): Expression-returned event type 'SupportBean_A' with underlying type '" + typeof(SupportBean_A).FullName + "' cannot be converted to target event type 'MergeInfra' with underlying type '" + typeof(SupportBean).FullName + "' [on SupportBean_A as up merge MergeInfra as mv where mv.TheString=id when matched then insert select *]");
             }
     
             epl = "on SupportBean as up merge MergeInfra as mv";
@@ -404,14 +404,14 @@ namespace com.espertech.esper.regression.nwtable.infra
             epl = "on SupportBean as up merge MergeInfra as mv where a=b when matched and then delete";
             SupportMessageAssertUtil.TryInvalid(epService, epl, "Incorrect syntax near 'then' (a reserved keyword) at line 1 column 71 [on SupportBean as up merge MergeInfra as mv where a=b when matched and then delete]");
     
-            epl = "on SupportBean as up merge MergeInfra as mv where boolPrimitive=true when not matched then insert select *";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate where-clause expression 'boolPrimitive=true': Property named 'boolPrimitive' is ambiguous as is valid for more then one stream [on SupportBean as up merge MergeInfra as mv where boolPrimitive=true when not matched then insert select *]");
+            epl = "on SupportBean as up merge MergeInfra as mv where BoolPrimitive=true when not matched then insert select *";
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate where-clause expression 'BoolPrimitive=true': Property named 'BoolPrimitive' is ambiguous as is valid for more then one stream [on SupportBean as up merge MergeInfra as mv where BoolPrimitive=true when not matched then insert select *]");
     
-            epl = "on SupportBean_A as up merge MergeInfra as mv where mv.boolPrimitive=true when not matched then insert select intPrimitive";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'intPrimitive': Property named 'intPrimitive' is not valid in any stream [on SupportBean_A as up merge MergeInfra as mv where mv.boolPrimitive=true when not matched then insert select intPrimitive]");
+            epl = "on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then insert select IntPrimitive";
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'IntPrimitive': Property named 'IntPrimitive' is not valid in any stream [on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then insert select IntPrimitive]");
     
-            epl = "on SupportBean_A as up merge MergeInfra as mv where mv.boolPrimitive=true when not matched then insert select * where theString = 'A'";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate match where-clause expression 'theString=\"A\"': Property named 'theString' is not valid in any stream [on SupportBean_A as up merge MergeInfra as mv where mv.boolPrimitive=true when not matched then insert select * where theString = 'A']");
+            epl = "on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then insert select * where TheString = 'A'";
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate match where-clause expression 'TheString=\"A\"': Property named 'TheString' is not valid in any stream [on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then insert select * where TheString = 'A']");
     
             epService.EPAdministrator.DestroyAllStatements();
             foreach (var name in "ABCSchema,ABCInfra,MergeInfra".Split(',')) {
@@ -506,11 +506,11 @@ namespace com.espertech.esper.regression.nwtable.infra
                     "create table MyInfraPM as (c1 string primary key, c2 string primary key)";
             var namedWindowStmt = epService.EPAdministrator.CreateEPL(eplCreate);
     
-            var epl = "on pattern[every a=SupportBean(theString like 'A%') -> b=SupportBean(theString like 'B%', intPrimitive = a.intPrimitive)] me " +
+            var epl = "on pattern[every a=SupportBean(TheString like 'A%') -> b=SupportBean(TheString like 'B%', IntPrimitive = a.IntPrimitive)] me " +
                     "merge MyInfraPM mw " +
-                    "where me.a.theString = mw.c1 and me.b.theString = mw.c2 " +
+                    "where me.a.TheString = mw.c1 and me.b.TheString = mw.c2 " +
                     "when not matched then " +
-                    "insert select me.a.theString as c1, me.b.theString as c2 ";
+                    "insert select me.a.TheString as c1, me.b.TheString as c2 ";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var mergeListener = new SupportUpdateListener();
             stmt.Events += mergeListener.Update;
@@ -580,30 +580,30 @@ namespace com.espertech.esper.regression.nwtable.infra
         private void RunAssertionMultiactionDeleteUpdate(EPServiceProvider epService, bool namedWindow) {
             var eplCreate = namedWindow ?
                     "create window WinMDU#keepall as SupportBean" :
-                    "create table WinMDU (theString string primary key, intPrimitive int)";
+                    "create table WinMDU (TheString string primary key, IntPrimitive int)";
             var nmStmt = epService.EPAdministrator.CreateEPL(eplCreate);
     
-            epService.EPAdministrator.CreateEPL("insert into WinMDU select theString, intPrimitive from SupportBean");
-            var epl = "on SupportBean_ST0 as st0 merge WinMDU as win where st0.key0=win.theString " +
+            epService.EPAdministrator.CreateEPL("insert into WinMDU select TheString, IntPrimitive from SupportBean");
+            var epl = "on SupportBean_ST0 as st0 merge WinMDU as win where st0.key0=win.TheString " +
                     "when matched " +
-                    "then delete where intPrimitive<0 " +
-                    "then update set intPrimitive=st0.p00 where intPrimitive=3000 or p00=3000 " +
-                    "then update set intPrimitive=999 where intPrimitive=1000 " +
-                    "then delete where intPrimitive=1000 " +
-                    "then update set intPrimitive=1999 where intPrimitive=2000 " +
-                    "then delete where intPrimitive=2000 ";
+                    "then delete where IntPrimitive<0 " +
+                    "then update set IntPrimitive=st0.p00 where IntPrimitive=3000 or p00=3000 " +
+                    "then update set IntPrimitive=999 where IntPrimitive=1000 " +
+                    "then delete where IntPrimitive=1000 " +
+                    "then update set IntPrimitive=1999 where IntPrimitive=2000 " +
+                    "then delete where IntPrimitive=2000 ";
             var eplFormatted = "on SupportBean_ST0 as st0" + NEWLINE +
                     "merge WinMDU as win" + NEWLINE +
-                    "where st0.key0=win.theString" + NEWLINE +
+                    "where st0.key0=win.TheString" + NEWLINE +
                     "when matched" + NEWLINE +
-                    "then delete where intPrimitive<0" + NEWLINE +
-                    "then update set intPrimitive=st0.p00 where intPrimitive=3000 or p00=3000" + NEWLINE +
-                    "then update set intPrimitive=999 where intPrimitive=1000" + NEWLINE +
-                    "then delete where intPrimitive=1000" + NEWLINE +
-                    "then update set intPrimitive=1999 where intPrimitive=2000" + NEWLINE +
-                    "then delete where intPrimitive=2000";
+                    "then delete where IntPrimitive<0" + NEWLINE +
+                    "then update set IntPrimitive=st0.p00 where IntPrimitive=3000 or p00=3000" + NEWLINE +
+                    "then update set IntPrimitive=999 where IntPrimitive=1000" + NEWLINE +
+                    "then delete where IntPrimitive=1000" + NEWLINE +
+                    "then update set IntPrimitive=1999 where IntPrimitive=2000" + NEWLINE +
+                    "then delete where IntPrimitive=2000";
             epService.EPAdministrator.CreateEPL(epl);
-            var fields = "theString,intPrimitive".Split(',');
+            var fields = "TheString,IntPrimitive".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean_ST0("ST0", "E1", 0));
@@ -641,8 +641,8 @@ namespace com.espertech.esper.regression.nwtable.infra
     
         private void RunAssertionSubqueryNotMatched(EPServiceProvider epService, bool namedWindow) {
             var eplCreateOne = namedWindow ?
-                    "create window InfraOne#unique(string) (string string, intPrimitive int)" :
-                    "create table InfraOne (string string primary key, intPrimitive int)";
+                    "create window InfraOne#unique(string) (string string, IntPrimitive int)" :
+                    "create table InfraOne (string string primary key, IntPrimitive int)";
             var stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplCreateOne);
             Assert.IsFalse(stmt.StatementContext.IsStatelessSelect);
     
@@ -653,18 +653,18 @@ namespace com.espertech.esper.regression.nwtable.infra
             epService.EPAdministrator.CreateEPL("insert into InfraTwo select 'W2' as val0, id as val1 from SupportBean_S0");
     
             var epl = "on SupportBean sb merge InfraOne w1 " +
-                    "where sb.theString = w1.string " +
-                    "when not matched then insert select 'Y' as string, (select val1 from InfraTwo as w2 where w2.val0 = sb.theString) as intPrimitive";
+                    "where sb.TheString = w1.string " +
+                    "when not matched then insert select 'Y' as string, (select val1 from InfraTwo as w2 where w2.val0 = sb.TheString) as IntPrimitive";
             epService.EPAdministrator.CreateEPL(epl);
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(50));  // InfraTwo now has a row {W2, 1}
             epService.EPRuntime.SendEvent(new SupportBean("W2", 1));
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), "string,intPrimitive".Split(','), new object[][]{new object[] {"Y", 50}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), "string,IntPrimitive".Split(','), new object[][]{new object[] {"Y", 50}});
     
             if (namedWindow) {
                 epService.EPRuntime.SendEvent(new SupportBean_S0(51));  // InfraTwo now has a row {W2, 1}
                 epService.EPRuntime.SendEvent(new SupportBean("W2", 2));
-                EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), "string,intPrimitive".Split(','), new object[][]{new object[] {"Y", 51}});
+                EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), "string,IntPrimitive".Split(','), new object[][]{new object[] {"Y", 51}});
             }
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -675,15 +675,15 @@ namespace com.espertech.esper.regression.nwtable.infra
         private void RunAssertionUpdateOrderOfFields(EPServiceProvider epService, bool namedWindow) {
             var eplCreate = namedWindow ?
                     "create window MyInfraUOF#keepall as SupportBean" :
-                    "create table MyInfraUOF(theString string primary key, intPrimitive int, intBoxed int, doublePrimitive double)";
+                    "create table MyInfraUOF(TheString string primary key, IntPrimitive int, IntBoxed int, DoublePrimitive double)";
             epService.EPAdministrator.CreateEPL(eplCreate);
-            epService.EPAdministrator.CreateEPL("insert into MyInfraUOF select theString, intPrimitive, intBoxed, doublePrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into MyInfraUOF select TheString, IntPrimitive, IntBoxed, DoublePrimitive from SupportBean");
             var stmt = epService.EPAdministrator.CreateEPL("on SupportBean_S0 as sb " +
-                    "merge MyInfraUOF as mywin where mywin.theString = sb.p00 when matched then " +
-                    "update set intPrimitive=id, intBoxed=mywin.intPrimitive, doublePrimitive=initial.intPrimitive");
+                    "merge MyInfraUOF as mywin where mywin.TheString = sb.p00 when matched then " +
+                    "update set IntPrimitive=id, IntBoxed=mywin.IntPrimitive, DoublePrimitive=initial.IntPrimitive");
             var mergeListener = new SupportUpdateListener();
             stmt.Events += mergeListener.Update;
-            var fields = "intPrimitive,intBoxed,doublePrimitive".Split(',');
+            var fields = "IntPrimitive,IntBoxed,DoublePrimitive".Split(',');
     
             epService.EPRuntime.SendEvent(MakeSupportBean("E1", 1, 2));
             epService.EPRuntime.SendEvent(new SupportBean_S0(5, "E1"));
@@ -767,7 +767,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                             (namedWindow ?
                                     "create window AInfra#lastevent as AInfraType;\n" :
                                     "create table AInfra (k string, cflat Composite, carr Composite[]);\n") +
-                            "insert into AInfra select theString as k, null as cflat, null as carr from SupportBean;\n" +
+                            "insert into AInfra select TheString as k, null as cflat, null as carr from SupportBean;\n" +
                             "create " + metaType + " schema MyEvent as (cf Composite, ca Composite[]);\n" +
                             "on MyEvent e merge AInfra when matched then update set cflat = e.cf, carr = e.ca";
             var deployed = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(eplTypes);

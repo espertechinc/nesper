@@ -41,27 +41,27 @@ namespace com.espertech.esper.regression.rowrecog
             handler = SupportConditionHandlerFactory.LastHandler;
             string[] fields = "c0".Split(',');
     
-            string eplOne = "@Name('S1') select * from SupportBean(theString = 'A') " +
+            string eplOne = "@Name('S1') select * from SupportBean(TheString = 'A') " +
                     "match_recognize (" +
-                    "  partition by intPrimitive " +
-                    "  measures P2.intPrimitive as c0" +
+                    "  partition by IntPrimitive " +
+                    "  measures P2.IntPrimitive as c0" +
                     "  pattern (P1 P2) " +
                     "  define " +
-                    "    P1 as P1.longPrimitive = 1," +
-                    "    P2 as P2.longPrimitive = 2" +
+                    "    P1 as P1.LongPrimitive = 1," +
+                    "    P2 as P2.LongPrimitive = 2" +
                     ")";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(eplOne);
             var listenerOne = new SupportUpdateListener();
             stmtOne.Events += listenerOne.Update;
     
-            string eplTwo = "@Name('S2') select * from SupportBean(theString = 'B')#length(2) " +
+            string eplTwo = "@Name('S2') select * from SupportBean(TheString = 'B')#length(2) " +
                     "match_recognize (" +
-                    "  partition by intPrimitive " +
-                    "  measures P2.intPrimitive as c0" +
+                    "  partition by IntPrimitive " +
+                    "  measures P2.IntPrimitive as c0" +
                     "  pattern (P1 P2) " +
                     "  define " +
-                    "    P1 as P1.longPrimitive = 1," +
-                    "    P2 as P2.longPrimitive = 2" +
+                    "    P1 as P1.LongPrimitive = 1," +
+                    "    P2 as P2.LongPrimitive = 2" +
                     ")";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(eplTwo);
             var listenerTwo = new SupportUpdateListener();

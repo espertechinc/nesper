@@ -55,7 +55,7 @@ namespace com.espertech.esper.regression.epl.join
             epService.EPAdministrator.Configuration.AddEventType("SupportBean_S1", typeof(SupportBean_S1));
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
     
-            string stmtTextLO = "select sum(intPrimitive) as c0, count(*) as c1 " +
+            string stmtTextLO = "select sum(IntPrimitive) as c0, count(*) as c1 " +
                     "from pattern [every timer:interval(1 seconds)] unidirectional " +
                     "left outer join " +
                     "SupportBean#keepall";
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regression.epl.join
             // test 2-stream inner join
             //
             string[] fieldsIJ = "c0,c1".Split(',');
-            string stmtTextIJ = "select sum(intPrimitive) as c0, count(*) as c1 " +
+            string stmtTextIJ = "select sum(IntPrimitive) as c0, count(*) as c1 " +
                     "from SupportBean_S0 unidirectional " +
                     "inner join " +
                     "SupportBean#keepall";
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regression.epl.join
             // test 3-stream inner join
             //
             string[] fields3IJ = "c0,c1".Split(',');
-            string stmtText3IJ = "select sum(intPrimitive) as c0, count(*) as c1 " +
+            string stmtText3IJ = "select sum(IntPrimitive) as c0, count(*) as c1 " +
                     "from " +
                     "SupportBean_S0#keepall " +
                     "inner join " +
@@ -130,8 +130,8 @@ namespace com.espertech.esper.regression.epl.join
     
             // test 3-stream full outer join
             //
-            string[] fields3FOJ = "p00,p10,theString".Split(',');
-            string stmtText3FOJ = "select p00, p10, theString " +
+            string[] fields3FOJ = "p00,p10,TheString".Split(',');
+            string stmtText3FOJ = "select p00, p10, TheString " +
                     "from " +
                     "SupportBean_S0#keepall " +
                     "full outer join " +
@@ -165,8 +165,8 @@ namespace com.espertech.esper.regression.epl.join
     
             // test 3-stream full outer join with where-clause
             //
-            string[] fields3FOJW = "p00,p10,theString".Split(',');
-            string stmtText3FOJW = "select p00, p10, theString " +
+            string[] fields3FOJW = "p00,p10,TheString".Split(',');
+            string stmtText3FOJW = "select p00, p10, TheString " +
                     "from " +
                     "SupportBean_S0#keepall as s0 " +
                     "full outer join " +
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regression.epl.join
             string stmtText = "select irstream symbol, count(*) as cnt " +
                     "from " + typeof(SupportMarketDataBean).FullName + " unidirectional, " +
                     typeof(SupportBean).FullName + "#keepall " +
-                    "where theString = symbol group by theString, symbol";
+                    "where TheString = symbol group by TheString, symbol";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -285,7 +285,7 @@ namespace com.espertech.esper.regression.epl.join
             string stmtText = "select irstream count(*) as cnt " +
                     "from " + typeof(SupportMarketDataBean).FullName + " unidirectional, " +
                     typeof(SupportBean).FullName + "#keepall " +
-                    "where theString = symbol";
+                    "where TheString = symbol";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -325,9 +325,9 @@ namespace com.espertech.esper.regression.epl.join
             string stmtText = "select s0.id, s1.id, s2.id " +
                     "from " +
                     typeof(SupportBean_S0).FullName + " as s0 unidirectional " +
-                    " full outer join " + typeof(SupportBean_S1).Name + "#keepall as s1" +
+                    " full outer join " + typeof(SupportBean_S1).FullName + "#keepall as s1" +
                     " on p00 = p10 " +
-                    " full outer join " + typeof(SupportBean_S2).Name + "#keepall as s2" +
+                    " full outer join " + typeof(SupportBean_S2).FullName + "#keepall as s2" +
                     " on p10 = p20";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
@@ -339,9 +339,9 @@ namespace com.espertech.esper.regression.epl.join
             string stmtText = "select s0.id, s1.id, s2.id " +
                     "from " +
                     typeof(SupportBean_S0).FullName + " as s0 unidirectional " +
-                    " left outer join " + typeof(SupportBean_S1).Name + "#keepall as s1 " +
+                    " left outer join " + typeof(SupportBean_S1).FullName + "#keepall as s1 " +
                     " on p00 = p10 " +
-                    " left outer join " + typeof(SupportBean_S2).Name + "#keepall as s2 " +
+                    " left outer join " + typeof(SupportBean_S2).FullName + "#keepall as s2 " +
                     " on p10 = p20";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
@@ -356,9 +356,9 @@ namespace com.espertech.esper.regression.epl.join
             // no iterator allowed
             string stmtText = "select count(*) as num " +
                     "from pattern [every timer:at(*/1,*,*,*,*)] unidirectional,\n" +
-                    "SupportBean(intPrimitive=1)#unique(theString) a,\n" +
-                    "SupportBean(intPrimitive=2)#unique(theString) b\n" +
-                    "where a.theString = b.theString";
+                    "SupportBean(IntPrimitive=1)#unique(TheString) a,\n" +
+                    "SupportBean(IntPrimitive=2)#unique(TheString) b\n" +
+                    "where a.TheString = b.TheString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -383,9 +383,9 @@ namespace com.espertech.esper.regression.epl.join
             // no iterator allowed
             string stmtText = "select count(*) as num " +
                     "from pattern [every timer:at(*/1,*,*,*,*)] unidirectional,\n" +
-                    "SupportBean(intPrimitive=1)#unique(theString) a,\n" +
-                    "SupportBean(intPrimitive=2)#unique(theString) b\n" +
-                    "where a.theString = b.theString output every 2 minutes";
+                    "SupportBean(IntPrimitive=1)#unique(TheString) a,\n" +
+                    "SupportBean(IntPrimitive=2)#unique(TheString) b\n" +
+                    "where a.TheString = b.TheString output every 2 minutes";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -443,8 +443,8 @@ namespace com.espertech.esper.regression.epl.join
             string stmtText = "select s0.id, s1.id, s2.id " +
                     "from " +
                     typeof(SupportBean_S0).FullName + " as s0 unidirectional, " +
-                    typeof(SupportBean_S1).Name + "#keepall as s1, " +
-                    typeof(SupportBean_S2).Name + "#keepall as s2 " +
+                    typeof(SupportBean_S1).FullName + "#keepall as s1, " +
+                    typeof(SupportBean_S2).FullName + "#keepall as s2 " +
                     "where p00 = p10 and p10 = p20";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
@@ -455,9 +455,9 @@ namespace com.espertech.esper.regression.epl.join
         private void RunAssertion3TableJoinVar2A(EPServiceProvider epService) {
             string stmtText = "select s0.id, s1.id, s2.id " +
                     "from " +
-                    typeof(SupportBean_S1).Name + "#keepall as s1, " +
+                    typeof(SupportBean_S1).FullName + "#keepall as s1, " +
                     typeof(SupportBean_S0).FullName + " as s0 unidirectional, " +
-                    typeof(SupportBean_S2).Name + "#keepall as s2 " +
+                    typeof(SupportBean_S2).FullName + "#keepall as s2 " +
                     "where p00 = p10 and p10 = p20";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
@@ -468,9 +468,9 @@ namespace com.espertech.esper.regression.epl.join
         private void RunAssertion3TableJoinVar2B(EPServiceProvider epService) {
             string stmtText = "select s0.id, s1.id, s2.id " +
                     "from " +
-                    typeof(SupportBean_S2).Name + "#keepall as s2, " +
+                    typeof(SupportBean_S2).FullName + "#keepall as s2, " +
                     typeof(SupportBean_S0).FullName + " as s0 unidirectional, " +
-                    typeof(SupportBean_S1).Name + "#keepall as s1 " +
+                    typeof(SupportBean_S1).FullName + "#keepall as s1 " +
                     "where p00 = p10 and p10 = p20";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
@@ -481,8 +481,8 @@ namespace com.espertech.esper.regression.epl.join
         private void RunAssertion3TableJoinVar3(EPServiceProvider epService) {
             string stmtText = "select s0.id, s1.id, s2.id " +
                     "from " +
-                    typeof(SupportBean_S1).Name + "#keepall as s1, " +
-                    typeof(SupportBean_S2).Name + "#keepall as s2, " +
+                    typeof(SupportBean_S1).FullName + "#keepall as s1, " +
+                    typeof(SupportBean_S2).FullName + "#keepall as s2, " +
                     typeof(SupportBean_S0).FullName + " as s0 unidirectional " +
                     "where p00 = p10 and p10 = p20";
     
@@ -524,22 +524,22 @@ namespace com.espertech.esper.regression.epl.join
         }
     
         private void RunAssertion2TableFullOuterJoin(EPServiceProvider epService) {
-            string stmtText = "select symbol, volume, theString, intPrimitive " +
+            string stmtText = "select symbol, volume, TheString, IntPrimitive " +
                     "from " + typeof(SupportMarketDataBean).FullName + " unidirectional " +
                     "full outer join " +
                     typeof(SupportBean).FullName +
-                    "#keepall on theString = symbol";
+                    "#keepall on TheString = symbol";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             TryFullOuterPassive2Stream(epService, stmt);
             stmt.Dispose();
         }
     
         private void RunAssertion2TableFullOuterJoinCompile(EPServiceProvider epService) {
-            string stmtText = "select symbol, volume, theString, intPrimitive " +
+            string stmtText = "select symbol, volume, TheString, IntPrimitive " +
                     "from " + typeof(SupportMarketDataBean).FullName + " unidirectional " +
                     "full outer join " +
                     typeof(SupportBean).FullName +
-                    "#keepall on theString = symbol";
+                    "#keepall on TheString = symbol";
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
             Assert.AreEqual(stmtText, model.ToEPL());
@@ -552,16 +552,16 @@ namespace com.espertech.esper.regression.epl.join
     
         private void RunAssertion2TableFullOuterJoinOM(EPServiceProvider epService) {
             var model = new EPStatementObjectModel();
-            model.SelectClause = SelectClause.Create("symbol", "volume", "theString", "intPrimitive");
+            model.SelectClause = SelectClause.Create("symbol", "volume", "TheString", "IntPrimitive");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarketDataBean).FullName).Unidirectional(true));
             model.FromClause.Add(FilterStream.Create(typeof(SupportBean).FullName).AddView("keepall"));
-            model.FromClause.Add(OuterJoinQualifier.Create("theString", OuterJoinType.FULL, "symbol"));
+            model.FromClause.Add(OuterJoinQualifier.Create("TheString", OuterJoinType.FULL, "symbol"));
     
-            string stmtText = "select symbol, volume, theString, intPrimitive " +
+            string stmtText = "select symbol, volume, TheString, IntPrimitive " +
                     "from " + typeof(SupportMarketDataBean).FullName + " unidirectional " +
                     "full outer join " +
                     typeof(SupportBean).FullName +
-                    "#keepall on theString = symbol";
+                    "#keepall on TheString = symbol";
             Assert.AreEqual(stmtText, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -572,11 +572,11 @@ namespace com.espertech.esper.regression.epl.join
         }
     
         private void RunAssertion2TableFullOuterJoinBackwards(EPServiceProvider epService) {
-            string stmtText = "select symbol, volume, theString, intPrimitive " +
+            string stmtText = "select symbol, volume, TheString, IntPrimitive " +
                     "from " + typeof(SupportBean).FullName +
                     "#keepall full outer join " +
-                    typeof(SupportMarketDataBean).Name + " unidirectional " +
-                    "on theString = symbol";
+                    typeof(SupportMarketDataBean).FullName + " unidirectional " +
+                    "on TheString = symbol";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
     
             TryFullOuterPassive2Stream(epService, stmt);
@@ -585,19 +585,19 @@ namespace com.espertech.esper.regression.epl.join
         }
     
         private void RunAssertion2TableJoin(EPServiceProvider epService) {
-            string stmtText = "select symbol, volume, theString, intPrimitive " +
+            string stmtText = "select symbol, volume, TheString, IntPrimitive " +
                     "from " + typeof(SupportMarketDataBean).FullName + " unidirectional, " +
                     typeof(SupportBean).FullName +
-                    "#keepall where theString = symbol";
+                    "#keepall where TheString = symbol";
     
             TryJoinPassive2Stream(epService, stmtText);
         }
     
         private void RunAssertion2TableBackwards(EPServiceProvider epService) {
-            string stmtText = "select symbol, volume, theString, intPrimitive " +
+            string stmtText = "select symbol, volume, TheString, IntPrimitive " +
                     "from " + typeof(SupportBean).FullName + "#keepall, " +
-                    typeof(SupportMarketDataBean).Name + " unidirectional " +
-                    "where theString = symbol";
+                    typeof(SupportMarketDataBean).FullName + " unidirectional " +
+                    "where TheString = symbol";
     
             TryJoinPassive2Stream(epService, stmtText);
         }
@@ -605,14 +605,14 @@ namespace com.espertech.esper.regression.epl.join
         private void RunAssertionInvalid(EPServiceProvider epService) {
             string text = "select * from " + typeof(SupportBean).FullName + " unidirectional " +
                     "full outer join " +
-                    typeof(SupportMarketDataBean).Name + "#keepall unidirectional " +
-                    "on theString = symbol";
+                    typeof(SupportMarketDataBean).FullName + "#keepall unidirectional " +
+                    "on TheString = symbol";
             TryInvalid(epService, text, "Error starting statement: The unidirectional keyword requires that no views are declared onto the stream (applies to stream 1)");
     
             text = "select * from " + typeof(SupportBean).FullName + "#length(2) unidirectional " +
                     "full outer join " +
-                    typeof(SupportMarketDataBean).Name + "#keepall " +
-                    "on theString = symbol";
+                    typeof(SupportMarketDataBean).FullName + "#keepall " +
+                    "on TheString = symbol";
             TryInvalid(epService, text, "Error starting statement: The unidirectional keyword requires that no views are declared onto the stream");
         }
     
@@ -623,7 +623,7 @@ namespace com.espertech.esper.regression.epl.join
     
             // send event, expect result
             SendEventMD(epService, "E1", 1L);
-            string[] fields = "symbol,volume,theString,intPrimitive".Split(',');
+            string[] fields = "symbol,volume,TheString,IntPrimitive".Split(',');
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L, null, null});
     
             SendEvent(epService, "E1", 10);
@@ -644,7 +644,7 @@ namespace com.espertech.esper.regression.epl.join
     
             // send event, expect result
             SendEventMD(epService, "E1", 1L);
-            string[] fields = "symbol,volume,theString,intPrimitive".Split(',');
+            string[] fields = "symbol,volume,TheString,IntPrimitive".Split(',');
             Assert.IsFalse(listener.IsInvoked);
     
             SendEvent(epService, "E1", 10);

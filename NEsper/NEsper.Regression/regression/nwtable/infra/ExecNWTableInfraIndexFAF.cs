@@ -67,12 +67,12 @@ namespace com.espertech.esper.regression.nwtable.infra
     
             // single prop, no index, both declared unique (named window only)
             if (namedWindow) {
-                AssertIndexChoiceJoin(epService, namedWindow, new string[0], preloadedEventsOne, "std:Unique(s1)", "std:Unique(s2)", assertionsSingleProp);
+                AssertIndexChoiceJoin(epService, namedWindow, new string[0], preloadedEventsOne, "std:unique(s1)", "std:unique(s2)", assertionsSingleProp);
             }
     
             // single prop, unique indexes, both declared keepall
             var uniqueIndex = new string[]{"create unique index W1I1 on W1(s1)", "create unique index W1I2 on W2(s2)"};
-            AssertIndexChoiceJoin(epService, namedWindow, uniqueIndex, preloadedEventsOne, "win:Keepall()", "win:Keepall()", assertionsSingleProp);
+            AssertIndexChoiceJoin(epService, namedWindow, uniqueIndex, preloadedEventsOne, "win:keepall()", "win:keepall()", assertionsSingleProp);
     
             // single prop, mixed indexes, both declared keepall
             var assertionsMultiProp = new IndexAssertion[]{
@@ -84,20 +84,20 @@ namespace com.espertech.esper.regression.nwtable.infra
             };
             if (namedWindow) {
                 var mixedIndex = new string[]{"create index W1I1 on W1(s1, l1)", "create unique index W1I2 on W2(s2)"};
-                AssertIndexChoiceJoin(epService, namedWindow, mixedIndex, preloadedEventsOne, "std:Unique(s1)", "win:Keepall()", assertionsSingleProp);
+                AssertIndexChoiceJoin(epService, namedWindow, mixedIndex, preloadedEventsOne, "std:unique(s1)", "win:keepall()", assertionsSingleProp);
     
                 // multi prop, no index, both declared unique
-                AssertIndexChoiceJoin(epService, namedWindow, new string[0], preloadedEventsOne, "std:Unique(s1, l1)", "std:Unique(s2, l2)", assertionsMultiProp);
+                AssertIndexChoiceJoin(epService, namedWindow, new string[0], preloadedEventsOne, "std:unique(s1, l1)", "std:unique(s2, l2)", assertionsMultiProp);
             }
     
             // multi prop, unique indexes, both declared keepall
             var uniqueIndexMulti = new string[]{"create unique index W1I1 on W1(s1, l1)", "create unique index W1I2 on W2(s2, l2)"};
-            AssertIndexChoiceJoin(epService, namedWindow, uniqueIndexMulti, preloadedEventsOne, "win:Keepall()", "win:Keepall()", assertionsMultiProp);
+            AssertIndexChoiceJoin(epService, namedWindow, uniqueIndexMulti, preloadedEventsOne, "win:keepall()", "win:keepall()", assertionsMultiProp);
     
             // multi prop, mixed indexes, both declared keepall
             if (namedWindow) {
                 var mixedIndexMulti = new string[]{"create index W1I1 on W1(s1)", "create unique index W1I2 on W2(s2, l2)"};
-                AssertIndexChoiceJoin(epService, namedWindow, mixedIndexMulti, preloadedEventsOne, "std:Unique(s1, l1)", "win:Keepall()", assertionsMultiProp);
+                AssertIndexChoiceJoin(epService, namedWindow, mixedIndexMulti, preloadedEventsOne, "std:unique(s1, l1)", "win:keepall()", assertionsMultiProp);
             }
         }
     
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regression.nwtable.infra
     
             // single index one field (plus declared unique)
             var noindexes = new string[0];
-            AssertIndexChoice(epService, namedWindow, noindexes, preloadedEventsOne, "std:Unique(s1)",
+            AssertIndexChoice(epService, namedWindow, noindexes, preloadedEventsOne, "std:unique(s1)",
                     new IndexAssertion[]{
                             new IndexAssertion(null, "s1 = 'E2'", null, null, fafAssertion),
                             new IndexAssertion(null, "s1 = 'E2' and l1 = 22", null, null, fafAssertion),
@@ -170,7 +170,7 @@ namespace com.espertech.esper.regression.nwtable.infra
     
             // single index one field (plus declared unique)
             var indexOneField = new string[]{"create unique index One on MyInfra (s1)"};
-            AssertIndexChoice(epService, namedWindow, indexOneField, preloadedEventsOne, "std:Unique(s1)",
+            AssertIndexChoice(epService, namedWindow, indexOneField, preloadedEventsOne, "std:unique(s1)",
                     new IndexAssertion[]{
                             new IndexAssertion(null, "s1 = 'E2'", "One", BACKING_SINGLE_UNIQUE, fafAssertion),
                             new IndexAssertion(null, "s1 in ('E2')", "One", BACKING_SINGLE_UNIQUE, fafAssertion),
@@ -181,7 +181,7 @@ namespace com.espertech.esper.regression.nwtable.infra
     
             // single index two field (plus declared unique)
             var indexTwoField = new string[]{"create unique index One on MyInfra (s1, l1)"};
-            AssertIndexChoice(epService, namedWindow, indexTwoField, preloadedEventsOne, "std:Unique(s1)",
+            AssertIndexChoice(epService, namedWindow, indexTwoField, preloadedEventsOne, "std:unique(s1)",
                     new IndexAssertion[]{
                             new IndexAssertion(null, "s1 = 'E2'", null, null, fafAssertion),
                             new IndexAssertion(null, "s1 = 'E2' and l1 = 22", "One", BACKING_MULTI_UNIQUE, fafAssertion),
@@ -191,7 +191,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             var indexSetTwo = new string[]{
                     "create index One on MyInfra (s1)",
                     "create unique index Two on MyInfra (s1, d1)"};
-            AssertIndexChoice(epService, namedWindow, indexSetTwo, preloadedEventsOne, "std:Unique(s1)",
+            AssertIndexChoice(epService, namedWindow, indexSetTwo, preloadedEventsOne, "std:unique(s1)",
                     new IndexAssertion[]{
                             new IndexAssertion(null, "s1 = 'E2'", "One", BACKING_SINGLE_DUPS, fafAssertion),
                             new IndexAssertion(null, "s1 = 'E2' and l1 = 22", "One", BACKING_SINGLE_DUPS, fafAssertion),
@@ -207,7 +207,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             var indexSetThree = new string[]{
                     "create index One on MyInfra (l1 btree)",
                     "create index Two on MyInfra (d1 btree)"};
-            AssertIndexChoice(epService, namedWindow, indexSetThree, preloadedEventsOne, "std:Unique(s1)",
+            AssertIndexChoice(epService, namedWindow, indexSetThree, preloadedEventsOne, "std:unique(s1)",
                     new IndexAssertion[]{
                             new IndexAssertion(null, "l1 between 22 and 23", "One", BACKING_SORTED_COERCED, fafAssertion),
                             new IndexAssertion(null, "d1 between 21 and 22", "Two", BACKING_SORTED_COERCED, fafAssertion),

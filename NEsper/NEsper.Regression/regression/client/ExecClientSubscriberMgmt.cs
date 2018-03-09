@@ -24,7 +24,7 @@ namespace com.espertech.esper.regression.client
 
     public class ExecClientSubscriberMgmt : RegressionExecution
     {
-        private static readonly string[] FIELDS = "theString,intPrimitive".Split(',');
+        private static readonly string[] FIELDS = "TheString,IntPrimitive".Split(',');
     
         public override void Configure(Configuration configuration) {
             var pkg = typeof(SupportBean).Namespace;
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regression.client
             stmt.Subscriber = subscriberCreateVariable;
     
             var subscriberSetVariable = new SubscriberMap();
-            var stmtTextSet = "on SupportBean set myvar = theString";
+            var stmtTextSet = "on SupportBean set myvar = TheString";
             stmt = epService.EPAdministrator.CreateEPL(stmtTextSet);
             stmt.Subscriber = subscriberSetVariable;
     
@@ -92,12 +92,12 @@ namespace com.espertech.esper.regression.client
         private void TryAssertionNamedWindow(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum) {
             var fields = "key,value".Split(',');
             var subscriberNamedWindow = new SubscriberMap();
-            var stmtTextCreate = eventRepresentationEnum.GetAnnotationText() + " create window MyWindow#keepall as select theString as key, intPrimitive as value from SupportBean";
+            var stmtTextCreate = eventRepresentationEnum.GetAnnotationText() + " create window MyWindow#keepall as select TheString as key, IntPrimitive as value from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             stmt.Subscriber = subscriberNamedWindow;
     
             var subscriberInsertInto = new SubscriberFields();
-            var stmtTextInsertInto = "insert into MyWindow select theString as key, intPrimitive as value from SupportBean";
+            var stmtTextInsertInto = "insert into MyWindow select TheString as key, IntPrimitive as value from SupportBean";
             stmt = epService.EPAdministrator.CreateEPL(stmtTextInsertInto);
             stmt.Subscriber = subscriberInsertInto;
     
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regression.client
     
         private void RunAssertionSimpleSelectUpdateOnly(EPServiceProvider epService) {
             var subscriber = new SupportSubscriberRowByRowSpecificNStmt();
-            var stmt = epService.EPAdministrator.CreateEPL("select theString, intPrimitive from " + typeof(SupportBean).FullName + "#lastevent");
+            var stmt = epService.EPAdministrator.CreateEPL("select TheString, IntPrimitive from " + typeof(SupportBean).FullName + "#lastevent");
             stmt.Subscriber = subscriber;
     
             // get statement, attach listener

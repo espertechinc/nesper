@@ -32,9 +32,9 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionSumOneView(EPServiceProvider epService) {
-            string epl = "select irstream sum(longBoxed) as mySum " +
+            string epl = "select irstream sum(LongBoxed) as mySum " +
                     "from " + typeof(SupportBean).FullName + "#time(10 seconds) " +
-                    "having sum(longBoxed) > 10";
+                    "having sum(LongBoxed) > 10";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -45,11 +45,11 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionSumJoin(EPServiceProvider epService) {
-            string epl = "select irstream sum(longBoxed) as mySum " +
+            string epl = "select irstream sum(LongBoxed) as mySum " +
                     "from " + typeof(SupportBeanString).FullName + "#time(10 seconds) as one, " +
                     typeof(SupportBean).FullName + "#time(10 seconds) as two " +
-                    "where one.theString = two.theString " +
-                    "having sum(longBoxed) > 10";
+                    "where one.TheString = two.TheString " +
+                    "having sum(LongBoxed) > 10";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionAvgGroupWindow(EPServiceProvider epService) {
-            //string stmtText = "select istream avg(price) as aprice from "+ typeof(SupportMarketDataBean).Name
+            //string stmtText = "select istream avg(price) as aprice from "+ typeof(SupportMarketDataBean).FullName
             //        +"#groupwin(symbol)#length(1) having avg(price) <= 0";
             string stmtText = "select istream avg(price) as aprice from " + typeof(SupportMarketDataBean).FullName
                     + "#unique(symbol) having avg(price) <= 0";

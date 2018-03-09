@@ -101,13 +101,13 @@ namespace com.espertech.esper.regression.nwtable.infra
             epService.EPRuntime.SendEvent(new SupportBean("E2", 11));
             epService.EPRuntime.SendEvent(new SupportBean("E3", 5));
 
-            var query = "select * from MyInfra(intPrimitive > 1, intPrimitive < 10)";
+            var query = "select * from MyInfra(IntPrimitive > 1, IntPrimitive < 10)";
             RunAssertionFilter(epService, query);
 
-            query = "select * from MyInfra(intPrimitive > 1) where intPrimitive < 10";
+            query = "select * from MyInfra(IntPrimitive > 1) where IntPrimitive < 10";
             RunAssertionFilter(epService, query);
 
-            query = "select * from MyInfra where intPrimitive < 10 and intPrimitive > 1";
+            query = "select * from MyInfra where IntPrimitive < 10 and IntPrimitive > 1";
             RunAssertionFilter(epService, query);
 
             DestroyInfra(epService);
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regression.nwtable.infra
 
         private void RunAssertionFilter(EPServiceProvider epService, string query)
         {
-            var fields = "theString,intPrimitive".Split(',');
+            var fields = "TheString,IntPrimitive".Split(',');
             var result = epService.EPRuntime.ExecuteQuery(query);
             EPAssertionUtil.AssertPropsPerRow(result.GetEnumerator(), fields, new[] {new object[] {"E3", 5}});
 
@@ -147,39 +147,39 @@ namespace com.espertech.esper.regression.nwtable.infra
                 epService, epl,
                 "Error executing statement: Output rate limiting is not a supported feature of on-demand queries [select * from MyInfra output every 10 seconds]");
 
-            epl = "select prev(1, theString) from MyInfra";
+            epl = "select prev(1, TheString) from MyInfra";
             TryInvalidFAF(
                 epService, epl,
-                "Error executing statement: Failed to validate select-clause expression 'Prev(1,theString)': Previous function cannot be used in this context [select prev(1, theString) from MyInfra]");
+                "Error executing statement: Failed to validate select-clause expression 'Prev(1,TheString)': Previous function cannot be used in this context [select prev(1, TheString) from MyInfra]");
 
-            epl = "insert into MyInfra(intPrimitive) select 'a'";
+            epl = "insert into MyInfra(IntPrimitive) select 'a'";
             if (isNamedWindow)
             {
                 TryInvalidFAF(
                     epService, epl,
-                    "Error executing statement: Invalid assignment of column 'intPrimitive' of type 'System.String' to event property 'intPrimitive' typed as 'int', column and parameter types mismatch [insert into MyInfra(intPrimitive) select 'a']");
+                    "Error executing statement: Invalid assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as 'int', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
             }
             else
             {
                 TryInvalidFAF(
                     epService, epl,
-                    "Error executing statement: Invalid assignment of column 'intPrimitive' of type 'System.String' to event property 'intPrimitive' typed as '" + Name.Of<int>() + "', column and parameter types mismatch [insert into MyInfra(intPrimitive) select 'a']");
+                    "Error executing statement: Invalid assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as '" + Name.Of<int>() + "', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
             }
 
-            epl = "insert into MyInfra(intPrimitive, theString) select 1";
+            epl = "insert into MyInfra(IntPrimitive, TheString) select 1";
             TryInvalidFAF(
                 epService, epl,
-                "Error executing statement: Number of supplied values in the select or values clause does not match insert-into clause [insert into MyInfra(intPrimitive, theString) select 1]");
+                "Error executing statement: Number of supplied values in the select or values clause does not match insert-into clause [insert into MyInfra(IntPrimitive, TheString) select 1]");
 
-            epl = "insert into MyInfra select 1 as intPrimitive from MyInfra";
+            epl = "insert into MyInfra select 1 as IntPrimitive from MyInfra";
             TryInvalidFAF(
                 epService, epl,
-                "Error executing statement: Insert-into fire-and-forget query can only consist of an insert-into clause and a select-clause [insert into MyInfra select 1 as intPrimitive from MyInfra]");
+                "Error executing statement: Insert-into fire-and-forget query can only consist of an insert-into clause and a select-clause [insert into MyInfra select 1 as IntPrimitive from MyInfra]");
 
-            epl = "insert into MyInfra(intPrimitive, theString) values (1, 'a', 1)";
+            epl = "insert into MyInfra(IntPrimitive, TheString) values (1, 'a', 1)";
             TryInvalidFAF(
                 epService, epl,
-                "Error executing statement: Number of supplied values in the select or values clause does not match insert-into clause [insert into MyInfra(intPrimitive, theString) values (1, 'a', 1)]");
+                "Error executing statement: Number of supplied values in the select or values clause does not match insert-into clause [insert into MyInfra(IntPrimitive, TheString) values (1, 'a', 1)]");
 
             if (isNamedWindow)
             {
@@ -188,10 +188,10 @@ namespace com.espertech.esper.regression.nwtable.infra
                     epService, epl,
                     "Error executing statement: On-demand queries require tables or named windows and do not allow event streams or patterns [select * from pattern [every MyInfra]]");
 
-                epl = "select * from MyInfra#uni(intPrimitive)";
+                epl = "select * from MyInfra#uni(IntPrimitive)";
                 TryInvalidFAF(
                     epService, epl,
-                    "Error executing statement: Views are not a supported feature of on-demand queries [select * from MyInfra#uni(intPrimitive)]");
+                    "Error executing statement: Views are not a supported feature of on-demand queries [select * from MyInfra#uni(IntPrimitive)]");
             }
 
             DestroyInfra(epService);
@@ -381,9 +381,9 @@ namespace com.espertech.esper.regression.nwtable.infra
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 11));
             epService.EPRuntime.SendEvent(new SupportBean("E3", 5));
-            var fields = new[] {"theString", "total"};
+            var fields = new[] {"TheString", "total"};
 
-            var query = "select theString, sum(intPrimitive) as total from MyInfra";
+            var query = "select TheString, sum(IntPrimitive) as total from MyInfra";
             var result = epService.EPRuntime.ExecuteQuery(query);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
                 result.GetEnumerator(), fields,
@@ -418,10 +418,10 @@ namespace com.espertech.esper.regression.nwtable.infra
             epService.EPRuntime.SendEvent(new SupportBean("E2", 11));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 5));
             epService.EPRuntime.SendEvent(new SupportBean_A("E2"));
-            var fields = new[] {"theString", "intPrimitive", "id"};
+            var fields = new[] {"TheString", "IntPrimitive", "id"};
 
-            var query = "select theString, intPrimitive, id from MyInfra nw1, " +
-                        "MySecondInfra nw2 where nw1.theString = nw2.id";
+            var query = "select TheString, IntPrimitive, id from MyInfra nw1, " +
+                        "MySecondInfra nw2 where nw1.TheString = nw2.id";
             var result = epService.EPRuntime.ExecuteQuery(query);
             EPAssertionUtil.AssertPropsPerRow(result.GetEnumerator(), fields, new[] {new object[] {"E2", 11, "E2"}});
 
@@ -445,10 +445,10 @@ namespace com.espertech.esper.regression.nwtable.infra
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 11));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 5));
-            var fields = new[] {"theString", "total"};
+            var fields = new[] {"TheString", "total"};
 
             var query =
-                "select theString, sum(intPrimitive) as total from MyInfra group by theString order by theString asc";
+                "select TheString, sum(IntPrimitive) as total from MyInfra group by TheString order by TheString asc";
             var result = epService.EPRuntime.ExecuteQuery(query);
             EPAssertionUtil.AssertPropsPerRow(
                 result.GetEnumerator(), fields, new[] {new object[] {"E1", 6}, new object[] {"E2", 11}});
@@ -476,17 +476,17 @@ namespace com.espertech.esper.regression.nwtable.infra
             RunAssertionIn(epService);
 
             // try suitable index
-            var stmtIdx1 = epService.EPAdministrator.CreateEPL("create index Idx1 on MyInfra(theString, intPrimitive)");
+            var stmtIdx1 = epService.EPAdministrator.CreateEPL("create index Idx1 on MyInfra(TheString, IntPrimitive)");
             RunAssertionIn(epService);
             stmtIdx1.Dispose();
 
             // backwards index
-            var stmtIdx2 = epService.EPAdministrator.CreateEPL("create index Idx2 on MyInfra(intPrimitive, theString)");
+            var stmtIdx2 = epService.EPAdministrator.CreateEPL("create index Idx2 on MyInfra(IntPrimitive, TheString)");
             RunAssertionIn(epService);
             stmtIdx2.Dispose();
 
             // partial index
-            var stmtIdx3 = epService.EPAdministrator.CreateEPL("create index Idx3 on MyInfra(intPrimitive)");
+            var stmtIdx3 = epService.EPAdministrator.CreateEPL("create index Idx3 on MyInfra(IntPrimitive)");
             RunAssertionIn(epService);
             stmtIdx3.Dispose();
 
@@ -495,13 +495,13 @@ namespace com.espertech.esper.regression.nwtable.infra
 
         private void RunAssertionIn(EPServiceProvider epService)
         {
-            TryAssertionIn(epService, "theString in ('E2', 'E3') and intPrimitive in (10, 20)", new[] {200L});
-            TryAssertionIn(epService, "intPrimitive in (30, 20) and theString in ('E4', 'E1')", new long[] { });
-            TryAssertionIn(epService, "intPrimitive in (30, 20) and theString in ('E2', 'E1')", new[] {200L});
-            TryAssertionIn(epService, "theString in ('E2', 'E3') and intPrimitive in (20, 30)", new[] {200L, 300L});
-            TryAssertionIn(epService, "theString in ('E2', 'E3') and intPrimitive in (30, 20)", new[] {200L, 300L});
+            TryAssertionIn(epService, "TheString in ('E2', 'E3') and IntPrimitive in (10, 20)", new[] {200L});
+            TryAssertionIn(epService, "IntPrimitive in (30, 20) and TheString in ('E4', 'E1')", new long[] { });
+            TryAssertionIn(epService, "IntPrimitive in (30, 20) and TheString in ('E2', 'E1')", new[] {200L});
+            TryAssertionIn(epService, "TheString in ('E2', 'E3') and IntPrimitive in (20, 30)", new[] {200L, 300L});
+            TryAssertionIn(epService, "TheString in ('E2', 'E3') and IntPrimitive in (30, 20)", new[] {200L, 300L});
             TryAssertionIn(
-                epService, "theString in ('E1', 'E2', 'E3', 'E4') and intPrimitive in (10, 20, 30)",
+                epService, "TheString in ('E1', 'E2', 'E3', 'E4') and IntPrimitive in (10, 20, 30)",
                 new[] {100L, 200L, 300L});
         }
 
@@ -512,7 +512,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             var values = new List<long>();
             foreach (var @event in result.Array)
             {
-                values.Add(@event.Get("longPrimitive").AsLong());
+                values.Add(@event.Get("LongPrimitive").AsLong());
             }
 
             EPAssertionUtil.AssertEqualsAnyOrder(expected, values.ToArray());
@@ -527,7 +527,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             epService.EPRuntime.SendEvent(new SupportBean("E3", 5));
             var fields = new[] {"total"};
 
-            var query = "select sum(intPrimitive) as total from MyInfra";
+            var query = "select sum(IntPrimitive) as total from MyInfra";
             var result = epService.EPRuntime.ExecuteQuery(query);
             EPAssertionUtil.AssertPropsPerRow(result.GetEnumerator(), fields, new[] {new object[] {16}});
 
@@ -582,7 +582,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             var query = "select * from MyInfra";
             var prepared = epService.EPRuntime.PrepareQuery(query);
             var result = epService.EPRuntime.ExecuteQuery(query);
-            var fields = new[] {"theString", "intPrimitive"};
+            var fields = new[] {"TheString", "IntPrimitive"};
             EPAssertionUtil.AssertPropsPerRow(result.GetEnumerator(), fields, null);
             EPAssertionUtil.AssertPropsPerRow(prepared.Execute().GetEnumerator(), fields, null);
 
@@ -606,16 +606,16 @@ namespace com.espertech.esper.regression.nwtable.infra
         {
             // test hash-segmented context
             var eplCtx =
-                "create context MyCtx coalesce Consistent_hash_crc32(theString) from SupportBean granularity 4 preallocate";
+                "create context MyCtx coalesce Consistent_hash_crc32(TheString) from SupportBean granularity 4 preallocate";
             epService.EPAdministrator.CreateEPL(eplCtx);
 
             var eplCreate = isNamedWindow
                 ? "context MyCtx create window CtxInfra#keepall as SupportBean"
-                : "context MyCtx create table CtxInfra (theString string primary key, intPrimitive int primary key)";
+                : "context MyCtx create table CtxInfra (TheString string primary key, IntPrimitive int primary key)";
             epService.EPAdministrator.CreateEPL(eplCreate);
             var eplPopulate = isNamedWindow
                 ? "context MyCtx insert into CtxInfra select * from SupportBean"
-                : "context MyCtx on SupportBean sb merge CtxInfra ci where sb.theString = ci.theString and sb.intPrimitive = ci.intPrimitive when not matched then insert select theString, intPrimitive";
+                : "context MyCtx on SupportBean sb merge CtxInfra ci where sb.TheString = ci.TheString and sb.IntPrimitive = ci.IntPrimitive when not matched then insert select TheString, IntPrimitive";
             epService.EPAdministrator.CreateEPL(eplPopulate);
 
             var codeFunc = new SupportHashCodeFuncGranularCRC32(4);
@@ -634,34 +634,34 @@ namespace com.espertech.esper.regression.nwtable.infra
 
             // delete per context partition (E0 ended up in '3')
             epService.EPRuntime.ExecuteQuery(
-                "delete from CtxInfra where theString = 'E0'",
+                "delete from CtxInfra where TheString = 'E0'",
                 new ContextPartitionSelector[] {new SupportSelectorByHashCode(1)});
             AssertCtxInfraCountPerCode(epService, new long[] {0, 2, 1, 2});
 
             var result = epService.EPRuntime.ExecuteQuery(
-                "delete from CtxInfra where theString = 'E0'",
+                "delete from CtxInfra where TheString = 'E0'",
                 new ContextPartitionSelector[] {new SupportSelectorByHashCode(3)});
             AssertCtxInfraCountPerCode(epService, new long[] {0, 2, 1, 1});
             if (isNamedWindow)
             {
-                EPAssertionUtil.AssertPropsPerRow(result.Array, "theString".Split(','), new[] {new object[] {"E0"}});
+                EPAssertionUtil.AssertPropsPerRow(result.Array, "TheString".Split(','), new[] {new object[] {"E0"}});
             }
 
             // delete per context partition (E1 ended up in '1')
             epService.EPRuntime.ExecuteQuery(
-                "delete from CtxInfra where theString = 'E1'",
+                "delete from CtxInfra where TheString = 'E1'",
                 new ContextPartitionSelector[] {new SupportSelectorByHashCode(0)});
             AssertCtxInfraCountPerCode(epService, new long[] {0, 2, 1, 1});
 
             epService.EPRuntime.ExecuteQuery(
-                "delete from CtxInfra where theString = 'E1'",
+                "delete from CtxInfra where TheString = 'E1'",
                 new ContextPartitionSelector[] {new SupportSelectorByHashCode(1)});
             AssertCtxInfraCountPerCode(epService, new long[] {0, 1, 1, 1});
             epService.EPAdministrator.DestroyAllStatements();
 
             // test category-segmented context
             var eplCtxCategory =
-                "create context MyCtxCat group by intPrimitive < 0 as negative, group by intPrimitive > 0 as positive from SupportBean";
+                "create context MyCtxCat group by IntPrimitive < 0 as negative, group by IntPrimitive > 0 as positive from SupportBean";
             epService.EPAdministrator.CreateEPL(eplCtxCategory);
             epService.EPAdministrator.CreateEPL("context MyCtxCat create window CtxInfraCat#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("context MyCtxCat insert into CtxInfraCat select * from SupportBean");
@@ -678,7 +678,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             Assert.AreEqual(2L, GetCtxInfraCatCount(epService, "positive"));
             Assert.AreEqual(0L, GetCtxInfraCatCount(epService, "negative"));
             EPAssertionUtil.AssertPropsPerRow(
-                result.Array, "theString".Split(','), new[] {new object[] {"E1"}, new object[] {"E3"}});
+                result.Array, "TheString".Split(','), new[] {new object[] {"E1"}, new object[] {"E3"}});
 
             DestroyInfra(epService);
             epService.EPAdministrator.Configuration.RemoveEventType("CtxInfra", false);
@@ -701,7 +701,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             {
                 Assert.AreEqual(epService.EPAdministrator.Configuration.GetEventType("MyInfra"), result.EventType);
                 Assert.AreEqual(10, result.Array.Length);
-                Assert.AreEqual("E0", result.Array[0].Get("theString"));
+                Assert.AreEqual("E0", result.Array[0].Get("TheString"));
             }
             else
             {
@@ -715,7 +715,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             }
 
             Assert.AreEqual(10L, GetMyInfraCount(epService));
-            var eplWithWhere = "delete from MyInfra where theString=\"E1\"";
+            var eplWithWhere = "delete from MyInfra where TheString=\"E1\"";
             var modelWithWhere = epService.EPAdministrator.CompileEPL(eplWithWhere);
             Assert.AreEqual(eplWithWhere, modelWithWhere.ToEPL());
             result = epService.EPRuntime.ExecuteQuery(modelWithWhere);
@@ -723,7 +723,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             if (isNamedWindow)
             {
                 Assert.AreEqual(epService.EPAdministrator.Configuration.GetEventType("MyInfra"), result.EventType);
-                EPAssertionUtil.AssertPropsPerRow(result.Array, "theString".Split(','), new[] {new object[] {"E1"}});
+                EPAssertionUtil.AssertPropsPerRow(result.Array, "TheString".Split(','), new[] {new object[] {"E1"}});
             }
 
             // test SODA delete-all
@@ -736,7 +736,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             // test with index
             if (isNamedWindow)
             {
-                epService.EPAdministrator.CreateEPL("create unique index Idx1 on MyInfra (theString)");
+                epService.EPAdministrator.CreateEPL("create unique index Idx1 on MyInfra (TheString)");
             }
 
             for (var i = 0; i < 5; i++)
@@ -745,22 +745,22 @@ namespace com.espertech.esper.regression.nwtable.infra
             }
 
             RunQueryAssertCount(
-                epService, INDEX_CALLBACK_HOOK + "delete from MyInfra where theString = 'E1' and intPrimitive = 0", 5,
+                epService, INDEX_CALLBACK_HOOK + "delete from MyInfra where TheString = 'E1' and IntPrimitive = 0", 5,
                 isNamedWindow ? "Idx1" : "primary-MyInfra",
                 isNamedWindow ? BACKING_SINGLE_UNIQUE : BACKING_MULTI_UNIQUE);
             RunQueryAssertCount(
-                epService, INDEX_CALLBACK_HOOK + "delete from MyInfra where theString = 'E1' and intPrimitive = 1", 4,
+                epService, INDEX_CALLBACK_HOOK + "delete from MyInfra where TheString = 'E1' and IntPrimitive = 1", 4,
                 isNamedWindow ? "Idx1" : "primary-MyInfra",
                 isNamedWindow ? BACKING_SINGLE_UNIQUE : BACKING_MULTI_UNIQUE);
             RunQueryAssertCount(
-                epService, INDEX_CALLBACK_HOOK + "delete from MyInfra where theString = 'E2'", 3,
+                epService, INDEX_CALLBACK_HOOK + "delete from MyInfra where TheString = 'E2'", 3,
                 isNamedWindow ? "Idx1" : null, isNamedWindow ? BACKING_SINGLE_UNIQUE : null);
             RunQueryAssertCount(
-                epService, INDEX_CALLBACK_HOOK + "delete from MyInfra where intPrimitive = 4", 2, null, null);
+                epService, INDEX_CALLBACK_HOOK + "delete from MyInfra where IntPrimitive = 4", 2, null, null);
 
             // test with alias
             RunQueryAssertCount(
-                epService, INDEX_CALLBACK_HOOK + "delete from MyInfra as w1 where w1.theString = 'E3'", 1,
+                epService, INDEX_CALLBACK_HOOK + "delete from MyInfra as w1 where w1.TheString = 'E3'", 1,
                 isNamedWindow ? "Idx1" : null, isNamedWindow ? BACKING_SINGLE_UNIQUE : null);
 
             // test consumption
@@ -768,7 +768,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             epService.EPRuntime.ExecuteQuery("delete from MyInfra");
-            var fields = new[] {"theString", "intPrimitive"};
+            var fields = new[] {"TheString", "IntPrimitive"};
             if (isNamedWindow)
             {
                 EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"E0", 0});
@@ -797,7 +797,7 @@ namespace com.espertech.esper.regression.nwtable.infra
         private void RunAssertionUpdate(EPServiceProvider epService, bool isNamedWindow)
         {
             SetupInfra(epService, isNamedWindow);
-            var fields = new[] {"theString", "intPrimitive"};
+            var fields = new[] {"TheString", "IntPrimitive"};
 
             // test update-all
             for (var i = 0; i < 2; i++)
@@ -805,7 +805,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 epService.EPRuntime.SendEvent(new SupportBean("E" + i, i));
             }
 
-            var result = epService.EPRuntime.ExecuteQuery("update MyInfra set theString = 'ABC'");
+            var result = epService.EPRuntime.ExecuteQuery("update MyInfra set TheString = 'ABC'");
             EPAssertionUtil.AssertPropsPerRow(
                 epService.EPAdministrator.GetStatement("TheInfra").GetEnumerator(), fields,
                 new[] {new object[] {"ABC", 0}, new object[] {"ABC", 1}});
@@ -823,7 +823,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             }
 
             result = epService.EPRuntime.ExecuteQuery(
-                "update MyInfra set theString = 'X', intPrimitive=-1 where theString = 'E1' and intPrimitive = 1");
+                "update MyInfra set TheString = 'X', IntPrimitive=-1 where TheString = 'E1' and IntPrimitive = 1");
             if (isNamedWindow)
             {
                 EPAssertionUtil.AssertPropsPerRow(result.Array, fields, new[] {new object[] {"X", -1}});
@@ -834,7 +834,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 new[] {new object[] {"E0", 0}, new object[] {"E2", 2}, new object[] {"X", -1}});
 
             // test update with SODA
-            var epl = "update MyInfra set intPrimitive=intPrimitive+10 where theString=\"E2\"";
+            var epl = "update MyInfra set IntPrimitive=IntPrimitive+10 where TheString=\"E2\"";
             var model = epService.EPAdministrator.CompileEPL(epl);
             Assert.AreEqual(epl, model.ToEPL());
             result = epService.EPRuntime.ExecuteQuery(model);
@@ -849,7 +849,7 @@ namespace com.espertech.esper.regression.nwtable.infra
 
             // test update with initial value
             result = epService.EPRuntime.ExecuteQuery(
-                "update MyInfra set intPrimitive=5, theString='x', theString = initial.theString || 'y', intPrimitive=initial.intPrimitive+100 where theString = 'E0'");
+                "update MyInfra set IntPrimitive=5, TheString='x', TheString = initial.TheString || 'y', IntPrimitive=initial.IntPrimitive+100 where TheString = 'E0'");
             if (isNamedWindow)
             {
                 EPAssertionUtil.AssertPropsPerRow(result.Array, fields, new[] {new object[] {"E0y", 100}});
@@ -863,7 +863,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             // test with index
             if (isNamedWindow)
             {
-                epService.EPAdministrator.CreateEPL("create unique index Idx1 on MyInfra (theString)");
+                epService.EPAdministrator.CreateEPL("create unique index Idx1 on MyInfra (TheString)");
             }
 
             for (var i = 0; i < 5; i++)
@@ -873,31 +873,31 @@ namespace com.espertech.esper.regression.nwtable.infra
 
             RunQueryAssertCountNonNegative(
                 epService,
-                INDEX_CALLBACK_HOOK + "update MyInfra set intPrimitive=-1 where theString = 'E1' and intPrimitive = 0",
+                INDEX_CALLBACK_HOOK + "update MyInfra set IntPrimitive=-1 where TheString = 'E1' and IntPrimitive = 0",
                 5, isNamedWindow ? "Idx1" : "primary-MyInfra",
                 isNamedWindow ? BACKING_SINGLE_UNIQUE : BACKING_MULTI_UNIQUE);
             RunQueryAssertCountNonNegative(
                 epService,
-                INDEX_CALLBACK_HOOK + "update MyInfra set intPrimitive=-1 where theString = 'E1' and intPrimitive = 1",
+                INDEX_CALLBACK_HOOK + "update MyInfra set IntPrimitive=-1 where TheString = 'E1' and IntPrimitive = 1",
                 4, isNamedWindow ? "Idx1" : "primary-MyInfra",
                 isNamedWindow ? BACKING_SINGLE_UNIQUE : BACKING_MULTI_UNIQUE);
             RunQueryAssertCountNonNegative(
-                epService, INDEX_CALLBACK_HOOK + "update MyInfra set intPrimitive=-1 where theString = 'E2'", 3,
+                epService, INDEX_CALLBACK_HOOK + "update MyInfra set IntPrimitive=-1 where TheString = 'E2'", 3,
                 isNamedWindow ? "Idx1" : null, isNamedWindow ? BACKING_SINGLE_UNIQUE : null);
             RunQueryAssertCountNonNegative(
-                epService, INDEX_CALLBACK_HOOK + "update MyInfra set intPrimitive=-1 where intPrimitive = 4", 2, null,
+                epService, INDEX_CALLBACK_HOOK + "update MyInfra set IntPrimitive=-1 where IntPrimitive = 4", 2, null,
                 null);
 
             // test with alias
             RunQueryAssertCountNonNegative(
-                epService, INDEX_CALLBACK_HOOK + "update MyInfra as w1 set intPrimitive=-1 where w1.theString = 'E3'",
+                epService, INDEX_CALLBACK_HOOK + "update MyInfra as w1 set IntPrimitive=-1 where w1.TheString = 'E3'",
                 1, isNamedWindow ? "Idx1" : null, isNamedWindow ? BACKING_SINGLE_UNIQUE : null);
 
             // test consumption
             var stmt = epService.EPAdministrator.CreateEPL("select irstream * from MyInfra");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            epService.EPRuntime.ExecuteQuery("update MyInfra set intPrimitive=1000 where theString = 'E0'");
+            epService.EPRuntime.ExecuteQuery("update MyInfra set IntPrimitive=1000 where TheString = 'E0'");
             if (isNamedWindow)
             {
                 EPAssertionUtil.AssertProps(
@@ -914,7 +914,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 epService.EPRuntime.ExecuteQuery("update MyInfra mw set Mw.TheString = 'XYZ', DoubleInt(mw)");
                 EPAssertionUtil.AssertPropsPerRow(
                     epService.EPAdministrator.GetStatement("TheInfra").GetEnumerator(),
-                    "theString,intPrimitive".Split(','), new[] {new object[] {"XYZ", 20}});
+                    "TheString,IntPrimitive".Split(','), new[] {new object[] {"XYZ", 20}});
             }
 
             DestroyInfra(epService);
@@ -926,7 +926,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             SupportQueryPlanIndexHook.Reset();
             epService.EPRuntime.ExecuteQuery(epl);
             var actual = (long) epService.EPRuntime
-                .ExecuteQuery("select count(*) as c0 from MyInfra where intPrimitive >= 0").Array[0].Get("c0");
+                .ExecuteQuery("select count(*) as c0 from MyInfra where IntPrimitive >= 0").Array[0].Get("c0");
             Assert.AreEqual(count, actual);
             SupportQueryPlanIndexHook.AssertFAFAndReset(indexName, backingClass);
         }
@@ -941,7 +941,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             }
 
             // test one parameter
-            var eplOneParam = "select * from MyInfra where intPrimitive = ?";
+            var eplOneParam = "select * from MyInfra where IntPrimitive = ?";
             var pqOneParam = epService.EPRuntime.PrepareQueryWithParameters(eplOneParam);
             for (var i = 0; i < 10; i++)
             {
@@ -951,7 +951,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             RunParameterizedQuery(epService, pqOneParam, new object[] {-1}, null); // not found
 
             // test two parameter
-            var eplTwoParam = "select * from MyInfra where intPrimitive = ? and longPrimitive = ?";
+            var eplTwoParam = "select * from MyInfra where IntPrimitive = ? and LongPrimitive = ?";
             var pqTwoParam = epService.EPRuntime.PrepareQueryWithParameters(eplTwoParam);
             for (var i = 0; i < 10; i++)
             {
@@ -961,13 +961,13 @@ namespace com.espertech.esper.regression.nwtable.infra
             RunParameterizedQuery(epService, pqTwoParam, new object[] {-1, 1000}, null); // not found
 
             // test in-clause with string objects
-            var eplInSimple = "select * from MyInfra where theString in (?, ?, ?)";
+            var eplInSimple = "select * from MyInfra where TheString in (?, ?, ?)";
             var pqInSimple = epService.EPRuntime.PrepareQueryWithParameters(eplInSimple);
             RunParameterizedQuery(epService, pqInSimple, new object[] {"A", "A", "A"}, null); // not found
             RunParameterizedQuery(epService, pqInSimple, new object[] {"A", "E3", "A"}, new[] {"E3"});
 
             // test in-clause with string array
-            var eplInArray = "select * from MyInfra where theString in (?)";
+            var eplInArray = "select * from MyInfra where TheString in (?)";
             var pqInArray = epService.EPRuntime.PrepareQueryWithParameters(eplInArray);
             RunParameterizedQuery(
                 epService, pqInArray, new object[] {new[] {"E3", "E6", "E8"}}, new[] {"E3", "E6", "E8"});
@@ -976,20 +976,20 @@ namespace com.espertech.esper.regression.nwtable.infra
             RunParameterizedQuery(
                 epService,
                 epService.EPRuntime.PrepareQueryWithParameters(
-                    "select * from MyInfra where theString in (?) and longPrimitive = 4000"),
+                    "select * from MyInfra where TheString in (?) and LongPrimitive = 4000"),
                 new object[] {new[] {"E3", "E4", "E8"}}, new[] {"E4"});
             RunParameterizedQuery(
                 epService,
-                epService.EPRuntime.PrepareQueryWithParameters("select * from MyInfra where longPrimitive > 8000"),
+                epService.EPRuntime.PrepareQueryWithParameters("select * from MyInfra where LongPrimitive > 8000"),
                 new object[] { }, new[] {"E9"});
             RunParameterizedQuery(
                 epService,
-                epService.EPRuntime.PrepareQueryWithParameters("select * from MyInfra where longPrimitive < ?"),
+                epService.EPRuntime.PrepareQueryWithParameters("select * from MyInfra where LongPrimitive < ?"),
                 new object[] {2000}, new[] {"E0", "E1"});
             RunParameterizedQuery(
                 epService,
                 epService.EPRuntime.PrepareQueryWithParameters(
-                    "select * from MyInfra where longPrimitive between ? and ?"),
+                    "select * from MyInfra where LongPrimitive between ? and ?"),
                 new object[] {2000, 4000}, new[] {"E2", "E3", "E4"});
 
             DestroyInfra(epService);
@@ -1016,7 +1016,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 var resultStrings = new string[result.Array.Length];
                 for (var i = 0; i < resultStrings.Length; i++)
                 {
-                    resultStrings[i] = (string) result.Array[i].Get("theString");
+                    resultStrings[i] = (string) result.Array[i].Get("TheString");
                 }
 
                 EPAssertionUtil.AssertEqualsAnyOrder(expected, resultStrings);
@@ -1028,16 +1028,16 @@ namespace com.espertech.esper.regression.nwtable.infra
             SetupInfra(epService, isNamedWindow);
 
             var stmt = epService.EPAdministrator.GetStatement("TheInfra");
-            var propertyNames = "theString,intPrimitive".Split(',');
+            var propertyNames = "TheString,IntPrimitive".Split(',');
 
             // try column name provided with insert-into
-            var eplSelect = "insert into MyInfra (theString, intPrimitive) select 'a', 1";
+            var eplSelect = "insert into MyInfra (TheString, IntPrimitive) select 'a', 1";
             var resultOne = epService.EPRuntime.ExecuteQuery(eplSelect);
             AssertFAFInsertResult(resultOne, new object[] {"a", 1}, propertyNames, stmt, isNamedWindow);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), propertyNames, new[] {new object[] {"a", 1}});
 
             // try SODA and column name not provided with insert-into
-            var eplTwo = "insert into MyInfra select \"b\" as theString, 2 as intPrimitive";
+            var eplTwo = "insert into MyInfra select \"b\" as TheString, 2 as IntPrimitive";
             var modelWSelect = epService.EPAdministrator.CompileEPL(eplTwo);
             Assert.AreEqual(eplTwo, modelWSelect.ToEPL());
             var resultTwo = epService.EPRuntime.ExecuteQuery(modelWSelect);
@@ -1046,16 +1046,16 @@ namespace com.espertech.esper.regression.nwtable.infra
                 stmt.GetEnumerator(), propertyNames, new[] {new object[] {"a", 1}, new object[] {"b", 2}});
 
             // create unique index, insert duplicate row
-            epService.EPAdministrator.CreateEPL("create unique index I1 on MyInfra (theString)");
+            epService.EPAdministrator.CreateEPL("create unique index I1 on MyInfra (TheString)");
             try
             {
-                var eplThree = "insert into MyInfra (theString) select 'a' as theString";
+                var eplThree = "insert into MyInfra (TheString) select 'a' as TheString";
                 epService.EPRuntime.ExecuteQuery(eplThree);
             }
             catch (EPException ex)
             {
                 Assert.AreEqual(
-                    "Error executing statement: Unique index violation, index 'I1' is a unique index and key 'a' already Exists [insert into MyInfra (theString) select 'a' as theString]",
+                    "Error executing statement: Unique index violation, index 'I1' is a unique index and key 'a' already exists [insert into MyInfra (TheString) select 'a' as TheString]",
                     ex.Message);
             }
 
@@ -1075,7 +1075,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             epService.EPAdministrator.CreateEPL("create schema MyMode (mode " + typeof(SupportEnum).FullName + ")");
             var eplInfraMode = isNamedWindow
                 ? "create window MyInfraTwo#unique(mode) as MyMode"
-                : "create table MyInfraTwo as (mode " + typeof(SupportEnum).Name + ")";
+                : "create table MyInfraTwo as (mode " + typeof(SupportEnum).FullName + ")";
             var stmtEnumWin = epService.EPAdministrator.CreateEPL(eplInfraMode);
             epService.EPRuntime.ExecuteQuery(
                 "insert into MyInfraTwo select " + typeof(SupportEnum).FullName + "." +
@@ -1085,7 +1085,7 @@ namespace com.espertech.esper.regression.nwtable.infra
 
             // try insert-into with values-keyword and explicit column names
             epService.EPRuntime.ExecuteQuery("delete from MyInfra");
-            var eplValuesKW = "insert into MyInfra(theString, intPrimitive) values (\"a\", 1)";
+            var eplValuesKW = "insert into MyInfra(TheString, IntPrimitive) values (\"a\", 1)";
             var resultValuesKW = epService.EPRuntime.ExecuteQuery(eplValuesKW);
             AssertFAFInsertResult(resultValuesKW, new object[] {"a", 1}, propertyNames, stmt, isNamedWindow);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
@@ -1132,12 +1132,12 @@ namespace com.espertech.esper.regression.nwtable.infra
         {
             var eplCreate = isNamedWindow
                 ? "@Name('TheInfra') create window MyInfra#keepall as select * from SupportBean"
-                : "@Name('TheInfra') create table MyInfra as (theString string primary key, intPrimitive int primary key, longPrimitive long)";
+                : "@Name('TheInfra') create table MyInfra as (TheString string primary key, IntPrimitive int primary key, LongPrimitive long)";
             epService.EPAdministrator.CreateEPL(eplCreate);
             var eplInsert = isNamedWindow
                 ? "@Name('Insert') insert into MyInfra select * from SupportBean"
-                : "@Name('Insert') on SupportBean sb merge MyInfra mi where mi.theString = sb.theString and mi.intPrimitive=sb.intPrimitive" +
-                  " when not matched then insert select theString, intPrimitive, longPrimitive";
+                : "@Name('Insert') on SupportBean sb merge MyInfra mi where mi.TheString = sb.TheString and mi.IntPrimitive=sb.IntPrimitive" +
+                  " when not matched then insert select TheString, IntPrimitive, LongPrimitive";
             epService.EPAdministrator.CreateEPL(eplInsert);
         }
 

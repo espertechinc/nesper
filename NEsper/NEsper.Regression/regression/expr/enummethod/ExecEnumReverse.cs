@@ -11,14 +11,9 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.enummethod
 {
@@ -40,7 +35,9 @@ namespace com.espertech.esper.regression.expr.enummethod
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val".Split(','), new Type[]{typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val".Split(','), new Type[] {
+                typeof(ICollection<SupportBean_ST0>)
+            });
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E3,1"));
             LambdaAssertionUtil.AssertST0Id(listener, "val", "E3,E2,E1");
@@ -69,7 +66,7 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0".Split(',');
             string eplFragment = "select " +
-                    "strvals.Reverse() as val0 " +
+                    "Strvals.Reverse() as val0 " +
                     "from SupportCollection";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();

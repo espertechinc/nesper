@@ -65,17 +65,17 @@ namespace com.espertech.esper.regression.expr.datetime
             }
     
             // test Bean-type Date-type timestamps
-            string epl = eventRepresentationEnum.GetAnnotationText() + " create schema SupportBean as " + typeof(SupportBean).FullName + " starttimestamp longPrimitive endtimestamp longBoxed";
+            string epl = eventRepresentationEnum.GetAnnotationText() + " create schema SupportBean as " + typeof(SupportBean).FullName + " starttimestamp LongPrimitive endtimestamp LongBoxed";
             epService.EPAdministrator.CreateEPL(epl);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select A.Get('month') as val0 from SupportBean a");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select a.Get('month') as val0 from SupportBean a");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
             var theEvent = new SupportBean();
             theEvent.LongPrimitive = DateTimeParser.ParseDefaultMSec(startA);
             epService.EPRuntime.SendEvent(theEvent);
-            Assert.AreEqual(4, listener.AssertOneGetNewAndReset().Get("val0"));
+            Assert.AreEqual(5, listener.AssertOneGetNewAndReset().Get("val0"));
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
             Assert.AreEqual(epl.Trim(), model.ToEPL());
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regression.expr.datetime
                 epService.EPAdministrator.Configuration.AddEventType("TypeXML", desc);
                 Assert.Fail();
             } catch (ConfigurationException ex) {
-                Assert.AreEqual("Declared start timestamp property 'mystarttimestamp' is expected to return a Date, Calendar or long-typed value but returns 'java.lang.double?'", ex.Message);
+                Assert.AreEqual("Declared start timestamp property 'mystarttimestamp' is expected to return a DateTime, DateTimeEx or long-typed value but returns '" + Name.Clean<double>() + "'", ex.Message);
             }
         }
     
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regression.expr.datetime
             epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create schema TypeA as (startts " + typeOfDatetimeProp + ", endts " + typeOfDatetimeProp + ") starttimestamp startts endtimestamp endts");
             epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create schema TypeB as (startts " + typeOfDatetimeProp + ", endts " + typeOfDatetimeProp + ") starttimestamp startts endtimestamp endts");
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select A.Includes(b) as val0 from TypeA#lastevent as a, TypeB#lastevent as b");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select a.includes(b) as val0 from TypeA#lastevent as a, TypeB#lastevent as b");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     

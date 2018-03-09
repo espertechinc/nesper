@@ -6,17 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Linq;
 using System.Xml;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.container;
-using com.espertech.esper.compat.logging;
-using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util.support;
@@ -28,7 +23,7 @@ namespace com.espertech.esper.regression.events.xml
 {
     public class ExecEventXMLSchemaEventTransposeNodeArray : RegressionExecution {
         private const string CLASSLOADER_SCHEMA_URI = "regression/simpleSchema.xsd";
-    
+
         public override void Run(EPServiceProvider epService) {
             var eventTypeMeta = new ConfigurationEventTypeXMLDOM();
             eventTypeMeta.RootElementName = "simpleEvent";

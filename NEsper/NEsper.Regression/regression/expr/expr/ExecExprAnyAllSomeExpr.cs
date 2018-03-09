@@ -40,11 +40,11 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionEqualsAll(EPServiceProvider epService) {
             string[] fields = "eq,neq,sqlneq,nneq".Split(',');
             string stmtText = "select " +
-                    "intPrimitive=All(1,intBoxed) as eq, " +
-                    "intPrimitive!=All(1,intBoxed) as neq, " +
-                    "intPrimitive<>All(1,intBoxed) as sqlneq, " +
-                    "not intPrimitive=All(1,intBoxed) as nneq " +
-                    "from SupportBean(theString like \"E%\")";
+                    "IntPrimitive=All(1,IntBoxed) as eq, " +
+                    "IntPrimitive!=All(1,IntBoxed) as neq, " +
+                    "IntPrimitive<>All(1,IntBoxed) as sqlneq, " +
+                    "not IntPrimitive=All(1,IntBoxed) as nneq " +
+                    "from SupportBean(TheString like \"E%\")";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -93,8 +93,8 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionEqualsAllArray(EPServiceProvider epService) {
             string[] fields = "e,ne".Split(',');
             string stmtText = "select " +
-                    "longBoxed = all ({1, 1}, intArr, longCol) as e, " +
-                    "longBoxed != all ({1, 1}, intArr, longCol) as ne " +
+                    "LongBoxed = all ({1, 1}, intArr, longCol) as e, " +
+                    "LongBoxed != all ({1, 1}, intArr, longCol) as ne " +
                     "from ArrayBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -121,8 +121,8 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionEqualsAnyArray(EPServiceProvider epService) {
             string[] fields = "e,ne".Split(',');
             string stmtText = "select " +
-                    "longBoxed = any ({1, 1}, intArr, longCol) as e, " +
-                    "longBoxed != any ({1, 1}, intArr, longCol) as ne " +
+                    "LongBoxed = any ({1, 1}, intArr, longCol) as e, " +
+                    "LongBoxed != any ({1, 1}, intArr, longCol) as ne " +
                     "from ArrayBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -148,8 +148,8 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionRelationalOpAllArray(EPServiceProvider epService) {
             string[] fields = "g,ge".Split(',');
             string stmtText = "select " +
-                    "longBoxed>All({1,2},intArr,intCol) as g, " +
-                    "longBoxed>=All({1,2},intArr,intCol) as ge " +
+                    "LongBoxed>All({1,2},intArr,intCol) as g, " +
+                    "LongBoxed>=All({1,2},intArr,intCol) as ge " +
                     "from ArrayBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -197,9 +197,9 @@ namespace com.espertech.esper.regression.expr.expr
             // test array
             string[] fields = "vall,vany".Split(',');
             string stmtText = "select " +
-                    "intBoxed >= all ({doubleBoxed, longBoxed}) as vall, " +
-                    "intBoxed >= any ({doubleBoxed, longBoxed}) as vany " +
-                    " from SupportBean(theString like 'E%')";
+                    "IntBoxed >= all ({DoubleBoxed, LongBoxed}) as vall, " +
+                    "IntBoxed >= any ({DoubleBoxed, LongBoxed}) as vany " +
+                    " from SupportBean(TheString like 'E%')";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -220,9 +220,9 @@ namespace com.espertech.esper.regression.expr.expr
             stmt.Dispose();
             fields = "vall,vany".Split(',');
             stmtText = "select " +
-                    "intBoxed >= all (doubleBoxed, longBoxed) as vall, " +
-                    "intBoxed >= any (doubleBoxed, longBoxed) as vany " +
-                    " from SupportBean(theString like 'E%')";
+                    "IntBoxed >= all (DoubleBoxed, LongBoxed) as vall, " +
+                    "IntBoxed >= any (DoubleBoxed, LongBoxed) as vany " +
+                    " from SupportBean(TheString like 'E%')";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
             stmt.Events += listener.Update;
     
@@ -244,8 +244,8 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionRelationalOpAnyArray(EPServiceProvider epService) {
             string[] fields = "g,ge".Split(',');
             string stmtText = "select " +
-                    "longBoxed > any ({1, 2}, intArr, intCol) as g, " +
-                    "longBoxed >= any ({1, 2}, intArr, intCol) as ge " +
+                    "LongBoxed > any ({1, 2}, intArr, intCol) as g, " +
+                    "LongBoxed >= any ({1, 2}, intArr, intCol) as ge " +
                     "from ArrayBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -279,11 +279,11 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionEqualsAny(EPServiceProvider epService) {
             string[] fields = "eq,neq,sqlneq,nneq".Split(',');
             string stmtText = "select " +
-                    "intPrimitive = any (1, intBoxed) as eq, " +
-                    "intPrimitive != any (1, intBoxed) as neq, " +
-                    "intPrimitive <> any (1, intBoxed) as sqlneq, " +
-                    "not intPrimitive = any (1, intBoxed) as nneq " +
-                    " from SupportBean(theString like 'E%')";
+                    "IntPrimitive = any (1, IntBoxed) as eq, " +
+                    "IntPrimitive != any (1, IntBoxed) as neq, " +
+                    "IntPrimitive <> any (1, IntBoxed) as sqlneq, " +
+                    "not IntPrimitive = any (1, IntBoxed) as nneq " +
+                    " from SupportBean(TheString like 'E%')";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -317,11 +317,11 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionRelationalOpAll(EPServiceProvider epService) {
             string[] fields = "g,ge,l,le".Split(',');
             string stmtText = "select " +
-                    "intPrimitive > all (1, 3, 4) as g, " +
-                    "intPrimitive >= all (1, 3, 4) as ge, " +
-                    "intPrimitive < all (1, 3, 4) as l, " +
-                    "intPrimitive <= all (1, 3, 4) as le " +
-                    " from SupportBean(theString like 'E%')";
+                    "IntPrimitive > all (1, 3, 4) as g, " +
+                    "IntPrimitive >= all (1, 3, 4) as ge, " +
+                    "IntPrimitive < all (1, 3, 4) as l, " +
+                    "IntPrimitive <= all (1, 3, 4) as le " +
+                    " from SupportBean(TheString like 'E%')";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -347,11 +347,11 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionRelationalOpAny(EPServiceProvider epService) {
             string[] fields = "g,ge,l,le".Split(',');
             string stmtText = "select " +
-                    "intPrimitive > any (1, 3, 4) as g, " +
-                    "intPrimitive >= some (1, 3, 4) as ge, " +
-                    "intPrimitive < any (1, 3, 4) as l, " +
-                    "intPrimitive <= some (1, 3, 4) as le " +
-                    " from SupportBean(theString like 'E%')";
+                    "IntPrimitive > any (1, 3, 4) as g, " +
+                    "IntPrimitive >= some (1, 3, 4) as ge, " +
+                    "IntPrimitive < any (1, 3, 4) as l, " +
+                    "IntPrimitive <= some (1, 3, 4) as le " +
+                    " from SupportBean(TheString like 'E%')";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -378,11 +378,11 @@ namespace com.espertech.esper.regression.expr.expr
             // test fixed array case
             string[] fields = "eall,eany,neall,neany,isin".Split(',');
             string stmtText = "select " +
-                    "intBoxed = all ({doubleBoxed, longBoxed}) as eall, " +
-                    "intBoxed = any ({doubleBoxed, longBoxed}) as eany, " +
-                    "intBoxed != all ({doubleBoxed, longBoxed}) as neall, " +
-                    "intBoxed != any ({doubleBoxed, longBoxed}) as neany, " +
-                    "intBoxed in ({doubleBoxed, longBoxed}) as isin " +
+                    "IntBoxed = all ({DoubleBoxed, LongBoxed}) as eall, " +
+                    "IntBoxed = any ({DoubleBoxed, LongBoxed}) as eany, " +
+                    "IntBoxed != all ({DoubleBoxed, LongBoxed}) as neall, " +
+                    "IntBoxed != any ({DoubleBoxed, LongBoxed}) as neany, " +
+                    "IntBoxed in ({DoubleBoxed, LongBoxed}) as isin " +
                     " from SupportBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -404,11 +404,11 @@ namespace com.espertech.esper.regression.expr.expr
             stmt.Dispose();
             fields = "eall,eany,neall,neany,isin".Split(',');
             stmtText = "select " +
-                    "intBoxed = all (doubleBoxed, longBoxed) as eall, " +
-                    "intBoxed = any (doubleBoxed, longBoxed) as eany, " +
-                    "intBoxed != all (doubleBoxed, longBoxed) as neall, " +
-                    "intBoxed != any (doubleBoxed, longBoxed) as neany, " +
-                    "intBoxed in (doubleBoxed, longBoxed) as isin " +
+                    "IntBoxed = all (DoubleBoxed, LongBoxed) as eall, " +
+                    "IntBoxed = any (DoubleBoxed, LongBoxed) as eany, " +
+                    "IntBoxed != all (DoubleBoxed, LongBoxed) as neall, " +
+                    "IntBoxed != any (DoubleBoxed, LongBoxed) as neany, " +
+                    "IntBoxed in (DoubleBoxed, LongBoxed) as isin " +
                     " from SupportBean";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
             stmt.Events += listener.Update;

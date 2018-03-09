@@ -72,13 +72,13 @@ namespace com.espertech.esper.regression.expr.expr
                     "{1, 1.1d, 1e20} as doubleArray," +
                     "{5, 6L} as intLongArray," +
                     "{null} as nullArray," +
-                    typeof(ExecExprArrayExpression).Name + ".DoIt({'a'}, {1}, {1, 'd', null, true}) as func," +
+                    typeof(ExecExprArrayExpression).FullName + ".DoIt({'a'}, {1}, {1, 'd', null, true}) as func," +
                     "{true, false} as boolArray," +
-                    "{intPrimitive} as dynIntArr," +
-                    "{intPrimitive, longPrimitive} as dynLongArr," +
-                    "{intPrimitive, theString} as dynMixedArr," +
-                    "{intPrimitive, intPrimitive * 2, intPrimitive * 3} as dynCalcArr," +
-                    "{longBoxed, doubleBoxed * 2, theString || 'a'} as dynCalcArrNulls" +
+                    "{IntPrimitive} as dynIntArr," +
+                    "{IntPrimitive, LongPrimitive} as dynLongArr," +
+                    "{IntPrimitive, TheString} as dynMixedArr," +
+                    "{IntPrimitive, IntPrimitive * 2, IntPrimitive * 3} as dynCalcArr," +
+                    "{LongBoxed, DoubleBoxed * 2, TheString || 'a'} as dynCalcArrNulls" +
                     " from " + typeof(SupportBean).FullName;
     
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);

@@ -48,10 +48,7 @@ namespace com.espertech.esper.epl.enummethod.dot
 
         public abstract EnumEval GetEnumEval(EngineImportService engineImportService, EventAdapterService eventAdapterService, StreamTypeService streamTypeService, int statementId, string enumMethodUsedName, IList<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Type collectionComponentType, int numStreamsIncoming, bool disablePropertyExpressionEventCollCache);
 
-        public EnumMethodEnum EnumMethodEnum
-        {
-            get { return _enumMethodEnum; }
-        }
+        public EnumMethodEnum EnumMethodEnum => _enumMethodEnum;
 
         public void Visit(ExprDotEvalVisitor visitor)
         {
@@ -187,8 +184,8 @@ namespace com.espertech.esper.epl.enummethod.dot
 
         public EPType TypeInfo
         {
-            get { return _typeInfo; }
-            set { _typeInfo = value; }
+            get => _typeInfo;
+            set => _typeInfo = value;
         }
 
         public object Evaluate(object target, EvaluateParams evalParams)

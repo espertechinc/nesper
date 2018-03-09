@@ -10,16 +10,11 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.enummethod
 {
@@ -39,19 +34,21 @@ namespace com.espertech.esper.regression.expr.enummethod
     
         private void RunAssertionMinMaxScalarWithLambda(EPServiceProvider epService) {
     
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(MyService).Name, "extractNum");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(MyService), "ExtractNum");
     
             string[] fields = "val0,val1,val2,val3".Split(',');
             string eplFragment = "select " +
-                    "strvals.min(v => ExtractNum(v)) as val0, " +
-                    "strvals.max(v => ExtractNum(v)) as val1, " +
-                    "strvals.min(v => v) as val2, " +
-                    "strvals.max(v => v) as val3 " +
+                    "Strvals.min(v => extractNum(v)) as val0, " +
+                    "Strvals.max(v => extractNum(v)) as val1, " +
+                    "Strvals.min(v => v) as val2, " +
+                    "Strvals.max(v => v) as val3 " +
                     "from SupportCollection";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(int?), typeof(int?), typeof(string), typeof(string)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
+                typeof(int?), typeof(int?), typeof(string), typeof(string)
+            });
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E2,E1,E5,E4"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1, 5, "E1", "E5"});
@@ -72,8 +69,8 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1".Split(',');
             string eplFragment = "select " +
-                    "contained.min(x => p00) as val0, " +
-                    "contained.max(x => p00) as val1 " +
+                    "Contained.min(x => p00) as val0, " +
+                    "Contained.max(x => p00) as val1 " +
                     "from Bean";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
@@ -99,13 +96,15 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1".Split(',');
             string eplFragment = "select " +
-                    "strvals.min() as val0, " +
-                    "strvals.max() as val1 " +
+                    "Strvals.min() as val0, " +
+                    "Strvals.max() as val1 " +
                     "from SupportCollection";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(string), typeof(string)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
+                typeof(string), typeof(string)
+            });
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E2,E1,E5,E4"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E5"});
@@ -126,7 +125,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             string epl;
     
             epl = "select Contained.min() from Bean";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'contained.min()': Invalid input for built-in enumeration method 'min' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" + typeof(SupportBean_ST0).Name + "' [select Contained.min() from Bean]");
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.min()': Invalid input for built-in enumeration method 'min' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" + typeof(SupportBean_ST0).FullName + "' [select Contained.min() from Bean]");
         }
     
         public class MyService {

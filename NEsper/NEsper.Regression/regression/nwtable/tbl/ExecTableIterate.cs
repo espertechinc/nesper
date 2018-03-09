@@ -33,7 +33,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.Configuration.AddImport(typeof(SupportStaticMethodLib));
     
             epService.EPAdministrator.CreateEPL("@Resilient create table MyTable(pkey0 string primary key, pkey1 int primary key, c0 long)");
-            epService.EPAdministrator.CreateEPL("@Resilient insert into MyTable select theString as pkey0, intPrimitive as pkey1, longPrimitive as c0 from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Resilient insert into MyTable select TheString as pkey0, IntPrimitive as pkey1, LongPrimitive as c0 from SupportBean");
     
             SendSupportBean(epService, "E1", 10, 100);
             SendSupportBean(epService, "E2", 20, 200);

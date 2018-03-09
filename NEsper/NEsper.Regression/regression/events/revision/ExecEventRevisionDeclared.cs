@@ -29,7 +29,7 @@ namespace com.espertech.esper.regression.events.revision
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly string[] fields = "k0,p0,p1,p2,p3,p4,p5".Split(',');
+        private readonly string[] fields = "K0,P0,P1,P2,P3,P4,P5".Split(',');
     
         public override void Configure(Configuration configuration) {
             configuration.AddEventType<SupportBean>();
@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.events.revision
             configuration.AddEventType("D5", typeof(SupportDeltaFive));
     
             var configRev = new ConfigurationRevisionEventType();
-            configRev.KeyPropertyNames = new string[]{"k0"};
+            configRev.KeyPropertyNames = new string[]{"K0"};
             configRev.AddNameBaseEventType("FullEvent");
             configRev.AddNameDeltaEventType("D1");
             configRev.AddNameDeltaEventType("D2");
@@ -88,13 +88,13 @@ namespace com.espertech.esper.regression.events.revision
             Assert.AreSame(type, valueAddTypes[0]);
     
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
-                    new EventPropertyDescriptor("k0", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("p0", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("p1", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("p2", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("p3", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("p4", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("p5", typeof(string), null, false, false, false, false, false)
+                    new EventPropertyDescriptor("K0", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("P0", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("P1", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("P2", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("P3", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("P4", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("P5", typeof(string), null, false, false, false, false, false)
             }, type.PropertyDescriptors);
         }
     
@@ -102,13 +102,13 @@ namespace com.espertech.esper.regression.events.revision
             var listenerOne = new SupportUpdateListener();
             EPStatement consumerOne = epService.EPAdministrator.CreateEPL("select * from RevQuote");
             consumerOne.Events += listenerOne.Update;
-            EPStatement consumerTwo = epService.EPAdministrator.CreateEPL("select k0, count(*) as count, sum(long.ParseLong(p0)) as sum from RevQuote group by k0");
+            EPStatement consumerTwo = epService.EPAdministrator.CreateEPL("select K0, count(*) as count, sum(Int64.Parse(P0)) as sum from RevQuote group by K0");
             var listenerTwo = new SupportUpdateListener();
             consumerTwo.Events += listenerTwo.Update;
             EPStatement consumerThree = epService.EPAdministrator.CreateEPL("select * from RevQuote output every 2 events");
             var listenerThree = new SupportUpdateListener();
             consumerThree.Events += listenerThree.Update;
-            string[] agg = "k0,count,sum".Split(',');
+            string[] agg = "K0,count,sum".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportRevisionFull("k00", "01", "p10", "20", "p30", "40", "50"));
             EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"k00", "01", "p10", "20", "p30", "40", "50"});
@@ -179,7 +179,7 @@ namespace com.espertech.esper.regression.events.revision
             consumerOne.Events += listenerOne.Update;
             statements.Add(consumerOne);
     
-            statements.Add(epService.EPAdministrator.CreateEPL("on SupportBean(intPrimitive=2) as sb delete from RevQuote where theString = p2"));
+            statements.Add(epService.EPAdministrator.CreateEPL("on SupportBean(IntPrimitive=2) as sb delete from RevQuote where TheString = P2"));
 
             Log.Debug("a00");
             epService.EPRuntime.SendEvent(new SupportRevisionFull("a", "a00", "a10", "a20", "a30", "a40", "a50"));
@@ -188,7 +188,7 @@ namespace com.espertech.esper.regression.events.revision
             epService.EPRuntime.SendEvent(new SupportDeltaThree("x", "03", "41"));
             Assert.IsFalse(listenerOne.IsInvoked);
     
-            statements.Add(epService.EPAdministrator.CreateEPL("on SupportBean(intPrimitive=3) as sb delete from RevQuote where theString = p3"));
+            statements.Add(epService.EPAdministrator.CreateEPL("on SupportBean(IntPrimitive=3) as sb delete from RevQuote where TheString = P3"));
 
             Log.Debug("b00");
             epService.EPRuntime.SendEvent(new SupportRevisionFull("b", "b00", "b10", "b20", "b30", "b40", "b50"));
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regression.events.revision
             epService.EPRuntime.SendEvent(new SupportRevisionFull("c", "c00", "c10", "c20", "c30", "c40", "c50"));
             EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"c", "c00", "c10", "c20", "c30", "c40", "c50"});
     
-            statements.Add(epService.EPAdministrator.CreateEPL("on SupportBean(intPrimitive=0) as sb delete from RevQuote where theString = p0"));
+            statements.Add(epService.EPAdministrator.CreateEPL("on SupportBean(IntPrimitive=0) as sb delete from RevQuote where TheString = P0"));
 
             Log.Debug("c11");
             epService.EPRuntime.SendEvent(new SupportDeltaFive("c", "c11", "c51"));
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regression.events.revision
             EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new object[]{"c", "c00", "c10", "c20", "c30", "c40", "c50"});
             listenerOne.Reset();
     
-            statements.Add(epService.EPAdministrator.CreateEPL("on SupportBean(intPrimitive=1) as sb delete from RevQuote where theString = p1"));
+            statements.Add(epService.EPAdministrator.CreateEPL("on SupportBean(IntPrimitive=1) as sb delete from RevQuote where TheString = P1"));
 
             Log.Debug("d00");
             epService.EPRuntime.SendEvent(new SupportRevisionFull("d", "d00", "d10", "d20", "d30", "d40", "d50"));
@@ -232,7 +232,7 @@ namespace com.espertech.esper.regression.events.revision
                         new object[] {"d", "d01", "d10", "d21", "d30", "d40", "d51"}
                     });
     
-            statements.Add(epService.EPAdministrator.CreateEPL("on SupportBean(intPrimitive=4) as sb delete from RevQuote where theString = p4"));
+            statements.Add(epService.EPAdministrator.CreateEPL("on SupportBean(IntPrimitive=4) as sb delete from RevQuote where TheString = P4"));
     
             epService.EPRuntime.SendEvent(new SupportBean("abc", 1));
             Assert.IsFalse(listenerOne.IsInvoked);
@@ -351,19 +351,19 @@ namespace com.espertech.esper.regression.events.revision
             TryInvalidConfig(epService, "abc", config, "Required key properties are not set in the configuration for revision event type 'abc'");
     
             config.KeyPropertyNames = new string[]{"xyz"};
-            TryInvalidConfig(epService, "abc", config, "Key property 'xyz' as defined in the configuration for revision event type 'abc' does not Exists in event type 'MyEvent'");
+            TryInvalidConfig(epService, "abc", config, "Key property 'xyz' as defined in the configuration for revision event type 'abc' does not exists in event type 'MyEvent'");
     
-            config.KeyPropertyNames = new string[]{"intPrimitive"};
+            config.KeyPropertyNames = new string[]{"IntPrimitive"};
             config.AddNameDeltaEventType("MyComplex");
-            TryInvalidConfig(epService, "abc", config, "Key property 'intPrimitive' as defined in the configuration for revision event type 'abc' does not Exists in event type 'MyComplex'");
+            TryInvalidConfig(epService, "abc", config, "Key property 'IntPrimitive' as defined in the configuration for revision event type 'abc' does not exists in event type 'MyComplex'");
     
             config.AddNameDeltaEventType("XYZ");
             TryInvalidConfig(epService, "abc", config, "Could not locate event type for name 'XYZ' in the configuration for revision event type 'abc'");
     
             config.NameDeltaEventTypes.Clear();
-            config.KeyPropertyNames = new string[]{"intBoxed"};
-            config.AddNameDeltaEventType("MyTypeChange");  // invalid intPrimitive property type
-            TryInvalidConfig(epService, "abc", config, "Property named 'intPrimitive' does not have the same type for base and delta types of revision event type 'abc'");
+            config.KeyPropertyNames = new string[]{"IntBoxed"};
+            config.AddNameDeltaEventType("MyTypeChange");  // invalid IntPrimitive property type
+            TryInvalidConfig(epService, "abc", config, "Property named 'IntPrimitive' does not have the same type for base and delta types of revision event type 'abc'");
     
             config.NameDeltaEventTypes.Clear();
             epService.EPAdministrator.Configuration.AddRevisionEventType("abc", config);
@@ -373,7 +373,7 @@ namespace com.espertech.esper.regression.events.revision
             SupportMessageAssertUtil.TryInvalid(epService, "insert into RevQuote select * from " + typeof(SupportBean).FullName,
                     "Error starting statement: Selected event type is not a valid base or delta event type of revision event type 'RevisableQuote' [");
     
-            SupportMessageAssertUtil.TryInvalid(epService, "insert into RevQuote select intPrimitive as k0 from " + typeof(SupportBean).FullName,
+            SupportMessageAssertUtil.TryInvalid(epService, "insert into RevQuote select IntPrimitive as K0 from " + typeof(SupportBean).FullName,
                     "Error starting statement: Selected event type is not a valid base or delta event type of revision event type 'RevisableQuote' ");
         }
     
@@ -388,14 +388,14 @@ namespace com.espertech.esper.regression.events.revision
     
         private void AssertEvent(IDictionary<string, IDictionary<string, string>> last, EventBean eventBean, int count) {
             string error = "Error asseting count " + count;
-            string key = (string) eventBean.Get("k0");
+            string key = (string) eventBean.Get("K0");
             IDictionary<string, string> vals = last.Get(key);
-            Assert.AreEqual(vals.Get("p0"), eventBean.Get("p0"), error);
-            Assert.AreEqual(vals.Get("p1"), eventBean.Get("p1"), error);
-            Assert.AreEqual(vals.Get("p2"), eventBean.Get("p2"), error);
-            Assert.AreEqual(vals.Get("p3"), eventBean.Get("p3"), error);
-            Assert.AreEqual(vals.Get("p4"), eventBean.Get("p4"), error);
-            Assert.AreEqual(vals.Get("p5"), eventBean.Get("p5"), error);
+            Assert.AreEqual(vals.Get("P0"), eventBean.Get("P0"), error);
+            Assert.AreEqual(vals.Get("P1"), eventBean.Get("P1"), error);
+            Assert.AreEqual(vals.Get("P2"), eventBean.Get("P2"), error);
+            Assert.AreEqual(vals.Get("P3"), eventBean.Get("P3"), error);
+            Assert.AreEqual(vals.Get("P4"), eventBean.Get("P4"), error);
+            Assert.AreEqual(vals.Get("P5"), eventBean.Get("P5"), error);
         }
     
         private void Add(IDictionary<string, IDictionary<string, string>> last, string key, string s0, string s1, string s2, string s3, string s4, string s5) {
@@ -406,22 +406,22 @@ namespace com.espertech.esper.regression.events.revision
             }
     
             if (s0 != null) {
-                entry.Put("p0", s0);
+                entry.Put("P0", s0);
             }
             if (s1 != null) {
-                entry.Put("p1", s1);
+                entry.Put("P1", s1);
             }
             if (s2 != null) {
-                entry.Put("p2", s2);
+                entry.Put("P2", s2);
             }
             if (s3 != null) {
-                entry.Put("p3", s3);
+                entry.Put("P3", s3);
             }
             if (s4 != null) {
-                entry.Put("p4", s4);
+                entry.Put("P4", s4);
             }
             if (s5 != null) {
-                entry.Put("p5", s5);
+                entry.Put("P5", s5);
             }
         }
     

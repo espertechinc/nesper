@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.events.objectarray
             Assert.AreEqual(typeof(object[]), epService.EPAdministrator.Configuration.GetEventType("MyMapNestedObjectArray").UnderlyingType);
     
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select lev0name.lev1name.sb.theString as val from MyMapNestedObjectArray").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select lev0name.lev1name.sb.TheString as val from MyMapNestedObjectArray").Events += listener.Update;
     
             var lev2data = new Dictionary<string, Object>();
             lev2data.Put("sb", eventAdapterService.AdapterForTypedObject(new SupportBean("E1", 0), supportBeanType));

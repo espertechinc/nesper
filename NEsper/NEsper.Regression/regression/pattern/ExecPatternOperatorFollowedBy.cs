@@ -139,9 +139,9 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionFollowedByWithNot(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportBean_A).Name);
-            epService.EPAdministrator.Configuration.AddEventType("B", typeof(SupportBean_B).Name);
-            epService.EPAdministrator.Configuration.AddEventType("C", typeof(SupportBean_C).Name);
+            epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportBean_A));
+            epService.EPAdministrator.Configuration.AddEventType("B", typeof(SupportBean_B));
+            epService.EPAdministrator.Configuration.AddEventType("C", typeof(SupportBean_C));
     
             string stmt =
                     "select * from pattern [" +
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionFollowedByTimer(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddEventType("CallEvent", typeof(SupportCallEvent).Name);
+            epService.EPAdministrator.Configuration.AddEventType("CallEvent", typeof(SupportCallEvent));
     
             string expression = "select * from pattern " +
                     "[every A=CallEvent -> every B=CallEvent(dest=A.dest, startTime in [A.startTime:A.endTime]) where timer:within (7200000)]" +
@@ -223,7 +223,7 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionMemoryRFIDEvent(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddEventType("LR", typeof(SupportRFIDEvent).Name);
+            epService.EPAdministrator.Configuration.AddEventType("LR", typeof(SupportRFIDEvent));
     
             string expression =
                     "select 'Tag May Be Broken' as alert, " +
@@ -255,7 +255,7 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionRFIDZoneExit(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddEventType("LR", typeof(SupportRFIDEvent).Name);
+            epService.EPAdministrator.Configuration.AddEventType("LR", typeof(SupportRFIDEvent));
 
             // Every LR event with a zone of '1' activates a new sub-expression after
             // the followed-by operator. The sub-expression instance can end two different ways:
@@ -297,7 +297,7 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionRFIDZoneEnter(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddEventType("LR", typeof(SupportRFIDEvent).Name);
+            epService.EPAdministrator.Configuration.AddEventType("LR", typeof(SupportRFIDEvent));
     
             // Every LR event with a zone other then '1' activates a new sub-expression after
             // the followed-by operator. The sub-expression instance can end two different ways:
@@ -340,7 +340,7 @@ namespace com.espertech.esper.regression.pattern
     
         private void RunAssertionFollowedNotEvery(EPServiceProvider epService) {
             string expression = "select * from pattern [every A=" + typeof(SupportBean).FullName +
-                    " -> (timer:interval(1 seconds) and not " + typeof(SupportBean_A).Name + ")]";
+                    " -> (timer:interval(1 seconds) and not " + typeof(SupportBean_A).FullName + ")]";
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
@@ -362,10 +362,10 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionFollowedEveryMultiple(EPServiceProvider epService) {
-            string expression = "select * from pattern [every a=" + typeof(SupportBean_A).Name +
-                    " -> b=" + typeof(SupportBean_B).Name +
-                    " -> c=" + typeof(SupportBean_C).Name +
-                    " -> d=" + typeof(SupportBean_D).Name +
+            string expression = "select * from pattern [every a=" + typeof(SupportBean_A).FullName +
+                    " -> b=" + typeof(SupportBean_B).FullName +
+                    " -> c=" + typeof(SupportBean_C).FullName +
+                    " -> d=" + typeof(SupportBean_D).FullName +
                     "]";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(expression);
@@ -400,7 +400,7 @@ namespace com.espertech.esper.regression.pattern
             // ESPER-411
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
-            EPStatement statement = epService.EPAdministrator.CreatePattern("every a=SupportBean -> b=SupportBean(b.intPrimitive <= a.intPrimitive)");
+            EPStatement statement = epService.EPAdministrator.CreatePattern("every a=SupportBean -> b=SupportBean(b.IntPrimitive <= a.IntPrimitive)");
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
     
@@ -409,7 +409,7 @@ namespace com.espertech.esper.regression.pattern
             Assert.IsFalse(listener.IsInvoked);
     
             statement.Dispose();
-            statement = epService.EPAdministrator.CreatePattern("every a=SupportBean -> b=SupportBean(a.intPrimitive >= b.intPrimitive)");
+            statement = epService.EPAdministrator.CreatePattern("every a=SupportBean -> b=SupportBean(a.IntPrimitive >= b.IntPrimitive)");
             statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
@@ -426,10 +426,10 @@ namespace com.espertech.esper.regression.pattern
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
-            string pattern = "every s=SupportBean(theString='E') -> " +
-                    "(timer:interval(10) and not SupportBean(theString='C1'))" +
+            string pattern = "every s=SupportBean(TheString='E') -> " +
+                    "(timer:interval(10) and not SupportBean(TheString='C1'))" +
                     "or" +
-                    "(SupportBean(theString='C2') and not timer:interval(10))";
+                    "(SupportBean(TheString='C2') and not timer:interval(10))";
             EPStatement statement = epService.EPAdministrator.CreatePattern(pattern);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;

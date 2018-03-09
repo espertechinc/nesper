@@ -75,17 +75,17 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertion3StreamKeyRangeCoercion(EPServiceProvider epService) {
             string epl = "select (" +
-                    "select sum(intPrimitive) as sumi from SupportBean#keepall where theString = st2.key2 and intPrimitive between s0.p01Long and s1.p11Long) " +
+                    "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.key2 and IntPrimitive between s0.p01Long and s1.p11Long) " +
                     "from ST2#lastevent st2, ST0#lastevent s0, ST1#lastevent s1";
             TryAssertion3StreamKeyRangeCoercion(epService, epl, true);
     
             epl = "select (" +
-                    "select sum(intPrimitive) as sumi from SupportBean#keepall where theString = st2.key2 and s1.p11Long >= intPrimitive and s0.p01Long <= intPrimitive) " +
+                    "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.key2 and s1.p11Long >= IntPrimitive and s0.p01Long <= IntPrimitive) " +
                     "from ST2#lastevent st2, ST0#lastevent s0, ST1#lastevent s1";
             TryAssertion3StreamKeyRangeCoercion(epService, epl, false);
     
             epl = "select (" +
-                    "select sum(intPrimitive) as sumi from SupportBean#keepall where theString = st2.key2 and s1.p11Long > intPrimitive) " +
+                    "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.key2 and s1.p11Long > IntPrimitive) " +
                     "from ST2#lastevent st2, ST0#lastevent s0, ST1#lastevent s1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             stmt.Dispose();
             epl = "select (" +
-                    "select sum(intPrimitive) as sumi from SupportBean#keepall where theString = st2.key2 and s1.p11Long < intPrimitive) " +
+                    "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.key2 and s1.p11Long < IntPrimitive) " +
                     "from ST2#lastevent st2, ST0#lastevent s0, ST1#lastevent s1";
             stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += listener.Update;
@@ -168,18 +168,18 @@ namespace com.espertech.esper.regression.epl.subselect
     
             // between and 'in' automatically revert the range (20 to 10 is the same as 10 to 20)
             string epl = "select (" +
-                    "select sum(intPrimitive) as sumi from SupportBean#keepall where intPrimitive between s0.p01Long and s1.p11Long) " +
+                    "select sum(IntPrimitive) as sumi from SupportBean#keepall where IntPrimitive between s0.p01Long and s1.p11Long) " +
                     "from ST0#lastevent s0, ST1#lastevent s1";
             TryAssertion2StreamRangeCoercion(epService, epl, true);
     
             epl = "select (" +
-                    "select sum(intPrimitive) as sumi from SupportBean#keepall where intPrimitive between s1.p11Long and s0.p01Long) " +
+                    "select sum(IntPrimitive) as sumi from SupportBean#keepall where IntPrimitive between s1.p11Long and s0.p01Long) " +
                     "from ST1#lastevent s1, ST0#lastevent s0";
             TryAssertion2StreamRangeCoercion(epService, epl, true);
     
             // >= and <= should not automatically revert the range
             epl = "select (" +
-                    "select sum(intPrimitive) as sumi from SupportBean#keepall where intPrimitive >= s0.p01Long and intPrimitive <= s1.p11Long) " +
+                    "select sum(IntPrimitive) as sumi from SupportBean#keepall where IntPrimitive >= s0.p01Long and IntPrimitive <= s1.p11Long) " +
                     "from ST0#lastevent s0, ST1#lastevent s1";
             TryAssertion2StreamRangeCoercion(epService, epl, false);
         }
@@ -377,7 +377,7 @@ namespace com.espertech.esper.regression.epl.subselect
             stmt.Dispose();
     
             // single range
-            stmtText = "select (select theString from SupportBean#lastevent where intPrimitive between 10 and 20) as ids1 from S0";
+            stmtText = "select (select TheString from SupportBean#lastevent where IntPrimitive between 10 and 20) as ids1 from S0";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
             stmt.Events += listener.Update;
     
@@ -572,65 +572,65 @@ namespace com.espertech.esper.regression.epl.subselect
     
         private void RunAssertionSelectWhereJoined4Coercion(EPServiceProvider epService) {
             string stmtText = "select " +
-                    "(select intPrimitive from MyEvent(theString='S')#length(1000) " +
-                    "  where intBoxed=s1.longBoxed and " +
-                    "intBoxed=s2.doubleBoxed and " +
-                    "doubleBoxed=s3.intBoxed" +
+                    "(select IntPrimitive from MyEvent(TheString='S')#length(1000) " +
+                    "  where IntBoxed=s1.LongBoxed and " +
+                    "IntBoxed=s2.DoubleBoxed and " +
+                    "DoubleBoxed=s3.IntBoxed" +
                     ") as ids0 from " +
-                    "MyEvent(theString='A')#keepall as s1, " +
-                    "MyEvent(theString='B')#keepall as s2, " +
-                    "MyEvent(theString='C')#keepall as s3 " +
-                    "where s1.intPrimitive = s2.intPrimitive and s2.intPrimitive = s3.intPrimitive";
+                    "MyEvent(TheString='A')#keepall as s1, " +
+                    "MyEvent(TheString='B')#keepall as s2, " +
+                    "MyEvent(TheString='C')#keepall as s3 " +
+                    "where s1.IntPrimitive = s2.IntPrimitive and s2.IntPrimitive = s3.IntPrimitive";
             TrySelectWhereJoined4Coercion(epService, stmtText);
     
             stmtText = "select " +
-                    "(select intPrimitive from MyEvent(theString='S')#length(1000) " +
-                    "  where doubleBoxed=s3.intBoxed and " +
-                    "intBoxed=s2.doubleBoxed and " +
-                    "intBoxed=s1.longBoxed" +
+                    "(select IntPrimitive from MyEvent(TheString='S')#length(1000) " +
+                    "  where DoubleBoxed=s3.IntBoxed and " +
+                    "IntBoxed=s2.DoubleBoxed and " +
+                    "IntBoxed=s1.LongBoxed" +
                     ") as ids0 from " +
-                    "MyEvent(theString='A')#keepall as s1, " +
-                    "MyEvent(theString='B')#keepall as s2, " +
-                    "MyEvent(theString='C')#keepall as s3 " +
-                    "where s1.intPrimitive = s2.intPrimitive and s2.intPrimitive = s3.intPrimitive";
+                    "MyEvent(TheString='A')#keepall as s1, " +
+                    "MyEvent(TheString='B')#keepall as s2, " +
+                    "MyEvent(TheString='C')#keepall as s3 " +
+                    "where s1.IntPrimitive = s2.IntPrimitive and s2.IntPrimitive = s3.IntPrimitive";
             TrySelectWhereJoined4Coercion(epService, stmtText);
     
             stmtText = "select " +
-                    "(select intPrimitive from MyEvent(theString='S')#length(1000) " +
-                    "  where doubleBoxed=s3.intBoxed and " +
-                    "intBoxed=s1.longBoxed and " +
-                    "intBoxed=s2.doubleBoxed" +
+                    "(select IntPrimitive from MyEvent(TheString='S')#length(1000) " +
+                    "  where DoubleBoxed=s3.IntBoxed and " +
+                    "IntBoxed=s1.LongBoxed and " +
+                    "IntBoxed=s2.DoubleBoxed" +
                     ") as ids0 from " +
-                    "MyEvent(theString='A')#keepall as s1, " +
-                    "MyEvent(theString='B')#keepall as s2, " +
-                    "MyEvent(theString='C')#keepall as s3 " +
-                    "where s1.intPrimitive = s2.intPrimitive and s2.intPrimitive = s3.intPrimitive";
+                    "MyEvent(TheString='A')#keepall as s1, " +
+                    "MyEvent(TheString='B')#keepall as s2, " +
+                    "MyEvent(TheString='C')#keepall as s3 " +
+                    "where s1.IntPrimitive = s2.IntPrimitive and s2.IntPrimitive = s3.IntPrimitive";
             TrySelectWhereJoined4Coercion(epService, stmtText);
         }
     
         private void RunAssertionSelectWhereJoined4BackCoercion(EPServiceProvider epService) {
             string stmtText = "select " +
-                    "(select intPrimitive from MyEvent(theString='S')#length(1000) " +
-                    "  where longBoxed=s1.intBoxed and " +
-                    "longBoxed=s2.doubleBoxed and " +
-                    "intBoxed=s3.longBoxed" +
+                    "(select IntPrimitive from MyEvent(TheString='S')#length(1000) " +
+                    "  where LongBoxed=s1.IntBoxed and " +
+                    "LongBoxed=s2.DoubleBoxed and " +
+                    "IntBoxed=s3.LongBoxed" +
                     ") as ids0 from " +
-                    "MyEvent(theString='A')#keepall as s1, " +
-                    "MyEvent(theString='B')#keepall as s2, " +
-                    "MyEvent(theString='C')#keepall as s3 " +
-                    "where s1.intPrimitive = s2.intPrimitive and s2.intPrimitive = s3.intPrimitive";
+                    "MyEvent(TheString='A')#keepall as s1, " +
+                    "MyEvent(TheString='B')#keepall as s2, " +
+                    "MyEvent(TheString='C')#keepall as s3 " +
+                    "where s1.IntPrimitive = s2.IntPrimitive and s2.IntPrimitive = s3.IntPrimitive";
             TrySelectWhereJoined4CoercionBack(epService, stmtText);
     
             stmtText = "select " +
-                    "(select intPrimitive from MyEvent(theString='S')#length(1000) " +
-                    "  where longBoxed=s2.doubleBoxed and " +
-                    "intBoxed=s3.longBoxed and " +
-                    "longBoxed=s1.intBoxed " +
+                    "(select IntPrimitive from MyEvent(TheString='S')#length(1000) " +
+                    "  where LongBoxed=s2.DoubleBoxed and " +
+                    "IntBoxed=s3.LongBoxed and " +
+                    "LongBoxed=s1.IntBoxed " +
                     ") as ids0 from " +
-                    "MyEvent(theString='A')#keepall as s1, " +
-                    "MyEvent(theString='B')#keepall as s2, " +
-                    "MyEvent(theString='C')#keepall as s3 " +
-                    "where s1.intPrimitive = s2.intPrimitive and s2.intPrimitive = s3.intPrimitive";
+                    "MyEvent(TheString='A')#keepall as s1, " +
+                    "MyEvent(TheString='B')#keepall as s2, " +
+                    "MyEvent(TheString='C')#keepall as s3 " +
+                    "where s1.IntPrimitive = s2.IntPrimitive and s2.IntPrimitive = s3.IntPrimitive";
             TrySelectWhereJoined4CoercionBack(epService, stmtText);
         }
     
@@ -639,30 +639,30 @@ namespace com.espertech.esper.regression.epl.subselect
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            SendBean(epService, "A", 1, 10, 200, 3000);        // intPrimitive, intBoxed, longBoxed, doubleBoxed
+            SendBean(epService, "A", 1, 10, 200, 3000);        // IntPrimitive, IntBoxed, LongBoxed, DoubleBoxed
             SendBean(epService, "B", 1, 10, 200, 3000);
             SendBean(epService, "C", 1, 10, 200, 3000);
             Assert.IsNull(listener.AssertOneGetNewAndReset().Get("ids0"));
     
-            SendBean(epService, "S", -1, 11, 201, 0);     // intPrimitive, intBoxed, longBoxed, doubleBoxed
+            SendBean(epService, "S", -1, 11, 201, 0);     // IntPrimitive, IntBoxed, LongBoxed, DoubleBoxed
             SendBean(epService, "A", 2, 201, 0, 0);
             SendBean(epService, "B", 2, 0, 0, 201);
             SendBean(epService, "C", 2, 0, 11, 0);
             Assert.AreEqual(-1, listener.AssertOneGetNewAndReset().Get("ids0"));
     
-            SendBean(epService, "S", -2, 12, 202, 0);     // intPrimitive, intBoxed, longBoxed, doubleBoxed
+            SendBean(epService, "S", -2, 12, 202, 0);     // IntPrimitive, IntBoxed, LongBoxed, DoubleBoxed
             SendBean(epService, "A", 3, 202, 0, 0);
             SendBean(epService, "B", 3, 0, 0, 202);
             SendBean(epService, "C", 3, 0, -1, 0);
             Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("ids0"));
     
-            SendBean(epService, "S", -3, 13, 203, 0);     // intPrimitive, intBoxed, longBoxed, doubleBoxed
+            SendBean(epService, "S", -3, 13, 203, 0);     // IntPrimitive, IntBoxed, LongBoxed, DoubleBoxed
             SendBean(epService, "A", 4, 203, 0, 0);
             SendBean(epService, "B", 4, 0, 0, 203.0001);
             SendBean(epService, "C", 4, 0, 13, 0);
             Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("ids0"));
     
-            SendBean(epService, "S", -4, 14, 204, 0);     // intPrimitive, intBoxed, longBoxed, doubleBoxed
+            SendBean(epService, "S", -4, 14, 204, 0);     // IntPrimitive, IntBoxed, LongBoxed, DoubleBoxed
             SendBean(epService, "A", 5, 205, 0, 0);
             SendBean(epService, "B", 5, 0, 0, 204);
             SendBean(epService, "C", 5, 0, 14, 0);
@@ -676,31 +676,31 @@ namespace com.espertech.esper.regression.epl.subselect
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            SendBean(epService, "A", 1, 10, 200, 3000);        // intPrimitive, intBoxed, longBoxed, doubleBoxed
+            SendBean(epService, "A", 1, 10, 200, 3000);        // IntPrimitive, IntBoxed, LongBoxed, DoubleBoxed
             SendBean(epService, "B", 1, 10, 200, 3000);
             SendBean(epService, "C", 1, 10, 200, 3000);
             Assert.IsNull(listener.AssertOneGetNewAndReset().Get("ids0"));
     
             SendBean(epService, "S", -2, 11, 0, 3001);
-            SendBean(epService, "A", 2, 0, 11, 0);        // intPrimitive, intBoxed, longBoxed, doubleBoxed
+            SendBean(epService, "A", 2, 0, 11, 0);        // IntPrimitive, IntBoxed, LongBoxed, DoubleBoxed
             SendBean(epService, "B", 2, 0, 0, 11);
             SendBean(epService, "C", 2, 3001, 0, 0);
             Assert.AreEqual(-2, listener.AssertOneGetNewAndReset().Get("ids0"));
     
             SendBean(epService, "S", -3, 12, 0, 3002);
-            SendBean(epService, "A", 3, 0, 12, 0);        // intPrimitive, intBoxed, longBoxed, doubleBoxed
+            SendBean(epService, "A", 3, 0, 12, 0);        // IntPrimitive, IntBoxed, LongBoxed, DoubleBoxed
             SendBean(epService, "B", 3, 0, 0, 12);
             SendBean(epService, "C", 3, 3003, 0, 0);
             Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("ids0"));
     
             SendBean(epService, "S", -4, 11, 0, 3003);
-            SendBean(epService, "A", 4, 0, 0, 0);        // intPrimitive, intBoxed, longBoxed, doubleBoxed
+            SendBean(epService, "A", 4, 0, 0, 0);        // IntPrimitive, IntBoxed, LongBoxed, DoubleBoxed
             SendBean(epService, "B", 4, 0, 0, 11);
             SendBean(epService, "C", 4, 3003, 0, 0);
             Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("ids0"));
     
             SendBean(epService, "S", -5, 14, 0, 3004);
-            SendBean(epService, "A", 5, 0, 14, 0);        // intPrimitive, intBoxed, longBoxed, doubleBoxed
+            SendBean(epService, "A", 5, 0, 14, 0);        // IntPrimitive, IntBoxed, LongBoxed, DoubleBoxed
             SendBean(epService, "B", 5, 0, 0, 11);
             SendBean(epService, "C", 5, 3004, 0, 0);
             Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("ids0"));
@@ -862,7 +862,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void TryAssertionHavingNoAggWFilterWWhere(EPServiceProvider epService) {
-            string epl = "select (select intPrimitive from SupportBean(intPrimitive < 20) #keepall where intPrimitive > 15 having theString = 'ID1') as c0 from S0";
+            string epl = "select (select IntPrimitive from SupportBean(IntPrimitive < 20) #keepall where IntPrimitive > 15 having TheString = 'ID1') as c0 from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -877,7 +877,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void TryAssertionHavingNoAggWWhere(EPServiceProvider epService) {
-            string epl = "select (select intPrimitive from SupportBean#keepall where intPrimitive > 15 having theString = 'ID1') as c0 from S0";
+            string epl = "select (select IntPrimitive from SupportBean#keepall where IntPrimitive > 15 having TheString = 'ID1') as c0 from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -891,7 +891,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void TryAssertionHavingNoAggNoFilterNoWhere(EPServiceProvider epService) {
-            string epl = "select (select intPrimitive from SupportBean#keepall having theString = 'ID1') as c0 from S0";
+            string epl = "select (select IntPrimitive from SupportBean#keepall having TheString = 'ID1') as c0 from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

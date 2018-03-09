@@ -61,12 +61,12 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionPatternFilter(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("stringContainsX", GetType().FullName, "stringContainsX");
-            string eplContext = "create context IndividualBean partition by theString from SupportBean";
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("stringContainsX", GetType().FullName, "StringContainsX");
+            string eplContext = "create context IndividualBean partition by TheString from SupportBean";
             epService.EPAdministrator.CreateEPL(eplContext);
     
             string eplAnalysis = "context IndividualBean " +
-                    "select * from pattern [every (event1=SupportBean(StringContainsX(theString) = false) -> event2=SupportBean(StringContainsX(theString) = true))]";
+                    "select * from pattern [every (event1=SupportBean(stringContainsX(TheString) = false) -> event2=SupportBean(stringContainsX(TheString) = true))]";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(eplAnalysis).Events += listener.Update;
     
@@ -80,17 +80,17 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionMatchRecognize(EPServiceProvider epService) {
     
-            string eplContextOne = "create context SegmentedByString partition by theString from SupportBean";
+            string eplContextOne = "create context SegmentedByString partition by TheString from SupportBean";
             epService.EPAdministrator.CreateEPL(eplContextOne);
     
             string eplMatchRecog = "context SegmentedByString " +
                     "select * from SupportBean\n" +
                     "match_recognize ( \n" +
-                    "  measures A.longPrimitive as a, B.longPrimitive as b\n" +
+                    "  measures A.LongPrimitive as a, B.LongPrimitive as b\n" +
                     "  pattern (A B) \n" +
                     "  define " +
-                    "    A as A.intPrimitive = 1," +
-                    "    B as B.intPrimitive = 2\n" +
+                    "    A as A.IntPrimitive = 1," +
+                    "    B as B.IntPrimitive = 2\n" +
                     ")";
             EPStatement stmtMatchRecog = epService.EPAdministrator.CreateEPL(eplMatchRecog);
             var listener = new SupportUpdateListener();
@@ -108,14 +108,14 @@ namespace com.espertech.esper.regression.context
             epService.EPAdministrator.DestroyAllStatements();
     
             // try with "prev"
-            string eplContextTwo = "create context SegmentedByString partition by theString from SupportBean";
+            string eplContextTwo = "create context SegmentedByString partition by TheString from SupportBean";
             epService.EPAdministrator.CreateEPL(eplContextTwo);
     
             string eplMatchRecogWithPrev = "context SegmentedByString select * from SupportBean " +
                     "match_recognize ( " +
-                    "  measures A.longPrimitive as e1, B.longPrimitive as e2" +
+                    "  measures A.LongPrimitive as e1, B.LongPrimitive as e2" +
                     "  pattern (A B) " +
-                    "  define A as A.intPrimitive >= prev(A.intPrimitive),B as B.intPrimitive >= prev(B.intPrimitive) " +
+                    "  define A as A.IntPrimitive >= prev(A.IntPrimitive),B as B.IntPrimitive >= prev(B.IntPrimitive) " +
                     ")";
             EPStatement stmtMatchRecogWithPrev = epService.EPAdministrator.CreateEPL(eplMatchRecogWithPrev);
             stmtMatchRecogWithPrev.Events += listener.Update;
@@ -171,9 +171,9 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionIterateTargetedCP(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("create context PartitionedByString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context PartitionedByString partition by TheString from SupportBean");
             string[] fields = "c0,c1".Split(',');
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("@Name('StmtOne') context PartitionedByString select context.key1 as c0, sum(intPrimitive) as c1 from SupportBean#length(5)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("@Name('StmtOne') context PartitionedByString select context.key1 as c0, sum(IntPrimitive) as c1 from SupportBean#length(5)");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
@@ -222,15 +222,15 @@ namespace com.espertech.esper.regression.context
             TryInvalid(epService, epl, "Error starting statement: For context 'SegmentedByAString' property name 'dummy' not found on type SupportBean [");
     
             // mismatch number pf properties
-            epl = "create context SegmentedByAString partition by theString from SupportBean, id, p00 from SupportBean_S0";
-            TryInvalid(epService, epl, "Error starting statement: For context 'SegmentedByAString' expected the same number of property names for each event type, found 1 properties for event type 'SupportBean' and 2 properties for event type 'SupportBean_S0' [create context SegmentedByAString partition by theString from SupportBean, id, p00 from SupportBean_S0]");
+            epl = "create context SegmentedByAString partition by TheString from SupportBean, id, p00 from SupportBean_S0";
+            TryInvalid(epService, epl, "Error starting statement: For context 'SegmentedByAString' expected the same number of property names for each event type, found 1 properties for event type 'SupportBean' and 2 properties for event type 'SupportBean_S0' [create context SegmentedByAString partition by TheString from SupportBean, id, p00 from SupportBean_S0]");
     
             // incompatible property types
-            epl = "create context SegmentedByAString partition by theString from SupportBean, id from SupportBean_S0";
-            TryInvalid(epService, epl, "Error starting statement: For context 'SegmentedByAString' for context 'SegmentedByAString' found mismatch of property types, property 'theString' of type 'System.String' compared to property 'id' of type '" + Name.Of<int>() + "' [");
+            epl = "create context SegmentedByAString partition by TheString from SupportBean, id from SupportBean_S0";
+            TryInvalid(epService, epl, "Error starting statement: For context 'SegmentedByAString' for context 'SegmentedByAString' found mismatch of property types, property 'TheString' of type 'System.String' compared to property 'id' of type '" + Name.Of<int>() + "' [");
     
             // duplicate type specification
-            epl = "create context SegmentedByAString partition by theString from SupportBean, theString from SupportBean";
+            epl = "create context SegmentedByAString partition by TheString from SupportBean, TheString from SupportBean";
             TryInvalid(epService, epl, "Error starting statement: For context 'SegmentedByAString' the event type 'SupportBean' is listed twice [");
     
             // duplicate type: subtype
@@ -240,14 +240,14 @@ namespace com.espertech.esper.regression.context
             TryInvalid(epService, epl, "Error starting statement: For context 'SegmentedByAString' the event type 'ISupportA' is listed twice: Event type 'ISupportA' is a subtype or supertype of event type 'ISupportBaseAB' [");
     
             // validate statement not applicable filters
-            epService.EPAdministrator.CreateEPL("create context SegmentedByAString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context SegmentedByAString partition by TheString from SupportBean");
             epl = "context SegmentedByAString select * from SupportBean_S0";
             TryInvalid(epService, epl, "Error starting statement: Segmented context 'SegmentedByAString' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type 'SupportBean_S0' is not one of the types listed [");
     
             // invalid attempt to partition a named window's streams
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportBean");
-            epl = "create context SegmentedByWhat partition by theString from MyWindow";
-            TryInvalid(epService, epl, "Error starting statement: Partition criteria may not include named windows [create context SegmentedByWhat partition by theString from MyWindow]");
+            epl = "create context SegmentedByWhat partition by TheString from MyWindow";
+            TryInvalid(epService, epl, "Error starting statement: Partition criteria may not include named windows [create context SegmentedByWhat partition by TheString from MyWindow]");
     
             // partitioned with named window
             epService.EPAdministrator.CreateEPL("create schema SomeSchema(ipAddress string)");
@@ -259,13 +259,13 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionLargeNumberContexts(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByAString  partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByAString  partition by TheString from SupportBean");
     
             string[] fields = "col1".Split(',');
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("context SegmentedByAString " +
-                    "select sum(intPrimitive) as col1," +
-                    "prev(1, intPrimitive)," +
-                    "prior(1, intPrimitive)," +
+                    "select sum(IntPrimitive) as col1," +
+                    "prev(1, IntPrimitive)," +
+                    "prior(1, IntPrimitive)," +
                     "(select id from SupportBean_S0#lastevent)" +
                     "  from SupportBean#keepall");
             var listener = new SupportUpdateListener();
@@ -282,7 +282,7 @@ namespace com.espertech.esper.regression.context
         private void RunAssertionAdditionalFilters(EPServiceProvider epService) {
             FilterServiceSPI filterSPI = (FilterServiceSPI) ((EPServiceProviderSPI) epService).FilterService;
             epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByAString " +
-                    "partition by theString from SupportBean(intPrimitive>0), p00 from SupportBean_S0(id > 0)");
+                    "partition by TheString from SupportBean(IntPrimitive>0), p00 from SupportBean_S0(id > 0)");
     
             // first send a view events
             epService.EPRuntime.SendEvent(new SupportBean("B1", -1));
@@ -291,7 +291,7 @@ namespace com.espertech.esper.regression.context
     
             string[] fields = "col1,col2".Split(',');
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("context SegmentedByAString " +
-                    "select sum(sb.intPrimitive) as col1, sum(s0.id) as col2 " +
+                    "select sum(sb.IntPrimitive) as col1, sum(s0.id) as col2 " +
                     "from pattern [every (s0=SupportBean_S0 or sb=SupportBean)]");
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
@@ -324,8 +324,8 @@ namespace com.espertech.esper.regression.context
             Assert.AreEqual(0, filterSPI.FilterCountApprox);
     
             // Test unnecessary filter
-            string epl = "create context CtxSegmented partition by theString from SupportBean;" +
-                    "context CtxSegmented select * from pattern [every a=SupportBean -> c=SupportBean(c.theString=a.theString)];";
+            string epl = "create context CtxSegmented partition by TheString from SupportBean;" +
+                    "context CtxSegmented select * from pattern [every a=SupportBean -> c=SupportBean(c.TheString=a.TheString)];";
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
@@ -336,7 +336,7 @@ namespace com.espertech.esper.regression.context
         private void RunAssertionMultiStatementFilterCount(EPServiceProvider epService) {
             FilterServiceSPI filterSPI = (FilterServiceSPI) ((EPServiceProviderSPI) epService).FilterService;
             EPStatement stmtContext = epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByAString " +
-                    "partition by theString from SupportBean, p00 from SupportBean_S0");
+                    "partition by TheString from SupportBean, p00 from SupportBean_S0");
             Assert.AreEqual(0, filterSPI.FilterCountApprox);
     
             // first send a view events
@@ -365,7 +365,7 @@ namespace com.espertech.esper.regression.context
     
             Assert.AreEqual(4, filterSPI.FilterCountApprox);
     
-            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("context SegmentedByAString select sum(intPrimitive) as col1 from SupportBean");
+            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("context SegmentedByAString select sum(IntPrimitive) as col1 from SupportBean");
             stmtTwo.Events += listener.Update;
     
             Assert.AreEqual(6, filterSPI.FilterCountApprox);
@@ -419,11 +419,11 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionSegmentedJoinMultitypeMultifield(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedBy2Fields " +
-                    "partition by theString and intPrimitive from SupportBean, p00 and id from SupportBean_S0");
+                    "partition by TheString and IntPrimitive from SupportBean, p00 and id from SupportBean_S0");
     
             string[] fields = "c1,c2,c3,c4,c5,c6".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context SegmentedBy2Fields " +
-                    "select theString as c1, intPrimitive as c2, id as c3, p00 as c4, context.key1 as c5, context.key2 as c6 " +
+                    "select TheString as c1, IntPrimitive as c2, id as c3, p00 as c4, context.key1 as c5, context.key2 as c6 " +
                     "from SupportBean#lastevent, SupportBean_S0#lastevent");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -461,8 +461,8 @@ namespace com.espertech.esper.regression.context
     
             // Esper-695
             string eplTwo =
-                    "create context Ctx partition by theString from SupportBean;\n" +
-                            "context Ctx create window MyWindow#unique(intPrimitive) as SupportBean;" +
+                    "create context Ctx partition by TheString from SupportBean;\n" +
+                            "context Ctx create window MyWindow#unique(IntPrimitive) as SupportBean;" +
                             "context Ctx select irstream * from pattern [MyWindow];";
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(eplTwo);
             TryInvalidCreateWindow(epService);
@@ -481,11 +481,11 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionSegmentedSubselectPrevPrior(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by TheString from SupportBean");
     
-            var fieldsPrev = new[]{"theString", "col1"};
+            var fieldsPrev = new[]{"TheString", "col1"};
             EPStatement stmtPrev = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
-                    "select theString, (select prev(0, id) from SupportBean_S0#keepall) as col1 from SupportBean");
+                    "select TheString, (select prev(0, id) from SupportBean_S0#keepall) as col1 from SupportBean");
             var listener = new SupportUpdateListener();
             stmtPrev.Events += listener.Update;
     
@@ -508,9 +508,9 @@ namespace com.espertech.esper.regression.context
     
             stmtPrev.Stop();
     
-            var fieldsPrior = new[]{"theString", "col1"};
+            var fieldsPrior = new[]{"TheString", "col1"};
             EPStatement stmtPrior = epService.EPAdministrator.CreateEPL("@Name('B') context SegmentedByString " +
-                    "select theString, (select prior(0, id) from SupportBean_S0#keepall) as col1 from SupportBean");
+                    "select TheString, (select prior(0, id) from SupportBean_S0#keepall) as col1 from SupportBean");
             stmtPrior.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
@@ -534,11 +534,11 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionSegmentedPrior(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by TheString from SupportBean");
     
             var fields = new[]{"val0", "val1"};
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
-                    "select intPrimitive as val0, prior(1, intPrimitive) as val1 from SupportBean");
+                    "select IntPrimitive as val0, prior(1, IntPrimitive) as val1 from SupportBean");
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     
@@ -556,11 +556,11 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionSegmentedSubqueryFiltered(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by TheString from SupportBean");
     
-            var fields = new[]{"theString", "intPrimitive", "val0"};
+            var fields = new[]{"TheString", "IntPrimitive", "val0"};
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
-                    "select theString, intPrimitive, (select p00 from SupportBean_S0#lastevent as s0 where sb.intPrimitive = s0.id) as val0 " +
+                    "select TheString, IntPrimitive, (select p00 from SupportBean_S0#lastevent as s0 where sb.IntPrimitive = s0.id) as val0 " +
                     "from SupportBean as sb");
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
@@ -590,12 +590,12 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionSegmentedSubqueryNamedWindowIndexShared(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by TheString from SupportBean");
             epService.EPAdministrator.CreateEPL("@Hint('enable_window_subquery_indexshare') create window MyWindowTwo#keepall as SupportBean_S0");
             epService.EPAdministrator.CreateEPL("insert into MyWindowTwo select * from SupportBean_S0");
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
-                    "select theString, intPrimitive, (select p00 from MyWindowTwo as s0 where sb.intPrimitive = s0.id) as val0 " +
+                    "select TheString, IntPrimitive, (select p00 from MyWindowTwo as s0 where sb.IntPrimitive = s0.id) as val0 " +
                     "from SupportBean as sb");
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
@@ -606,12 +606,12 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionSegmentedSubqueryNamedWindowIndexUnShared(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by TheString from SupportBean");
             epService.EPAdministrator.CreateEPL("create window MyWindowThree#keepall as SupportBean_S0");
             epService.EPAdministrator.CreateEPL("insert into MyWindowThree select * from SupportBean_S0");
     
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
-                    "select theString, intPrimitive, (select p00 from MyWindowThree as s0 where sb.intPrimitive = s0.id) as val0 " +
+                    "select TheString, IntPrimitive, (select p00 from MyWindowThree as s0 where sb.IntPrimitive = s0.id) as val0 " +
                     "from SupportBean as sb");
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
@@ -622,7 +622,7 @@ namespace com.espertech.esper.regression.context
         }
     
         private void TryAssertionSubqueryNW(EPServiceProvider epService, SupportUpdateListener listener) {
-            var fields = new[]{"theString", "intPrimitive", "val0"};
+            var fields = new[]{"TheString", "IntPrimitive", "val0"};
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(10, "s1"));
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
@@ -643,12 +643,12 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionSegmentedJoin(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by TheString from SupportBean");
     
-            var fields = new[]{"sb.theString", "sb.intPrimitive", "s0.id"};
+            var fields = new[]{"sb.TheString", "sb.IntPrimitive", "s0.id"};
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
                     "select * from SupportBean#keepall as sb, SupportBean_S0#keepall as s0 " +
-                    "where intPrimitive = id");
+                    "where IntPrimitive = id");
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     
@@ -673,11 +673,11 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionSegmentedPattern(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by TheString from SupportBean");
     
-            var fields = new[]{"a.theString", "a.intPrimitive", "b.theString", "b.intPrimitive"};
+            var fields = new[]{"a.TheString", "a.IntPrimitive", "b.TheString", "b.IntPrimitive"};
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
-                    "select * from pattern [every a=SupportBean -> b=SupportBean(intPrimitive=a.intPrimitive+1)]");
+                    "select * from pattern [every a=SupportBean -> b=SupportBean(IntPrimitive=a.IntPrimitive+1)]");
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     
@@ -700,7 +700,7 @@ namespace com.espertech.esper.regression.context
     
             // add another statement: contexts already exist, this one uses @Consume
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
-                    "select * from pattern [every a=SupportBean -> b=SupportBean(intPrimitive=a.intPrimitive+1)@Consume]");
+                    "select * from pattern [every a=SupportBean -> b=SupportBean(IntPrimitive=a.IntPrimitive+1)@Consume]");
             stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
@@ -721,9 +721,9 @@ namespace com.espertech.esper.regression.context
             stmtTwo.Dispose();
     
             // test truly segmented consume
-            var fieldsThree = new[]{"a.theString", "a.intPrimitive", "b.id", "b.p00"};
+            var fieldsThree = new[]{"a.TheString", "a.IntPrimitive", "b.id", "b.p00"};
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
-                    "select * from pattern [every a=SupportBean -> b=SupportBean_S0(id=a.intPrimitive)@Consume]");
+                    "select * from pattern [every a=SupportBean -> b=SupportBean_S0(id=a.IntPrimitive)@Consume]");
             stmtThree.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
@@ -737,12 +737,12 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionSegmentedViews(EPServiceProvider epService) {
-            string contextEPL = "@Name('context') create context SegmentedByString as partition by theString from SupportBean";
+            string contextEPL = "@Name('context') create context SegmentedByString as partition by TheString from SupportBean";
             epService.EPAdministrator.CreateEPL(contextEPL);
     
-            string[] fieldsIterate = "intPrimitive".Split(',');
+            string[] fieldsIterate = "IntPrimitive".Split(',');
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
-                    "select irstream intPrimitive, prevwindow(items) as pw from SupportBean#length(2) as items");
+                    "select irstream IntPrimitive, prevwindow(items) as pw from SupportBean#length(2) as items");
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
     
@@ -779,7 +779,7 @@ namespace com.espertech.esper.regression.context
             string[] fields = "c1,c2,c3,c4".Split(',');
             string ctx = "SegmentedByString";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
-                    "select context.name as c1, context.id as c2, context.key1 as c3, theString as c4 " +
+                    "select context.name as c1, context.id as c2, context.key1 as c3, TheString as c4 " +
                     "from SupportBean#length(2) as items");
             stmtTwo.Events += listener.Update;
     
@@ -789,8 +789,8 @@ namespace com.espertech.esper.regression.context
     
             // test grouped delivery
             epService.EPAdministrator.CreateEPL("create variable bool trigger = false");
-            epService.EPAdministrator.CreateEPL("create context MyCtx partition by theString from SupportBean");
-            epService.EPAdministrator.CreateEPL("@Name('Out') context MyCtx select * from SupportBean#expr(not trigger) for Grouped_delivery(theString)");
+            epService.EPAdministrator.CreateEPL("create context MyCtx partition by TheString from SupportBean");
+            epService.EPAdministrator.CreateEPL("@Name('Out') context MyCtx select * from SupportBean#expr(not trigger) for grouped_delivery(TheString)");
             epService.EPAdministrator.GetStatement("Out").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -804,9 +804,9 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionJoinWhereClauseOnPartitionKey(EPServiceProvider epService) {
-            string epl = "create context MyCtx partition by theString from SupportBean;\n" +
+            string epl = "create context MyCtx partition by TheString from SupportBean;\n" +
                     "@Name('select') context MyCtx select * from SupportBean#lastevent as sb, SupportBean_S0#lastevent as s0 " +
-                    "where theString is 'Test'";
+                    "where TheString is 'Test'";
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.GetStatement("select").Events += listener.Update;
@@ -820,7 +820,7 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionNullSingleKey(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("create context MyContext partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context MyContext partition by TheString from SupportBean");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context MyContext select count(*) as cnt from SupportBean");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -838,7 +838,7 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionNullKeyMultiKey(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("create context MyContext partition by theString, intBoxed, intPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context MyContext partition by TheString, IntBoxed, IntPrimitive from SupportBean");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context MyContext select count(*) as cnt from SupportBean");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -857,7 +857,7 @@ namespace com.espertech.esper.regression.context
     
         private void AssertViewData(SupportUpdateListener listener, int newIntExpected, object[][] newArrayExpected, int? oldIntExpected) {
             Assert.AreEqual(1, listener.LastNewData.Length);
-            Assert.AreEqual(newIntExpected, listener.LastNewData[0].Get("intPrimitive"));
+            Assert.AreEqual(newIntExpected, listener.LastNewData[0].Get("IntPrimitive"));
             SupportBean[] beans = (SupportBean[]) listener.LastNewData[0].Get("pw");
             Assert.AreEqual(newArrayExpected.Length, beans.Length);
             for (int i = 0; i < beans.Length; i++) {
@@ -867,7 +867,7 @@ namespace com.espertech.esper.regression.context
     
             if (oldIntExpected != null) {
                 Assert.AreEqual(1, listener.LastOldData.Length);
-                Assert.AreEqual(oldIntExpected, listener.LastOldData[0].Get("intPrimitive"));
+                Assert.AreEqual(oldIntExpected, listener.LastOldData[0].Get("IntPrimitive"));
             } else {
                 Assert.IsNull(listener.LastOldData);
             }
@@ -888,7 +888,7 @@ namespace com.espertech.esper.regression.context
             public bool Filter(ContextPartitionIdentifier contextPartitionIdentifier) {
                 ContextPartitionIdentifierPartitioned id = (ContextPartitionIdentifierPartitioned) contextPartitionIdentifier;
                 if (_match == null && _cpids.Contains(id.ContextPartitionId)) {
-                    throw new EPRuntimeException("Already Exists context id: " + id.ContextPartitionId);
+                    throw new EPRuntimeException("Already exists context id: " + id.ContextPartitionId);
                 }
                 _cpids.Add(id.ContextPartitionId);
                 _contexts.Add(id.Keys);

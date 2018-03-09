@@ -44,11 +44,11 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
         public override void Run(EPServiceProvider epService) {
     
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("alwaysTrue", typeof(SupportStaticMethodLib).FullName, "alwaysTrue");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("alwaysTrue", typeof(SupportStaticMethodLib), "AlwaysTrue");
     
             // set up
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
-                    "expression myExpr {v => AlwaysTrue(null) } select MyExpr(st0) as c0, MyExpr(st1) as c1, MyExpr(st0) as c2, MyExpr(st1) as c3 from SupportBean_ST0#lastevent as st0, SupportBean_ST1#lastevent as st1");
+                    "expression myExpr {v => alwaysTrue(null) } select myExpr(st0) as c0, myExpr(st1) as c1, myExpr(st0) as c2, myExpr(st1) as c3 from SupportBean_ST0#lastevent as st0, SupportBean_ST1#lastevent as st1");
             stmt.Events += new SupportUpdateListener().Update;
     
             // send event and assert

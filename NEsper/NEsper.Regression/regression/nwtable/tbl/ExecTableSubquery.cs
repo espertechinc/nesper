@@ -30,7 +30,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("create table varagg as (" +
                     "key string primary key, total sum(int))");
             epService.EPAdministrator.CreateEPL("into table varagg " +
-                    "select sum(intPrimitive) as total from SupportBean group by theString");
+                    "select sum(IntPrimitive) as total from SupportBean group by TheString");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select (select total from varagg where key = s0.p00) as value " +
                     "from SupportBean_S0 as s0").Events += listener.Update;
@@ -43,9 +43,9 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.DestroyAllStatements();
     
             // subquery against unkeyed
-            epService.EPAdministrator.CreateEPL("create table InfraOne (string string, intPrimitive int)");
-            epService.EPAdministrator.CreateEPL("select (select intPrimitive from InfraOne where string = s0.p00) as c0 from SupportBean_S0 as s0").Events += listener.Update;
-            epService.EPAdministrator.CreateEPL("insert into InfraOne select theString as string, intPrimitive from SupportBean");
+            epService.EPAdministrator.CreateEPL("create table InfraOne (string string, IntPrimitive int)");
+            epService.EPAdministrator.CreateEPL("select (select IntPrimitive from InfraOne where string = s0.p00) as c0 from SupportBean_S0 as s0").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("insert into InfraOne select TheString as string, IntPrimitive from SupportBean");
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E1"));

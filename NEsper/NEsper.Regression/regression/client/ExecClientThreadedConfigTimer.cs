@@ -12,7 +12,6 @@ using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.client.time;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.epl;

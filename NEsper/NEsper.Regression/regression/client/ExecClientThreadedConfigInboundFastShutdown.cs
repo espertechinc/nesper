@@ -6,15 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Threading;
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.client
 {
@@ -23,11 +17,11 @@ namespace com.espertech.esper.regression.client
             configuration.EngineDefaults.Threading.IsThreadPoolInbound = true;
             configuration.EngineDefaults.Threading.ThreadPoolInboundNumThreads = 2;
             configuration.AddEventType(typeof(MyEvent));
-            configuration.AddPlugInSingleRowFunction("sleepaLittle", GetType().FullName, "sleepaLittle");
+            configuration.AddPlugInSingleRowFunction("sleepaLittle", GetType().FullName, "SleepaLittle");
         }
     
         public override void Run(EPServiceProvider epService) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select SleepaLittle(100) from MyEvent");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select sleepaLittle(100) from MyEvent");
             stmt.Subscriber = new MySubscriber();
             for (int i = 0; i < 10000; i++) {
                 epService.EPRuntime.SendEvent(new MyEvent());

@@ -67,17 +67,17 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionNestedContextWithFilterUDF(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                    "customEnabled", typeof(ExecContextNested).Name, "customMatch", FilterOptimizableEnum.ENABLED);
+                    "customEnabled", typeof(ExecContextNested), "CustomMatch", FilterOptimizableEnum.ENABLED);
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                    "customDisabled", typeof(ExecContextNested).Name, "customMatch", FilterOptimizableEnum.DISABLED);
+                    "customDisabled", typeof(ExecContextNested), "CustomMatch", FilterOptimizableEnum.DISABLED);
             epService.EPAdministrator.CreateEPL("create context NestedContext " +
                     "context ACtx initiated by SupportBean_S0 as s0 terminated after 24 hours, " +
                     "context BCtx initiated by SupportBean_S1 as s1 terminated after 1 hour");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context NestedContext select * " +
                     "from SupportBean(" +
-                    "CustomEnabled(theString, context.ACtx.s0.p00, intPrimitive, context.BCtx.s1.id)" +
+                    "CustomEnabled(TheString, context.ACtx.s0.p00, IntPrimitive, context.BCtx.s1.id)" +
                     " and " +
-                    "CustomDisabled(theString, context.ACtx.s0.p00, intPrimitive, context.BCtx.s1.id))");
+                    "CustomDisabled(TheString, context.ACtx.s0.p00, IntPrimitive, context.BCtx.s1.id))");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -100,11 +100,11 @@ namespace com.espertech.esper.regression.context
         private void RunAssertionIterateTargetedCP(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create context NestedContext " +
                     "context ACtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(id=s0.id), " +
-                    "context BCtx group by intPrimitive < 0 as grp1, group by intPrimitive = 0 as grp2, group by intPrimitive > 0 as grp3 from SupportBean");
+                    "context BCtx group by IntPrimitive < 0 as grp1, group by IntPrimitive = 0 as grp2, group by IntPrimitive > 0 as grp3 from SupportBean");
     
             string[] fields = "c0,c1,c2,c3".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL("@Name('StmtOne') context NestedContext " +
-                    "select context.ACtx.s0.p00 as c0, context.BCtx.label as c1, theString as c2, sum(intPrimitive) as c3 from SupportBean#length(5) group by theString");
+                    "select context.ACtx.s0.p00 as c0, context.BCtx.label as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#length(5) group by TheString");
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "S0_1"));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -143,9 +143,9 @@ namespace com.espertech.esper.regression.context
     
             // test 3 nesting levels and targeted
             epService.EPAdministrator.CreateEPL("create context NestedContext " +
-                    "context ACtx group by intPrimitive < 0 as i1, group by intPrimitive = 0 as i2, group by intPrimitive > 0 as i3 from SupportBean," +
-                    "context BCtx group by longPrimitive < 0 as l1, group by longPrimitive = 0 as l2, group by longPrimitive > 0 as l3 from SupportBean," +
-                    "context CCtx group by boolPrimitive = true as b1, group by boolPrimitive = false as b2 from SupportBean");
+                    "context ACtx group by IntPrimitive < 0 as i1, group by IntPrimitive = 0 as i2, group by IntPrimitive > 0 as i3 from SupportBean," +
+                    "context BCtx group by LongPrimitive < 0 as l1, group by LongPrimitive = 0 as l2, group by LongPrimitive > 0 as l3 from SupportBean," +
+                    "context CCtx group by BoolPrimitive = true as b1, group by BoolPrimitive = false as b2 from SupportBean");
     
             string[] fieldsSelect = "c0,c1,c2,c3".Split(',');
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("@Name('StmtOne') context NestedContext " +
@@ -188,7 +188,7 @@ namespace com.espertech.esper.regression.context
             TryInvalid(epService, epl, "Error starting statement: Context by name 'EightToNine' has already been declared within nested context 'ABC' [");
     
             // validate statement added to nested context
-            epl = "create context ABC context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *), context PartCtx as partition by theString from SupportBean";
+            epl = "create context ABC context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *), context PartCtx as partition by TheString from SupportBean";
             epService.EPAdministrator.CreateEPL(epl);
             epl = "context ABC select * from SupportBean_S0";
             TryInvalid(epService, epl, "Error starting statement: Segmented context 'PartCtx' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type 'SupportBean_S0' is not one of the types listed [");
@@ -199,12 +199,12 @@ namespace com.espertech.esper.regression.context
     
             epService.EPAdministrator.CreateEPL("create context NestedContext " +
                     "context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *), " +
-                    "context SegByString partition by theString from SupportBean");
+                    "context SegByString partition by TheString from SupportBean");
     
             var listener = new SupportUpdateListener();
             string[] fields = "c0,c1,c2".Split(',');
             EPStatementSPI stmtUser = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select " +
-                    "context.EightToNine.startTime as c0, context.SegByString.key1 as c1, intPrimitive as c2 from SupportBean#keepall");
+                    "context.EightToNine.startTime as c0, context.SegByString.key1 as c1, IntPrimitive as c2 from SupportBean#keepall");
             stmtUser.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -240,37 +240,37 @@ namespace com.espertech.esper.regression.context
     
             // category over partition
             eplContext = "create context TheContext " +
-                    "context CtxCategory as group intPrimitive < 0 as negative, group intPrimitive > 0 as positive from SupportBean, " +
-                    "context CtxPartition as partition by theString from SupportBean";
+                    "context CtxCategory as group IntPrimitive < 0 as negative, group IntPrimitive > 0 as positive from SupportBean, " +
+                    "context CtxPartition as partition by TheString from SupportBean";
             spiCtx = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplContext);
             spiStmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplSelect);
     
-            AssertFilters(epService, isolationAllowed, "SupportBean(intPrimitive<0),SupportBean(intPrimitive>0)", spiCtx);
+            AssertFilters(epService, isolationAllowed, "SupportBean(IntPrimitive<0),SupportBean(IntPrimitive>0)", spiCtx);
             epService.EPRuntime.SendEvent(new SupportBean("E1", -1));
-            AssertFilters(epService, isolationAllowed, "SupportBean(theStringisE1,intPrimitive<0)", spiStmt);
+            AssertFilters(epService, isolationAllowed, "SupportBean(TheString=E1,IntPrimitive<0)", spiStmt);
             epService.EPAdministrator.DestroyAllStatements();
     
             // category over partition over category
             eplContext = "create context TheContext " +
-                    "context CtxCategoryOne as group intPrimitive < 0 as negative, group intPrimitive > 0 as positive from SupportBean, " +
-                    "context CtxPartition as partition by theString from SupportBean," +
-                    "context CtxCategoryTwo as group longPrimitive < 0 as negative, group longPrimitive > 0 as positive from SupportBean";
+                    "context CtxCategoryOne as group IntPrimitive < 0 as negative, group IntPrimitive > 0 as positive from SupportBean, " +
+                    "context CtxPartition as partition by TheString from SupportBean," +
+                    "context CtxCategoryTwo as group LongPrimitive < 0 as negative, group LongPrimitive > 0 as positive from SupportBean";
             spiCtx = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplContext);
             spiStmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplSelect);
     
-            AssertFilters(epService, isolationAllowed, "SupportBean(intPrimitive<0),SupportBean(intPrimitive>0)", spiCtx);
+            AssertFilters(epService, isolationAllowed, "SupportBean(IntPrimitive<0),SupportBean(IntPrimitive>0)", spiCtx);
             bean = new SupportBean("E1", -1);
             bean.LongPrimitive = 1;
             epService.EPRuntime.SendEvent(bean);
-            AssertFilters(epService, isolationAllowed, "SupportBean(longPrimitive<0,theStringisE1,intPrimitive<0),SupportBean(longPrimitive>0,theStringisE1,intPrimitive<0)", spiStmt);
-            AssertFilters(epService, isolationAllowed, "SupportBean(intPrimitive<0),SupportBean(intPrimitive>0)", spiCtx);
+            AssertFilters(epService, isolationAllowed, "SupportBean(LongPrimitive<0,TheString=E1,IntPrimitive<0),SupportBean(LongPrimitive>0,TheString=E1,IntPrimitive<0)", spiStmt);
+            AssertFilters(epService, isolationAllowed, "SupportBean(IntPrimitive<0),SupportBean(IntPrimitive>0)", spiCtx);
             epService.EPAdministrator.DestroyAllStatements();
     
             // partition over partition over partition
             eplContext = "create context TheContext " +
-                    "context CtxOne as partition by theString from SupportBean, " +
-                    "context CtxTwo as partition by intPrimitive from SupportBean," +
-                    "context CtxThree as partition by longPrimitive from SupportBean";
+                    "context CtxOne as partition by TheString from SupportBean, " +
+                    "context CtxTwo as partition by IntPrimitive from SupportBean," +
+                    "context CtxThree as partition by LongPrimitive from SupportBean";
             spiCtx = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplContext);
             spiStmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplSelect);
     
@@ -278,27 +278,27 @@ namespace com.espertech.esper.regression.context
             bean = new SupportBean("E1", 2);
             bean.LongPrimitive = 3;
             epService.EPRuntime.SendEvent(bean);
-            AssertFilters(epService, isolationAllowed, "SupportBean(longPrimitiveis3,intPrimitiveis2,theStringisE1)", spiStmt);
-            AssertFilters(epService, isolationAllowed, "SupportBean(),SupportBean(theStringisE1),SupportBean(theStringisE1,intPrimitiveis2)", spiCtx);
+            AssertFilters(epService, isolationAllowed, "SupportBean(LongPrimitive=3,IntPrimitive=2,TheString=E1)", spiStmt);
+            AssertFilters(epService, isolationAllowed, "SupportBean(),SupportBean(TheString=E1),SupportBean(TheString=E1,IntPrimitive=2)", spiCtx);
             epService.EPAdministrator.DestroyAllStatements();
     
             // category over hash
             eplContext = "create context TheContext " +
-                    "context CtxCategoryOne as group intPrimitive < 0 as negative, group intPrimitive > 0 as positive from SupportBean, " +
-                    "context CtxTwo as coalesce by Consistent_hash_crc32(theString) from SupportBean granularity 100";
+                    "context CtxCategoryOne as group IntPrimitive < 0 as negative, group IntPrimitive > 0 as positive from SupportBean, " +
+                    "context CtxTwo as coalesce by consistent_hash_crc32(TheString) from SupportBean granularity 100";
             spiCtx = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplContext);
             spiStmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplSelect);
     
-            AssertFilters(epService, isolationAllowed, "SupportBean(intPrimitive<0),SupportBean(intPrimitive>0)", spiCtx);
+            AssertFilters(epService, isolationAllowed, "SupportBean(IntPrimitive<0),SupportBean(IntPrimitive>0)", spiCtx);
             bean = new SupportBean("E1", 2);
             bean.LongPrimitive = 3;
             epService.EPRuntime.SendEvent(bean);
-            AssertFilters(epService, isolationAllowed, "SupportBean(Consistent_hash_crc32(theString)=33,intPrimitive>0)", spiStmt);
-            AssertFilters(epService, isolationAllowed, "SupportBean(intPrimitive<0),SupportBean(intPrimitive>0)", spiCtx);
+            AssertFilters(epService, isolationAllowed, "SupportBean(consistent_hash_crc32(TheString)=33,IntPrimitive>0)", spiStmt);
+            AssertFilters(epService, isolationAllowed, "SupportBean(IntPrimitive<0),SupportBean(IntPrimitive>0)", spiCtx);
             epService.EPAdministrator.DestroyAllStatements();
     
             eplContext = "create context TheContext " +
-                    "context CtxOne as partition by theString from SupportBean, " +
+                    "context CtxOne as partition by TheString from SupportBean, " +
                     "context CtxTwo as start pattern [SupportBean_S0] end pattern[SupportBean_S1]";
             spiCtx = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplContext);
             spiStmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL(eplSelect);
@@ -356,14 +356,14 @@ namespace com.espertech.esper.regression.context
             SendTimeEvent(epService, "2002-05-1T08:00:00.000");
     
             string eplCtx = "create context NestedContext as " +
-                    "context SegByString as partition by theString from SupportBean(intPrimitive > 0), " +
+                    "context SegByString as partition by TheString from SupportBean(IntPrimitive > 0), " +
                     "context InitCtx initiated by SupportBean_S0 as s0 terminated after 60 seconds";
             epService.EPAdministrator.CreateEPL(eplCtx);
     
             var listener = new SupportUpdateListener();
             string[] fields = "c0,c1,c2".Split(',');
             EPStatementSPI stmtUser = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select " +
-                    "context.InitCtx.s0.p00 as c0, theString as c1, sum(intPrimitive) as c2 from SupportBean group by theString");
+                    "context.InitCtx.s0.p00 as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean group by TheString");
             stmtUser.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -392,14 +392,14 @@ namespace com.espertech.esper.regression.context
             SendTimeEvent(epService, "2002-05-1T08:00:00.000");
     
             string eplCtx = "create context NestedContext as " +
-                    "context ByCat as group intPrimitive < 0 as g1, group intPrimitive > 0 as g2, group intPrimitive = 0 as g3 from SupportBean, " +
+                    "context ByCat as group IntPrimitive < 0 as g1, group IntPrimitive > 0 as g2, group IntPrimitive = 0 as g3 from SupportBean, " +
                     "context InitCtx as initiated by pattern [every a=SupportBean_S0 -> b=SupportBean_S1(id = a.id)] terminated after 10 sec";
             epService.EPAdministrator.CreateEPL(eplCtx);
     
             var listener = new SupportUpdateListener();
             string[] fields = "c0,c1,c2,c3".Split(',');
             EPStatementSPI stmtUser = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select " +
-                    "context.ByCat.label as c0, context.InitCtx.a.p00 as c1, context.InitCtx.b.p10 as c2, sum(intPrimitive) as c3 from SupportBean group by theString");
+                    "context.ByCat.label as c0, context.InitCtx.a.p00 as c1, context.InitCtx.b.p10 as c2, sum(IntPrimitive) as c3 from SupportBean group by TheString");
             stmtUser.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -452,9 +452,9 @@ namespace com.espertech.esper.regression.context
             // Test partitioned context
             //
             string eplCtxOne = "create context NestedContext as " +
-                    "context SegByString as partition by theString from SupportBean, " +
-                    "context SegByInt as partition by intPrimitive from SupportBean, " +
-                    "context SegByLong as partition by longPrimitive from SupportBean ";
+                    "context SegByString as partition by TheString from SupportBean, " +
+                    "context SegByInt as partition by IntPrimitive from SupportBean, " +
+                    "context SegByLong as partition by LongPrimitive from SupportBean ";
             EPStatement stmtCtxOne = epService.EPAdministrator.CreateEPL(eplCtxOne);
     
             var listenerOne = new SupportUpdateListener();
@@ -484,14 +484,14 @@ namespace com.espertech.esper.regression.context
             // Test partitioned context
             //
             string eplCtxTwo = "create context NestedContext as " +
-                    "context HashOne coalesce by Hash_code(theString) from SupportBean granularity 10, " +
-                    "context HashTwo coalesce by Hash_code(intPrimitive) from SupportBean granularity 10";
+                    "context HashOne coalesce by Hash_code(TheString) from SupportBean granularity 10, " +
+                    "context HashTwo coalesce by Hash_code(IntPrimitive) from SupportBean granularity 10";
             EPStatement stmtCtxTwo = epService.EPAdministrator.CreateEPL(eplCtxTwo);
     
             var listenerTwo = new SupportUpdateListener();
             string[] fieldsTwo = "c1,c2".Split(',');
             EPStatementSPI stmtUserTwo = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select " +
-                    "theString as c1, count(*) as c2 from SupportBean");
+                    "TheString as c1, count(*) as c2 from SupportBean");
             stmtUserTwo.Events += listenerTwo.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
@@ -509,14 +509,14 @@ namespace com.espertech.esper.regression.context
             // Test partitioned context
             //
             string eplCtxThree = "create context NestedContext as " +
-                    "context InitOne initiated by SupportBean(theString like 'I%') as sb0 terminated after 10 sec, " +
-                    "context InitTwo initiated by SupportBean(intPrimitive > 0) as sb1 terminated after 10 sec";
+                    "context InitOne initiated by SupportBean(TheString like 'I%') as sb0 terminated after 10 sec, " +
+                    "context InitTwo initiated by SupportBean(IntPrimitive > 0) as sb1 terminated after 10 sec";
             EPStatement stmtCtxThree = epService.EPAdministrator.CreateEPL(eplCtxThree);
     
             var listenerThree = new SupportUpdateListener();
             string[] fieldsThree = "c1,c2".Split(',');
             EPStatementSPI stmtUserThree = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select " +
-                    "theString as c1, count(*) as c2 from SupportBean");
+                    "TheString as c1, count(*) as c2 from SupportBean");
             stmtUserThree.Events += listenerThree.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("I1", 1));
@@ -541,7 +541,7 @@ namespace com.espertech.esper.regression.context
             var listener = new SupportUpdateListener();
             string[] fields = "c1,c2,c3,c4".Split(',');
             EPStatementSPI stmtUser = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select " +
-                    "context.InitCtx0.s0.p00 as c1, context.InitCtx1.s1.p10 as c2, context.InitCtx2.s2.p20 as c3, sum(intPrimitive) as c4 from SupportBean");
+                    "context.InitCtx0.s0.p00 as c1, context.InitCtx1.s1.p10 as c2, context.InitCtx2.s2.p20 as c3, sum(IntPrimitive) as c4 from SupportBean");
             stmtUser.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "S0_1"));
@@ -596,7 +596,7 @@ namespace com.espertech.esper.regression.context
             epService.EPRuntime.SendEvent(new SupportBean("E10", 10));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{new object[] {"S0_2", "S1_3", "S2_5", 10}, new object[] {"S0_2", "S1_5", "S2_5", 10}});
     
-            SendTimeEvent(epService, "2002-05-1T08:00:60.000"); // terminate S0_2 branch, only the "8to9" is left
+            SendTimeEvent(epService, "2002-05-01T08:01:00.000"); // terminate S0_2 branch, only the "8to9" is left
     
             epService.EPRuntime.SendEvent(new SupportBean("E11", 11));
             Assert.IsFalse(listener.IsInvoked);
@@ -641,13 +641,13 @@ namespace com.espertech.esper.regression.context
     
             string eplCtx = "create context NestedContext as " +
                     "context InitCtx initiated by SupportBean_S0(id > 0) as s0 terminated after 10 seconds, " +
-                    "context SegmCtx as partition by theString from SupportBean(intPrimitive > 0)";
+                    "context SegmCtx as partition by TheString from SupportBean(IntPrimitive > 0)";
             epService.EPAdministrator.CreateEPL(eplCtx);
     
             var listener = new SupportUpdateListener();
             string[] fields = "c1,c2,c3".Split(',');
             EPStatementSPI stmtUser = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select " +
-                    "context.InitCtx.s0.p00 as c1, context.SegmCtx.key1 as c2, sum(intPrimitive) as c3 from SupportBean");
+                    "context.InitCtx.s0.p00 as c1, context.SegmCtx.key1 as c2, sum(IntPrimitive) as c3 from SupportBean");
             stmtUser.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", -1));
@@ -707,14 +707,14 @@ namespace com.espertech.esper.regression.context
     
             string eplCtx = "create context NestedContext as " +
                     "context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *), " +
-                    "context ByCat as group intPrimitive<0 as g1, group intPrimitive=0 as g2, group intPrimitive>0 as g3 from SupportBean, " +
-                    "context SegmentedByString as partition by theString from SupportBean";
+                    "context ByCat as group IntPrimitive<0 as g1, group IntPrimitive=0 as g2, group IntPrimitive>0 as g3 from SupportBean, " +
+                    "context SegmentedByString as partition by TheString from SupportBean";
             EPStatement stmtCtx = epService.EPAdministrator.CreateEPL(eplCtx);
     
             var listener = new SupportUpdateListener();
             string[] fields = "c1,c2,c3".Split(',');
             EPStatementSPI stmtUser = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select " +
-                    "context.ByCat.label as c1, context.SegmentedByString.key1 as c2, sum(longPrimitive) as c3 from SupportBean");
+                    "context.ByCat.label as c1, context.SegmentedByString.key1 as c2, sum(LongPrimitive) as c3 from SupportBean");
             stmtUser.Events += listener.Update;
     
             TryAssertion3Contexts(epService, listener, fields, "2002-05-1T09:00:00.000");
@@ -731,7 +731,7 @@ namespace com.espertech.esper.regression.context
             Assert.AreEqual(eplCtx, stmtCtxTwo.Text);
     
             stmtUser = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select " +
-                    "context.ByCat.label as c1, context.SegmentedByString.key1 as c2, sum(longPrimitive) as c3 from SupportBean");
+                    "context.ByCat.label as c1, context.SegmentedByString.key1 as c2, sum(LongPrimitive) as c3 from SupportBean");
             stmtUser.Events += listener.Update;
     
             TryAssertion3Contexts(epService, listener, fields, "2002-05-2T09:00:00.000");
@@ -750,13 +750,13 @@ namespace com.espertech.esper.regression.context
     
             epService.EPAdministrator.CreateEPL("create context NestedContext " +
                     "context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *), " +
-                    "context HashedCtx coalesce Hash_code(intPrimitive) from SupportBean granularity 10 preallocate");
+                    "context HashedCtx coalesce Hash_code(IntPrimitive) from SupportBean granularity 10 preallocate");
             Assert.AreEqual(0, spi.SchedulingService.ScheduleHandleCount);
     
             var listener = new SupportUpdateListener();
             string[] fields = "c1,c2".Split(',');
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select " +
-                    "theString as c1, count(*) as c2 from SupportBean group by theString");
+                    "TheString as c1, count(*) as c2 from SupportBean group by TheString");
             statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
@@ -797,16 +797,16 @@ namespace com.espertech.esper.regression.context
     
             epService.EPAdministrator.CreateEPL("create context NestedContext " +
                     "context ByCat " +
-                    "  group intPrimitive < 0 and intPrimitive != -9999 as g1, " +
-                    "  group intPrimitive = 0 as g2, " +
-                    "  group intPrimitive > 0 as g3 from SupportBean, " +
-                    "context InitGrd initiated by SupportBean(theString like 'init%') as sb terminated after 10 seconds");
+                    "  group IntPrimitive < 0 and IntPrimitive != -9999 as g1, " +
+                    "  group IntPrimitive = 0 as g2, " +
+                    "  group IntPrimitive > 0 as g3 from SupportBean, " +
+                    "context InitGrd initiated by SupportBean(TheString like 'init%') as sb terminated after 10 seconds");
             Assert.AreEqual(0, spi.SchedulingService.ScheduleHandleCount);
     
             var listener = new SupportUpdateListener();
             string[] fields = "c1,c2,c3".Split(',');
             EPStatementSPI statement = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select " +
-                    "context.ByCat.label as c1, context.InitGrd.sb.theString as c2, count(*) as c3 from SupportBean");
+                    "context.ByCat.label as c1, context.InitGrd.sb.TheString as c2, count(*) as c3 from SupportBean");
             statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
@@ -861,7 +861,7 @@ namespace com.espertech.esper.regression.context
     
             EPStatement stmtCtx = epService.EPAdministrator.CreateEPL("create context NestedContext " +
                     "context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *), " +
-                    "context SegmentedByAString partition by theString from SupportBean");
+                    "context SegmentedByAString partition by TheString from SupportBean");
             Assert.AreEqual(0, spi.SchedulingService.ScheduleHandleCount);
     
             var listener = new SupportUpdateListener();
@@ -945,7 +945,7 @@ namespace com.espertech.esper.regression.context
             SendTimeEvent(epService, "2002-05-1T07:00:00.000");
     
             EPStatement stmtCtx = epService.EPAdministrator.CreateEPL("create context NestedContext " +
-                    "context SegmentedByAString partition by theString from SupportBean, " +
+                    "context SegmentedByAString partition by TheString from SupportBean, " +
                     "context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *)");
             Assert.AreEqual(0, filterSPI.FilterCountApprox);
             Assert.AreEqual(0, spi.SchedulingService.ScheduleHandleCount);
@@ -1036,7 +1036,7 @@ namespace com.espertech.esper.regression.context
     
             EPStatement stmtCtx = epService.EPAdministrator.CreateEPL("create context NestedContext " +
                     "context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *), " +
-                    "context SegmentedByAString partition by theString from SupportBean");
+                    "context SegmentedByAString partition by TheString from SupportBean");
     
             var listener = new SupportUpdateListener();
             string[] fields = "c0,c1,c2,c3,c4,c5,c6".Split(',');
@@ -1046,7 +1046,7 @@ namespace com.espertech.esper.regression.context
                     "context.SegmentedByAString.name as c2, " +
                     "context.SegmentedByAString.key1 as c3, " +
                     "context.name as c4, " +
-                    "intPrimitive as c5," +
+                    "IntPrimitive as c5," +
                     "count(*) as c6 " +
                     "from SupportBean");
             statement.Events += listener.Update;
@@ -1107,18 +1107,18 @@ namespace com.espertech.esper.regression.context
     
             epService.EPAdministrator.CreateEPL("create context NestedContext " +
                     "context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *), " +
-                    "context SegmentedByAString partition by theString from SupportBean");
+                    "context SegmentedByAString partition by TheString from SupportBean");
     
             var listenerOne = new SupportUpdateListener();
             string[] fields = "c0,c1".Split(',');
-            EPStatementSPI statementOne = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select theString as c0, count(*) as c1 from SupportBean");
+            EPStatementSPI statementOne = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select TheString as c0, count(*) as c1 from SupportBean");
             statementOne.Events += listenerOne.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"E1", 1L});
     
             var listenerTwo = new SupportUpdateListener();
-            EPStatementSPI statementTwo = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select theString as c0, sum(intPrimitive) as c1 from SupportBean");
+            EPStatementSPI statementTwo = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select TheString as c0, sum(IntPrimitive) as c1 from SupportBean");
             statementTwo.Events += listenerTwo.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 20));
@@ -1130,7 +1130,7 @@ namespace com.espertech.esper.regression.context
             EPAssertionUtil.AssertProps(listenerTwo.AssertOneGetNewAndReset(), fields, new object[]{"E2", 30});
     
             var listenerThree = new SupportUpdateListener();
-            EPStatementSPI statementThree = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select theString as c0, min(intPrimitive) as c1 from SupportBean");
+            EPStatementSPI statementThree = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext select TheString as c0, min(IntPrimitive) as c1 from SupportBean");
             statementThree.Events += listenerThree.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 40));
@@ -1185,14 +1185,14 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionPartitionWithMultiPropsAndTerm(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create context NestedContext " +
-                    "context PartitionedByKeys partition by theString, intPrimitive from SupportBean, " +
+                    "context PartitionedByKeys partition by TheString, IntPrimitive from SupportBean, " +
                     "context InitiateAndTerm start SupportBean as e1 " +
-                    "end SupportBean_S0(id=e1.intPrimitive and p00=e1.theString)");
+                    "end SupportBean_S0(id=e1.IntPrimitive and p00=e1.TheString)");
     
             var listenerOne = new SupportUpdateListener();
             string[] fields = "c0,c1,c2".Split(',');
             EPStatementSPI statementOne = (EPStatementSPI) epService.EPAdministrator.CreateEPL("context NestedContext " +
-                    "select theString as c0, intPrimitive as c1, count(longPrimitive) as c2 from SupportBean \n" +
+                    "select TheString as c0, IntPrimitive as c1, count(LongPrimitive) as c2 from SupportBean \n" +
                     "output last when terminated");
             statementOne.Events += listenerOne.Update;
     
@@ -1209,14 +1209,14 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionNestedOverlappingAndPattern(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create context NestedContext " +
-                    "context PartitionedByKeys partition by theString from SupportBean, " +
+                    "context PartitionedByKeys partition by TheString from SupportBean, " +
                     "context TimedImmediate initiated @now and pattern[every timer:interval(10)] terminated after 10 seconds");
             TryAssertion(epService);
         }
     
         private void RunAssertionNestedNonOverlapping(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create context NestedContext " +
-                    "context PartitionedByKeys partition by theString from SupportBean, " +
+                    "context PartitionedByKeys partition by TheString from SupportBean, " +
                     "context TimedImmediate start @now end after 10 seconds");
             TryAssertion(epService);
         }
@@ -1227,7 +1227,7 @@ namespace com.espertech.esper.regression.context
             var listenerOne = new SupportUpdateListener();
             string[] fields = "c0,c1".Split(',');
             EPStatement statementOne = epService.EPAdministrator.CreateEPL("context NestedContext " +
-                    "select theString as c0, sum(intPrimitive) as c1 from SupportBean \n" +
+                    "select TheString as c0, sum(IntPrimitive) as c1 from SupportBean \n" +
                     "output last when terminated");
             statementOne.Events += listenerOne.Update;
     
@@ -1282,7 +1282,7 @@ namespace com.espertech.esper.regression.context
             public bool Filter(ContextPartitionIdentifier contextPartitionIdentifier) {
                 ContextPartitionIdentifierNested nested = (ContextPartitionIdentifierNested) contextPartitionIdentifier;
                 if (pathMatch == null && cpids.Contains(nested.ContextPartitionId)) {
-                    throw new EPRuntimeException("Already Exists context id: " + nested.ContextPartitionId);
+                    throw new EPRuntimeException("Already exists context id: " + nested.ContextPartitionId);
                 }
                 cpids.Add(nested.ContextPartitionId);
     

@@ -29,24 +29,26 @@ namespace com.espertech.esper.regression.events.objectarray
     public class ExecEventObjectArrayConfiguredStatic : RegressionExecution {
         public override void Configure(Configuration configuration) {
             configuration.EngineDefaults.EventMeta.DefaultEventRepresentation = EventUnderlyingType.OBJECTARRAY;
-            configuration.AddEventType("MyOAType", "bean,theString,map".Split(','), new object[]{typeof(SupportBean).FullName, "string", "Map"});
+            configuration.AddEventType("MyOAType", "Bean,TheString,Map".Split(','), new object[] {
+                typeof(SupportBean).AssemblyQualifiedName, "string", "map"
+            });
         }
     
         public override void Run(EPServiceProvider epService) {
             var eventType = epService.EPAdministrator.Configuration.GetEventType("MyOAType");
             Assert.AreEqual(typeof(object[]), eventType.UnderlyingType);
-            Assert.AreEqual(typeof(string), eventType.GetPropertyType("theString"));
-            Assert.AreEqual(typeof(Map), eventType.GetPropertyType("map"));
-            Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("bean"));
+            Assert.AreEqual(typeof(string), eventType.GetPropertyType("TheString"));
+            Assert.AreEqual(typeof(Map), eventType.GetPropertyType("Map"));
+            Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("Bean"));
     
-            var stmt = epService.EPAdministrator.CreateEPL("select bean, theString, Map('key'), bean.theString from MyOAType");
+            var stmt = epService.EPAdministrator.CreateEPL("select Bean, TheString, Map('key'), Bean.TheString from MyOAType");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             Assert.AreEqual(typeof(object[]), stmt.EventType.UnderlyingType);
     
             var bean = new SupportBean("E1", 1);
             epService.EPRuntime.SendEvent(new object[]{bean, "abc", Collections.SingletonMap("key", "value")}, "MyOAType");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), "bean,theString,Map('key'),bean.theString".Split(','), new object[]{bean, "abc", "value", "E1"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), "Bean,TheString,Map('key'),Bean.TheString".Split(','), new object[]{bean, "abc", "value", "E1"});
         }
     
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

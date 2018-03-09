@@ -33,56 +33,56 @@ namespace com.espertech.esper.regression.client
         public override void Configure(Configuration configuration)
         {
             configuration.AddPlugInSingleRowFunction(
-                "singlerow", typeof(MySingleRowFunctionTwo).FullName, "testSingleRow");
-            configuration.AddPlugInSingleRowFunction("power3", typeof(MySingleRowFunction).FullName, "computePower3");
-            configuration.AddPlugInSingleRowFunction("chainTop", typeof(MySingleRowFunction).FullName, "getChainTop");
-            configuration.AddPlugInSingleRowFunction("surroundx", typeof(MySingleRowFunction).FullName, "surroundx");
+                "singlerow", typeof(MySingleRowFunctionTwo).FullName, "TestSingleRow");
+            configuration.AddPlugInSingleRowFunction("power3", typeof(MySingleRowFunction), "ComputePower3");
+            configuration.AddPlugInSingleRowFunction("chainTop", typeof(MySingleRowFunction), "GetChainTop");
+            configuration.AddPlugInSingleRowFunction("surroundx", typeof(MySingleRowFunction), "Surroundx");
             configuration.AddPlugInSingleRowFunction(
-                "throwExceptionLogMe", typeof(MySingleRowFunction).FullName, "throwexception",
+                "throwExceptionLogMe", typeof(MySingleRowFunction), "ThrowException",
                 ValueCacheEnum.DISABLED,
                 FilterOptimizableEnum.ENABLED, false);
             configuration.AddPlugInSingleRowFunction(
-                "throwExceptionRethrow", typeof(MySingleRowFunction).FullName, "throwexception",
+                "throwExceptionRethrow", typeof(MySingleRowFunction), "ThrowException",
                 ValueCacheEnum.DISABLED,
                 FilterOptimizableEnum.ENABLED, true);
             configuration.AddPlugInSingleRowFunction(
-                "power3Rethrow", typeof(MySingleRowFunction).FullName, "computePower3",
+                "power3Rethrow", typeof(MySingleRowFunction), "ComputePower3",
                 ValueCacheEnum.DISABLED,
                 FilterOptimizableEnum.ENABLED, true);
             configuration.AddPlugInSingleRowFunction(
-                "power3Context", typeof(MySingleRowFunction).FullName, "computePower3WithContext",
+                "power3Context", typeof(MySingleRowFunction), "ComputePower3WithContext",
                 ValueCacheEnum.DISABLED,
                 FilterOptimizableEnum.ENABLED, true);
             configuration.AddPlugInSingleRowFunction(
-                "isNullValue", typeof(MySingleRowFunction).FullName, "isNullValue");
+                "isNullValue", typeof(MySingleRowFunction), "IsNullValue");
             configuration.AddPlugInSingleRowFunction(
-                "getValueAsString", typeof(MySingleRowFunction).FullName, "getValueAsString");
+                "getValueAsString", typeof(MySingleRowFunction), "GetValueAsString");
             configuration.AddPlugInSingleRowFunction(
-                "eventsCheckStrings", typeof(MySingleRowFunction).FullName, "eventsCheckStrings");
+                "eventsCheckStrings", typeof(MySingleRowFunction), "EventsCheckStrings");
             configuration.AddPlugInSingleRowFunction(
-                "varargsOnlyInt", typeof(MySingleRowFunction).FullName, "varargsOnlyInt");
+                "varargsOnlyInt", typeof(MySingleRowFunction), "VarargsOnlyInt");
             configuration.AddPlugInSingleRowFunction(
-                "varargsOnlyString", typeof(MySingleRowFunction).FullName, "varargsOnlyString");
+                "varargsOnlyString", typeof(MySingleRowFunction), "VarargsOnlyString");
             configuration.AddPlugInSingleRowFunction(
-                "varargsOnlyObject", typeof(MySingleRowFunction).FullName, "varargsOnlyObject");
+                "varargsOnlyObject", typeof(MySingleRowFunction), "VarargsOnlyObject");
             configuration.AddPlugInSingleRowFunction(
-                "varargsOnlyNumber", typeof(MySingleRowFunction).FullName, "varargsOnlyNumber");
+                "varargsOnlyNumber", typeof(MySingleRowFunction), "VarargsOnlyNumber");
             configuration.AddPlugInSingleRowFunction(
-                "varargsOnlyISupportBaseAB", typeof(MySingleRowFunction).FullName, "varargsOnlyISupportBaseAB");
+                "varargsOnlyISupportBaseAB", typeof(MySingleRowFunction), "VarargsOnlyISupportBaseAB");
             configuration.AddPlugInSingleRowFunction(
-                "varargsW1Param", typeof(MySingleRowFunction).FullName, "varargsW1Param");
+                "varargsW1Param", typeof(MySingleRowFunction), "VarargsW1Param");
             configuration.AddPlugInSingleRowFunction(
-                "varargsW2Param", typeof(MySingleRowFunction).FullName, "varargsW2Param");
+                "varargsW2Param", typeof(MySingleRowFunction), "VarargsW2Param");
             configuration.AddPlugInSingleRowFunction(
-                "varargsOnlyWCtx", typeof(MySingleRowFunction).FullName, "varargsOnlyWCtx");
+                "varargsOnlyWCtx", typeof(MySingleRowFunction), "VarargsOnlyWCtx");
             configuration.AddPlugInSingleRowFunction(
-                "varargsW1ParamWCtx", typeof(MySingleRowFunction).FullName, "varargsW1ParamWCtx");
+                "varargsW1ParamWCtx", typeof(MySingleRowFunction), "VarargsW1ParamWCtx");
             configuration.AddPlugInSingleRowFunction(
-                "varargsW2ParamWCtx", typeof(MySingleRowFunction).FullName, "varargsW2ParamWCtx");
+                "varargsW2ParamWCtx", typeof(MySingleRowFunction), "VarargsW2ParamWCtx");
             configuration.AddPlugInSingleRowFunction(
-                "varargsObjectsWCtx", typeof(MySingleRowFunction).FullName, "varargsObjectsWCtx");
+                "varargsObjectsWCtx", typeof(MySingleRowFunction), "VarargsObjectsWCtx");
             configuration.AddPlugInSingleRowFunction(
-                "varargsW1ParamObjectsWCtx", typeof(MySingleRowFunction).FullName, "varargsW1ParamObjectsWCtx");
+                "varargsW1ParamObjectsWCtx", typeof(MySingleRowFunction), "VarargsW1ParamObjectsWCtx");
             configuration.AddEventType<SupportBean>();
         }
 
@@ -100,8 +100,8 @@ namespace com.espertech.esper.regression.client
 
         private void RunAssertionReturnTypeIsEvents(EPServiceProvider epService)
         {
-            TryAssertionReturnTypeIsEvents(epService, "myItemProducerEventBeanArray");
-            TryAssertionReturnTypeIsEvents(epService, "myItemProducerEventBeanCollection");
+            TryAssertionReturnTypeIsEvents(epService, "MyItemProducerEventBeanArray");
+            TryAssertionReturnTypeIsEvents(epService, "MyItemProducerEventBeanCollection");
             TryAssertionReturnTypeIsEventsInvalid(epService);
         }
 
@@ -116,14 +116,15 @@ namespace com.espertech.esper.regression.client
 
             epService.EPAdministrator.CreateEPL("create schema MyItem(id string)");
             var stmt = epService.EPAdministrator.CreateEPL(
-                "select " + methodName + "(theString).Where(v => v.id in ('id1', 'id3')) as c0 from SupportBean");
+                "select " + methodName + "(TheString).where(v => v.id in ('id1', 'id3')) as c0 from SupportBean");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("id0,id1,id2,id3,id4", 0));
-            var coll = (ICollection<Map>) listener.AssertOneGetNewAndReset().Get("c0");
+            var coll = listener.AssertOneGetNewAndReset().Get("c0").UnwrapIntoArray<object>();
             EPAssertionUtil.AssertPropsPerRow(
-                coll.ToArray(), "id".Split(','), new[] {new object[] {"id1"}, new object[] {"id3"}});
+                SupportContainer.Instance, coll, "id".Split(','), 
+                new[] {new object[] {"id1"}, new object[] {"id3"}});
 
             stmt.Dispose();
         }
@@ -132,17 +133,17 @@ namespace com.espertech.esper.regression.client
         {
             var entry = new ConfigurationPlugInSingleRowFunction();
             entry.FunctionClassName = GetType().FullName;
-            entry.FunctionMethodName = "myItemProducerEventBeanArray";
+            entry.FunctionMethodName = "MyItemProducerEventBeanArray";
 
             // test invalid: no event type name
             entry.Name = "myItemProducerInvalidNoType";
             entry.EventTypeName = null;
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(entry);
-            epService.EPAdministrator.CreateEPL("select MyItemProducerInvalidNoType(theString) as c0 from SupportBean");
+            epService.EPAdministrator.CreateEPL("select MyItemProducerInvalidNoType(TheString) as c0 from SupportBean");
             SupportMessageAssertUtil.TryInvalid(
                 epService,
-                "select MyItemProducerInvalidNoType(theString).Where(v => v.id='id1') as c0 from SupportBean",
-                "Error starting statement: Failed to validate select-clause expression 'MyItemProducerInvalidNoType(theStri...(68 chars)': Method 'myItemProducerEventBeanArray' returns EventBean-array but does not provide the event type name [");
+                "select MyItemProducerInvalidNoType(TheString).where(v => v.id='id1') as c0 from SupportBean",
+                "Error starting statement: Failed to validate select-clause expression 'MyItemProducerInvalidNoType(theStri...(68 chars)': Method 'MyItemProducerEventBeanArray' returns EventBean-array but does not provide the event type name [");
 
             // test invalid: event type name invalid
             entry.Name = "myItemProducerInvalidWrongType";
@@ -150,8 +151,8 @@ namespace com.espertech.esper.regression.client
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(entry);
             SupportMessageAssertUtil.TryInvalid(
                 epService,
-                "select MyItemProducerInvalidWrongType(theString).Where(v => v.id='id1') as c0 from SupportBean",
-                "Error starting statement: Failed to validate select-clause expression 'MyItemProducerInvalidWrongType(theS...(74 chars)': Method 'myItemProducerEventBeanArray' returns event type 'dummy' and the event type cannot be found [select MyItemProducerInvalidWrongType(theString).Where(v => v.id='id1') as c0 from SupportBean]");
+                "select MyItemProducerInvalidWrongType(TheString).where(v => v.id='id1') as c0 from SupportBean",
+                "Error starting statement: Failed to validate select-clause expression 'MyItemProducerInvalidWrongType(theS...(74 chars)': Method 'MyItemProducerEventBeanArray' returns event type 'dummy' and the event type cannot be found [select MyItemProducerInvalidWrongType(TheString).where(v => v.id='id1') as c0 from SupportBean]");
 
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -212,7 +213,7 @@ namespace com.espertech.esper.regression.client
             RunVarargAssertion(
                 epService,
                 MakePair(
-                    "VarargsOnlyISupportBaseAB(new " + typeof(ISupportBImpl).Name + "('a', 'b'))",
+                    "VarargsOnlyISupportBaseAB(new " + typeof(ISupportBImpl).FullName + "('a', 'b'))",
                     "ISupportBImpl{valueB='a', valueBaseAB='b'}"));
 
             // tests for array-passthru
@@ -235,8 +236,8 @@ namespace com.espertech.esper.regression.client
 
             // test select-clause
             var fields = new[] {"c0", "c1"};
-            var text = "select IsNullValue(*, 'theString') as c0," +
-                       "ExecClientSingleRowFunctionPlugIn.LocalIsNullValue(*, 'theString') as c1 from SupportBean";
+            var text = "select IsNullValue(*, 'TheString') as c0," +
+                       "ExecClientSingleRowFunctionPlugIn.LocalIsNullValue(*, 'TheString') as c1 from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -250,17 +251,17 @@ namespace com.espertech.esper.regression.client
 
             // test pattern
             var textPattern =
-                "select * from pattern [a=SupportBean -> b=SupportBean(theString=GetValueAsString(a, 'theString'))]";
+                "select * from pattern [a=SupportBean -> b=SupportBean(TheString=GetValueAsString(a, 'TheString'))]";
             var stmtPattern = epService.EPAdministrator.CreateEPL(textPattern);
             stmtPattern.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
             EPAssertionUtil.AssertProps(
-                listener.AssertOneGetNewAndReset(), "a.intPrimitive,b.intPrimitive".Split(','), new object[] {1, 2});
+                listener.AssertOneGetNewAndReset(), "a.IntPrimitive,b.IntPrimitive".Split(','), new object[] {1, 2});
             stmtPattern.Dispose();
 
             // test filter
-            var textFilter = "select * from SupportBean('E1'=GetValueAsString(*, 'theString'))";
+            var textFilter = "select * from SupportBean('E1'=GetValueAsString(*, 'TheString'))";
             var stmtFilter = epService.EPAdministrator.CreateEPL(textFilter);
             stmtFilter.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
@@ -270,7 +271,7 @@ namespace com.espertech.esper.regression.client
 
             // test "first"
             var textAccessAgg =
-                "select * from SupportBean#keepall having 'E2' = GetValueAsString(last(*), 'theString')";
+                "select * from SupportBean#keepall having 'E2' = GetValueAsString(last(*), 'TheString')";
             var stmtAccessAgg = epService.EPAdministrator.CreateEPL(textAccessAgg);
             stmtAccessAgg.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
@@ -280,7 +281,7 @@ namespace com.espertech.esper.regression.client
 
             // test "window"
             var textWindowAgg =
-                "select * from SupportBean#keepall having EventsCheckStrings(window(*), 'theString', 'E1')";
+                "select * from SupportBean#keepall having EventsCheckStrings(window(*), 'TheString', 'E1')";
             var stmtWindowAgg = epService.EPAdministrator.CreateEPL(textWindowAgg);
             stmtWindowAgg.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E2", 1));
@@ -303,7 +304,7 @@ namespace com.espertech.esper.regression.client
 
         private void RunAssertionChainMethod(EPServiceProvider epService)
         {
-            var text = "select ChainTop().ChainValue(12,intPrimitive) as val from SupportBean";
+            var text = "select ChainTop().ChainValue(12,IntPrimitive) as val from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -322,7 +323,7 @@ namespace com.espertech.esper.regression.client
 
         private void RunAssertionSingleMethod(EPServiceProvider epService)
         {
-            var text = "select Power3(intPrimitive) as val from SupportBean";
+            var text = "select Power3(IntPrimitive) as val from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -347,7 +348,7 @@ namespace com.espertech.esper.regression.client
             stmt.Dispose();
 
             // test passing a context as well
-            text = "@Name('A') select Power3Context(intPrimitive) as val from SupportBean";
+            text = "@Name('A') select Power3Context(IntPrimitive) as val from SupportBean";
             stmt = epService.EPAdministrator.CreateEPL(text, (object) "my_user_object");
             stmt.Events += listener.Update;
 
@@ -385,7 +386,7 @@ namespace com.espertech.esper.regression.client
             }
 
             // NPE when boxed is null
-            epService.EPAdministrator.CreateEPL("@Name('S1') select Power3Rethrow(intBoxed) from SupportBean")
+            epService.EPAdministrator.CreateEPL("@Name('S1') select Power3Rethrow(IntBoxed) from SupportBean")
                 .Events += listener.Update;
             try
             {
@@ -429,7 +430,7 @@ namespace com.espertech.esper.regression.client
             {
                 SupportMessageAssertUtil.AssertMessage(
                     ex,
-                    "Error starting statement: Failed to validate select-clause expression 'Singlerow(\"a\",\"b\")': Could not find static method named 'testSingleRow' in class 'com.espertech.esper.supportregression.client.MySingleRowFunctionTwo' with matching parameter number and expected parameter Type(s) 'string, string' (nearest match found was 'testSingleRow' taking Type(s) 'string, int')");
+                    "Error starting statement: Failed to validate select-clause expression 'Singlerow(\"a\",\"b\")': Could not find static method named 'testSingleRow' in class 'com.espertech.esper.supportregression.client.MySingleRowFunctionTwo' with matching parameter number and expected parameter type(s) 'System.String, System.String' (nearest match found was 'testSingleRow' taking type(s) 'System.String, System.Int32')");
             }
         }
 
@@ -442,9 +443,9 @@ namespace com.espertech.esper.regression.client
             try
             {
                 epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                    "concatstring", typeof(MySingleRowFunction).FullName, "xyz");
+                    "concatstring", typeof(MySingleRowFunction), "xyz");
                 epService.EPAdministrator.Configuration.AddPlugInAggregationFunctionFactory(
-                    "concatstring", typeof(MyConcatAggregationFunctionFactory).Name);
+                    "concatstring", typeof(MyConcatAggregationFunctionFactory));
                 Assert.Fail();
             }
             catch (ConfigurationException)
@@ -456,9 +457,9 @@ namespace com.espertech.esper.regression.client
             try
             {
                 epService.EPAdministrator.Configuration.AddPlugInAggregationFunctionFactory(
-                    "teststring", typeof(MyConcatAggregationFunctionFactory).Name);
+                    "teststring", typeof(MyConcatAggregationFunctionFactory));
                 epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                    "teststring", typeof(MySingleRowFunction).FullName, "xyz");
+                    "teststring", typeof(MySingleRowFunction), "xyz");
                 Assert.Fail();
             }
             catch (ConfigurationException)
@@ -500,7 +501,7 @@ namespace com.espertech.esper.regression.client
                 buf.Write(",");
             }
 
-            buf.Write("intPrimitive from SupportBean");
+            buf.Write("IntPrimitive from SupportBean");
 
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(buf.ToString()).Events += listener.Update;

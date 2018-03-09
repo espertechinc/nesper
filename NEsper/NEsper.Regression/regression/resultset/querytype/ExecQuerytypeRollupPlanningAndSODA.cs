@@ -27,7 +27,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.regression.resultset.querytype
 {
     public class ExecQuerytypeRollupPlanningAndSODA : RegressionExecution {
-        public static readonly string PLAN_CALLBACK_HOOK = "@Hook(type=" + typeof(HookType).Name + ".INTERNAL_GROUPROLLUP_PLAN,hook='" + typeof(SupportGroupRollupPlanHook).Name + "')";
+        public static readonly string PLAN_CALLBACK_HOOK = "@Hook(type=" + typeof(HookType).FullName + ".INTERNAL_GROUPROLLUP_PLAN,hook='" + typeof(SupportGroupRollupPlanHook).FullName + "')";
     
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType(typeof(ABCProp));

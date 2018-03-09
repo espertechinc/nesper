@@ -21,9 +21,9 @@ namespace com.espertech.esper.regression.epl.join
         {
             var updateListener = new SupportUpdateListener();
             var joinStatement = "select * from " +
-                                typeof(SupportMarketDataBean).Name + "#length(3)," +
+                                typeof(SupportMarketDataBean).FullName + "#length(3)," +
                                 typeof(SupportBean).FullName + "#length(3)" +
-                                " where symbol=theString and volume=longBoxed";
+                                " where symbol=TheString and volume=LongBoxed";
 
             var joinView = epService.EPAdministrator.CreateEPL(joinStatement);
             joinView.Events += updateListener.Update;

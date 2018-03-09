@@ -33,8 +33,8 @@ namespace com.espertech.esper.epl.expression.ops
         [Test]
         public void TestGetType()
         {
-            Assert.AreEqual(typeof(long?), ValidatedNodeToTest.ReturnType);
-            Assert.AreEqual(typeof(long?), _wildcardCount.ReturnType);
+            Assert.AreEqual(typeof(long), ValidatedNodeToTest.ReturnType);
+            Assert.AreEqual(typeof(long), _wildcardCount.ReturnType);
         }
     
         [Test]

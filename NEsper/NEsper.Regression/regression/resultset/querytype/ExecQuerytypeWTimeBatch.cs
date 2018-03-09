@@ -73,7 +73,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionTimeBatchRowForAllJoin(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string stmtText = "select irstream sum(price) as sumPrice from MarketData#time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.symbol = S1.theString";
+            string stmtText = "select irstream sum(price) as sumPrice from MarketData#time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.symbol = S1.TheString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionTimeBatchAggregateAllJoin(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            string stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData#time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.symbol = S1.theString";
+            string stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData#time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.symbol = S1.TheString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             SendTimer(epService, 0);
             string stmtText = "select irstream symbol, sum(price) as sumPrice " +
                     " from MarketData#time_batch(1 sec) as S0, SupportBean#keepall as S1" +
-                    " where S0.symbol = S1.theString " +
+                    " where S0.symbol = S1.TheString " +
                     " group by symbol";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -284,7 +284,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             SendTimer(epService, 0);
             string stmtText = "select irstream symbol, sum(price) as sumPrice, volume " +
                     "from MarketData#time_batch(1 sec) as S0, SupportBean#keepall as S1" +
-                    " where S0.symbol = S1.theString " +
+                    " where S0.symbol = S1.TheString " +
                     " group by symbol";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();

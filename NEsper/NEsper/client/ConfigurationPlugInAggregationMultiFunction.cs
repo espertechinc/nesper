@@ -31,6 +31,11 @@ namespace com.espertech.esper.client
             MultiFunctionFactoryClassName = multiFunctionFactoryClassName;
         }
 
+        public ConfigurationPlugInAggregationMultiFunction(String[] functionNames, Type multiFunctionFactoryClass)
+            : this(functionNames, multiFunctionFactoryClass.AssemblyQualifiedName)
+        {
+        }
+
         /// <summary>Returns aggregation function names. </summary>
         /// <value>names</value>
         public string[] FunctionNames { get; set; }

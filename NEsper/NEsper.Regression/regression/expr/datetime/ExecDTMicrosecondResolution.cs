@@ -12,10 +12,8 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
-using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
@@ -80,7 +78,7 @@ namespace com.espertech.esper.regression.expr.datetime
             EPServiceProviderIsolated isolated = epService.GetEPServiceIsolated("isolated");
             isolated.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
-            EPStatement stmt = isolated.EPAdministrator.CreateEPL("select * from MyEvent(id='A') as a unidirectional, MyEvent(id='B')#lastevent as b where A.WithDate(2002, 4, 30).Before(b)", "s0", null);
+            EPStatement stmt = isolated.EPAdministrator.CreateEPL("select * from MyEvent(id='A') as a unidirectional, MyEvent(id='B')#lastevent as b where a.withDate(2002, 4, 30).before(b)", "s0", null);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     

@@ -131,41 +131,41 @@ namespace com.espertech.esper.regression.epl.variable
         private void RunAssertionConstantVariable(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create const variable int MYCONST = 10");
     
-            TryOperator(epService, "MYCONST = intBoxed", new[] {new object[] {10, true}, new object[] {9, false}, new object[] {null, false}});
+            TryOperator(epService, "MYCONST = IntBoxed", new[] {new object[] {10, true}, new object[] {9, false}, new object[] {null, false}});
     
-            TryOperator(epService, "MYCONST > intBoxed", new[] {new object[] {11, false}, new object[] {10, false}, new object[] {9, true}, new object[] {8, true}});
-            TryOperator(epService, "MYCONST >= intBoxed", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, true}, new object[] {8, true}});
-            TryOperator(epService, "MYCONST < intBoxed", new[] {new object[] {11, true}, new object[] {10, false}, new object[] {9, false}, new object[] {8, false}});
-            TryOperator(epService, "MYCONST <= intBoxed", new[] {new object[] {11, true}, new object[] {10, true}, new object[] {9, false}, new object[] {8, false}});
+            TryOperator(epService, "MYCONST > IntBoxed", new[] {new object[] {11, false}, new object[] {10, false}, new object[] {9, true}, new object[] {8, true}});
+            TryOperator(epService, "MYCONST >= IntBoxed", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, true}, new object[] {8, true}});
+            TryOperator(epService, "MYCONST < IntBoxed", new[] {new object[] {11, true}, new object[] {10, false}, new object[] {9, false}, new object[] {8, false}});
+            TryOperator(epService, "MYCONST <= IntBoxed", new[] {new object[] {11, true}, new object[] {10, true}, new object[] {9, false}, new object[] {8, false}});
     
-            TryOperator(epService, "intBoxed < MYCONST", new[] {new object[] {11, false}, new object[] {10, false}, new object[] {9, true}, new object[] {8, true}});
-            TryOperator(epService, "intBoxed <= MYCONST", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, true}, new object[] {8, true}});
-            TryOperator(epService, "intBoxed > MYCONST", new[] {new object[] {11, true}, new object[] {10, false}, new object[] {9, false}, new object[] {8, false}});
-            TryOperator(epService, "intBoxed >= MYCONST", new[] {new object[] {11, true}, new object[] {10, true}, new object[] {9, false}, new object[] {8, false}});
+            TryOperator(epService, "IntBoxed < MYCONST", new[] {new object[] {11, false}, new object[] {10, false}, new object[] {9, true}, new object[] {8, true}});
+            TryOperator(epService, "IntBoxed <= MYCONST", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, true}, new object[] {8, true}});
+            TryOperator(epService, "IntBoxed > MYCONST", new[] {new object[] {11, true}, new object[] {10, false}, new object[] {9, false}, new object[] {8, false}});
+            TryOperator(epService, "IntBoxed >= MYCONST", new[] {new object[] {11, true}, new object[] {10, true}, new object[] {9, false}, new object[] {8, false}});
     
-            TryOperator(epService, "intBoxed in (MYCONST)", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, false}, new object[] {8, false}});
-            TryOperator(epService, "intBoxed between MYCONST and MYCONST", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, false}, new object[] {8, false}});
+            TryOperator(epService, "IntBoxed in (MYCONST)", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, false}, new object[] {8, false}});
+            TryOperator(epService, "IntBoxed between MYCONST and MYCONST", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, false}, new object[] {8, false}});
     
-            TryOperator(epService, "MYCONST != intBoxed", new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, false}});
-            TryOperator(epService, "intBoxed != MYCONST", new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, false}});
+            TryOperator(epService, "MYCONST != IntBoxed", new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, false}});
+            TryOperator(epService, "IntBoxed != MYCONST", new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, false}});
     
-            TryOperator(epService, "intBoxed not in (MYCONST)", new[] {new object[] {11, true}, new object[] {10, false}, new object[] {9, true}, new object[] {8, true}});
-            TryOperator(epService, "intBoxed not between MYCONST and MYCONST", new[] {new object[] {11, true}, new object[] {10, false}, new object[] {9, true}, new object[] {8, true}});
+            TryOperator(epService, "IntBoxed not in (MYCONST)", new[] {new object[] {11, true}, new object[] {10, false}, new object[] {9, true}, new object[] {8, true}});
+            TryOperator(epService, "IntBoxed not between MYCONST and MYCONST", new[] {new object[] {11, true}, new object[] {10, false}, new object[] {9, true}, new object[] {8, true}});
     
-            TryOperator(epService, "MYCONST is intBoxed", new[] {new object[] {10, true}, new object[] {9, false}, new object[] {null, false}});
-            TryOperator(epService, "intBoxed is MYCONST", new[] {new object[] {10, true}, new object[] {9, false}, new object[] {null, false}});
+            TryOperator(epService, "MYCONST is IntBoxed", new[] {new object[] {10, true}, new object[] {9, false}, new object[] {null, false}});
+            TryOperator(epService, "IntBoxed is MYCONST", new[] {new object[] {10, true}, new object[] {9, false}, new object[] {null, false}});
     
-            TryOperator(epService, "MYCONST is not intBoxed", new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, true}});
-            TryOperator(epService, "intBoxed is not MYCONST", new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, true}});
+            TryOperator(epService, "MYCONST is not IntBoxed", new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, true}});
+            TryOperator(epService, "IntBoxed is not MYCONST", new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, true}});
     
             // try coercion
-            TryOperator(epService, "MYCONST = shortBoxed", new[] {new object[] {(short) 10, true}, new object[] {(short) 9, false}, new object[] {null, false}});
-            TryOperator(epService, "shortBoxed = MYCONST", new[] {new object[] {(short) 10, true}, new object[] {(short) 9, false}, new object[] {null, false}});
+            TryOperator(epService, "MYCONST = ShortBoxed", new[] {new object[] {(short) 10, true}, new object[] {(short) 9, false}, new object[] {null, false}});
+            TryOperator(epService, "ShortBoxed = MYCONST", new[] {new object[] {(short) 10, true}, new object[] {(short) 9, false}, new object[] {null, false}});
     
-            TryOperator(epService, "MYCONST > shortBoxed", new[] {new object[] {(short) 11, false}, new object[] {(short) 10, false}, new object[] {(short) 9, true}, new object[] {(short) 8, true}});
-            TryOperator(epService, "shortBoxed < MYCONST", new[] {new object[] {(short) 11, false}, new object[] {(short) 10, false}, new object[] {(short) 9, true}, new object[] {(short) 8, true}});
+            TryOperator(epService, "MYCONST > ShortBoxed", new[] {new object[] {(short) 11, false}, new object[] {(short) 10, false}, new object[] {(short) 9, true}, new object[] {(short) 8, true}});
+            TryOperator(epService, "ShortBoxed < MYCONST", new[] {new object[] {(short) 11, false}, new object[] {(short) 10, false}, new object[] {(short) 9, true}, new object[] {(short) 8, true}});
     
-            TryOperator(epService, "shortBoxed in (MYCONST)", new[] {new object[] {(short) 11, false}, new object[] {(short) 10, true}, new object[] {(short) 9, false}, new object[] {(short) 8, false}});
+            TryOperator(epService, "ShortBoxed in (MYCONST)", new[] {new object[] {(short) 11, false}, new object[] {(short) 10, true}, new object[] {(short) 9, false}, new object[] {(short) 8, false}});
     
             // test SODA
             var epl = "create constant variable int MYCONST = 10";
@@ -202,13 +202,13 @@ namespace com.espertech.esper.regression.epl.variable
             TryAssertionArrayVar(epService, "var_strings");
             epService.EPAdministrator.Configuration.AddVariable("varcoll", "string[]", new[]{"E1", "E2"}, true);
     
-            TryOperator(epService, "intBoxed in (10, 8)", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, false}, new object[] {8, true}});
+            TryOperator(epService, "IntBoxed in (10, 8)", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, false}, new object[] {8, true}});
     
             epService.EPAdministrator.CreateEPL("create constant variable int [ ] var_ints = {8, 10}");
-            TryOperator(epService, "intBoxed in (var_ints)", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, false}, new object[] {8, true}});
+            TryOperator(epService, "IntBoxed in (var_ints)", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, false}, new object[] {8, true}});
     
             epService.EPAdministrator.CreateEPL("create constant variable int[]  var_intstwo = {9}");
-            TryOperator(epService, "intBoxed in (var_ints, var_intstwo)", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, true}, new object[] {8, true}});
+            TryOperator(epService, "IntBoxed in (var_ints, var_intstwo)", new[] {new object[] {11, false}, new object[] {10, true}, new object[] {9, true}, new object[] {8, true}});
     
             SupportMessageAssertUtil.TryInvalid(epService, "create constant variable SupportBean[] var_beans",
                     "Error starting statement: Cannot create variable: Cannot create variable 'var_beans', type 'SupportBean' cannot be declared as an array type [create constant variable SupportBean[] var_beans]");
@@ -240,7 +240,7 @@ namespace com.espertech.esper.regression.epl.variable
         }
     
         private void TryAssertionArrayVar(EPServiceProvider epService, string varName) {
-            var stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean(theString in (" + varName + "))");
+            var stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean(TheString in (" + varName + "))");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             SendBeanAssert(epService, listener, "E1", true);
@@ -264,7 +264,7 @@ namespace com.espertech.esper.regression.epl.variable
             Assert.AreEqual(typeof(int?), runtimeSPI.GetVariableType("var1"));
             Assert.AreEqual(typeof(string), runtimeSPI.GetVariableType("var2"));
     
-            var stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1 = intPrimitive, var2 = theString";
+            var stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1 = IntPrimitive, var2 = TheString";
             epService.EPAdministrator.CreateEPL(stmtTextSet);
     
             AssertVariableValues(epService, new[]{"var1", "var2"}, new object[]{-1, "abc"});
@@ -328,7 +328,7 @@ namespace com.espertech.esper.regression.epl.variable
                 Assert.Fail();
             } catch (VariableValueException ex) {
                 // expected
-                Assert.AreEqual("Variable 'dummy' of declared type " + Name.Of<int>() + " cannot be assigned a value of type java.lang.long", ex.Message);
+                Assert.AreEqual("Variable 'dummy' of declared type " + Name.Of<int>() + " cannot be assigned a value of type " + Name.Clean<long>(), ex.Message);
             }
             try {
                 epService.EPRuntime.SetVariableValue("var2", 0);
@@ -396,15 +396,15 @@ namespace com.espertech.esper.regression.epl.variable
             epService.EPAdministrator.Configuration.AddVariable("var1IFB", typeof(string), null);
             epService.EPAdministrator.Configuration.AddVariable("var2IFB", typeof(string), null);
     
-            var stmtTextSet = "on " + typeof(SupportBean_S0).Name + " set var1IFB = p00, var2IFB = p01";
+            var stmtTextSet = "on " + typeof(SupportBean_S0).FullName + " set var1IFB = p00, var2IFB = p01";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
             stmtSet.Events += listenerSet.Update;
             var fieldsVar = new[]{"var1IFB", "var2IFB"};
             EPAssertionUtil.AssertPropsPerRow(stmtSet.GetEnumerator(), fieldsVar, new[] {new object[] {null, null}});
     
-            var stmtTextSelect = "select theString, intPrimitive from " + typeof(SupportBean).FullName + "(theString = var1IFB or theString = var2IFB)";
-            var fieldsSelect = new[]{"theString", "intPrimitive"};
+            var stmtTextSelect = "select TheString, IntPrimitive from " + typeof(SupportBean).FullName + "(TheString = var1IFB or TheString = var2IFB)";
+            var fieldsSelect = new[]{"TheString", "IntPrimitive"};
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listener = new SupportUpdateListener();
             stmtSelect.Events += listener.Update;
@@ -442,15 +442,15 @@ namespace com.espertech.esper.regression.epl.variable
         private void RunAssertionVariableInFilter(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddVariable("var1IF", typeof(string), null);
     
-            var stmtTextSet = "on " + typeof(SupportBean_S0).Name + " set var1IF = p00";
+            var stmtTextSet = "on " + typeof(SupportBean_S0).FullName + " set var1IF = p00";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
             stmtSet.Events += listenerSet.Update;
             var fieldsVar = new[]{"var1IF"};
             EPAssertionUtil.AssertPropsPerRow(stmtSet.GetEnumerator(), fieldsVar, new[] {new object[] {null}});
     
-            var stmtTextSelect = "select theString, intPrimitive from " + typeof(SupportBean).FullName + "(theString = var1IF)";
-            var fieldsSelect = new[]{"theString", "intPrimitive"};
+            var stmtTextSelect = "select TheString, IntPrimitive from " + typeof(SupportBean).FullName + "(TheString = var1IF)";
+            var fieldsSelect = new[]{"TheString", "IntPrimitive"};
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtTextSelect);
             var listener = new SupportUpdateListener();
             stmtSelect.Events += listener.Update;
@@ -484,7 +484,7 @@ namespace com.espertech.esper.regression.epl.variable
             epService.EPAdministrator.Configuration.AddVariable("var2OND", typeof(int?), "2");
             epService.EPAdministrator.Configuration.AddVariable("var3OND", typeof(int?), null);
     
-            var stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1OND = intPrimitive, var2OND = var1OND + 1, var3OND = var1OND + var2OND";
+            var stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1OND = IntPrimitive, var2OND = var1OND + 1, var3OND = var1OND + var2OND";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
             stmtSet.Events += listenerSet.Update;
@@ -511,7 +511,7 @@ namespace com.espertech.esper.regression.epl.variable
             epService.EPAdministrator.Configuration.AddVariable("var2OD", typeof(int?), 1);
             epService.EPAdministrator.Configuration.AddVariable("var3OD", typeof(int?), 2);
     
-            var stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1OD = intPrimitive, var2OD = var2OD, var1OD = intBoxed, var3OD = var3OD + 1";
+            var stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1OD = IntPrimitive, var2OD = var2OD, var1OD = IntBoxed, var3OD = var3OD + 1";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
             stmtSet.Events += listenerSet.Update;
@@ -556,9 +556,9 @@ namespace com.espertech.esper.regression.epl.variable
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsSelect, new object[]{10d, 11L, "E1"});
     
             model = new EPStatementObjectModel();
-            model.OnExpr = OnClause.CreateOnSet(Expressions.Eq(Expressions.Property("var1OM"), Expressions.Property("intPrimitive"))).AddAssignment(Expressions.Eq(Expressions.Property("var2OM"), Expressions.Property("intBoxed")));
+            model.OnExpr = OnClause.CreateOnSet(Expressions.Eq(Expressions.Property("var1OM"), Expressions.Property("IntPrimitive"))).AddAssignment(Expressions.Eq(Expressions.Property("var2OM"), Expressions.Property("IntBoxed")));
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName));
-            var stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1OM=intPrimitive, var2OM=intBoxed";
+            var stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1OM=IntPrimitive, var2OM=IntBoxed";
             var stmtSet = epService.EPAdministrator.Create(model);
             var listenerSet = new SupportUpdateListener();
             stmtSet.Events += listenerSet.Update;
@@ -587,7 +587,7 @@ namespace com.espertech.esper.regression.epl.variable
             epService.EPAdministrator.Configuration.AddVariable("var1C", typeof(double), 10d);
             epService.EPAdministrator.Configuration.AddVariable("var2C", typeof(long), 11L);
     
-            var stmtText = "select var1C, var2C, id from " + typeof(SupportBean_A).Name;
+            var stmtText = "select var1C, var2C, id from " + typeof(SupportBean_A).FullName;
             var model = epService.EPAdministrator.CompileEPL(stmtText);
             var stmtSelect = epService.EPAdministrator.Create(model);
             Assert.AreEqual(stmtText, model.ToEPL());
@@ -598,7 +598,7 @@ namespace com.espertech.esper.regression.epl.variable
             SendSupportBean_A(epService, "E1");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsSelect, new object[]{10d, 11L, "E1"});
     
-            var stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1C=intPrimitive, var2C=intBoxed";
+            var stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1C=IntPrimitive, var2C=IntBoxed";
             model = epService.EPAdministrator.CompileEPL(stmtTextSet);
             var stmtSet = epService.EPAdministrator.Create(model);
             var listenerSet = new SupportUpdateListener();
@@ -638,19 +638,19 @@ namespace com.espertech.esper.regression.epl.variable
         private void RunAssertionRuntimeConfig(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddVariable("var1RTC", typeof(int?), 10);
     
-            var stmtText = "select var1RTC, theString from " + typeof(SupportBean).FullName + "(theString like 'E%')";
+            var stmtText = "select var1RTC, TheString from " + typeof(SupportBean).FullName + "(TheString like 'E%')";
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmtSelect.Events += listener.Update;
     
-            var fieldsSelect = new[]{"var1RTC", "theString"};
+            var fieldsSelect = new[]{"var1RTC", "TheString"};
             SendSupportBean(epService, "E1", 1);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsSelect, new object[]{10, "E1"});
     
             SendSupportBean(epService, "E2", 2);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsSelect, new object[]{10, "E2"});
     
-            var stmtTextSet = "on " + typeof(SupportBean).FullName + "(theString like 'S%') set var1RTC = intPrimitive";
+            var stmtTextSet = "on " + typeof(SupportBean).FullName + "(TheString like 'S%') set var1RTC = IntPrimitive";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
             stmtSet.Events += listenerSet.Update;
@@ -691,7 +691,7 @@ namespace com.espertech.esper.regression.epl.variable
             epService.EPAdministrator.Configuration.AddVariable("var1ROM", typeof(int?), null);
             epService.EPAdministrator.Configuration.AddVariable("var2ROM", typeof(int?), 1);
     
-            var stmtTextSet = "on " + typeof(SupportBean).FullName + "(theString like 'S%' or theString like 'B%') set var1ROM = intPrimitive, var2ROM = intBoxed";
+            var stmtTextSet = "on " + typeof(SupportBean).FullName + "(TheString like 'S%' or TheString like 'B%') set var1ROM = IntPrimitive, var2ROM = IntBoxed";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
             stmtSet.Events += listenerSet.Update;
@@ -712,11 +712,11 @@ namespace com.espertech.esper.regression.epl.variable
             EPAssertionUtil.AssertProps(listenerSet.AssertOneGetNewAndReset(), fieldsVar, new object[]{-1, -2});
             EPAssertionUtil.AssertPropsPerRow(stmtSet.GetEnumerator(), fieldsVar, new[] {new object[] {-1, -2}});
     
-            var stmtText = "select var1ROM, var2ROM, theString from " + typeof(SupportBean).FullName + "(theString like 'E%' or theString like 'B%')";
+            var stmtText = "select var1ROM, var2ROM, TheString from " + typeof(SupportBean).FullName + "(TheString like 'E%' or TheString like 'B%')";
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmtSelect.Events += listener.Update;
-            var fieldsSelect = new[]{"var1ROM", "var2ROM", "theString"};
+            var fieldsSelect = new[]{"var1ROM", "var2ROM", "TheString"};
             EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fieldsSelect, null);
     
             SendSupportBean(epService, "E1", 1);
@@ -738,7 +738,7 @@ namespace com.espertech.esper.regression.epl.variable
         }
     
         private void RunAssertionEngineConfigAPI(EPServiceProvider epService) {
-            var stmtTextSet = "on " + typeof(SupportBean).FullName + "(theString like 'S%') set papi_1 = 'end', papi_2 = false, papi_3 = null";
+            var stmtTextSet = "on " + typeof(SupportBean).FullName + "(TheString like 'S%') set papi_1 = 'end', papi_2 = false, papi_3 = null";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
             stmtSet.Events += listenerSet.Update;
@@ -765,7 +765,7 @@ namespace com.espertech.esper.regression.epl.variable
         }
     
         private void RunAssertionEngineConfigXML(EPServiceProvider epService) {
-            var stmtTextSet = "on " + typeof(SupportBean).FullName + " set p_1 = theString, p_2 = boolBoxed, p_3 = intBoxed, p_4 = intBoxed";
+            var stmtTextSet = "on " + typeof(SupportBean).FullName + " set p_1 = TheString, p_2 = BoolBoxed, p_3 = IntBoxed, p_4 = IntBoxed";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
             stmtSet.Events += listenerSet.Update;
@@ -801,14 +801,14 @@ namespace com.espertech.esper.regression.epl.variable
             epService.EPAdministrator.Configuration.AddVariable("var2COE", typeof(double?), null);
             epService.EPAdministrator.Configuration.AddVariable("var3COE", typeof(long), null);
     
-            var stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1COE = intPrimitive, var2COE = intPrimitive, var3COE=intBoxed";
+            var stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1COE = IntPrimitive, var2COE = IntPrimitive, var3COE=IntBoxed";
             var stmtSet = epService.EPAdministrator.CreateEPL(stmtTextSet);
             var listenerSet = new SupportUpdateListener();
             stmtSet.Events += listenerSet.Update;
             var fieldsVar = new[]{"var1COE", "var2COE", "var3COE"};
             EPAssertionUtil.AssertPropsPerRow(stmtSet.GetEnumerator(), fieldsVar, new[] {new object[] {null, null, null}});
     
-            var stmtText = "select irstream var1COE, var2COE, var3COE, id from " + typeof(SupportBean_A).Name + "#length(2)";
+            var stmtText = "select irstream var1COE, var2COE, var3COE, id from " + typeof(SupportBean_A).FullName + "#length(2)";
             var stmtSelect = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmtSelect.Events += listener.Update;
@@ -861,7 +861,7 @@ namespace com.espertech.esper.regression.epl.variable
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var3IS = 'abc'",
                     "Error starting statement: Variable 'var3IS' of declared type " + Name.Of<int>() + " cannot be assigned a value of type System.String");
     
-            TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var3IS = doublePrimitive",
+            TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var3IS = DoublePrimitive",
                     "Error starting statement: Variable 'var3IS' of declared type " + Name.Of<int>() + " cannot be assigned a value of type double");
     
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var2IS = 'false'", null);
@@ -886,7 +886,7 @@ namespace com.espertech.esper.regression.epl.variable
                     "Error creating variable: Variable 'invalidvar1' of declared type " + Name.Of<int>() + " cannot be initialized by value 'abcdef': java.lang.NumberFormatException: For input string: \"abcdef\"");
     
             TryInvalid(epService, typeof(int?), new double?(11.1),
-                    "Error creating variable: Variable 'invalidvar1' of declared type " + Name.Of<int>() + " cannot be initialized by a value of type java.lang.double?");
+                    "Error creating variable: Variable 'invalidvar1' of declared type " + Name.Of<int>() + " cannot be initialized by a value of type " + Name.Clean<double>());
     
             TryInvalid(epService, typeof(int), new double?(11.1), null);
             TryInvalid(epService, typeof(string), true, null);
@@ -1002,7 +1002,7 @@ namespace com.espertech.esper.regression.epl.variable
             var spi = (EPServiceProviderSPI) epService;
             var filterSpi = (FilterServiceSPI) spi.FilterService;
     
-            var stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("select theString as c0,intPrimitive as c1 from SupportBean(" + @operator + ")");
+            var stmt = (EPStatementSPI) epService.EPAdministrator.CreateEPL("select TheString as c0,IntPrimitive as c1 from SupportBean(" + @operator + ")");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     

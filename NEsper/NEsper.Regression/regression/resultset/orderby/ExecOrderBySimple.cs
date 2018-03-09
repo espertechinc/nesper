@@ -55,7 +55,7 @@ namespace com.espertech.esper.regression.resultset.orderby
     
             // try pattern
             var listener = new SupportUpdateListener();
-            string stmtText = "select a.theString from pattern [every a=SupportBean(theString like 'A%') -> b=SupportBean(theString like 'B%')] order by a.theString desc";
+            string stmtText = "select a.TheString from pattern [every a=SupportBean(TheString like 'A%') -> b=SupportBean(TheString like 'B%')] order by a.TheString desc";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtText);
             stmtOne.Events += listener.Update;
     
@@ -65,15 +65,15 @@ namespace com.espertech.esper.regression.resultset.orderby
     
             EventBean[] received = listener.GetNewDataListFlattened();
             Assert.AreEqual(2, received.Length);
-            EPAssertionUtil.AssertPropsPerRow(received, "a.theString".Split(','), new object[][]
+            EPAssertionUtil.AssertPropsPerRow(received, "a.TheString".Split(','), new object[][]
             {
                 new object[] {"A2"}, new object[] {"A1"}
             });
     
             // try pattern with output limit
             var listenerThree = new SupportUpdateListener();
-            string stmtTextThree = "select a.theString from pattern [every a=SupportBean(theString like 'A%') -> b=SupportBean(theString like 'B%')] " +
-                    "output every 2 events order by a.theString desc";
+            string stmtTextThree = "select a.TheString from pattern [every a=SupportBean(TheString like 'A%') -> b=SupportBean(TheString like 'B%')] " +
+                    "output every 2 events order by a.TheString desc";
             EPStatement stmtThree = epService.EPAdministrator.CreateEPL(stmtTextThree);
             stmtThree.Events += listenerThree.Update;
     
@@ -84,13 +84,13 @@ namespace com.espertech.esper.regression.resultset.orderby
     
             EventBean[] receivedThree = listenerThree.GetNewDataListFlattened();
             Assert.AreEqual(2, receivedThree.Length);
-            EPAssertionUtil.AssertPropsPerRow(receivedThree, "a.theString".Split(','), new object[][]
+            EPAssertionUtil.AssertPropsPerRow(receivedThree, "a.TheString".Split(','), new object[][]
             {
                 new object[] {"A2"}, new object[] {"A1"}
             });
     
             // try grouped time window
-            string stmtTextTwo = "select rstream theString from SupportBean#groupwin(theString)#time(10) order by theString desc";
+            string stmtTextTwo = "select rstream TheString from SupportBean#groupwin(TheString)#time(10) order by TheString desc";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listenerTwo = new SupportUpdateListener();
             stmtTwo.Events += listenerTwo.Update;
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(11000));
             EventBean[] receivedTwo = listenerTwo.GetNewDataListFlattened();
             Assert.AreEqual(2, receivedTwo.Length);
-            EPAssertionUtil.AssertPropsPerRow(receivedTwo, "theString".Split(','), new object[][]
+            EPAssertionUtil.AssertPropsPerRow(receivedTwo, "TheString".Split(','), new object[][]
             {
                 new object[] {"A2"}, new object[] {"A1"}
             });
@@ -111,10 +111,10 @@ namespace com.espertech.esper.regression.resultset.orderby
         }
     
         private void RunAssertionIterator(EPServiceProvider epService) {
-            string statementString = "select symbol, theString, price from " +
+            string statementString = "select symbol, TheString, price from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "order by price";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementString);
             SendJoinEvents(epService);
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             SendEvent(epService, "IBM", 49);
             SendEvent(epService, "CAT", 15);
             SendEvent(epService, "IBM", 100);
-            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), new string[]{"symbol", "theString", "price"},
+            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), new string[]{"symbol", "TheString", "price"},
                     new object[][]{
                             new object[] {"CAT", "CAT", 15d},
                             new object[] {"IBM", "IBM", 49d},
@@ -131,7 +131,7 @@ namespace com.espertech.esper.regression.resultset.orderby
                     });
     
             SendEvent(epService, "KGB", 75);
-            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), new string[]{"symbol", "theString", "price"},
+            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), new string[]{"symbol", "TheString", "price"},
                     new object[][]{
                             new object[] {"CAT", "CAT", 15d},
                             new object[] {"IBM", "IBM", 49d},
@@ -144,10 +144,10 @@ namespace com.espertech.esper.regression.resultset.orderby
         }
     
         private void RunAssertionAcrossJoin(EPServiceProvider epService) {
-            string statementString = "select symbol, theString from " +
+            string statementString = "select symbol, TheString from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by price";
             var listener = new SupportUpdateListener();
@@ -156,16 +156,16 @@ namespace com.espertech.esper.regression.resultset.orderby
             SendJoinEvents(epService);
             OrderValuesByPriceJoin(spv);
             AssertValues(listener, spv.Symbols, "symbol");
-            AssertValues(listener, spv.Symbols, "theString");
-            AssertOnlyProperties(listener, Collections.List("symbol", "theString"));
+            AssertValues(listener, spv.Symbols, "TheString");
+            AssertOnlyProperties(listener, Collections.List("symbol", "TheString"));
             ClearValuesDropStmt(epService, spv);
     
             statementString = "select symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by theString, price";
+                    "order by TheString, price";
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesBySymbolPrice(spv);
@@ -365,7 +365,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             string statementString = "select symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by (price * 6) + 5";
             var listener = new SupportUpdateListener();
@@ -380,7 +380,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             statementString = "select symbol, price from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by (price * 6) + 5, price";
             CreateAndSend(epService, statementString, listener);
@@ -393,7 +393,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             statementString = "select symbol, 1+volume*23 from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by (price * 6) + 5, price, volume";
             CreateAndSend(epService, statementString, listener);
@@ -406,7 +406,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             statementString = "select symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by volume*price, symbol";
             CreateAndSend(epService, statementString, listener);
@@ -458,7 +458,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             string statementString = "select symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by sum(price)";
             try {
@@ -471,7 +471,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             statementString = "select sum(price) from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by sum(price + 6)";
             try {
@@ -484,7 +484,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             statementString = "select sum(price + 6) from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by sum(price)";
             try {
@@ -590,7 +590,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             string statementString = "select symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by symbol, price";
             var listener = new SupportUpdateListener();
@@ -605,7 +605,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             statementString = "select symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by price, symbol, volume";
             CreateAndSend(epService, statementString, listener);
@@ -618,7 +618,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             statementString = "select symbol, volume*2 from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by price, volume";
             CreateAndSend(epService, statementString, listener);
@@ -701,7 +701,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             string statementString = "select symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by price";
             var spv = new SymbolPricesVolumes();
@@ -716,7 +716,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             statementString = "select symbol, price from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by price";
             CreateAndSend(epService, statementString, listener);
@@ -730,7 +730,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             statementString = "select symbol, volume from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by price";
             CreateAndSend(epService, statementString, listener);
@@ -744,7 +744,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             statementString = "select symbol, volume*2 from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by price";
             CreateAndSend(epService, statementString, listener);
@@ -758,7 +758,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             statementString = "select symbol, volume from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by symbol";
             CreateAndSend(epService, statementString, listener);
@@ -772,7 +772,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             statementString = "select price from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by symbol, price";
             CreateAndSend(epService, statementString, listener);
@@ -816,7 +816,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             string statementString = "select * from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by price";
             var spv = new SymbolPricesVolumes();
@@ -830,7 +830,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             statementString = "select * from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "output every 6 events " +
                     "order by symbol, price";
             CreateAndSend(epService, statementString, listener);
@@ -873,7 +873,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             string statementString = "select symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "order by price";
             var spv = new SymbolPricesVolumes();
             var listener = new SupportUpdateListener();
@@ -893,7 +893,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             statementString = "select symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#time_batch(1) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.theString " +
+                    "where one.symbol = two.TheString " +
                     "order by price, symbol";
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);

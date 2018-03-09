@@ -1138,7 +1138,7 @@ namespace com.espertech.esper.events
                     }
                     else if (type is EventType[])
                     {
-                        EventTypeSPI componentType = ((EventTypeSPI[]) type)[0];
+                        EventTypeSPI componentType = (EventTypeSPI) ((EventType[]) type)[0];
                         EventPropertyGetterSPI nestedGetter = componentType.GetGetterSPI(propertyNested);
                         if (nestedGetter == null)
                         {

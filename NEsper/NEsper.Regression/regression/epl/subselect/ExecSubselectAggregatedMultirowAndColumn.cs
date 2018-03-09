@@ -49,27 +49,27 @@ namespace com.espertech.esper.regression.epl.subselect
             // Invalid tests
             string epl;
             // not fully aggregated
-            epl = "select (select theString, sum(longPrimitive) from SupportBean#keepall group by intPrimitive) from S0";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires non-aggregated properties in the select-clause to also appear in the group-by clause [select (select theString, sum(longPrimitive) from SupportBean#keepall group by intPrimitive) from S0]");
+            epl = "select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by IntPrimitive) from S0";
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires non-aggregated properties in the select-clause to also appear in the group-by clause [select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by IntPrimitive) from S0]");
     
             // correlated group-by not allowed
-            epl = "select (select theString, sum(longPrimitive) from SupportBean#keepall group by theString, s0.id) from S0 as s0";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (property 'id' is not) [select (select theString, sum(longPrimitive) from SupportBean#keepall group by theString, s0.id) from S0 as s0]");
-            epl = "select (select theString, sum(longPrimitive) from SupportBean#keepall group by theString, s0.P00) from S0 as s0";
+            epl = "select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, s0.id) from S0 as s0";
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (property 'id' is not) [select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, s0.id) from S0 as s0]");
+            epl = "select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, s0.P00) from S0 as s0";
             SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (expression 's0.P00' against stream 1 is not)");
     
             // aggregations not allowed in group-by
-            epl = "select (select intPrimitive, sum(longPrimitive) from SupportBean#keepall group by sum(intPrimitive)) from S0 as s0";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Group-by expressions in a subselect may not have an aggregation function [select (select intPrimitive, sum(longPrimitive) from SupportBean#keepall group by sum(intPrimitive)) from S0 as s0]");
+            epl = "select (select IntPrimitive, sum(LongPrimitive) from SupportBean#keepall group by sum(IntPrimitive)) from S0 as s0";
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Group-by expressions in a subselect may not have an aggregation function [select (select IntPrimitive, sum(LongPrimitive) from SupportBean#keepall group by sum(IntPrimitive)) from S0 as s0]");
     
             // "prev" not allowed in group-by
-            epl = "select (select intPrimitive, sum(longPrimitive) from SupportBean#keepall group by prev(1, intPrimitive)) from S0 as s0";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Group-by expressions in a subselect may not have a function that requires view resources (prior, prev) [select (select intPrimitive, sum(longPrimitive) from SupportBean#keepall group by prev(1, intPrimitive)) from S0 as s0]");
+            epl = "select (select IntPrimitive, sum(LongPrimitive) from SupportBean#keepall group by prev(1, IntPrimitive)) from S0 as s0";
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Group-by expressions in a subselect may not have a function that requires view resources (prior, prev) [select (select IntPrimitive, sum(LongPrimitive) from SupportBean#keepall group by prev(1, IntPrimitive)) from S0 as s0]");
         }
     
         private void RunAssertionMulticolumnGroupedWHaving(EPServiceProvider epService) {
             string[] fields = "c0,c1".Split(',');
-            string epl = "select (select theString as c0, sum(intPrimitive) as c1 from SupportBean#keepall group by theString having sum(intPrimitive) > 10) as subq from S0";
+            string epl = "select (select TheString as c0, sum(IntPrimitive) as c1 from SupportBean#keepall group by TheString having sum(IntPrimitive) > 10) as subq from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -92,12 +92,12 @@ namespace com.espertech.esper.regression.epl.subselect
             string[] fields = "c0,c1".Split(',');
     
             epService.EPAdministrator.CreateEPL(
-                    "create context MyCtx partition by theString from SupportBean, p00 from S0");
+                    "create context MyCtx partition by TheString from SupportBean, p00 from S0");
     
             string stmtText = "context MyCtx select " +
-                    "(select theString as c0, sum(intPrimitive) as c1 " +
+                    "(select TheString as c0, sum(IntPrimitive) as c1 " +
                     " from SupportBean#keepall " +
-                    " group by theString) as subq " +
+                    " group by TheString) as subq " +
                     "from S0 as s0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -125,9 +125,9 @@ namespace com.espertech.esper.regression.epl.subselect
             string fieldName = "subq";
             string[] fields = "c0,c1".Split(',');
             string eplNoDelete = "select " +
-                    "(select theString as c0, sum(intPrimitive) as c1 " +
+                    "(select TheString as c0, sum(IntPrimitive) as c1 " +
                     "from SupportBean#keepall " +
-                    "group by theString) as subq " +
+                    "group by TheString) as subq " +
                     "from S0 as s0";
             EPStatement stmtNoDelete = epService.EPAdministrator.CreateEPL(eplNoDelete);
             var listener = new SupportUpdateListener();
@@ -147,9 +147,9 @@ namespace com.espertech.esper.regression.epl.subselect
             // test named window with delete/remove
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
-            epService.EPAdministrator.CreateEPL("on S1 delete from MyWindow where id = intPrimitive");
-            EPStatement stmtDelete = epService.EPAdministrator.CreateEPL("@Hint('disable_reclaim_group') select (select theString as c0, sum(intPrimitive) as c1 " +
-                    " from MyWindow group by theString) as subq from S0 as s0");
+            epService.EPAdministrator.CreateEPL("on S1 delete from MyWindow where id = IntPrimitive");
+            EPStatement stmtDelete = epService.EPAdministrator.CreateEPL("@Hint('disable_reclaim_group') select (select TheString as c0, sum(IntPrimitive) as c1 " +
+                    " from MyWindow group by TheString) as subq from S0 as s0");
             stmtDelete.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
@@ -186,10 +186,10 @@ namespace com.espertech.esper.regression.epl.subselect
             // test multiple group-by criteria
             string[] fieldsMultiGroup = "c0,c1,c2,c3,c4".Split(',');
             string eplMultiGroup = "select " +
-                    "(select theString as c0, intPrimitive as c1, theString||'x' as c2, " +
-                    "    intPrimitive * 1000 as c3, sum(longPrimitive) as c4 " +
+                    "(select TheString as c0, IntPrimitive as c1, TheString||'x' as c2, " +
+                    "    IntPrimitive * 1000 as c3, sum(LongPrimitive) as c4 " +
                     " from SupportBean#keepall " +
-                    " group by theString, intPrimitive) as subq " +
+                    " group by TheString, IntPrimitive) as subq " +
                     "from S0 as s0";
             EPStatement stmtMultiGroup = epService.EPAdministrator.CreateEPL(eplMultiGroup);
             stmtMultiGroup.Events += listener.Update;
@@ -211,11 +211,11 @@ namespace com.espertech.esper.regression.epl.subselect
             string[] fields = "c0,c1".Split(',');
     
             string eplEnumCorrelated = "select " +
-                    "(select theString as c0, sum(intPrimitive) as c1 " +
+                    "(select TheString as c0, sum(IntPrimitive) as c1 " +
                     " from SupportBean#keepall " +
-                    " where intPrimitive = s0.id " +
-                    " group by theString" +
-                    " having sum(intPrimitive) > 10).Take(100) as subq " +
+                    " where IntPrimitive = s0.id " +
+                    " group by TheString" +
+                    " having sum(IntPrimitive) > 10).take(100) as subq " +
                     "from S0 as s0";
             EPStatement stmtEnumUnfiltered = epService.EPAdministrator.CreateEPL(eplEnumCorrelated);
             var listener = new SupportUpdateListener();
@@ -250,10 +250,10 @@ namespace com.espertech.esper.regression.epl.subselect
             string[] fields = "c0,c1".Split(',');
     
             string eplEnumCorrelated = "select " +
-                    "(select theString as c0, sum(intPrimitive) as c1 " +
+                    "(select TheString as c0, sum(IntPrimitive) as c1 " +
                     " from SupportBean#keepall " +
-                    " where intPrimitive = s0.id " +
-                    " group by theString).Take(100) as subq " +
+                    " where IntPrimitive = s0.id " +
+                    " group by TheString).take(100) as subq " +
                     "from S0 as s0";
             EPStatement stmtEnumUnfiltered = epService.EPAdministrator.CreateEPL(eplEnumCorrelated);
             var listener = new SupportUpdateListener();
@@ -305,7 +305,7 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPRuntime.SendEvent(new SupportBean("E1", 20));
     
             EPStatement stmtUncorrelated = epService.EPAdministrator.CreateEPL("select " +
-                    "(select theString as c0, sum(intPrimitive) as c1 from SBWindow group by theString).Take(10) as e1 from S0");
+                    "(select TheString as c0, sum(IntPrimitive) as c1 from SBWindow group by TheString).take(10) as e1 from S0");
             var listener = new SupportUpdateListener();
             stmtUncorrelated.Events += listener.Update;
     
@@ -319,7 +319,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             // test correlated
             EPStatement stmtCorrelated = epService.EPAdministrator.CreateEPL("select " +
-                    "(select theString as c0, sum(intPrimitive) as c1 from SBWindow where theString = s0.p00 group by theString).Take(10) as e1 from S0 as s0");
+                    "(select TheString as c0, sum(IntPrimitive) as c1 from SBWindow where TheString = s0.p00 group by TheString).take(10) as e1 from S0 as s0");
             stmtCorrelated.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
@@ -329,7 +329,7 @@ namespace com.espertech.esper.regression.epl.subselect
         }
     
         private void RunAssertionMultirowGroupedNoDataWindowUncorrelated(EPServiceProvider epService) {
-            string stmtText = "select (select theString as c0, sum(intPrimitive) as c1 from SupportBean group by theString).Take(10) as subq from S0";
+            string stmtText = "select (select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString).take(10) as subq from S0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -352,10 +352,10 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionMultirowGroupedUncorrelatedIteratorAndExpressionDef(EPServiceProvider epService) {
             string[] fields = "c0,c1".Split(',');
             string epl = "expression getGroups {" +
-                    "(select theString as c0, sum(intPrimitive) as c1 " +
-                    "  from SupportBean#keepall group by theString)" +
+                    "(select TheString as c0, sum(IntPrimitive) as c1 " +
+                    "  from SupportBean#keepall group by TheString)" +
                     "}" +
-                    "select GetGroups() as e1, GetGroups().Take(10) as e2 from S0#lastevent()";
+                    "select GetGroups() as e1, GetGroups().take(10) as e2 from S0#lastevent()";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -383,9 +383,9 @@ namespace com.espertech.esper.regression.epl.subselect
     
             // test unfiltered
             string eplEnumUnfiltered = "select " +
-                    "(select theString as c0, sum(intPrimitive) as c1 " +
+                    "(select TheString as c0, sum(IntPrimitive) as c1 " +
                     " from SupportBean#keepall " +
-                    " group by theString).Take(100) as subq " +
+                    " group by TheString).take(100) as subq " +
                     "from S0 as s0";
             EPStatement stmtEnumUnfiltered = epService.EPAdministrator.CreateEPL(eplEnumUnfiltered);
             var listener = new SupportUpdateListener();
@@ -409,10 +409,10 @@ namespace com.espertech.esper.regression.epl.subselect
     
             // test filtered
             string eplEnumFiltered = "select " +
-                    "(select theString as c0, sum(intPrimitive) as c1 " +
+                    "(select TheString as c0, sum(IntPrimitive) as c1 " +
                     " from SupportBean#keepall " +
-                    " where intPrimitive > 100 " +
-                    " group by theString).Take(100) as subq " +
+                    " where IntPrimitive > 100 " +
+                    " group by TheString).take(100) as subq " +
                     "from S0 as s0";
             EPStatement stmtEnumFiltered = epService.EPAdministrator.CreateEPL(eplEnumFiltered);
             stmtEnumFiltered.Events += listener.Update;
@@ -472,8 +472,13 @@ namespace com.espertech.esper.regression.epl.subselect
             EPAssertionUtil.AssertPropsMap(subq, names, values);
         }
     
-        internal static void AssertMapMultiRow(string fieldName, EventBean @event, string sortKey, string[] names, object[][] values) {
-            ICollection<Map> subq = (ICollection<Map>) @event.Get(fieldName);
+        internal static void AssertMapMultiRow(string fieldName, EventBean @event, string sortKey, string[] names, object[][] values)
+        {
+            ICollection<Map> subq = @event.Get(fieldName)
+                .Unwrap<object>()
+                .Select(item => (Map) item)
+                .ToList();
+
             if (values == null && subq == null) {
                 return;
             }

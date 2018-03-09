@@ -44,23 +44,23 @@ namespace com.espertech.esper.regression.epl.other
             TryInvalid(epService, "select * from SupportBean for grouped_delivery",
                     "Error starting statement: The for-clause with the grouped_delivery keyword requires one or more grouping expressions [select * from SupportBean for grouped_delivery]");
     
-            TryInvalid(epService, "select * from SupportBean for Grouped_delivery()",
-                    "Error starting statement: The for-clause with the grouped_delivery keyword requires one or more grouping expressions [select * from SupportBean for Grouped_delivery()]");
+            TryInvalid(epService, "select * from SupportBean for grouped_delivery()",
+                    "Error starting statement: The for-clause with the grouped_delivery keyword requires one or more grouping expressions [select * from SupportBean for grouped_delivery()]");
     
-            TryInvalid(epService, "select * from SupportBean for Grouped_delivery(dummy)",
-                    "Error starting statement: Failed to validate for-clause expression 'dummy': Property named 'dummy' is not valid in any stream [select * from SupportBean for Grouped_delivery(dummy)]");
+            TryInvalid(epService, "select * from SupportBean for grouped_delivery(dummy)",
+                    "Error starting statement: Failed to validate for-clause expression 'dummy': Property named 'dummy' is not valid in any stream [select * from SupportBean for grouped_delivery(dummy)]");
     
             TryInvalid(epService, "select * from SupportBean for Discrete_delivery(dummy)",
                     "Error starting statement: The for-clause with the discrete_delivery keyword does not allow grouping expressions [select * from SupportBean for Discrete_delivery(dummy)]");
     
-            TryInvalid(epService, "select * from SupportBean for discrete_delivery for Grouped_delivery(intPrimitive)",
+            TryInvalid(epService, "select * from SupportBean for discrete_delivery for grouped_delivery(IntPrimitive)",
                     "Incorrect syntax near 'for' (a reserved keyword) at line 1 column 48 ");
         }
     
         private void RunAssertionSubscriberOnly(EPServiceProvider epService) {
             var subscriber = new SupportSubscriberMRD();
             SendTimer(epService, 0);
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream theString,intPrimitive from SupportBean#time_batch(1) for discrete_delivery");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream TheString,IntPrimitive from SupportBean#time_batch(1) for discrete_delivery");
             stmt.Subscriber = subscriber;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regression.epl.other
     
             stmt.Dispose();
             subscriber.Reset();
-            stmt = epService.EPAdministrator.CreateEPL("select irstream theString,intPrimitive from SupportBean#time_batch(1) for Grouped_delivery(intPrimitive)");
+            stmt = epService.EPAdministrator.CreateEPL("select irstream TheString,IntPrimitive from SupportBean#time_batch(1) for grouped_delivery(IntPrimitive)");
             stmt.Subscriber = subscriber;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -104,9 +104,9 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPRuntime.SendEvent(new SupportBean("E3", 1));
             SendTimer(epService, 1000);
             Assert.AreEqual(3, listener.NewDataList.Count);
-            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[0], "theString,intPrimitive".Split(','), new object[][]{new object[] {"E1", 1}});
-            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[1], "theString,intPrimitive".Split(','), new object[][]{new object[] {"E2", 2}});
-            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[2], "theString,intPrimitive".Split(','), new object[][]{new object[] {"E3", 1}});
+            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[0], "TheString,IntPrimitive".Split(','), new object[][]{new object[] {"E1", 1}});
+            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[1], "TheString,IntPrimitive".Split(','), new object[][]{new object[] {"E2", 2}});
+            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[2], "TheString,IntPrimitive".Split(','), new object[][]{new object[] {"E3", 1}});
             listener.Reset();
     
             // test no-event delivery
@@ -124,7 +124,7 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionGroupDelivery(EPServiceProvider epService) {
             SendTimer(epService, 0);
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#time_batch(1) for grouped_delivery (intPrimitive)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#time_batch(1) for grouped_delivery (IntPrimitive)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -134,13 +134,13 @@ namespace com.espertech.esper.regression.epl.other
             SendTimer(epService, 1000);
             Assert.AreEqual(2, listener.NewDataList.Count);
             Assert.AreEqual(2, listener.NewDataList[0].Length);
-            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[0], "theString,intPrimitive".Split(','), new object[][]{new object[] {"E1", 1}, new object[] {"E3", 1}});
+            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[0], "TheString,IntPrimitive".Split(','), new object[][]{new object[] {"E1", 1}, new object[] {"E3", 1}});
             Assert.AreEqual(1, listener.NewDataList[1].Length);
-            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[1], "theString,intPrimitive".Split(','), new object[][]{new object[] {"E2", 2}});
+            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[1], "TheString,IntPrimitive".Split(','), new object[][]{new object[] {"E2", 2}});
     
             // test sorted
             stmt.Dispose();
-            stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#time_batch(1) order by intPrimitive desc for grouped_delivery (intPrimitive)");
+            stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean#time_batch(1) order by IntPrimitive desc for grouped_delivery (IntPrimitive)");
             stmt.Events += listener.Update;
             listener.Reset();
     
@@ -150,13 +150,13 @@ namespace com.espertech.esper.regression.epl.other
             SendTimer(epService, 2000);
             Assert.AreEqual(2, listener.NewDataList.Count);
             Assert.AreEqual(1, listener.NewDataList[0].Length);
-            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[0], "theString,intPrimitive".Split(','), new object[][]{new object[] {"E2", 2}});
+            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[0], "TheString,IntPrimitive".Split(','), new object[][]{new object[] {"E2", 2}});
             Assert.AreEqual(2, listener.NewDataList[1].Length);
-            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[1], "theString,intPrimitive".Split(','), new object[][]{new object[] {"E1", 1}, new object[] {"E3", 1}});
+            EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[1], "TheString,IntPrimitive".Split(','), new object[][]{new object[] {"E1", 1}, new object[] {"E3", 1}});
     
             // test multiple criteria
             stmt.Dispose();
-            string stmtText = "select theString, doubleBoxed, enumValue from SupportBean#time_batch(1) order by theString, doubleBoxed, enumValue for Grouped_delivery(doubleBoxed, enumValue)";
+            string stmtText = "select TheString, DoubleBoxed, enumValue from SupportBean#time_batch(1) order by TheString, DoubleBoxed, enumValue for grouped_delivery(DoubleBoxed, enumValue)";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
             stmt.Events += listener.Update;
             listener.Reset();
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regression.epl.other
             SendEvent(epService, "E8", 10d, SupportEnum.ENUM_VALUE_1); // D
             SendTimer(epService, 3000);
             Assert.AreEqual(4, listener.NewDataList.Count);
-            string[] fields = "theString,doubleBoxed,enumValue".Split(',');
+            string[] fields = "TheString,DoubleBoxed,enumValue".Split(',');
             EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[0], fields,
                     new object[][]{new object[] {"E1", 10d, SupportEnum.ENUM_VALUE_2}, new object[] {"E4", 10d, SupportEnum.ENUM_VALUE_2}});
             EPAssertionUtil.AssertPropsPerRow(listener.NewDataList[1], fields,

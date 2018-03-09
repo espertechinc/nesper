@@ -115,9 +115,9 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "min(distinct volume) as minDistVol," +
                     "max(distinct volume) as maxDistVol" +
                     " from " + typeof(SupportBeanString).FullName + "#length(100) as one, " +
-                    typeof(SupportMarketDataBean).Name + "#length(3) as two " +
+                    typeof(SupportMarketDataBean).FullName + "#length(3) as two " +
                     "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                    "  and one.theString = two.symbol " +
+                    "  and one.TheString = two.symbol " +
                     "group by symbol";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);

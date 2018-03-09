@@ -31,7 +31,7 @@ namespace com.espertech.esper.regression.multithread
     public class ExecMTStmtTimeWindow : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
             var stmt = epService.EPAdministrator.CreateEPL(
-                    " select irstream intPrimitive, theString as key " +
+                    " select irstream IntPrimitive, TheString as key " +
                             " from " + typeof(SupportBean).FullName + "#time(1 sec)");
     
             var listener = new SupportMTUpdateListener();
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regression.multithread
         private IDictionary<int, IList<string>> SortPerIntKey(EventBean[] result) {
             var results = new LinkedHashMap<int, IList<string>>();
             foreach (var theEvent in result) {
-                var count = theEvent.Get("intPrimitive").AsInt();
+                var count = theEvent.Get("IntPrimitive").AsInt();
                 var key = (string) theEvent.Get("key");
     
                 var entries = results.Get(count);

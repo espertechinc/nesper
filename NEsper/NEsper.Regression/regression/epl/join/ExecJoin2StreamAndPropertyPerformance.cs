@@ -32,7 +32,7 @@ namespace com.espertech.esper.regression.epl.join
         private void RunAssertionPerfRemoveStream(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.Configuration.AddEventType<SupportBean_S0>();
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("myStaticEvaluator", typeof(MyStaticEval).Name, "myStaticEvaluator");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("myStaticEvaluator", typeof(MyStaticEval), "MyStaticEvaluator");
     
             MyStaticEval.CountCalled = 0;
             MyStaticEval.WaitTimeMSec = 0;
@@ -40,7 +40,7 @@ namespace com.espertech.esper.regression.epl.join
     
             string epl = "select * from SupportBean#time(1) as sb, " +
                     " SupportBean_S0#keepall as s0 " +
-                    " where MyStaticEvaluator(sb.theString, s0.p00)";
+                    " where MyStaticEvaluator(sb.TheString, s0.p00)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var updateListener = new SupportUpdateListener();
             stmt.Events += updateListener.Update;
@@ -63,9 +63,9 @@ namespace com.espertech.esper.regression.epl.join
             string methodName = ".testPerformanceJoinNoResults";
     
             string epl = "select * from " +
-                    typeof(SupportMarketDataBean).Name + "#length(1000000)," +
+                    typeof(SupportMarketDataBean).FullName + "#length(1000000)," +
                     typeof(SupportBean).FullName + "#length(1000000)" +
-                    " where symbol=theString and volume=longBoxed";
+                    " where symbol=TheString and volume=LongBoxed";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var updateListener = new SupportUpdateListener();
@@ -92,9 +92,9 @@ namespace com.espertech.esper.regression.epl.join
             string methodName = ".testPerformanceJoinNoResults";
     
             string epl = "select * from " +
-                    typeof(SupportMarketDataBean).Name + "()#length(1000000)," +
+                    typeof(SupportMarketDataBean).FullName + "()#length(1000000)," +
                     typeof(SupportBean).FullName + "#length(1000000)" +
-                    " where symbol=theString and volume=longBoxed and doublePrimitive=price";
+                    " where symbol=TheString and volume=LongBoxed and DoublePrimitive=price";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var updateListener = new SupportUpdateListener();

@@ -10,22 +10,17 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.agg.aggregator;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.client
 {
     public class ExecClientExceptionHandlerNoHandler : RegressionExecution {
         public override void Configure(Configuration configuration) {
             configuration.EngineDefaults.ExceptionHandling.HandlerFactories.Clear();
-            configuration.AddPlugInAggregationFunctionFactory("myinvalidagg", typeof(InvalidAggTestFactory).Name);
+            configuration.AddPlugInAggregationFunctionFactory("myinvalidagg", typeof(InvalidAggTestFactory));
             configuration.AddEventType<SupportBean>();
         }
     

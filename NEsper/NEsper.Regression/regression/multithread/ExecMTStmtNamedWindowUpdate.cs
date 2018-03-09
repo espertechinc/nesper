@@ -34,11 +34,11 @@ namespace com.espertech.esper.regression.multithread
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             // setup statements
-            epService.EPAdministrator.CreateEPL("create window MyWindow#unique(theString, intPrimitive) as select * from SupportBean");
-            epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean(boolPrimitive = true)");
-            epService.EPAdministrator.CreateEPL("on SupportBean(boolPrimitive = false) sb " +
-                    "update MyWindow win set intBoxed = win.intBoxed + 1, doublePrimitive = win.doublePrimitive + sb.doublePrimitive" +
-                    " where sb.theString = win.theString and sb.intPrimitive = win.intPrimitive");
+            epService.EPAdministrator.CreateEPL("create window MyWindow#unique(TheString, IntPrimitive) as select * from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean(BoolPrimitive = true)");
+            epService.EPAdministrator.CreateEPL("on SupportBean(BoolPrimitive = false) sb " +
+                    "update MyWindow win set IntBoxed = win.IntBoxed + 1, DoublePrimitive = win.DoublePrimitive + sb.DoublePrimitive" +
+                    " where sb.TheString = win.TheString and sb.IntPrimitive = win.IntPrimitive");
     
             // send primer events, initialize totals
             var totals = new Dictionary<MultiKeyUntyped, UpdateTotals>();
@@ -88,9 +88,9 @@ namespace com.espertech.esper.regression.multithread
             Assert.AreEqual(rows.Length, totals.Count);
             long totalUpdates = 0;
             foreach (EventBean row in rows) {
-                UpdateTotals total = totals.Get(new MultiKeyUntyped(row.Get("theString"), row.Get("intPrimitive")));
-                Assert.AreEqual(total.Num, row.Get("intBoxed"));
-                Assert.AreEqual(total.Sum, row.Get("doublePrimitive"));
+                UpdateTotals total = totals.Get(new MultiKeyUntyped(row.Get("TheString"), row.Get("IntPrimitive")));
+                Assert.AreEqual(total.Num, row.Get("IntBoxed"));
+                Assert.AreEqual(total.Sum, row.Get("DoublePrimitive"));
                 totalUpdates += total.Num;
             }
     

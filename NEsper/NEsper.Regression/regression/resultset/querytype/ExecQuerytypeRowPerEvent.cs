@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             epService.EPAdministrator.Configuration.AddEventType<SupportBean_S0>();
             string epl = "select window(s0.*) as rows, sb " +
                     "from SupportBean#keepall as sb, SupportBean_S0#keepall as s0 " +
-                    "where sb.theString = s0.p00";
+                    "where sb.TheString = s0.p00";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionAggregatedSelectUnaggregatedHaving(EPServiceProvider epService) {
             // ESPER-571
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            string epl = "select max(intPrimitive) as val from SupportBean#time(1) having max(intPrimitive) > intBoxed";
+            string epl = "select max(IntPrimitive) as val from SupportBean#time(1) having max(IntPrimitive) > IntBoxed";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionSumOneView(EPServiceProvider epService) {
-            string epl = "select irstream longPrimitive, sum(longBoxed) as mySum " +
+            string epl = "select irstream LongPrimitive, sum(LongBoxed) as mySum " +
                     "from " + typeof(SupportBean).FullName + "#length(3)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -101,10 +101,10 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionSumJoin(EPServiceProvider epService) {
-            string epl = "select irstream longPrimitive, sum(longBoxed) as mySum " +
+            string epl = "select irstream LongPrimitive, sum(LongBoxed) as mySum " +
                     "from " + typeof(SupportBeanString).FullName + "#length(3) as one, " +
                     typeof(SupportBean).FullName + "#length(3) as two " +
-                    "where one.theString = two.theString";
+                    "where one.TheString = two.TheString";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -155,7 +155,7 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void TryAssert(EPServiceProvider epService, SupportUpdateListener listener, EPStatement stmt) {
-            var fields = new string[]{"longPrimitive", "mySum"};
+            var fields = new string[]{"LongPrimitive", "mySum"};
     
             // assert select result type
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("mySum"));

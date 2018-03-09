@@ -29,10 +29,10 @@ namespace com.espertech.esper.regression.multithread
     public class ExecMTStmtNamedWindowFAF : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL(
-                    "create window MyWindow#keepall as select theString, longPrimitive from " + typeof(SupportBean).FullName);
+                    "create window MyWindow#keepall as select TheString, LongPrimitive from " + typeof(SupportBean).FullName);
     
             epService.EPAdministrator.CreateEPL(
-                    "insert into MyWindow(theString, longPrimitive) " +
+                    "insert into MyWindow(TheString, LongPrimitive) " +
                             " select symbol, volume \n" +
                             " from " + typeof(SupportMarketDataBean).FullName);
     

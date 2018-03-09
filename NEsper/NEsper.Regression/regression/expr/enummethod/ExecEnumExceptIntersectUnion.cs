@@ -14,7 +14,6 @@ using com.espertech.esper.client.deploy;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
@@ -49,7 +48,7 @@ namespace com.espertech.esper.regression.expr.enummethod
     
         private void RunAssertionStringArrayIntersection(EPServiceProvider epService) {
             string epl = "create objectarray schema Event(meta1 string[], meta2 string[]);\n" +
-                    "@Name('Out') select * from Event(meta1.Intersect(meta2).CountOf() > 0);\n";
+                    "@Name('Out') select * from Event(meta1.Intersect(meta2).countOf() > 0);\n";
             DeploymentResult result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.GetStatement("Out").Events += listener.Update;
@@ -65,14 +64,16 @@ namespace com.espertech.esper.regression.expr.enummethod
     
         private void RunAssertionSetLogicWithContained(EPServiceProvider epService) {
             string epl = "select " +
-                    "contained.Except(containedTwo) as val0," +
-                    "contained.Intersect(containedTwo) as val1, " +
-                    "contained.Union(containedTwo) as val2 " +
+                    "Contained.Except(containedTwo) as val0," +
+                    "Contained.Intersect(containedTwo) as val1, " +
+                    "Contained.Union(containedTwo) as val2 " +
                     " from SupportBean_ST0_Container";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0".Split(','), new Type[]{typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0".Split(','), new Type[] {
+                typeof(ICollection<SupportBean_ST0>)
+            });
     
             List<SupportBean_ST0> first = SupportBean_ST0_Container.Make2ValueList("E1,1", "E2,10", "E3,1", "E4,10", "E5,11");
             List<SupportBean_ST0> second = SupportBean_ST0_Container.Make2ValueList("E1,1", "E3,1", "E4,10");
@@ -152,9 +153,9 @@ namespace com.espertech.esper.regression.expr.enummethod
     
         private void RunAssertionSetLogicWithScalar(EPServiceProvider epService) {
             string epl = "select " +
-                    "strvals.Except(strvalstwo) as val0," +
-                    "strvals.Intersect(strvalstwo) as val1, " +
-                    "strvals.Union(strvalstwo) as val2 " +
+                    "Strvals.Except(strvalstwo) as val0," +
+                    "Strvals.Intersect(strvalstwo) as val1, " +
+                    "Strvals.Union(strvalstwo) as val2 " +
                     " from SupportCollection as bean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -192,20 +193,20 @@ namespace com.espertech.esper.regression.expr.enummethod
             string epl;
     
             epl = "select Contained.Union(true) from SupportBean_ST0_Container";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'contained.Union(true)': Enumeration method 'union' requires an expression yielding an event-collection as input paramater [select Contained.Union(true) from SupportBean_ST0_Container]");
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.Union(true)': Enumeration method 'union' requires an expression yielding an event-collection as input paramater [select Contained.Union(true) from SupportBean_ST0_Container]");
     
             epl = "select Contained.Union(Prevwindow(s1)) from SupportBean_ST0_Container#lastevent, SupportBean#keepall s1";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'contained.Union(Prevwindow(s1))': Enumeration method 'union' expects event type 'SupportBean_ST0' but receives event type 'SupportBean' [select Contained.Union(Prevwindow(s1)) from SupportBean_ST0_Container#lastevent, SupportBean#keepall s1]");
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.Union(Prevwindow(s1))': Enumeration method 'union' expects event type 'SupportBean_ST0' but receives event type 'SupportBean' [select Contained.Union(Prevwindow(s1)) from SupportBean_ST0_Container#lastevent, SupportBean#keepall s1]");
         }
     
         private void RunAssertionUnionWhere(EPServiceProvider epService) {
     
             string epl = "expression one {" +
-                    "  x => x.contained.Where(y => p00 = 10)" +
+                    "  x => x.Contained.where(y => p00 = 10)" +
                     "} " +
                     "" +
                     "expression two {" +
-                    "  x => x.contained.Where(y => p00 = 11)" +
+                    "  x => x.Contained.where(y => p00 = 11)" +
                     "} " +
                     "" +
                     "select One(bean).Union(Two(bean)) as val0 from SupportBean_ST0_Container as bean";

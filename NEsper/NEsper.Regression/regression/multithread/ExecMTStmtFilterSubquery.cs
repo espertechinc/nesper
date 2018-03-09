@@ -33,7 +33,7 @@ namespace com.espertech.esper.regression.multithread
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportBean_S0");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean_S0");
     
-            string epl = "select * from pattern[SupportBean_S0 -> SupportBean(not Exists (select * from MyWindow mw where mw.p00 = 'E'))]";
+            string epl = "select * from pattern[SupportBean_S0 -> SupportBean(not exists (select * from MyWindow mw where mw.p00 = 'E'))]";
             epService.EPAdministrator.CreateEPL(epl);
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
     
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.multithread
         }
     
         private void TryStreamFilterSubquery(EPServiceProvider engine) {
-            string epl = "select * from SupportBean(not Exists (select * from SupportBean_S0#keepall mw where mw.p00 = 'E'))";
+            string epl = "select * from SupportBean(not exists (select * from SupportBean_S0#keepall mw where mw.p00 = 'E'))";
             engine.EPAdministrator.CreateEPL(epl);
     
             var insertThread = new Thread(new InsertRunnable(engine, 1000).Run);

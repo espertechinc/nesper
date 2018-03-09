@@ -34,12 +34,12 @@ namespace com.espertech.esper.regression.epl.join
         }
     
         private void RunAssertionPerfCoercion3waySceneOne(EPServiceProvider epService) {
-            string stmtText = "select s1.intBoxed as v1, s2.longBoxed as v2, s3.doubleBoxed as v3 from " +
-                    typeof(SupportBean).FullName + "(theString='A')#length(1000000) s1 " +
+            string stmtText = "select s1.IntBoxed as v1, s2.LongBoxed as v2, s3.DoubleBoxed as v3 from " +
+                    typeof(SupportBean).FullName + "(TheString='A')#length(1000000) s1 " +
                     " left outer join " +
-                    typeof(SupportBean).FullName + "(theString='B')#length(1000000) s2 on s1.intBoxed=s2.longBoxed " +
+                    typeof(SupportBean).FullName + "(TheString='B')#length(1000000) s2 on s1.IntBoxed=s2.LongBoxed " +
                     " left outer join " +
-                    typeof(SupportBean).FullName + "(theString='C')#length(1000000) s3 on s1.intBoxed=s3.doubleBoxed";
+                    typeof(SupportBean).FullName + "(TheString='C')#length(1000000) s3 on s1.IntBoxed=s3.DoubleBoxed";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -68,12 +68,12 @@ namespace com.espertech.esper.regression.epl.join
         }
     
         private void RunAssertionPerfCoercion3waySceneTwo(EPServiceProvider epService) {
-            string stmtText = "select s1.intBoxed as v1, s2.longBoxed as v2, s3.doubleBoxed as v3 from " +
-                    typeof(SupportBean).FullName + "(theString='A')#length(1000000) s1 " +
+            string stmtText = "select s1.IntBoxed as v1, s2.LongBoxed as v2, s3.DoubleBoxed as v3 from " +
+                    typeof(SupportBean).FullName + "(TheString='A')#length(1000000) s1 " +
                     " left outer join " +
-                    typeof(SupportBean).FullName + "(theString='B')#length(1000000) s2 on s1.intBoxed=s2.longBoxed " +
+                    typeof(SupportBean).FullName + "(TheString='B')#length(1000000) s2 on s1.IntBoxed=s2.LongBoxed " +
                     " left outer join " +
-                    typeof(SupportBean).FullName + "(theString='C')#length(1000000) s3 on s1.intBoxed=s3.doubleBoxed";
+                    typeof(SupportBean).FullName + "(TheString='C')#length(1000000) s3 on s1.IntBoxed=s3.DoubleBoxed";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -103,12 +103,12 @@ namespace com.espertech.esper.regression.epl.join
         }
     
         private void RunAssertionPerfCoercion3waySceneThree(EPServiceProvider epService) {
-            string stmtText = "select s1.intBoxed as v1, s2.longBoxed as v2, s3.doubleBoxed as v3 from " +
-                    typeof(SupportBean).FullName + "(theString='A')#length(1000000) s1 " +
+            string stmtText = "select s1.IntBoxed as v1, s2.LongBoxed as v2, s3.DoubleBoxed as v3 from " +
+                    typeof(SupportBean).FullName + "(TheString='A')#length(1000000) s1 " +
                     " left outer join " +
-                    typeof(SupportBean).FullName + "(theString='B')#length(1000000) s2 on s1.intBoxed=s2.longBoxed " +
+                    typeof(SupportBean).FullName + "(TheString='B')#length(1000000) s2 on s1.IntBoxed=s2.LongBoxed " +
                     " left outer join " +
-                    typeof(SupportBean).FullName + "(theString='C')#length(1000000) s3 on s1.intBoxed=s3.doubleBoxed";
+                    typeof(SupportBean).FullName + "(TheString='C')#length(1000000) s3 on s1.IntBoxed=s3.DoubleBoxed";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();

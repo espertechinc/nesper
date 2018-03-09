@@ -39,12 +39,12 @@ namespace com.espertech.esper.regression.rowrecog
         private void RunAssertionAfterCurrentRow(EPServiceProvider epService) {
             string text = "select * from MyEvent#keepall " +
                     "match_recognize (" +
-                    " measures A.theString as a, B[0].theString as b0, B[1].theString as b1" +
+                    " measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1" +
                     " after match skip to current row" +
                     " pattern (A B*)" +
                     " define" +
-                    " A as A.theString like \"A%\"," +
-                    " B as B.theString like \"B%\"" +
+                    " A as A.TheString like \"A%\"," +
+                    " B as B.TheString like \"B%\"" +
                     ")";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
@@ -87,12 +87,12 @@ namespace com.espertech.esper.regression.rowrecog
             string[] fields = "a,b0,b1".Split(',');
             string text = "select * from MyEvent#keepall " +
                     "match_recognize (" +
-                    "  measures A.theString as a, B[0].theString as b0, B[1].theString as b1" +
+                    "  measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1" +
                     "  AFTER MATCH SKIP TO NEXT ROW " +
                     "  pattern (A B*) " +
                     "  define " +
-                    "    A as A.theString like 'A%'," +
-                    "    B as B.theString like 'B%'" +
+                    "    A as A.TheString like 'A%'," +
+                    "    B as B.TheString like 'B%'" +
                     ")";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regression.rowrecog
             string[] fields = "a_string,b_string".Split(',');
             string text = "select * from MyEvent#keepall " +
                     "match_recognize (" +
-                    "  measures A.theString as a_string, B.theString as b_string " +
+                    "  measures A.TheString as a_string, B.TheString as b_string " +
                     "  all matches " +
                     "  after match skip to next row " +
                     "  pattern (A B) " +
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regression.rowrecog
             string[] fields = "a0,b,a1".Split(',');
             string text = "select * from MyEvent#keepall " +
                     "match_recognize (" +
-                    "  measures A[0].theString as a0, B.theString as b, A[1].theString as a1 " +
+                    "  measures A[0].TheString as a0, B.TheString as b, A[1].TheString as a1 " +
                     "  all matches " +
                     "  after match skip to next row " +
                     "  pattern ( A B A ) " +
@@ -213,8 +213,8 @@ namespace com.espertech.esper.regression.rowrecog
             string[] fields = "a_string,a_value,b_value".Split(',');
             string text = "select * from MyEvent#keepall " +
                     "match_recognize (" +
-                    "  partition by theString" +
-                    "  measures A.theString as a_string, A.value as a_value, B.value as b_value " +
+                    "  partition by TheString" +
+                    "  measures A.TheString as a_string, A.value as a_value, B.value as b_value " +
                     "  all matches " +
                     "  after match skip to next row " +
                     "  pattern (A B) " +
@@ -294,7 +294,7 @@ namespace com.espertech.esper.regression.rowrecog
             string[] fields = "a_string,b_string".Split(',');
             string text = "select * from MyEvent#keepall " +
                     "match_recognize (" +
-                    "  measures A.theString as a_string, B.theString as b_string " +
+                    "  measures A.TheString as a_string, B.TheString as b_string " +
                     "  all matches " +
                     "  after match skip past last row" +
                     "  pattern (A B) " +

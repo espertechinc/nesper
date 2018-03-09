@@ -23,8 +23,8 @@ namespace com.espertech.esper.regression.rowrecog
     public class ExecRowRecogVariantStream : RegressionExecution {
     
         public override void Run(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("create schema S0 as " + typeof(SupportBean_S0).Name);
-            epService.EPAdministrator.CreateEPL("create schema S1 as " + typeof(SupportBean_S1).Name);
+            epService.EPAdministrator.CreateEPL("create schema S0 as " + typeof(SupportBean_S0).FullName);
+            epService.EPAdministrator.CreateEPL("create schema S1 as " + typeof(SupportBean_S1).FullName);
             epService.EPAdministrator.CreateEPL("create variant schema MyVariantType as S0, S1");
     
             string[] fields = "a,b".Split(',');

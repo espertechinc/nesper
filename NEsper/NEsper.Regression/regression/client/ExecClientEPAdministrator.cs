@@ -7,15 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.dot;
@@ -24,7 +21,6 @@ using com.espertech.esper.pattern;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
-
 
 using NUnit.Framework;
 
@@ -94,7 +90,7 @@ namespace com.espertech.esper.regression.client
             testListener.AssertOneGetNewAndReset();
     
             // create a second with the same name
-            stmt = "select intPrimitive from " + typeof(SupportBean).FullName;
+            stmt = "select IntPrimitive from " + typeof(SupportBean).FullName;
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmt, "s1");
             Assert.AreEqual("s1--0", stmtTwo.Name);
             Assert.AreEqual(stmt, stmtTwo.Text);
@@ -109,7 +105,7 @@ namespace com.espertech.esper.regression.client
             }
     
             // create a forth statement with the same name
-            stmt = "select theString from " + typeof(SupportBean).FullName;
+            stmt = "select TheString from " + typeof(SupportBean).FullName;
             EPStatement stmtFour = epService.EPAdministrator.CreateEPL(stmt, "s1");
             Assert.AreEqual("s1--1", stmtFour.Name);
             Assert.AreEqual(stmt, stmtFour.Text);
@@ -139,7 +135,7 @@ namespace com.espertech.esper.regression.client
             testListener.AssertOneGetNewAndReset();
     
             // create a second with the same name
-            stmt = typeof(SupportMarketDataBean).Name;
+            stmt = typeof(SupportMarketDataBean).FullName;
             EPStatement stmtTwo = epService.EPAdministrator.CreatePattern(stmt, "s1");
             Assert.AreEqual("s1--0", stmtTwo.Name);
             Assert.AreEqual(stmt, stmtTwo.Text);
@@ -262,7 +258,7 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(typeof(PatternFollowedByExpr), ((PatternStream) modelPattern.FromClause.Streams[0]).Expression.GetType());
     
             AnnotationPart part = spi.CompileAnnotationToSODA("@Somevalue(a='test', b=5)");
-            Assert.AreEqual("somevalue", part.Name);
+            Assert.AreEqual("Somevalue", part.Name);
             Assert.AreEqual(2, part.Attributes.Count);
             Assert.AreEqual("a", part.Attributes[0].Name);
             Assert.AreEqual("test", part.Attributes[0].Value);
@@ -273,7 +269,7 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(5, regex.Children.Count);
     
             // test fail cases
-            string expected = "Incorrect syntax near 'in' (a reserved keyword) at line 1 column 45 [goofy in in]";
+            string expected = "Incorrect syntax near 'in' (a reserved keyword) at line 1 column 42 [goofy in in]";
             string compiled = "goofy in in";
             try {
                 spi.CompileExpression(compiled);
@@ -315,7 +311,7 @@ namespace com.espertech.esper.regression.client
                 spi.CompileMatchRecognizePatternToSODA("a b???");
                 Assert.Fail();
             } catch (EPException ex) {
-                Assert.AreEqual("Incorrect syntax near '?' expecting a closing parenthesis ')' but found a questionmark '?' at line 1 column 79 [a b???]", ex.Message);
+                Assert.AreEqual("Incorrect syntax near '?' expecting a closing parenthesis ')' but found a questionmark '?' at line 1 column 76 [a b???]", ex.Message);
             }
     
             StatementSpecRaw raw = spi.CompileEPLToRaw("select * from System.Object");

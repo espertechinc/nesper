@@ -16,16 +16,16 @@ namespace com.espertech.esper.supportregression.rowrecog
         private string cat;
     
         public SupportRecogBean(string theString) {
-            this.theString = theString;
+            this.TheString = theString;
         }
     
         public SupportRecogBean(string theString, int value) {
-            this.theString = theString;
+            this.TheString = theString;
             this.value = value;
         }
     
         public SupportRecogBean(string theString, string cat, int value) {
-            this.theString = theString;
+            this.TheString = theString;
             this.cat = cat;
             this.value = value;
         }
@@ -61,7 +61,7 @@ namespace com.espertech.esper.supportregression.rowrecog
         }
     
         public void SetTheString(string theString) {
-            this.theString = theString;
+            this.TheString = theString;
         }
     
         public int GetValue() {

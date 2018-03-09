@@ -43,8 +43,8 @@ namespace com.espertech.esper.regression.multithread
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             epService.EPAdministrator.CreateEPL("create variable bool myvar = false");
-            epService.EPAdministrator.CreateEPL("create context SegmentedByString as partition by theString from SupportBean");
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("context SegmentedByString select theString, count(*) - 1 as cnt from SupportBean output snapshot when myvar = true");
+            epService.EPAdministrator.CreateEPL("create context SegmentedByString as partition by TheString from SupportBean");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("context SegmentedByString select TheString, count(*) - 1 as cnt from SupportBean output snapshot when myvar = true");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regression.multithread
             EventBean[] result = listener.LastNewData;
             Assert.AreEqual(choices.Length, result.Length);
             foreach (EventBean item in result) {
-                string theString = (string) item.Get("theString");
+                string theString = (string) item.Get("TheString");
                 long count = (long) item.Get("cnt");
                 //Log.Info("string " + string + " count " + count);
                 Assert.AreEqual(count, totals.Get(theString));

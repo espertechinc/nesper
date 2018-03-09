@@ -36,7 +36,7 @@ namespace com.espertech.esper.compat.collections
         /// <value></value>
 		public T this[int index]
 		{
-			get { return _parent[index] ; }
+            get { return _parent[index] ; }
 			set { throw new NotSupportedException() ; }
 		}
 

@@ -88,22 +88,22 @@ namespace com.espertech.esper.regression.dataflow
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddImport(typeof(DefaultSupportSourceOp).Namespace + ".*");
+            epService.EPAdministrator.Configuration.AddImport(typeof(DefaultSupportSourceOp).Namespace);
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
-            TryInvalidInstantiate(epService, "insert into ABC select theString from ME", false,
+            TryInvalidInstantiate(epService, "insert into ABC select TheString from ME", false,
                     "Failed to instantiate data flow 'MySelect': Failed validation for operator 'Select': Insert-into clause is not supported");
     
-            TryInvalidInstantiate(epService, "select irstream theString from ME", false,
+            TryInvalidInstantiate(epService, "select irstream TheString from ME", false,
                     "Failed to instantiate data flow 'MySelect': Failed validation for operator 'Select': Selecting remove-stream is not supported");
     
-            TryInvalidInstantiate(epService, "select theString from pattern[SupportBean]", false,
+            TryInvalidInstantiate(epService, "select TheString from pattern[SupportBean]", false,
                     "Failed to instantiate data flow 'MySelect': Failed validation for operator 'Select': From-clause must contain only streams and cannot contain patterns or other constructs");
     
-            TryInvalidInstantiate(epService, "select theString from DUMMY", false,
+            TryInvalidInstantiate(epService, "select TheString from DUMMY", false,
                     "Failed to instantiate data flow 'MySelect': Failed validation for operator 'Select': Failed to find stream 'DUMMY' among input ports, input ports are [ME]");
     
-            TryInvalidInstantiate(epService, "select theString from ME output every 10 seconds", true,
+            TryInvalidInstantiate(epService, "select TheString from ME output every 10 seconds", true,
                     "Failed to instantiate data flow 'MySelect': Failed validation for operator 'Select': Output rate limiting is not supported with 'iterate'");
     
             TryInvalidInstantiate(epService, "select (select * from SupportBean#lastevent) from ME", false,
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regression.dataflow
             string graph = "create dataflow MySelect\n" +
                     "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
                     "@Audit Select(instream_s0 as ALIAS) -> outstream {\n" +
-                    "  select: (select theString, sum(intPrimitive) as sumInt from ALIAS group by theString order by theString asc),\n" +
+                    "  select: (select TheString, sum(IntPrimitive) as sumInt from ALIAS group by TheString order by TheString asc),\n" +
                     "  iterate: true" +
                     "}\n" +
                     "CaptureOp(outstream) {}\n";
@@ -158,7 +158,7 @@ namespace com.espertech.esper.regression.dataflow
             emitter.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
             EPAssertionUtil.AssertPropsPerRow(
                 epService.Container, capture.Current, 
-                "theString,sumInt".Split(','), 
+                "TheString,sumInt".Split(','), 
                 new[] {new object[] {"E1", 6}, new object[] {"E2", 5}, new object[] {"E3", 4}});
     
             instance.Cancel();
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regression.dataflow
             string graph = "create dataflow MySelect\n" +
                     "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
                     "Select(instream_s0) -> outstream {\n" +
-                    "  select: (select sum(intPrimitive) as sumInt from instream_s0 output snapshot every 1 minute)\n" +
+                    "  select: (select sum(IntPrimitive) as sumInt from instream_s0 output snapshot every 1 minute)\n" +
                     "}\n" +
                     "CaptureOp(outstream) {}\n";
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
@@ -218,7 +218,7 @@ namespace com.espertech.esper.regression.dataflow
             string graph = "create dataflow MySelect\n" +
                     "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
                     "Select(instream_s0) -> outstream {\n" +
-                    "  select: (select sum(intPrimitive) as sumInt from instream_s0#time(1 minute))\n" +
+                    "  select: (select sum(IntPrimitive) as sumInt from instream_s0#time(1 minute))\n" +
                     "}\n" +
                     "CaptureOp(outstream) {}\n";
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
@@ -329,7 +329,7 @@ namespace com.espertech.esper.regression.dataflow
             RunAssertionAllTypes(epService, "MyXMLEvent", DefaultSupportGraphEventUtil.XMLEvents);
             RunAssertionAllTypes(epService, "MyOAEvent", DefaultSupportGraphEventUtil.OAEvents);
             RunAssertionAllTypes(epService, "MyMapEvent", DefaultSupportGraphEventUtil.MapEvents);
-            RunAssertionAllTypes(epService, "MyEvent", DefaultSupportGraphEventUtil.PONOEvents);
+            RunAssertionAllTypes(epService, "MyEvent", DefaultSupportGraphEventUtil.PonoEvents);
         }
     
         private void RunAssertionAllTypes(EPServiceProvider epService, string typeName, object[] events) {

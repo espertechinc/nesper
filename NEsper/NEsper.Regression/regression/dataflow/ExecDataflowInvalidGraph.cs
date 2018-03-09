@@ -63,7 +63,7 @@ namespace com.espertech.esper.regression.dataflow
     
             // op is some other class
             SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "MyGraph", "create dataflow MyGraph Random {}",
-                    "Failed to instantiate data flow 'MyGraph': Failed to resolve operator 'Random', operator class java.util.Random does not declare the DataFlowOperator annotation or implement the DataFlowSourceOperator interface");
+                    "Failed to instantiate data flow 'MyGraph': Failed to resolve operator 'Random', operator class System.Random does not declare the DataFlowOperator annotation or implement the DataFlowSourceOperator interface");
     
             // input stream not found
             SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "MyGraph", "create dataflow MyGraph DefaultSupportCaptureOp(nostream) {}",
@@ -78,8 +78,8 @@ namespace com.espertech.esper.regression.dataflow
                     "Failed to instantiate data flow 'MyGraph': Failed to find writable property 'dummy' for class");
     
             // inject properties: property invalid type
-            SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "MyGraph", "create dataflow MyGraph MyTestOp {theString: 1}",
-                    "Failed to instantiate data flow 'MyGraph': Property 'theString' of class com.espertech.esper.regression.dataflow.ExecDataflowInvalidGraph$MyTestOp expects an System.String but receives a value of type " + Name.Of<int>() + "");
+            SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "MyGraph", "create dataflow MyGraph MyTestOp {TheString: 1}",
+                    "Failed to instantiate data flow 'MyGraph': Property 'TheString' of class com.espertech.esper.regression.dataflow.ExecDataflowInvalidGraph$MyTestOp expects an System.String but receives a value of type " + Name.Of<int>() + "");
     
             // two incompatible input streams: different types
             epl = "create dataflow MyGraph " +

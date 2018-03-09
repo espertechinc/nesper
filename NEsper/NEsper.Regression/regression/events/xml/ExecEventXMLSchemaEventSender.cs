@@ -6,15 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Linq;
 using System.Xml;
 using System.Xml.XPath;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
@@ -58,7 +54,7 @@ namespace com.espertech.esper.regression.events.xml
                 sender.SendEvent(new SupportBean());
                 Assert.Fail();
             } catch (EPException ex) {
-                Assert.AreEqual("Unexpected event object type '" + typeof(SupportBean).FullName + "' encountered, please supply a org.w3c.dom.XmlDocument or Element node", ex.Message);
+                Assert.AreEqual("Unexpected event object type '" + typeof(SupportBean).FullName + "' encountered, please supply a XmlDocument or XmlElement node", ex.Message);
             }
     
             // test adding a second type for the same root element

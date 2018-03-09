@@ -73,23 +73,23 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             }
             epService.EPRuntime.SendEvent(new SupportBean("B", 100));
     
-            string eplIdx1One = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow where intPrimitive = sbr.rangeStart";
+            string eplIdx1One = "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow where IntPrimitive = sbr.rangeStart";
             RunOnDemandAssertion(epService, eplIdx1One, 1, new SupportBeanRange("R", 5501, 0), 5501);
     
-            string eplIdx1Two = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow where intPrimitive between sbr.rangeStart and sbr.rangeEnd";
+            string eplIdx1Two = "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow where IntPrimitive between sbr.rangeStart and sbr.rangeEnd";
             RunOnDemandAssertion(epService, eplIdx1Two, 1, new SupportBeanRange("R", 5501, 5503), 5501 + 5502 + 5503);
     
-            string eplIdx1Three = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow where theString = key and intPrimitive between sbr.rangeStart and sbr.rangeEnd";
+            string eplIdx1Three = "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow where TheString = key and IntPrimitive between sbr.rangeStart and sbr.rangeEnd";
             RunOnDemandAssertion(epService, eplIdx1Three, 1, new SupportBeanRange("R", "A", 4998, 5503), 4998 + 4999);
     
-            string eplIdx1Four = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow " +
-                    "where theString = key and longPrimitive = rangeStart and intPrimitive between rangeStart and rangeEnd " +
-                    "and longBoxed between rangeStart and rangeEnd";
+            string eplIdx1Four = "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow " +
+                    "where TheString = key and LongPrimitive = rangeStart and IntPrimitive between rangeStart and rangeEnd " +
+                    "and LongBoxed between rangeStart and rangeEnd";
             RunOnDemandAssertion(epService, eplIdx1Four, 1, new SupportBeanRange("R", "A", 4998, 5503), 4998);
     
-            string eplIdx1Five = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow " +
-                    "where intPrimitive between rangeStart and rangeEnd " +
-                    "and longBoxed between rangeStart and rangeEnd";
+            string eplIdx1Five = "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow " +
+                    "where IntPrimitive between rangeStart and rangeEnd " +
+                    "and LongBoxed between rangeStart and rangeEnd";
             RunOnDemandAssertion(epService, eplIdx1Five, 1, new SupportBeanRange("R", "A", 4998, 5001), 4998 + 4999 + 5000);
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -121,15 +121,15 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionDeletePerformance(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindow#keepall as select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextCreate = "create window MyWindow#keepall as select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
     
             // create delete stmt
-            string stmtTextDelete = "on " + typeof(SupportBean_A).Name + " delete from MyWindow where id = a";
+            string stmtTextDelete = "on " + typeof(SupportBean_A).FullName + " delete from MyWindow where id = a";
             epService.EPAdministrator.CreateEPL(stmtTextDelete);
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindow select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextInsertOne = "insert into MyWindow select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // load window
@@ -158,15 +158,15 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionDeletePerformanceCoercion(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindow#keepall as select theString as a, longPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextCreate = "create window MyWindow#keepall as select TheString as a, LongPrimitive as b from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
     
             // create delete stmt
-            string stmtTextDelete = "on " + typeof(SupportMarketDataBean).Name + " delete from MyWindow where b = price";
+            string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " delete from MyWindow where b = price";
             epService.EPAdministrator.CreateEPL(stmtTextDelete);
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindow select theString as a, longPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextInsertOne = "insert into MyWindow select TheString as a, LongPrimitive as b from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // load window
@@ -199,19 +199,19 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             }
     
             // create window
-            string stmtTextCreate = "create window MyWindow#keepall as select theString as a, longPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextCreate = "create window MyWindow#keepall as select TheString as a, LongPrimitive as b from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
     
             // create delete stmt one
-            string stmtTextDeleteOne = "on " + typeof(SupportMarketDataBean).Name + " delete from MyWindow where b = price";
+            string stmtTextDeleteOne = "on " + typeof(SupportMarketDataBean).FullName + " delete from MyWindow where b = price";
             epService.EPAdministrator.CreateEPL(stmtTextDeleteOne);
     
             // create delete stmt two
-            string stmtTextDeleteTwo = "on " + typeof(SupportBean_A).Name + " delete from MyWindow where id = a";
+            string stmtTextDeleteTwo = "on " + typeof(SupportBean_A).FullName + " delete from MyWindow where id = a";
             epService.EPAdministrator.CreateEPL(stmtTextDeleteTwo);
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindow select theString as a, longPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextInsertOne = "insert into MyWindow select TheString as a, LongPrimitive as b from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // load window
@@ -241,18 +241,18 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionDeletePerformanceIndexReuse(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindow#keepall as select theString as a, longPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextCreate = "create window MyWindow#keepall as select TheString as a, LongPrimitive as b from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
     
             // create delete stmt
             var statements = new EPStatement[50];
             for (int i = 0; i < statements.Length; i++) {
-                string stmtTextDelete = "on " + typeof(SupportMarketDataBean).Name + " delete from MyWindow where b = price";
+                string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " delete from MyWindow where b = price";
                 statements[i] = epService.EPAdministrator.CreateEPL(stmtTextDelete);
             }
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindow select theString as a, longPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextInsertOne = "insert into MyWindow select TheString as a, LongPrimitive as b from " + typeof(SupportBean).FullName;
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // load window

@@ -32,8 +32,8 @@ namespace com.espertech.esper.regression.epl.join
     
         private void RunAssertionJoinUniquePerId(EPServiceProvider epService) {
             string joinStatement = "select * from " +
-                    typeof(SupportMarketDataBean).Name + "(symbol='IBM')#length(3) s0, " +
-                    typeof(SupportMarketDataBean).Name + "(symbol='CSCO')#length(3) s1" +
+                    typeof(SupportMarketDataBean).FullName + "(symbol='IBM')#length(3) s0, " +
+                    typeof(SupportMarketDataBean).FullName + "(symbol='CSCO')#length(3) s1" +
                     " where s0.volume=s1.volume";
     
             var setOne = new Object[5];
@@ -74,14 +74,14 @@ namespace com.espertech.esper.regression.epl.join
     
             // assert type-statement reference
             EPServiceProviderSPI spi = (EPServiceProviderSPI) epService;
-            Assert.IsTrue(spi.StatementEventTypeRef.IsInUse(typeof(SupportMarketDataBean).Name));
-            var stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportMarketDataBean).Name);
+            Assert.IsTrue(spi.StatementEventTypeRef.IsInUse(typeof(SupportMarketDataBean).FullName));
+            var stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportMarketDataBean).FullName);
             Assert.IsTrue(stmtNames.Contains("MyJoin"));
     
             stmt.Dispose();
     
-            Assert.IsFalse(spi.StatementEventTypeRef.IsInUse(typeof(SupportMarketDataBean).Name));
-            stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportMarketDataBean).Name);
+            Assert.IsFalse(spi.StatementEventTypeRef.IsInUse(typeof(SupportMarketDataBean).FullName));
+            stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportMarketDataBean).FullName);
             EPAssertionUtil.AssertEqualsAnyOrder(null, stmtNames.ToArray());
             Assert.IsFalse(stmtNames.Contains("MyJoin"));
         }

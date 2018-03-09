@@ -26,7 +26,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
         public override void Run(EPServiceProvider epService) {
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select avg(bigdec) as c0 from SupportBeanNumeric").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select avg(DecimalOne) as c0 from SupportBeanNumeric").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBeanNumeric(null, MakeDecimal(0, 2, MidpointRounding.AwayFromZero)));
             epService.EPRuntime.SendEvent(new SupportBeanNumeric(null, MakeDecimal(0, 2, MidpointRounding.AwayFromZero)));
             epService.EPRuntime.SendEvent(new SupportBeanNumeric(null, MakeDecimal(1, 2, MidpointRounding.AwayFromZero)));

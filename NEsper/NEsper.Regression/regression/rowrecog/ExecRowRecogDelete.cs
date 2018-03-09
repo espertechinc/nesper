@@ -65,15 +65,15 @@ namespace com.espertech.esper.regression.rowrecog
         private void RunAssertionNamedWindowOnDeleteOutOfSeq(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create window MyNamedWindow#keepall as MyEvent");
             epService.EPAdministrator.CreateEPL("insert into MyNamedWindow select * from MyEvent");
-            epService.EPAdministrator.CreateEPL("on MyDeleteEvent as d delete from MyNamedWindow w where d.intPrimitive = w.value");
+            epService.EPAdministrator.CreateEPL("on MyDeleteEvent as d delete from MyNamedWindow w where d.IntPrimitive = w.value");
     
             string[] fields = "a_string,b_string".Split(',');
             string text = "select * from MyNamedWindow " +
                     "match_recognize (" +
-                    "  measures A.theString as a_string, B.theString as b_string" +
+                    "  measures A.TheString as a_string, B.TheString as b_string" +
                     "  all matches pattern (A B) " +
                     "  define " +
-                    "    A as PREV(A.theString, 3) = 'P3' and PREV(A.theString, 2) = 'P2' and PREV(A.theString, 4) = 'P4'," +
+                    "    A as PREV(A.TheString, 3) = 'P3' and PREV(A.TheString, 2) = 'P2' and PREV(A.TheString, 4) = 'P4'," +
                     "    B as B.value in (PREV(B.value, 4), PREV(B.value, 2))" +
                     ")";
     
@@ -131,12 +131,12 @@ namespace com.espertech.esper.regression.rowrecog
         private void RunAssertionNamedWindowOutOfSequenceDelete(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportRecogBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportRecogBean");
-            epService.EPAdministrator.CreateEPL("on SupportBean as s delete from MyWindow as w where s.theString = w.theString");
+            epService.EPAdministrator.CreateEPL("on SupportBean as s delete from MyWindow as w where s.TheString = w.TheString");
     
             string[] fields = "a0,a1,b0,b1,c".Split(',');
             string text = "select * from MyWindow " +
                     "match_recognize (" +
-                    "  measures A[0].theString as a0, A[1].theString as a1, B[0].theString as b0, B[1].theString as b1, C.theString as c" +
+                    "  measures A[0].TheString as a0, A[1].TheString as a1, B[0].TheString as b0, B[1].TheString as b1, C.TheString as c" +
                     "  pattern ( A+ B* C ) " +
                     "  define " +
                     "    A as (A.value = 1)," +
@@ -200,12 +200,12 @@ namespace com.espertech.esper.regression.rowrecog
         private void RunAssertionNamedWindowInSequenceDelete(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportRecogBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportRecogBean");
-            epService.EPAdministrator.CreateEPL("on SupportBean as s delete from MyWindow as w where s.theString = w.theString");
+            epService.EPAdministrator.CreateEPL("on SupportBean as s delete from MyWindow as w where s.TheString = w.TheString");
     
             string[] fields = "a0,a1,b".Split(',');
             string text = "select * from MyWindow " +
                     "match_recognize (" +
-                    "  measures A[0].theString as a0, A[1].theString as a1, B.theString as b" +
+                    "  measures A[0].TheString as a0, A[1].TheString as a1, B.TheString as b" +
                     "  pattern ( A* B ) " +
                     "  define " +
                     "    A as (A.value = 1)," +

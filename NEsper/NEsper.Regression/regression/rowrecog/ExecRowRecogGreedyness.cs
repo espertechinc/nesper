@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.rowrecog
             string[] fields = "a_string,b_string".Split(',');
             string text = "select * from MyEvent#keepall " +
                     "match_recognize (" +
-                    "  measures A.theString as a_string, B.theString as b_string " +
+                    "  measures A.TheString as a_string, B.TheString as b_string " +
                     "  pattern (A?? B?) " +
                     "  define " +
                     "   A as A.value = 1," +
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.rowrecog
             string[] fields = "a0,a1,a2,b,c".Split(',');
             string text = "select * from MyEvent#keepall " +
                     "match_recognize (" +
-                    "  measures A[0].theString as a0, A[1].theString as a1, A[2].theString as a2, B.theString as b, C.theString as c" +
+                    "  measures A[0].TheString as a0, A[1].TheString as a1, A[2].TheString as a2, B.TheString as b, C.TheString as c" +
                     "  pattern (A*? B? C) " +
                     "  define " +
                     "   A as A.value = 1," +
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regression.rowrecog
             string[] fields = "a0,a1,a2,b,c".Split(',');
             string text = "select * from MyEvent#keepall " +
                     "match_recognize (" +
-                    "  measures A[0].theString as a0, A[1].theString as a1, A[2].theString as a2, B.theString as b, C.theString as c" +
+                    "  measures A[0].TheString as a0, A[1].TheString as a1, A[2].TheString as a2, B.TheString as b, C.TheString as c" +
                     "  pattern (A+? B? C) " +
                     "  define " +
                     "   A as A.value = 1," +

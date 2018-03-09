@@ -33,8 +33,8 @@ namespace com.espertech.esper.regression.multithread
     
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            epService.EPAdministrator.CreateEPL("create context HashByUserCtx as coalesce by Consistent_hash_crc32(theString) from SupportBean granularity 10000000");
-            epService.EPAdministrator.CreateEPL("@Name('select') context HashByUserCtx select theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context HashByUserCtx as coalesce by Consistent_hash_crc32(TheString) from SupportBean granularity 10000000");
+            epService.EPAdministrator.CreateEPL("@Name('select') context HashByUserCtx select TheString from SupportBean");
     
             TrySendContextCountSimple(epService, 4, 5);
         }

@@ -952,10 +952,14 @@ namespace com.espertech.esper.util
 
             if (invocationType.IsValueType)
             {
-                Type parameterWrapperType = GetBoxedType(invocationType);
+                if (declarationType == typeof(object)) {
+                    return true;
+                }
+
+                var parameterWrapperType = GetBoxedType(invocationType);
                 if (parameterWrapperType != null)
                 {
-                    if (parameterWrapperType.Equals(declarationType))
+                    if (parameterWrapperType == declarationType)
                     {
                         return true;
                     }
@@ -1305,6 +1309,8 @@ namespace com.espertech.esper.util
                     return boxed
                         ? typeof (BigInteger?)
                         : typeof (BigInteger);
+                case "map":
+                    return typeof(IDictionary<string, object>);
             }
 
             var type = ResolveType(typeName.Trim(), throwOnError);

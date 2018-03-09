@@ -118,7 +118,7 @@ namespace com.espertech.esper.regression.epl.variable
             Assert.IsFalse(listenerCreateOne.IsInvoked);
     
             EventType typeSet = stmtCreateOne.EventType;
-            Assert.AreEqual(typeof(long), typeSet.GetPropertyType("var1SAI"));
+            Assert.AreEqual(typeof(long?), typeSet.GetPropertyType("var1SAI"));
             Assert.AreEqual(typeof(Map), typeSet.UnderlyingType);
             Assert.IsTrue(Collections.AreEqual(typeSet.PropertyNames, new string[]{"var1SAI"}));
     
@@ -130,7 +130,7 @@ namespace com.espertech.esper.regression.epl.variable
             EPAssertionUtil.AssertPropsPerRow(stmtCreateTwo.GetEnumerator(), fieldsVar2, new object[][]{new object[] {20L}});
             Assert.IsFalse(listenerCreateTwo.IsInvoked);
     
-            string stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1SAI = intPrimitive * 2, var2SAI = var1SAI + 1";
+            string stmtTextSet = "on " + typeof(SupportBean).FullName + " set var1SAI = IntPrimitive * 2, var2SAI = var1SAI + 1";
             epService.EPAdministrator.CreateEPL(stmtTextSet);
     
             SendSupportBean(epService, "E1", 100);

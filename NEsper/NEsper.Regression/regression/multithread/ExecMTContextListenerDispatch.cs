@@ -35,7 +35,7 @@ namespace com.espertech.esper.regression.multithread
         public override void Run(EPServiceProvider epService)
         {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            epService.EPAdministrator.CreateEPL("create context CtxEachString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context CtxEachString partition by TheString from SupportBean");
             epService.EPAdministrator.CreateEPL("@Name('select') context CtxEachString select * from SupportBean");
 
             TryPerformanceDispatch(epService, 8, 100);

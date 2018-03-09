@@ -305,10 +305,24 @@ namespace com.espertech.esper.client
             _plugInSingleRowFunctions.Add(singleRowFunction);
         }
 
+        public void AddPlugInSingleRowFunction(string functionName, Type clazz, string methodName)
+        {
+            AddPlugInSingleRowFunction(functionName, clazz.AssemblyQualifiedName, methodName);
+        }
+
         public void AddPlugInSingleRowFunction(string functionName, string className, string methodName)
         {
             AddPlugInSingleRowFunction(
                 functionName, className, methodName, ValueCacheEnum.DISABLED);
+        }
+
+        public void AddPlugInSingleRowFunction(
+            string functionName, 
+            Type clazz, 
+            string methodName, 
+            ValueCacheEnum valueCache)
+        {
+            AddPlugInSingleRowFunction(functionName, clazz.AssemblyQualifiedName, methodName, valueCache);
         }
 
         public void AddPlugInSingleRowFunction(
@@ -319,6 +333,15 @@ namespace com.espertech.esper.client
         {
             AddPlugInSingleRowFunction(
                 functionName, className, methodName, valueCache, FilterOptimizableEnum.ENABLED);
+        }
+
+        public void AddPlugInSingleRowFunction(
+            string functionName, 
+            Type clazz,
+            string methodName,
+            FilterOptimizableEnum filterOptimizable)
+        {
+            AddPlugInSingleRowFunction(functionName, clazz.AssemblyQualifiedName, methodName, filterOptimizable);
         }
 
         public void AddPlugInSingleRowFunction(
@@ -365,6 +388,17 @@ namespace com.espertech.esper.client
             FilterOptimizableEnum filterOptimizable)
         {
             AddPlugInSingleRowFunction(functionName, className, methodName, valueCache, filterOptimizable, false);
+        }
+
+        public void AddPlugInSingleRowFunction(
+            string functionName, 
+            Type clazz, 
+            string methodName,
+            ValueCacheEnum valueCache,
+            FilterOptimizableEnum filterOptimizable,
+            bool rethrowExceptions)
+        {
+            AddPlugInSingleRowFunction(functionName, clazz.AssemblyQualifiedName, methodName, valueCache, filterOptimizable, rethrowExceptions);
         }
 
         /// <summary>
@@ -651,6 +685,14 @@ namespace com.espertech.esper.client
             _eventTypesLegacy.Put(eventTypeName, legacyEventTypeDesc);
         }
 
+        public void AddEventType(
+            string eventTypeName,
+            Type eventClass,
+            ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        {
+            AddEventType(eventTypeName, eventClass.AssemblyQualifiedName, legacyEventTypeDesc);
+        }
+
         /// <summary>
         /// Add a namespace. Adding will suppress the use of the default namespaces.
         /// </summary>
@@ -659,7 +701,7 @@ namespace com.espertech.esper.client
         /// ConfigurationException if incorrect package or class names are encountered
         /// </throws>
         public void AddImport(string importName)
-        {
+       {
             string[] importParts = importName.Split(',');
             if (importParts.Length == 1)
             {
@@ -788,7 +830,7 @@ namespace com.espertech.esper.client
         /// <param name="methodInvocationConfig">is the cache configuration</param>
         public void AddMethodRef(Type clazz, ConfigurationMethodRef methodInvocationConfig)
         {
-            _methodInvocationReferences.Put(clazz.Name, methodInvocationConfig);
+            _methodInvocationReferences.Put(clazz.AssemblyQualifiedName, methodInvocationConfig);
         }
 
         public IDictionary<string, string> EventTypeNames => _eventClasses;
@@ -901,6 +943,11 @@ namespace com.espertech.esper.client
             _plugInViews.Add(configurationPlugInView);
         }
 
+        public void AddPlugInView(string @namespace, string name, Type viewFactoryClass)
+        {
+            AddPlugInView(@namespace, name, viewFactoryClass.AssemblyQualifiedName);
+        }
+
         /// <summary>
         /// Add a virtual data window for plug-in.
         /// </summary>
@@ -947,6 +994,17 @@ namespace com.espertech.esper.client
             entry.FactoryClassName = observerFactoryClass;
             entry.PatternObjectType = ConfigurationPlugInPatternObject.PatternObjectTypeEnum.OBSERVER;
             _plugInPatternObjects.Add(entry);
+        }
+
+        /// <summary>
+        /// Add a pattern guard for plug-in.
+        /// </summary>
+        /// <param name="namespace">is the namespace the guard should be available under</param>
+        /// <param name="name">is the name of the guard</param>
+        /// <param name="guardFactoryClass">is the guard factory class to use</param>
+        public void AddPlugInPatternGuard(string @namespace, string name, Type guardFactoryClass)
+        {
+            AddPlugInPatternGuard(@namespace, name, guardFactoryClass.AssemblyQualifiedName);
         }
 
         /// <summary>
@@ -1042,7 +1100,10 @@ namespace com.espertech.esper.client
             Type eventRepresentationClass,
             object initializer)
         {
-            AddPlugInEventRepresentation(eventRepresentationRootUri, eventRepresentationClass.Name, initializer);
+            AddPlugInEventRepresentation(
+                eventRepresentationRootUri, 
+                eventRepresentationClass.AssemblyQualifiedName, 
+                initializer);
         }
 
         public void AddPlugInEventType(string eventTypeName, Uri[] resolutionUris, object initializer)
@@ -1331,6 +1392,30 @@ namespace com.espertech.esper.client
             _imports.Add(new AutoImportDesc("System.Text"));
             _imports.Add(new AutoImportDesc(ANNOTATION_IMPORT));
             _imports.Add(new AutoImportDesc(typeof(BeaconSource).Namespace, (string) null));
+        }
+    }
+
+    public static class ConfigurationExtensions
+    {
+        public static void AddPlugInVirtualDataWindow(
+            this Configuration configuration,
+            string @namespace,
+            string name,
+            Type factoryClass)
+        {
+            configuration.AddPlugInVirtualDataWindow(
+                @namespace, name, factoryClass.AssemblyQualifiedName);
+        }
+
+        public static void AddPlugInVirtualDataWindow(
+            this Configuration configuration,
+            string @namespace,
+            string name,
+            Type factoryClass,
+            object customConfigurationObject)
+        {
+            configuration.AddPlugInVirtualDataWindow(
+                @namespace, name, factoryClass.AssemblyQualifiedName, customConfigurationObject);
         }
     }
 } // end of namespace

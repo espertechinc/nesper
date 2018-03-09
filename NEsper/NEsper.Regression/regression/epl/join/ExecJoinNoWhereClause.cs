@@ -32,10 +32,10 @@ namespace com.espertech.esper.regression.epl.join
         {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
-            var fields = "a.theString,b.theString".Split(',');
+            var fields = "a.TheString,b.TheString".Split(',');
             var epl =
-                "select * from SupportBean(theString like 'A%')#length(3) as a inner join SupportBean(theString like 'B%')#length(3) as b " +
-                "where a.intPrimitive = b.intPrimitive";
+                "select * from SupportBean(TheString like 'A%')#length(3) as a inner join SupportBean(TheString like 'B%')#length(3) as b " +
+                "where a.IntPrimitive = b.IntPrimitive";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -51,9 +51,9 @@ namespace com.espertech.esper.regression.epl.join
 
         private void RunAssertionJoinNoWhereClause(EPServiceProvider epService)
         {
-            var fields = new[] {"stream_0.volume", "stream_1.longBoxed"};
+            var fields = new[] {"stream_0.volume", "stream_1.LongBoxed"};
             var joinStatement = "select * from " +
-                                typeof(SupportMarketDataBean).Name + "#length(3)," +
+                                typeof(SupportMarketDataBean).FullName + "#length(3)," +
                                 typeof(SupportBean).FullName + "()#length(3)";
 
             var stmt = epService.EPAdministrator.CreateEPL(joinStatement);

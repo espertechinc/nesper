@@ -55,15 +55,15 @@ namespace com.espertech.esper.regression.epl.join {
             Log.Info("Done preloading");
 
             String epl = "@Hint('PREFER_MERGE_JOIN') select * from SupportBeanRange#lastevent a " +
-                         "inner join ST0 st0 on st0.key0 = a.key " +
-                         "inner join ST1 st1 on st1.key1 = a.key " +
+                         "inner join ST0 st0 on st0.Key0 = a.Key " +
+                         "inner join ST1 st1 on st1.Key1 = a.Key " +
                          "where " +
-                         "st0.p00 between rangeStart and rangeEnd and st1.p10 between rangeStart and rangeEnd";
+                         "st0.p00 between RangeStart and RangeEnd and st1.P10 between RangeStart and RangeEnd";
             TryAssertion(epService, epl);
 
             epl = "@Hint('PREFER_MERGE_JOIN') select * from SupportBeanRange#lastevent a, ST0 st0, ST1 st1 " +
-                  "where st0.key0 = a.key and st1.key1 = a.key and " +
-                  "st0.p00 between rangeStart and rangeEnd and st1.p10 between rangeStart and rangeEnd";
+                  "where st0.Key0 = a.Key and st1.Key1 = a.Key and " +
+                  "st0.p00 between RangeStart and RangeEnd and st1.P10 between RangeStart and RangeEnd";
             TryAssertion(epService, epl);
 
             epService.EPAdministrator.DestroyAllStatements();
@@ -91,9 +91,9 @@ namespace com.espertech.esper.regression.epl.join {
 
             // start query
             //String epl = "select * from SupportBeanRange#lastevent a, ST0 st0, ST1 st1 " +
-            //        "where st0.key0 = a.key and st1.key1 = a.key";
+            //        "where st0.Key0 = a.Key and st1.Key1 = a.Key";
             String epl = "select * from SupportBeanRange#lastevent a, ST0 st0, ST1 st1 " +
-                         "where st0.p00 between rangeStart and rangeEnd and st1.p10 between rangeStart and rangeEnd";
+                         "where st0.p00 between RangeStart and RangeEnd and st1.P10 between RangeStart and RangeEnd";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             SupportUpdateListener listener = new SupportUpdateListener();
             stmt.AddListener(listener);
@@ -135,8 +135,8 @@ namespace com.espertech.esper.regression.epl.join {
             Log.Info("Done preloading");
 
             String epl = "select * from SupportBean_ST0 st0 unidirectional, SBR a, ST1 st1 " +
-                         "where st0.key0 = a.key and st1.key1 = a.key and " +
-                         "st1.p10 between rangeStart and rangeEnd";
+                         "where st0.Key0 = a.Key and st1.Key1 = a.Key and " +
+                         "st1.P10 between RangeStart and RangeEnd";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             SupportUpdateListener listener = new SupportUpdateListener();
             stmt.AddListener(listener);

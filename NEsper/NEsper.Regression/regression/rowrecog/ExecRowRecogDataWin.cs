@@ -37,10 +37,10 @@ namespace com.espertech.esper.regression.rowrecog
             string[] fields = "string,value".Split(',');
             string text = "select * from MyEvent " +
                     "match_recognize (" +
-                    "  measures A.theString as string, A.value as value" +
+                    "  measures A.TheString as string, A.value as value" +
                     "  all matches pattern (A) " +
                     "  define " +
-                    "    A as PREV(A.theString, 1) = theString" +
+                    "    A as PREV(A.TheString, 1) = TheString" +
                     ")";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regression.rowrecog
             string[] fields = "a_string,b_string,c_string".Split(',');
             string text = "select * from MyEvent#time(5 sec) " +
                     "match_recognize (" +
-                    "  measures A.theString as a_string, B.theString as b_string, C.theString as c_string" +
+                    "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string" +
                     "  all matches pattern ( A B C ) " +
                     "  define " +
                     "    A as (A.value = 1)," +
@@ -132,12 +132,12 @@ namespace com.espertech.esper.regression.rowrecog
             string text = "select * from MyEvent#time_batch(5 sec) " +
                     "match_recognize (" +
                     "  partition by cat " +
-                    "  measures A.theString as a_string, B.theString as b_string, C.theString as c_string" +
+                    "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string" +
                     "  all matches pattern ( (A | B) C ) " +
                     "  define " +
-                    "    A as A.theString like 'A%'," +
-                    "    B as B.theString like 'B%'," +
-                    "    C as C.theString like 'C%' and C.value in (A.value, B.value)" +
+                    "    A as A.TheString like 'A%'," +
+                    "    B as B.TheString like 'B%'," +
+                    "    C as C.TheString like 'C%' and C.value in (A.value, B.value)" +
                     ") order by a_string";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);

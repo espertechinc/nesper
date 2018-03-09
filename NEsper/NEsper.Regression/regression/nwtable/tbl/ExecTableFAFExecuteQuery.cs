@@ -28,8 +28,8 @@ namespace com.espertech.esper.regression.nwtable.tbl
     {
         public override void Configure(Configuration configuration) {
             configuration.EngineDefaults.Logging.IsEnableQueryPlan = true;
-            configuration.AddEventType("SupportBean", typeof(SupportBean).FullName);
-            configuration.AddEventType("SupportBean_A", typeof(SupportBean_A).Name);
+            configuration.AddEventType("SupportBean", typeof(SupportBean));
+            configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -53,7 +53,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
         private void RunAssertionFAFDelete(EPServiceProvider epService) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL("create table MyTableDEL as (p0 string primary key, thesum sum(int))");
-            epService.EPAdministrator.CreateEPL("into table MyTableDEL select theString, sum(intPrimitive) as thesum from SupportBean group by theString");
+            epService.EPAdministrator.CreateEPL("into table MyTableDEL select TheString, sum(IntPrimitive) as thesum from SupportBean group by TheString");
             for (int i = 0; i < 10; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean("G" + i, i));
             }
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
         private void RunAssertionFAFUpdate(EPServiceProvider epService) {
             string[] fields = "p0,p1".Split(',');
             epService.EPAdministrator.CreateEPL("@Name('TheTable') create table MyTableUPD as (p0 string primary key, p1 string, thesum sum(int))");
-            epService.EPAdministrator.CreateEPL("into table MyTableUPD select theString, sum(intPrimitive) as thesum from SupportBean group by theString");
+            epService.EPAdministrator.CreateEPL("into table MyTableUPD select TheString, sum(IntPrimitive) as thesum from SupportBean group by TheString");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             epService.EPRuntime.ExecuteQuery("update MyTableUPD set p1 = 'ABC'");
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
         private void RunAssertionFAFSelect(EPServiceProvider epService) {
             string[] fields = "p0".Split(',');
             epService.EPAdministrator.CreateEPL("@Name('TheTable') create table MyTableSEL as (p0 string primary key, thesum sum(int))");
-            epService.EPAdministrator.CreateEPL("into table MyTableSEL select theString, sum(intPrimitive) as thesum from SupportBean group by theString");
+            epService.EPAdministrator.CreateEPL("into table MyTableSEL select TheString, sum(IntPrimitive) as thesum from SupportBean group by TheString");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             EPOnDemandQueryResult result = epService.EPRuntime.ExecuteQuery("select * from MyTableSEL");

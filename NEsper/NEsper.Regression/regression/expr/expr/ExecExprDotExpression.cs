@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.expr.expr
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             var listener = new SupportUpdateListener();
             var stmt = epService.EPAdministrator.CreateEPL(
-                "select Sb.Equals(MaxBy(intPrimitive)) as c0 from SupportBean as sb");
+                "select sb.equals(maxBy(IntPrimitive)) as c0 from SupportBean as sb");
             stmt.Events += listener.Update;
 
             SendAssertDotObjectEquals(epService, listener, 10, true);
@@ -63,11 +63,11 @@ namespace com.espertech.esper.regression.expr.expr
             var fields = "c0,c1,c2,c3".Split(',');
             var stmt = epService.EPAdministrator.CreateEPL(
                 "select " +
-                "intPrimitive = SupportEnumTwo.ENUM_VALUE_1.AssociatedValue as c0," +
-                "SupportEnumTwo.ENUM_VALUE_2.CheckAssociatedValue(intPrimitive) as c1, " +
+                "IntPrimitive = SupportEnumTwo.ENUM_VALUE_1.AssociatedValue as c0," +
+                "SupportEnumTwo.ENUM_VALUE_2.CheckAssociatedValue(IntPrimitive) as c1, " +
                 "SupportEnumTwo.ENUM_VALUE_3.Nested.Value as c2," +
-                "SupportEnumTwo.ENUM_VALUE_2.CheckEventBeanPropInt(sb, 'intPrimitive') as c3, " +
-                "SupportEnumTwo.ENUM_VALUE_2.CheckEventBeanPropInt(*, 'intPrimitive') as c4 " +
+                "SupportEnumTwo.ENUM_VALUE_2.CheckEventBeanPropInt(sb, 'IntPrimitive') as c3, " +
+                "SupportEnumTwo.ENUM_VALUE_2.CheckEventBeanPropInt(*, 'IntPrimitive') as c4 " +
                 "from SupportBean as sb");
             stmt.Events += listener.Update;
 
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regression.expr.expr
 
             // test "events" reserved keyword in package name
             epService.EPAdministrator.CreateEPL(
-                "select " + typeof(SampleEnumInEventsPackage).Name + ".A from SupportBean");
+                "select " + typeof(SampleEnumInEventsPackage).FullName + ".A from SupportBean");
 
             stmt.Dispose();
         }
@@ -126,15 +126,15 @@ namespace com.espertech.esper.regression.expr.expr
             epService.EPAdministrator.Configuration.AddEventType("SupportChainTop", typeof(SupportChainTop));
 
             TryInvalid(
-                epService, "select Abc.NoSuchMethod() from SupportBean abc",
+                epService, "select abc.NoSuchMethod() from SupportBean abc",
                 "Error starting statement: Failed to validate select-clause expression 'abc.NoSuchMethod()': Failed to solve 'noSuchMethod' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
                 typeof(SupportBean).FullName +
-                "' taking no parameters [select Abc.NoSuchMethod() from SupportBean abc]");
+                "' taking no parameters [select abc.NoSuchMethod() from SupportBean abc]");
             TryInvalid(
-                epService, "select Abc.GetChildOne(\"abc\", 10).NoSuchMethod() from SupportChainTop abc",
+                epService, "select abc.GetChildOne(\"abc\", 10).NoSuchMethod() from SupportChainTop abc",
                 "Error starting statement: Failed to validate select-clause expression 'abc.GetChildOne(\"abc\",10).NoSuchMethod()': Failed to solve 'getChildOne' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
-                typeof(SupportChainChildOne).Name +
-                "' taking no parameters [select Abc.GetChildOne(\"abc\", 10).NoSuchMethod() from SupportChainTop abc]");
+                typeof(SupportChainChildOne).FullName +
+                "' taking no parameters [select abc.GetChildOne(\"abc\", 10).NoSuchMethod() from SupportChainTop abc]");
         }
 
         private void RunAssertionNestedPropertyInstanceExpr(EPServiceProvider epService)
@@ -144,8 +144,8 @@ namespace com.espertech.esper.regression.expr.expr
             var stmt = epService.EPAdministrator.CreateEPL(
                 "select " +
                 "levelOne.GetCustomLevelOne(10) as val0, " +
-                "levelOne.levelTwo.GetCustomLevelTwo(20) as val1, " +
-                "levelOne.levelTwo.levelThree.GetCustomLevelThree(30) as val2 " +
+                "levelOne.LevelTwo.GetCustomLevelTwo(20) as val1, " +
+                "levelOne.LevelTwo.LevelThree.GetCustomLevelThree(30) as val2 " +
                 "from LevelZero");
             stmt.Events += listener.Update;
 

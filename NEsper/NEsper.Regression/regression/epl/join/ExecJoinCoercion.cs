@@ -32,8 +32,8 @@ namespace com.espertech.esper.regression.epl.join
             epService.EPAdministrator.Configuration.AddEventType("SupportBeanRange", typeof(SupportBeanRange));
     
             string[] fields = "sbs,sbi,sbri".Split(',');
-            string epl = "select sb.theString as sbs, sb.intPrimitive as sbi, sbr.id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
-                    "where intPrimitive between rangeStartLong and rangeEndLong";
+            string epl = "select sb.TheString as sbs, sb.IntPrimitive as sbi, sbr.id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
+                    "where IntPrimitive between rangeStartLong and rangeEndLong";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -56,8 +56,8 @@ namespace com.espertech.esper.regression.epl.join
             Assert.IsFalse(listener.IsInvoked);
     
             stmt.Dispose();
-            epl = "select sb.theString as sbs, sb.intPrimitive as sbi, sbr.id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
-                    "where sbr.key = sb.theString and intPrimitive between rangeStartLong and rangeEndLong";
+            epl = "select sb.TheString as sbs, sb.IntPrimitive as sbi, sbr.id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
+                    "where sbr.key = sb.TheString and IntPrimitive between rangeStartLong and rangeEndLong";
             stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += listener.Update;
     
@@ -83,9 +83,9 @@ namespace com.espertech.esper.regression.epl.join
     
         private void RunAssertionJoinCoercion(EPServiceProvider epService) {
             string joinStatement = "select volume from " +
-                    typeof(SupportMarketDataBean).Name + "#length(3) as s0," +
+                    typeof(SupportMarketDataBean).FullName + "#length(3) as s0," +
                     typeof(SupportBean).FullName + "()#length(3) as s1 " +
-                    " where s0.volume = s1.intPrimitive";
+                    " where s0.volume = s1.IntPrimitive";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(joinStatement);
             var listener = new SupportUpdateListener();

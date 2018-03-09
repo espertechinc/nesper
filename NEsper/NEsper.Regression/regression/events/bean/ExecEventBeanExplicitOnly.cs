@@ -34,26 +34,26 @@ namespace com.espertech.esper.regression.events.bean
             legacyDef.AccessorStyle = AccessorStyleEnum.EXPLICIT;
             legacyDef.CodeGeneration = codeGeneration;
             legacyDef.AddFieldProperty("explicitFNested", "fieldNested");
-            legacyDef.AddMethodProperty("explicitMNested", "readLegacyNested");
-            configuration.AddEventType("MyLegacyEvent", typeof(SupportLegacyBean).Name, legacyDef);
+            legacyDef.AddMethodProperty("explicitMNested", "ReadLegacyNested");
+            configuration.AddEventType("MyLegacyEvent", typeof(SupportLegacyBean).AssemblyQualifiedName, legacyDef);
     
             legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.AccessorStyle = AccessorStyleEnum.EXPLICIT;
             legacyDef.CodeGeneration = codeGeneration;
             legacyDef.AddFieldProperty("fieldNestedClassValue", "fieldNestedValue");
-            legacyDef.AddMethodProperty("readNestedClassValue", "readNestedValue");
-            configuration.AddEventType("MyLegacyNestedEvent", typeof(SupportLegacyBean.LegacyNested).Name, legacyDef);
+            legacyDef.AddMethodProperty("readNestedClassValue", "ReadNestedValue");
+            configuration.AddEventType("MyLegacyNestedEvent", typeof(SupportLegacyBean.LegacyNested).AssemblyQualifiedName, legacyDef);
     
             legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.AccessorStyle = AccessorStyleEnum.EXPLICIT;
             legacyDef.CodeGeneration = codeGeneration;
-            configuration.AddEventType("MySupportBean", typeof(SupportBean).FullName, legacyDef);
+            configuration.AddEventType("MySupportBean", typeof(SupportBean).AssemblyQualifiedName, legacyDef);
         }
     
         public override void Run(EPServiceProvider epService) {
             string statementText = "select " +
                     "explicitFNested.fieldNestedClassValue as fnested, " +
-                    "explicitMNested.readNestedClassValue as mnested" +
+                    "explicitMNested.ReadNestedClassValue as mnested" +
                     " from MyLegacyEvent#length(5)";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regression.events.bean
     
             try {
                 // invalid statement, JavaBean-style getters not exposed
-                statementText = "select intPrimitive from MySupportBean#length(5)";
+                statementText = "select IntPrimitive from MySupportBean#length(5)";
                 epService.EPAdministrator.CreateEPL(statementText);
             } catch (EPStatementException) {
                 // expected

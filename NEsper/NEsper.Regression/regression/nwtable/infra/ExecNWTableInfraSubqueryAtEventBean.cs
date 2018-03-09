@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             epService.EPAdministrator.CreateEPL(eplCreate);
     
             // create insert into
-            string eplInsert = "insert into MyInfra select theString as c0, intPrimitive as c1 from SupportBean";
+            string eplInsert = "insert into MyInfra select TheString as c0, IntPrimitive as c1 from SupportBean";
             epService.EPAdministrator.CreateEPL(eplInsert);
     
             // create subquery

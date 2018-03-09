@@ -57,7 +57,7 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPAdministrator.CreateEPL(createEpl);
     
             if (buildIndex) {
-                epService.EPAdministrator.CreateEPL("create index idx1 on MyWindow(theString hash, intPrimitive btree)");
+                epService.EPAdministrator.CreateEPL("create index idx1 on MyWindow(TheString hash, IntPrimitive btree)");
             }
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
     
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             // single-field compare
             string[] fields = "val".Split(',');
-            string eplSingle = "select (select intPrimitive from MyWindow where theString = 'E9734') as val from SupportBeanRange sbr";
+            string eplSingle = "select (select IntPrimitive from MyWindow where TheString = 'E9734') as val from SupportBeanRange sbr";
             EPStatement stmtSingle = epService.EPAdministrator.CreateEPL(eplSingle);
             var listener = new SupportUpdateListener();
             stmtSingle.Events += listener.Update;
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regression.epl.subselect
             stmtSingle.Dispose();
     
             // two-field compare
-            string eplTwoHash = "select (select intPrimitive from MyWindow where theString = 'E9736' and intPrimitive = 9736) as val from SupportBeanRange sbr";
+            string eplTwoHash = "select (select IntPrimitive from MyWindow where TheString = 'E9736' and IntPrimitive = 9736) as val from SupportBeanRange sbr";
             EPStatement stmtTwoHash = epService.EPAdministrator.CreateEPL(eplTwoHash);
             stmtTwoHash.Events += listener.Update;
     
@@ -100,9 +100,9 @@ namespace com.espertech.esper.regression.epl.subselect
     
             // range compare single
             if (buildIndex) {
-                epService.EPAdministrator.CreateEPL("create index idx2 on MyWindow(intPrimitive btree)");
+                epService.EPAdministrator.CreateEPL("create index idx2 on MyWindow(IntPrimitive btree)");
             }
-            string eplSingleBTree = "select (select intPrimitive from MyWindow where intPrimitive between 9735 and 9735) as val from SupportBeanRange sbr";
+            string eplSingleBTree = "select (select IntPrimitive from MyWindow where IntPrimitive between 9735 and 9735) as val from SupportBeanRange sbr";
             EPStatement stmtSingleBtree = epService.EPAdministrator.CreateEPL(eplSingleBTree);
             stmtSingleBtree.Events += listener.Update;
     
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regression.epl.subselect
             stmtSingleBtree.Dispose();
     
             // range compare composite
-            string eplComposite = "select (select intPrimitive from MyWindow where theString = 'E9738' and intPrimitive between 9738 and 9738) as val from SupportBeanRange sbr";
+            string eplComposite = "select (select IntPrimitive from MyWindow where TheString = 'E9738' and IntPrimitive between 9738 and 9738) as val from SupportBeanRange sbr";
             EPStatement stmtComposite = epService.EPAdministrator.CreateEPL(eplComposite);
             stmtComposite.Events += listener.Update;
     
@@ -150,7 +150,7 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPAdministrator.CreateEPL(createEpl);
     
             if (buildIndex) {
-                epService.EPAdministrator.CreateEPL("create index idx1 on MyWindow(theString hash, intPrimitive btree)");
+                epService.EPAdministrator.CreateEPL("create index idx1 on MyWindow(TheString hash, IntPrimitive btree)");
             }
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
     
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regression.epl.subselect
             }
     
             string[] fields = "cols.mini,cols.maxi".Split(',');
-            string queryEpl = "select (select min(intPrimitive) as mini, max(intPrimitive) as maxi from MyWindow where theString = sbr.key and intPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
+            string queryEpl = "select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow where TheString = sbr.key and IntPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(queryEpl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPAdministrator.CreateEPL(createEpl);
     
             if (buildIndex) {
-                epService.EPAdministrator.CreateEPL("create index idx1 on MyWindow(intPrimitive btree)");
+                epService.EPAdministrator.CreateEPL("create index idx1 on MyWindow(IntPrimitive btree)");
             }
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
     
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regression.epl.subselect
             }
     
             string[] fields = "cols.mini,cols.maxi".Split(',');
-            string queryEpl = "select (select min(intPrimitive) as mini, max(intPrimitive) as maxi from MyWindow where intPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
+            string queryEpl = "select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow where IntPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(queryEpl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -235,8 +235,8 @@ namespace com.espertech.esper.regression.epl.subselect
             }
     
             string[] fields = "cols.mini,cols.maxi".Split(',');
-            string queryEpl = "select (select min(intPrimitive) as mini, max(intPrimitive) as maxi from MyWindow " +
-                    "where theString = sbr.key and intPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
+            string queryEpl = "select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow " +
+                    "where TheString = sbr.key and IntPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(queryEpl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -286,10 +286,10 @@ namespace com.espertech.esper.regression.epl.subselect
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
     
             if (createExplicitIndex) {
-                epService.EPAdministrator.CreateEPL("create index MyIndex on MyWindow (theString)");
+                epService.EPAdministrator.CreateEPL("create index MyIndex on MyWindow (TheString)");
             }
     
-            string consumeEpl = "select e0, (select theString from MyWindow where intPrimitive = es.e1 and theString = es.e2) as val from EventSchema as es";
+            string consumeEpl = "select e0, (select TheString from MyWindow where IntPrimitive = es.e1 and TheString = es.e2) as val from EventSchema as es";
             if (disableIndexShareConsumer) {
                 consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
             }

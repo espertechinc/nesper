@@ -11,13 +11,9 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.events.revision
 {
@@ -258,27 +254,27 @@ namespace com.espertech.esper.regression.events.revision
             var revEvent = new ConfigurationRevisionEventType();
             revEvent.AddNameBaseEventType("Nested");
             revEvent.PropertyRevision = PropertyRevisionEnum.MERGE_DECLARED;
-            revEvent.KeyPropertyNames = new string[]{"simpleProperty"};
+            revEvent.KeyPropertyNames = new string[]{"SimpleProperty"};
             epService.EPAdministrator.Configuration.AddRevisionEventType("NestedRevision", revEvent);
     
             epService.EPAdministrator.CreateEPL("create window MyWinFour#time(10 sec) as select * from NestedRevision");
             epService.EPAdministrator.CreateEPL("insert into MyWinFour select * from Nested");
     
             string[] fields = "key,f1".Split(',');
-            string stmtText = "select irstream simpleProperty as key, nested.nestedValue as f1 from MyWinFour";
+            string stmtText = "select irstream SimpleProperty as key, Nested.NestedValue as f1 from MyWinFour";
             EPStatement consumerOne = epService.EPAdministrator.CreateEPL(stmtText);
             var listenerOne = new SupportUpdateListener();
             consumerOne.Events += listenerOne.Update;
             EPAssertionUtil.AssertEqualsAnyOrder(consumerOne.EventType.PropertyNames, fields);
     
             epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"simple", "nestedValue"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"Simple", "NestedValue"});
     
             SupportBeanComplexProps bean = SupportBeanComplexProps.MakeDefaultBean();
             bean.Nested.NestedValue = "val2";
             epService.EPRuntime.SendEvent(bean);
-            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new object[]{"simple", "nestedValue"});
-            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new object[]{"simple", "val2"});
+            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new object[]{"Simple", "NestedValue"});
+            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new object[]{"Simple", "val2"});
             listenerOne.Reset();
         }
     

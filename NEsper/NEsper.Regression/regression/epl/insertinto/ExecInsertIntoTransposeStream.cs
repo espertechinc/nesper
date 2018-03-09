@@ -72,7 +72,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             } else {
                 throw new IllegalStateException("Unrecognized code " + representation);
             }
-            string epl = "insert into MySchema select Transpose(" + generateFunction + "(theString, intPrimitive)) from SupportBean";
+            string epl = "insert into MySchema select Transpose(" + generateFunction + "(TheString, IntPrimitive)) from SupportBean";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(epl, "first").Events += listener.Update;
     
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E2", 2});
     
-            // MySchema already Exists, start second statement
+            // MySchema already exists, start second statement
             epService.EPAdministrator.CreateEPL(epl, "second").Events += listener.Update;
             epService.EPAdministrator.GetStatement("first").Dispose();
     
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regression.epl.insertinto
         }
     
         private void RunAssertionTransposeFunctionToStreamWithProps(EPServiceProvider epService) {
-            string stmtTextOne = "insert into MyStream select 1 as dummy, Transpose(Custom('O' || theString, 10)) from SupportBean(theString like 'I%')";
+            string stmtTextOne = "insert into MyStream select 1 as dummy, Transpose(Custom('O' || TheString, 10)) from SupportBean(TheString like 'I%')";
             epService.EPAdministrator.CreateEPL(stmtTextOne);
     
             string stmtTextTwo = "select * from MyStream";
@@ -107,17 +107,17 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPRuntime.SendEvent(new SupportBean("I1", 1));
             EventBean result = listener.AssertOneGetNewAndReset();
             var underlying = (Pair<object, object>) result.Underlying;
-            EPAssertionUtil.AssertProps(result, "dummy,theString,intPrimitive".Split(','), new object[]{1, "OI1", 10});
+            EPAssertionUtil.AssertProps(result, "dummy,TheString,IntPrimitive".Split(','), new object[]{1, "OI1", 10});
             Assert.AreEqual("OI1", ((SupportBean) underlying.First).TheString);
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
         private void RunAssertionTransposeFunctionToStream(EPServiceProvider epService) {
-            string stmtTextOne = "insert into OtherStream select Transpose(Custom('O' || theString, 10)) from SupportBean(theString like 'I%')";
+            string stmtTextOne = "insert into OtherStream select Transpose(Custom('O' || TheString, 10)) from SupportBean(TheString like 'I%')";
             epService.EPAdministrator.CreateEPL(stmtTextOne, "first");
     
-            string stmtTextTwo = "select * from OtherStream(theString like 'O%')";
+            string stmtTextTwo = "select * from OtherStream(TheString like 'O%')";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -126,25 +126,25 @@ namespace com.espertech.esper.regression.epl.insertinto
     
             epService.EPRuntime.SendEvent(new SupportBean("I1", 1));
             EventBean result = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(result, "theString,intPrimitive".Split(','), new object[]{"OI1", 10});
+            EPAssertionUtil.AssertProps(result, "TheString,IntPrimitive".Split(','), new object[]{"OI1", 10});
             Assert.AreEqual("OI1", ((SupportBean) result.Underlying).TheString);
     
-            // try second statement as "OtherStream" now already Exists
+            // try second statement as "OtherStream" now already exists
             epService.EPAdministrator.CreateEPL(stmtTextOne, "second");
             epService.EPAdministrator.GetStatement("first").Dispose();
             epService.EPRuntime.SendEvent(new SupportBean("I2", 2));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "theString,intPrimitive".Split(','), new object[]{"OI2", 10});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "TheString,IntPrimitive".Split(','), new object[]{"OI2", 10});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
         private void RunAssertionTransposeSingleColumnInsert(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBeanNumeric));
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("customOne", typeof(SupportStaticMethodLib).FullName, "makeSupportBean");
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("customTwo", typeof(SupportStaticMethodLib).FullName, "makeSupportBeanNumeric");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("customOne", typeof(SupportStaticMethodLib).FullName, "MakeSupportBean");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("customTwo", typeof(SupportStaticMethodLib).FullName, "MakeSupportBeanNumeric");
     
             // with transpose and same input and output
-            string stmtTextOne = "insert into SupportBean select Transpose(CustomOne('O' || theString, 10)) from SupportBean(theString like 'I%')";
+            string stmtTextOne = "insert into SupportBean select Transpose(CustomOne('O' || TheString, 10)) from SupportBean(TheString like 'I%')";
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);
             Assert.AreEqual(typeof(SupportBean), stmtOne.EventType.UnderlyingType);
             var listener = new SupportUpdateListener();
@@ -152,12 +152,12 @@ namespace com.espertech.esper.regression.epl.insertinto
     
             epService.EPRuntime.SendEvent(new SupportBean("I1", 1));
             EventBean resultOne = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(resultOne, "theString,intPrimitive".Split(','), new object[]{"OI1", 10});
+            EPAssertionUtil.AssertProps(resultOne, "TheString,IntPrimitive".Split(','), new object[]{"OI1", 10});
             Assert.AreEqual("OI1", ((SupportBean) resultOne.Underlying).TheString);
             stmtOne.Dispose();
     
             // with transpose but different input and output (also test ignore column name)
-            string stmtTextTwo = "insert into SupportBeanNumeric select Transpose(CustomTwo(intPrimitive, intPrimitive+1)) as col1 from SupportBean(theString like 'I%')";
+            string stmtTextTwo = "insert into SupportBeanNumeric select Transpose(CustomTwo(IntPrimitive, IntPrimitive+1)) as col1 from SupportBean(TheString like 'I%')";
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL(stmtTextTwo);
             Assert.AreEqual(typeof(SupportBeanNumeric), stmtTwo.EventType.UnderlyingType);
             stmtTwo.Events += listener.Update;
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                 epService.EPAdministrator.CreateEPL("insert into SupportBeanNumeric select Transpose(CustomOne('O', 10)) from SupportBean");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Expression-returned value of type '" + typeof(SupportBean).FullName + "' cannot be converted to target event type 'SupportBeanNumeric' with underlying type '" + typeof(SupportBeanNumeric).Name + "' [insert into SupportBeanNumeric select Transpose(CustomOne('O', 10)) from SupportBean]", ex.Message);
+                Assert.AreEqual("Error starting statement: Expression-returned value of type '" + typeof(SupportBean).FullName + "' cannot be converted to target event type 'SupportBeanNumeric' with underlying type '" + typeof(SupportBeanNumeric).FullName + "' [insert into SupportBeanNumeric select Transpose(CustomOne('O', 10)) from SupportBean]", ex.Message);
             }
     
             // invalid additional properties

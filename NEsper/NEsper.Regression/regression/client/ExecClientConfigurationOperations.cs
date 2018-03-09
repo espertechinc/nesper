@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.client
         private void RunAssertionAutoNamePackage(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventTypeAutoName(typeof(MyAutoNamedEventType).Namespace);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from " + typeof(MyAutoNamedEventType).Name);
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from " + typeof(MyAutoNamedEventType).FullName);
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
     
@@ -167,7 +167,7 @@ namespace com.espertech.esper.regression.client
     
             // First statement with new name
             var mapProps = new Dictionary<string, object>();
-            mapProps.Put("prop1", typeof(int).Name);
+            mapProps.Put("prop1", typeof(int).FullName);
             epService.EPAdministrator.Configuration.AddEventType("AddedMapOne", mapProps);
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from AddedMapOne");
@@ -195,12 +195,12 @@ namespace com.espertech.esper.regression.client
     
             // Add the same name and type again
             mapProps.Clear();
-            mapProps.Put("prop1", typeof(int).Name);
+            mapProps.Put("prop1", typeof(int).FullName);
             epService.EPAdministrator.Configuration.AddEventType("AddedNameSecond", mapProps);
     
             // Add the same name and a different type
             try {
-                mapProps.Put("XX", typeof(int).Name);
+                mapProps.Put("XX", typeof(int).FullName);
                 epService.EPAdministrator.Configuration.AddEventType("AddedNameSecond", mapProps);
                 Assert.Fail();
             } catch (ConfigurationException) {
@@ -218,7 +218,7 @@ namespace com.espertech.esper.regression.client
             TryInvalid(epService, "AddedName");
     
             // First statement with new name
-            epService.EPAdministrator.Configuration.AddEventType("AddedName", typeof(SupportBean).FullName);
+            epService.EPAdministrator.Configuration.AddEventType("AddedName", typeof(SupportBean));
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from AddedName");
             var testListener = new SupportUpdateListener();
             stmt.Events += testListener.Update;
@@ -230,7 +230,7 @@ namespace com.espertech.esper.regression.client
             TryInvalid(epService, "AddedNameSecond");
     
             // Second statement using a new alias to the same type, should both receive
-            epService.EPAdministrator.Configuration.AddEventType("AddedNameSecond", typeof(SupportBean).FullName);
+            epService.EPAdministrator.Configuration.AddEventType("AddedNameSecond", typeof(SupportBean));
             var testListenerTwo = new SupportUpdateListener();
             stmt = epService.EPAdministrator.CreateEPL("select * from AddedNameSecond");
             stmt.Events += testListenerTwo.Update;
@@ -241,11 +241,11 @@ namespace com.espertech.esper.regression.client
             Assert.AreSame(eventTwo, testListenerTwo.AssertOneGetNewAndReset().Underlying);
     
             // Add the same name and type again
-            epService.EPAdministrator.Configuration.AddEventType("AddedNameSecond", typeof(SupportBean).FullName);
+            epService.EPAdministrator.Configuration.AddEventType("AddedNameSecond", typeof(SupportBean));
     
             // Add the same name and a different type
             try {
-                epService.EPAdministrator.Configuration.AddEventType("AddedNameSecond", typeof(SupportBean_A).Name);
+                epService.EPAdministrator.Configuration.AddEventType("AddedNameSecond", typeof(SupportBean_A));
                 Assert.Fail();
             } catch (ConfigurationException) {
                 // expected

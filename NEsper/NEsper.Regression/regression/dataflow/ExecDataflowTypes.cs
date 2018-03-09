@@ -52,11 +52,11 @@ namespace com.espertech.esper.regression.dataflow
 
             EPAssertionUtil.AssertPropsPerRow(
                 epService.Container,
-                outputOne.GetAndReset().ToArray(), "theString,intPrimitive".Split(','), new[] {new object[] {"E1", 1}});
+                outputOne.GetAndReset().ToArray(), "TheString,IntPrimitive".Split(','), new[] {new object[] {"E1", 1}});
             var received = outputTwo.GetAndReset();
             EPAssertionUtil.AssertPropsPerRow(
                 epService.Container,
-                received.First.ToArray(), "theString,intPrimitive".Split(','), new[] {new object[] {"E1", 1}});
+                received.First.ToArray(), "TheString,IntPrimitive".Split(','), new[] {new object[] {"E1", 1}});
             EPAssertionUtil.AssertEqualsExactOrder(new[] {0}, received.Second.ToArray());
 
             epService.EPAdministrator.DestroyAllStatements();

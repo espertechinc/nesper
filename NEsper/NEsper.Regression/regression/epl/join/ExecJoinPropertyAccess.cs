@@ -33,8 +33,8 @@ namespace com.espertech.esper.regression.epl.join
             Assert.AreEqual("0ma0", combined.GetIndexed(0).GetMapped("0ma").Value);
     
             string epl = "select nested.nested, s1.indexed[0], nested.indexed[1] from " +
-                    typeof(SupportBeanComplexProps).Name + "#length(3) nested, " +
-                    typeof(SupportBeanCombinedProps).Name + "#length(3) s1" +
+                    typeof(SupportBeanComplexProps).FullName + "#length(3) nested, " +
+                    typeof(SupportBeanCombinedProps).FullName + "#length(3) s1" +
                     " where Mapped('keyOne') = indexed[2].Mapped('2ma').value and" +
                     " indexed[0].Mapped('0ma').value = '0ma0'";
     
@@ -55,9 +55,9 @@ namespace com.espertech.esper.regression.epl.join
     
         private void RunAssertionOuterJoin(EPServiceProvider epService) {
             string epl = "select * from " +
-                    typeof(SupportBeanComplexProps).Name + "#length(3) s0" +
+                    typeof(SupportBeanComplexProps).FullName + "#length(3) s0" +
                     " left outer join " +
-                    typeof(SupportBeanCombinedProps).Name + "#length(3) s1" +
+                    typeof(SupportBeanCombinedProps).FullName + "#length(3) s1" +
                     " on Mapped('keyOne') = indexed[2].Mapped('2ma').value";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regression.epl.join
             Assert.AreEqual(complex.GetMapped("keyOne"), combined.GetIndexed(2).GetMapped("2ma").Value);
     
             EventBean theEvent = testListener.GetAndResetLastNewData()[0];
-            Assert.AreEqual("simple", theEvent.Get("s0.simpleProperty"));
+            Assert.AreEqual("Simple", theEvent.Get("s0.SimpleProperty"));
             Assert.AreSame(complex, theEvent.Get("s0"));
             Assert.AreSame(combined, theEvent.Get("s1"));
     

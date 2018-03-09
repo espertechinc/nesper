@@ -49,10 +49,10 @@ namespace com.espertech.esper.regression.view
             // invalid return type for filter during compilation time
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             try {
-                epService.EPAdministrator.CreateEPL("select theString From SupportBean#time(30 seconds) where intPrimitive group by theString");
+                epService.EPAdministrator.CreateEPL("select TheString From SupportBean#time(30 seconds) where IntPrimitive group by TheString");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error validating expression: The where-clause filter expression must return a bool value [Select theString From SupportBean#time(30 seconds) where intPrimitive group by theString]", ex.Message);
+                Assert.AreEqual("Error validating expression: The where-clause filter expression must return a bool value [Select TheString From SupportBean#time(30 seconds) where IntPrimitive group by TheString]", ex.Message);
             }
     
             // invalid return type for filter at runtime
@@ -75,11 +75,11 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionWhereNumericType(EPServiceProvider epService) {
             string epl = "select " +
-                    " intPrimitive + longPrimitive as p1," +
-                    " intPrimitive * doublePrimitive as p2," +
-                    " floatPrimitive / doublePrimitive as p3" +
+                    " IntPrimitive + LongPrimitive as p1," +
+                    " IntPrimitive * DoublePrimitive as p2," +
+                    " FloatPrimitive / DoublePrimitive as p3" +
                     " from " + typeof(SupportBean).FullName + "#length(3) where " +
-                    "intPrimitive=longPrimitive and intPrimitive=doublePrimitive and floatPrimitive=doublePrimitive";
+                    "IntPrimitive=LongPrimitive and IntPrimitive=DoublePrimitive and FloatPrimitive=DoublePrimitive";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();

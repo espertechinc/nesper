@@ -44,7 +44,7 @@ namespace com.espertech.esper.epl.lookup
             EventAdvancedIndexProvisionDesc advancedIndexProvisionDesc = null;
     
             foreach (CreateIndexItem columnDesc in columns) {
-                string indexType = columnDesc.IndexType.GetNameInvariant();
+                string indexType = columnDesc.IndexType.ToLowerInvariant();
                 if ((indexType == CreateIndexType.HASH.GetNameInvariant()) ||
                     (indexType == CreateIndexType.BTREE.GetNameInvariant())) {
                     ValidateBuiltin(columnDesc, eventType, hashProps, btreeProps, indexedColumns);

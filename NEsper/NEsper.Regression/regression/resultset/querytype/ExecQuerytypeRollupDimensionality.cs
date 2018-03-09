@@ -58,8 +58,8 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void TryAssertionOutputWhenTerminated(EPServiceProvider epService, string outputLimit, bool hinted) {
             string hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
             epService.EPAdministrator.CreateEPL("@Name('s0') create context MyContext start SupportBean_S0(id=1) end SupportBean_S0(id=0)");
-            epService.EPAdministrator.CreateEPL(hint + "@Name('s1') context MyContext select theString as c0, sum(intPrimitive) as c1 " +
-                    "from SupportBean group by Rollup(theString) output " + outputLimit + " when terminated");
+            epService.EPAdministrator.CreateEPL(hint + "@Name('s1') context MyContext select TheString as c0, sum(IntPrimitive) as c1 " +
+                    "from SupportBean group by Rollup(TheString) output " + outputLimit + " when terminated");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.GetStatement("s1").Events += listener.Update;
     
@@ -87,8 +87,8 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionGroupByWithComputation(EPServiceProvider epService) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select longPrimitive as c0, sum(intPrimitive) as c1 " +
-                    "from SupportBean group by Rollup(case when longPrimitive > 0 then 1 else 0 end)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select LongPrimitive as c0, sum(IntPrimitive) as c1 " +
+                    "from SupportBean group by Rollup(case when LongPrimitive > 0 then 1 else 0 end)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("c0"));
@@ -118,9 +118,9 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionContextPartitionAlsoRollup(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("create context SegmentedByString partition by theString from SupportBean");
+            epService.EPAdministrator.CreateEPL("create context SegmentedByString partition by TheString from SupportBean");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("context SegmentedByString select theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from SupportBean group by Rollup(theString, intPrimitive)").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("context SegmentedByString select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean group by Rollup(TheString, IntPrimitive)").Events += listener.Update;
             string[] fields = "c0,c1,c2".Split(',');
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10));
@@ -141,7 +141,7 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionOnSelect(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("on SupportBean_S0 as s0 select mw.theString as c0, sum(mw.intPrimitive) as c1, count(*) as c2 from MyWindow mw group by Rollup(mw.theString)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("on SupportBean_S0 as s0 select mw.TheString as c0, sum(mw.IntPrimitive) as c1, count(*) as c2 from MyWindow mw group by Rollup(mw.TheString)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             string[] fields = "c0,c1,c2".Split(',');
@@ -165,27 +165,27 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionUnboundRollupUnenclosed(EPServiceProvider epService) {
-            TryAssertionUnboundRollupUnenclosed(epService, "theString, Rollup(intPrimitive, longPrimitive)");
+            TryAssertionUnboundRollupUnenclosed(epService, "TheString, Rollup(IntPrimitive, LongPrimitive)");
             TryAssertionUnboundRollupUnenclosed(epService, "grouping Sets(" +
-                    "(theString, intPrimitive, longPrimitive)," +
-                    "(theString, intPrimitive)," +
-                    "theString)");
-            TryAssertionUnboundRollupUnenclosed(epService, "theString, grouping Sets(" +
-                    "(intPrimitive, longPrimitive)," +
-                    "(intPrimitive), ())");
+                    "(TheString, IntPrimitive, LongPrimitive)," +
+                    "(TheString, IntPrimitive)," +
+                    "TheString)");
+            TryAssertionUnboundRollupUnenclosed(epService, "TheString, grouping Sets(" +
+                    "(IntPrimitive, LongPrimitive)," +
+                    "(IntPrimitive), ())");
         }
     
         private void RunAssertionUnboundCubeUnenclosed(EPServiceProvider epService) {
-            TryAssertionUnboundCubeUnenclosed(epService, "theString, Cube(intPrimitive, longPrimitive)");
+            TryAssertionUnboundCubeUnenclosed(epService, "TheString, Cube(IntPrimitive, LongPrimitive)");
             TryAssertionUnboundCubeUnenclosed(epService, "grouping Sets(" +
-                    "(theString, intPrimitive, longPrimitive)," +
-                    "(theString, intPrimitive)," +
-                    "(theString, longPrimitive)," +
-                    "theString)");
-            TryAssertionUnboundCubeUnenclosed(epService, "theString, grouping Sets(" +
-                    "(intPrimitive, longPrimitive)," +
-                    "(intPrimitive)," +
-                    "(longPrimitive)," +
+                    "(TheString, IntPrimitive, LongPrimitive)," +
+                    "(TheString, IntPrimitive)," +
+                    "(TheString, LongPrimitive)," +
+                    "TheString)");
+            TryAssertionUnboundCubeUnenclosed(epService, "TheString, grouping Sets(" +
+                    "(IntPrimitive, LongPrimitive)," +
+                    "(IntPrimitive)," +
+                    "(LongPrimitive)," +
                     "())");
         }
     
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             string[] fields = "c0,c1,c2,c3".Split(',');
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("@Name('s1')" +
-                    "select theString as c0, intPrimitive as c1, longPrimitive as c2, sum(doublePrimitive) as c3 from SupportBean " +
+                    "select TheString as c0, IntPrimitive as c1, LongPrimitive as c2, sum(DoublePrimitive) as c3 from SupportBean " +
                     "group by " + groupBy).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 10, 100, 1000));
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             string[] fields = "c0,c1,c2,c3".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL("@Name('s1')" +
-                    "select theString as c0, intPrimitive as c1, longPrimitive as c2, sum(doublePrimitive) as c3 from SupportBean " +
+                    "select TheString as c0, IntPrimitive as c1, LongPrimitive as c2, sum(DoublePrimitive) as c3 from SupportBean " +
                     "group by " + groupBy);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -247,15 +247,15 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionUnboundGroupingSet2LevelUnenclosed(EPServiceProvider epService) {
-            TryAssertionUnboundGroupingSet2LevelUnenclosed(epService, "theString, grouping Sets(intPrimitive, longPrimitive)");
-            TryAssertionUnboundGroupingSet2LevelUnenclosed(epService, "grouping Sets((theString, intPrimitive), (theString, longPrimitive))");
+            TryAssertionUnboundGroupingSet2LevelUnenclosed(epService, "TheString, grouping Sets(IntPrimitive, LongPrimitive)");
+            TryAssertionUnboundGroupingSet2LevelUnenclosed(epService, "grouping Sets((TheString, IntPrimitive), (TheString, LongPrimitive))");
         }
     
         private void TryAssertionUnboundGroupingSet2LevelUnenclosed(EPServiceProvider epService, string groupBy) {
     
             string[] fields = "c0,c1,c2,c3".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL("@Name('s1')" +
-                    "select theString as c0, intPrimitive as c1, longPrimitive as c2, sum(doublePrimitive) as c3 from SupportBean " +
+                    "select TheString as c0, IntPrimitive as c1, LongPrimitive as c2, sum(DoublePrimitive) as c3 from SupportBean " +
                     "group by " + groupBy);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -284,8 +284,8 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionBoundGroupingSet2LevelNoTopNoDetail(EPServiceProvider epService) {
             string[] fields = "c0,c1,c2".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL("@Name('s1')" +
-                    "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from SupportBean#length(4) " +
-                    "group by grouping Sets(theString, intPrimitive)");
+                    "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean#length(4) " +
+                    "group by grouping Sets(TheString, IntPrimitive)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c1"));
@@ -321,8 +321,8 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionBoundGroupingSet2LevelTopAndDetail(EPServiceProvider epService) {
             string[] fields = "c0,c1,c2".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL("@Name('s1')" +
-                    "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from SupportBean#length(4) " +
-                    "group by grouping Sets((), (theString, intPrimitive))");
+                    "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean#length(4) " +
+                    "group by grouping Sets((), (TheString, IntPrimitive))");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c1"));
@@ -353,8 +353,8 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionUnboundCube4Dim(EPServiceProvider epService) {
             string[] fields = "c0,c1,c2,c3,c4".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL("@Name('s1')" +
-                    "select theString as c0, intPrimitive as c1, longPrimitive as c2, doublePrimitive as c3, sum(intBoxed) as c4 from SupportBean " +
-                    "group by Cube(theString, intPrimitive, longPrimitive, doublePrimitive)");
+                    "select TheString as c0, IntPrimitive as c1, LongPrimitive as c2, DoublePrimitive as c3, sum(IntBoxed) as c4 from SupportBean " +
+                    "group by Cube(TheString, IntPrimitive, LongPrimitive, DoublePrimitive)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c1"));
@@ -431,15 +431,15 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionBoundCube3Dim(EPServiceProvider epService) {
-            TryAssertionBoundCube(epService, "Cube(theString, intPrimitive, longPrimitive)");
+            TryAssertionBoundCube(epService, "Cube(TheString, IntPrimitive, LongPrimitive)");
             TryAssertionBoundCube(epService, "grouping Sets(" +
-                    "(theString, intPrimitive, longPrimitive)," +
-                    "(theString, intPrimitive)," +
-                    "(theString, longPrimitive)," +
-                    "(theString)," +
-                    "(intPrimitive, longPrimitive)," +
-                    "(intPrimitive)," +
-                    "(longPrimitive)," +
+                    "(TheString, IntPrimitive, LongPrimitive)," +
+                    "(TheString, IntPrimitive)," +
+                    "(TheString, LongPrimitive)," +
+                    "(TheString)," +
+                    "(IntPrimitive, LongPrimitive)," +
+                    "(IntPrimitive)," +
+                    "(LongPrimitive)," +
                     "()" +
                     ")");
         }
@@ -449,15 +449,15 @@ namespace com.espertech.esper.regression.resultset.querytype
             string[] fields = "c0,c1,c2,c3,c4,c5,c6,c7,c8".Split(',');
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("@Name('s1')" +
-                    "select theString as c0, " +
-                    "intPrimitive as c1, " +
-                    "longPrimitive as c2, " +
+                    "select TheString as c0, " +
+                    "IntPrimitive as c1, " +
+                    "LongPrimitive as c2, " +
                     "count(*) as c3, " +
-                    "sum(doublePrimitive) as c4," +
-                    "Grouping(theString) as c5," +
-                    "Grouping(intPrimitive) as c6," +
-                    "Grouping(longPrimitive) as c7," +
-                    "Grouping_id(theString, intPrimitive, longPrimitive) as c8 " +
+                    "sum(DoublePrimitive) as c4," +
+                    "Grouping(TheString) as c5," +
+                    "Grouping(IntPrimitive) as c6," +
+                    "Grouping(LongPrimitive) as c7," +
+                    "Grouping_id(TheString, IntPrimitive, LongPrimitive) as c8 " +
                     "from SupportBean#length(4) " +
                     "group by " + groupBy).Events += listener.Update;
     
@@ -535,11 +535,11 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionNamedWindowCube2Dim(EPServiceProvider epService) {
-            TryAssertionNamedWindowCube2Dim(epService, "Cube(theString, intPrimitive)");
+            TryAssertionNamedWindowCube2Dim(epService, "Cube(TheString, IntPrimitive)");
             TryAssertionNamedWindowCube2Dim(epService, "grouping Sets(" +
-                    "(theString, intPrimitive)," +
-                    "(theString)," +
-                    "(intPrimitive)," +
+                    "(TheString, IntPrimitive)," +
+                    "(TheString)," +
+                    "(IntPrimitive)," +
                     "()" +
                     ")");
         }
@@ -547,13 +547,13 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void TryAssertionNamedWindowCube2Dim(EPServiceProvider epService, string groupBy) {
     
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportBean");
-            epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean(intBoxed = 0)");
-            epService.EPAdministrator.CreateEPL("on SupportBean(intBoxed = 3) delete from MyWindow");
+            epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean(IntBoxed = 0)");
+            epService.EPAdministrator.CreateEPL("on SupportBean(IntBoxed = 3) delete from MyWindow");
     
             string[] fields = "c0,c1,c2".Split(',');
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("@Name('s1')" +
-                    "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from MyWindow " +
+                    "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from MyWindow " +
                     "group by " + groupBy).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEvent(0, "E1", 10, 100));    // insert event
@@ -589,34 +589,34 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionNamedWindowDeleteAndRStream2Dim(EPServiceProvider epService) {
-            TryAssertionNamedWindowDeleteAndRStream2Dim(epService, "Rollup(theString, intPrimitive)");
+            TryAssertionNamedWindowDeleteAndRStream2Dim(epService, "Rollup(TheString, IntPrimitive)");
             TryAssertionNamedWindowDeleteAndRStream2Dim(epService, "grouping Sets(" +
-                    "(theString, intPrimitive)," +
-                    "(theString)," +
+                    "(TheString, IntPrimitive)," +
+                    "(TheString)," +
                     "())");
         }
     
         private void TryAssertionNamedWindowDeleteAndRStream2Dim(EPServiceProvider epService, string groupBy) {
             epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as SupportBean");
-            epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean(intBoxed = 0)");
-            epService.EPAdministrator.CreateEPL("on SupportBean(intBoxed = 1) as sb " +
-                    "delete from MyWindow mw where sb.theString = mw.theString and sb.intPrimitive = mw.intPrimitive");
-            epService.EPAdministrator.CreateEPL("on SupportBean(intBoxed = 2) as sb " +
-                    "delete from MyWindow mw where sb.theString = mw.theString and sb.intPrimitive = mw.intPrimitive and sb.longPrimitive = mw.longPrimitive");
-            epService.EPAdministrator.CreateEPL("on SupportBean(intBoxed = 3) delete from MyWindow");
+            epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean(IntBoxed = 0)");
+            epService.EPAdministrator.CreateEPL("on SupportBean(IntBoxed = 1) as sb " +
+                    "delete from MyWindow mw where sb.TheString = mw.TheString and sb.IntPrimitive = mw.IntPrimitive");
+            epService.EPAdministrator.CreateEPL("on SupportBean(IntBoxed = 2) as sb " +
+                    "delete from MyWindow mw where sb.TheString = mw.TheString and sb.IntPrimitive = mw.IntPrimitive and sb.LongPrimitive = mw.LongPrimitive");
+            epService.EPAdministrator.CreateEPL("on SupportBean(IntBoxed = 3) delete from MyWindow");
     
             string[] fields = "c0,c1,c2".Split(',');
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("@Name('s1')" +
-                    "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from MyWindow " +
+                    "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from MyWindow " +
                     "group by " + groupBy).Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(MakeEvent(0, "E1", 10, 100));    // insert event intBoxed=0
+            epService.EPRuntime.SendEvent(MakeEvent(0, "E1", 10, 100));    // insert event IntBoxed=0
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields,
                     new[] {new object[] {"E1", 10, 100L}, new object[] {"E1", null, 100L}, new object[] {null, null, 100L}},
                     new[] {new object[] {"E1", 10, null}, new object[] {"E1", null, null}, new object[] {null, null, null}});
     
-            epService.EPRuntime.SendEvent(MakeEvent(1, "E1", 10, 100));   // delete (intBoxed = 1)
+            epService.EPRuntime.SendEvent(MakeEvent(1, "E1", 10, 100));   // delete (IntBoxed = 1)
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields,
                     new[] {new object[] {"E1", 10, null}, new object[] {"E1", null, null}, new object[] {null, null, null}},
                     new[] {new object[] {"E1", 10, 100L}, new object[] {"E1", null, 100L}, new object[] {null, null, 100L}});
@@ -683,12 +683,12 @@ namespace com.espertech.esper.regression.resultset.querytype
             epService.EPRuntime.SendEvent(MakeEvent(0, "E1", 20, 400));   // insert
             listener.Reset();
     
-            epService.EPRuntime.SendEvent(MakeEvent(1, "E1", 20, -1));   // delete (intBoxed = 1)
+            epService.EPRuntime.SendEvent(MakeEvent(1, "E1", 20, -1));   // delete (IntBoxed = 1)
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields,
                     new[] {new object[] {"E1", 20, null}, new object[] {"E1", null, 400L}, new object[] {null, null, 400L}},
                     new[] {new object[] {"E1", 20, 600L}, new object[] {"E1", null, 1000L}, new object[] {null, null, 1000L}});
     
-            epService.EPRuntime.SendEvent(MakeEvent(1, "E1", 10, -1));   // delete (intBoxed = 1)
+            epService.EPRuntime.SendEvent(MakeEvent(1, "E1", 10, -1));   // delete (IntBoxed = 1)
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields,
                     new[] {new object[] {"E1", 10, null}, new object[] {"E1", null, null}, new object[] {null, null, null}},
                     new[] {new object[] {"E1", 10, 400L}, new object[] {"E1", null, 400L}, new object[] {null, null, 400L}});
@@ -700,7 +700,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             epService.EPRuntime.SendEvent(MakeEvent(0, "E2", 20, 500));   // insert
             listener.Reset();
     
-            epService.EPRuntime.SendEvent(MakeEvent(2, "E1", 10, 200));   // delete specific (intBoxed = 2)
+            epService.EPRuntime.SendEvent(MakeEvent(2, "E1", 10, 200));   // delete specific (IntBoxed = 2)
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened(), fields,
                     new[] {new object[] {"E1", 10, 400L}, new object[] {"E1", null, 800L}, new object[] {null, null, 1300L}},
                     new[] {new object[] {"E1", 10, 600L}, new object[] {"E1", null, 1000L}, new object[] {null, null, 1500L}});
@@ -738,9 +738,9 @@ namespace com.espertech.esper.regression.resultset.querytype
             string[] fields = "c0,c1,c2".Split(',');
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("@Name('s1')" +
-                    "select theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 " +
+                    "select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                     "from SupportBean#length(3) " + (join ? ", SupportBean_S0#lastevent " : "") +
-                    "group by Rollup(theString, intPrimitive)").Events += listener.Update;
+                    "group by Rollup(TheString, IntPrimitive)").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 10, 100));
@@ -755,7 +755,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
                     new[] {new object[] {"E1", 11, 300L}, new object[] {"E1", null, 400L}, new object[] {null, null, 600L}});
     
-            epService.EPRuntime.SendEvent(MakeEvent("E2", 20, 400));   // expires {theString="E1", intPrimitive=10, longPrimitive=100}
+            epService.EPRuntime.SendEvent(MakeEvent("E2", 20, 400));   // expires {TheString="E1", IntPrimitive=10, LongPrimitive=100}
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
                     new[]
                     {
@@ -763,7 +763,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                         new object[]{"E2", null, 600L}, new object[]{"E1", null, 300L},
                         new object[]{null, null, 900L}});
     
-            epService.EPRuntime.SendEvent(MakeEvent("E2", 20, 500));   // expires {theString="E2", intPrimitive=20, longPrimitive=200}
+            epService.EPRuntime.SendEvent(MakeEvent("E2", 20, 500));   // expires {TheString="E2", IntPrimitive=20, LongPrimitive=200}
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
                     new[]
                     {
@@ -771,7 +771,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                         new object[]{"E2", null, 900L},
                         new object[]{null, null, 1200L}});
     
-            epService.EPRuntime.SendEvent(MakeEvent("E2", 21, 600));   // expires {theString="E1", intPrimitive=11, longPrimitive=300}
+            epService.EPRuntime.SendEvent(MakeEvent("E2", 21, 600));   // expires {TheString="E1", IntPrimitive=11, LongPrimitive=300}
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
                     new[]
                     {
@@ -779,7 +779,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                         new object[]{"E2", null, 1500L}, new object[]{"E1", null, null},
                         new object[]{null, null, 1500L}});
     
-            epService.EPRuntime.SendEvent(MakeEvent("E2", 21, 700));   // expires {theString="E2", intPrimitive=20, longPrimitive=400}
+            epService.EPRuntime.SendEvent(MakeEvent("E2", 21, 700));   // expires {TheString="E2", IntPrimitive=20, LongPrimitive=400}
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
                     new[]
                     {
@@ -787,7 +787,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                         new object[]{"E2", null, 1800L},
                         new object[]{null, null, 1800L}});
     
-            epService.EPRuntime.SendEvent(MakeEvent("E2", 21, 800));   // expires {theString="E2", intPrimitive=20, longPrimitive=500}
+            epService.EPRuntime.SendEvent(MakeEvent("E2", 21, 800));   // expires {TheString="E2", IntPrimitive=20, LongPrimitive=500}
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
                     new[]
                     {
@@ -795,7 +795,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                         new object[]{"E2", null, 2100L},
                         new object[]{null, null, 2100L}});
     
-            epService.EPRuntime.SendEvent(MakeEvent("E1", 10, 900));   // expires {theString="E2", intPrimitive=21, longPrimitive=600}
+            epService.EPRuntime.SendEvent(MakeEvent("E1", 10, 900));   // expires {TheString="E2", IntPrimitive=21, LongPrimitive=600}
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
                     new[]
                     {
@@ -803,7 +803,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                         new object[]{"E1", null, 900L}, new object[]{"E2", null, 1500L},
                         new object[]{null, null, 2400L}});
     
-            epService.EPRuntime.SendEvent(MakeEvent("E1", 11, 1000));   // expires {theString="E2", intPrimitive=21, longPrimitive=700}
+            epService.EPRuntime.SendEvent(MakeEvent("E1", 11, 1000));   // expires {TheString="E2", IntPrimitive=21, LongPrimitive=700}
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
                     new[]
                     {
@@ -811,7 +811,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                         new object[]{"E1", null, 1900L}, new object[]{"E2", null, 800L},
                         new object[]{null, null, 2700L}});
     
-            epService.EPRuntime.SendEvent(MakeEvent("E2", 20, 1100));   // expires {theString="E2", intPrimitive=21, longPrimitive=800}
+            epService.EPRuntime.SendEvent(MakeEvent("E2", 20, 1100));   // expires {TheString="E2", IntPrimitive=21, LongPrimitive=800}
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
                     new[]
                     {
@@ -825,8 +825,8 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionUnboundRollup2Dim(EPServiceProvider epService) {
             string[] fields = "c0,c1,c2".Split(',');
             EPStatement stmt = epService.EPAdministrator.CreateEPL("@Name('s1')" +
-                    "select theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from SupportBean " +
-                    "group by Rollup(theString, intPrimitive)");
+                    "select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean " +
+                    "group by Rollup(TheString, IntPrimitive)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -860,16 +860,16 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionUnboundRollup1Dim(EPServiceProvider epService) {
-            TryAssertionUnboundRollup1Dim(epService, "Rollup(theString)");
-            TryAssertionUnboundRollup1Dim(epService, "Cube(theString)");
+            TryAssertionUnboundRollup1Dim(epService, "Rollup(TheString)");
+            TryAssertionUnboundRollup1Dim(epService, "Cube(TheString)");
         }
     
         private void RunAssertionUnboundRollup2DimBatchWindow(EPServiceProvider epService) {
             string[] fields = "c0,c1,c2".Split(',');
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("@Name('s1')" +
-                    "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from SupportBean#length_batch(4) " +
-                    "group by Rollup(theString, intPrimitive)").Events += listener.Update;
+                    "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean#length_batch(4) " +
+                    "group by Rollup(TheString, IntPrimitive)").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 10, 100));
             epService.EPRuntime.SendEvent(MakeEvent("E2", 20, 200));
@@ -911,7 +911,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             string[] fields = "c0,c1".Split(',');
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("@Name('s1')" +
-                    "select theString as c0, sum(intPrimitive) as c1 from SupportBean " +
+                    "select TheString as c0, sum(IntPrimitive) as c1 from SupportBean " +
                     "group by " + rollup).Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
@@ -934,14 +934,14 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionUnboundRollup3Dim(EPServiceProvider epService) {
-            string rollupEpl = "Rollup(theString, intPrimitive, longPrimitive)";
+            string rollupEpl = "Rollup(TheString, IntPrimitive, LongPrimitive)";
             TryAssertionUnboundRollup3Dim(epService, rollupEpl, false);
             TryAssertionUnboundRollup3Dim(epService, rollupEpl, true);
     
             string gsEpl = "grouping Sets(" +
-                    "(theString, intPrimitive, longPrimitive)," +
-                    "(theString, intPrimitive)," +
-                    "(theString)," +
+                    "(TheString, IntPrimitive, LongPrimitive)," +
+                    "(TheString, IntPrimitive)," +
+                    "(TheString)," +
                     "()" +
                     ")";
             TryAssertionUnboundRollup3Dim(epService, gsEpl, false);
@@ -953,7 +953,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             string[] fields = "c0,c1,c2,c3,c4".Split(',');
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("@Name('s1')" +
-                    "select theString as c0, intPrimitive as c1, longPrimitive as c2, count(*) as c3, sum(doublePrimitive) as c4 " +
+                    "select TheString as c0, IntPrimitive as c1, LongPrimitive as c2, count(*) as c3, sum(DoublePrimitive) as c4 " +
                     "from SupportBean#keepall " + (isJoin ? ", SupportBean_S0#lastevent " : "") +
                     "group by " + groupByClause).Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
@@ -988,8 +988,8 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void RunAssertionMixedAccessAggregation(EPServiceProvider epService) {
             string[] fields = "c0,c1,c2".Split(',');
             var listener = new SupportUpdateListener();
-            string epl = "select sum(intPrimitive) as c0, theString as c1, window(*) as c2 " +
-                    "from SupportBean#length(2) sb group by Rollup(theString) order by theString";
+            string epl = "select sum(IntPrimitive) as c0, TheString as c1, window(*) as c2 " +
+                    "from SupportBean#length(2) sb group by Rollup(TheString) order by TheString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += listener.Update;
     
@@ -1017,56 +1017,56 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunAssertionNonBoxedTypeWithRollup(EPServiceProvider epService) {
-            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select intPrimitive as c0, doublePrimitive as c1, longPrimitive as c2, sum(shortPrimitive) " +
-                    "from SupportBean group by intPrimitive, Rollup(doublePrimitive, longPrimitive)");
+            EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select IntPrimitive as c0, DoublePrimitive as c1, LongPrimitive as c2, sum(ShortPrimitive) " +
+                    "from SupportBean group by IntPrimitive, Rollup(DoublePrimitive, LongPrimitive)");
             AssertTypesC0C1C2(stmtOne, typeof(int), typeof(double?), typeof(long));
     
-            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select intPrimitive as c0, doublePrimitive as c1, longPrimitive as c2, sum(shortPrimitive) " +
-                    "from SupportBean group by grouping sets ((intPrimitive, doublePrimitive, longPrimitive))");
+            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select IntPrimitive as c0, DoublePrimitive as c1, LongPrimitive as c2, sum(ShortPrimitive) " +
+                    "from SupportBean group by grouping sets ((IntPrimitive, DoublePrimitive, LongPrimitive))");
             AssertTypesC0C1C2(stmtTwo, typeof(int), typeof(double), typeof(long));
     
-            EPStatement stmtThree = epService.EPAdministrator.CreateEPL("select intPrimitive as c0, doublePrimitive as c1, longPrimitive as c2, sum(shortPrimitive) " +
-                    "from SupportBean group by grouping sets ((intPrimitive, doublePrimitive, longPrimitive), (intPrimitive, doublePrimitive))");
+            EPStatement stmtThree = epService.EPAdministrator.CreateEPL("select IntPrimitive as c0, DoublePrimitive as c1, LongPrimitive as c2, sum(ShortPrimitive) " +
+                    "from SupportBean group by grouping sets ((IntPrimitive, DoublePrimitive, LongPrimitive), (IntPrimitive, DoublePrimitive))");
             AssertTypesC0C1C2(stmtThree, typeof(int), typeof(double), typeof(long));
     
-            EPStatement stmtFour = epService.EPAdministrator.CreateEPL("select intPrimitive as c0, doublePrimitive as c1, longPrimitive as c2, sum(shortPrimitive) " +
-                    "from SupportBean group by grouping sets ((doublePrimitive, intPrimitive), (longPrimitive, intPrimitive))");
+            EPStatement stmtFour = epService.EPAdministrator.CreateEPL("select IntPrimitive as c0, DoublePrimitive as c1, LongPrimitive as c2, sum(ShortPrimitive) " +
+                    "from SupportBean group by grouping sets ((DoublePrimitive, IntPrimitive), (LongPrimitive, IntPrimitive))");
             AssertTypesC0C1C2(stmtFour, typeof(int), typeof(double?), typeof(long));
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            string prefix = "select theString, sum(intPrimitive) from SupportBean group by ";
+            string prefix = "select TheString, sum(IntPrimitive) from SupportBean group by ";
     
             // invalid rollup expressions
             TryInvalid(epService, prefix + "Rollup()",
-                    "Incorrect syntax near ')' at line 1 column 69, please check the group-by clause [select theString, sum(intPrimitive) from SupportBean group by Rollup()]");
-            TryInvalid(epService, prefix + "Rollup(theString, theString)",
-                    "Failed to validate the group-by clause, found duplicate specification of expressions (theString) [select theString, sum(intPrimitive) from SupportBean group by Rollup(theString, theString)]");
+                    "Incorrect syntax near ')' at line 1 column 69, please check the group-by clause [select TheString, sum(IntPrimitive) from SupportBean group by Rollup()]");
+            TryInvalid(epService, prefix + "Rollup(TheString, TheString)",
+                    "Failed to validate the group-by clause, found duplicate specification of expressions (TheString) [select TheString, sum(IntPrimitive) from SupportBean group by Rollup(TheString, TheString)]");
             TryInvalid(epService, prefix + "Rollup(x)",
-                    "Error starting statement: Failed to validate group-by-clause expression 'x': Property named 'x' is not valid in any stream [select theString, sum(intPrimitive) from SupportBean group by Rollup(x)]");
-            TryInvalid(epService, prefix + "Rollup(longPrimitive)",
-                    "Error starting statement: Group-by with rollup requires a fully-aggregated query, the query is not full-aggregated because of property 'theString' [select theString, sum(intPrimitive) from SupportBean group by Rollup(longPrimitive)]");
-            TryInvalid(epService, prefix + "Rollup((theString, longPrimitive), (theString, longPrimitive))",
-                    "Failed to validate the group-by clause, found duplicate specification of expressions (theString, longPrimitive) [select theString, sum(intPrimitive) from SupportBean group by Rollup((theString, longPrimitive), (theString, longPrimitive))]");
-            TryInvalid(epService, prefix + "Rollup((theString, longPrimitive), (longPrimitive, theString))",
-                    "Failed to validate the group-by clause, found duplicate specification of expressions (theString, longPrimitive) [select theString, sum(intPrimitive) from SupportBean group by Rollup((theString, longPrimitive), (longPrimitive, theString))]");
-            TryInvalid(epService, prefix + "grouping Sets((theString, theString))",
-                    "Failed to validate the group-by clause, found duplicate specification of expressions (theString) [select theString, sum(intPrimitive) from SupportBean group by grouping Sets((theString, theString))]");
-            TryInvalid(epService, prefix + "grouping Sets(theString, theString)",
-                    "Failed to validate the group-by clause, found duplicate specification of expressions (theString) [select theString, sum(intPrimitive) from SupportBean group by grouping Sets(theString, theString)]");
+                    "Error starting statement: Failed to validate group-by-clause expression 'x': Property named 'x' is not valid in any stream [select TheString, sum(IntPrimitive) from SupportBean group by Rollup(x)]");
+            TryInvalid(epService, prefix + "Rollup(LongPrimitive)",
+                    "Error starting statement: Group-by with rollup requires a fully-aggregated query, the query is not full-aggregated because of property 'TheString' [select TheString, sum(IntPrimitive) from SupportBean group by Rollup(LongPrimitive)]");
+            TryInvalid(epService, prefix + "Rollup((TheString, LongPrimitive), (TheString, LongPrimitive))",
+                    "Failed to validate the group-by clause, found duplicate specification of expressions (TheString, LongPrimitive) [select TheString, sum(IntPrimitive) from SupportBean group by Rollup((TheString, LongPrimitive), (TheString, LongPrimitive))]");
+            TryInvalid(epService, prefix + "Rollup((TheString, LongPrimitive), (LongPrimitive, TheString))",
+                    "Failed to validate the group-by clause, found duplicate specification of expressions (TheString, LongPrimitive) [select TheString, sum(IntPrimitive) from SupportBean group by Rollup((TheString, LongPrimitive), (LongPrimitive, TheString))]");
+            TryInvalid(epService, prefix + "grouping Sets((TheString, TheString))",
+                    "Failed to validate the group-by clause, found duplicate specification of expressions (TheString) [select TheString, sum(IntPrimitive) from SupportBean group by grouping Sets((TheString, TheString))]");
+            TryInvalid(epService, prefix + "grouping Sets(TheString, TheString)",
+                    "Failed to validate the group-by clause, found duplicate specification of expressions (TheString) [select TheString, sum(IntPrimitive) from SupportBean group by grouping Sets(TheString, TheString)]");
             TryInvalid(epService, prefix + "grouping Sets((), ())",
-                    "Failed to validate the group-by clause, found duplicate specification of the overall grouping '()' [select theString, sum(intPrimitive) from SupportBean group by grouping Sets((), ())]");
+                    "Failed to validate the group-by clause, found duplicate specification of the overall grouping '()' [select TheString, sum(IntPrimitive) from SupportBean group by grouping Sets((), ())]");
             TryInvalid(epService, prefix + "grouping Sets(())",
-                    "Failed to validate the group-by clause, the overall grouping '()' cannot be the only grouping [select theString, sum(intPrimitive) from SupportBean group by grouping Sets(())]");
+                    "Failed to validate the group-by clause, the overall grouping '()' cannot be the only grouping [select TheString, sum(IntPrimitive) from SupportBean group by grouping Sets(())]");
     
             // invalid select clause for this type of query
-            TryInvalid(epService, "select * from SupportBean group by grouping Sets(theString)",
-                    "Group-by with rollup requires that the select-clause does not use wildcard [select * from SupportBean group by grouping Sets(theString)]");
-            TryInvalid(epService, "select sb.* from SupportBean sb group by grouping Sets(theString)",
-                    "Group-by with rollup requires that the select-clause does not use wildcard [select sb.* from SupportBean sb group by grouping Sets(theString)]");
+            TryInvalid(epService, "select * from SupportBean group by grouping Sets(TheString)",
+                    "Group-by with rollup requires that the select-clause does not use wildcard [select * from SupportBean group by grouping Sets(TheString)]");
+            TryInvalid(epService, "select sb.* from SupportBean sb group by grouping Sets(TheString)",
+                    "Group-by with rollup requires that the select-clause does not use wildcard [select sb.* from SupportBean sb group by grouping Sets(TheString)]");
     
-            TryInvalid(epService, "@Hint('disable_reclaim_group') select theString, count(*) from SupportBean sb group by grouping Sets(theString)",
-                    "Error starting statement: Reclaim hints are not available with rollup [@Hint('disable_reclaim_group') select theString, count(*) from SupportBean sb group by grouping Sets(theString)]");
+            TryInvalid(epService, "@Hint('disable_reclaim_group') select TheString, count(*) from SupportBean sb group by grouping Sets(TheString)",
+                    "Error starting statement: Reclaim hints are not available with rollup [@Hint('disable_reclaim_group') select TheString, count(*) from SupportBean sb group by grouping Sets(TheString)]");
         }
     
         private SupportBean MakeEvent(int intBoxed, string theString, int intPrimitive, long longPrimitive) {

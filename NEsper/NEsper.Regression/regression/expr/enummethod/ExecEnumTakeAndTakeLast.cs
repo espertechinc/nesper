@@ -11,14 +11,9 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.enummethod
 {
@@ -38,17 +33,24 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1,val2,val3,val4,val5".Split(',');
             string epl = "select " +
-                    "contained.Take(2) as val0," +
-                    "contained.Take(1) as val1," +
-                    "contained.Take(0) as val2," +
-                    "contained.Take(-1) as val3," +
-                    "contained.TakeLast(2) as val4," +
-                    "contained.TakeLast(1) as val5" +
+                    "Contained.take(2) as val0," +
+                    "Contained.take(1) as val1," +
+                    "Contained.take(0) as val2," +
+                    "Contained.take(-1) as val3," +
+                    "Contained.TakeLast(2) as val4," +
+                    "Contained.TakeLast(1) as val5" +
                     " from Bean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[]{typeof(ICollection<object>), typeof(ICollection<object>), typeof(ICollection<object>), typeof(ICollection<object>), typeof(ICollection<object>), typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[] {
+                typeof(ICollection<SupportBean_ST0>),
+                typeof(ICollection<SupportBean_ST0>),
+                typeof(ICollection<SupportBean_ST0>),
+                typeof(ICollection<SupportBean_ST0>),
+                typeof(ICollection<SupportBean_ST0>),
+                typeof(ICollection<SupportBean_ST0>)
+            });
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2", "E3,3"));
             LambdaAssertionUtil.AssertST0Id(listener, "val0", "E1,E2");
@@ -96,10 +98,10 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1,val2,val3".Split(',');
             string epl = "select " +
-                    "strvals.Take(2) as val0," +
-                    "strvals.Take(1) as val1," +
-                    "strvals.TakeLast(2) as val2," +
-                    "strvals.TakeLast(1) as val3" +
+                    "Strvals.take(2) as val0," +
+                    "Strvals.take(1) as val1," +
+                    "Strvals.TakeLast(2) as val2," +
+                    "Strvals.TakeLast(1) as val3" +
                     " from SupportCollection";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();

@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             string eplCreateVariable = "create table MyTable (pkey string primary key)";
             epService.EPAdministrator.CreateEPL(eplCreateVariable);
     
-            string eplInsertInto = "insert into MyTable select theString as pkey from SupportBean";
+            string eplInsertInto = "insert into MyTable select TheString as pkey from SupportBean";
             epService.EPAdministrator.CreateEPL(eplInsertInto);
     
             // seed with count 1

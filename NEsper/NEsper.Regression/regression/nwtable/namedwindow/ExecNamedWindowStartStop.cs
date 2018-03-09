@@ -99,17 +99,17 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionStartStopCreator(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindow#keepall as select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextCreate = "create window MyWindow#keepall as select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName;
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate, "stmtCreateFirst");
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
     
             // create delete stmt
-            string stmtTextDelete = "on " + typeof(SupportBean_A).Name + " delete from MyWindow";
+            string stmtTextDelete = "on " + typeof(SupportBean_A).FullName + " delete from MyWindow";
             EPStatement stmtDelete = epService.EPAdministrator.CreateEPL(stmtTextDelete, "stmtDelete");
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindow select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
+            string stmtTextInsertOne = "insert into MyWindow select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName;
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL(stmtTextInsertOne, "stmtInsert");
     
             // create consumer
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][]{new object[] {"E3", 3}, new object[] {"E4", 4}});
     
             // create window anew
-            stmtTextCreate = "create window MyWindow#keepall as select theString as a, intPrimitive as b from " + typeof(SupportBean).FullName;
+            stmtTextCreate = "create window MyWindow#keepall as select TheString as a, IntPrimitive as b from " + typeof(SupportBean).FullName;
             stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate, "stmtCreate");
             stmtCreate.Events += listenerWindow.Update;
     
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][]{new object[] {"E3", 3}, new object[] {"E4", 4}});
     
             // create select stmt
-            string stmtTextOnSelect = "on " + typeof(SupportBean_A).Name + " insert into A select * from MyWindow";
+            string stmtTextOnSelect = "on " + typeof(SupportBean_A).FullName + " insert into A select * from MyWindow";
             EPStatement stmtOnSelect = epService.EPAdministrator.CreateEPL(stmtTextOnSelect, "stmtOnSelect");
     
             // assert statement-type reference
@@ -187,8 +187,8 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportBean).FullName);
             EPAssertionUtil.AssertEqualsAnyOrder(new string[]{"stmtCreate", "stmtInsert"}, stmtNames.ToArray());
     
-            Assert.IsTrue(spi.StatementEventTypeRef.IsInUse(typeof(SupportBean_A).Name));
-            stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportBean_A).Name);
+            Assert.IsTrue(spi.StatementEventTypeRef.IsInUse(typeof(SupportBean_A).FullName));
+            stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportBean_A).FullName);
             EPAssertionUtil.AssertEqualsAnyOrder(new string[]{"stmtDelete", "stmtOnSelect"}, stmtNames.ToArray());
     
             stmtInsert.Dispose();
@@ -202,8 +202,8 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportBean).FullName);
             EPAssertionUtil.AssertEqualsAnyOrder(new string[]{"stmtCreate"}, stmtNames.ToArray());
     
-            Assert.IsTrue(spi.StatementEventTypeRef.IsInUse(typeof(SupportBean_A).Name));
-            stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportBean_A).Name);
+            Assert.IsTrue(spi.StatementEventTypeRef.IsInUse(typeof(SupportBean_A).FullName));
+            stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportBean_A).FullName);
             EPAssertionUtil.AssertEqualsAnyOrder(new string[]{"stmtOnSelect"}, stmtNames.ToArray());
     
             stmtCreate.Dispose();
@@ -214,8 +214,8 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             Assert.IsFalse(spi.StatementEventTypeRef.IsInUse(typeof(SupportBean).FullName));
     
-            Assert.IsTrue(spi.StatementEventTypeRef.IsInUse(typeof(SupportBean_A).Name));
-            stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportBean_A).Name);
+            Assert.IsTrue(spi.StatementEventTypeRef.IsInUse(typeof(SupportBean_A).FullName));
+            stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportBean_A).FullName);
             EPAssertionUtil.AssertEqualsAnyOrder(new string[]{"stmtOnSelect"}, stmtNames.ToArray());
     
             stmtOnSelect.Dispose();
@@ -223,7 +223,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
             Assert.IsFalse(spi.StatementEventTypeRef.IsInUse("MyWindow"));
             Assert.IsFalse(spi.StatementEventTypeRef.IsInUse(typeof(SupportBean).FullName));
-            Assert.IsFalse(spi.StatementEventTypeRef.IsInUse(typeof(SupportBean_A).Name));
+            Assert.IsFalse(spi.StatementEventTypeRef.IsInUse(typeof(SupportBean_A).FullName));
         }
     
         private void SendSupportBean(EPServiceProvider epService, string theString, int intPrimitive) {

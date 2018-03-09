@@ -27,9 +27,9 @@ namespace com.espertech.esper.regression.events.plugin
         }
     
         public static void ConfigureURIs(Configuration configuration) {
-            configuration.AddPlugInEventRepresentation(new Uri("type://properties"), typeof(MyPlugInEventRepresentation).Name, "r3");
-            configuration.AddPlugInEventRepresentation(new Uri("type://properties/test1"), typeof(MyPlugInEventRepresentation).Name, "r1");
-            configuration.AddPlugInEventRepresentation(new Uri("type://properties/test2"), typeof(MyPlugInEventRepresentation).Name, "r2");
+            configuration.AddPlugInEventRepresentation(new Uri("type://properties"), typeof(MyPlugInEventRepresentation), "r3");
+            configuration.AddPlugInEventRepresentation(new Uri("type://properties/test1"), typeof(MyPlugInEventRepresentation), "r1");
+            configuration.AddPlugInEventRepresentation(new Uri("type://properties/test2"), typeof(MyPlugInEventRepresentation), "r2");
         }
     
         public override void Run(EPServiceProvider epService) {

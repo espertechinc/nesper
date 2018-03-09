@@ -40,7 +40,7 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionEquals(EPServiceProvider epService) {
             // test equals decimal
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBeanNumeric where bigdec = 1 or bigdec = intOne or bigdec = doubleOne");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBeanNumeric where DecimalOne = 1 or DecimalOne = intOne or DecimalOne = doubleOne");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             // test equals BigInteger
             stmt.Dispose();
-            stmt = epService.EPAdministrator.CreateEPL("select * from SupportBeanNumeric where bigdec = bigint or bigint = intOne or bigint = 1");
+            stmt = epService.EPAdministrator.CreateEPL("select * from SupportBeanNumeric where DecimalOne = BigInt or BigInt = intOne or BigInt = 1");
             stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBeanNumeric(0, 0, new BigInteger(2), new decimal(2), 0, 0));
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionRelOp(EPServiceProvider epService) {
             // relational op tests handled by relational op unit test
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBeanNumeric where bigdec < 10 and bigint > 10");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBeanNumeric where DecimalOne < 10 and BigInt > 10");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regression.expr.expr
             Assert.IsTrue(listener.GetAndClearIsInvoked());
             stmt.Dispose();
     
-            stmt = epService.EPAdministrator.CreateEPL("select * from SupportBeanNumeric where bigdec < 10.0");
+            stmt = epService.EPAdministrator.CreateEPL("select * from SupportBeanNumeric where DecimalOne < 10.0");
             stmt.Events += listener.Update;
     
             SendBigNumEvent(epService, 0, 11);
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionBetween(EPServiceProvider epService) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBeanNumeric where bigdec between 10 and 20 or bigint between 100 and 200");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBeanNumeric where DecimalOne between 10 and 20 or BigInt between 100 and 200");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionIn(EPServiceProvider epService) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBeanNumeric where bigdec in (10, 20d) or bigint in (0x02, 3)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBeanNumeric where DecimalOne in (10, 20d) or BigInt in (0x02, 3)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionMath(EPServiceProvider epService) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBeanNumeric " +
-                    "where bigdec+bigint=100 or bigdec+1=2 or bigdec+2d=5.0 or bigint+5L=8 or bigint+5d=9.0");
+                    "where DecimalOne+BigInt=100 or DecimalOne+1=2 or DecimalOne+2d=5.0 or BigInt+5L=8 or BigInt+5d=9.0");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -195,16 +195,16 @@ namespace com.espertech.esper.regression.expr.expr
             stmt.Dispose();
     
             stmt = epService.EPAdministrator.CreateEPL(
-                    "select bigdec+bigint as v1, bigdec+2 as v2, bigdec+3d as v3, bigint+5L as v4, bigint+5d as v5 " +
+                    "select DecimalOne+BigInt as v1, DecimalOne+2 as v2, DecimalOne+3d as v3, BigInt+5L as v4, BigInt+5d as v5 " +
                             " from SupportBeanNumeric");
             stmt.Events += listener.Update;
             listener.Reset();
     
-            Assert.AreEqual(typeof(decimal), stmt.EventType.GetPropertyType("v1"));
-            Assert.AreEqual(typeof(decimal), stmt.EventType.GetPropertyType("v2"));
-            Assert.AreEqual(typeof(decimal), stmt.EventType.GetPropertyType("v3"));
-            Assert.AreEqual(typeof(BigInteger), stmt.EventType.GetPropertyType("v4"));
-            Assert.AreEqual(typeof(decimal), stmt.EventType.GetPropertyType("v5"));
+            Assert.AreEqual(typeof(decimal?), stmt.EventType.GetPropertyType("v1"));
+            Assert.AreEqual(typeof(decimal?), stmt.EventType.GetPropertyType("v2"));
+            Assert.AreEqual(typeof(decimal?), stmt.EventType.GetPropertyType("v3"));
+            Assert.AreEqual(typeof(BigInteger?), stmt.EventType.GetPropertyType("v4"));
+            Assert.AreEqual(typeof(decimal?), stmt.EventType.GetPropertyType("v5"));
     
             SendBigNumEvent(epService, 1, 2);
             EventBean theEvent = listener.AssertOneGetNewAndReset();
@@ -214,10 +214,10 @@ namespace com.espertech.esper.regression.expr.expr
             // test aggregation-sum, multiplication and division all together; test for ESPER-340
             stmt.Dispose();
             stmt = epService.EPAdministrator.CreateEPL(
-                    "select (sum(bigdecTwo * bigdec)/sum(bigdec)) as avgRate from SupportBeanNumeric");
+                    "select (sum(bigdecTwo * DecimalOne)/sum(DecimalOne)) as avgRate from SupportBeanNumeric");
             stmt.Events += listener.Update;
             listener.Reset();
-            Assert.AreEqual(typeof(decimal), stmt.EventType.GetPropertyType("avgRate"));
+            Assert.AreEqual(typeof(decimal?), stmt.EventType.GetPropertyType("avgRate"));
             SendBigNumEvent(epService, 0, 5);
             Object avgRate = listener.AssertOneGetNewAndReset().Get("avgRate");
             Assert.IsTrue(avgRate is decimal);
@@ -227,12 +227,12 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionAggregation(EPServiceProvider epService) {
-            string fields = "sum(bigint),sum(bigdec)," +
-                    "avg(bigint),avg(bigdec)," +
-                    "median(bigint),median(bigdec)," +
-                    "stddev(bigint),stddev(bigdec)," +
-                    "avedev(bigint),avedev(bigdec)," +
-                    "min(bigint),min(bigdec)";
+            string fields = "sum(BigInt),sum(DecimalOne)," +
+                    "avg(BigInt),avg(DecimalOne)," +
+                    "median(BigInt),median(DecimalOne)," +
+                    "stddev(BigInt),stddev(DecimalOne)," +
+                    "avedev(BigInt),avedev(DecimalOne)," +
+                    "min(BigInt),min(DecimalOne)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
                     "select " + fields + " from SupportBeanNumeric");
             var listener = new SupportUpdateListener();
@@ -257,8 +257,8 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionMinMax(EPServiceProvider epService) {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
-                    "select min(bigint, 10) as v1, min(10, bigint) as v2, " +
-                            "max(bigdec, 10) as v3, max(10, 100d, bigint, bigdec) as v4 from SupportBeanNumeric");
+                    "select min(BigInt, 10) as v1, min(10, BigInt) as v2, " +
+                            "max(DecimalOne, 10) as v3, max(10, 100d, BigInt, DecimalOne) as v4 from SupportBeanNumeric");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             listener.Reset();
@@ -281,9 +281,9 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionFilterEquals(EPServiceProvider epService) {
-            string[] fieldList = "bigdec".Split(',');
+            string[] fieldList = "DecimalOne".Split(',');
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select bigdec from SupportBeanNumeric(bigdec = 4)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select DecimalOne from SupportBeanNumeric(DecimalOne = 4)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -294,7 +294,7 @@ namespace com.espertech.esper.regression.expr.expr
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldList, new object[]{new decimal(4)});
     
             stmt.Dispose();
-            stmt = epService.EPAdministrator.CreateEPL("select bigdec from SupportBeanNumeric(bigdec = 4d)");
+            stmt = epService.EPAdministrator.CreateEPL("select DecimalOne from SupportBeanNumeric(DecimalOne = 4d)");
             stmt.Events += listener.Update;
     
             SendBigNumEvent(epService, 0, 4);
@@ -305,7 +305,7 @@ namespace com.espertech.esper.regression.expr.expr
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldList, new object[]{new decimal(4d)});
     
             stmt.Dispose();
-            stmt = epService.EPAdministrator.CreateEPL("select bigdec from SupportBeanNumeric(bigint = 4)");
+            stmt = epService.EPAdministrator.CreateEPL("select DecimalOne from SupportBeanNumeric(BigInt = 4)");
             stmt.Events += listener.Update;
     
             SendBigNumEvent(epService, 3, 4);
@@ -318,9 +318,9 @@ namespace com.espertech.esper.regression.expr.expr
         }
     
         private void RunAssertionJoin(EPServiceProvider epService) {
-            string[] fieldList = "bigint,bigdec".Split(',');
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select bigint,bigdec from SupportBeanNumeric#keepall(), SupportBean#keepall " +
-                    "where intPrimitive = bigint and doublePrimitive = bigdec");
+            string[] fieldList = "BigInt,DecimalOne".Split(',');
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select BigInt,DecimalOne from SupportBeanNumeric#keepall(), SupportBean#keepall " +
+                    "where IntPrimitive = BigInt and DoublePrimitive = DecimalOne");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     

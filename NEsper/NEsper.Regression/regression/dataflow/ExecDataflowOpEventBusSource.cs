@@ -26,8 +26,8 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regression.dataflow
 {
-    public class ExecDataflowOpEventBusSource : RegressionExecution {
-    
+    public class ExecDataflowOpEventBusSource : RegressionExecution
+    {
         public override void Run(EPServiceProvider epService) {
             RunAssertionAllTypes(epService);
             RunAssertionSchemaObjectArray(epService);
@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.dataflow
             RunAssertionAllTypes(epService, "MyMapEvent", DefaultSupportGraphEventUtil.MapEventsSendable);
             RunAssertionAllTypes(epService, "MyXMLEvent", DefaultSupportGraphEventUtil.XMLEventsSendable);
             RunAssertionAllTypes(epService, "MyOAEvent", DefaultSupportGraphEventUtil.OAEventsSendable);
-            RunAssertionAllTypes(epService, "MyEvent", DefaultSupportGraphEventUtil.PONOEventsSendable);
+            RunAssertionAllTypes(epService, "MyEvent", DefaultSupportGraphEventUtil.PonoEventsSendable);
     
             // invalid: no output stream
             SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "DF1", "create dataflow DF1 EventBusSource {}",
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regression.dataflow
                     "  // With collector that performs transformation.\n" +
                     "  EventBusSource -> stream.two<SampleSchema> {\n" +
                     "    collector : {\n" +
-                    "      class : '" + typeof(MyDummyCollector).Name + "'\n" +
+                    "      class : '" + typeof(MyDummyCollector).FullName + "'\n" +
                     "    },\n" +
                     "  }";
             epService.EPAdministrator.CreateEPL(epl);

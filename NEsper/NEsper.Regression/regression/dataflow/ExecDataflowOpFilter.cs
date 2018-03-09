@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.dataflow
     public class ExecDataflowOpFilter : RegressionExecution {
     
         public override void Run(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddImport(typeof(DefaultSupportSourceOp).Namespace + ".*");
+            epService.EPAdministrator.Configuration.AddImport(typeof(DefaultSupportSourceOp).Namespace);
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             RunAssertionInvalid(epService);
@@ -49,11 +49,11 @@ namespace com.espertech.esper.regression.dataflow
                     "Failed to instantiate data flow 'DF1': Failed initialization for operator 'Filter': Filter operator requires one or two output Stream(s) but produces 0 streams");
     
             // invalid filter expressions
-            TryInvalidInstantiate(epService, "theString = 1",
-                    "Failed to instantiate data flow 'MySelect': Failed validation for operator 'Filter': Failed to validate filter dataflow operator expression 'theString=1': Implicit conversion from datatype 'int?' to 'string' is not allowed");
+            TryInvalidInstantiate(epService, "TheString = 1",
+                    "Failed to instantiate data flow 'MySelect': Failed validation for operator 'Filter': Failed to validate filter dataflow operator expression 'TheString=1': Implicit conversion from datatype '" + Name.Of<int>() + "' to '" + Name.Of<string>() + "' is not allowed");
     
-            TryInvalidInstantiate(epService, "prev(theString, 1) = 'abc'",
-                    "Failed to instantiate data flow 'MySelect': Failed validation for operator 'Filter': Invalid filter dataflow operator expression 'Prev(theString,1)=\"abc\"': Aggregation, sub-select, previous or prior functions are not supported in this context");
+            TryInvalidInstantiate(epService, "prev(TheString, 1) = 'abc'",
+                    "Failed to instantiate data flow 'MySelect': Failed validation for operator 'Filter': Invalid filter dataflow operator expression 'prev(TheString,1)=\"abc\"': Aggregation, sub-select, previous or prior functions are not supported in this context");
         }
     
         private void RunAssertionAllTypes(EPServiceProvider epService) {
@@ -62,7 +62,7 @@ namespace com.espertech.esper.regression.dataflow
             RunAssertionAllTypes(epService, "MyXMLEvent", DefaultSupportGraphEventUtil.XMLEvents);
             RunAssertionAllTypes(epService, "MyOAEvent", DefaultSupportGraphEventUtil.OAEvents);
             RunAssertionAllTypes(epService, "MyMapEvent", DefaultSupportGraphEventUtil.MapEvents);
-            RunAssertionAllTypes(epService, "MyEvent", DefaultSupportGraphEventUtil.PONOEvents);
+            RunAssertionAllTypes(epService, "MyEvent", DefaultSupportGraphEventUtil.PonoEvents);
     
             // test doc sample
             string epl = "create dataflow MyDataFlow\n" +
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regression.dataflow
             DefaultSupportCaptureOpStatic.Instances.Clear();
             string graph = "create dataflow MyFilter\n" +
                     "Emitter -> sb<SupportBean> {name : 'e1'}\n" +
-                    "Filter(sb) -> out.ok, out.fail {filter: theString = 'x'}\n" +
+                    "Filter(sb) -> out.ok, out.fail {filter: TheString = 'x'}\n" +
                     "DefaultSupportCaptureOpStatic(out.ok) {}" +
                     "DefaultSupportCaptureOpStatic(out.fail) {}";
             epService.EPAdministrator.CreateEPL(graph);

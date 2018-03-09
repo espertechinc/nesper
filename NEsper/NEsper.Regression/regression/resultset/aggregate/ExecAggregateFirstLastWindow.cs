@@ -64,9 +64,9 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
         private void RunAssertionLastMaxMixedOnSelect(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create window MyWindowOne#keepall as SupportBean");
-            epService.EPAdministrator.CreateEPL("insert into MyWindowOne select * from SupportBean(theString like 'A%')");
+            epService.EPAdministrator.CreateEPL("insert into MyWindowOne select * from SupportBean(TheString like 'A%')");
     
-            string epl = "on SupportBean(theString like 'B%') select last(mw.intPrimitive) as li, max(mw.intPrimitive) as mi from MyWindowOne mw";
+            string epl = "on SupportBean(TheString like 'B%') select last(mw.IntPrimitive) as li, max(mw.IntPrimitive) as mi from MyWindowOne mw";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -95,15 +95,15 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
         private void RunAssertionPrevNthIndexedFirstLast(EPServiceProvider epService) {
             string epl = "select " +
-                    "prev(intPrimitive, 0) as p0, " +
-                    "prev(intPrimitive, 1) as p1, " +
-                    "prev(intPrimitive, 2) as p2, " +
-                    "Nth(intPrimitive, 0) as n0, " +
-                    "Nth(intPrimitive, 1) as n1, " +
-                    "Nth(intPrimitive, 2) as n2, " +
-                    "last(intPrimitive, 0) as l1, " +
-                    "last(intPrimitive, 1) as l2, " +
-                    "last(intPrimitive, 2) as l3 " +
+                    "prev(IntPrimitive, 0) as p0, " +
+                    "prev(IntPrimitive, 1) as p1, " +
+                    "prev(IntPrimitive, 2) as p2, " +
+                    "nth(IntPrimitive, 0) as n0, " +
+                    "nth(IntPrimitive, 1) as n1, " +
+                    "nth(IntPrimitive, 2) as n2, " +
+                    "last(IntPrimitive, 0) as l1, " +
+                    "last(IntPrimitive, 1) as l2, " +
+                    "last(IntPrimitive, 2) as l3 " +
                     "from SupportBean#length(3)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -127,14 +127,14 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
         private void RunAssertionFirstLastIndexed(EPServiceProvider epService) {
             string epl = "select " +
-                    "first(intPrimitive, 0) as f0, " +
-                    "first(intPrimitive, 1) as f1, " +
-                    "first(intPrimitive, 2) as f2, " +
-                    "first(intPrimitive, 3) as f3, " +
-                    "last(intPrimitive, 0) as l0, " +
-                    "last(intPrimitive, 1) as l1, " +
-                    "last(intPrimitive, 2) as l2, " +
-                    "last(intPrimitive, 3) as l3 " +
+                    "first(IntPrimitive, 0) as f0, " +
+                    "first(IntPrimitive, 1) as f1, " +
+                    "first(IntPrimitive, 2) as f2, " +
+                    "first(IntPrimitive, 3) as f3, " +
+                    "last(IntPrimitive, 0) as l0, " +
+                    "last(IntPrimitive, 1) as l1, " +
+                    "last(IntPrimitive, 2) as l2, " +
+                    "last(IntPrimitive, 3) as l3 " +
                     "from SupportBean#length(3)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -156,7 +156,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             stmt.Dispose();
             epService.EPAdministrator.CreateEPL("create variable int indexvar = 2");
             epl = "select " +
-                    "first(intPrimitive, indexvar) as f0 " +
+                    "first(IntPrimitive, indexvar) as f0 " +
                     "from SupportBean#keepall";
     
             stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             stmt.Dispose();
     
             // test as part of function
-            epService.EPAdministrator.CreateEPL("select Math.Abs(last(intPrimitive)) from SupportBean").Dispose();
+            epService.EPAdministrator.CreateEPL("select Math.Abs(last(IntPrimitive)) from SupportBean").Dispose();
         }
     
         private void TryAssertionFirstLastIndexed(EPServiceProvider epService, SupportUpdateListener listener) {
@@ -195,17 +195,17 @@ namespace com.espertech.esper.regression.resultset.aggregate
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            TryInvalid(epService, "select window(distinct intPrimitive) from SupportBean",
+            TryInvalid(epService, "select window(distinct IntPrimitive) from SupportBean",
                     "Incorrect syntax near '(' ('distinct' is a reserved keyword) at line 1 column 13 near reserved keyword 'distinct' [");
     
-            TryInvalid(epService, "select window(sa.intPrimitive + sb.intPrimitive) from SupportBean#lastevent sa, SupportBean#lastevent sb",
-                    "Error starting statement: Failed to validate select-clause expression 'window(sa.intPrimitive+sb.intPrimitive)': The 'window' aggregation function requires that any child expressions evaluate properties of the same stream; Use 'firstever' or 'lastever' or 'nth' instead [select window(sa.intPrimitive + sb.intPrimitive) from SupportBean#lastevent sa, SupportBean#lastevent sb]");
+            TryInvalid(epService, "select window(sa.IntPrimitive + sb.IntPrimitive) from SupportBean#lastevent sa, SupportBean#lastevent sb",
+                    "Error starting statement: Failed to validate select-clause expression 'window(sa.IntPrimitive+sb.IntPrimitive)': The 'window' aggregation function requires that any child expressions evaluate properties of the same stream; Use 'firstever' or 'lastever' or 'nth' instead [select window(sa.IntPrimitive + sb.IntPrimitive) from SupportBean#lastevent sa, SupportBean#lastevent sb]");
     
             TryInvalid(epService, "select last(*) from SupportBean#lastevent sa, SupportBean#lastevent sb",
                     "Error starting statement: Failed to validate select-clause expression 'last(*)': The 'last' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead [select last(*) from SupportBean#lastevent sa, SupportBean#lastevent sb]");
     
-            TryInvalid(epService, "select theString, (select first(*) from SupportBean#lastevent sa) from SupportBean#lastevent sb",
-                    "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Failed to validate select-clause expression 'First(*)': The 'first' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead [select theString, (select first(*) from SupportBean#lastevent sa) from SupportBean#lastevent sb]");
+            TryInvalid(epService, "select TheString, (select first(*) from SupportBean#lastevent sa) from SupportBean#lastevent sb",
+                    "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Failed to validate select-clause expression 'First(*)': The 'first' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead [select TheString, (select first(*) from SupportBean#lastevent sa) from SupportBean#lastevent sb]");
     
             TryInvalid(epService, "select window(x.*) from SupportBean#lastevent",
                     "Error starting statement: Failed to validate select-clause expression 'window(x.*)': Stream by name 'x' could not be found among all streams [select window(x.*) from SupportBean#lastevent]");
@@ -214,11 +214,11 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "Error starting statement: Failed to validate select-clause expression 'window(*)': The 'window' aggregation function requires that the aggregated events provide a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(*) from SupportBean x]");
             TryInvalid(epService, "select window(x.*) from SupportBean x",
                     "Error starting statement: Failed to validate select-clause expression 'window(x.*)': The 'window' aggregation function requires that the aggregated events provide a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(x.*) from SupportBean x]");
-            TryInvalid(epService, "select window(x.intPrimitive) from SupportBean x",
-                    "Error starting statement: Failed to validate select-clause expression 'window(x.intPrimitive)': The 'window' aggregation function requires that the aggregated events provide a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(x.intPrimitive) from SupportBean x]");
+            TryInvalid(epService, "select window(x.IntPrimitive) from SupportBean x",
+                    "Error starting statement: Failed to validate select-clause expression 'window(x.IntPrimitive)': The 'window' aggregation function requires that the aggregated events provide a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(x.IntPrimitive) from SupportBean x]");
     
-            TryInvalid(epService, "select window(x.intPrimitive, 10) from SupportBean#keepall x",
-                    "Error starting statement: Failed to validate select-clause expression 'window(x.intPrimitive,10)': The 'window' aggregation function does not accept an index expression; Use 'first' or 'last' instead [");
+            TryInvalid(epService, "select window(x.IntPrimitive, 10) from SupportBean#keepall x",
+                    "Error starting statement: Failed to validate select-clause expression 'window(x.IntPrimitive,10)': The 'window' aggregation function does not accept an index expression; Use 'first' or 'last' instead [");
     
             TryInvalid(epService, "select first(x.*, 10d) from SupportBean#lastevent as x",
                     "Error starting statement: Failed to validate select-clause expression 'First(x.*,10.0)': The 'first' aggregation function requires an index expression that returns an integer value [select first(x.*, 10d) from SupportBean#lastevent as x]");
@@ -250,7 +250,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
         }
     
         private void RunAssertionMethodAndAccessTogether(EPServiceProvider epService) {
-            string epl = "select sum(intPrimitive) as si, window(sa.intPrimitive) as wi from SupportBean#length(2) as sa";
+            string epl = "select sum(IntPrimitive) as si, window(sa.IntPrimitive) as wi from SupportBean#length(2) as sa";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{5, IntArray(2, 3)});
     
             stmt.Dispose();
-            epl = "select sum(intPrimitive) as si, window(sa.intPrimitive) as wi from SupportBean#keepall as sa group by theString";
+            epl = "select sum(IntPrimitive) as si, window(sa.IntPrimitive) as wi from SupportBean#keepall as sa group by TheString";
             stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += listener.Update;
     
@@ -286,7 +286,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
         }
     
         private void RunAssertionOutputRateLimiting(EPServiceProvider epService) {
-            string epl = "select sum(intPrimitive) as si, window(sa.intPrimitive) as wi from SupportBean#keepall as sa output every 2 events";
+            string epl = "select sum(IntPrimitive) as si, window(sa.IntPrimitive) as wi from SupportBean#keepall as sa output every 2 events";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -315,8 +315,8 @@ namespace com.espertech.esper.regression.resultset.aggregate
             epService.EPAdministrator.Configuration.AddImport(typeof(SupportStaticMethodLib).FullName);
     
             string epl = "select " +
-                    "first(sa.doublePrimitive + sa.intPrimitive), " +
-                    "first(sa.intPrimitive), " +
+                    "first(sa.DoublePrimitive + sa.IntPrimitive), " +
+                    "first(sa.IntPrimitive), " +
                     "window(sa.*), " +
                     "last(*) from SupportBean#length(2) as sa";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
@@ -325,8 +325,8 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             var rows = new[]
             {
-                    new object[] {"first(sa.doublePrimitive+sa.intPrimitive)", typeof(double?)},
-                    new object[] {"first(sa.intPrimitive)", typeof(int)},
+                    new object[] {"first(sa.DoublePrimitive+sa.IntPrimitive)", typeof(double?)},
+                    new object[] {"first(sa.IntPrimitive)", typeof(int)},
                     new object[] {"window(sa.*)", typeof(SupportBean[])},
                     new object[] {"last(*)", typeof(SupportBean)},
             };
@@ -338,8 +338,8 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             stmt.Dispose();
             epl = "select " +
-                    "first(sa.doublePrimitive + sa.intPrimitive) as f1, " +
-                    "first(sa.intPrimitive) as f2, " +
+                    "first(sa.DoublePrimitive + sa.IntPrimitive) as f1, " +
+                    "first(sa.IntPrimitive) as f2, " +
                     "window(sa.*) as w1, " +
                     "last(*) as l1 " +
                     "from SupportBean#length(2) as sa";
@@ -351,13 +351,13 @@ namespace com.espertech.esper.regression.resultset.aggregate
             stmt.Dispose();
     
             epl = "select " +
-                    "first(sa.doublePrimitive + sa.intPrimitive) as f1, " +
-                    "first(sa.intPrimitive) as f2, " +
+                    "first(sa.DoublePrimitive + sa.IntPrimitive) as f1, " +
+                    "first(sa.IntPrimitive) as f2, " +
                     "window(sa.*) as w1, " +
                     "last(*) as l1 " +
                     "from SupportBean#length(2) as sa " +
-                    "having SupportStaticMethodLib.AlwaysTrue({First(sa.doublePrimitive + sa.intPrimitive), " +
-                    "first(sa.intPrimitive), window(sa.*), last(*)})";
+                    "having SupportStaticMethodLib.AlwaysTrue({First(sa.DoublePrimitive + sa.IntPrimitive), " +
+                    "first(sa.IntPrimitive), window(sa.*), last(*)})";
             stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += listener.Update;
     
@@ -489,9 +489,9 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
         private void RunAssertionBatchWindow(EPServiceProvider epService) {
             string epl = "select irstream " +
-                    "first(theString) as fs, " +
-                    "window(theString) as ws, " +
-                    "last(theString) as ls " +
+                    "first(TheString) as fs, " +
+                    "window(TheString) as ws, " +
+                    "last(TheString) as ls " +
                     "from SupportBean#length_batch(2) as sb";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -522,16 +522,16 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
         private void RunAssertionBatchWindowGrouped(EPServiceProvider epService) {
             string epl = "select " +
-                    "theString, " +
-                    "first(intPrimitive) as fi, " +
-                    "window(intPrimitive) as wi, " +
-                    "last(intPrimitive) as li " +
-                    "from SupportBean#length_batch(6) as sb group by theString order by theString asc";
+                    "TheString, " +
+                    "first(IntPrimitive) as fi, " +
+                    "window(IntPrimitive) as wi, " +
+                    "last(IntPrimitive) as li " +
+                    "from SupportBean#length_batch(6) as sb group by TheString order by TheString asc";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            string[] fields = "theString,fi,wi,li".Split(',');
+            string[] fields = "TheString,fi,wi,li".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
@@ -573,9 +573,9 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             string[] fields = "firststring,windowstring,laststring".Split(',');
             string epl = "select " +
-                    "first(theString) as firststring, " +
-                    "window(theString) as windowstring, " +
-                    "last(theString) as laststring " +
+                    "first(TheString) as firststring, " +
+                    "window(TheString) as windowstring, " +
+                    "last(TheString) as laststring " +
                     "from MyWindowTwo";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -590,13 +590,13 @@ namespace com.espertech.esper.regression.resultset.aggregate
         private void RunAssertionOnDelete(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create window MyWindowThree#keepall as select * from SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindowThree select * from SupportBean");
-            epService.EPAdministrator.CreateEPL("on SupportBean_A delete from MyWindowThree where theString = id");
+            epService.EPAdministrator.CreateEPL("on SupportBean_A delete from MyWindowThree where TheString = id");
     
             string[] fields = "firststring,windowstring,laststring".Split(',');
             string epl = "select " +
-                    "first(theString) as firststring, " +
-                    "window(theString) as windowstring, " +
-                    "last(theString) as laststring " +
+                    "first(TheString) as firststring, " +
+                    "window(TheString) as windowstring, " +
+                    "last(TheString) as laststring " +
                     "from MyWindowThree";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -646,7 +646,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             epService.EPRuntime.SendEvent(new SupportBean("E1", 11));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 12));
     
-            EPOnDemandPreparedQuery q = epService.EPRuntime.PrepareQuery("select first(intPrimitive) as f, window(intPrimitive) as w, last(intPrimitive) as l from MyWindowFour as s");
+            EPOnDemandPreparedQuery q = epService.EPRuntime.PrepareQuery("select first(IntPrimitive) as f, window(IntPrimitive) as w, last(IntPrimitive) as l from MyWindowFour as s");
             EPAssertionUtil.AssertPropsPerRow(q.Execute().Array, "f,w,l".Split(','),
                     new[] {new object[] {10, IntArray(10, 20, 30, 31, 11, 12), 12}});
     
@@ -654,7 +654,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             EPAssertionUtil.AssertPropsPerRow(q.Execute().Array, "f,w,l".Split(','),
                     new[] {new object[] {10, IntArray(10, 20, 30, 31, 11, 12, 13), 13}});
     
-            q = epService.EPRuntime.PrepareQuery("select theString as s, first(intPrimitive) as f, window(intPrimitive) as w, last(intPrimitive) as l from MyWindowFour as s group by theString order by theString asc");
+            q = epService.EPRuntime.PrepareQuery("select TheString as s, first(IntPrimitive) as f, window(IntPrimitive) as w, last(IntPrimitive) as l from MyWindowFour as s group by TheString order by TheString asc");
             var expected = new[]
             {
                     new object[] {"E1", 10, IntArray(10, 11, 12, 13), 13},
@@ -714,10 +714,10 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
         private void RunAssertionUnboundedStream(EPServiceProvider epService) {
             string epl = "select " +
-                    "first(theString) as f1, " +
+                    "first(TheString) as f1, " +
                     "first(sb.*) as f2, " +
                     "first(*) as f3, " +
-                    "last(theString) as l1, " +
+                    "last(TheString) as l1, " +
                     "last(sb.*) as l2, " +
                     "last(*) as l3 " +
                     "from SupportBean as sb";
@@ -741,11 +741,11 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
         private void RunAssertionWindowedUnGrouped(EPServiceProvider epService) {
             string epl = "select " +
-                    "first(theString) as firststring, " +
-                    "last(theString) as laststring, " +
-                    "first(intPrimitive) as firstint, " +
-                    "last(intPrimitive) as lastint, " +
-                    "window(intPrimitive) as allint " +
+                    "first(TheString) as firststring, " +
+                    "last(TheString) as laststring, " +
+                    "first(IntPrimitive) as firstint, " +
+                    "last(IntPrimitive) as lastint, " +
+                    "window(IntPrimitive) as allint " +
                     "from SupportBean#length(2)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -765,7 +765,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             stmt.Dispose();
     
             // test null-value provided
-            EPStatement stmtWNull = epService.EPAdministrator.CreateEPL("select window(intBoxed).Take(10) from SupportBean#length(2)");
+            EPStatement stmtWNull = epService.EPAdministrator.CreateEPL("select window(IntBoxed).take(10) from SupportBean#length(2)");
             stmtWNull.Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
     
@@ -774,14 +774,14 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
         private void RunAssertionWindowedGrouped(EPServiceProvider epService) {
             string epl = "select " +
-                    "theString, " +
-                    "first(theString) as firststring, " +
-                    "last(theString) as laststring, " +
-                    "first(intPrimitive) as firstint, " +
-                    "last(intPrimitive) as lastint, " +
-                    "window(intPrimitive) as allint " +
+                    "TheString, " +
+                    "first(TheString) as firststring, " +
+                    "last(TheString) as laststring, " +
+                    "first(IntPrimitive) as firstint, " +
+                    "last(IntPrimitive) as lastint, " +
+                    "window(IntPrimitive) as allint " +
                     "from SupportBean#length(5) " +
-                    "group by theString order by theString";
+                    "group by TheString order by TheString";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -815,17 +815,17 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             // test SODA indexes
             string eplFirstLast = "select " +
-                    "last(intPrimitive), " +
-                    "last(intPrimitive,1), " +
-                    "first(intPrimitive), " +
-                    "first(intPrimitive,1) " +
+                    "last(IntPrimitive), " +
+                    "last(IntPrimitive,1), " +
+                    "first(IntPrimitive), " +
+                    "first(IntPrimitive,1) " +
                     "from SupportBean#length(3)";
             EPStatementObjectModel modelFirstLast = epService.EPAdministrator.CompileEPL(eplFirstLast);
             Assert.AreEqual(eplFirstLast, modelFirstLast.ToEPL());
         }
     
         private void TryAssertionGrouped(EPServiceProvider epService, SupportUpdateListener listener) {
-            string[] fields = "theString,firststring,firstint,laststring,lastint,allint".Split(',');
+            string[] fields = "TheString,firststring,firstint,laststring,lastint,allint".Split(',');
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"E1", "E1", 10, "E1", 10, new[]{10}});

@@ -87,7 +87,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, volume, price " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol";
+                           "SupportBean#keepall where TheString=symbol";
             TryAssertion12(epService, stmtText, "none");
         }
 
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, volume, price " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            " having price > 10";
             TryAssertion34(epService, stmtText, "none");
         }
@@ -120,7 +120,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, volume, price " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "output every 1 seconds";
             TryAssertion56(epService, stmtText, "default");
         }
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, volume, price " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "having price > 10" +
                            "output every 1 seconds";
             TryAssertion78(epService, stmtText, "default");
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, volume, price " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "output all every 1 seconds";
             TryAssertion56(epService, stmtText, "all");
         }
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "@Hint('enable_outputlimit_opt') select symbol, volume, price " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "output all every 1 seconds";
             TryAssertion56(epService, stmtText, "all");
         }
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, volume, price " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "having price > 10" +
                            "output all every 1 seconds";
             TryAssertion78(epService, stmtText, "all");
@@ -210,7 +210,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "@Hint('enable_outputlimit_opt') select symbol, volume, price " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "having price > 10" +
                            "output all every 1 seconds";
             TryAssertion78(epService, stmtText, "all");
@@ -228,7 +228,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, volume, price " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "output last every 1 seconds";
             TryAssertion13_14(epService, stmtText, "last");
         }
@@ -246,7 +246,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, volume, price " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "having price > 10 " +
                            "output last every 1 seconds";
             TryAssertion15_16(epService, stmtText, "last");
@@ -264,7 +264,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select symbol, volume, price " +
                            "from MarketData#time(5.5 sec)," +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "output first every 1 seconds";
             TryAssertion17IStream(epService, stmtText, "first");
         }
@@ -281,7 +281,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             var stmtText = "select irstream symbol, volume, price " +
                            "from MarketData#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+                           "SupportBean#keepall where TheString=symbol " +
                            "output first every 1 seconds";
             TryAssertion17IRStream(epService, stmtText, "first");
         }
@@ -665,7 +665,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             var stmtText = "select symbol, volume " +
                            "from " + typeof(SupportMarketDataBean).FullName + "#length(10) as one," +
                            typeof(SupportBean).FullName + "#length(10) as two " +
-                           "where one.symbol=two.theString " +
+                           "where one.symbol=two.TheString " +
                            "having volume > 0 " +
                            "output every 5 events";
 
@@ -694,10 +694,10 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertionIterator(EPServiceProvider epService)
         {
             var fields = new[] {"symbol", "price"};
-            var statementString = "select symbol, theString, price from " +
-                                  typeof(SupportMarketDataBean).Name + "#length(10) as one, " +
-                                  typeof(SupportBeanString).Name + "#length(100) as two " +
-                                  "where one.symbol = two.theString " +
+            var statementString = "select symbol, TheString, price from " +
+                                  typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
+                                  typeof(SupportBeanString).FullName + "#length(100) as two " +
+                                  "where one.symbol = two.TheString " +
                                   "output every 3 events";
             var statement = epService.EPAdministrator.CreateEPL(statementString);
             epService.EPRuntime.SendEvent(new SupportBeanString("CAT"));
@@ -731,12 +731,12 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertionLimitEventJoin(EPServiceProvider epService)
         {
             var eventName1 = typeof(SupportBean).FullName;
-            var eventName2 = typeof(SupportBean_A).Name;
+            var eventName2 = typeof(SupportBean_A).FullName;
             var joinStatement =
                 "select * from " +
                 eventName1 + "#length(5) as event1," +
                 eventName2 + "#length(5) as event2" +
-                " where event1.theString = event2.id";
+                " where event1.TheString = event2.id";
             var outputStmt1 = joinStatement + " output every 1 events";
             var outputStmt3 = joinStatement + " output every 3 events";
 
@@ -832,7 +832,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 40000);
             var newEvents = listener.GetAndResetLastNewData();
             Assert.AreEqual(1, newEvents.Length);
-            Assert.AreEqual("e1", newEvents[0].Get("theString"));
+            Assert.AreEqual("e1", newEvents[0].Get("TheString"));
             listener.Reset();
 
             SendTimer(epService, 50000);
@@ -852,8 +852,8 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 80000);
             newEvents = listener.GetAndResetLastNewData();
             Assert.AreEqual(2, newEvents.Length);
-            Assert.AreEqual("e2", newEvents[0].Get("theString"));
-            Assert.AreEqual("e3", newEvents[1].Get("theString"));
+            Assert.AreEqual("e2", newEvents[0].Get("TheString"));
+            Assert.AreEqual("e3", newEvents[1].Get("TheString"));
 
             SendTimer(epService, 90000);
             Assert.IsTrue(listener.IsInvoked);
@@ -871,13 +871,13 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void TryAssertionSimpleNoJoinAll(EPServiceProvider epService, bool hinted)
         {
             var hint = hinted ? "@Hint('enable_outputlimit_opt')" : "";
-            var epl = hint + "select longBoxed " +
+            var epl = hint + "select LongBoxed " +
                       "from " + typeof(SupportBean).FullName + "#length(3) " +
                       "output all every 2 events";
 
             TryAssertAll(epService, CreateStmtAndListenerNoJoin(epService, epl));
 
-            epl = hint + "select longBoxed " +
+            epl = hint + "select LongBoxed " +
                   "from " + typeof(SupportBean).FullName + "#length(3) " +
                   "output every 2 events";
 
@@ -894,7 +894,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
         private void RunAssertionSimpleNoJoinLast(EPServiceProvider epService)
         {
-            var epl = "select longBoxed " +
+            var epl = "select LongBoxed " +
                       "from " + typeof(SupportBean).FullName + "#length(3) " +
                       "output last every 2 events";
 
@@ -918,7 +918,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void TryAssertionSimpleJoinAll(EPServiceProvider epService, bool hinted)
         {
             var hint = hinted ? "@Hint('enable_outputlimit_opt')" : "";
-            var epl = hint + "select longBoxed  " +
+            var epl = hint + "select LongBoxed  " +
                       "from " + typeof(SupportBeanString).FullName + "#length(3) as one, " +
                       typeof(SupportBean).FullName + "#length(3) as two " +
                       "output all every 2 events";
@@ -949,8 +949,8 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             // check update, all events present
             Assert.IsTrue(updateListener.GetAndClearIsInvoked());
             Assert.AreEqual(2, updateListener.LastNewData.Length);
-            Assert.AreEqual(1L, updateListener.LastNewData[0].Get("longBoxed"));
-            Assert.AreEqual(2L, updateListener.LastNewData[1].Get("longBoxed"));
+            Assert.AreEqual(1L, updateListener.LastNewData[0].Get("LongBoxed"));
+            Assert.AreEqual(2L, updateListener.LastNewData[1].Get("LongBoxed"));
             Assert.IsNull(updateListener.LastOldData);
         }
 
@@ -971,7 +971,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
         private void RunAssertionSimpleJoinLast(EPServiceProvider epService)
         {
-            var epl = "select longBoxed " +
+            var epl = "select LongBoxed " +
                       "from " + typeof(SupportBeanString).FullName + "#length(3) as one, " +
                       typeof(SupportBean).FullName + "#length(3) as two " +
                       "output last every 2 events";
@@ -1063,7 +1063,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 2000);
             SendEvent(epService, "YAH");
             EPAssertionUtil.AssertPropsPerRow(
-                listener.LastNewData, new[] {"theString"},
+                listener.LastNewData, new[] {"TheString"},
                 new[] {new object[] {"IBM"}, new object[] {"MSFT"}, new object[] {"YAH"}});
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
@@ -1076,7 +1076,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 10000);
             SendEvent(epService, "s6");
             EPAssertionUtil.AssertPropsPerRow(
-                listener.LastNewData, new[] {"theString"},
+                listener.LastNewData, new[] {"TheString"},
                 new[]
                 {
                     new object[] {"IBM"}, new object[] {"MSFT"}, new object[] {"YAH"}, new object[] {"s4"},
@@ -1094,7 +1094,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             SendEvent(epService, "s9");
             EPAssertionUtil.AssertPropsPerRow(
-                listener.LastNewData, new[] {"theString"},
+                listener.LastNewData, new[] {"TheString"},
                 new[]
                 {
                     new object[] {"YAH"}, new object[] {"s4"}, new object[] {"s5"}, new object[] {"s6"},
@@ -1105,7 +1105,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             SendTimer(epService, 14000);
             EPAssertionUtil.AssertPropsPerRow(
-                listener.LastNewData, new[] {"theString"},
+                listener.LastNewData, new[] {"TheString"},
                 new[] {new object[] {"s6"}, new object[] {"s7"}, new object[] {"s8"}, new object[] {"s9"}});
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
@@ -1116,7 +1116,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             SendTimer(epService, 23000);
             EPAssertionUtil.AssertPropsPerRow(
-                listener.LastNewData, new[] {"theString"}, new[] {new object[] {"s10"}, new object[] {"s11"}});
+                listener.LastNewData, new[] {"TheString"}, new[] {new object[] {"s10"}, new object[] {"s11"}});
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
 
@@ -1129,19 +1129,19 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void RunAssertionFirstSimpleHavingAndNoHaving(EPServiceProvider epService)
         {
             TryAssertionFirstSimpleHavingAndNoHaving(epService, "");
-            TryAssertionFirstSimpleHavingAndNoHaving(epService, "having intPrimitive != 0");
+            TryAssertionFirstSimpleHavingAndNoHaving(epService, "having IntPrimitive != 0");
         }
 
         private void TryAssertionFirstSimpleHavingAndNoHaving(EPServiceProvider epService, string having)
         {
-            var epl = "select theString from SupportBean " + having + " output first every 3 events";
+            var epl = "select TheString from SupportBean " + having + " output first every 3 events";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             EPAssertionUtil.AssertProps(
-                listener.AssertOneGetNewAndReset(), "theString".Split(','), new object[] {"E1"});
+                listener.AssertOneGetNewAndReset(), "TheString".Split(','), new object[] {"E1"});
 
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
@@ -1149,7 +1149,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
             EPAssertionUtil.AssertProps(
-                listener.AssertOneGetNewAndReset(), "theString".Split(','), new object[] {"E4"});
+                listener.AssertOneGetNewAndReset(), "TheString".Split(','), new object[] {"E4"});
 
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
@@ -1163,9 +1163,9 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             var listener = new SupportUpdateListener();
 
             SendTimer(epService, 0);
-            var selectStmt = "select theString from " + typeof(SupportBean).FullName + "#time(10) as s," +
-                             typeof(SupportMarketDataBean).Name +
-                             "#keepall as m where s.theString = m.symbol output snapshot every 3 events order by symbol asc";
+            var selectStmt = "select TheString from " + typeof(SupportBean).FullName + "#time(10) as s," +
+                             typeof(SupportMarketDataBean).FullName +
+                             "#keepall as m where s.TheString = m.symbol output snapshot every 3 events order by symbol asc";
 
             var stmt = epService.EPAdministrator.CreateEPL(selectStmt);
             stmt.Events += listener.Update;
@@ -1183,7 +1183,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 2000);
             SendEvent(epService, "s2");
             EPAssertionUtil.AssertPropsPerRow(
-                listener.LastNewData, new[] {"theString"},
+                listener.LastNewData, new[] {"TheString"},
                 new[] {new object[] {"s0"}, new object[] {"s1"}, new object[] {"s2"}});
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
@@ -1196,7 +1196,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendTimer(epService, 10000);
             SendEvent(epService, "s6");
             EPAssertionUtil.AssertPropsPerRow(
-                listener.LastNewData, new[] {"theString"},
+                listener.LastNewData, new[] {"TheString"},
                 new[]
                 {
                     new object[] {"s0"}, new object[] {"s1"}, new object[] {"s2"}, new object[] {"s4"},
@@ -1214,7 +1214,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             SendEvent(epService, "s9");
             EPAssertionUtil.AssertPropsPerRow(
-                listener.LastNewData, new[] {"theString"},
+                listener.LastNewData, new[] {"TheString"},
                 new[]
                 {
                     new object[] {"s2"}, new object[] {"s4"}, new object[] {"s5"}, new object[] {"s6"},
@@ -1225,7 +1225,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             SendTimer(epService, 14000);
             EPAssertionUtil.AssertPropsPerRow(
-                listener.LastNewData, new[] {"theString"},
+                listener.LastNewData, new[] {"TheString"},
                 new[] {new object[] {"s6"}, new object[] {"s7"}, new object[] {"s8"}, new object[] {"s9"}});
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
@@ -1236,7 +1236,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             SendTimer(epService, 23000);
             EPAssertionUtil.AssertPropsPerRow(
-                listener.LastNewData, new[] {"theString"}, new[] {new object[] {"s10"}, new object[] {"s11"}});
+                listener.LastNewData, new[] {"TheString"}, new[] {new object[] {"s10"}, new object[] {"s11"}});
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
 
@@ -1260,7 +1260,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
 
             SendCurrentTime(epService, "2002-03-01T09:00:00.000");
             EPAssertionUtil.AssertPropsPerRow(
-                listener.GetAndResetLastNewData(), "theString".Split(','), new[] {new object[] {"E1"}});
+                listener.GetAndResetLastNewData(), "TheString".Split(','), new[] {new object[] {"E1"}});
 
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -1284,7 +1284,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             SendCurrentTime(epService, "2002-03-01T09:00:00.000");
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
             EPAssertionUtil.AssertPropsPerRow(
-                listener.GetAndResetLastNewData(), "theString".Split(','), new[] {new object[] {"E4"}});
+                listener.GetAndResetLastNewData(), "TheString".Split(','), new[] {new object[] {"E4"}});
 
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -1312,7 +1312,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             // check update, only the last event present
             Assert.IsTrue(updateListener.GetAndClearIsInvoked());
             Assert.AreEqual(1, updateListener.LastNewData.Length);
-            Assert.AreEqual(2L, updateListener.LastNewData[0].Get("longBoxed"));
+            Assert.AreEqual(2L, updateListener.LastNewData[0].Get("LongBoxed"));
             Assert.IsNull(updateListener.LastOldData);
         }
 

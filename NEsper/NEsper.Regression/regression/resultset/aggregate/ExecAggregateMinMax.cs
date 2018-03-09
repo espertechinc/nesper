@@ -37,10 +37,10 @@ namespace com.espertech.esper.regression.resultset.aggregate
             SupportModelHelper.CreateByCompileOrParse(epService, soda, "create window NamedWindow5m#length(2) as select * from SupportBean");
             SupportModelHelper.CreateByCompileOrParse(epService, soda, "insert into NamedWindow5m select * from SupportBean");
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, "select " +
-                    "min(intPrimitive) as lower, " +
-                    "max(intPrimitive) as upper, " +
-                    "minever(intPrimitive) as lowerever, " +
-                    "maxever(intPrimitive) as upperever from NamedWindow5m");
+                    "min(IntPrimitive) as lower, " +
+                    "max(IntPrimitive) as upper, " +
+                    "minever(IntPrimitive) as lowerever, " +
+                    "maxever(IntPrimitive) as upperever from NamedWindow5m");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -62,7 +62,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
         private void RunAssertionMinMaxNoDataWindowSubquery(EPServiceProvider epService) {
     
             string[] fields = "maxi,mini,max0,min0".Split(',');
-            string epl = "select max(intPrimitive) as maxi, min(intPrimitive) as mini," +
+            string epl = "select max(IntPrimitive) as maxi, min(IntPrimitive) as mini," +
                     "(select max(id) from S0#lastevent) as max0, (select min(id) from S0#lastevent) as min0" +
                     " from SupportBean";
             var listener = new SupportUpdateListener();

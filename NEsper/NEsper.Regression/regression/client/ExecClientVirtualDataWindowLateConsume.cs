@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Linq;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
 using com.espertech.esper.client.scopetest;
@@ -14,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.virtualdw;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.client
@@ -30,7 +32,7 @@ namespace com.espertech.esper.regression.client
 
         public override void Run(EPServiceProvider epService)
         {
-            epService.EPAdministrator.CreateEPL("create window MyVDW.test:Vdw() as SupportBean");
+            epService.EPAdministrator.CreateEPL("create window MyVDW.test:vdw() as SupportBean");
             var window = (SupportVirtualDW) GetFromContext(epService, "/virtualdw/MyVDW");
             var supportBean = new SupportBean("S1", 100);
             window.Data = Collections.SingletonList<object>(supportBean);
@@ -39,7 +41,7 @@ namespace com.espertech.esper.regression.client
             // test aggregated consumer - wherein the virtual data window does not return an iterator that prefills the aggregation state
             var fields = "val0".Split(',');
             var stmtAggregate =
-                epService.EPAdministrator.CreateEPL("@Name('ABC') select sum(intPrimitive) as val0 from MyVDW");
+                epService.EPAdministrator.CreateEPL("@Name('ABC') select sum(IntPrimitive) as val0 from MyVDW");
             var listener = new SupportUpdateListener();
             stmtAggregate.Events += listener.Update;
             EPAssertionUtil.AssertProps(stmtAggregate.First(), fields, new object[] {100});
@@ -68,7 +70,7 @@ namespace com.espertech.esper.regression.client
 
             // test filter criteria passed to event
             var stmtAggregateWFilter = epService.EPAdministrator.CreateEPL(
-                "@Name('ABC') select sum(intPrimitive) as val0 from MyVDW(theString = 'A')");
+                "@Name('ABC') select sum(IntPrimitive) as val0 from MyVDW(TheString = 'A')");
             var eventWithFilter = (VirtualDataWindowEventConsumerAdd) window.Events[0];
             Assert.AreEqual(1, eventWithFilter.FilterExpressions.Length);
             Assert.IsNotNull(eventWithFilter.ExprEvaluatorContext);

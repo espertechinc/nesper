@@ -34,10 +34,10 @@ namespace com.espertech.esper.regression.multithread
     
         private void SetupStmts(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL(
-                    "create window MyWindow#groupwin(theString)#keepall as select theString, longPrimitive from " + typeof(SupportBean).FullName);
+                    "create window MyWindow#groupwin(TheString)#keepall as select TheString, LongPrimitive from " + typeof(SupportBean).FullName);
     
             epService.EPAdministrator.CreateEPL(
-                    "insert into MyWindow(theString, longPrimitive) " +
+                    "insert into MyWindow(TheString, LongPrimitive) " +
                             " select symbol, volume \n" +
                             " from " + typeof(SupportMarketDataBean).FullName);
         }

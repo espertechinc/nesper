@@ -27,7 +27,7 @@ namespace com.espertech.esperio.csv
         [SetUp]
         public void SetUp()
         {
-            _container = SupportContainer.Instance;
+            _container = SupportContainer.Reset();
         }
 
         [Test]

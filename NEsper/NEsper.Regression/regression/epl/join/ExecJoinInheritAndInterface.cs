@@ -24,8 +24,8 @@ namespace com.espertech.esper.regression.epl.join
     public class ExecJoinInheritAndInterface : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
             string epl = "select a, b from " +
-                    typeof(ISupportA).Name + "#length(10), " +
-                    typeof(ISupportB).Name + "#length(10)" +
+                    typeof(ISupportA).FullName + "#length(10), " +
+                    typeof(ISupportB).FullName + "#length(10)" +
                     " where a = b";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);

@@ -27,7 +27,7 @@ namespace com.espertech.esperio.regression.adapter
 
         public TestCSVAdapterUseCasesBean()
     	{
-	        _container = SupportContainer.Instance;
+	        _container = SupportContainer.Reset();
     	    _baseUseCase = new TestCSVAdapterUseCases(true);
     	}
     

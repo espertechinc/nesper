@@ -32,7 +32,7 @@ namespace com.espertech.esper.regression.epl.insertinto
     
             string[] fields = "c0,c1".Split(',');
             string stmtTextOne = "insert irstream into MyStream " +
-                    "select irstream theString as c0, Istream() as c1 " +
+                    "select irstream TheString as c0, istream() as c1 " +
                     "from SupportBean#lastevent";
             epService.EPAdministrator.CreateEPL(stmtTextOne).Events += listenerInsert.Update;
     
@@ -52,17 +52,17 @@ namespace com.espertech.esper.regression.epl.insertinto
             EPAssertionUtil.AssertPropsPerRow(listenerSelect.GetAndResetDataListsFlattened(), fields, new object[][]{new object[] {"E3", true}, new object[] {"E2", false}}, new Object[0][]);
     
             // test SODA
-            string eplModel = "select Istream() from SupportBean";
+            string eplModel = "select istream() from SupportBean";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(eplModel);
             Assert.AreEqual(eplModel, model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
             Assert.AreEqual(eplModel, stmt.Text);
-            Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("Istream()"));
+            Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("istream()"));
     
             // test join
             epService.EPAdministrator.DestroyAllStatements();
             fields = "c0,c1,c2".Split(',');
-            string stmtTextJoin = "select irstream theString as c0, id as c1, Istream() as c2 " +
+            string stmtTextJoin = "select irstream TheString as c0, id as c1, istream() as c2 " +
                     "from SupportBean#lastevent, SupportBean_S0#lastevent";
             epService.EPAdministrator.CreateEPL(stmtTextJoin).Events += listenerSelect.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));

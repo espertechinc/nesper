@@ -34,8 +34,8 @@ namespace com.espertech.esper.regression.rowrecog
                     "  measures E1.value as value" +
                     "  pattern (E1 E2 | E2 E1 ) " +
                     "  define " +
-                    "    E1 as E1.theString = 'A', " +
-                    "    E2 as E2.theString = 'B' " +
+                    "    E1 as E1.TheString = 'A', " +
+                    "    E2 as E2.TheString = 'B' " +
                     ")";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);

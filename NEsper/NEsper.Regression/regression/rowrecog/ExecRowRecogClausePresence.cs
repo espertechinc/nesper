@@ -30,7 +30,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             RunAssertionMeasurePresence(epService, 0, "B.Count", 1);
             RunAssertionMeasurePresence(epService, 0, "100+B.Count", 101);
-            RunAssertionMeasurePresence(epService, 1000000, "B.AnyOf(v=>theString='E2')", true);
+            RunAssertionMeasurePresence(epService, 1000000, "B.AnyOf(v=>TheString='E2')", true);
     
             RunAssertionDefineNotPresent(epService, true);
             RunAssertionDefineNotPresent(epService, false);
@@ -70,12 +70,12 @@ namespace com.espertech.esper.regression.rowrecog
             engine.EPRuntime.SendEvent(new CurrentTimeEvent(baseTime));
             string epl = "select * from SupportBean  " +
                     "match_recognize (" +
-                    "    measures A as a, A.theString as id, " + select + " as val " +
+                    "    measures A as a, A.TheString as id, " + select + " as val " +
                     "    pattern (A B*) " +
                     "    interval 1 minute " +
                     "    define " +
-                    "        A as (A.intPrimitive=1)," +
-                    "        B as (B.intPrimitive=2))";
+                    "        A as (A.IntPrimitive=1)," +
+                    "        B as (B.IntPrimitive=2))";
             var listener = new SupportUpdateListener();
             engine.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     

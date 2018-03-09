@@ -36,7 +36,7 @@ namespace com.espertech.esper.view.internals
         private IThreadLocal<IntersectBatchViewLocalState> _batchViewLocalState;
         private IThreadLocal<IntersectDefaultViewLocalState> _defaultViewLocalState;
         private IThreadLocal<IntersectAsymetricViewLocalState> _asymetricViewLocalState;
-        private IThreadLocalManager _threadLocalManager;
+        private readonly IThreadLocalManager _threadLocalManager;
 
         public IntersectViewFactory(IThreadLocalManager threadLocalManager)
         {

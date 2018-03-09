@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.rowrecog
             string[] fields = "a".Split(',');
             string text = "@Hint('iterate_only') select * from MyEvent#length(1) " +
                     "match_recognize (" +
-                    "  measures A.theString as a" +
+                    "  measures A.TheString as a" +
                     "  all matches " +
                     "  pattern (A) " +
                     "  define A as SupportStaticMethodLib.SleepReturnTrue(mySleepDuration)" +
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regression.rowrecog
             string[] fields = "a".Split(',');
             string text = "@Hint('iterate_only') select * from MyEvent#lastevent " +
                     "match_recognize (" +
-                    "  measures A.theString as a" +
+                    "  measures A.TheString as a" +
                     "  all matches " +
                     "  pattern (A) " +
                     "  define A as prev(A.value, 2) = value" +
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regression.rowrecog
             string text = "@Hint('iterate_only') select * from MyEvent#lastevent " +
                     "match_recognize (" +
                     "  partition by cat" +
-                    "  measures A.theString as a, A.cat as cat" +
+                    "  measures A.TheString as a, A.cat as cat" +
                     "  all matches " +
                     "  pattern (A) " +
                     "  define A as prev(A.value, 2) = value" +

@@ -30,13 +30,13 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             // unaggregated and ungrouped
             //
-            TryAssertion(epService, currentTime, 0, false, "intPrimitive", null, null, "last", null);
-            TryAssertion(epService, currentTime, 0, false, "intPrimitive", null, null, "last", "order by intPrimitive");
+            TryAssertion(epService, currentTime, 0, false, "IntPrimitive", null, null, "last", null);
+            TryAssertion(epService, currentTime, 0, false, "IntPrimitive", null, null, "last", "order by IntPrimitive");
     
-            TryAssertion(epService, currentTime, 5, false, "intPrimitive", null, null, "all", null);
-            TryAssertion(epService, currentTime, 0, true, "intPrimitive", null, null, "all", null);
+            TryAssertion(epService, currentTime, 5, false, "IntPrimitive", null, null, "all", null);
+            TryAssertion(epService, currentTime, 0, true, "IntPrimitive", null, null, "all", null);
     
-            TryAssertion(epService, currentTime, 0, false, "intPrimitive", null, null, "first", null);
+            TryAssertion(epService, currentTime, 0, false, "IntPrimitive", null, null, "first", null);
     
             // fully-aggregated and ungrouped
             TryAssertion(epService, currentTime, 5, false, "count(*)", null, null, "last", null);
@@ -49,35 +49,35 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             TryAssertion(epService, currentTime, 0, false, "count(*)", null, "having count(*) > 0", "first", null);
     
             // aggregated and ungrouped
-            TryAssertion(epService, currentTime, 5, false, "theString, count(*)", null, null, "last", null);
-            TryAssertion(epService, currentTime, 0, true, "theString, count(*)", null, null, "last", null);
+            TryAssertion(epService, currentTime, 5, false, "TheString, count(*)", null, null, "last", null);
+            TryAssertion(epService, currentTime, 0, true, "TheString, count(*)", null, null, "last", null);
     
-            TryAssertion(epService, currentTime, 5, false, "theString, count(*)", null, null, "all", null);
-            TryAssertion(epService, currentTime, 0, true, "theString, count(*)", null, null, "all", null);
+            TryAssertion(epService, currentTime, 5, false, "TheString, count(*)", null, null, "all", null);
+            TryAssertion(epService, currentTime, 0, true, "TheString, count(*)", null, null, "all", null);
     
-            TryAssertion(epService, currentTime, 0, true, "theString, count(*)", null, null, "first", null);
-            TryAssertion(epService, currentTime, 0, true, "theString, count(*)", null, "having count(*) > 0", "first", null);
+            TryAssertion(epService, currentTime, 0, true, "TheString, count(*)", null, null, "first", null);
+            TryAssertion(epService, currentTime, 0, true, "TheString, count(*)", null, "having count(*) > 0", "first", null);
     
             // fully-aggregated and grouped
-            TryAssertion(epService, currentTime, 5, false, "theString, count(*)", "group by theString", null, "last", null);
-            TryAssertion(epService, currentTime, 0, true, "theString, count(*)", "group by theString", null, "last", null);
+            TryAssertion(epService, currentTime, 5, false, "TheString, count(*)", "group by TheString", null, "last", null);
+            TryAssertion(epService, currentTime, 0, true, "TheString, count(*)", "group by TheString", null, "last", null);
     
-            TryAssertion(epService, currentTime, 5, false, "theString, count(*)", "group by theString", null, "all", null);
-            TryAssertion(epService, currentTime, 0, true, "theString, count(*)", "group by theString", null, "all", null);
+            TryAssertion(epService, currentTime, 5, false, "TheString, count(*)", "group by TheString", null, "all", null);
+            TryAssertion(epService, currentTime, 0, true, "TheString, count(*)", "group by TheString", null, "all", null);
     
-            TryAssertion(epService, currentTime, 0, false, "theString, count(*)", "group by theString", null, "first", null);
+            TryAssertion(epService, currentTime, 0, false, "TheString, count(*)", "group by TheString", null, "first", null);
     
             // aggregated and grouped
-            TryAssertion(epService, currentTime, 5, false, "theString, intPrimitive, count(*)", "group by theString", null, "last", null);
-            TryAssertion(epService, currentTime, 0, true, "theString, intPrimitive, count(*)", "group by theString", null, "last", null);
+            TryAssertion(epService, currentTime, 5, false, "TheString, IntPrimitive, count(*)", "group by TheString", null, "last", null);
+            TryAssertion(epService, currentTime, 0, true, "TheString, IntPrimitive, count(*)", "group by TheString", null, "last", null);
     
-            TryAssertion(epService, currentTime, 5, false, "theString, intPrimitive, count(*)", "group by theString", null, "all", null);
+            TryAssertion(epService, currentTime, 5, false, "TheString, IntPrimitive, count(*)", "group by TheString", null, "all", null);
     
-            TryAssertion(epService, currentTime, 0, false, "theString, intPrimitive, count(*)", "group by theString", null, "first", null);
+            TryAssertion(epService, currentTime, 0, false, "TheString, IntPrimitive, count(*)", "group by TheString", null, "first", null);
     
             SupportMessageAssertUtil.TryInvalid(epService,
-                    "@Hint('enable_outputlimit_opt') select sum(intPrimitive) " +
-                            "from SupportBean output last every 4 events order by theString",
+                    "@Hint('enable_outputlimit_opt') select sum(IntPrimitive) " +
+                            "from SupportBean output last every 4 events order by TheString",
                     "Error starting statement: Error in the output rate limiting clause: The ENABLE_OUTPUTLIMIT_OPT hint is not supported with order-by");
         }
     
