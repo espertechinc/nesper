@@ -170,7 +170,7 @@ namespace com.espertech.esper.regression.epl.variable
                     new object[] {"var5", "bool", " var1=1 ", true},
                     new object[] {"var6", "double", " 1.11 ", 1.11d},
                     new object[] {"var7", "double", " 1.20d ", 1.20d},
-                    new object[] {"var8", "double?", " ' 1.12 ' ", 1.12d},
+                    new object[] {"var8", "DOUBLE", " ' 1.12 ' ", 1.12d},
                     new object[] {"var9", "float", " 1.13f*2f ", 2.26f},
                     new object[] {"var10", "FLOAT", " -1.14f ", -1.14f},
                     new object[] {"var11", "string", " ' XXXX ' ", " XXXX "},
@@ -233,7 +233,7 @@ namespace com.espertech.esper.regression.epl.variable
             SupportMessageAssertUtil.TryInvalid(epService, stmt, "Error starting statement: Cannot create variable: Cannot create variable 'myvar', type 'somedummy' is not a recognized type [create variable somedummy myvar = 10]");
     
             stmt = "create variable string myvar = 5";
-            SupportMessageAssertUtil.TryInvalid(epService, stmt, "Error starting statement: Cannot create variable: Variable 'myvar' of declared type System.String cannot be initialized by a value of type " + Name.Of<int>() + " [create variable string myvar = 5]");
+            SupportMessageAssertUtil.TryInvalid(epService, stmt, "Error starting statement: Cannot create variable: Variable 'myvar' of declared type System.String cannot be initialized by a value of type " + Name.Clean<int>(false) + " [create variable string myvar = 5]");
     
             stmt = "create variable string myvar = 'a'";
             epService.EPAdministrator.CreateEPL("create variable string myvar = 'a'");

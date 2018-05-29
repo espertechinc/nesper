@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 using com.espertech.esper.client;
@@ -35,10 +36,11 @@ namespace com.espertech.esper.supportregression.multithread
             Log.Debug(".call Thread " + Thread.CurrentThread.ManagedThreadId + " starting");
             try
             {
-                while (_events.MoveNext())
+                for (var counter = 0 ; _events.MoveNext() ; counter++)
                 {
                     var @event = _events.Current;
                     _engine.EPRuntime.SendEvent(@event);
+                    Debug.WriteLine("Counter: {0}", counter);
                 }
             }
             catch (Exception ex)

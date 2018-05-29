@@ -190,7 +190,7 @@ namespace com.espertech.esper.regression.client
         }
     
         [Test]
-        public void TestExecClientStatementAwareListener() {
+        public void TestExecClientStatementAwareEvents() {
             RegressionRunner.Run(new ExecClientStatementAwareEvents());
         }
     

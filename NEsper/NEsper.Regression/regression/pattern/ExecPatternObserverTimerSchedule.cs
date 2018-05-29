@@ -75,12 +75,12 @@ namespace com.espertech.esper.regression.pattern
     
         private void RunAssertionFollowedByDynamicallyComputed(EPServiceProvider epService) {
     
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("computeISO8601String", GetType().FullName, "computeISO8601String");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("computeISO8601String", GetType(), "ComputeISO8601String");
     
             EPServiceProviderIsolated iso = epService.GetEPServiceIsolated("E1");
             SendCurrentTime(iso, "2012-10-01T05:51:07.000GMT-0:00");
     
-            string epl = "select * from pattern[every sb=SupportBean -> timer:schedule(iso: ComputeISO8601String(sb))]";
+            string epl = "select * from pattern[every sb=SupportBean -> timer:schedule(iso: computeISO8601String(sb))]";
             var listener = new SupportUpdateListener();
             iso.EPAdministrator.CreateEPL(epl, null, null).Events += listener.Update;
     
@@ -141,7 +141,7 @@ namespace com.espertech.esper.regression.pattern
             SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:schedule(repetitions:'a', period:1 seconds)]",
                     "Invalid parameter for pattern observer 'timer:schedule(repetitions:\"a\",period:1 seconds)': Failed to validate named parameter 'repetitions', expected a single expression returning any of the following types: int,long");
             SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:schedule(date:1 seconds)]",
-                    "Invalid parameter for pattern observer 'timer:schedule(date:1 seconds)': Failed to validate named parameter 'date', expected a single expression returning any of the following types: string,Calendar,Date,long");
+                    "Invalid parameter for pattern observer 'timer:schedule(date:1 seconds)': Failed to validate named parameter 'date', expected a single expression returning any of the following types: string,DateTime,DateTimeOffset,long,DateTimeEx");
             SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:schedule(repetitions:1)]",
                     "Invalid parameter for pattern observer 'timer:schedule(repetitions:1)': Either the date or period parameter is required");
             SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[timer:schedule(iso: 'R/1980-01-01T00:00:00Z/PT15S', repetitions:1)]",
@@ -350,16 +350,14 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionNameParameters(EPServiceProvider epService) {
-            foreach (string name in "getThe1980Calendar,getThe1980Date,getThe1980Long,getTheSeconds,getThe1980LocalDateTime,getThe1980ZonedDateTime".Split(',')) {
-                epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(name, GetType().FullName, name);
+            foreach (string name in "GetThe1980Calendar,GetThe1980Date,GetThe1980Long,GetTheSeconds".Split(',')) {
+                epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(name, GetType(), name);
             }
     
             TryAssertionNameParameters(epService, "repetitions:-1L, date:'1980-01-01T00:00:00Z', period: 1 seconds");
-            TryAssertionNameParameters(epService, "repetitions:-1, date:GetThe1980Calendar(), period: 1 seconds");
-            TryAssertionNameParameters(epService, "repetitions:-1, date:GetThe1980Date(), period: GetTheSeconds() seconds");
-            TryAssertionNameParameters(epService, "repetitions:-1, date:GetThe1980Long(), period: 1 seconds");
-            TryAssertionNameParameters(epService, "repetitions:-1, date:GetThe1980LocalDateTime(), period: 1 seconds");
-            TryAssertionNameParameters(epService, "repetitions:-1, date:GetThe1980ZonedDateTime(), period: 1 seconds");
+            TryAssertionNameParameters(epService, "repetitions:-1, date:getThe1980Calendar(), period: 1 seconds");
+            TryAssertionNameParameters(epService, "repetitions:-1, date:getThe1980Date(), period: getTheSeconds() seconds");
+            TryAssertionNameParameters(epService, "repetitions:-1, date:getThe1980Long(), period: 1 seconds");
         }
     
         private void TryAssertionNameParameters(EPServiceProvider epService, string parameters) {
@@ -515,6 +513,11 @@ namespace com.espertech.esper.regression.pattern
         public static long GetThe1980Long()
         {
             return GetThe1980Calendar().TimeInMillis();
+        }
+
+        public static int GetTheSeconds()
+        {
+            return 1;
         }
     }
 } // end of namespace

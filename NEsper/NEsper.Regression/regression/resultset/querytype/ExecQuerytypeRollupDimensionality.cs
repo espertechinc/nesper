@@ -12,7 +12,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.util;
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
 
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "from SupportBean group by Rollup(case when LongPrimitive > 0 then 1 else 0 end)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("c0"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("c0").GetBoxedType());
             string[] fields = "c0,c1".Split(',');
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10));
@@ -224,8 +224,8 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "group by " + groupBy);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c1"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("c2"));
+            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c1").GetBoxedType());
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("c2").GetBoxedType());
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 10, 100, 1000));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
@@ -259,8 +259,8 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "group by " + groupBy);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c1"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("c2"));
+            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c1").GetBoxedType());
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("c2").GetBoxedType());
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 10, 100, 1000));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
@@ -357,9 +357,9 @@ namespace com.espertech.esper.regression.resultset.querytype
                     "group by Cube(TheString, IntPrimitive, LongPrimitive, DoublePrimitive)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c1"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("c2"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c3"));
+            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c1").GetBoxedType());
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("c2").GetBoxedType());
+            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c3").GetBoxedType());
     
             epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10, 100, 1000));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields,
@@ -1098,9 +1098,9 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void AssertTypesC0C1C2(EPStatement stmtOne, Type expectedC0, Type expectedC1, Type expectedC2) {
-            Assert.AreEqual(expectedC0, stmtOne.EventType.GetPropertyType("c0"));
-            Assert.AreEqual(expectedC1, stmtOne.EventType.GetPropertyType("c1"));
-            Assert.AreEqual(expectedC2, stmtOne.EventType.GetPropertyType("c2"));
+            Assert.AreEqual(expectedC0.GetBoxedType(), stmtOne.EventType.GetPropertyType("c0").GetBoxedType());
+            Assert.AreEqual(expectedC1.GetBoxedType(), stmtOne.EventType.GetPropertyType("c1").GetBoxedType());
+            Assert.AreEqual(expectedC2.GetBoxedType(), stmtOne.EventType.GetPropertyType("c2").GetBoxedType());
         }
     }
 } // end of namespace

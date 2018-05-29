@@ -6,16 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
 
 using NUnit.Framework;
 
@@ -37,26 +32,34 @@ namespace com.espertech.esper.regression.epl.variable
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportBean_S0 s0 unidirectional, MyWindow sb where TheString = MYCONST");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-    
-            long start = PerformanceObserver.MilliTime;
-            for (int i = 0; i < 10000; i++) {
-                epService.EPRuntime.SendEvent(new SupportBean_S0(i, "E" + i));
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "sb.TheString,sb.IntPrimitive".Split(','), new object[]{"E331", -331});
-            }
-            long delta = DateTimeHelper.CurrentTimeMillis - start;
+
+            long delta = PerformanceObserver.TimeMillis(
+                () =>
+                {
+                    ;
+                    for (int i = 0; i < 10000; i++) {
+                        epService.EPRuntime.SendEvent(new SupportBean_S0(i, "E" + i));
+                        EPAssertionUtil.AssertProps(
+                            listener.AssertOneGetNewAndReset(), "sb.TheString,sb.IntPrimitive".Split(','),
+                            new object[] {"E331", -331});
+                    }
+                });
+
             Assert.IsTrue(delta < 500, "delta=" + delta);
             stmt.Dispose();
     
             // test subquery
             EPStatement stmtSubquery = epService.EPAdministrator.CreateEPL("select * from SupportBean_S0 where exists (select * from MyWindow where TheString = MYCONST)");
             stmtSubquery.Events += listener.Update;
-    
-            start = PerformanceObserver.MilliTime;
-            for (int i = 0; i < 10000; i++) {
-                epService.EPRuntime.SendEvent(new SupportBean_S0(i, "E" + i));
-                Assert.IsTrue(listener.GetAndClearIsInvoked());
-            }
-            delta = DateTimeHelper.CurrentTimeMillis - start;
+
+            delta = PerformanceObserver.TimeMillis(
+                () =>
+                {
+                    for (int i = 0; i < 10000; i++) {
+                        epService.EPRuntime.SendEvent(new SupportBean_S0(i, "E" + i));
+                        Assert.IsTrue(listener.GetAndClearIsInvoked());
+                    }
+                });
             Assert.IsTrue(delta < 500, "delta=" + delta);
         }
     }

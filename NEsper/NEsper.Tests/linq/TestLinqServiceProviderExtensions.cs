@@ -39,13 +39,13 @@ namespace com.espertech.esper.linq
             var selectA = _serviceProvider.From<SupportBean>(typeof(SupportBean));
 
             _serviceProvider.EPAdministrator.CreateEPL(
-                "create window testWindow1#keepall as select * from " + Name.Of<SupportBean>());
+                "create window testWindow1#keepall as select * from " + Name.Clean<SupportBean>());
 
             using (var statement = _serviceProvider.CreateWindow("testWindow2", view, selectA))
             {
                 Assert.AreEqual(
                     statement.Text,
-                    "@IterableUnbound create window testWindow2#keepall as select * from " + Name.Of<SupportBean>() + " as s0");
+                    "@IterableUnbound create window testWindow2#keepall as select * from " + Name.Clean<SupportBean>() + " as s0");
             }
         }
 

@@ -22,9 +22,16 @@ using NUnit.Framework;
 namespace com.espertech.esper.regression.view
 {
     public class ExecViewInvalid : RegressionExecution {
-        private static readonly string EVENT_NUM = typeof(SupportBean_N).Name;
+        private static readonly string EVENT_NUM = typeof(SupportBean_N).FullName;
         private static readonly string EVENT_ALLTYPES = typeof(SupportBean).FullName;
-    
+
+        public override void Configure(Configuration configuration)
+        {
+            base.Configure(configuration);
+            configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle =
+                PropertyResolutionStyle.CASE_SENSITIVE;
+        }
+
         public override void Run(EPServiceProvider epService) {
             RunAssertionInvalidPropertyExpression(epService);
             RunAssertionInvalidSyntax(epService);
@@ -93,11 +100,11 @@ namespace com.espertech.esper.regression.view
             AssertMessage(exception, "Aggregation functions not allowed within filters [");
     
             // class not found
-            exception = GetStatementExceptionView(epService, "select * from Dummypkg.Dummy()#length(10)");
-            AssertMessage(exception, "Failed to resolve event type: Event type or class named 'dummypkg.dummy' was not found [select * from Dummypkg.Dummy()#length(10)]");
+            exception = GetStatementExceptionView(epService, "select * from dummypkg.dummy()#length(10)");
+            AssertMessage(exception, "Failed to resolve event type: Event type or class named 'dummypkg.dummy' was not found [select * from dummypkg.dummy()#length(10)]");
     
             // invalid view
-            exception = GetStatementExceptionView(epService, "select * from " + EVENT_NUM + ".dummy:Dummy(10)");
+            exception = GetStatementExceptionView(epService, "select * from " + EVENT_NUM + ".dummy:dummy(10)");
             AssertMessage(exception, "Error starting statement: View name 'dummy:dummy' is not a known view name [");
     
             // keyword used
@@ -110,7 +117,7 @@ namespace com.espertech.esper.regression.view
     
             // where-clause relational op has invalid type
             exception = GetStatementExceptionView(epService, "select * from " + EVENT_ALLTYPES + "#length(1) where TheString > 5");
-            AssertMessage(exception, "Error validating expression: Failed to validate filter expression 'TheString>5': Implicit conversion from datatype 'string' to numeric is not allowed [");
+            AssertMessage(exception, "Error validating expression: Failed to validate filter expression 'TheString>5': Implicit conversion from datatype 'System.String' to numeric is not allowed [");
     
             // where-clause has aggregation function
             exception = GetStatementExceptionView(epService, "select * from " + EVENT_ALLTYPES + "#length(1) where sum(IntPrimitive) > 5");
@@ -118,11 +125,11 @@ namespace com.espertech.esper.regression.view
     
             // invalid numerical expression
             exception = GetStatementExceptionView(epService, "select 2 * 's' from " + EVENT_ALLTYPES + "#length(1)");
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression '2*\"s\"': Implicit conversion from datatype 'string' to numeric is not allowed [");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression '2*\"s\"': Implicit conversion from datatype 'System.String' to numeric is not allowed [");
     
             // invalid property in select
             exception = GetStatementExceptionView(epService, "select a[2].M('a') from " + EVENT_ALLTYPES + "#length(1)");
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'a[2].M('a')': Failed to resolve enumeration method, date-time method or mapped property 'a[2].M('a')': Failed to resolve 'a[2].m' to a property, single-row function, aggregation function, script, stream or class name [");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'a[2].M('a')': Failed to resolve enumeration method, date-time method or mapped property 'a[2].M('a')': Failed to resolve 'a[2].M' to a property, single-row function, aggregation function, script, stream or class name [");
     
             // select clause uses same "as" name twice
             exception = GetStatementExceptionView(epService, "select 2 as m, 2 as m from " + EVENT_ALLTYPES + "#length(1)");
@@ -130,11 +137,11 @@ namespace com.espertech.esper.regression.view
     
             // class in method invocation not found
             exception = GetStatementExceptionView(epService, "select UnknownClass.Method() from " + EVENT_NUM + "#length(10)");
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'unknownClass.Method()': Failed to resolve 'unknownClass.method' to a property, single-row function, aggregation function, script, stream or class name [");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'UnknownClass.Method()': Failed to resolve 'UnknownClass.Method' to a property, single-row function, aggregation function, script, stream or class name [");
     
             // method not found
             exception = GetStatementExceptionView(epService, "select Math.UnknownMethod() from " + EVENT_NUM + "#length(10)");
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'Math.UnknownMethod()': Failed to resolve 'Math.unknownMethod' to a property, single-row function, aggregation function, script, stream or class name [");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'Math.UnknownMethod()': Failed to resolve 'Math.UnknownMethod' to a property, single-row function, aggregation function, script, stream or class name [");
     
             // invalid property in group-by
             exception = GetStatementExceptionView(epService, "select IntPrimitive from " + EVENT_ALLTYPES + "#length(1) group by xxx");
@@ -150,7 +157,7 @@ namespace com.espertech.esper.regression.view
     
             // invalid property in having clause
             exception = GetStatementExceptionView(epService, "select 2 * 's' from " + EVENT_ALLTYPES + "#length(1) group by IntPrimitive having xxx > 5");
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression '2*\"s\"': Implicit conversion from datatype 'string' to numeric is not allowed [");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression '2*\"s\"': Implicit conversion from datatype 'System.String' to numeric is not allowed [");
     
             // invalid having clause - not a symbol in the group-by (non-aggregate)
             exception = GetStatementExceptionView(epService, "select sum(IntPrimitive) from " + EVENT_ALLTYPES + "#length(1) group by IntBoxed having DoubleBoxed > 5");
@@ -202,11 +209,11 @@ namespace com.espertech.esper.regression.view
     
             // mismatched type on coalesce columns
             exception = GetStatementExceptionView(epService, "select coalesce(BoolBoxed, TheString) from " + typeof(SupportBean).FullName + "#length(1) as aStr");
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'coalesce(BoolBoxed,TheString)': Implicit conversion not allowed: Cannot coerce to bool? type System.String [");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'coalesce(BoolBoxed,TheString)': Implicit conversion not allowed: Cannot coerce to bool type System.String [");
     
             // mismatched case compare type
             exception = GetStatementExceptionView(epService, "select case BoolPrimitive when 1 then true end from " + typeof(SupportBean).FullName + "#length(1) as aStr");
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'case BoolPrimitive when 1 then true end': Implicit conversion not allowed: Cannot coerce to bool? type " + Name.Clean<int>() + " [");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'case BoolPrimitive when 1 then true end': Implicit conversion not allowed: Cannot coerce to bool type " + Name.Clean<int>() + " [");
     
             // mismatched case result type
             exception = GetStatementExceptionView(epService, "select case when 1=2 then 1 when 1=3 then true end from " + typeof(SupportBean).FullName + "#length(1) as aStr");
@@ -214,16 +221,16 @@ namespace com.espertech.esper.regression.view
     
             // case expression not returning bool
             exception = GetStatementExceptionView(epService, "select case when 3 then 1 end from " + typeof(SupportBean).FullName + "#length(1) as aStr");
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'case when 3 then 1 end': Case node 'when' expressions must return a bool value [");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'case when 3 then 1 end': Case node 'when' expressions must return a boolean value [");
     
             // function not known
-            exception = GetStatementExceptionView(epService, "select Gogglex(1) from " + EVENT_NUM + "#length(1)");
-            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'Gogglex(1)': Unknown single-row function, aggregation function or mapped or indexed property named 'gogglex' could not be resolved [");
+            exception = GetStatementExceptionView(epService, "select gogglex(1) from " + EVENT_NUM + "#length(1)");
+            AssertMessage(exception, "Error starting statement: Failed to validate select-clause expression 'gogglex(1)': Unknown single-row function, aggregation function or mapped or indexed property named 'gogglex' could not be resolved [");
     
             // insert into column name incorrect
-            epService.EPAdministrator.CreateEPL("insert into Xyz select 1 as dodi from System.String");
-            exception = GetStatementExceptionView(epService, "select pox from pattern[Xyz(yodo=4)]");
-            AssertMessage(exception, "Failed to validate filter expression 'yodo=4': Property named 'yodo' is not valid in any stream (did you mean 'dodi'?) [select pox from pattern[Xyz(yodo=4)]]");
+            epService.EPAdministrator.CreateEPL("insert into xyz select 1 as dodi from System.String");
+            exception = GetStatementExceptionView(epService, "select pox from pattern[xyz(yodo=4)]");
+            AssertMessage(exception, "Failed to validate filter expression 'yodo=4': Property named 'yodo' is not valid in any stream (did you mean 'dodi'?) [select pox from pattern[xyz(yodo=4)]]");
         }
     
         private void RunAssertionInvalidView(EPServiceProvider epService) {

@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.expr.datetime
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("AEarlier", "2002-05-30T08:00:00.000", 100));
             epService.EPRuntime.SendEvent(SupportTimeStartEndA.Make("ALater", "2002-05-30T10:00:00.000", 100));
     
-            string epl = "select a.key as c0 from SupportDateTime unidirectional, AWindow as a where Longdate.Between(LongdateStart, LongdateEnd, false, true)";
+            string epl = "select a.key as c0 from SupportDateTime unidirectional, AWindow as a where Longdate.between(longdateStart, longdateEnd, false, true)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

@@ -96,7 +96,7 @@ namespace com.espertech.esperio.csv
             Assert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
-            expected = new[] {"value\r\nwith newline"};
+            expected = new[] {string.Format("value{0}with newline", "\n")};
             Assert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
@@ -206,7 +206,7 @@ namespace com.espertech.esperio.csv
 
             var source = new AdapterInputSource("regression/nestedProperties.csv");
             var spec = new CSVInputAdapterSpec(source, "Figure");
-            var adapter = new CSVInputAdapter(ep, spec);
+            var adapter = new CSVInputAdapter(_container, ep, spec);
             adapter.Start();
 
             Assert.IsTrue(ul.IsInvoked());
@@ -235,7 +235,7 @@ namespace com.espertech.esperio.csv
 
             var source = new AdapterInputSource("regression/nestedProperties.csv");
             var spec = new CSVInputAdapterSpec(source, "Figure");
-            var adapter = new CSVInputAdapter(ep, spec);
+            var adapter = new CSVInputAdapter(_container, ep, spec);
             adapter.Start();
 
             Assert.IsTrue(ul.IsInvoked());

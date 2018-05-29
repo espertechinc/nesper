@@ -56,8 +56,8 @@ namespace com.espertech.esper.regression.rowrecog
         }
     
         private void RunDocSampleUpToN(EPServiceProvider epService) {
-            string[] fields = "a0_id,a1_id,b_id".Split(',');
-            string epl = "select * from TemperatureSensorEvent\n" +
+            var fields = "a0_id,a1_id,b_id".Split(',');
+            var epl = "select * from TemperatureSensorEvent\n" +
                     "match_recognize (\n" +
                     "  partition by device\n" +
                     "  measures A[0].id as a0_id, A[1].id as a1_id, B.id as b_id\n" +
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regression.rowrecog
                     "  define \n" +
                     "\tA as A.temp >= 100,\n" +
                     "\tB as B.temp >= 102)";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
+            var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -80,8 +80,8 @@ namespace com.espertech.esper.regression.rowrecog
         }
     
         private void RunDocSampleNOrMore_and_BetweenNandM(EPServiceProvider epService, string pattern) {
-            string[] fields = "a0_id,a1_id,a2_id,b_id".Split(',');
-            string epl = "select * from TemperatureSensorEvent\n" +
+            var fields = "a0_id,a1_id,a2_id,b_id".Split(',');
+            var epl = "select * from TemperatureSensorEvent\n" +
                     "match_recognize (\n" +
                     "  partition by device\n" +
                     "  measures A[0].id as a0_id, A[1].id as a1_id, A[2].id as a2_id, B.id as b_id\n" +
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regression.rowrecog
                     "  define \n" +
                     "\tA as A.temp >= 100,\n" +
                     "\tB as B.temp >= 102)";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
+            var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -104,15 +104,15 @@ namespace com.espertech.esper.regression.rowrecog
         }
     
         private void RunDocSampleExactlyN(EPServiceProvider epService) {
-            string[] fields = "a0_id,a1_id".Split(',');
-            string epl = "select * from TemperatureSensorEvent\n" +
+            var fields = "a0_id,a1_id".Split(',');
+            var epl = "select * from TemperatureSensorEvent\n" +
                     "match_recognize (\n" +
                     "  partition by device\n" +
                     "  measures A[0].id as a0_id, A[1].id as a1_id\n" +
                     "  pattern (A{2})\n" +
                     "  define \n" +
                     "\tA as A.temp >= 100)";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
+            var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -130,7 +130,7 @@ namespace com.espertech.esper.regression.rowrecog
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            string template = "select * from SupportBean " +
+            var template = "select * from SupportBean " +
                     "match_recognize (" +
                     "  measures A as a" +
                     "  pattern (REPLACE) " +
@@ -143,10 +143,10 @@ namespace com.espertech.esper.regression.rowrecog
                     "Error starting statement: pattern quantifier 'null' must return an integer-type value");
             SupportMessageAssertUtil.TryInvalid(epService, template.RegexReplaceAll("REPLACE", "A{myvariable}"),
                     "Error starting statement: pattern quantifier 'myvariable' must return a constant value");
-            SupportMessageAssertUtil.TryInvalid(epService, template.RegexReplaceAll("REPLACE", "A{Prev(A)}"),
-                    "Error starting statement: Invalid match-recognize pattern expression 'Prev(A)': Aggregation, sub-select, previous or prior functions are not supported in this context");
+            SupportMessageAssertUtil.TryInvalid(epService, template.RegexReplaceAll("REPLACE", "A{prev(A)}"),
+                    "Error starting statement: Invalid match-recognize pattern expression 'prev(A)': Aggregation, sub-select, previous or prior functions are not supported in this context");
     
-            string expected = "Error starting statement: Invalid pattern quantifier value -1, expecting a minimum of 1";
+            var expected = "Error starting statement: Invalid pattern quantifier value -1, expecting a minimum of 1";
             SupportMessageAssertUtil.TryInvalid(epService, template.RegexReplaceAll("REPLACE", "A{-1}"), expected);
             SupportMessageAssertUtil.TryInvalid(epService, template.RegexReplaceAll("REPLACE", "A{,-1}"), expected);
             SupportMessageAssertUtil.TryInvalid(epService, template.RegexReplaceAll("REPLACE", "A{-1,10}"), expected);
@@ -156,7 +156,7 @@ namespace com.espertech.esper.regression.rowrecog
         }
     
         private void RunAssertionPrev(EPServiceProvider epService) {
-            string text = "select * from SupportBean " +
+            var text = "select * from SupportBean " +
                     "match_recognize (" +
                     "  measures A as a" +
                     "  pattern (A{3}) " +
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regression.rowrecog
                     "    A as A.IntPrimitive > prev(A.IntPrimitive)" +
                     ")";
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
+            var stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -173,9 +173,9 @@ namespace com.espertech.esper.regression.rowrecog
             SendEvent("A3", 2, epService);
             SendEvent("A4", 6, epService);
             SendEvent("A5", 5, epService);
-            SupportBean b6 = SendEvent("A6", 6, epService);
-            SupportBean b7 = SendEvent("A7", 7, epService);
-            SupportBean b8 = SendEvent("A9", 8, epService);
+            var b6 = SendEvent("A6", 6, epService);
+            var b7 = SendEvent("A7", 7, epService);
+            var b8 = SendEvent("A9", 8, epService);
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a".Split(','), new object[]{new object[]{b6, b7, b8}});
         }
     
@@ -438,11 +438,11 @@ namespace com.espertech.esper.regression.rowrecog
         private void RunAssertion(EPServiceProvider epService, bool soda, string pattern, string propertyNames, bool[] arrayProp,
                                   string[] sequencesWithMatch,
                                   string[] sequencesNoMatch) {
-            string[] props = propertyNames.Split(',');
-            string measures = MakeMeasures(props);
-            string defines = MakeDefines(props);
+            var props = propertyNames.Split(',');
+            var measures = MakeMeasures(props);
+            var defines = MakeDefines(props);
     
-            string text = "select * from SupportBean " +
+            var text = "select * from SupportBean " +
                     "match_recognize (" +
                     " partition by IntPrimitive" +
                     " measures " + measures +
@@ -452,13 +452,13 @@ namespace com.espertech.esper.regression.rowrecog
             var listener = new SupportUpdateListener();
             SupportModelHelper.CreateByCompileOrParse(epService, soda, text).Events += listener.Update;
     
-            int sequenceNum = 0;
-            foreach (string aSequencesWithMatch in sequencesWithMatch) {
+            var sequenceNum = 0;
+            foreach (var aSequencesWithMatch in sequencesWithMatch) {
                 RunAssertionSequence(epService, listener, true, props, arrayProp, sequenceNum, aSequencesWithMatch);
                 sequenceNum++;
             }
     
-            foreach (string aSequencesNoMatch in sequencesNoMatch) {
+            foreach (var aSequencesNoMatch in sequencesNoMatch) {
                 RunAssertionSequence(epService, listener, false, props, arrayProp, sequenceNum, aSequencesNoMatch);
                 sequenceNum++;
             }
@@ -469,12 +469,12 @@ namespace com.espertech.esper.regression.rowrecog
         private void RunAssertionSequence(EPServiceProvider epService, SupportUpdateListener listener, bool match, string[] propertyNames, bool[] arrayProp, int sequenceNum, string sequence) {
     
             // send events
-            string[] events = sequence.Split(',');
+            var events = sequence.Split(',');
             var sent = new Dictionary<string, IList<SupportBean>>();
-            foreach (string anEvent in events) {
+            foreach (var anEvent in events) {
                 var type = new String(new char[]{ anEvent[0] });
-                SupportBean bean = SendEvent(anEvent, sequenceNum, epService);
-                string propName = type.ToLowerInvariant();
+                var bean = SendEvent(anEvent, sequenceNum, epService);
+                var propName = type.ToLowerInvariant();
                 if (!sent.ContainsKey(propName)) {
                     sent.Put(propName, new List<SupportBean>());
                 }
@@ -483,8 +483,8 @@ namespace com.espertech.esper.regression.rowrecog
     
             // prepare expected
             var expected = new Object[propertyNames.Length];
-            for (int i = 0; i < propertyNames.Length; i++) {
-                IList<SupportBean> sentForType = sent.Get(propertyNames[i]);
+            for (var i = 0; i < propertyNames.Length; i++) {
+                var sentForType = sent.Get(propertyNames[i]);
                 if (arrayProp[i]) {
                     expected[i] = sentForType == null ? null : sentForType.ToArray();
                 } else {
@@ -496,7 +496,7 @@ namespace com.espertech.esper.regression.rowrecog
             }
     
             if (match) {
-                EventBean @event = listener.AssertOneGetNewAndReset();
+                var @event = listener.AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(@event, propertyNames, expected);
             } else {
                 Assert.IsFalse(listener.IsInvoked, "Failed at " + sequence);
@@ -504,9 +504,9 @@ namespace com.espertech.esper.regression.rowrecog
         }
     
         private string MakeDefines(string[] props) {
-            string delimiter = "";
+            var delimiter = "";
             var buf = new StringWriter();
-            foreach (string prop in props) {
+            foreach (var prop in props) {
                 buf.Write(delimiter);
                 delimiter = ", ";
                 buf.Write(prop.ToUpperInvariant());
@@ -520,9 +520,9 @@ namespace com.espertech.esper.regression.rowrecog
         }
     
         private string MakeMeasures(string[] props) {
-            string delimiter = "";
+            var delimiter = "";
             var buf = new StringWriter();
-            foreach (string prop in props) {
+            foreach (var prop in props) {
                 buf.Write(delimiter);
                 delimiter = ", ";
                 buf.Write(prop.ToUpperInvariant());
@@ -539,17 +539,17 @@ namespace com.espertech.esper.regression.rowrecog
         }
     
         internal static void RunEquivalent(EPServiceProvider epService, string before, string after) {
-            string epl = "select * from SupportBean#keepall " +
+            var epl = "select * from SupportBean#keepall " +
                     "match_recognize (" +
                     " measures A as a" +
                     " pattern (" + before + ")" +
                     " define" +
                     " A as A.TheString like \"A%\"" +
                     ")";
-            EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
-            EPStatementSPI spi = (EPStatementSPI) epService.EPAdministrator.Create(model);
-            StatementSpecCompiled spec = ((EPServiceProviderSPI) epService).StatementLifecycleSvc.GetStatementSpec(spi.StatementId);
-            RowRegexExprNode expanded = RegexPatternExpandUtil.Expand(spec.MatchRecognizeSpec.Pattern);
+            var model = epService.EPAdministrator.CompileEPL(epl);
+            var spi = (EPStatementSPI) epService.EPAdministrator.Create(model);
+            var spec = ((EPServiceProviderSPI) epService).StatementLifecycleSvc.GetStatementSpec(spi.StatementId);
+            var expanded = RegexPatternExpandUtil.Expand(epService.Container, spec.MatchRecognizeSpec.Pattern);
             var writer = new StringWriter();
             expanded.ToEPL(writer, RowRegexExprNodePrecedenceEnum.MINIMUM);
             Assert.AreEqual(after, writer.ToString());

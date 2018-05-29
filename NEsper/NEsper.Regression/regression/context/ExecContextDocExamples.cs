@@ -55,7 +55,7 @@ namespace com.espertech.esper.regression.context
             epService.EPAdministrator.DestroyAllStatements();
             Create(
                 epService, "create context SegmentedByCustomer partition by\n" +
-                           "custId from BankTxn, loginId from LoginEvent(failed=false)");
+                           "custId from BankTxn, loginId from LoginEvent(IsFailed=false)");
             epService.EPAdministrator.DestroyAllStatements();
             Create(epService, "create context ByCustomerAndAccount partition by custId and account from BankTxn");
             Create(epService, "context ByCustomerAndAccount select custId, account, sum(amount) from BankTxn");
@@ -121,25 +121,25 @@ namespace com.espertech.esper.regression.context
 
             Create(
                 epService, "create context SegmentedByCustomerHash\n" +
-                           "coalesce by Consistent_hash_crc32(custId) from BankTxn granularity 16 preallocate");
+                           "coalesce by consistent_hash_crc32(custId) from BankTxn granularity 16 preallocate");
             Create(
                 epService, "context SegmentedByCustomerHash\n" +
                            "select custId, account, sum(amount) from BankTxn group by custId, account");
             Create(
                 epService, "create context HashedByCustomer as coalesce\n" +
-                           "Consistent_hash_crc32(custId) from BankTxn,\n" +
-                           "Consistent_hash_crc32(loginId) from LoginEvent,\n" +
-                           "Consistent_hash_crc32(loginId) from LogoutEvent\n" +
+                           "consistent_hash_crc32(custId) from BankTxn,\n" +
+                           "consistent_hash_crc32(loginId) from LoginEvent,\n" +
+                           "consistent_hash_crc32(loginId) from LogoutEvent\n" +
                            "granularity 32 preallocate");
 
             epService.EPAdministrator.DestroyAllStatements();
             Create(
                 epService, "create context HashedByCustomer\n" +
-                           "coalesce Consistent_hash_crc32(loginId) from LoginEvent(failed = false)\n" +
+                           "coalesce consistent_hash_crc32(loginId) from LoginEvent(IsFailed = false)\n" +
                            "granularity 1024 preallocate");
             Create(
                 epService,
-                "create context ByCustomerHash coalesce Consistent_hash_crc32(custId) from BankTxn granularity 1024");
+                "create context ByCustomerHash coalesce consistent_hash_crc32(custId) from BankTxn granularity 1024");
             Create(
                 epService, "context ByCustomerHash\n" +
                            "select context.name, context.id from BankTxn");
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regression.context
             Create(
                 epService, "create context CtxNestedTrainEnter\n" +
                            "context InitCtx initiated by TrainEnterEvent as te terminated after 5 minutes,\n" +
-                           "context HashCtx coalesce by Consistent_hash_crc32(tagId) from PassengerScanEvent\n" +
+                           "context HashCtx coalesce by consistent_hash_crc32(tagId) from PassengerScanEvent\n" +
                            "granularity 16 preallocate");
             Create(
                 epService, "context CtxNestedTrainEnter\n" +

@@ -9,6 +9,7 @@
 using System;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.epl.db.drivers
 {
@@ -18,6 +19,15 @@ namespace com.espertech.esper.epl.db.drivers
     [Serializable]
     public class DbDriverSqlServer : BaseDbDriver
     {
+        public DbDriverSqlServer()
+        {
+        }
+
+        protected DbDriverSqlServer(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
         /// <summary>
         /// Creates a connection string builder.
         /// </summary>

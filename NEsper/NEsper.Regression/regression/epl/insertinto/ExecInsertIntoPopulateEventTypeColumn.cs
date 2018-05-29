@@ -85,7 +85,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                     "  else new { p0 = 'b', p1 = 2 }\n" +
                     "  end\n" +
                     "}\n" +
-                    "insert into OuterType select ComputeNested(sb) as n0 from SupportBean as sb");
+                    "insert into OuterType select computeNested(sb) as n0 from SupportBean as sb");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.GetStatement("out").Events += listener.Update;
     
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regression.epl.insertinto
     
             // typable - selected column type is incompatible
             TryInvalid(epService, "insert into N1_2 select new {p0='a'} as p1 from SupportBean",
-                    "Error starting statement: Invalid assignment of column 'p0' of type 'System.String' to event property 'p0' typed as '" + Name.Of<int>() + "', column and parameter types mismatch [insert into N1_2 select new {p0='a'} as p1 from SupportBean]");
+                    "Error starting statement: Invalid assignment of column 'p0' of type 'System.String' to event property 'p0' typed as '" + Name.Clean<int>(false) + "', column and parameter types mismatch [insert into N1_2 select new {p0='a'} as p1 from SupportBean]");
     
             // typable - selected column type is not matching anything
             TryInvalid(epService, "insert into N1_2 select new {xxx='a'} as p1 from SupportBean",

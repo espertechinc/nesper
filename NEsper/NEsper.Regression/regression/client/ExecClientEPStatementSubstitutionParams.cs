@@ -68,7 +68,8 @@ namespace com.espertech.esper.regression.client
     
         private void RunAssertionMethodInvocation(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            EPPreparedStatement prepared = epService.EPAdministrator.PrepareEPL("select * from SupportBean(TheString = ?.TheString)");
+            EPPreparedStatement prepared = epService.EPAdministrator.PrepareEPL(
+                "select * from SupportBean(TheString = ?.get_TheString())");
             prepared.SetObject(1, new SupportBean("E1", 0));
             var listenerOne = new SupportUpdateListener();
             epService.EPAdministrator.Create(prepared).Events += listenerOne.Update;
@@ -167,7 +168,7 @@ namespace com.espertech.esper.regression.client
             statement = epService.EPAdministrator.Create(prepared);
             var listenerTwo = new SupportUpdateListener();
             statement.Events += listenerTwo.Update;
-            Assert.AreEqual("select * from Com.espertech.esper.supportregression.bean.SupportBean(TheString=\"e2\")", statement.Text);
+            Assert.AreEqual("select * from com.espertech.esper.supportregression.bean.SupportBean(TheString=\"e2\")", statement.Text);
     
             epService.EPRuntime.SendEvent(new SupportBean("e2", 10));
             Assert.IsFalse(listenerOne.IsInvoked);
@@ -276,7 +277,7 @@ namespace com.espertech.esper.regression.client
             statement = epService.EPAdministrator.Create(prepared);
             var listenerTwo = new SupportUpdateListener();
             statement.Events += listenerTwo.Update;
-            Assert.AreEqual("select * from Com.espertech.esper.supportregression.bean.SupportBean(TheString=\"e1\")", statement.Text);
+            Assert.AreEqual("select * from com.espertech.esper.supportregression.bean.SupportBean(TheString=\"e1\")", statement.Text);
     
             epService.EPRuntime.SendEvent(new SupportBean("e2", 10));
             Assert.IsFalse(listenerOne.IsInvoked);
@@ -332,7 +333,7 @@ namespace com.espertech.esper.regression.client
                 epService.EPAdministrator.Create(prepared);
                 Assert.Fail();
             } catch (EPException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex, "Failed to validate filter expression 'TheString=-1': Implicit conversion from datatype '" + Name.Of<int>() + "' to 'string' is not allowed [");
+                SupportMessageAssertUtil.AssertMessage(ex, "Failed to validate filter expression 'TheString=-1': Implicit conversion from datatype '" + Name.Clean<int>() + "' to '" + Name.Clean<string>() + "' is not allowed [");
             }
         }
     

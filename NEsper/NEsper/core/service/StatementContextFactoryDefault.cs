@@ -167,10 +167,11 @@ namespace com.espertech.esper.core.service
                 engineServices.MultiMatchHandlerFactory.GetDefaultHandler());
     
             var patternContextFactory = new PatternContextFactoryDefault();
-    
+
+            var container = engineServices.Container;
             var optionalCreateNamedWindowName = statementSpecRaw.CreateWindowDesc != null ? statementSpecRaw.CreateWindowDesc.WindowName : null;
             var viewResolutionService = new ViewResolutionServiceImpl(_viewRegistry, optionalCreateNamedWindowName, _systemVirtualDwViewFactory);
-            var patternResolutionService = new PatternObjectResolutionServiceImpl(_patternObjectClasses);
+            var patternResolutionService = new PatternObjectResolutionServiceImpl(container, _patternObjectClasses);
     
             var schedulingService = engineServices.SchedulingService;
             var filterService = engineServices.FilterService;

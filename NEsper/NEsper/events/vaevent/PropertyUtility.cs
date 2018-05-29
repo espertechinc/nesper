@@ -217,12 +217,12 @@ namespace com.espertech.esper.events.vaevent
             return GetMismatchException(field.DeclaringType, @object, e);
         }
 
-        public static PropertyAccessException GetTargetException(MethodInfo method, TargetException e)
+        public static PropertyAccessException GetGenericException(MethodInfo method, Exception e)
         {
             Type declaring = method.DeclaringType;
             String eMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             String message = "Failed to invoke method " + method.Name + " on class " +
-                             TypeHelper.GetTypeNameFullyQualPretty(declaring) + ": " +
+                             declaring.GetCleanName() + ": " +
                              eMessage;
             throw new PropertyAccessException(message, e);
         }
@@ -230,7 +230,7 @@ namespace com.espertech.esper.events.vaevent
         public static PropertyAccessException GetInvocationTargetException(MethodInfo method, TargetInvocationException e)
         {
             Type declaring = method.DeclaringType;
-            String message = "Failed to invoke method " + method.Name + " on class " + TypeHelper.GetTypeNameFullyQualPretty(declaring) + ": " + e.InnerException.Message;
+            String message = "Failed to invoke method " + method.Name + " on class " + declaring.GetCleanName() + ": " + e.InnerException?.Message;
             throw new PropertyAccessException(message, e);
         }
 
@@ -244,20 +244,20 @@ namespace com.espertech.esper.events.vaevent
             return GetAccessExceptionField(field, e);
         }
 
-        private static PropertyAccessException GetAccessExceptionField(FieldInfo field, Exception e)
+        public static PropertyAccessException GetAccessExceptionField(FieldInfo field, Exception e)
         {
             Type declaring = field.DeclaringType;
-            String message = "Failed to obtain field value for field " + field.Name + " on class " + TypeHelper.GetTypeNameFullyQualPretty(declaring) + ": " + e.Message;
+            String message = "Failed to obtain field value for field " + field.Name + " on class " + declaring.GetCleanName() + ": " + e.Message;
             throw new PropertyAccessException(message, e);
         }
 
         private static PropertyAccessException GetMismatchException(Type declared, Object @object, InvalidCastException e)
         {
-            String classNameExpected = TypeHelper.GetTypeNameFullyQualPretty(declared);
+            String classNameExpected = declared.GetCleanName();
             String classNameReceived;
             if (@object != null)
             {
-                classNameReceived = TypeHelper.GetTypeNameFullyQualPretty(@object.GetType());
+                classNameReceived = @object.GetType().GetCleanName();
             }
             else
             {
@@ -266,8 +266,8 @@ namespace com.espertech.esper.events.vaevent
 
             if (classNameExpected.Equals(classNameReceived))
             {
-                classNameExpected = TypeHelper.GetTypeNameFullyQualPretty(declared);
-                classNameReceived = @object != null ? TypeHelper.GetTypeNameFullyQualPretty(@object.GetType()) : "null";
+                classNameExpected = declared.GetCleanName();
+                classNameReceived = @object != null ? @object.GetType().GetCleanName() : "null";
             }
 
             var message = "Mismatched getter instance to event bean type, expected " + classNameExpected + " but received " + classNameReceived;
@@ -284,10 +284,10 @@ namespace com.espertech.esper.events.vaevent
             return GetAccessExceptionMethod(method, e);
         }
 
-        private static PropertyAccessException GetAccessExceptionMethod(MethodInfo method, Exception e)
+        public static PropertyAccessException GetAccessExceptionMethod(MethodInfo method, Exception e)
         {
             Type declaring = method.DeclaringType;
-            String message = "Failed to invoke method " + method.Name + " on class " + TypeHelper.GetTypeNameFullyQualPretty(declaring) + ": " + e.Message;
+            String message = "Failed to invoke method " + method.Name + " on class " + declaring.GetCleanName() + ": " + e.Message;
             throw new PropertyAccessException(message, e);
         }
     }

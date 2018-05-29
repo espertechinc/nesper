@@ -54,7 +54,7 @@ namespace com.espertech.esper.epl.datetime.eval
             {
                 if (!(inputType is ClassEPType || inputType is NullEPType))
                 {
-                    throw new ExprValidationException(message + " but received " + EPTypeHelper.ToTypeDescriptive(inputType));
+                    throw new ExprValidationException(message + " but received " + inputType.ToTypeDescriptive());
                 }
                 if (inputType is ClassEPType)
                 {
@@ -62,7 +62,7 @@ namespace com.espertech.esper.epl.datetime.eval
                     if (!TypeHelper.IsDateTime(classEPType.Clazz))
                     {
                         throw new ExprValidationException(
-                            message + " but received " + classEPType.Clazz.GetTypeNameFullyQualPretty());
+                            message + " but received " + classEPType.Clazz.GetCleanName());
                     }
                 }
             }

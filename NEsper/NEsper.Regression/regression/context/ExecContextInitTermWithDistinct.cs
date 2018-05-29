@@ -42,30 +42,30 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
             // require stream name assignment using 'as'
-            TryInvalid(epService, "create context MyContext initiated by Distinct(TheString) SupportBean terminated after 15 seconds",
-                    "Error starting statement: Distinct-expressions require that a stream name is assigned to the stream using 'as' [create context MyContext initiated by Distinct(TheString) SupportBean terminated after 15 seconds]");
+            TryInvalid(epService, "create context MyContext initiated by distinct(TheString) SupportBean terminated after 15 seconds",
+                    "Error starting statement: Distinct-expressions require that a stream name is assigned to the stream using 'as' [create context MyContext initiated by distinct(TheString) SupportBean terminated after 15 seconds]");
     
             // require stream
-            TryInvalid(epService, "create context MyContext initiated by Distinct(a.TheString) pattern [a=SupportBean] terminated after 15 seconds",
-                    "Error starting statement: Distinct-expressions require a stream as the initiated-by condition [create context MyContext initiated by Distinct(a.TheString) pattern [a=SupportBean] terminated after 15 seconds]");
+            TryInvalid(epService, "create context MyContext initiated by distinct(a.TheString) pattern [a=SupportBean] terminated after 15 seconds",
+                    "Error starting statement: Distinct-expressions require a stream as the initiated-by condition [create context MyContext initiated by distinct(a.TheString) pattern [a=SupportBean] terminated after 15 seconds]");
     
             // invalid distinct-clause expression
-            TryInvalid(epService, "create context MyContext initiated by Distinct((select * from MyWindow)) SupportBean as sb terminated after 15 seconds",
-                    "Error starting statement: Invalid context distinct-clause expression 'subselect_0': Aggregation, sub-select, previous or prior functions are not supported in this context [create context MyContext initiated by Distinct((select * from MyWindow)) SupportBean as sb terminated after 15 seconds]");
+            TryInvalid(epService, "create context MyContext initiated by distinct((select * from MyWindow)) SupportBean as sb terminated after 15 seconds",
+                    "Error starting statement: Invalid context distinct-clause expression 'subselect_0': Aggregation, sub-select, previous or prior functions are not supported in this context [create context MyContext initiated by distinct((select * from MyWindow)) SupportBean as sb terminated after 15 seconds]");
     
             // empty list of expressions
-            TryInvalid(epService, "create context MyContext initiated by Distinct() SupportBean terminated after 15 seconds",
-                    "Error starting statement: Distinct-expressions have not been provided [create context MyContext initiated by Distinct() SupportBean terminated after 15 seconds]");
+            TryInvalid(epService, "create context MyContext initiated by distinct() SupportBean terminated after 15 seconds",
+                    "Error starting statement: Distinct-expressions have not been provided [create context MyContext initiated by distinct() SupportBean terminated after 15 seconds]");
     
             // non-overlapping context not allowed with distinct
-            TryInvalid(epService, "create context MyContext start Distinct(TheString) SupportBean end after 15 seconds",
-                    "Incorrect syntax near 'distinct' (a reserved keyword) at line 1 column 31 [create context MyContext start Distinct(TheString) SupportBean end after 15 seconds]");
+            TryInvalid(epService, "create context MyContext start distinct(TheString) SupportBean end after 15 seconds",
+                    "Incorrect syntax near 'distinct' (a reserved keyword) at line 1 column 31 [create context MyContext start distinct(TheString) SupportBean end after 15 seconds]");
         }
     
         private void RunAssertionDistinctOverlappingSingleKey(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL(
                     "create context MyContext " +
-                            "  initiated by Distinct(s0.TheString) SupportBean(IntPrimitive = 0) s0" +
+                            "  initiated by distinct(s0.TheString) SupportBean(IntPrimitive = 0) s0" +
                             "  terminated by SupportBean(TheString = s0.TheString and IntPrimitive = 1)");
     
             string[] fields = "TheString,LongPrimitive,cnt".Split(',');
@@ -121,7 +121,7 @@ namespace com.espertech.esper.regression.context
     
         private void RunAssertionDistinctOverlappingMultiKey(EPServiceProvider epService) {
             string epl = "create context MyContext as " +
-                    "initiated by Distinct(TheString, IntPrimitive) SupportBean as sb " +
+                    "initiated by distinct(TheString, IntPrimitive) SupportBean as sb " +
                     "terminated SupportBean_S1";         // any S1 ends the contexts
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
             Assert.AreEqual(epl, model.ToEPL());
@@ -191,7 +191,7 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionNullSingleKey(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("create context MyContext initiated by Distinct(TheString) SupportBean as sb terminated after 24 hours");
+            epService.EPAdministrator.CreateEPL("create context MyContext initiated by distinct(TheString) SupportBean as sb terminated after 24 hours");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context MyContext select count(*) as cnt from SupportBean");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -209,7 +209,7 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionNullKeyMultiKey(EPServiceProvider epService) {
-            epService.EPAdministrator.CreateEPL("create context MyContext initiated by Distinct(TheString, IntBoxed, IntPrimitive) SupportBean as sb terminated after 100 hours");
+            epService.EPAdministrator.CreateEPL("create context MyContext initiated by distinct(TheString, IntBoxed, IntPrimitive) SupportBean as sb terminated after 100 hours");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context MyContext select count(*) as cnt from SupportBean");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

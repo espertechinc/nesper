@@ -141,7 +141,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             string epl;
     
             epl = "select Beans.sumof() from Bean";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'beans.sumof()': Invalid input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" + typeof(SupportBean).FullName + "' [select Beans.sumof() from Bean]");
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Beans.sumof()': Invalid input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" + typeof(SupportBean).FullName + "' [select Beans.sumof() from Bean]");
         }
     }
 } // end of namespace

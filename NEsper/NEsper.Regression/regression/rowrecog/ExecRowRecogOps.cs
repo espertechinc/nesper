@@ -522,11 +522,11 @@ namespace com.espertech.esper.regression.rowrecog
         private void RunAssertionRegex() {
             Assert.IsTrue("aq".Matches("^aq|^id"));
             Assert.IsTrue("id".Matches("^aq|^id"));
-            Assert.IsTrue("ad".Matches("A(q|i)?d"));
-            Assert.IsTrue("aqd".Matches("A(q|i)?d"));
-            Assert.IsTrue("aid".Matches("A(q|i)?d"));
-            Assert.IsFalse("aed".Matches("A(q|i)?d"));
-            Assert.IsFalse("a".Matches("(A(b?)c)?"));
+            Assert.IsTrue("ad".Matches("a(q|i)?d"));
+            Assert.IsTrue("aqd".Matches("a(q|i)?d"));
+            Assert.IsTrue("aid".Matches("a(q|i)?d"));
+            Assert.IsFalse("aed".Matches("a(q|i)?d"));
+            Assert.IsFalse("a".Matches("(a(b?)c)?"));
         }
     }
 } // end of namespace

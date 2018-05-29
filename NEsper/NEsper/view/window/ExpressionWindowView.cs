@@ -54,10 +54,7 @@ namespace com.espertech.esper.view.window
             _dataWindowViewFactory = dataWindowViewFactory;
         }
 
-        public override string ViewName
-        {
-            get { return _dataWindowViewFactory.ViewName; }
-        }
+        public override string ViewName => _dataWindowViewFactory.ViewName;
 
         public override View CloneView()
         {
@@ -240,19 +237,13 @@ namespace com.espertech.esper.view.window
             }
         }
 
-        public ArrayDeque<ExpressionWindowTimestampEventPair> Window
-        {
-            get { return _window; }
-        }
+        public ArrayDeque<ExpressionWindowTimestampEventPair> Window => _window;
 
         public override void VisitView(ViewDataVisitor viewDataVisitor)
         {
             viewDataVisitor.VisitPrimary(_window, true, _dataWindowViewFactory.ViewName, null);
         }
 
-        public override ViewFactory ViewFactory
-        {
-            get { return _dataWindowViewFactory; }
-        }
+        public override ViewFactory ViewFactory => _dataWindowViewFactory;
     }
 }

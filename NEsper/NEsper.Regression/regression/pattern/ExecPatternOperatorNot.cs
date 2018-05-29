@@ -53,7 +53,7 @@ namespace com.espertech.esper.regression.pattern
                     .Add(Patterns.EveryFilter(EVENT_B_CLASS, "b"))
                     .Add(Patterns.NotFilter(EVENT_G_CLASS, "g"));
             model.FromClause = FromClause.Create(PatternStream.Create(pattern));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(text, model.ToEPL());
             testCase = new EventExpressionCase(model);
             testCase.Add("B1", "b", events.GetEvent("B1"));

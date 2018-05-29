@@ -110,10 +110,10 @@ namespace com.espertech.esper.util
                     "Property 'booleanArray' of class com.espertech.esper.util.TestJsonUtil+DEF expects an array but receives a value of type System.Int32");
     
             TryInvalid(typeof(DEF), "{'booleanArray': [1, 2]}",
-                    "Property 'booleanArray (array element)' of class System.Boolean(Array) expects an System.Boolean but receives a value of type System.Int32");
+                    "Property 'booleanArray (array element)' of class System.Boolean[] expects an System.Boolean but receives a value of type System.Int32");
     
             TryInvalid(typeof(DEF), "{'defString': [1, 2]}",
-                    "Property 'defString' of class com.espertech.esper.util.TestJsonUtil+DEF expects an System.String but receives a value of type " + TypeHelper.GetTypeNameFullyQualPretty<List<object>>());
+                    "Property 'defString' of class com.espertech.esper.util.TestJsonUtil+DEF expects an System.String but receives a value of type " + TypeHelper.GetCleanName<List<object>>());
     
             TryInvalid(typeof(Container), "{'abc': 'def'}",
                     "Property 'abc' of class com.espertech.esper.util.TestJsonUtil+Container expects an com.espertech.esper.util.TestJsonUtil+ABC but receives a value of type System.String");

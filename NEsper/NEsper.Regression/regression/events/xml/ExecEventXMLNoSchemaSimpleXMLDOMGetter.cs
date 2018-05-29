@@ -28,7 +28,7 @@ namespace com.espertech.esper.regression.events.xml
             string stmt =
                     "select element1, invalidelement, " +
                             "element4.element41 as nestedElement," +
-                            "element2.Element21('e21_2') as mappedElement," +
+                            "element2.element21('e21_2') as mappedElement," +
                             "element2.element21[1] as indexedElement," +
                             "element3.myattribute as invalidattribute " +
                             "from TestXMLNoSchemaType#length(100)";

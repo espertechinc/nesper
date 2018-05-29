@@ -11,13 +11,14 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
-
+using com.espertech.esper.util;
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
 using NUnit.Framework;
@@ -243,7 +244,7 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void RunAssertionConstant(EPServiceProvider epService) {
             string text = "select * from pattern [" +
-                    typeof(SupportBean).FullName + "(IntPrimitive=" + typeof(ISupportA).FullName + ".VALUE_1)]";
+                    typeof(SupportBean).FullName + "(IntPrimitive=" + typeof(ISupportAConst).FullName + ".VALUE_1)]";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -261,7 +262,7 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void RunAssertionEnumSyntaxOne(EPServiceProvider epService) {
             string text = "select * from pattern [" +
-                    typeof(SupportBeanWithEnum).FullName + "(supportEnum=" + typeof(SupportEnum).FullName + ".ValueOf('ENUM_VALUE_1'))]";
+                    typeof(SupportBeanWithEnum).FullName + "(supportEnum=" + typeof(SupportEnumHelper).FullName + ".GetEnumFor('ENUM_VALUE_1'))]";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -1048,24 +1049,24 @@ namespace com.espertech.esper.regression.expr.filter
                             "b=" + typeof(SupportMarketDataBean).FullName + "(sum(a.LongBoxed) = 2)]",
                     "Aggregation functions not allowed within filters [");
     
-            TryInvalid(epService, "select * from pattern [every a=" + typeof(SupportBean).FullName + "(Prior(1, a.LongBoxed))]",
-                    "Failed to validate filter expression 'Prior(1,a.LongBoxed)': Prior function cannot be used in this context [");
+            TryInvalid(epService, "select * from pattern [every a=" + typeof(SupportBean).FullName + "(prior(1, a.LongBoxed))]",
+                    "Failed to validate filter expression 'prior(1,a.LongBoxed)': Prior function cannot be used in this context [");
     
-            TryInvalid(epService, "select * from pattern [every a=" + typeof(SupportBean).FullName + "(Prev(1, a.LongBoxed))]",
-                    "Failed to validate filter expression 'Prev(1,a.LongBoxed)': Previous function cannot be used in this context [");
+            TryInvalid(epService, "select * from pattern [every a=" + typeof(SupportBean).FullName + "(prev(1, a.LongBoxed))]",
+                    "Failed to validate filter expression 'prev(1,a.LongBoxed)': Previous function cannot be used in this context [");
     
             TryInvalid(epService, "select * from " + typeof(SupportBean).FullName + "(5 - 10)",
-                    "Filter expression not returning a bool value: '5-10' [");
+                    "Filter expression not returning a boolean value: '5-10' [");
     
             TryInvalid(epService, "select * from " + typeof(SupportBeanWithEnum).FullName + "(TheString=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_1)",
-                    "Failed to validate filter expression 'TheString=ENUM_VALUE_1': Implicit conversion from datatype 'SupportEnum' to 'string' is not allowed [");
+                    "Failed to validate filter expression 'TheString=ENUM_VALUE_1': Implicit conversion from datatype '" + Name.Clean<SupportEnum>() + "' to '" + Name.Clean<string>() + "' is not allowed [");
     
             TryInvalid(epService, "select * from " + typeof(SupportBeanWithEnum).FullName + "(supportEnum=A.b)",
                     "Failed to validate filter expression 'supportEnum=A.b': Failed to resolve property 'A.b' to a stream or nested property in a stream [");
     
             TryInvalid(epService, "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
                             typeof(SupportBean).FullName + "(DoubleBoxed not in (DoubleBoxed, x.IntBoxed, 9))]",
-                    "Failed to validate filter expression 'DoubleBoxed not in (DoubleBoxed,x.i...(45 chars)': Failed to find a stream named 'x' (did you mean 'b'?) [");
+                    "Failed to validate filter expression 'DoubleBoxed not in (DoubleBoxed,x.I...(45 chars)': Failed to find a stream named 'x' (did you mean 'b'?) [");
     
             TryInvalid(epService, "select * from pattern [a=" + typeof(SupportBean).FullName
                             + " -> b=" + typeof(SupportBean).FullName + "(cluedo.IntPrimitive=a.IntPrimitive)"
@@ -1150,7 +1151,7 @@ namespace com.espertech.esper.regression.expr.filter
                     expected = typeof(double?);
                 }
                 if (field.Equals("c8") || field.Equals("c9")) {
-                    expected = typeof(long);
+                    expected = typeof(long?);
                 }
                 Assert.AreEqual(expected, stmt.EventType.GetPropertyType(field), "for field " + field);
             }

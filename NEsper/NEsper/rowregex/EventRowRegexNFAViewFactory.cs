@@ -14,6 +14,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.agg.service;
@@ -76,6 +77,7 @@ namespace com.espertech.esper.rowregex
         /// </exception>
         /// <throws>ExprValidationException if validation fails</throws>
 	    public EventRowRegexNFAViewFactory(
+            IContainer container,
 	        ViewFactoryChain viewChain,
 	        MatchRecognizeSpec matchRecognizeSpec,
 	        AgentInstanceContext agentInstanceContext,
@@ -92,7 +94,8 @@ namespace com.espertech.esper.rowregex
 	        var statementContext = agentInstanceContext.StatementContext;
 
             // Expand repeats and permutations
-            _expandedPatternNode = RegexPatternExpandUtil.Expand(matchRecognizeSpec.Pattern);
+            _expandedPatternNode = RegexPatternExpandUtil.Expand(
+                container, matchRecognizeSpec.Pattern);
 
 	        // Determine single-row and multiple-row variables
 	        _variablesSingle = new LinkedHashSet<string>();

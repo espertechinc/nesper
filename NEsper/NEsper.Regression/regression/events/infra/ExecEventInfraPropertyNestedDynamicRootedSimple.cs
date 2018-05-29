@@ -51,7 +51,7 @@ namespace com.espertech.esper.regression.events.infra
     
             // Bean
             var beanTests = new Pair<SupportMarkerInterface, ValueWithExistsFlag[]>[] {
-                new Pair<SupportMarkerInterface, ValueWithExistsFlag[]>(SupportBeanComplexProps.MakeDefaultBean(), AllExist("simple", "nestedValue", "nestedNestedValue")),
+                new Pair<SupportMarkerInterface, ValueWithExistsFlag[]>(SupportBeanComplexProps.MakeDefaultBean(), AllExist("Simple", "NestedValue", "NestedNestedValue")),
                 new Pair<SupportMarkerInterface, ValueWithExistsFlag[]>(new SupportMarkerImplA("x"), NOT_EXISTS),
             };
             RunAssertion(epService, BEAN_TYPE.Name, FBEAN, null, beanTests, typeof(object));

@@ -300,8 +300,8 @@ namespace com.espertech.esper.events
                                 string.Format(
                                     "Type by name '{0}' contributes property '{1}' defined as '{2}' which overides the same property of type '{3}'",
                                     typeToMerge.Name, prop.PropertyName,
-                                    assigned.GetTypeNameFullyQualPretty(),
-                                    existingType.GetTypeNameFullyQualPretty()));
+                                    assigned.GetCleanName(),
+                                    existingType.GetCleanName()));
                         }
                     }
                     typing.Put(prop.PropertyName, prop.PropertyType);
@@ -353,7 +353,7 @@ namespace com.espertech.esper.events
                 {
                     throw new ConfigurationException(
                         "Declared start timestamp property '" + startTimestampProperty +
-                        "' is expected to return a DateTime, DateTimeEx or long-typed value but returns '" + Name.Of(type) + "'");
+                        "' is expected to return a DateTime, DateTimeEx or long-typed value but returns '" + Name.Clean(type) + "'");
                 }
             }
 
@@ -374,7 +374,7 @@ namespace com.espertech.esper.events
                 {
                     throw new ConfigurationException(
                         "Declared end timestamp property '" + endTimestampProperty +
-                        "' is expected to return a DateTime, DateTimeEx or long-typed value but returns '" + Name.Of(type) + "'");
+                        "' is expected to return a DateTime, DateTimeEx or long-typed value but returns '" + Name.Clean(type) + "'");
                 }
                 Type startType = eventType.GetPropertyType(startTimestampProperty);
                 if (startType.GetBoxedType() != type.GetBoxedType())

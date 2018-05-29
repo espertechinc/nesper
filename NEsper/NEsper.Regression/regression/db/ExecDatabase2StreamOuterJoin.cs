@@ -6,18 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
 using System.Data;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
-
 
 using NUnit.Framework;
 
@@ -27,8 +21,7 @@ namespace com.espertech.esper.regression.db
         private const string ALL_FIELDS = "mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal";
     
         public override void Configure(Configuration configuration) {
-            var configDB = new ConfigurationDBRef();
-            configDB.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative);
+            var configDB = SupportDatabaseService.CreateDefaultConfig();
             configDB.ConnectionLifecycle = ConnectionLifecycleEnum.RETAIN;
             configDB.ConnectionCatalog = "test";
             configDB.ConnectionTransactionIsolation = IsolationLevel.Serializable;
@@ -120,7 +113,7 @@ namespace com.espertech.esper.regression.db
             SendEvent(epService, 2, "B");
             received = listener.AssertOneGetNewAndReset();
             Assert.AreEqual(2, received.Get("MyInt"));
-            AssertReceived(received, 2L, 20, "B", "Y", false, 100.0m, 200.0m, 2.2d, 2.3d);
+            AssertReceived(received, 2L, 20, "B", "Y", false, 100.0m, 200.0m, 2.2d, 2.3f);
             EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new object[][]{new object[] {2, 20}});
     
             statement.Dispose();
@@ -154,19 +147,21 @@ namespace com.espertech.esper.regression.db
             SendEvent(epService, 2, "B");
             received = listener.AssertOneGetNewAndReset();
             Assert.AreEqual(2, received.Get("MyInt"));
-            AssertReceived(received, 2L, 20, "B", "Y", false, 100.0m, 200.0m, 2.2d, 2.3d);
+            AssertReceived(received, 2L, 20, "B", "Y", false, 100.0m, 200.0m, 2.2d, 2.3f);
             EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new object[][]{new object[] {2, 20}});
     
             statement.Dispose();
         }
     
         private void RunAssertionOuterJoinReversedOnFilter(EPServiceProvider epService) {
-            string[] fields = "MyInt,MyVarChar".Split(',');
-            string stmtText = "select s0.IntPrimitive as MyInt, MyVarChar from " +
+            // PGSQL does not care about "case" and columns are returned in lowercase,
+            // so please be aware of this.  I have converted the use case accordingly.
+            string[] fields = "MyInt,myvarcharx".Split(',');
+            string stmtText = "select s0.IntPrimitive as MyInt, myvarcharx from " +
                     typeof(SupportBean).FullName + "#keepall as s0 " +
                     " right outer join " +
-                    " sql:MyDB ['select myvarchar MyVarChar from mytesttable'] as s1 " +
-                    "on TheString = MyVarChar";
+                    " sql:MyDB ['select myvarchar as myvarcharx from mytesttable'] as s1 " +
+                    "on TheString = myvarcharx";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -181,7 +176,7 @@ namespace com.espertech.esper.regression.db
             SendEvent(epService, -1, "A");
             EventBean received = listener.AssertOneGetNewAndReset();
             Assert.AreEqual(-1, received.Get("MyInt"));
-            Assert.AreEqual("A", received.Get("MyVarChar"));
+            Assert.AreEqual("A", received.Get("myvarcharx"));
             EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields, new object[][]{new object[] {-1, "A"}});
     
             statement.Dispose();
@@ -195,7 +190,7 @@ namespace com.espertech.esper.regression.db
             SendEvent(epService, 2);
             EventBean received = listener.AssertOneGetNewAndReset();
             Assert.AreEqual(2, received.Get("MyInt"));
-            AssertReceived(received, 2L, 20, "B", "Y", false, 100.0m, 200.0m, 2.2d, 2.3d);
+            AssertReceived(received, 2L, 20, "B", "Y", false, 100.0m, 200.0m, 2.2d, 2.3f);
     
             SendEvent(epService, 11);
             Assert.IsFalse(listener.IsInvoked);
@@ -211,7 +206,7 @@ namespace com.espertech.esper.regression.db
             SendEvent(epService, 1);
             EventBean received = listener.AssertOneGetNewAndReset();
             Assert.AreEqual(1, received.Get("MyInt"));
-            AssertReceived(received, 1L, 10, "A", "Z", true, 5000.0m, 100.0m, 1.2d, 1.3d);
+            AssertReceived(received, 1L, 10, "A", "Z", true, 5000.0m, 100.0m, 1.2d, 1.3f);
     
             SendEvent(epService, 11);
             received = listener.AssertOneGetNewAndReset();
@@ -231,7 +226,7 @@ namespace com.espertech.esper.regression.db
             decimal? mynumeric, 
             decimal? mydecimal, 
             double? mydouble, 
-            double? myreal)
+            float? myreal)
         {
             Assert.AreEqual(mybigint, theEvent.Get("mybigint"));
             Assert.AreEqual(myint, theEvent.Get("myint"));

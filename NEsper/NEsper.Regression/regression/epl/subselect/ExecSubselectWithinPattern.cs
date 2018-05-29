@@ -47,12 +47,12 @@ namespace com.espertech.esper.regression.epl.subselect
                     "Failed to validate subquery number 1 querying MyWindowInvalid: Consuming statements to a named window cannot declare a data window view onto the named window [select * from S0(exists (select * from MyWindowInvalid#lastevent))]");
     
             TryInvalid(epService, "select * from S0(id in ((select p00 from MyWindowInvalid)))",
-                    "Failed to validate filter expression 'id in (subselect_1)': Implicit conversion not allowed: Cannot coerce types " + Name.Of<int>() + " and System.String [select * from S0(id in ((select p00 from MyWindowInvalid)))]");
+                    "Failed to validate filter expression 'id in (subselect_1)': Implicit conversion not allowed: Cannot coerce types " + Name.Clean<int>() + " and System.String [select * from S0(id in ((select p00 from MyWindowInvalid)))]");
         }
     
         private void RunAssertionSubqueryAgainstNamedWindowInUDFInPattern(EPServiceProvider epService) {
     
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("supportSingleRowFunction", typeof(ExecSubselectWithinPattern).Name, "SupportSingleRowFunction");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("supportSingleRowFunction", typeof(ExecSubselectWithinPattern), "SupportSingleRowFunction");
             epService.EPAdministrator.CreateEPL("create window MyWindowSNW#unique(p00)#keepall as S0");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from pattern[S1(supportSingleRowFunction((select * from MyWindowSNW)))]");
             var listener = new SupportUpdateListener();

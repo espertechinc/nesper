@@ -226,7 +226,7 @@ namespace com.espertech.esper.epl.core
                 var orderKeysArr = orderKeys.ToArray();
                 var orderedEvents = _orderByProcessor.Sort(outgoingEvents, orderKeysArr, ExprEvaluatorContext);
                 if (orderedEvents == null)
-                    return EnumerationHelper<EventBean>.Empty();
+                    return EnumerationHelper.Empty<EventBean>();
 
                 return ((IEnumerable<EventBean>)orderedEvents).GetEnumerator();
             }
@@ -242,7 +242,7 @@ namespace com.espertech.esper.epl.core
             var result = ProcessJoinResult(joinSet, CollectionUtil.EMPTY_ROW_SET, true);
             var first = result.First;
             if (first == null)
-                return EnumerationHelper<EventBean>.Empty();
+                return EnumerationHelper.Empty<EventBean>();
             return ((IEnumerable<EventBean>)first).GetEnumerator();
         }
     

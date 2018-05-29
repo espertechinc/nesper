@@ -53,26 +53,29 @@ namespace com.espertech.esper.regression.multithread
                 listeners[i] = new SupportMTUpdateListener();
                 stmt[i].Events += listeners[i].Update;
             }
-    
-            // Start send threads
-            // Each threads sends each symbol with price = 0 to numRepeats
-            long startTime = DateTimeHelper.CurrentTimeMillis;
+
             var threadPool = Executors.NewFixedThreadPool(numThreads);
             var future = new Future<bool>[numThreads];
-            for (int i = 0; i < numThreads; i++) {
-                var callable = new StmtSharedViewCallable(numRepeats, epService, SYMBOLS);
-                future[i] = threadPool.Submit(callable);
-            }
-    
-            // Shut down
-            threadPool.Shutdown();
-            threadPool.AwaitTermination(10, TimeUnit.SECONDS);
+
+            // Start send threads
+            // Each threads sends each symbol with price = 0 to numRepeats
+            long delta = PerformanceObserver.TimeMillis(
+                () => {
+                    for (int i = 0; i < numThreads; i++) {
+                        var callable = new StmtSharedViewCallable(numRepeats, epService, SYMBOLS);
+                        future[i] = threadPool.Submit(callable);
+                    }
+
+                    // Shut down
+                    threadPool.Shutdown();
+                    threadPool.AwaitTermination(10, TimeUnit.SECONDS);
+                });
+
             for (int i = 0; i < numThreads; i++) {
                 Assert.IsTrue(future[i].GetValueOrDefault());
             }
-            long endTime = DateTimeHelper.CurrentTimeMillis;
-            long delta = endTime - startTime;
-            Assert.IsTrue(delta < 5000, "delta=" + delta + " not less then 5 sec");   // should take less then 5 seconds even for 100 statements as they need to share resources thread-safely
+            
+            Assert.That(delta, Is.LessThan(5000));   // should take less then 5 seconds even for 100 statements as they need to share resources thread-safely
     
             // Assert results
             foreach (SupportMTUpdateListener listener in listeners) {

@@ -57,7 +57,7 @@ namespace com.espertech.esper.regression.events.objectarray
                     new object[]{"A1", "val1", null, null});
             EPAssertionUtil.AssertProps(received, "b1,b2,b3,b4".Split(','),
                     new object[]{ GetNestedKeyOA(testdata, 3, "objectOne"), 10, "val2", 300 });
-            EPAssertionUtil.AssertProps(received, "c1,c2".Split(','), new object[]{2, "nestedValue"});
+            EPAssertionUtil.AssertProps(received, "c1,c2".Split(','), new object[]{2, "NestedValue"});
             EPAssertionUtil.AssertProps(received, "d1,d2,d3".Split(','),
                     new object[]{300, GetNestedKeyOA(testdata, 3, "mapOne", "objectTwo"), GetNestedKeyOA(testdata, 3, "mapOne", "nodefmapTwo")});
             EPAssertionUtil.AssertProps(received, "e1,e2,e3".Split(','),
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regression.events.objectarray
             // nested POJO with generic return type
             listener.Reset();
             epService.EPAdministrator.Configuration.AddEventType("MyNested", new[]{"bean"}, new object[]{typeof(MyNested)});
-            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select * from MyNested(bean.insides.AnyOf(i=>id = 'A'))");
+            EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select * from MyNested(bean.insides.anyOf(i=>id = 'A'))");
             stmtTwo.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new object[]{new MyNested(Collections.List(new MyInside("A")))}, "MyNested");

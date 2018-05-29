@@ -45,7 +45,7 @@ namespace com.espertech.esper.regression.epl.other
                             .Add(Expressions.IsNotNull("s1.id"))
                             .Add(Expressions.Ge("s1.id", 100))
                     );
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string reverse = model.ToEPL();
             string stmtText = "select s0.id as idS0, s1.id as idS1 " +
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regression.epl.other
                     " or every s1=" + typeof(SupportBean_S1).FullName + "] " +
                     "where s0.id is not null and s0.id<100 or s1.id is not null and s1.id>=100";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string reverse = model.ToEPL();
             Assert.AreEqual(stmtText, reverse);

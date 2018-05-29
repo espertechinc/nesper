@@ -280,7 +280,7 @@ namespace com.espertech.esper.regression.epl.other
             TryInvalid(epService, "select s0.GetString(1,2,3) from " + typeof(SupportBean).FullName + " as s0", null);
     
             TryInvalid(epService, "select s0.abc() from " + typeof(SupportBean).FullName + " as s0",
-                    "Error starting statement: Failed to validate select-clause expression 's0.abc()': Failed to solve 'abc' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'abc': Could not find enumeration method, date-time method or instance method named 'abc' in class '" + typeof(SupportBean).FullName + "' taking no parameters [");
+                    "Error starting statement: Failed to validate select-clause expression 's0.abc()': Failed to solve 'abc' to either a date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'abc': Could not find enumeration method, date-time method or instance method named 'abc' in class '" + typeof(SupportBean).FullName + "' taking no parameters [");
     
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             TryInvalid(epService, "select s.TheString from pattern [every [2] s=SupportBean] ee",

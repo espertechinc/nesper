@@ -38,9 +38,9 @@ namespace com.espertech.esper.supportregression.multithread
                 var listener = new SupportMTUpdateListener();
                 _targetStatement.Events += listener.Update;
     
-                for (int loop = 0; loop < _numRepeats; loop++) {
-                    string generalKey = "Key";
-                    int valueExpected = _threadNum * 1000000000 + loop + 1;
+                for (var loop = 0; loop < _numRepeats; loop++) {
+                    var generalKey = "Key";
+                    var valueExpected = _threadNum * 1000000000 + loop + 1;
     
                     // send insert event with string-value NOT specific to thread
                     SendEvent(generalKey, valueExpected);
@@ -49,12 +49,12 @@ namespace com.espertech.esper.supportregression.multithread
                     _engine.EPRuntime.SendEvent(new SupportBean(generalKey, -1));
     
                     // assert trigger event received
-                    IList<EventBean[]> events = listener.NewDataListCopy;
-                    bool found = false;
-                    foreach (EventBean[] arr in events) {
-                        foreach (EventBean item in arr) {
-                            List<int?> value = (List<int?>) item.Get("val");
-                            foreach (int? valueReceived in value) {
+                    var events = listener.NewDataListCopy;
+                    var found = false;
+                    foreach (var arr in events) {
+                        foreach (var item in arr) {
+                            var value = item.Get("val").Unwrap<int?>();
+                            foreach (var valueReceived in value) {
                                 if (valueReceived == valueExpected) {
                                     found = true;
                                     break;

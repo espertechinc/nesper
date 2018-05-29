@@ -47,7 +47,7 @@ namespace com.espertech.esper.epl.expression.ops
         [Test]
         public void TestGetType()
         {
-            Assert.AreEqual(typeof(double?), ValidatedNodeToTest.ReturnType);
+            Assert.AreEqual(typeof(double), ValidatedNodeToTest.ReturnType);
         }
     
         [Test]

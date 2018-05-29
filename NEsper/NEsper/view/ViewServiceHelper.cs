@@ -354,7 +354,7 @@ namespace com.espertech.esper.view
             {
                 // Create the new view factory
                 var viewFactory = statementContext.ViewResolutionService.Create(
-                    spec.ObjectNamespace, spec.ObjectName);
+                    statementContext.Container, spec.ObjectNamespace, spec.ObjectName);
 
                 var audit = AuditEnum.VIEW.GetAudit(statementContext.Annotations);
                 if (audit != null)

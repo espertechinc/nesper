@@ -7,13 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
-
 
 using NUnit.Framework;
 
@@ -30,7 +30,7 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
     
             var configMethod = new ConfigurationMethodRef();
             configMethod.SetLRUCache(10);
-            configuration.AddMethodRef(typeof(SupportJoinMethods), configMethod);
+            configuration.AddMethodRef(typeof(SupportJoinMethods).FullName, configMethod);
         }
     
         public override void Run(EPServiceProvider epService) {

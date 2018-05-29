@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Xml;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
@@ -50,6 +51,8 @@ namespace com.espertech.esper.regression.epl.variable
 
             var configDoc = new XmlDocument();
             configDoc.LoadXml(xml);
+
+            configuration.Configure(configDoc);
         }
 
         public override void Run(EPServiceProvider epService) {
@@ -80,7 +83,8 @@ namespace com.espertech.esper.regression.epl.variable
             epService.EPAdministrator.Configuration.AddVariable("mySimpleVariableService", typeof(MySimpleVariableService), null);
             epService.EPRuntime.SetVariableValue("mySimpleVariableService", new MySimpleVariableService());
     
-            var epStatement = epService.EPAdministrator.CreateEPL("select MySimpleVariableService.DoSomething() as c0 from SupportBean");
+            var epStatement = epService.EPAdministrator.CreateEPL(
+                "select mySimpleVariableService.DoSomething() as c0 from SupportBean");
     
             var latch = new CountDownLatch(1);
             var values = new List<string>();
@@ -190,7 +194,8 @@ namespace com.espertech.esper.regression.epl.variable
             TryInvalidSetConstant(epService, "MYCONST_THREE", false);
     
             // try ESPER-653
-            var stmtDate = epService.EPAdministrator.CreateEPL("create constant variable java.util.Date START_TIME = java.util.Calendar.Instance.Time");
+            var stmtDate = epService.EPAdministrator.CreateEPL(
+                "create constant variable System.DateTime START_TIME = com.espertech.esper.compat.DateTimeHelper.GetCurrentTime()");
             var value = stmtDate.First().Get("START_TIME");
             Assert.IsNotNull(value);
     
@@ -215,7 +220,7 @@ namespace com.espertech.esper.regression.epl.variable
     
             // test array of primitives
             var stmtArrayOne = epService.EPAdministrator.CreateEPL("create variable byte[] myBytesBoxed");
-            var expectedType = new[] {new object[] {"myBytesBoxed", typeof(byte[])}};
+            var expectedType = new[] {new object[] {"myBytesBoxed", typeof(byte?[])}};
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedType, stmtArrayOne.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
             var stmtArrayTwo = epService.EPAdministrator.CreateEPL("create variable byte[primitive] myBytesPrimitive");
             expectedType = new[] {new object[] {"myBytesPrimitive", typeof(byte[])}};
@@ -321,21 +326,21 @@ namespace com.espertech.esper.regression.epl.variable
                 Assert.Fail();
             } catch (VariableValueException ex) {
                 // expected
-                Assert.AreEqual("Variable 'dummy' of declared type " + Name.Of<int>() + " cannot be assigned a value of type System.String", ex.Message);
+                Assert.AreEqual("Variable 'dummy' of declared type " + Name.Clean<int>() + " cannot be assigned a value of type System.String", ex.Message);
             }
             try {
                 epService.EPRuntime.SetVariableValue("dummy", 100L);
                 Assert.Fail();
             } catch (VariableValueException ex) {
                 // expected
-                Assert.AreEqual("Variable 'dummy' of declared type " + Name.Of<int>() + " cannot be assigned a value of type " + Name.Clean<long>(), ex.Message);
+                Assert.AreEqual("Variable 'dummy' of declared type " + Name.Clean<int>() + " cannot be assigned a value of type " + Name.Clean<long>(false), ex.Message);
             }
             try {
                 epService.EPRuntime.SetVariableValue("var2", 0);
                 Assert.Fail();
             } catch (VariableValueException ex) {
                 // expected
-                Assert.AreEqual("Variable 'var2' of declared type System.String cannot be assigned a value of type " + Name.Of<int>() + "", ex.Message);
+                Assert.AreEqual("Variable 'var2' of declared type System.String cannot be assigned a value of type " + Name.Clean<int>(false) + "", ex.Message);
             }
     
             // coercion
@@ -566,7 +571,7 @@ namespace com.espertech.esper.regression.epl.variable
     
             var typeSet = stmtSet.EventType;
             Assert.AreEqual(typeof(double?), typeSet.GetPropertyType("var1OM"));
-            Assert.AreEqual(typeof(long), typeSet.GetPropertyType("var2OM"));
+            Assert.AreEqual(typeof(long?), typeSet.GetPropertyType("var2OM"));
             Assert.AreEqual(typeof(Map), typeSet.UnderlyingType);
             var fieldsVar = new[]{"var1OM", "var2OM"};
             EPAssertionUtil.AssertEqualsAnyOrder(fieldsVar, typeSet.PropertyNames);
@@ -607,7 +612,7 @@ namespace com.espertech.esper.regression.epl.variable
     
             var typeSet = stmtSet.EventType;
             Assert.AreEqual(typeof(double?), typeSet.GetPropertyType("var1C"));
-            Assert.AreEqual(typeof(long), typeSet.GetPropertyType("var2C"));
+            Assert.AreEqual(typeof(long?), typeSet.GetPropertyType("var2C"));
             Assert.AreEqual(typeof(Map), typeSet.UnderlyingType);
             var fieldsVar = new[]{"var1C", "var2C"};
             EPAssertionUtil.AssertEqualsAnyOrder(fieldsVar, typeSet.PropertyNames);
@@ -628,7 +633,7 @@ namespace com.espertech.esper.regression.epl.variable
             epService.EPAdministrator.Configuration.AddEventType(typeof(B));
             var prepared = epService.EPAdministrator.PrepareEPL("select var_a.value from B");
             var statement = epService.EPAdministrator.Create(prepared);
-            statement.Subscriber = new object();
+            statement.Subscriber = new Action<string>(value => { });
             epService.EPRuntime.SendEvent(new B());
     
             statement.Dispose();
@@ -775,7 +780,7 @@ namespace com.espertech.esper.regression.epl.variable
             var typeSet = stmtSet.EventType;
             Assert.AreEqual(typeof(string), typeSet.GetPropertyType("p_1"));
             Assert.AreEqual(typeof(bool?), typeSet.GetPropertyType("p_2"));
-            Assert.AreEqual(typeof(long), typeSet.GetPropertyType("p_3"));
+            Assert.AreEqual(typeof(long?), typeSet.GetPropertyType("p_3"));
             Assert.AreEqual(typeof(double?), typeSet.GetPropertyType("p_4"));
             typeSet.PropertyNames.SortInPlace();
             Assert.IsTrue(Collections.AreEqual(typeSet.PropertyNames, fieldsVar));
@@ -818,7 +823,7 @@ namespace com.espertech.esper.regression.epl.variable
             var typeSet = stmtSet.EventType;
             Assert.AreEqual(typeof(float?), typeSet.GetPropertyType("var1COE"));
             Assert.AreEqual(typeof(double?), typeSet.GetPropertyType("var2COE"));
-            Assert.AreEqual(typeof(long), typeSet.GetPropertyType("var3COE"));
+            Assert.AreEqual(typeof(long?), typeSet.GetPropertyType("var3COE"));
             Assert.AreEqual(typeof(Map), typeSet.UnderlyingType);
             EPAssertionUtil.AssertEqualsAnyOrder(typeSet.PropertyNames, fieldsVar);
     
@@ -856,13 +861,13 @@ namespace com.espertech.esper.regression.epl.variable
                     "Error starting statement: Variable by name 'dummy' has not been created or configured");
     
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var1IS = 1",
-                    "Error starting statement: Variable 'var1IS' of declared type System.String cannot be assigned a value of type " + Name.Of<int>() + "");
+                    "Error starting statement: Variable 'var1IS' of declared type System.String cannot be assigned a value of type " + Name.Clean<int>() + "");
     
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var3IS = 'abc'",
-                    "Error starting statement: Variable 'var3IS' of declared type " + Name.Of<int>() + " cannot be assigned a value of type System.String");
+                    "Error starting statement: Variable 'var3IS' of declared type " + Name.Clean<int>() + " cannot be assigned a value of type System.String");
     
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var3IS = DoublePrimitive",
-                    "Error starting statement: Variable 'var3IS' of declared type " + Name.Of<int>() + " cannot be assigned a value of type double");
+                    "Error starting statement: Variable 'var3IS' of declared type " + Name.Clean<int>() + " cannot be assigned a value of type System.Double");
     
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var2IS = 'false'", null);
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var3IS = 1.1", null);
@@ -883,10 +888,10 @@ namespace com.espertech.esper.regression.epl.variable
     
         private void RunAssertionInvalidInitialization(EPServiceProvider epService) {
             TryInvalid(epService, typeof(int?), "abcdef",
-                    "Error creating variable: Variable 'invalidvar1' of declared type " + Name.Of<int>() + " cannot be initialized by value 'abcdef': java.lang.NumberFormatException: For input string: \"abcdef\"");
+                    "Error creating variable: Variable 'invalidvar1' of declared type " + Name.Clean<int>() + " cannot be initialized by value 'abcdef': System.FormatException: Input string was not in a correct format.");
     
             TryInvalid(epService, typeof(int?), new double?(11.1),
-                    "Error creating variable: Variable 'invalidvar1' of declared type " + Name.Of<int>() + " cannot be initialized by a value of type " + Name.Clean<double>());
+                    "Error creating variable: Variable 'invalidvar1' of declared type " + Name.Clean<int>() + " cannot be initialized by a value of type " + Name.Clean<double>(false));
     
             TryInvalid(epService, typeof(int), new double?(11.1), null);
             TryInvalid(epService, typeof(string), true, null);
@@ -1017,7 +1022,7 @@ namespace com.espertech.esper.regression.epl.variable
                 } else if (testValue is SupportEnum eValue) {
                     bean.EnumValue = eValue;
                 } else {
-                    bean.ShortBoxed = (short) testValue;
+                    bean.ShortBoxed = testValue.AsBoxedShort();
                 }
                 var expected = (bool) testdata[i][1];
     

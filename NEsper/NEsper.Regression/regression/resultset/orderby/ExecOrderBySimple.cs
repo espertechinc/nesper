@@ -18,7 +18,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.resultset.orderby
@@ -111,18 +110,18 @@ namespace com.espertech.esper.regression.resultset.orderby
         }
     
         private void RunAssertionIterator(EPServiceProvider epService) {
-            string statementString = "select symbol, TheString, price from " +
+            string statementString = "select Symbol, TheString, Price from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
-                    "order by price";
+                    "where one.Symbol = two.TheString " +
+                    "order by Price";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementString);
             SendJoinEvents(epService);
             SendEvent(epService, "CAT", 50);
             SendEvent(epService, "IBM", 49);
             SendEvent(epService, "CAT", 15);
             SendEvent(epService, "IBM", 100);
-            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), new string[]{"symbol", "TheString", "price"},
+            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), new string[]{"Symbol", "TheString", "Price"},
                     new object[][]{
                             new object[] {"CAT", "CAT", 15d},
                             new object[] {"IBM", "IBM", 49d},
@@ -131,7 +130,7 @@ namespace com.espertech.esper.regression.resultset.orderby
                     });
     
             SendEvent(epService, "KGB", 75);
-            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), new string[]{"symbol", "TheString", "price"},
+            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), new string[]{"Symbol", "TheString", "Price"},
                     new object[][]{
                             new object[] {"CAT", "CAT", 15d},
                             new object[] {"IBM", "IBM", 49d},
@@ -144,50 +143,50 @@ namespace com.espertech.esper.regression.resultset.orderby
         }
     
         private void RunAssertionAcrossJoin(EPServiceProvider epService) {
-            string statementString = "select symbol, TheString from " +
+            string statementString = "select Symbol, TheString from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by price";
+                    "order by Price";
             var listener = new SupportUpdateListener();
             var spv = new SymbolPricesVolumes();
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesByPriceJoin(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
+            AssertValues(listener, spv.Symbols, "Symbol");
             AssertValues(listener, spv.Symbols, "TheString");
-            AssertOnlyProperties(listener, Collections.List("symbol", "TheString"));
+            AssertOnlyProperties(listener, Collections.List("Symbol", "TheString"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol from " +
+            statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by TheString, price";
+                    "order by TheString, Price";
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesBySymbolPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol"));
             ClearValuesDropStmt(epService, spv);
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
         private void RunAssertionDescending_OM(EPServiceProvider epService) {
-            string stmtText = "select symbol from " +
+            string stmtText = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by price desc";
+                    "order by Price desc";
     
             var model = new EPStatementObjectModel();
-            model.SelectClause = SelectClause.Create("symbol");
+            model.SelectClause = SelectClause.Create("Symbol");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarketDataBean).FullName).AddView("length", Expressions.Constant(5)));
             model.OutputLimitClause = OutputLimitClause.Create(6);
-            model.OrderByClause = OrderByClause.Create().Add("price", true);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model.OrderByClause = OrderByClause.Create().Add("Price", true);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(stmtText, model.ToEPL());
     
             var listener = new SupportUpdateListener();
@@ -202,122 +201,122 @@ namespace com.espertech.esper.regression.resultset.orderby
     
             var spv = new SymbolPricesVolumes();
             OrderValuesByPriceDesc(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
+            AssertValues(listener, spv.Symbols, "Symbol");
     
             statement.Dispose();
         }
     
         private void RunAssertionDescending(EPServiceProvider epService) {
-            string statementString = "select symbol from " +
+            string statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by price desc";
+                    "order by Price desc";
             var listener = new SupportUpdateListener();
             CreateAndSend(epService, statementString, listener);
             var spv = new SymbolPricesVolumes();
             OrderValuesByPriceDesc(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
+            AssertValues(listener, spv.Symbols, "Symbol");
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol from " +
+            statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by price desc, symbol asc";
+                    "order by Price desc, Symbol asc";
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPrice(spv);
             CompatExtensions.Reverse(spv.Symbols);
-            AssertValues(listener, spv.Symbols, "symbol");
+            AssertValues(listener, spv.Symbols, "Symbol");
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol from " +
+            statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by price asc";
+                    "order by Price asc";
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
+            AssertValues(listener, spv.Symbols, "Symbol");
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, volume from " +
+            statementString = "select Symbol, Volume from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by symbol desc";
+                    "order by Symbol desc";
             CreateAndSend(epService, statementString, listener);
             OrderValuesBySymbol(spv);
             CompatExtensions.Reverse(spv.Symbols);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertValues(listener, spv.Volumes, "volume");
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertValues(listener, spv.Volumes, "Volume");
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, price from " +
+            statementString = "select Symbol, Price from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by symbol desc, price desc";
+                    "order by Symbol desc, Price desc";
             CreateAndSend(epService, statementString, listener);
             OrderValuesBySymbolPrice(spv);
             CompatExtensions.Reverse(spv.Symbols);
             CompatExtensions.Reverse(spv.Prices);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertValues(listener, spv.Prices, "price");
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertValues(listener, spv.Prices, "Price");
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, price from " +
+            statementString = "select Symbol, Price from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by symbol, price";
+                    "order by Symbol, Price";
             CreateAndSend(epService, statementString, listener);
             OrderValuesBySymbolPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertValues(listener, spv.Prices, "price");
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertValues(listener, spv.Prices, "Price");
             ClearValuesDropStmt(epService, spv);
         }
     
         private void RunAssertionExpressions(EPServiceProvider epService) {
-            string statementString = "select symbol from " +
+            string statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) " +
                     "output every 6 events " +
-                    "order by (price * 6) + 5";
+                    "order by (Price * 6) + 5";
             var listener = new SupportUpdateListener();
             CreateAndSend(epService, statementString, listener);
             var spv = new SymbolPricesVolumes();
             OrderValuesByPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, price from " +
+            statementString = "select Symbol, Price from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) " +
                     "output every 6 events " +
-                    "order by (price * 6) + 5, price";
+                    "order by (Price * 6) + 5, Price";
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol", "price"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "Price"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, 1+volume*23 from " +
+            statementString = "select Symbol, 1+Volume*23 from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) " +
                     "output every 6 events " +
-                    "order by (price * 6) + 5, price, volume";
+                    "order by (Price * 6) + 5, Price, Volume";
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol", "1+volume*23"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "1+Volume*23"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol from " +
+            statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) " +
                     "output every 6 events " +
-                    "order by volume*price, symbol";
+                    "order by Volume*Price, Symbol";
             CreateAndSend(epService, statementString, listener);
             OrderValuesBySymbol(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol"));
             ClearValuesDropStmt(epService, spv);
         }
     
         private void RunAssertionAliasesSimple(EPServiceProvider epService) {
-            string statementString = "select symbol as mySymbol from " +
+            string statementString = "select Symbol as mySymbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
                     "order by mySymbol";
@@ -329,7 +328,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             AssertOnlyProperties(listener, Collections.List("mySymbol"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol as mySymbol, price as myPrice from " +
+            statementString = "select Symbol as mySymbol, Price as myPrice from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
                     "order by myPrice";
@@ -340,89 +339,89 @@ namespace com.espertech.esper.regression.resultset.orderby
             AssertOnlyProperties(listener, Collections.List("mySymbol", "myPrice"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, price as myPrice from " +
+            statementString = "select Symbol, Price as myPrice from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) " +
                     "output every 6 events " +
-                    "order by (myPrice * 6) + 5, price";
+                    "order by (myPrice * 6) + 5, Price";
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol", "myPrice"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "myPrice"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, 1+volume*23 as myVol from " +
+            statementString = "select Symbol, 1+Volume*23 as myVol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) " +
                     "output every 6 events " +
-                    "order by (price * 6) + 5, price, myVol";
+                    "order by (Price * 6) + 5, Price, myVol";
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol", "myVol"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "myVol"));
             ClearValuesDropStmt(epService, spv);
         }
     
         private void RunAssertionExpressionsJoin(EPServiceProvider epService) {
-            string statementString = "select symbol from " +
+            string statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by (price * 6) + 5";
+                    "order by (Price * 6) + 5";
             var listener = new SupportUpdateListener();
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             var spv = new SymbolPricesVolumes();
             OrderValuesByPriceJoin(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, price from " +
+            statementString = "select Symbol, Price from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by (price * 6) + 5, price";
+                    "order by (Price * 6) + 5, Price";
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesByPriceJoin(spv);
-            AssertValues(listener, spv.Prices, "price");
-            AssertOnlyProperties(listener, Collections.List("symbol", "price"));
+            AssertValues(listener, spv.Prices, "Price");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "Price"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, 1+volume*23 from " +
+            statementString = "select Symbol, 1+Volume*23 from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by (price * 6) + 5, price, volume";
+                    "order by (Price * 6) + 5, Price, Volume";
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesByPriceJoin(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol", "1+volume*23"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "1+Volume*23"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol from " +
+            statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by volume*price, symbol";
+                    "order by Volume*Price, Symbol";
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesBySymbol(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol"));
             ClearValuesDropStmt(epService, spv);
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
             var listener = new SupportUpdateListener();
-            string statementString = "select symbol from " +
+            string statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by sum(price)";
+                    "order by sum(Price)";
             try {
                 CreateAndSend(epService, statementString, listener);
                 Assert.Fail();
@@ -430,10 +429,10 @@ namespace com.espertech.esper.regression.resultset.orderby
                 // expected
             }
     
-            statementString = "select sum(price) from " +
+            statementString = "select sum(Price) from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by sum(price + 6)";
+                    "order by sum(Price + 6)";
             try {
                 CreateAndSend(epService, statementString, listener);
                 Assert.Fail();
@@ -441,10 +440,10 @@ namespace com.espertech.esper.regression.resultset.orderby
                 // expected
             }
     
-            statementString = "select sum(price + 6) from " +
+            statementString = "select sum(Price + 6) from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by sum(price)";
+                    "order by sum(Price)";
             try {
                 CreateAndSend(epService, statementString, listener);
                 Assert.Fail();
@@ -455,12 +454,12 @@ namespace com.espertech.esper.regression.resultset.orderby
     
         private void RunAssertionInvalidJoin(EPServiceProvider epService) {
             var listener = new SupportUpdateListener();
-            string statementString = "select symbol from " +
+            string statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by sum(price)";
+                    "order by sum(Price)";
             try {
                 CreateAndSend(epService, statementString, listener);
                 Assert.Fail();
@@ -468,12 +467,12 @@ namespace com.espertech.esper.regression.resultset.orderby
                 // expected
             }
     
-            statementString = "select sum(price) from " +
+            statementString = "select sum(Price) from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by sum(price + 6)";
+                    "order by sum(Price + 6)";
             try {
                 CreateAndSend(epService, statementString, listener);
                 Assert.Fail();
@@ -481,12 +480,12 @@ namespace com.espertech.esper.regression.resultset.orderby
                 // expected
             }
     
-            statementString = "select sum(price + 6) from " +
+            statementString = "select sum(Price + 6) from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by sum(price)";
+                    "order by sum(Price)";
             try {
                 CreateAndSend(epService, statementString, listener);
                 Assert.Fail();
@@ -496,41 +495,41 @@ namespace com.espertech.esper.regression.resultset.orderby
         }
     
         private void RunAssertionMultipleKeys(EPServiceProvider epService) {
-            string statementString = "select symbol from " +
+            string statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) " +
                     "output every 6 events " +
-                    "order by symbol, price";
+                    "order by Symbol, Price";
             var listener = new SupportUpdateListener();
             CreateAndSend(epService, statementString, listener);
             var spv = new SymbolPricesVolumes();
             OrderValuesBySymbolPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol from " +
+            statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) " +
                     "output every 6 events " +
-                    "order by price, symbol, volume";
+                    "order by Price, Symbol, Volume";
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPriceSymbol(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, volume*2 from " +
+            statementString = "select Symbol, Volume*2 from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) " +
                     "output every 6 events " +
-                    "order by price, volume";
+                    "order by Price, Volume";
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol", "volume*2"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "Volume*2"));
             ClearValuesDropStmt(epService, spv);
         }
     
         private void RunAssertionAliases(EPServiceProvider epService) {
-            string statementString = "select symbol as mySymbol from " +
+            string statementString = "select Symbol as mySymbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
                     "order by mySymbol";
@@ -542,7 +541,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             AssertOnlyProperties(listener, Collections.List("mySymbol"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol as mySymbol, price as myPrice from " +
+            statementString = "select Symbol as mySymbol, Price as myPrice from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
                     "order by myPrice";
@@ -553,29 +552,29 @@ namespace com.espertech.esper.regression.resultset.orderby
             AssertOnlyProperties(listener, Collections.List("mySymbol", "myPrice"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, price as myPrice from " +
+            statementString = "select Symbol, Price as myPrice from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) " +
                     "output every 6 events " +
-                    "order by (myPrice * 6) + 5, price";
+                    "order by (myPrice * 6) + 5, Price";
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol", "myPrice"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "myPrice"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, 1+volume*23 as myVol from " +
+            statementString = "select Symbol, 1+Volume*23 as myVol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) " +
                     "output every 6 events " +
-                    "order by (price * 6) + 5, price, myVol";
+                    "order by (Price * 6) + 5, Price, myVol";
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol", "myVol"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "myVol"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol as mySymbol from " +
+            statementString = "select Symbol as mySymbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
-                    "order by price, mySymbol";
+                    "order by Price, mySymbol";
             CreateAndSend(epService, statementString, listener);
             spv.Symbols.Add("CAT");
             AssertValues(listener, spv.Symbols, "mySymbol");
@@ -587,199 +586,199 @@ namespace com.espertech.esper.regression.resultset.orderby
         }
     
         private void RunAssertionMultipleKeysJoin(EPServiceProvider epService) {
-            string statementString = "select symbol from " +
+            string statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by symbol, price";
+                    "order by Symbol, Price";
             var listener = new SupportUpdateListener();
             var spv = new SymbolPricesVolumes();
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesBySymbolPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol from " +
+            statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by price, symbol, volume";
+                    "order by Price, Symbol, Volume";
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesByPriceSymbol(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, volume*2 from " +
+            statementString = "select Symbol, Volume*2 from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by price, volume";
+                    "order by Price, Volume";
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesByPriceJoin(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol", "volume*2"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "Volume*2"));
             ClearValuesDropStmt(epService, spv);
         }
     
         private void RunAssertionSimple(EPServiceProvider epService) {
-            string statementString = "select symbol from " +
+            string statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by price";
+                    "order by Price";
             var spv = new SymbolPricesVolumes();
             var listener = new SupportUpdateListener();
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, price from " +
+            statementString = "select Symbol, Price from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by price";
+                    "order by Price";
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertValues(listener, spv.Prices, "price");
-            AssertOnlyProperties(listener, Collections.List("symbol", "price"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertValues(listener, spv.Prices, "Price");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "Price"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, volume from " +
+            statementString = "select Symbol, Volume from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by price";
+                    "order by Price";
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertValues(listener, spv.Volumes, "volume");
-            AssertOnlyProperties(listener, Collections.List("symbol", "volume"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertValues(listener, spv.Volumes, "Volume");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "Volume"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, volume*2 from " +
+            statementString = "select Symbol, Volume*2 from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by price";
+                    "order by Price";
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertValues(listener, spv.Volumes, "volume*2");
-            AssertOnlyProperties(listener, Collections.List("symbol", "volume*2"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertValues(listener, spv.Volumes, "Volume*2");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "Volume*2"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, volume from " +
+            statementString = "select Symbol, Volume from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by symbol";
+                    "order by Symbol";
             CreateAndSend(epService, statementString, listener);
             OrderValuesBySymbol(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertValues(listener, spv.Volumes, "volume");
-            AssertOnlyProperties(listener, Collections.List("symbol", "volume"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertValues(listener, spv.Volumes, "Volume");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "Volume"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select price from " +
+            statementString = "select Price from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by symbol";
+                    "order by Symbol";
             CreateAndSend(epService, statementString, listener);
             OrderValuesBySymbol(spv);
-            AssertValues(listener, spv.Prices, "price");
-            AssertOnlyProperties(listener, Collections.List("price"));
+            AssertValues(listener, spv.Prices, "Price");
+            AssertOnlyProperties(listener, Collections.List("Price"));
             ClearValuesDropStmt(epService, spv);
         }
     
         private void RunAssertionSimpleJoin(EPServiceProvider epService) {
-            string statementString = "select symbol from " +
+            string statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by price";
+                    "order by Price";
             var spv = new SymbolPricesVolumes();
             var listener = new SupportUpdateListener();
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesByPriceJoin(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, price from " +
+            statementString = "select Symbol, Price from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by price";
+                    "order by Price";
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesByPriceJoin(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertValues(listener, spv.Prices, "price");
-            AssertOnlyProperties(listener, Collections.List("symbol", "price"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertValues(listener, spv.Prices, "Price");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "Price"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, volume from " +
+            statementString = "select Symbol, Volume from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by price";
+                    "order by Price";
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesByPriceJoin(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertValues(listener, spv.Volumes, "volume");
-            AssertOnlyProperties(listener, Collections.List("symbol", "volume"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertValues(listener, spv.Volumes, "Volume");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "Volume"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, volume*2 from " +
+            statementString = "select Symbol, Volume*2 from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by price";
+                    "order by Price";
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesByPriceJoin(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertValues(listener, spv.Volumes, "volume*2");
-            AssertOnlyProperties(listener, Collections.List("symbol", "volume*2"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertValues(listener, spv.Volumes, "Volume*2");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "Volume*2"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select symbol, volume from " +
+            statementString = "select Symbol, Volume from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by symbol";
+                    "order by Symbol";
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesBySymbol(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertValues(listener, spv.Volumes, "volume");
-            AssertOnlyProperties(listener, Collections.List("symbol", "volume"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertValues(listener, spv.Volumes, "Volume");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "Volume"));
             ClearValuesDropStmt(epService, spv);
     
-            statementString = "select price from " +
+            statementString = "select Price from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by symbol, price";
+                    "order by Symbol, Price";
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesBySymbolJoin(spv);
-            AssertValues(listener, spv.Prices, "price");
-            AssertOnlyProperties(listener, Collections.List("price"));
+            AssertValues(listener, spv.Prices, "Price");
+            AssertOnlyProperties(listener, Collections.List("Price"));
             ClearValuesDropStmt(epService, spv);
         }
     
@@ -787,27 +786,27 @@ namespace com.espertech.esper.regression.resultset.orderby
             string statementString = "select * from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by price";
+                    "order by Price";
             var listener = new SupportUpdateListener();
             CreateAndSend(epService, statementString, listener);
             var spv = new SymbolPricesVolumes();
             OrderValuesByPrice(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertValues(listener, spv.Prices, "price");
-            AssertValues(listener, spv.Volumes, "volume");
-            AssertOnlyProperties(listener, Collections.List("symbol", "id", "volume", "price", "feed"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertValues(listener, spv.Prices, "Price");
+            AssertValues(listener, spv.Volumes, "Volume");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "Id", "Volume", "Price", "Feed"));
             ClearValuesDropStmt(epService, spv);
     
             statementString = "select * from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
                     "output every 6 events " +
-                    "order by symbol";
+                    "order by Symbol";
             CreateAndSend(epService, statementString, listener);
             OrderValuesBySymbol(spv);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertValues(listener, spv.Prices, "price");
-            AssertValues(listener, spv.Volumes, "volume");
-            AssertOnlyProperties(listener, Collections.List("symbol", "volume", "price", "feed", "id"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertValues(listener, spv.Prices, "Price");
+            AssertValues(listener, spv.Volumes, "Volume");
+            AssertOnlyProperties(listener, Collections.List("Symbol", "Volume", "Price", "Feed", "Id"));
             ClearValuesDropStmt(epService, spv);
         }
     
@@ -816,9 +815,9 @@ namespace com.espertech.esper.regression.resultset.orderby
             string statementString = "select * from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by price";
+                    "order by Price";
             var spv = new SymbolPricesVolumes();
             var listener = new SupportUpdateListener();
             CreateAndSend(epService, statementString, listener);
@@ -830,9 +829,9 @@ namespace com.espertech.esper.regression.resultset.orderby
             statementString = "select * from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
+                    "where one.Symbol = two.TheString " +
                     "output every 6 events " +
-                    "order by symbol, price";
+                    "order by Symbol, Price";
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesBySymbolJoin(spv);
@@ -842,65 +841,65 @@ namespace com.espertech.esper.regression.resultset.orderby
     
         private void RunAssertionNoOutputClauseView(EPServiceProvider epService) {
             var spv = new SymbolPricesVolumes();
-            string statementString = "select symbol from " +
+            string statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(5) " +
-                    "order by price";
+                    "order by Price";
             var listener = new SupportUpdateListener();
             CreateAndSend(epService, statementString, listener);
             spv.Symbols.Add("CAT");
-            AssertValues(listener, spv.Symbols, "symbol");
+            AssertValues(listener, spv.Symbols, "Symbol");
             ClearValues(spv);
             SendEvent(epService, "FOX", 10);
             spv.Symbols.Add("FOX");
-            AssertValues(listener, spv.Symbols, "symbol");
+            AssertValues(listener, spv.Symbols, "Symbol");
             ClearValuesDropStmt(epService, spv);
     
             // Set start time
             SendTimeEvent(epService, 0);
     
-            statementString = "select symbol from " +
+            statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#time_batch(1 sec) " +
-                    "order by price";
+                    "order by Price";
             CreateAndSend(epService, statementString, listener);
             OrderValuesByPrice(spv);
             SendTimeEvent(epService, 1000);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol"));
             ClearValuesDropStmt(epService, spv);
         }
     
         private void RunAssertionNoOutputClauseJoin(EPServiceProvider epService) {
-            string statementString = "select symbol from " +
+            string statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#length(10) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
-                    "order by price";
+                    "where one.Symbol = two.TheString " +
+                    "order by Price";
             var spv = new SymbolPricesVolumes();
             var listener = new SupportUpdateListener();
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             spv.Symbols.Add("KGB");
-            AssertValues(listener, spv.Symbols, "symbol");
+            AssertValues(listener, spv.Symbols, "Symbol");
             ClearValues(spv);
             SendEvent(epService, "DOG", 10);
             spv.Symbols.Add("DOG");
-            AssertValues(listener, spv.Symbols, "symbol");
+            AssertValues(listener, spv.Symbols, "Symbol");
             ClearValuesDropStmt(epService, spv);
     
             // Set start time
             SendTimeEvent(epService, 0);
     
-            statementString = "select symbol from " +
+            statementString = "select Symbol from " +
                     typeof(SupportMarketDataBean).FullName + "#time_batch(1) as one, " +
                     typeof(SupportBeanString).FullName + "#length(100) as two " +
-                    "where one.symbol = two.TheString " +
-                    "order by price, symbol";
+                    "where one.Symbol = two.TheString " +
+                    "order by Price, Symbol";
             CreateAndSend(epService, statementString, listener);
             SendJoinEvents(epService);
             OrderValuesByPriceJoin(spv);
             SendTimeEvent(epService, 1000);
-            AssertValues(listener, spv.Symbols, "symbol");
-            AssertOnlyProperties(listener, Collections.List("symbol"));
+            AssertValues(listener, spv.Symbols, "Symbol");
+            AssertOnlyProperties(listener, Collections.List("Symbol"));
             ClearValuesDropStmt(epService, spv);
         }
     

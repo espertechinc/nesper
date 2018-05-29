@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.expr.enummethod
     
         private void RunAssertionStringArrayIntersection(EPServiceProvider epService) {
             string epl = "create objectarray schema Event(meta1 string[], meta2 string[]);\n" +
-                    "@Name('Out') select * from Event(meta1.Intersect(meta2).countOf() > 0);\n";
+                    "@Name('Out') select * from Event(meta1.intersect(meta2).countOf() > 0);\n";
             DeploymentResult result = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.GetStatement("Out").Events += listener.Update;
@@ -64,9 +64,9 @@ namespace com.espertech.esper.regression.expr.enummethod
     
         private void RunAssertionSetLogicWithContained(EPServiceProvider epService) {
             string epl = "select " +
-                    "Contained.Except(containedTwo) as val0," +
-                    "Contained.Intersect(containedTwo) as val1, " +
-                    "Contained.Union(containedTwo) as val2 " +
+                    "Contained.except(containedTwo) as val0," +
+                    "Contained.intersect(containedTwo) as val1, " +
+                    "Contained.union(containedTwo) as val2 " +
                     " from SupportBean_ST0_Container";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -96,14 +96,16 @@ namespace com.espertech.esper.regression.expr.enummethod
                             " (select * from SupportBean_ST0(p00 > 0)#length(2)) " +
                             "}" +
                             "select " +
-                            "Last10A().Except(Last10NonZero()) as val0," +
-                            "Last10A().Intersect(Last10NonZero()) as val1, " +
-                            "Last10A().Union(Last10NonZero()) as val2 " +
+                            "last10A().except(last10NonZero()) as val0," +
+                            "last10A().intersect(last10NonZero()) as val1, " +
+                            "last10A().union(last10NonZero()) as val2 " +
                             "from SupportBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0".Split(','), new Type[]{typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0".Split(','), new Type[] {
+                typeof(ICollection<SupportBean_ST0>)
+            });
     
             epService.EPRuntime.SendEvent(new SupportBean_ST0("E1", "A1", 10));    // in both
             epService.EPRuntime.SendEvent(new SupportBean());
@@ -153,14 +155,16 @@ namespace com.espertech.esper.regression.expr.enummethod
     
         private void RunAssertionSetLogicWithScalar(EPServiceProvider epService) {
             string epl = "select " +
-                    "Strvals.Except(strvalstwo) as val0," +
-                    "Strvals.Intersect(strvalstwo) as val1, " +
-                    "Strvals.Union(strvalstwo) as val2 " +
+                    "Strvals.except(Strvalstwo) as val0," +
+                    "Strvals.intersect(Strvalstwo) as val1, " +
+                    "Strvals.union(Strvalstwo) as val2 " +
                     " from SupportCollection as bean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0".Split(','), new Type[]{typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0".Split(','), new Type[] {
+                typeof(ICollection<string>)
+            });
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2", "E3,E4"));
             LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val0", "E1", "E2");
@@ -192,11 +196,11 @@ namespace com.espertech.esper.regression.expr.enummethod
         private void RunAssertionInvalid(EPServiceProvider epService) {
             string epl;
     
-            epl = "select Contained.Union(true) from SupportBean_ST0_Container";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.Union(true)': Enumeration method 'union' requires an expression yielding an event-collection as input paramater [select Contained.Union(true) from SupportBean_ST0_Container]");
+            epl = "select Contained.union(true) from SupportBean_ST0_Container";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.union(true)': Enumeration method 'union' requires an expression yielding an event-collection as input paramater [select Contained.union(true) from SupportBean_ST0_Container]");
     
-            epl = "select Contained.Union(Prevwindow(s1)) from SupportBean_ST0_Container#lastevent, SupportBean#keepall s1";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.Union(Prevwindow(s1))': Enumeration method 'union' expects event type 'SupportBean_ST0' but receives event type 'SupportBean' [select Contained.Union(Prevwindow(s1)) from SupportBean_ST0_Container#lastevent, SupportBean#keepall s1]");
+            epl = "select Contained.union(prevwindow(s1)) from SupportBean_ST0_Container#lastevent, SupportBean#keepall s1";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.union(prevwindow(s1))': Enumeration method 'union' expects event type 'SupportBean_ST0' but receives event type 'SupportBean' [select Contained.union(prevwindow(s1)) from SupportBean_ST0_Container#lastevent, SupportBean#keepall s1]");
         }
     
         private void RunAssertionUnionWhere(EPServiceProvider epService) {
@@ -209,11 +213,13 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "  x => x.Contained.where(y => p00 = 11)" +
                     "} " +
                     "" +
-                    "select One(bean).Union(Two(bean)) as val0 from SupportBean_ST0_Container as bean";
+                    "select one(bean).union(two(bean)) as val0 from SupportBean_ST0_Container as bean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0".Split(','), new Type[]{typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val0".Split(','), new Type[] {
+                typeof(ICollection<SupportBean_ST0>)
+            });
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value("E1,1", "E2,10", "E3,1", "E4,10", "E5,11"));
             LambdaAssertionUtil.AssertST0Id(listener, "val0", "E2,E4,E5");
@@ -251,7 +257,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create schema BaseEvent as (b1 string)");
             epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create schema SubEvent as (s1 string) inherits BaseEvent");
             epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create schema OuterEvent as (bases BaseEvent[], subs SubEvent[])");
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " select Bases.Union(subs) as val from OuterEvent");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " select bases.union(subs) as val from OuterEvent");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     

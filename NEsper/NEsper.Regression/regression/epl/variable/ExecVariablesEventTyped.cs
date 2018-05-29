@@ -16,7 +16,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.util;
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
 using NUnit.Framework;
@@ -50,14 +50,14 @@ namespace com.espertech.esper.regression.epl.variable
                 epService.EPRuntime.SetVariableValue("vars0_A", new SupportBean_S1(1));
                 Assert.Fail();
             } catch (VariableValueException ex) {
-                Assert.AreEqual("Variable 'vars0_A' of declared event type 'TypeS0' underlying type '" + typeof(SupportBean_S0).FullName + "' cannot be assigned a value of type '" + typeof(SupportBean_S1).FullName + "'", ex.Message);
+                Assert.AreEqual("Variable 'vars0_A' of declared event type 'TypeS0' underlying type '" + typeof(SupportBean_S0).GetCleanName() + "' cannot be assigned a value of type '" + typeof(SupportBean_S1).GetCleanName() + "'", ex.Message);
             }
     
             TryInvalid(epService, "on TypeS0 arrival set vars1_A = arrival",
-                    "Error starting statement: Error in variable assignment: Variable 'vars1_A' of declared event type '" + typeof(SupportBean_S1).FullName + "' underlying type '" + typeof(SupportBean_S1).FullName + "' cannot be assigned a value of type '" + typeof(SupportBean_S0).FullName + "'");
+                    "Error starting statement: Error in variable assignment: Variable 'vars1_A' of declared event type '" + typeof(SupportBean_S1).GetCleanName() + "' underlying type '" + typeof(SupportBean_S1).GetCleanName() + "' cannot be assigned a value of type '" + typeof(SupportBean_S0).GetCleanName() + "'");
     
             TryInvalid(epService, "on TypeS0 arrival set vars0_A = 1",
-                    "Error starting statement: Error in variable assignment: Variable 'vars0_A' of declared event type 'TypeS0' underlying type '" + typeof(SupportBean_S0).FullName + "' cannot be assigned a value of type '" + Name.Of<int>() + "'");
+                    "Error starting statement: Error in variable assignment: Variable 'vars0_A' of declared event type 'TypeS0' underlying type '" + typeof(SupportBean_S0).GetCleanName() + "' cannot be assigned a value of type '" + Name.Clean<int>() + "'");
         }
     
         private void RunAssertionConfig(EPServiceProvider epService) {
@@ -89,8 +89,8 @@ namespace com.espertech.esper.regression.epl.variable
             epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportBean_A));
             epService.EPAdministrator.CreateEPL("create variable SupportBean varbean");
     
-            string[] fields = "varbean.TheString,varbean.IntPrimitive,varbean.TheString".Split(',');
-            EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("select varbean.TheString,varbean.IntPrimitive,varbean.TheString from S0");
+            string[] fields = "varbean.TheString,varbean.IntPrimitive,varbean.get_TheString()".Split(',');
+            EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("select varbean.TheString,varbean.IntPrimitive,varbean.get_TheString() from S0");
             stmtSelect.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_S0(1));
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regression.epl.variable
             // assign to properties of a variable
             // assign: configuration runtime + config static
             // SODA
-            epService.EPAdministrator.CreateEPL("create variable Object var@object = null");
+            epService.EPAdministrator.CreateEPL("create variable Object varobject = null");
             epService.EPAdministrator.CreateEPL("create variable " + typeof(SupportBean_A).FullName + " varbean = null");
             epService.EPAdministrator.CreateEPL("create variable S0Type vartype = null");
     
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regression.epl.variable
     
             // test on-set for Object and EventType
             string[] fieldsTop = "varobject,vartype,varbean".Split(',');
-            EPStatement stmtSet = epService.EPAdministrator.CreateEPL("on S0Type(p00='X') arrival set var@object =1, vartype=arrival, varbean=null");
+            EPStatement stmtSet = epService.EPAdministrator.CreateEPL("on S0Type(p00='X') arrival set varobject =1, vartype=arrival, varbean=null");
             stmtSet.Events += listener.Update;
     
             var s0objectTwo = new SupportBean_S0(2, "X");
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regression.epl.variable
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10L, a1objectOne, a1objectOne.Id, s0objectTwo, s0objectTwo.Id});
     
             // test on-set for Bean class
-            stmtSet = epService.EPAdministrator.CreateEPL("on " + typeof(SupportBean_A).FullName + "(id='Y') arrival set var@object =null, vartype=null, varbean=arrival");
+            stmtSet = epService.EPAdministrator.CreateEPL("on " + typeof(SupportBean_A).FullName + "(id='Y') arrival set varobject =null, vartype=null, varbean=arrival");
             stmtSet.Events += listener.Update;
             var a1objectTwo = new SupportBean_A("Y");
             epService.EPRuntime.SendEvent(new SupportBean_A("Y"));

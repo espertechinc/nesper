@@ -6,12 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Collections.Generic;
+
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.util;
-using System;
-using System.Collections.Generic;
 
 namespace com.espertech.esper.epl.util
 {
@@ -45,11 +46,11 @@ namespace com.espertech.esper.epl.util
         {
             if (expectedTypeEnum == EPLExpressionParamType.BOOLEAN && (!providedType.IsBoolean()))
             {
-                throw new ExprValidationException(GetInvokablePrefix(invocableName, invocableCategory, isFunction) + "expected a bool-type result for expression parameter " + parameterNum + " but received " + providedType.GetTypeNameFullyQualPretty());
+                throw new ExprValidationException(GetInvokablePrefix(invocableName, invocableCategory, isFunction) + "expected a bool-type result for expression parameter " + parameterNum + " but received " + providedType.GetCleanName());
             }
             if (expectedTypeEnum == EPLExpressionParamType.NUMERIC && (!providedType.IsNumeric()))
             {
-                throw new ExprValidationException(GetInvokablePrefix(invocableName, invocableCategory, isFunction) + "expected a number-type result for expression parameter " + parameterNum + " but received " + providedType.GetTypeNameFullyQualPretty());
+                throw new ExprValidationException(GetInvokablePrefix(invocableName, invocableCategory, isFunction) + "expected a number-type result for expression parameter " + parameterNum + " but received " + providedType.GetCleanName());
             }
             if (expectedTypeEnum == EPLExpressionParamType.SPECIFIC)
             {
@@ -75,7 +76,7 @@ namespace com.espertech.esper.epl.util
                     {
                         expected = "any of [" + TypeHelper.GetParameterAsString(expectedTypeClasses) + "]";
                     }
-                    throw new ExprValidationException(GetInvokablePrefix(invocableName, invocableCategory, isFunction) + "expected " + expected + "-type result for expression parameter " + parameterNum + " but received " + providedType.GetTypeNameFullyQualPretty());
+                    throw new ExprValidationException(GetInvokablePrefix(invocableName, invocableCategory, isFunction) + "expected " + expected + "-type result for expression parameter " + parameterNum + " but received " + providedType.GetCleanName());
                 }
             }
             if (expectedTypeEnum == EPLExpressionParamType.TIME_PERIOD_OR_SEC)
@@ -86,14 +87,14 @@ namespace com.espertech.esper.epl.util
                 }
                 if (!(TypeHelper.IsNumeric(providedType)))
                 {
-                    throw new ExprValidationException(GetInvokablePrefix(invocableName, invocableCategory, isFunction) + "expected a time-period expression or a numeric-type result for expression parameter " + parameterNum + " but received " + providedType.GetTypeNameFullyQualPretty());
+                    throw new ExprValidationException(GetInvokablePrefix(invocableName, invocableCategory, isFunction) + "expected a time-period expression or a numeric-type result for expression parameter " + parameterNum + " but received " + providedType.GetCleanName());
                 }
             }
             if (expectedTypeEnum == EPLExpressionParamType.DATETIME)
             {
                 if (!TypeHelper.IsDateTime(providedType))
                 {
-                    throw new ExprValidationException(GetInvokablePrefix(invocableName, invocableCategory, isFunction) + "expected a long-typed, Date-typed or Calendar-typed result for expression parameter " + parameterNum + " but received " + providedType.GetTypeNameFullyQualPretty());
+                    throw new ExprValidationException(GetInvokablePrefix(invocableName, invocableCategory, isFunction) + "expected a long-typed, Date-typed or Calendar-typed result for expression parameter " + parameterNum + " but received " + providedType.GetCleanName());
                 }
             }
         }

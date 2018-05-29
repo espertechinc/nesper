@@ -17,7 +17,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.util;
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
 using NUnit.Framework;
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
             string[] fields = "total,total+1".Split(',');
             foreach (string field in fields) {
-                Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType(field));
+                Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType(field).GetBoxedType());
             }
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
@@ -126,8 +126,8 @@ namespace com.espertech.esper.regression.expr.expressiondef
                     "Error starting statement: Failed to validate select-clause expression 'total+1': Error validating expression alias 'total': Failed to validate alias expression body expression 'sum(xxx)': Property named 'xxx' is not valid in any stream [expression total alias for {sum(xxx)} select total+1 from SupportBean]");
             TryInvalid(epService, "expression total xxx for {1} select total+1 from SupportBean",
                     "For expression alias 'total' expecting 'alias' keyword but received 'xxx' [expression total xxx for {1} select total+1 from SupportBean]");
-            TryInvalid(epService, "expression Total(a) alias for {1} select total+1 from SupportBean",
-                    "For expression alias 'total' expecting no parameters but received 'a' [expression Total(a) alias for {1} select total+1 from SupportBean]");
+            TryInvalid(epService, "expression total(a) alias for {1} select total+1 from SupportBean",
+                    "For expression alias 'total' expecting no parameters but received 'a' [expression total(a) alias for {1} select total+1 from SupportBean]");
             TryInvalid(epService, "expression total alias for {a -> 1} select total+1 from SupportBean",
                     "For expression alias 'total' expecting an expression without parameters but received 'a ->' [expression total alias for {a -> 1} select total+1 from SupportBean]");
             TryInvalid(epService, "expression total alias for ['some text'] select total+1 from SupportBean",

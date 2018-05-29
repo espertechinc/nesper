@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.dataflow
                     "DefaultSupportCaptureOp(outstream) {}");
 
             var container = epService.Container;
-            var captureOp = new DefaultSupportCaptureOp<object>(SupportContainer.Instance.LockManager());
+            var captureOp = new DefaultSupportCaptureOp(SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions();
             options.OperatorProvider(new DefaultSupportGraphOpProvider(captureOp));
     

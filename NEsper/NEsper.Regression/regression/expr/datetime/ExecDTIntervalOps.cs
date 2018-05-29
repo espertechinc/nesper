@@ -58,13 +58,13 @@ namespace com.espertech.esper.regression.expr.datetime
             object[][] expected = {
                     new object[] {"2999-01-01T09:00:00.001", 0, true},       // sending in A
             };
-            AssertExpression(epService, seedTime, 0, "a.WithDate(2001, 1, 1).before(b)", expected, null);
+            AssertExpression(epService, seedTime, 0, "a.withDate(2001, 1, 1).before(b)", expected, null);
     
             expected = new object[][]{
                     new object[] {"2999-01-01T10:00:00.001", 0, false},
                     new object[] {"2999-01-01T08:00:00.001", 0, true},
             };
-            AssertExpression(epService, seedTime, 0, "a.WithDate(2001, 1, 1).before(b.WithDate(2001, 1, 1))", expected, null);
+            AssertExpression(epService, seedTime, 0, "a.withDate(2001, 1, 1).before(b.withDate(2001, 1, 1))", expected, null);
     
             // Test end-timestamp preserved when using calendar ops
             expected = new object[][]{
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regression.expr.datetime
     
             // wrong 1st parameter - string
             TryInvalid(epService, "select a.before('x') from A as a",
-                    "Error starting statement: Failed to validate select-clause expression 'a.before('x')': Failed to resolve enumeration method, date-time method or mapped property 'a.before('x')': For date-time method 'before' the first parameter expression returns 'class System.String', however requires a DateTime or Long-type return value or event (with timestamp) [select a.before('x') from A as a]");
+                    "Error starting statement: Failed to validate select-clause expression 'a.before('x')': Failed to resolve enumeration method, date-time method or mapped property 'a.before('x')': For date-time method 'before' the first parameter expression returns 'System.String', however requires a DateTime or Long-type return value or event (with timestamp) [select a.before('x') from A as a]");
     
             // wrong 1st parameter - event not defined with timestamp expression
             TryInvalid(epService, "select a.before(b) from A#lastevent as a, SupportBean#lastevent as b",
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regression.expr.datetime
     
             // wrong 1st parameter - boolean
             TryInvalid(epService, "select a.before(true) from A#lastevent as a, SupportBean#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.before(true)': For date-time method 'before' the first parameter expression returns 'class " + Name.Clean<bool>() + ", however requires a DateTime or Long-type return value or event (with timestamp) [select a.before(true) from A#lastevent as a, SupportBean#lastevent as b]");
+                    "Error starting statement: Failed to validate select-clause expression 'a.before(true)': For date-time method 'before' the first parameter expression returns '" + Name.Clean<bool>() + "', however requires a DateTime or Long-type return value or event (with timestamp) [select a.before(true) from A#lastevent as a, SupportBean#lastevent as b]");
     
             // wrong zero parameters
             TryInvalid(epService, "select a.before() from A#lastevent as a, SupportBean#lastevent as b",
@@ -169,7 +169,7 @@ namespace com.espertech.esper.regression.expr.datetime
             string[] fields = "c0,c1".Split(',');
             string epl =
                     "select " +
-                            "a.LongdateStart.before(b.LongdateStart) as c0," +
+                            "a.longdateStart.before(b.longdateStart) as c0," +
                             "a.before(b) as c1 " +
                             " from A#lastevent as a, " +
                             "      B#lastevent as b";
@@ -203,20 +203,20 @@ namespace com.espertech.esper.regression.expr.datetime
                     "a.before(b)",
                     "a.before(b, 1 millisecond)",
                     "a.before(b, 1 millisecond, 1000000000L)",
-                    "a.LongdateStart.before(b)",
-                    "a.UtildateStart.before(b)",
-                    "a.CaldateStart.before(b)",
-                    "a.before(b.LongdateStart)",
-                    "a.before(b.UtildateStart)",
-                    "a.before(b.CaldateStart)",
-                    "a.LongdateStart.before(b.LongdateStart)",
-                    "a.LongdateStart.before(b.LongdateStart)",
-                    "a.UtildateStart.before(b.UtildateStart)",
-                    "a.CaldateStart.before(b.CaldateStart)",
-                    "a.UtildateStart.before(b.CaldateStart)",
-                    "a.UtildateStart.before(b.LongdateStart)",
-                    "a.CaldateStart.before(b.UtildateStart)",
-                    "a.CaldateStart.before(b.LongdateStart)"
+                    "a.longdateStart.before(b)",
+                    "a.utildateStart.before(b)",
+                    "a.caldateStart.before(b)",
+                    "a.before(b.longdateStart)",
+                    "a.before(b.utildateStart)",
+                    "a.before(b.caldateStart)",
+                    "a.longdateStart.before(b.longdateStart)",
+                    "a.longdateStart.before(b.longdateStart)",
+                    "a.utildateStart.before(b.utildateStart)",
+                    "a.caldateStart.before(b.caldateStart)",
+                    "a.utildateStart.before(b.caldateStart)",
+                    "a.utildateStart.before(b.longdateStart)",
+                    "a.caldateStart.before(b.utildateStart)",
+                    "a.caldateStart.before(b.longdateStart)"
             };
             string seedTime = "2002-05-30T09:00:00.000";
             foreach (string expression in expressions) {
@@ -1023,8 +1023,8 @@ namespace com.espertech.esper.regression.expr.datetime
     
         private void RegisterBeanType(EPServiceProvider epService) {
             var configBean = new ConfigurationEventTypeLegacy();
-            configBean.StartTimestampPropertyName = "LongdateStart";
-            configBean.EndTimestampPropertyName = "LongdateEnd";
+            configBean.StartTimestampPropertyName = "longdateStart";
+            configBean.EndTimestampPropertyName = "longdateEnd";
             epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportTimeStartEndA), configBean);
             epService.EPAdministrator.Configuration.AddEventType("B", typeof(SupportTimeStartEndB), configBean);
         }

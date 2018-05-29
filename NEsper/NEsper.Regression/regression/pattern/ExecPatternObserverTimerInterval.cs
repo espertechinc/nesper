@@ -56,7 +56,7 @@ namespace com.espertech.esper.regression.pattern
             model.SelectClause = SelectClause.CreateWildcard();
             PatternExpr pattern = Patterns.TimerInterval(1.999d);
             model.FromClause = FromClause.Create(PatternStream.Create(pattern));
-            model = (EPStatementObjectModel)SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel)SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(text, model.ToEPL());
             testCase = new EventExpressionCase(model);
             testCase.Add("B1");

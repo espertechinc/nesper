@@ -8,6 +8,7 @@
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
@@ -81,12 +82,14 @@ namespace com.espertech.esper.regression.client
             }
     
             try {
-                string stmtText = "select * from pattern [every " + typeof(SupportBean).FullName +
-                        " where namespace:Name(10)]";
+                string stmtText = "select * from pattern [every " + typeof(SupportBean).FullName + " where namespace:name(10)]";
                 epService.EPAdministrator.CreateEPL(stmtText);
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex, "Failed to resolve pattern guard '" + typeof(SupportBean).FullName + " where namespace:Name(10)': Error casting guard factory instance to com.espertech.esper.pattern.guard.GuardFactory interface for guard 'name'");
+                SupportMessageAssertUtil.AssertMessage(ex,
+                    "Failed to resolve pattern guard '"
+                    + Name.Clean<SupportBean>()
+                    + " where namespace:name(10)': Error invoking pattern object factory constructor for object 'name', no invocation access for Container.CreateInstance");
             }
         }
     }

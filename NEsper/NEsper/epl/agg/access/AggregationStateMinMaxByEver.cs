@@ -40,43 +40,19 @@ namespace com.espertech.esper.epl.agg.access
             CurrentMinMaxBean = null;
         }
 
-        public void ApplyEnter(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
+        public virtual void ApplyEnter(
+            EventBean[] eventsPerStream, 
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             EventBean theEvent = eventsPerStream[Spec.StreamId];
-            if (theEvent == null)
-            {
+            if (theEvent == null) {
                 return;
             }
-            Object comparable = AggregationStateSortedImpl.GetComparable(
-                Spec.Criteria, eventsPerStream, true, exprEvaluatorContext);
-            if (CurrentMinMax == null)
-            {
-                CurrentMinMax = comparable;
-                CurrentMinMaxBean = theEvent;
-            }
-            else
-            {
-                int compareResult = Spec.Comparator.Compare(CurrentMinMax, comparable);
-                if (Spec.IsMax)
-                {
-                    if (compareResult < 0)
-                    {
-                        CurrentMinMax = comparable;
-                        CurrentMinMaxBean = theEvent;
-                    }
-                }
-                else
-                {
-                    if (compareResult > 0)
-                    {
-                        CurrentMinMax = comparable;
-                        CurrentMinMaxBean = theEvent;
-                    }
-                }
-            }
+
+            AddEvent(theEvent, eventsPerStream, exprEvaluatorContext);
         }
 
-        public void ApplyLeave(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
+        public virtual void ApplyLeave(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
         {
             // this is an ever-type aggregation
         }
@@ -132,6 +108,40 @@ namespace com.espertech.esper.epl.agg.access
         public int Count
         {
             get { return CurrentMinMax == null ? 0 : 1; }
+        }
+
+        protected void AddEvent(
+            EventBean theEvent,
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            Object comparable = AggregationStateSortedImpl.GetComparable(
+                Spec.Criteria, eventsPerStream, true, exprEvaluatorContext);
+            if (CurrentMinMax == null)
+            {
+                CurrentMinMax = comparable;
+                CurrentMinMaxBean = theEvent;
+            }
+            else
+            {
+                int compareResult = Spec.Comparator.Compare(CurrentMinMax, comparable);
+                if (Spec.IsMax)
+                {
+                    if (compareResult < 0)
+                    {
+                        CurrentMinMax = comparable;
+                        CurrentMinMaxBean = theEvent;
+                    }
+                }
+                else
+                {
+                    if (compareResult > 0)
+                    {
+                        CurrentMinMax = comparable;
+                        CurrentMinMaxBean = theEvent;
+                    }
+                }
+            }
         }
     }
 }

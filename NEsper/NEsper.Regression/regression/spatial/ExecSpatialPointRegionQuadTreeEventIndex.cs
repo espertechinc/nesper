@@ -10,12 +10,9 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.client.deploy;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
-using com.espertech.esper.epl.join.util;
 using com.espertech.esper.spatial.quadtree.core;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
@@ -67,50 +64,50 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunAssertionEventIndexNWFireAndForgetPerformance(EPServiceProvider epService) {
-            string epl = "create window MyPointWindow#keepall as (id string, px double, py double);\n" +
+            var epl = "create window MyPointWindow#keepall as (id string, px double, py double);\n" +
                     "insert into MyPointWindow select id, px, py from SupportSpatialPoint;\n" +
-                    "create index Idx on MyPointWindow( (px, py) Pointregionquadtree(0, 0, 100, 100));\n";
-            string deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
+                    "create index Idx on MyPointWindow( (px, py) pointregionquadtree(0, 0, 100, 100));\n";
+            var deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
     
             var random = new Random();
             var points = new List<SupportSpatialPoint>();
-            for (int i = 0; i < 10000; i++) {
-                double px = random.NextDouble() * 100;
-                double py = random.NextDouble() * 100;
+            for (var i = 0; i < 10000; i++) {
+                var px = random.NextDouble() * 100;
+                var py = random.NextDouble() * 100;
                 var point = new SupportSpatialPoint("P" + Convert.ToString(i), px, py);
                 epService.EPRuntime.SendEvent(point);
                 points.Add(point);
                 // Comment-me-in: Log.Info("Point P" + i + " " + px + " " + py);
             }
     
-            EPOnDemandPreparedQueryParameterized prepared = epService.EPRuntime.PrepareQueryWithParameters("select * from MyPointWindow where Point(px,py).Inside(Rectangle(?,?,?,?))");
-            long start = PerformanceObserver.MilliTime;
-            string[] fields = "id".Split(',');
-            for (int i = 0; i < 500; i++) {
-                double x = random.NextDouble() * 100;
-                double y = random.NextDouble() * 100;
+            var prepared = epService.EPRuntime.PrepareQueryWithParameters("select * from MyPointWindow where point(px,py).inside(rectangle(?,?,?,?))");
+            var start = PerformanceObserver.MilliTime;
+            var fields = "id".Split(',');
+            for (var i = 0; i < 500; i++) {
+                var x = random.NextDouble() * 100;
+                var y = random.NextDouble() * 100;
                 // Comment-me-in: Log.Info("Query " + x + " " + y + " " + width + " " + height);
     
                 prepared.SetObject(1, x);
                 prepared.SetObject(2, y);
                 prepared.SetObject(3, 5);
                 prepared.SetObject(4, 5);
-                EventBean[] events = epService.EPRuntime.ExecuteQuery(prepared).Array;
-                object[][] expected = SupportSpatialUtil.GetExpected(points, x, y, 5, 5);
+                var events = epService.EPRuntime.ExecuteQuery(prepared).Array;
+                var expected = SupportSpatialUtil.GetExpected(points, x, y, 5, 5);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(events, fields, expected);
             }
-            long delta = DateTimeHelper.CurrentTimeMillis - start;
+            var delta = PerformanceObserver.MilliTime - start;
             Assert.IsTrue(delta < 1000, "delta=" + delta);
     
             epService.EPAdministrator.DeploymentAdmin.Undeploy(deploymentId);
         }
     
         private void RunAssertionEventIndexChoiceBetweenIndexTypes(EPServiceProvider epService) {
-            string epl = "@Name('win') create window MyPointWindow#keepall as (id string, category string, px double, py double);\n" +
+            var epl = "@Name('win') create window MyPointWindow#keepall as (id string, category string, px double, py double);\n" +
                     "@Name('insert') insert into MyPointWindow select id, category, px, py from SupportSpatialPoint;\n" +
                     "@Name('idx1') create index IdxHash on MyPointWindow(category);\n" +
-                    "@Name('idx2') create index IdxQuadtree on MyPointWindow((px, py) Pointregionquadtree(0, 0, 100, 100));\n";
-            string deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
+                    "@Name('idx2') create index IdxQuadtree on MyPointWindow((px, py) pointregionquadtree(0, 0, 100, 100));\n";
+            var deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
     
             SendPoint(epService, "P1", 10, 15, "X");
             SendPoint(epService, "P2", 10, 15, "Y");
@@ -123,11 +120,11 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunAssertionEventIndexUnique(EPServiceProvider epService) {
-            string epl = "@Name('win') create window MyPointWindow#keepall as (id string, px double, py double);\n" +
+            var epl = "@Name('win') create window MyPointWindow#keepall as (id string, px double, py double);\n" +
                     "@Name('insert') insert into MyPointWindow select id, px, py from SupportSpatialPoint;\n" +
-                    "@Name('idx') create unique index Idx on MyPointWindow( (px, py) Pointregionquadtree(0, 0, 100, 100));\n" +
-                    "@Name('out') on SupportSpatialAABB select mpw.id as c0 from MyPointWindow as mpw where Point(px, py).Inside(Rectangle(x, y, width, height));\n";
-            string deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
+                    "@Name('idx') create unique index Idx on MyPointWindow( (px, py) pointregionquadtree(0, 0, 100, 100));\n" +
+                    "@Name('out') on SupportSpatialAABB select mpw.id as c0 from MyPointWindow as mpw where point(px, py).inside(rectangle(x, y, width, height));\n";
+            var deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.GetStatement("out").Events += listener.Update;
     
@@ -137,46 +134,46 @@ namespace com.espertech.esper.regression.spatial
                 Assert.Fail();
             } catch (Exception ex) { // we have a handler
                 SupportMessageAssertUtil.AssertMessage(ex,
-                        "Unexpected exception in statement 'win': Unique index violation, index 'Idx' is a unique index and key '(10.0,15.0)' already exists");
+                        "Unexpected exception in statement 'win': Unique index violation, index 'Idx' is a unique index and key '(10,15)' already exists");
             }
     
             epService.EPAdministrator.DeploymentAdmin.Undeploy(deploymentId);
         }
     
         private void RunAssertionEventIndexPerformance(EPServiceProvider epService) {
-            string epl = "create window MyPointWindow#keepall as (id string, px double, py double);\n" +
+            var epl = "create window MyPointWindow#keepall as (id string, px double, py double);\n" +
                     "insert into MyPointWindow select id, px, py from SupportSpatialPoint;\n" +
-                    "create index Idx on MyPointWindow( (px, py) Pointregionquadtree(0, 0, 100, 100));\n" +
-                    "@Name('out') on SupportSpatialAABB select mpw.id as c0 from MyPointWindow as mpw where Point(px, py).Inside(Rectangle(x, y, width, height));\n";
-            string deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
+                    "create index Idx on MyPointWindow( (px, py) pointregionquadtree(0, 0, 100, 100));\n" +
+                    "@Name('out') on SupportSpatialAABB select mpw.id as c0 from MyPointWindow as mpw where point(px, py).inside(rectangle(x, y, width, height));\n";
+            var deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.GetStatement("out").Events += listener.Update;
     
-            for (int x = 0; x < 100; x++) {
-                for (int y = 0; y < 100; y++) {
+            for (var x = 0; x < 100; x++) {
+                for (var y = 0; y < 100; y++) {
                     epService.EPRuntime.SendEvent(new SupportSpatialPoint(Convert.ToString(x) + "_" + Convert.ToString(y), (double) x, (double) y));
                 }
             }
     
-            long start = PerformanceObserver.MilliTime;
-            for (int x = 0; x < 100; x++) {
-                for (int y = 0; y < 100; y++) {
+            var start = PerformanceObserver.MilliTime;
+            for (var x = 0; x < 100; x++) {
+                for (var y = 0; y < 100; y++) {
                     epService.EPRuntime.SendEvent(new SupportSpatialAABB("R", x, y, 0.5, 0.5));
                     Assert.AreEqual(Convert.ToString(x) + "_" + Convert.ToString(y), listener.AssertOneGetNewAndReset().Get("c0"));
                 }
             }
-            long delta = DateTimeHelper.CurrentTimeMillis - start;
+            var delta = PerformanceObserver.MilliTime - start;
             Assert.IsTrue(delta < 1000, "delta=" + delta);
     
             epService.EPAdministrator.DeploymentAdmin.Undeploy(deploymentId);
         }
     
         private void RunAssertionEventIndexUnusedNamedWindowFireAndForget(EPServiceProvider epService) {
-            string epl = "@Resilient create window PointWindow#keepall as (id string, px double, py double);\n" +
-                    "@Resilient create index MyIndex on PointWindow((px,py) Pointregionquadtree(0,0,100,100,2,12));\n" +
+            var epl = "@Resilient create window PointWindow#keepall as (id string, px double, py double);\n" +
+                    "@Resilient create index MyIndex on PointWindow((px,py) pointregionquadtree(0,0,100,100,2,12));\n" +
                     "@Resilient insert into PointWindow select id, px, py from SupportSpatialPoint;\n" +
-                    "@Resilient @Name('out') on SupportSpatialAABB as aabb select pt.id as c0 from PointWindow as pt where Point(px,py).Inside(Rectangle(x,y,width,height));\n";
-            string deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
+                    "@Resilient @Name('out') on SupportSpatialAABB as aabb select pt.id as c0 from PointWindow as pt where point(px,py).inside(rectangle(x,y,width,height));\n";
+            var deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
     
             epService.EPRuntime.ExecuteQuery("delete from PointWindow where id='P1'");
     
@@ -188,9 +185,9 @@ namespace com.espertech.esper.regression.spatial
             epService.EPAdministrator.CreateEPL("insert into MyTable select id, px as tx, py as ty from SupportSpatialPoint");
             epService.EPRuntime.SendEvent(new SupportSpatialPoint("P1", 50d, 50d));
             epService.EPRuntime.SendEvent(new SupportSpatialPoint("P2", 49d, 49d));
-            epService.EPAdministrator.CreateEPL("create index MyIdxWithExpr on MyTable( (tx, ty) Pointregionquadtree(0, 0, 100, 100))");
+            epService.EPAdministrator.CreateEPL("create index MyIdxWithExpr on MyTable( (tx, ty) pointregionquadtree(0, 0, 100, 100))");
     
-            EPOnDemandQueryResult result = epService.EPRuntime.ExecuteQuery(IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "select id as c0 from MyTable where Point(tx, ty).Inside(Rectangle(45, 45, 10, 10))");
+            var result = epService.EPRuntime.ExecuteQuery(IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "select id as c0 from MyTable where point(tx, ty).inside(rectangle(45, 45, 10, 10))");
             SupportQueryPlanIndexHook.AssertFAFAndReset("MyIdxWithExpr", "EventTableQuadTreePointRegionImpl");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(result.Array, "c0".Split(','), new object[][]{new object[] {"P1"}, new object[] {"P2"}});
     
@@ -203,20 +200,20 @@ namespace com.espertech.esper.regression.spatial
             epService.EPRuntime.ExecuteQuery("insert into MyTable values ('P2', 50, 28)");
             epService.EPRuntime.ExecuteQuery("insert into MyTable values ('P3', 50, 30)");
             epService.EPRuntime.ExecuteQuery("insert into MyTable values ('P4', 49, 29)");
-            epService.EPAdministrator.CreateEPL("create index MyIdxWithExpr on MyTable( (tx*10, ty*10) Pointregionquadtree(0, 0, 1000, 1000))");
+            epService.EPAdministrator.CreateEPL("create index MyIdxWithExpr on MyTable( (tx*10, ty*10) pointregionquadtree(0, 0, 1000, 1000))");
     
-            string eplOne = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "on SupportSpatialAABB select tbl.id as c0 from MyTable as tbl where Point(tx, ty).Inside(Rectangle(x, y, width, height))";
-            EPStatement statementOne = epService.EPAdministrator.CreateEPL(eplOne);
+            var eplOne = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "on SupportSpatialAABB select tbl.id as c0 from MyTable as tbl where point(tx, ty).inside(rectangle(x, y, width, height))";
+            var statementOne = epService.EPAdministrator.CreateEPL(eplOne);
             var listener = new SupportUpdateListener();
             statementOne.Events += listener.Update;
             SupportQueryPlanIndexHook.AssertOnExprTableAndReset(null, null);
             AssertRectanglesManyRow(epService, listener, BOXES, "P4", "P1,P2,P3", null, null, "P1,P2,P3,P4");
             statementOne.Dispose();
     
-            string eplTwo = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "on SupportSpatialAABB select tbl.id as c0 from MyTable as tbl where Point(tx*10, tbl.ty*10).Inside(Rectangle(x, y, width, height))";
-            EPStatement statementTwo = epService.EPAdministrator.CreateEPL(eplTwo);
+            var eplTwo = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "on SupportSpatialAABB select tbl.id as c0 from MyTable as tbl where point(tx*10, tbl.ty*10).inside(rectangle(x, y, width, height))";
+            var statementTwo = epService.EPAdministrator.CreateEPL(eplTwo);
             statementTwo.Events += listener.Update;
-            SupportQueryPlanIndexHook.AssertOnExprTableAndReset("MyIdxWithExpr", "non-unique hash={} btree={} advanced={Pointregionquadtree(tx*10,ty*10)}");
+            SupportQueryPlanIndexHook.AssertOnExprTableAndReset("MyIdxWithExpr", "non-unique hash={} btree={} advanced={pointregionquadtree(tx*10,ty*10)}");
             AssertRectanglesManyRow(epService, listener, BOXES, null, null, null, null, null);
             AssertRectanglesManyRow(epService, listener, Collections.SingletonList(new BoundingBox(500, 300, 501, 301)), "P1,P3");
             statementTwo.Dispose();
@@ -225,26 +222,26 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunAssertionEventIndexChoiceOfTwo(EPServiceProvider epService) {
-            string epl =
+            var epl =
                     "create table MyPointTable(" +
                             " id string primary key," +
                             " x1 double, y1 double, \n" +
                             " x2 double, y2 double);\n" +
-                            "create index Idx1 on MyPointTable( (x1, y1) Pointregionquadtree(0, 0, 100, 100));\n" +
-                            "create index Idx2 on MyPointTable( (x2, y2) Pointregionquadtree(0, 0, 100, 100));\n" +
+                            "create index Idx1 on MyPointTable( (x1, y1) pointregionquadtree(0, 0, 100, 100));\n" +
+                            "create index Idx2 on MyPointTable( (x2, y2) pointregionquadtree(0, 0, 100, 100));\n" +
                             "on SupportSpatialDualPoint dp merge MyPointTable t where dp.id = t.id when not matched then insert select dp.id as id,x1,y1,x2,y2;\n";
-            string deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
+            var deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
     
-            string textOne = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "on SupportSpatialAABB select tbl.id as c0 from MyPointTable as tbl where Point(x1, y1).Inside(Rectangle(x, y, width, height))";
-            EPStatement statementOne = epService.EPAdministrator.CreateEPL(textOne);
+            var textOne = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "on SupportSpatialAABB select tbl.id as c0 from MyPointTable as tbl where point(x1, y1).inside(rectangle(x, y, width, height))";
+            var statementOne = epService.EPAdministrator.CreateEPL(textOne);
             var listener = new SupportUpdateListener();
             statementOne.Events += listener.Update;
-            SupportQueryPlanIndexHook.AssertOnExprTableAndReset("Idx1", "non-unique hash={} btree={} advanced={Pointregionquadtree(x1,y1)}");
+            SupportQueryPlanIndexHook.AssertOnExprTableAndReset("Idx1", "non-unique hash={} btree={} advanced={pointregionquadtree(x1,y1)}");
     
-            string textTwo = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "on SupportSpatialAABB select tbl.id as c0 from MyPointTable as tbl where Point(tbl.x2, y2).Inside(Rectangle(x, y, width, height))";
-            EPStatement statementTwo = epService.EPAdministrator.CreateEPL(textTwo);
+            var textTwo = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "on SupportSpatialAABB select tbl.id as c0 from MyPointTable as tbl where point(tbl.x2, y2).inside(rectangle(x, y, width, height))";
+            var statementTwo = epService.EPAdministrator.CreateEPL(textTwo);
             statementTwo.Events += listener.Update;
-            SupportQueryPlanIndexHook.AssertOnExprTableAndReset("Idx2", "non-unique hash={} btree={} advanced={Pointregionquadtree(x2,y2)}");
+            SupportQueryPlanIndexHook.AssertOnExprTableAndReset("Idx2", "non-unique hash={} btree={} advanced={pointregionquadtree(x2,y2)}");
     
             epService.EPRuntime.SendEvent(new SupportSpatialDualPoint("P1", 10, 10, 60, 60));
             epService.EPRuntime.SendEvent(new SupportSpatialDualPoint("P2", 55, 20, 4, 88));
@@ -257,18 +254,18 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunAssertionEventIndexSubqNamedWindowIndexShare(EPServiceProvider epService) {
-            string epl = "@Hint('enable_window_subquery_indexshare') create window MyWindow#length(5) as select * from SupportSpatialPoint;\n" +
-                    "create index MyIndex on MyWindow((px,py) Pointregionquadtree(0,0,100,100));\n" +
+            var epl = "@Hint('enable_window_subquery_indexshare') create window MyWindow#length(5) as select * from SupportSpatialPoint;\n" +
+                    "create index MyIndex on MyWindow((px,py) pointregionquadtree(0,0,100,100));\n" +
                     "insert into MyWindow select * from SupportSpatialPoint;\n" +
                     IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
-                    "@Name('out') select (select id from MyWindow as mw where Point(mw.px,mw.py).Inside(Rectangle(aabb.x,aabb.y,aabb.width,aabb.height))).aggregate('', \n" +
+                    "@Name('out') select (select id from MyWindow as mw where point(mw.px,mw.py).inside(rectangle(aabb.x,aabb.y,aabb.width,aabb.height))).aggregate('', \n" +
                     "  (result, item) => result || (case when result='' then '' else ',' end) || item) as c0 from SupportSpatialAABB aabb";
-            DeploymentResult deploymentResult = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
+            var deploymentResult = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.GetStatement("out").Events += listener.Update;
     
-            QueryPlanIndexDescSubquery subquery = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
-            Assert.AreEqual("non-unique hash={} btree={} advanced={Pointregionquadtree(px,py)}", subquery.Tables[0].IndexDesc);
+            var subquery = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
+            Assert.AreEqual("non-unique hash={} btree={} advanced={pointregionquadtree(px,py)}", subquery.Tables[0].IndexDesc);
             Assert.AreEqual("MyIndex", subquery.Tables[0].IndexName);
     
             SendPoint(epService, "P1", 10, 40);
@@ -278,10 +275,10 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunAssertionEventIndexUnusedOnTrigger(EPServiceProvider epService) {
-            string epl = "create window MyWindow#length(5) as select * from SupportSpatialPoint;\n" +
-                    "create index MyIndex on MyWindow((px,py) Pointregionquadtree(0,0,100,100));\n" +
+            var epl = "create window MyWindow#length(5) as select * from SupportSpatialPoint;\n" +
+                    "create index MyIndex on MyWindow((px,py) pointregionquadtree(0,0,100,100));\n" +
                     "insert into MyWindow select * from SupportSpatialPoint;\n";
-            DeploymentResult deploymentResult = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
+            var deploymentResult = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
     
             SendPoint(epService, "P1", 5, 5);
             SendPoint(epService, "P2", 55, 60);
@@ -294,9 +291,9 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunIndexUnusedRectValueDepends(EPServiceProvider epService) {
-            string epl = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "@Name('out') on SupportSpatialAABB as aabb select points.id as c0 " +
-                    "from MyWindow as points where Point(px, py).Inside(Rectangle(px,py,1,1))";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
+            var epl = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "@Name('out') on SupportSpatialAABB as aabb select points.id as c0 " +
+                    "from MyWindow as points where point(px, py).inside(rectangle(px,py,1,1))";
+            var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -308,9 +305,9 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunIndexUnusedPointValueDepends(EPServiceProvider epService) {
-            string epl = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "@Name('out') on SupportSpatialAABB as aabb select points.id as c0 " +
-                    "from MyWindow as points where Point(px + x, py + y).Inside(Rectangle(x,y,width,height))";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
+            var epl = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "@Name('out') on SupportSpatialAABB as aabb select points.id as c0 " +
+                    "from MyWindow as points where point(px + x, py + y).inside(rectangle(x,y,width,height))";
+            var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -322,9 +319,9 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunIndexUnusedConstantsOnly(EPServiceProvider epService) {
-            string epl = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "@Name('out') on SupportSpatialAABB as aabb select points.id as c0 " +
-                    "from MyWindow as points where Point(0, 0).Inside(Rectangle(x,y,width,height))";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
+            var epl = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "@Name('out') on SupportSpatialAABB as aabb select points.id as c0 " +
+                    "from MyWindow as points where point(0, 0).inside(rectangle(x,y,width,height))";
+            var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -336,7 +333,7 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunAssertionEventIndexUnindexed(EPServiceProvider epService) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select Point(xOffset, yOffset).Inside(Rectangle(x, y, width, height)) as c0 from MyEventRectangleWithOffset");
+            var stmt = epService.EPAdministrator.CreateEPL("select point(xOffset, yOffset).inside(rectangle(x, y, width, height)) as c0 from MyEventRectangleWithOffset");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -359,13 +356,13 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunAssertionEventIndexOnTriggerContextParameterized(EPServiceProvider epService) {
-            string epl = "create context CtxBox initiated by MyEventRectangleWithOffset box;\n" +
+            var epl = "create context CtxBox initiated by MyEventRectangleWithOffset box;\n" +
                     "context CtxBox create window MyWindow#keepall as SupportSpatialPoint;\n" +
-                    "context CtxBox create index MyIndex on MyWindow((px+context.box.xOffset, py+context.box.yOffset) Pointregionquadtree(context.box.x, context.box.y, context.box.width, context.box.height));\n" +
+                    "context CtxBox create index MyIndex on MyWindow((px+context.box.xOffset, py+context.box.yOffset) pointregionquadtree(context.box.x, context.box.y, context.box.width, context.box.height));\n" +
                     "context CtxBox on SupportSpatialPoint(category = context.box.id) merge MyWindow when not matched then insert select *;\n" +
                     "@Name('out') context CtxBox on SupportSpatialAABB(category = context.box.id) aabb " +
-                    "  select points.id as c0 from MyWindow points where Point(px, py).Inside(Rectangle(x, y, width, height))";
-            DeploymentResult deploymentResult = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
+                    "  select points.id as c0 from MyWindow points where point(px, py).inside(rectangle(x, y, width, height))";
+            var deploymentResult = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.GetStatement("out").Events += listener.Update;
     
@@ -389,16 +386,16 @@ namespace com.espertech.esper.regression.spatial
     
         private void RunAssertionEventIndexOnTriggerNWInsertRemove(EPServiceProvider epService, bool soda) {
             SupportModelHelper.CreateByCompileOrParse(epService, soda, "create window MyWindow#length(5) as select * from SupportSpatialPoint");
-            SupportModelHelper.CreateByCompileOrParse(epService, soda, "create index MyIndex on MyWindow((px,py) Pointregionquadtree(0,0,100,100))");
+            SupportModelHelper.CreateByCompileOrParse(epService, soda, "create index MyIndex on MyWindow((px,py) pointregionquadtree(0,0,100,100))");
             SupportModelHelper.CreateByCompileOrParse(epService, soda, "insert into MyWindow select * from SupportSpatialPoint");
     
-            string epl = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + " on SupportSpatialAABB as aabb " +
-                    "select points.id as c0 from MyWindow as points where Point(px,py).Inside(Rectangle(x,y,width,height))";
-            EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
+            var epl = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + " on SupportSpatialAABB as aabb " +
+                    "select points.id as c0 from MyWindow as points where point(px,py).inside(rectangle(x,y,width,height))";
+            var stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            SupportQueryPlanIndexHook.AssertOnExprTableAndReset("MyIndex", "non-unique hash={} btree={} advanced={Pointregionquadtree(px,py)}");
+            SupportQueryPlanIndexHook.AssertOnExprTableAndReset("MyIndex", "non-unique hash={} btree={} advanced={pointregionquadtree(px,py)}");
     
             SendPoint(epService, "P1", 10, 40);
             AssertRectanglesManyRow(epService, listener, BOXES, "P1", null, null, null, null);
@@ -437,19 +434,19 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunAssertionEventIndexOnTriggerTable(EPServiceProvider epService) {
-            string epl =
+            var epl =
                     "create table MyPointTable(my_x double primary key, my_y double primary key, my_id string);\n" +
-                            "@Audit create index MyIndex on MyPointTable( (my_x, my_y) Pointregionquadtree(0, 0, 100, 100));\n" +
+                            "@Audit create index MyIndex on MyPointTable( (my_x, my_y) pointregionquadtree(0, 0, 100, 100));\n" +
                             "on SupportSpatialPoint ssp merge MyPointTable where ssp.px = my_x and ssp.py = my_y when not matched then insert select px as my_x, py as my_y, id as my_id;\n" +
                             IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
-                            "@Audit @Name('s0') on SupportSpatialAABB select my_id as c0 from MyPointTable as c0 where Point(my_x, my_y).Inside(Rectangle(x, y, width, height))";
-            string deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
+                            "@Audit @Name('s0') on SupportSpatialAABB select my_id as c0 from MyPointTable as c0 where point(my_x, my_y).inside(rectangle(x, y, width, height))";
+            var deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
     
-            EPStatement stmt = epService.EPAdministrator.GetStatement("s0");
+            var stmt = epService.EPAdministrator.GetStatement("s0");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            SupportQueryPlanIndexHook.AssertOnExprTableAndReset("MyIndex", "non-unique hash={} btree={} advanced={Pointregionquadtree(my_x,my_y)}");
+            SupportQueryPlanIndexHook.AssertOnExprTableAndReset("MyIndex", "non-unique hash={} btree={} advanced={pointregionquadtree(my_x,my_y)}");
     
             SendPoint(epService, "P1", 55, 45);
             AssertRectanglesManyRow(epService, listener, BOXES, null, "P1", null, null, "P1");
@@ -468,14 +465,14 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void AssertIndexChoice(EPServiceProvider epService, string hint, string expectedIndexName) {
-            string epl = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + hint +
+            var epl = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + hint +
                     "on SupportSpatialAABB as aabb select mpw.id as c0 from MyPointWindow as mpw " +
-                    "where aabb.category = mpw.category and Point(px, py).Inside(Rectangle(x, y, width, height))\n";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
+                    "where aabb.category = mpw.category and point(px, py).inside(rectangle(x, y, width, height))\n";
+            var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            QueryPlanIndexDescOnExpr plan = SupportQueryPlanIndexHook.AssertOnExprAndReset();
+            var plan = SupportQueryPlanIndexHook.AssertOnExprAndReset();
             Assert.AreEqual(expectedIndexName, plan.Tables[0].IndexName);
     
             epService.EPRuntime.SendEvent(new SupportSpatialAABB("R1", 9, 14, 1.0001, 1.0001, "Y"));

@@ -80,7 +80,7 @@ namespace com.espertech.esper.regression.view
     
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("average"));
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("variance"));
-            Assert.AreEqual(typeof(long), statement.EventType.GetPropertyType("datapoints"));
+            Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("datapoints"));
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("total"));
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("stddev"));
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("stddevpa"));

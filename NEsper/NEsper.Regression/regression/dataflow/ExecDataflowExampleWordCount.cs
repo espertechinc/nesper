@@ -25,7 +25,6 @@ using NUnit.Framework;
 namespace com.espertech.esper.regression.dataflow
 {
     public class ExecDataflowExampleWordCount : RegressionExecution {
-    
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddImport(typeof(MyTokenizerCounter).Namespace);
             epService.EPAdministrator.Configuration.AddImport(typeof(DefaultSupportCaptureOp).Namespace);
@@ -37,7 +36,7 @@ namespace com.espertech.esper.regression.dataflow
                     "DefaultSupportCaptureOp(WordCountStream) {}";
             epService.EPAdministrator.CreateEPL(epl);
     
-            var future = new DefaultSupportCaptureOp<object>(1, SupportContainer.Instance.LockManager());
+            var future = new DefaultSupportCaptureOp(1, SupportContainer.Instance.LockManager());
             var source = new MyLineFeedSource(Collections.List("Test this code", "Test line two").GetEnumerator());
     
             var options = new EPDataFlowInstantiationOptions()
@@ -49,7 +48,7 @@ namespace com.espertech.esper.regression.dataflow
             Assert.AreEqual(1, received.Length);
             var stats = (MyWordCountStats) received[0];
             EPAssertionUtil.AssertProps(
-                epService.Container, stats, "lines,words,chars".Split(','), new object[]{2, 6, 23});
+                epService.Container, stats, "Lines,Words,Chars".Split(','), new object[]{2, 6, 23});
         }
     }
 } // end of namespace

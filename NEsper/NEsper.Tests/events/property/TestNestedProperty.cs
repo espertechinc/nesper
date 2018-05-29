@@ -35,10 +35,10 @@ namespace com.espertech.esper.events.property
         {
             _container = SupportContainer.Reset();
             _beanEventTypeFactory = new BeanEventAdapter(
+                _container,
                 new ConcurrentDictionary<Type, BeanEventType>(),
                 _container.Resolve<EventAdapterService>(),
-                new EventTypeIdGeneratorImpl(),
-                _container.LockManager());
+                new EventTypeIdGeneratorImpl());
 
             _nested = new NestedProperty[2];
             _nested[0] = MakeProperty(new[] {"Nested", "NestedValue"});

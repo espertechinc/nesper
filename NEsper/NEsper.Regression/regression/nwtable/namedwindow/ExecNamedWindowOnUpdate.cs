@@ -15,8 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
-
+using com.espertech.esper.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.nwtable.namedwindow
@@ -33,13 +32,13 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
         }
     
         private void RunAssertionUpdateNonPropertySet(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("setBeanLongPrimitive999", GetType().FullName, "SetBeanLongPrimitive999");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("setBeanLongPrimitive999", GetType(), "SetBeanLongPrimitive999");
             epService.EPAdministrator.Configuration.AddEventType<SupportBean_S0>();
             epService.EPAdministrator.CreateEPL("create window MyWindowUNP#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindowUNP select * from SupportBean");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("on SupportBean_S0 as sb " +
                     "update MyWindowUNP as mywin" +
-                    " set Mywin.IntPrimitive = 10," +
+                    " set mywin.IntPrimitive = 10," +
                     "     setBeanLongPrimitive999(mywin)");
             var listenerWindow = new SupportUpdateListener();
             stmt.Events += listenerWindow.Update;
@@ -112,24 +111,24 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionSubclass(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindowSC#keepall as select * from " + typeof(SupportBeanAbstractSub).FullName;
+            string stmtTextCreate = "create window MyWindowSC#keepall as select * from " + typeof(SupportBeanAbstractSub).MaskTypeName();
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindowSC select * from " + typeof(SupportBeanAbstractSub).FullName;
+            string stmtTextInsertOne = "insert into MyWindowSC select * from " + typeof(SupportBeanAbstractSub).MaskTypeName();
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create update
-            string stmtTextUpdate = "on " + typeof(SupportBean).FullName + " update MyWindowSC set v1=TheString, v2=TheString";
+            string stmtTextUpdate = "on " + typeof(SupportBean).MaskTypeName() + " update MyWindowSC set V1=TheString, V2=TheString";
             epService.EPAdministrator.CreateEPL(stmtTextUpdate);
     
             epService.EPRuntime.SendEvent(new SupportBeanAbstractSub("value2"));
             listenerWindow.Reset();
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(listenerWindow.LastNewData[0], new string[]{"v1", "v2"}, new object[]{"E1", "E1"});
+            EPAssertionUtil.AssertProps(listenerWindow.LastNewData[0], new string[]{ "V1", "V2"}, new object[]{"E1", "E1"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }

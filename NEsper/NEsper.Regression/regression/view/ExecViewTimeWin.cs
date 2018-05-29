@@ -177,8 +177,8 @@ namespace com.espertech.esper.regression.view
     
         private void AssertSelectResultType(EPStatement stmt) {
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("volume"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("mySum"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("volume"));
+            Assert.AreEqual(typeof(double), stmt.EventType.GetPropertyType("mySum"));
         }
     
         private void SendEvent(EPServiceProvider epService, string symbol, long volume, double price) {

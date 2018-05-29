@@ -11,6 +11,7 @@ using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lrreport;
 using com.espertech.esper.supportregression.execution;
@@ -46,11 +47,12 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             long start = PerformanceObserver.MilliTime;
             epService.EPRuntime.SendEvent(theEvent);
-            long delta = DateTimeHelper.CurrentTimeMillis - start;
+            long delta = PerformanceObserver.MilliTime - start;
             Assert.IsTrue(delta < 100, "delta=" + delta);
-    
-            ICollection<SupportBean_ST0> result = (ICollection<SupportBean_ST0>) listener.AssertOneGetNewAndReset().Get("val");
-            EPAssertionUtil.AssertEqualsExactOrder(new object[]{minEvent}, result.ToArray());
+
+            var result = listener.AssertOneGetNewAndReset().Get("val")
+                .UnwrapIntoArray<SupportBean_ST0>();
+            EPAssertionUtil.AssertEqualsExactOrder(new object[] {minEvent}, result);
         }
     }
 } // end of namespace

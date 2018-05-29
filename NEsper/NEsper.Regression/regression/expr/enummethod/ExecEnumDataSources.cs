@@ -32,17 +32,17 @@ namespace com.espertech.esper.regression.expr.enummethod
             configuration.AddEventType("SupportBean_ST0", typeof(SupportBean_ST0));
             configuration.AddEventType("SupportBean_ST0_Container", typeof(SupportBean_ST0_Container));
             configuration.AddEventType("SupportCollection", typeof(SupportCollection));
-            configuration.AddEventType(typeof(MyEvent));
+            configuration.AddEventType<MyEvent>();
             configuration.AddImport(typeof(LocationReportFactory));
             configuration.EngineDefaults.Expression.IsUdfCache = false;
             configuration.AddPlugInSingleRowFunction(
-                "makeSampleList", typeof(SupportBean_ST0_Container).FullName, "MakeSampleList");
+                "makeSampleList", typeof(SupportBean_ST0_Container), "MakeSampleList");
             configuration.AddPlugInSingleRowFunction(
-                "makeSampleArray", typeof(SupportBean_ST0_Container).FullName, "MakeSampleArray");
+                "makeSampleArray", typeof(SupportBean_ST0_Container), "MakeSampleArray");
             configuration.AddPlugInSingleRowFunction(
-                "makeSampleListString", typeof(SupportCollection).FullName, "MakeSampleListString");
+                "makeSampleListString", typeof(SupportCollection), "MakeSampleListString");
             configuration.AddPlugInSingleRowFunction(
-                "makeSampleArrayString", typeof(SupportCollection).FullName, "MakeSampleArrayString");
+                "makeSampleArrayString", typeof(SupportCollection), "MakeSampleArrayString");
         }
 
         public override void Run(EPServiceProvider epService)
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
 
             var stmt = epService.EPAdministrator.CreateEPL(
-                "select MyTableUnkeyed.theWindow.AnyOf(v=>IntPrimitive=10) as c0 from SupportBean_A");
+                "select MyTableUnkeyed.theWindow.anyOf(v=>IntPrimitive=10) as c0 from SupportBean_A");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -135,7 +135,7 @@ namespace com.espertech.esper.regression.expr.enummethod
                           " measures A as a_array, B as b " +
                           " pattern (A* B)" +
                           " define" +
-                          " B as A.AnyOf(v=> v.IntPrimitive = B.IntPrimitive)" +
+                          " B as A.anyOf(v=> v.IntPrimitive = B.IntPrimitive)" +
                           ")";
 
             var stmtOne = epService.EPAdministrator.CreateEPL(textOne);
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             var fieldsTwo = "c0".Split(',');
             var textTwo = "select * from SupportBean " +
                           "match_recognize (" +
-                          " measures A.AnyOf(v=> v.IntPrimitive = B.IntPrimitive) as c0 " +
+                          " measures A.anyOf(v=> v.IntPrimitive = B.IntPrimitive) as c0 " +
                           " pattern (A* B)" +
                           " define" +
                           " A as A.TheString like 'A%'," +
@@ -194,8 +194,8 @@ namespace com.espertech.esper.regression.expr.enummethod
             var listener = new SupportUpdateListener();
             var stmt = epService.EPAdministrator.CreateEPL(
                 "select " +
-                "SupportEnumTwo.ENUM_VALUE_1.Mystrings.AnyOf(v => v = id) as c0, " +
-                "value.Mystrings.AnyOf(v => v = '2') as c1 " +
+                "SupportEnumTwo.ENUM_VALUE_1.GetMystrings().anyOf(v => v = id) as c0, " +
+                "value.GetMystrings().anyOf(v => v = '2') as c1 " +
                 "from SupportEnumTwoEvent");
             stmt.Events += listener.Update;
 
@@ -236,9 +236,8 @@ namespace com.espertech.esper.regression.expr.enummethod
             epService.EPAdministrator.Configuration.AddEventType(typeof(ContainerEvent));
 
             var stmt = epService.EPAdministrator.CreateEPL(
-                "" +
                 "select * from SelectorEvent#keepall as sel, ContainerEvent#keepall as cont " +
-                "where Cont.items.AnyOf(i => sel.selector = i.selected)");
+                "where cont.items.anyOf(i => sel.selector = i.selected)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -257,7 +256,10 @@ namespace com.espertech.esper.regression.expr.enummethod
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(
-                stmt.EventType, "val0,val1".Split(','), new[] {typeof(SupportBean_ST0[]), typeof(ICollection<object>)});
+                stmt.EventType, "val0,val1".Split(','), new[] {
+                    typeof(SupportBean_ST0[]),
+                    typeof(ICollection<SupportBean_ST0>)
+                });
 
             epService.EPRuntime.SendEvent(new SupportBean_ST0("E1", 5));
             LambdaAssertionUtil.AssertST0Id(listener, "val1", "E1");
@@ -282,7 +284,9 @@ namespace com.espertech.esper.regression.expr.enummethod
                 "select prevwindow(id).where(x => x not like '%ignore%') as val0 " +
                 "from SupportBean_ST0#keepall as st0");
             stmtScalar.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtScalar.EventType, fields, new[] {typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmtScalar.EventType, fields, new[] {
+                typeof(ICollection<string>)
+            });
 
             epService.EPRuntime.SendEvent(new SupportBean_ST0("E1", 5));
             LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val0", "E1");
@@ -313,7 +317,9 @@ namespace com.espertech.esper.regression.expr.enummethod
             var stmtNamedWindow = epService.EPAdministrator.CreateEPL(eplNamedWindow);
             var listener = new SupportUpdateListener();
             stmtNamedWindow.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtNamedWindow.EventType, "allOfX".Split(','), new[] {typeof(bool?)});
+            LambdaAssertionUtil.AssertTypes(stmtNamedWindow.EventType, "allOfX".Split(','), new[] {
+                typeof(bool)
+            });
 
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.AreEqual(null, listener.AssertOneGetNewAndReset().Get("allOfX"));
@@ -405,13 +411,13 @@ namespace com.espertech.esper.regression.expr.enummethod
             epService.EPRuntime.SendEvent(new SupportBean_ST0("B1", 10));
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
             AssertPropsMapRows(
-                (ICollection<object>) listener.AssertOneGetNewAndReset().Get("c0"), fields,
+                listener.AssertOneGetNewAndReset().Get("c0").Unwrap<object>(), fields,
                 new[] {new object[] {"B1", 10}});
 
             epService.EPRuntime.SendEvent(new SupportBean_ST0("B2", 20));
             epService.EPRuntime.SendEvent(new SupportBean("E2", 0));
             AssertPropsMapRows(
-                (ICollection<object>) listener.AssertOneGetNewAndReset().Get("c0"), fields,
+                listener.AssertOneGetNewAndReset().Get("c0").Unwrap<object>(), fields,
                 new[] {new object[] {"B1", 10}, new object[] {"B2", 20}});
             stmtSubselectMultivalue.Dispose();
 
@@ -420,7 +426,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             epService.EPAdministrator.CreateEPL("create schema AEvent (symbol string)");
             epService.EPAdministrator.CreateEPL("create schema BEvent (a AEvent)");
             var stmt = epService.EPAdministrator.CreateEPL(
-                "select (select a from BEvent#keepall).AnyOf(v => symbol = 'GE') as flag from SupportBean");
+                "select (select a from BEvent#keepall).anyOf(v => symbol = 'GE') as flag from SupportBean");
             stmt.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(MakeBEvent("XX"), "BEvent");
@@ -438,7 +444,7 @@ namespace com.espertech.esper.regression.expr.enummethod
         {
             epService.EPAdministrator.CreateEPL("create variable string[] myvar = { 'E1', 'E3' }");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select * from SupportBean(myvar.AnyOf(v => v = TheString))")
+            epService.EPAdministrator.CreateEPL("select * from SupportBean(myvar.anyOf(v => v = TheString))")
                 .Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -523,7 +529,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             // test array and iterable
             var fields = "val0,val1".Split(',');
             eplFragment = "select Intarray.sumof() as val0, " +
-                          "intiterable.sumOf() as val1 " +
+                          "Intiterable.sumOf() as val1 " +
                           " from SupportCollection#keepall";
             stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             stmtFragment.Events += listener.Update;
@@ -536,7 +542,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             epService.EPAdministrator.Configuration.AddEventType(typeof(BookDesc));
             epService.EPAdministrator.CreateEPL("create schema MySchema (books BookDesc[])");
 
-            var stmt = epService.EPAdministrator.CreateEPL("select Books.max(i => i.price) as mymax from MySchema");
+            var stmt = epService.EPAdministrator.CreateEPL("select books.max(i => i.price) as mymax from MySchema");
             stmt.Events += listener.Update;
 
             var @event = Collections.SingletonDataMap(
@@ -545,22 +551,22 @@ namespace com.espertech.esper.regression.expr.enummethod
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "mymax".Split(','), new object[] {1.0});
 
             // test method invocation variations returning list/array of string and test UDF +property as well
-            RunAssertionMethodInvoke(epService, "select E.TheList.AnyOf(v => v = selector) as flag from MyEvent e");
+            RunAssertionMethodInvoke(epService, "select e.TheList.anyOf(v => v = selector) as flag from MyEvent e");
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                "convertToArray", typeof(MyEvent).FullName, "ConvertToArray");
+                "convertToArray", typeof(MyEvent), "ConvertToArray");
             RunAssertionMethodInvoke(
-                epService, "select ConvertToArray(theList).AnyOf(v => v = selector) as flag from MyEvent e");
-            RunAssertionMethodInvoke(epService, "select TheArray.AnyOf(v => v = selector) as flag from MyEvent e");
-            RunAssertionMethodInvoke(epService, "select E.TheArray.AnyOf(v => v = selector) as flag from MyEvent e");
+                epService, "select convertToArray(theList).anyOf(v => v = selector) as flag from MyEvent e");
+            RunAssertionMethodInvoke(epService, "select TheArray.anyOf(v => v = selector) as flag from MyEvent e");
+            RunAssertionMethodInvoke(epService, "select e.TheArray.anyOf(v => v = selector) as flag from MyEvent e");
             RunAssertionMethodInvoke(
-                epService, "select E.theList.AnyOf(v => v = e.selector) as flag from pattern[every e=MyEvent]");
+                epService, "select e.TheList.anyOf(v => v = e.selector) as flag from pattern[every e=MyEvent]");
             RunAssertionMethodInvoke(
                 epService,
-                "select E.nestedMyEvent.myNestedList.AnyOf(v => v = e.selector) as flag from pattern[every e=MyEvent]");
+                "select e.NestedMyEvent.MyNestedList.anyOf(v => v = e.selector) as flag from pattern[every e=MyEvent]");
             RunAssertionMethodInvoke(
                 epService,
                 "select " + TypeHelper.MaskTypeName<MyEvent>() +
-                ".ConvertToArray(theList).AnyOf(v => v = selector) as flag from MyEvent e");
+                ".ConvertToArray(TheList).anyOf(v => v = selector) as flag from MyEvent e");
 
             stmt.Dispose();
         }
@@ -689,10 +695,10 @@ namespace com.espertech.esper.regression.expr.enummethod
             LambdaAssertionUtil.AssertTypes(
                 stmtScalar.EventType, fields, new[]
                 {
-                    typeof(ICollection<object>),
-                    typeof(ICollection<object>),
-                    typeof(ICollection<object>),
-                    typeof(ICollection<object>)
+                    typeof(ICollection<string>),
+                    typeof(ICollection<string>),
+                    typeof(ICollection<string>),
+                    typeof(ICollection<string>)
                 });
 
             SupportCollection.SampleCSV = "E1,E2,E3";
@@ -761,8 +767,9 @@ namespace com.espertech.esper.regression.expr.enummethod
 
         private void AssertPropsMapRows(ICollection<object> rows, string[] fields, object[][] objects)
         {
-            var mapsColl = (ICollection<Map>) rows;
-            var maps = mapsColl.ToArray();
+            var maps = rows
+                .Select(row => row.UnwrapStringDictionary())
+                .ToArray();
             EPAssertionUtil.AssertPropsPerRow(maps, fields, objects);
         }
 
@@ -811,21 +818,20 @@ namespace com.espertech.esper.regression.expr.enummethod
             {
                 Selector = selector;
 
-                MyList = new List<string>();
-                MyList.Add("1");
-                MyList.Add("2");
-                MyList.Add("3");
+                TheList = new List<string>();
+                TheList.Add("1");
+                TheList.Add("2");
+                TheList.Add("3");
             }
 
             public string Selector { get; }
 
-            public List<string> MyList { get; }
+            public List<string> TheList { get; }
 
-            public NestedMyEvent NestedMyEvent => new NestedMyEvent(MyList);
+            public NestedMyEvent NestedMyEvent => new NestedMyEvent(TheList);
 
-            public string[] GetTheArray()
-            {
-                return MyList.ToArray();
+            public string[] TheArray {
+                get { return TheList.ToArray(); }
             }
 
             public static string[] ConvertToArray(IEnumerable<string> list)

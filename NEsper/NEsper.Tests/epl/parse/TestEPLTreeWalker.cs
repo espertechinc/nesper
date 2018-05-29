@@ -248,14 +248,14 @@ namespace com.espertech.esper.epl.parse
         }
     
         [Test]
-        public void TestWalkOnSet() 
+        public void TestWalkOnSet()
         {
             VariableService variableService = new VariableServiceImpl(
-                0, 
+                _container, 0,
                 new SchedulingServiceImpl(new TimeSourceServiceImpl(), _container),
-                _container.Resolve<EventAdapterService>(), null,
-                _container.RWLockManager(),
-                _container.ThreadLocalManager());
+                _container.Resolve<EventAdapterService>(),
+                null);
+
             variableService.CreateNewVariable(null, "var1", typeof(long?).FullName, false, false, false, 100L, null);
             variableService.AllocateVariableState("var1", 0, null, false);
     
@@ -1309,9 +1309,11 @@ namespace com.espertech.esper.epl.parse
                 var delta = result - expected;
                 Assert.IsTrue(Math.Abs(delta) < 0.0000001, "Interval '" + interval + "' expected=" + expected + " actual=" + result);
             }
-    
-            TryIntervalInvalid("1.5 month",
-                    "Time period expressions with month or year component require integer values, received a " + Name.Of<double?>() + " value");
+
+            TryIntervalInvalid(
+                "1.5 month",
+                "Time period expressions with month or year component require integer values, received a " +
+                Name.Clean<double?>() + " value");
         }
     
         [Test]

@@ -57,7 +57,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             Assert.AreEqual(eplModel, model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
             Assert.AreEqual(eplModel, stmt.Text);
-            Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("istream()"));
+            Assert.AreEqual(typeof(bool), stmt.EventType.GetPropertyType("istream()"));
     
             // test join
             epService.EPAdministrator.DestroyAllStatements();

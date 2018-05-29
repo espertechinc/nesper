@@ -67,7 +67,7 @@ namespace com.espertech.esper.regression.expr.expr
                     "LongBoxed", "IntBoxed", "ShortBoxed"), "result");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName)
                 .AddView("length", Expressions.Constant(1000)));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(epl, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);

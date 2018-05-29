@@ -36,10 +36,10 @@ namespace com.espertech.esper.regression.epl.insertinto
     public class ExecInsertIntoTransposeStream : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("generateMap", GetType().FullName, "LocalGenerateMap");
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("generateOA", GetType().FullName, "LocalGenerateOA");
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("generateAvro", GetType().FullName, "LocalGenerateAvro");
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("custom", typeof(SupportStaticMethodLib).FullName, "MakeSupportBean");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("generateMap", GetType(), "LocalGenerateMap");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("generateOA", GetType(), "LocalGenerateOA");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("generateAvro", GetType(), "LocalGenerateAvro");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("custom", typeof(SupportStaticMethodLib), "MakeSupportBean");
     
             RunAssertionTransposeMapAndObjectArray(epService);
             RunAssertionTransposeFunctionToStreamWithProps(epService);
@@ -102,11 +102,11 @@ namespace com.espertech.esper.regression.epl.insertinto
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             EventType type = stmt.EventType;
-            Assert.AreEqual(typeof(Pair<object, object>), type.UnderlyingType);
+            Assert.AreEqual(typeof(Pair<object, Map>), type.UnderlyingType);
     
             epService.EPRuntime.SendEvent(new SupportBean("I1", 1));
             EventBean result = listener.AssertOneGetNewAndReset();
-            var underlying = (Pair<object, object>) result.Underlying;
+            var underlying = (Pair<object, Map>) result.Underlying;
             EPAssertionUtil.AssertProps(result, "dummy,TheString,IntPrimitive".Split(','), new object[]{1, "OI1", 10});
             Assert.AreEqual("OI1", ((SupportBean) underlying.First).TheString);
     
@@ -140,8 +140,8 @@ namespace com.espertech.esper.regression.epl.insertinto
     
         private void RunAssertionTransposeSingleColumnInsert(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBeanNumeric));
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("customOne", typeof(SupportStaticMethodLib).FullName, "MakeSupportBean");
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("customTwo", typeof(SupportStaticMethodLib).FullName, "MakeSupportBeanNumeric");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("customOne", typeof(SupportStaticMethodLib), "MakeSupportBean");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("customTwo", typeof(SupportStaticMethodLib), "MakeSupportBeanNumeric");
     
             // with transpose and same input and output
             string stmtTextOne = "insert into SupportBean select Transpose(CustomOne('O' || TheString, 10)) from SupportBean(TheString like 'I%')";
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                 epService.EPAdministrator.CreateEPL("insert into SupportBeanNumeric select Transpose(CustomOne('O', 10)) from SupportBean");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Expression-returned value of type '" + typeof(SupportBean).FullName + "' cannot be converted to target event type 'SupportBeanNumeric' with underlying type '" + typeof(SupportBeanNumeric).FullName + "' [insert into SupportBeanNumeric select Transpose(CustomOne('O', 10)) from SupportBean]", ex.Message);
+                Assert.AreEqual("Error starting statement: Expression-returned value of type '" + Name.Clean<SupportBean>() + "' cannot be converted to target event type 'SupportBeanNumeric' with underlying type '" + Name.Clean<SupportBeanNumeric>() + "' [insert into SupportBeanNumeric select Transpose(CustomOne('O', 10)) from SupportBean]", ex.Message);
             }
     
             // invalid additional properties
@@ -181,7 +181,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                 epService.EPAdministrator.CreateEPL("insert into SupportBean select 1 as dummy, Transpose(CustomOne('O', 10)) from SupportBean");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Cannot transpose additional properties in the select-clause to target event type 'SupportBean' with underlying type '" + typeof(SupportBean).FullName + "', the transpose function must occur alone in the select clause [insert into SupportBean select 1 as dummy, Transpose(CustomOne('O', 10)) from SupportBean]", ex.Message);
+                Assert.AreEqual("Error starting statement: Cannot transpose additional properties in the select-clause to target event type 'SupportBean' with underlying type '" + Name.Clean<SupportBean>() + "', the transpose function must occur alone in the select clause [insert into SupportBean select 1 as dummy, Transpose(CustomOne('O', 10)) from SupportBean]", ex.Message);
             }
     
             // invalid occurs twice
@@ -198,7 +198,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                 epService.EPAdministrator.CreateEPL("insert into SomeOtherStream select Transpose(CustomOne('O', 10)) from SupportBean");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Expression-returned value of type '" + typeof(SupportBean).FullName + "' cannot be converted to target event type 'SomeOtherStream' with underlying type 'Map' [insert into SomeOtherStream select Transpose(CustomOne('O', 10)) from SupportBean]", ex.Message);
+                Assert.AreEqual("Error starting statement: Expression-returned value of type '" + Name.Clean<SupportBean>() + "' cannot be converted to target event type 'SomeOtherStream' with underlying type '" + Name.Clean<Map>() + "' [insert into SomeOtherStream select Transpose(CustomOne('O', 10)) from SupportBean]", ex.Message);
             }
     
             // invalid two parameters
@@ -206,7 +206,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                 epService.EPAdministrator.CreateEPL("select Transpose(CustomOne('O', 10), CustomOne('O', 10)) from SupportBean");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Failed to validate select-clause expression 'Transpose(CustomOne(\"O\",10),customO...(46 chars)': The transpose function requires a single parameter expression [select Transpose(CustomOne('O', 10), CustomOne('O', 10)) from SupportBean]", ex.Message);
+                Assert.AreEqual("Error starting statement: Failed to validate select-clause expression 'Transpose(CustomOne(\"O\",10),CustomO...(46 chars)': The transpose function requires a single parameter expression [select Transpose(CustomOne('O', 10), CustomOne('O', 10)) from SupportBean]", ex.Message);
             }
     
             // test not a top-level function or used in where-clause (possible but not useful)
@@ -218,7 +218,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                 epService.EPAdministrator.CreateEPL("insert into SomeOther select Transpose(GenerateOA('a', 1)) from SupportBean");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Invalid expression return type '[Ljava.lang.Object;' for transpose function [insert into SomeOther select Transpose(GenerateOA('a', 1)) from SupportBean]", ex.Message);
+                Assert.AreEqual("Error starting statement: Invalid expression return type '" + Name.Clean<object[]>() + "' for transpose function [insert into SomeOther select Transpose(GenerateOA('a', 1)) from SupportBean]", ex.Message);
             }
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -278,7 +278,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "result".Split(','), new object[]{"nestedValue"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "result".Split(','), new object[]{ "NestedValue" });
     
             epService.EPAdministrator.DestroyAllStatements();
         }

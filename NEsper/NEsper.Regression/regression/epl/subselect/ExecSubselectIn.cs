@@ -68,7 +68,7 @@ namespace com.espertech.esper.regression.epl.subselect
             var model = new EPStatementObjectModel();
             model.FromClause = FromClause.Create(FilterStream.Create("S0"));
             model.SelectClause = SelectClause.Create().Add(Expressions.SubqueryIn("id", subquery), "value");
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string stmtText = "select id in (select id from S1#length(1000)) as value from S0";
             Assert.AreEqual(stmtText, model.ToEPL());
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionInSelectCompile(EPServiceProvider epService) {
             string stmtText = "select id in (select id from S1#length(1000)) as value from S0";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(stmtText, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);

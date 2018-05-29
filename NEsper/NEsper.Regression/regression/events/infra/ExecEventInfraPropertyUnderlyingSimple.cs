@@ -18,6 +18,7 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.supportregression.bean;
+using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util;
@@ -111,8 +112,7 @@ namespace com.espertech.esper.regression.events.infra
             {
                 RunAssertionPassUnderlying(epService, pair.First, pair.Second);
                 RunAssertionPropertiesWGetter(epService, pair.First, pair.Second);
-                RunAssertionTypeValidProp(
-                    epService, pair.First, pair.Second == FMAP || pair.Second == FXML || pair.Second == FOA);
+                RunAssertionTypeValidProp(epService, pair.First, pair.Second == FMAP || pair.Second == FXML || pair.Second == FOA, (pair.Second == FBEAN));
                 RunAssertionTypeInvalidProp(epService, pair.First, pair.Second == FXML);
             }
         }
@@ -175,33 +175,49 @@ namespace com.espertech.esper.regression.events.infra
 
         private void RunAssertionEventInvalidProp(EventBean @event)
         {
-            foreach (var prop in Collections.List("xxxx", "myString[1]", "MyString('a')", "x.y", "myString.x"))
+            foreach (var prop in Collections.List("xxxx", "myString('a')", "x.y", "myString.x"))
             {
                 SupportMessageAssertUtil.TryInvalidProperty(@event, prop);
                 SupportMessageAssertUtil.TryInvalidGetFragment(@event, prop);
             }
         }
 
-        private void RunAssertionTypeValidProp(EPServiceProvider epService, string typeName, bool boxed)
+        private void RunAssertionTypeValidProp(EPServiceProvider epService, string typeName, bool boxed, bool isBeanStyle)
         {
             var eventType = epService.EPAdministrator.Configuration.GetEventType(typeName);
 
-            var expectedType = new[]
+            string nameMyString;
+            string nameMyInt;
+
+            if (isBeanStyle)
             {
-                new object[] {"myInt", boxed ? typeof(int?) : typeof(int), null, null},
-                new object[] {"myString", typeof(string), null, null}
-            };
+                nameMyString = "MyString";
+                nameMyInt = "MyInt";
+            }
+            else
+            {
+                nameMyString = "myString";
+                nameMyInt = "myInt";
+            } 
+
+            var valuesMyString = new object[] { nameMyString, typeof(string), null, null };
+            var valuesMyInt = new object[] { nameMyInt, boxed ? typeof(int?) : typeof(int), null, null };
+
+            var expectedType = isBeanStyle
+                ? new object[][] { valuesMyString, valuesMyInt } // why are we dependent on order?
+                : new object[][] { valuesMyInt, valuesMyString };
+
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(
                 expectedType, eventType, SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
 
-            EPAssertionUtil.AssertEqualsAnyOrder(new[] {"myString", "myInt"}, eventType.PropertyNames);
+            EPAssertionUtil.AssertEqualsAnyOrder(new[] {nameMyString, nameMyInt}, eventType.PropertyNames);
 
-            Assert.IsNotNull(eventType.GetGetter("myInt"));
-            Assert.IsTrue(eventType.IsProperty("myInt"));
-            Assert.AreEqual(boxed ? typeof(int?) : typeof(int), eventType.GetPropertyType("myInt"));
+            Assert.IsNotNull(eventType.GetGetter(nameMyInt));
+            Assert.IsTrue(eventType.IsProperty(nameMyInt));
+            Assert.AreEqual(boxed ? typeof(int?) : typeof(int), eventType.GetPropertyType(nameMyInt));
             Assert.AreEqual(
-                new EventPropertyDescriptor("myString", typeof(string), null, false, false, false, false, false),
-                eventType.GetPropertyDescriptor("myString"));
+                new EventPropertyDescriptor(nameMyString, typeof(string), typeof(char), false, false, true, false, false), 
+                eventType.GetPropertyDescriptor(nameMyString));
         }
 
         private void RunAssertionTypeInvalidProp(EPServiceProvider epService, string typeName, bool xml)
@@ -209,7 +225,7 @@ namespace com.espertech.esper.regression.events.infra
             var eventType = epService.EPAdministrator.Configuration.GetEventType(typeName);
 
             foreach (var prop in Collections.List(
-                "xxxx", "myString[0]", "MyString('a')", "myString.x", "myString.x.y", "myString.x"))
+                "xxxx", "myString('a')", "myString.x", "myString.x.y", "myString.x"))
             {
                 Assert.AreEqual(false, eventType.IsProperty(prop));
                 Type expected = null;

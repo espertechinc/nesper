@@ -18,6 +18,11 @@ namespace com.espertech.esper.epl.agg.aggregator
         private int _sum;
         private long _numDataPoints;
 
+        public AggregatorSumNumInteger()
+        {
+            System.Diagnostics.Debug.WriteLine("Stop here");
+        }
+
         public virtual void Clear()
         {
             _sum = 0;

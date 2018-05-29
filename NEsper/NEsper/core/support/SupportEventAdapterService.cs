@@ -45,7 +45,7 @@ namespace com.espertech.esper.core.support
 #endif
 
         public static EventAdapterService Allocate(
-            ILockManager lockManager,
+            IContainer container,
             ClassLoaderProvider classLoaderProvider)
         {
             EventAdapterAvroHandler avroHandler = EventAdapterAvroHandlerUnsupported.INSTANCE;
@@ -59,9 +59,9 @@ namespace com.espertech.esper.core.support
             }
 
             return new EventAdapterServiceImpl(
+                container,
                 new EventTypeIdGeneratorImpl(), 5, avroHandler, 
-                SupportEngineImportServiceFactory.Make(classLoaderProvider),
-                lockManager);
+                SupportEngineImportServiceFactory.Make(classLoaderProvider));
         }
     }
 } // end of namespace

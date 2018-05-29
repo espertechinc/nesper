@@ -75,7 +75,7 @@ namespace com.espertech.esper.regression.events.bean
                     "fieldNested.ReadNestedValue as fieldNestedVal," +
                     "ReadLegacyBeanVal as simple," +
                     "ReadLegacyNested as nestedObject," +
-                    "ReadLegacyNested.readNestedValue as nested," +
+                    "ReadLegacyNested.ReadNestedValue as nested," +
                     "ReadStringArray[0] as array," +
                     "ReadStringIndexed[1] as indexed," +
                     "ReadMapByKey('key1') as mapped," +
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regression.events.bean
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("fieldSimple"));
             Assert.AreEqual(typeof(string[]), eventType.GetPropertyType("fieldArr"));
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("fieldArrIndexed"));
-            Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("fieldMap"));
+            Assert.AreEqual(typeof(IDictionary<string, string>), eventType.GetPropertyType("fieldMap"));
             Assert.AreEqual(typeof(SupportLegacyBean.LegacyNested), eventType.GetPropertyType("fieldNested"));
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("fieldNestedVal"));
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("simple"));

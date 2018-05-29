@@ -42,9 +42,9 @@ namespace com.espertech.esper.regression.expr.datetime
             configBean.EndTimestampPropertyName = "TheString";
             TryInvalidConfig(epService, typeof(SupportBean), configBean, "Declared end timestamp property 'TheString' is expected to return a DateTime, DateTimeEx or long-typed value but returns 'System.String'");
     
-            configBean.StartTimestampPropertyName = "longdate";
-            configBean.EndTimestampPropertyName = "caldate";
-            TryInvalidConfig(epService, typeof(SupportDateTime), configBean, "Declared end timestamp property 'caldate' is expected to have the same property type as the start-timestamp property 'longdate'");
+            configBean.StartTimestampPropertyName = "Longdate";
+            configBean.EndTimestampPropertyName = "Caldate";
+            TryInvalidConfig(epService, typeof(SupportDateTime), configBean, "Declared end timestamp property 'Caldate' is expected to have the same property type as the start-timestamp property 'Longdate'");
         }
     
         private void TryInvalidConfig(EPServiceProvider epService, Type clazz, ConfigurationEventTypeLegacy config, string message) {

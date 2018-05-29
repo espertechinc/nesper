@@ -52,44 +52,44 @@ namespace com.espertech.esper.type
         static MathArithTypeEnumExtensions()
         {
             Computers = new Dictionary<MultiKeyUntyped, Computer>();
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(BigInteger), MathArithTypeEnum.ADD }), AddBigInteger);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(decimal), MathArithTypeEnum.ADD }), AddDecimal);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(double), MathArithTypeEnum.ADD }), AddDouble);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(float), MathArithTypeEnum.ADD }), AddSingle);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(long), MathArithTypeEnum.ADD }), AddInt64);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(int), MathArithTypeEnum.ADD }), AddInt32);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(ulong), MathArithTypeEnum.ADD }), AddUInt64);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(uint), MathArithTypeEnum.ADD }), AddUInt32);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(BigInteger), MathArithTypeEnum.SUBTRACT }), SubtractBigInteger);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(decimal), MathArithTypeEnum.SUBTRACT }), SubtractDecimal);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(double), MathArithTypeEnum.SUBTRACT }), SubtractDouble);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(float), MathArithTypeEnum.SUBTRACT }), SubtractSingle);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(long), MathArithTypeEnum.SUBTRACT }), SubtractInt64);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(int), MathArithTypeEnum.SUBTRACT }), SubtractInt32);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(ulong), MathArithTypeEnum.SUBTRACT }), SubtractUInt64);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(uint), MathArithTypeEnum.SUBTRACT }), SubtractUInt32);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(BigInteger), MathArithTypeEnum.MULTIPLY }), MultiplyBigInteger);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(decimal), MathArithTypeEnum.MULTIPLY }), MultiplyDecimal);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(double), MathArithTypeEnum.MULTIPLY }), MultiplyDouble);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(float), MathArithTypeEnum.MULTIPLY }), MultiplySingle);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(long), MathArithTypeEnum.MULTIPLY }), MultiplyInt64);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(int), MathArithTypeEnum.MULTIPLY }), MultiplyInt32);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(ulong), MathArithTypeEnum.MULTIPLY }), MultiplyUInt64);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(uint), MathArithTypeEnum.MULTIPLY }), MultiplyUInt32);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(BigInteger), MathArithTypeEnum.MODULO }), ModuloBigInteger);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(decimal), MathArithTypeEnum.MODULO }), ModuloDecimal);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(double), MathArithTypeEnum.MODULO }), ModuloDouble);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(float), MathArithTypeEnum.MODULO }), ModuloSingle);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(long), MathArithTypeEnum.MODULO }), ModuloInt64);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(int), MathArithTypeEnum.MODULO }), ModuloInt32);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(ulong), MathArithTypeEnum.MODULO }), ModuloUInt64);
-            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(uint), MathArithTypeEnum.MODULO }), ModuloUInt32);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(BigInteger), MathArithTypeEnum.ADD }), AddBigInteger);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(decimal), MathArithTypeEnum.ADD }), AddDecimal);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(double), MathArithTypeEnum.ADD }), AddDouble);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(float), MathArithTypeEnum.ADD }), AddSingle);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(long), MathArithTypeEnum.ADD }), AddInt64);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(int), MathArithTypeEnum.ADD }), AddInt32);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(ulong), MathArithTypeEnum.ADD }), AddUInt64);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(uint), MathArithTypeEnum.ADD }), AddUInt32);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(BigInteger), MathArithTypeEnum.SUBTRACT }), SubtractBigInteger);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(decimal), MathArithTypeEnum.SUBTRACT }), SubtractDecimal);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(double), MathArithTypeEnum.SUBTRACT }), SubtractDouble);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(float), MathArithTypeEnum.SUBTRACT }), SubtractSingle);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(long), MathArithTypeEnum.SUBTRACT }), SubtractInt64);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(int), MathArithTypeEnum.SUBTRACT }), SubtractInt32);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(ulong), MathArithTypeEnum.SUBTRACT }), SubtractUInt64);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(uint), MathArithTypeEnum.SUBTRACT }), SubtractUInt32);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(BigInteger), MathArithTypeEnum.MULTIPLY }), MultiplyBigInteger);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(decimal), MathArithTypeEnum.MULTIPLY }), MultiplyDecimal);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(double), MathArithTypeEnum.MULTIPLY }), MultiplyDouble);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(float), MathArithTypeEnum.MULTIPLY }), MultiplySingle);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(long), MathArithTypeEnum.MULTIPLY }), MultiplyInt64);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(int), MathArithTypeEnum.MULTIPLY }), MultiplyInt32);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(ulong), MathArithTypeEnum.MULTIPLY }), MultiplyUInt64);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(uint), MathArithTypeEnum.MULTIPLY }), MultiplyUInt32);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(BigInteger), MathArithTypeEnum.MODULO }), ModuloBigInteger);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(decimal), MathArithTypeEnum.MODULO }), ModuloDecimal);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(double), MathArithTypeEnum.MODULO }), ModuloDouble);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(float), MathArithTypeEnum.MODULO }), ModuloSingle);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(long), MathArithTypeEnum.MODULO }), ModuloInt64);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(int), MathArithTypeEnum.MODULO }), ModuloInt32);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(ulong), MathArithTypeEnum.MODULO }), ModuloUInt64);
+            Computers.Add(new MultiKeyUntyped(new object[] { typeof(uint), MathArithTypeEnum.MODULO }), ModuloUInt32);
         }
 
         /// <summary>Returns string representation of enum.</summary>
         /// <returns>text for enum</returns>
 
-        public static String GetExpressionText(this MathArithTypeEnum value)
+        public static string GetExpressionText(this MathArithTypeEnum value)
         {
             switch (value)
             {
@@ -105,7 +105,7 @@ namespace com.espertech.esper.type
                     return "%";
             }
 
-            throw new ArgumentException("invalid value", "value");
+            throw new ArgumentException("invalid value", nameof(value));
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace com.espertech.esper.type
         /// Interface for number cruncher.
         /// </summary>
 
-        public delegate Object Computer(Object d1, Object d2);
+        public delegate object Computer(object d1, object d2);
 
         /// <summary>
         /// Returns number cruncher for the target coercion type.
@@ -174,7 +174,7 @@ namespace com.espertech.esper.type
 
             if (value != MathArithTypeEnum.DIVIDE)
             {
-                var key = new MultiKeyUntyped(new Object[] { coercedType, value });
+                var key = new MultiKeyUntyped(new object[] { coercedType, value });
                 var computer = Computers.Get(key);
                 if (computer == null)
                 {
@@ -185,24 +185,35 @@ namespace com.espertech.esper.type
 
             if (!isIntegerDivision)
             {
-                if (coercedType == typeof(decimal))
-                    return isDivisionByZeroReturnsNull ? (Computer)DivideDecimalChecked : DivideDecimalUnchecked;
+                if (coercedType == typeof(decimal)) {
+                    return isDivisionByZeroReturnsNull
+                        ? new Computer((v1, v2) => DivideDecimalChecked(v1, v2, optionalMathContext))
+                        : new Computer((v1, v2) => DivideDecimalUnchecked(v1, v2, optionalMathContext));
+                }
 
                 return isDivisionByZeroReturnsNull ? (Computer)DivideDoubleChecked : DivideDoubleUnchecked;
             }
 
-            if (coercedType == typeof(BigInteger))
+            if (coercedType == typeof(BigInteger)) {
                 return DivideBigInteger;
-            if (coercedType == typeof(double))
-                return isDivisionByZeroReturnsNull ? (Computer)DivideDoubleChecked : DivideDoubleUnchecked;
-            if (coercedType == typeof(float))
+            }
+            if (coercedType == typeof(double)) {
+                return isDivisionByZeroReturnsNull ? (Computer) DivideDoubleChecked : DivideDoubleUnchecked;
+            }
+            if (coercedType == typeof(float)) {
                 return DivideSingle;
-            if (coercedType == typeof(long))
+            }
+            if (coercedType == typeof(long)) {
                 return DivideInt64;
-            if (coercedType == typeof(int))
+            }
+            if (coercedType == typeof(int)) {
                 return DivideInt32;
-            if (coercedType == typeof(decimal))
-                return isDivisionByZeroReturnsNull ? (Computer)DivideDecimalChecked : DivideDecimalUnchecked;
+            }
+            if (coercedType == typeof(decimal)) {
+                return isDivisionByZeroReturnsNull
+                    ? new Computer((v1, v2) => DivideDecimalChecked(v1, v2, optionalMathContext))
+                    : new Computer((v1, v2) => DivideDecimalUnchecked(v1, v2, optionalMathContext));
+            }
 
             throw new ArgumentException("Could not determine process or type " + value + " type " + coercedType);
         }
@@ -213,7 +224,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object AddBigInteger(Object d1, Object d2)
+        public static object AddBigInteger(object d1, object d2)
         {
             var nd1 = d1.AsBigInteger();
             var nd2 = d2.AsBigInteger();
@@ -226,7 +237,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object AddDecimal(Object d1, Object d2)
+        public static object AddDecimal(object d1, object d2)
         {
             return d1.AsDecimal() + d2.AsDecimal();
         }
@@ -237,7 +248,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object AddDouble(Object d1, Object d2)
+        public static object AddDouble(object d1, object d2)
         {
             return d1.AsDouble() + d2.AsDouble();
         }
@@ -248,7 +259,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object AddSingle(Object d1, Object d2)
+        public static object AddSingle(object d1, object d2)
         {
             return d1.AsFloat() + d2.AsFloat();
         }
@@ -259,7 +270,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object AddInt64(Object d1, Object d2)
+        public static object AddInt64(object d1, object d2)
         {
             return d1.AsLong() + d2.AsLong();
         }
@@ -270,7 +281,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object AddInt32(Object d1, Object d2)
+        public static object AddInt32(object d1, object d2)
         {
             return d1.AsInt() + d2.AsInt();
         }
@@ -281,7 +292,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object AddUInt64(Object d1, Object d2)
+        public static object AddUInt64(object d1, object d2)
         {
             return Convert.ToUInt64(d1) + Convert.ToUInt64(d2);
         }
@@ -292,7 +303,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object AddUInt32(Object d1, Object d2)
+        public static object AddUInt32(object d1, object d2)
         {
             return Convert.ToUInt32(d1) + Convert.ToUInt32(d2);
         }
@@ -303,7 +314,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object SubtractBigInteger(Object d1, Object d2)
+        public static object SubtractBigInteger(object d1, object d2)
         {
             var nd1 = d1.AsBigInteger();
             var nd2 = d2.AsBigInteger();
@@ -316,7 +327,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object SubtractDecimal(Object d1, Object d2)
+        public static object SubtractDecimal(object d1, object d2)
         {
             return d1.AsDecimal() - d2.AsDecimal();
         }
@@ -327,7 +338,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object SubtractDouble(Object d1, Object d2)
+        public static object SubtractDouble(object d1, object d2)
         {
             return d1.AsDouble() - d2.AsDouble();
         }
@@ -338,7 +349,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object SubtractSingle(Object d1, Object d2)
+        public static object SubtractSingle(object d1, object d2)
         {
             return d1.AsFloat() - d2.AsFloat();
         }
@@ -349,7 +360,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object SubtractInt64(Object d1, Object d2)
+        public static object SubtractInt64(object d1, object d2)
         {
             return d1.AsLong() - d2.AsLong();
         }
@@ -360,7 +371,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object SubtractInt32(Object d1, Object d2)
+        public static object SubtractInt32(object d1, object d2)
         {
             return d1.AsInt() - d2.AsInt();
         }
@@ -371,7 +382,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object SubtractUInt64(Object d1, Object d2)
+        public static object SubtractUInt64(object d1, object d2)
         {
             return Convert.ToUInt64(d1) - Convert.ToUInt64(d2);
         }
@@ -382,7 +393,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object SubtractUInt32(Object d1, Object d2)
+        public static object SubtractUInt32(object d1, object d2)
         {
             return Convert.ToUInt32(d1) - Convert.ToUInt32(d2);
         }
@@ -393,7 +404,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object DivideBigInteger(Object d1, Object d2)
+        public static object DivideBigInteger(object d1, object d2)
         {
             var nd1 = d1.AsBigInteger();
             var nd2 = d2.AsBigInteger();
@@ -407,12 +418,15 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object DivideDecimalChecked(Object d1, Object d2)
+        public static object DivideDecimalChecked(object d1, object d2, MathContext optionalMathContext)
         {
             var nd1 = d1.AsDecimal();
             var nd2 = d2.AsDecimal();
             if (nd2 == 0) return null;
-            return nd1 / nd2;
+            var ndx = nd1 / nd2;
+            return optionalMathContext != null
+                ? Math.Round(ndx, optionalMathContext.Precision, optionalMathContext.RoundingMode)
+                : ndx;
         }
 
         /// <summary>
@@ -421,11 +435,14 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object DivideDecimalUnchecked(Object d1, Object d2)
+        public static object DivideDecimalUnchecked(object d1, object d2, MathContext optionalMathContext)
         {
             var nd1 = d1.AsDecimal();
             var nd2 = d2.AsDecimal();
-            return nd1 / nd2;
+            var ndx = nd1 / nd2;
+            return optionalMathContext != null
+                ? Math.Round(ndx, optionalMathContext.Precision, optionalMathContext.RoundingMode)
+                : ndx;
         }
 
         /// <summary>
@@ -434,7 +451,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object DivideDoubleUnchecked(Object d1, Object d2)
+        public static object DivideDoubleUnchecked(object d1, object d2)
         {
             var nd1 = d1.AsDouble();
             var nd2 = d2.AsDouble();
@@ -447,7 +464,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object DivideDoubleChecked(Object d1, Object d2)
+        public static object DivideDoubleChecked(object d1, object d2)
         {
             var nd1 = d1.AsDouble();
             var nd2 = d2.AsDouble();
@@ -461,7 +478,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object DivideSingle(Object d1, Object d2)
+        public static object DivideSingle(object d1, object d2)
         {
             var nd1 = d1.AsFloat();
             var nd2 = d2.AsFloat();
@@ -475,7 +492,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object DivideInt64(Object d1, Object d2)
+        public static object DivideInt64(object d1, object d2)
         {
             var nd1 = d1.AsLong();
             var nd2 = d2.AsLong();
@@ -489,7 +506,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object DivideInt32(Object d1, Object d2)
+        public static object DivideInt32(object d1, object d2)
         {
             var nd1 = d1.AsInt();
             var nd2 = d2.AsInt();
@@ -504,7 +521,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object DivideUInt64(Object d1, Object d2)
+        public static object DivideUInt64(object d1, object d2)
         {
             var nd1 = Convert.ToUInt64(d1);
             var nd2 = Convert.ToUInt64(d2);
@@ -518,7 +535,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object DivideUInt32(Object d1, Object d2)
+        public static object DivideUInt32(object d1, object d2)
         {
             var nd1 = Convert.ToUInt32(d1);
             var nd2 = Convert.ToUInt32(d2);
@@ -532,7 +549,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object MultiplyBigInteger(Object d1, Object d2)
+        public static object MultiplyBigInteger(object d1, object d2)
         {
             var nd1 = d1.AsBigInteger();
             var nd2 = d2.AsBigInteger();
@@ -545,7 +562,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object MultiplyDecimal(Object d1, Object d2)
+        public static object MultiplyDecimal(object d1, object d2)
         {
             return d1.AsDecimal() * d2.AsDecimal();
         }
@@ -556,7 +573,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object MultiplyDouble(Object d1, Object d2)
+        public static object MultiplyDouble(object d1, object d2)
         {
             return d1.AsDouble() * d2.AsDouble();
         }
@@ -567,7 +584,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object MultiplySingle(Object d1, Object d2)
+        public static object MultiplySingle(object d1, object d2)
         {
             return d1.AsFloat() * d2.AsFloat();
         }
@@ -578,7 +595,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object MultiplyInt64(Object d1, Object d2)
+        public static object MultiplyInt64(object d1, object d2)
         {
             return d1.AsLong() * d2.AsLong();
         }
@@ -589,7 +606,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object MultiplyInt32(Object d1, Object d2)
+        public static object MultiplyInt32(object d1, object d2)
         {
             return d1.AsInt() * d2.AsInt();
         }
@@ -600,7 +617,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object MultiplyUInt64(Object d1, Object d2)
+        public static object MultiplyUInt64(object d1, object d2)
         {
             return Convert.ToUInt64(d1) * Convert.ToUInt64(d2);
         }
@@ -611,7 +628,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object MultiplyUInt32(Object d1, Object d2)
+        public static object MultiplyUInt32(object d1, object d2)
         {
             return Convert.ToUInt32(d1) * Convert.ToUInt32(d2);
         }
@@ -622,7 +639,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object ModuloBigInteger(Object d1, Object d2)
+        public static object ModuloBigInteger(object d1, object d2)
         {
             var nd1 = d1.AsBigInteger();
             var nd2 = d2.AsBigInteger();
@@ -635,7 +652,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object ModuloDecimal(Object d1, Object d2)
+        public static object ModuloDecimal(object d1, object d2)
         {
             return d1.AsDecimal() % d2.AsDecimal();
         }
@@ -646,7 +663,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object ModuloDouble(Object d1, Object d2)
+        public static object ModuloDouble(object d1, object d2)
         {
             return d1.AsDouble() % d2.AsDouble();
         }
@@ -657,7 +674,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object ModuloSingle(Object d1, Object d2)
+        public static object ModuloSingle(object d1, object d2)
         {
             return d1.AsFloat() % d2.AsFloat();
         }
@@ -668,7 +685,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object ModuloInt64(Object d1, Object d2)
+        public static object ModuloInt64(object d1, object d2)
         {
             return d1.AsLong() % d2.AsLong();
         }
@@ -679,7 +696,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object ModuloInt32(Object d1, Object d2)
+        public static object ModuloInt32(object d1, object d2)
         {
             return d1.AsInt() % d2.AsInt();
         }
@@ -690,7 +707,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object ModuloUInt64(Object d1, Object d2)
+        public static object ModuloUInt64(object d1, object d2)
         {
             return Convert.ToUInt64(d1) % Convert.ToUInt64(d2);
         }
@@ -701,7 +718,7 @@ namespace com.espertech.esper.type
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
         /// <returns></returns>
-        public static Object ModuloUInt32(Object d1, Object d2)
+        public static object ModuloUInt32(object d1, object d2)
         {
             return Convert.ToUInt32(d1) % Convert.ToUInt32(d2);
         }

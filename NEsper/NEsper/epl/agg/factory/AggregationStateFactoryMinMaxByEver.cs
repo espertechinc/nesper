@@ -24,8 +24,15 @@ namespace com.espertech.esper.epl.agg.factory
 	        Spec = spec;
 	    }
 
-	    public AggregationState CreateAccess(int agentInstanceId, bool join, object groupKey, AggregationServicePassThru passThru)
+	    public AggregationState CreateAccess(
+	        int agentInstanceId, 
+	        bool join, 
+	        object groupKey, 
+	        AggregationServicePassThru passThru)
         {
+            if (Spec.OptionalFilter != null) {
+                return new AggregationStateMinMaxByEverWFilter(Spec);
+            }
 	        return new AggregationStateMinMaxByEver(Spec);
 	    }
 

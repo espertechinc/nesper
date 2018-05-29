@@ -72,17 +72,17 @@ namespace com.espertech.esper.events.bean
 
         public Object GetBeanPropInternal(Object @object, Object key)
         {
-            try
-            {
-                return _fastMethod.Invoke(@object, new Object[] { key });
+            try {
+                return _fastMethod.Invoke(@object, new Object[] {key});
             }
-            catch (InvalidCastException e)
-            {
+            catch (PropertyAccessException e) {
+                throw;
+            }
+            catch (InvalidCastException e) {
                 throw PropertyUtility.GetMismatchException(_fastMethod.Target, @object, e);
             }
-            catch (TargetInvocationException e)
-            {
-                throw PropertyUtility.GetInvocationTargetException(_fastMethod.Target, e);
+            catch (Exception e) {
+                throw PropertyUtility.GetAccessExceptionMethod(_fastMethod.Target, e);
             }
         }
 

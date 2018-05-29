@@ -72,7 +72,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                 TryAssertionWildcardRecast(epService, true, null, true, null);
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex, "Error starting statement: Expression-returned event type 'SourceSchema' with underlying type 'com.espertech.esper.regression.epl.insertinto.ExecInsertInto$MyP0P1EventSource' cannot be converted to target event type 'TargetSchema' with underlying type ");
+                SupportMessageAssertUtil.AssertMessage(ex, "Error starting statement: Expression-returned event type 'SourceSchema' with underlying type 'com.espertech.esper.regression.epl.insertinto.ExecInsertInto+MyP0P1EventSource' cannot be converted to target event type 'TargetSchema' with underlying type ");
             }
     
             // OA
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             model.InsertInto = InsertIntoClause.Create("Event_1_RSOM", new string[0], StreamSelector.RSTREAM_ONLY);
             model.SelectClause = SelectClause.Create().Add("IntPrimitive", "IntBoxed");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             EPStatement stmt = epService.EPAdministrator.Create(model, "s1");
     
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             Assert.AreEqual(epl, stmt.Text);
     
             EPStatementObjectModel modelTwo = epService.EPAdministrator.CompileEPL(model.ToEPL());
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(epl, modelTwo.ToEPL());
     
             // assert statement-type reference
@@ -132,7 +132,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             model.SelectClause = SelectClause.Create().Add(Expressions.Minus("IntPrimitive", "IntBoxed"), "deltaTag")
                     .Add(Expressions.Multiply("IntPrimitive", "IntBoxed"), "productTag");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName).AddView(View.Create("length", Expressions.Constant(100))));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             EPStatement stmt = TryAssertsVariant(epService, null, model, "Event_1_OMS");
     
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                     "from " + typeof(SupportBean).FullName + "#length(100)";
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(epl, model.ToEPL());
     
             EPStatement stmt = TryAssertsVariant(epService, null, model, "Event_1_EPL");
@@ -654,7 +654,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                 eventS1 = new SupportBean_A("myId");
                 epService.EPRuntime.SendEvent(eventS1);
             } else if (rep.Value.IsMapEvent()) {
-                eventS1 = Collections.SingletonMap("id", "myId");
+                eventS1 = Collections.SingletonDataMap("id", "myId");
                 epService.EPRuntime.SendEvent((Map) eventS1, "S1");
             } else if (rep.Value.IsObjectArrayEvent()) {
                 eventS1 = new object[]{"myId"};
@@ -673,7 +673,7 @@ namespace com.espertech.esper.regression.epl.insertinto
                 eventS0 = new SupportBean("myId", -1);
                 epService.EPRuntime.SendEvent(eventS0);
             } else if (rep.Value.IsMapEvent()) {
-                eventS0 = Collections.SingletonMap("TheString", "myId");
+                eventS0 = Collections.SingletonDataMap("TheString", "myId");
                 epService.EPRuntime.SendEvent((Map) eventS0, "S0");
             } else if (rep.Value.IsObjectArrayEvent()) {
                 eventS0 = new object[]{"myId"};

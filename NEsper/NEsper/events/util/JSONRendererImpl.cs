@@ -13,6 +13,7 @@ using System.Text;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.util;
+using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
@@ -76,7 +77,7 @@ namespace com.espertech.esper.events.util
 
         public String Render(EventBean theEvent)
         {
-            StringBuilder buf = new StringBuilder();
+            var buf = new StringBuilder();
             buf.Append('{');
             RecursiveRender(theEvent, buf, 2, _meta, _rendererOptions);
             buf.Append('}');
@@ -85,7 +86,7 @@ namespace com.espertech.esper.events.util
 
         private static void Ident(StringBuilder buf, int level)
         {
-            for (int i = 0; i < level; i++)
+            for (var i = 0; i < level; i++)
             {
                 IndentChar(buf);
             }
@@ -99,110 +100,114 @@ namespace com.espertech.esper.events.util
 
         private static void RecursiveRender(EventBean theEvent, StringBuilder buf, int level, RendererMeta meta, RendererMetaOptions rendererOptions)
         {
-            String delimiter = "";
+            var delimiter = "";
+
+            var renderActions = new SortedList<string, Action>();
 
             // simple properties
-            GetterPair[] simpleProps = meta.SimpleProperties;
+            var simpleProps = meta.SimpleProperties;
             if (rendererOptions.Renderer == null)
             {
-                foreach (GetterPair simpleProp in simpleProps.OrderBy(prop => prop.Name))
-                {
-                    Object value = simpleProp.Getter.Get(theEvent);
-                    WriteDelimitedIndentedProp(buf, delimiter, level, simpleProp.Name);
-                    simpleProp.Output.Render(value, buf);
-                    delimiter = COMMA_DELIMITER_NEWLINE;
+                foreach (var simpleProp in simpleProps.OrderBy(prop => prop.Name)) {
+                    var name = simpleProp.Name;
+                    var value = simpleProp.Getter.Get(theEvent);
+                    renderActions.Add(name, () =>
+                    {
+                        WriteDelimitedIndentedProp(buf, delimiter, level, name);
+                        simpleProp.Output.Render(value, buf);
+                        delimiter = COMMA_DELIMITER_NEWLINE;
+                    });
                 }
             }
             else
             {
-                EventPropertyRendererContext context = rendererOptions.RendererContext;
+                var context = rendererOptions.RendererContext;
                 context.SetStringBuilderAndReset(buf);
-                foreach (GetterPair simpleProp in simpleProps.OrderBy(prop => prop.Name))
-                {
-                    Object value = simpleProp.Getter.Get(theEvent);
-                    WriteDelimitedIndentedProp(buf, delimiter, level, simpleProp.Name);
-                    context.DefaultRenderer = simpleProp.Output;
-                    context.PropertyName = simpleProp.Name;
-                    context.PropertyValue = value;
-                    rendererOptions.Renderer.Render(context);
-                    delimiter = COMMA_DELIMITER_NEWLINE;
-                }
-            }
-
-            GetterPair[] indexProps = meta.IndexProperties;
-            foreach (GetterPair indexProp in indexProps.OrderBy(prop => prop.Name))
-            {
-                WriteDelimitedIndentedProp(buf, delimiter, level, indexProp.Name);
-
-                var value = indexProp.Getter.Get(theEvent);
-                if (value == null)
-                {
-                    buf.Append("null");
-                }
-                else if (value is string)
-                {
-                    if (rendererOptions.Renderer == null)
+                foreach (var simpleProp in simpleProps.OrderBy(prop => prop.Name)) {
+                    var name = simpleProp.Name;
+                    var value = simpleProp.Getter.Get(theEvent);
+                    renderActions.Add(name, () =>
                     {
-                        indexProp.Output.Render(value, buf);
-                    }
-                    else
-                    {
-                        EventPropertyRendererContext context = rendererOptions.RendererContext;
-                        context.SetStringBuilderAndReset(buf);
-                        context.DefaultRenderer = indexProp.Output;
-                        context.PropertyName = indexProp.Name;
+                        WriteDelimitedIndentedProp(buf, delimiter, level, simpleProp.Name);
+                        context.DefaultRenderer = simpleProp.Output;
+                        context.PropertyName = simpleProp.Name;
                         context.PropertyValue = value;
                         rendererOptions.Renderer.Render(context);
-                    }
+                        delimiter = COMMA_DELIMITER_NEWLINE;
+                    });
                 }
-                else
-                {
-                    var asArray = value as Array;
-                    if (asArray == null)
-                    {
-                        buf.Append("[]");
-                    }
-                    else
-                    {
-                        buf.Append('[');
-
-                        var arrayDelimiter = "";
-
-                        if (rendererOptions.Renderer == null)
-                        {
-                            for (int i = 0; i < asArray.Length; i++)
-                            {
-                                var arrayItem = asArray.GetValue(i);
-                                buf.Append(arrayDelimiter);
-                                indexProp.Output.Render(arrayItem, buf);
-                                arrayDelimiter = ", ";
-                            }
-                        }
-                        else
-                        {
-                            EventPropertyRendererContext context = rendererOptions.RendererContext;
-                            context.SetStringBuilderAndReset(buf);
-                            for (int i = 0; i < asArray.Length; i++)
-                            {
-                                Object arrayItem = asArray.GetValue(i);
-                                buf.Append(arrayDelimiter);
-                                context.PropertyName = indexProp.Name;
-                                context.PropertyValue = arrayItem;
-                                context.IndexedPropertyIndex = i;
-                                context.DefaultRenderer = indexProp.Output;
-                                rendererOptions.Renderer.Render(context);
-                                arrayDelimiter = ", ";
-                            }
-                        }
-                        buf.Append(']');
-                    }
-                }
-                delimiter = COMMA_DELIMITER_NEWLINE;
             }
 
-            GetterPair[] mappedProps = meta.MappedProperties;
-            foreach (GetterPair mappedProp in mappedProps.OrderBy(prop => prop.Name))
-            {
+            var indexProps = meta.IndexProperties;
+            foreach (var indexProp in indexProps.OrderBy(prop => prop.Name)) {
+                var name = indexProp.Name;
+
+                renderActions.Add(
+                    name, () =>
+                    {
+                        WriteDelimitedIndentedProp(buf, delimiter, level, name);
+
+                        var value = indexProp.Getter.Get(theEvent);
+                        if (value == null) {
+                            buf.Append("null");
+                        }
+                        else if (value is string) {
+                            if (rendererOptions.Renderer == null) {
+                                indexProp.Output.Render(value, buf);
+                            }
+                            else {
+                                var context = rendererOptions.RendererContext;
+                                context.SetStringBuilderAndReset(buf);
+                                context.DefaultRenderer = indexProp.Output;
+                                context.PropertyName = name;
+                                context.PropertyValue = value;
+                                rendererOptions.Renderer.Render(context);
+                            }
+                        }
+                        else {
+                            var asArray = value as Array;
+                            if (asArray == null) {
+                                buf.Append("[]");
+                            }
+                            else {
+                                buf.Append('[');
+
+                                var arrayDelimiter = "";
+
+                                if (rendererOptions.Renderer == null) {
+                                    for (var i = 0; i < asArray.Length; i++) {
+                                        var arrayItem = asArray.GetValue(i);
+                                        buf.Append(arrayDelimiter);
+                                        indexProp.Output.Render(arrayItem, buf);
+                                        arrayDelimiter = ", ";
+                                    }
+                                }
+                                else {
+                                    var context = rendererOptions.RendererContext;
+                                    context.SetStringBuilderAndReset(buf);
+                                    for (var i = 0; i < asArray.Length; i++) {
+                                        var arrayItem = asArray.GetValue(i);
+                                        buf.Append(arrayDelimiter);
+                                        context.PropertyName = indexProp.Name;
+                                        context.PropertyValue = arrayItem;
+                                        context.IndexedPropertyIndex = i;
+                                        context.DefaultRenderer = indexProp.Output;
+                                        rendererOptions.Renderer.Render(context);
+                                        arrayDelimiter = ", ";
+                                    }
+                                }
+
+                                buf.Append(']');
+                            }
+                        }
+
+                        delimiter = COMMA_DELIMITER_NEWLINE;
+                    });
+            }
+
+            var mappedProps = meta.MappedProperties;
+            foreach (var mappedProp in mappedProps.OrderBy(prop => prop.Name)) {
+                var name = mappedProp.Name;
                 var value = mappedProp.Getter.Get(theEvent);
 
                 if ((value != null) && (!(value.GetType().IsGenericStringDictionary())))
@@ -211,138 +216,143 @@ namespace com.espertech.esper.events.util
                     continue;
                 }
 
-                WriteDelimitedIndentedProp(buf, delimiter, level, mappedProp.Name);
-
-                if (value == null)
-                {
-                    buf.Append("null");
-                    buf.Append(NEWLINE);
-                }
-                else
-                {
-                    var map = MagicMarker.GetStringDictionary(value);
-                    if (map.IsEmpty())
+                renderActions.Add(
+                    name, () =>
                     {
-                        buf.Append("{}");
-                        buf.Append(NEWLINE);
-                    }
-                    else
-                    {
-                        buf.Append('{');
-                        buf.Append(NEWLINE);
+                        WriteDelimitedIndentedProp(buf, delimiter, level, mappedProp.Name);
 
-                        var localDelimiter = "";
-                        foreach (var entry in map)
-                        {
-                            if (entry.Key == null)
-                            {
-                                continue;
+                        if (value == null) {
+                            buf.Append("null");
+                            buf.Append(NEWLINE);
+                        }
+                        else {
+                            var map = MagicMarker.GetStringDictionary(value);
+                            if (map.IsEmpty()) {
+                                buf.Append("{}");
+                                buf.Append(NEWLINE);
                             }
+                            else {
+                                buf.Append('{');
+                                buf.Append(NEWLINE);
 
-                            buf.Append(localDelimiter);
-                            Ident(buf, level + 1);
-                            buf.Append('\"');
-                            buf.Append(entry.Key);
-                            buf.Append("\": ");
+                                var localDelimiter = "";
+                                foreach (var entry in map) {
+                                    if (entry.Key == null) {
+                                        continue;
+                                    }
 
-                            if (entry.Value == null)
-                            {
-                                buf.Append("null");
-                            }
-                            else
-                            {
-                                OutputValueRenderer outRenderer = OutputValueRendererFactory.GetOutputValueRenderer(entry.Value.GetType(), rendererOptions);
-                                if (rendererOptions.Renderer == null)
-                                {
-                                    outRenderer.Render(entry.Value, buf);
+                                    buf.Append(localDelimiter);
+                                    Ident(buf, level + 1);
+                                    buf.Append('\"');
+                                    buf.Append(entry.Key);
+                                    buf.Append("\": ");
+
+                                    if (entry.Value == null) {
+                                        buf.Append("null");
+                                    }
+                                    else {
+                                        var outRenderer =
+                                            OutputValueRendererFactory.GetOutputValueRenderer(
+                                                entry.Value.GetType(), rendererOptions);
+                                        if (rendererOptions.Renderer == null) {
+                                            outRenderer.Render(entry.Value, buf);
+                                        }
+                                        else {
+                                            var context = rendererOptions.RendererContext;
+                                            context.SetStringBuilderAndReset(buf);
+                                            context.PropertyName = mappedProp.Name;
+                                            context.PropertyValue = entry.Value;
+                                            context.MappedPropertyKey = entry.Key;
+                                            context.DefaultRenderer = outRenderer;
+                                            rendererOptions.Renderer.Render(context);
+                                        }
+                                    }
+
+                                    localDelimiter = COMMA_DELIMITER_NEWLINE;
                                 }
-                                else
-                                {
-                                    EventPropertyRendererContext context = rendererOptions.RendererContext;
-                                    context.SetStringBuilderAndReset(buf);
-                                    context.PropertyName = mappedProp.Name;
-                                    context.PropertyValue = entry.Value;
-                                    context.MappedPropertyKey = entry.Key;
-                                    context.DefaultRenderer = outRenderer;
-                                    rendererOptions.Renderer.Render(context);
-                                }
+
+                                buf.Append(NEWLINE);
+                                Ident(buf, level);
+                                buf.Append('}');
                             }
-                            localDelimiter = COMMA_DELIMITER_NEWLINE;
                         }
 
-                        buf.Append(NEWLINE);
-                        Ident(buf, level);
-                        buf.Append('}');
-                    }
-                }
-
-                delimiter = COMMA_DELIMITER_NEWLINE;
+                        delimiter = COMMA_DELIMITER_NEWLINE;
+                    });
             }
 
-            NestedGetterPair[] nestedProps = meta.NestedProperties;
-            foreach (NestedGetterPair nestedProp in nestedProps.OrderBy(prop => prop.Name))
-            {
+            var nestedProps = meta.NestedProperties;
+            foreach (var nestedProp in nestedProps.OrderBy(prop => prop.Name)) {
+                var name = nestedProp.Name;
                 var value = nestedProp.Getter.GetFragment(theEvent);
 
-                WriteDelimitedIndentedProp(buf, delimiter, level, nestedProp.Name);
-
-                if (value == null)
-                {
-                    buf.Append("null");
-                }
-                else if (!nestedProp.IsArray)
-                {
-                    if (!(value is EventBean))
+                renderActions.Add(
+                    name, () =>
                     {
-                        Log.Warn("Property '" + nestedProp.Name + "' expected to return EventBean and returned " + value.GetType() + " instead");
-                        buf.Append("null");
-                        continue;
-                    }
-                    var nestedEventBean = (EventBean)value;
-                    buf.Append('{');
-                    buf.Append(NEWLINE);
+                        WriteDelimitedIndentedProp(buf, delimiter, level, nestedProp.Name);
 
-                    RecursiveRender(nestedEventBean, buf, level + 1, nestedProp.Metadata, rendererOptions);
+                        if (value == null) {
+                            buf.Append("null");
+                        }
+                        else if (!nestedProp.IsArray) {
+                            if (!(value is EventBean)) {
+                                Log.Warn(
+                                    "Property '" + nestedProp.Name + "' expected to return EventBean and returned " +
+                                    value.GetType() + " instead");
+                                buf.Append("null");
+                                return;
+                            }
 
-                    Ident(buf, level);
-                    buf.Append('}');
-                }
-                else
-                {
-                    if (!(value is EventBean[]))
-                    {
-                        Log.Warn("Property '" + nestedProp.Name + "' expected to return EventBean[] and returned " + value.GetType() + " instead");
-                        buf.Append("null");
-                        continue;
-                    }
+                            var nestedEventBean = (EventBean) value;
+                            buf.Append('{');
+                            buf.Append(NEWLINE);
 
+                            RecursiveRender(nestedEventBean, buf, level + 1, nestedProp.Metadata, rendererOptions);
 
-                    StringBuilder arrayDelimiterBuf = new StringBuilder();
-                    arrayDelimiterBuf.Append(',');
-                    arrayDelimiterBuf.Append(NEWLINE);
-                    Ident(arrayDelimiterBuf, level + 1);
+                            Ident(buf, level);
+                            buf.Append('}');
+                        }
+                        else {
+                            if (!(value is EventBean[])) {
+                                Log.Warn(
+                                    "Property '" + nestedProp.Name + "' expected to return EventBean[] and returned " +
+                                    value.GetType() + " instead");
+                                buf.Append("null");
+                                return;
+                            }
 
-                    EventBean[] nestedEventArray = (EventBean[])value;
-                    String arrayDelimiter = "";
-                    buf.Append('[');
+                            var arrayDelimiterBuf = new StringBuilder();
+                            arrayDelimiterBuf.Append(',');
+                            arrayDelimiterBuf.Append(NEWLINE);
+                            Ident(arrayDelimiterBuf, level + 1);
 
-                    for (int i = 0; i < nestedEventArray.Length; i++)
-                    {
-                        EventBean arrayItem = nestedEventArray[i];
-                        buf.Append(arrayDelimiter);
-                        arrayDelimiter = arrayDelimiterBuf.ToString();
+                            var nestedEventArray = (EventBean[]) value;
+                            var arrayDelimiter = "";
+                            buf.Append('[');
 
-                        buf.Append('{');
-                        buf.Append(NEWLINE);
+                            for (var i = 0; i < nestedEventArray.Length; i++) {
+                                var arrayItem = nestedEventArray[i];
+                                buf.Append(arrayDelimiter);
+                                arrayDelimiter = arrayDelimiterBuf.ToString();
 
-                        RecursiveRender(arrayItem, buf, level + 2, nestedProp.Metadata, rendererOptions);
+                                buf.Append('{');
+                                buf.Append(NEWLINE);
 
-                        Ident(buf, level + 1);
-                        buf.Append('}');
-                    }
-                    buf.Append(']');
-                }
-                delimiter = COMMA_DELIMITER_NEWLINE;
+                                RecursiveRender(arrayItem, buf, level + 2, nestedProp.Metadata, rendererOptions);
+
+                                Ident(buf, level + 1);
+                                buf.Append('}');
+                            }
+
+                            buf.Append(']');
+                        }
+
+                        delimiter = COMMA_DELIMITER_NEWLINE;
+                    });
+            }
+
+            foreach (var entry in renderActions) {
+                entry.Value.Invoke();
             }
 
             buf.Append(NEWLINE);

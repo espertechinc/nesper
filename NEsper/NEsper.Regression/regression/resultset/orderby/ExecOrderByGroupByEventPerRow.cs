@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.resultset.orderby
                     "order by sum(price), symbol";
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(statementString);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(statementString, model.ToEPL());
     
             var testListener = new SupportUpdateListener();
@@ -62,7 +62,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             model.GroupByClause = GroupByClause.Create("symbol");
             model.OutputLimitClause = OutputLimitClause.Create(6);
             model.OrderByClause = OrderByClause.Create(Expressions.Sum("price")).Add("symbol", false);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string statementString = "select symbol, volume, sum(price) as mySum from " +
                     typeof(SupportMarketDataBean).FullName + "#length(20) " +

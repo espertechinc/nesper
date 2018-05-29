@@ -15,6 +15,7 @@ using com.espertech.esper.codegen.model.blocks;
 using com.espertech.esper.codegen.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 using com.espertech.esper.events.arr;
 using com.espertech.esper.events.bean;
 using com.espertech.esper.events.map;
@@ -88,13 +89,20 @@ namespace com.espertech.esper.events
             EventType fragmentEventType,
             EventAdapterService eventAdapterService)
         {
-            if (value is Map valueAsMap)
-            {
+            if (value == null) {
+                return null;
+            }
+
+            if (value is Map valueAsMap) {
                 return eventAdapterService.AdapterForTypedMap(valueAsMap, fragmentEventType);
             }
 
-            if (value is EventBean)
-            {
+            if (value.GetType().IsGenericStringDictionary()) {
+                var valueAsStringMap = value.AsStringDictionary();
+                return eventAdapterService.AdapterForTypedMap(valueAsStringMap, fragmentEventType);
+            }
+
+            if (value is EventBean) {
                 return value;
             }
 
@@ -374,9 +382,14 @@ namespace com.espertech.esper.events
 
         public static object GetMappedPropertyValue(object value, string key)
         {
-            if (value is Map innerMap)
-            {
+            if (value == null) {
+                return null;
+            }
+            if (value is Map innerMap) {
                 return innerMap.Get(key);
+            }
+            if (value.GetType().IsGenericStringDictionary()) {
+                return value.SDGet(key);
             }
 
             return null;
@@ -384,9 +397,14 @@ namespace com.espertech.esper.events
 
         public static bool GetMappedPropertyExists(object value, string key)
         {
-            if (value is Map innerMap)
-            {
+            if (value == null) {
+                return false;
+            }
+            if (value is Map innerMap) {
                 return innerMap.ContainsKey(key);
+            }
+            if (value.GetType().IsGenericStringDictionary()) {
+                return value.SDContainsKey(key);
             }
 
             return false;
@@ -733,8 +751,8 @@ namespace com.espertech.esper.events
                 {
                     if (!TypeHelper.IsSubclassOrImplementsInterface(boxedOther, boxedThis))
                     {
-                        return "Type by name '" + otherName + "' in property '" + propName + "' expected " + boxedThis +
-                               " but receives " + boxedOther;
+                        return "Type by name '" + otherName + "' in property '" + propName + "' expected " + Name.Clean(boxedThis) +
+                               " but receives " + Name.Clean(boxedOther);
                     }
                 }
             }
@@ -744,8 +762,8 @@ namespace com.espertech.esper.events
                 var boxedThis = ((Type) setOneType).GetBoxedType();
                 if (boxedOther != boxedThis)
                 {
-                    return "Type by name '" + otherName + "' in property '" + propName + "' expected " + boxedThis +
-                           " but receives " + boxedOther;
+                    return "Type by name '" + otherName + "' in property '" + propName + "' expected " + Name.Clean(boxedThis) +
+                           " but receives " + Name.Clean(boxedOther);
                 }
             }
             else if (setTwoType is EventType[] && ((EventType[]) setTwoType)[0] is BeanEventType &&
@@ -755,8 +773,8 @@ namespace com.espertech.esper.events
                 var boxedThis = ((Type) setOneType).GetElementType().GetBoxedType();
                 if (boxedOther != boxedThis)
                 {
-                    return "Type by name '" + otherName + "' in property '" + propName + "' expected " + boxedThis +
-                           " but receives " + boxedOther;
+                    return "Type by name '" + otherName + "' in property '" + propName + "' expected " + Name.Clean(boxedThis) +
+                           " but receives " + Name.Clean(boxedOther);
                 }
             }
             else if ((setTwoType is Map) && (setOneType is Map))
@@ -879,13 +897,13 @@ namespace com.espertech.esper.events
                 var boxedType = TypeHelper.GetPrimitiveTypeForName(typeAsString).GetBoxedType();
                 if (boxedType != null)
                 {
-                    return boxedType.FullName;
+                    return Name.Clean(boxedType);
                 }
 
                 return typeAsString;
             }
 
-            return type.GetType().FullName;
+            return Name.Clean(type.GetType());
         }
 
         public class MapIndexedPropPair

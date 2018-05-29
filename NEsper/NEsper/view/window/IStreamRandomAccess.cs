@@ -118,19 +118,10 @@ namespace com.espertech.esper.view.window
             return _arrayList.GetEnumerator();
         }
 
-        public ICollection<EventBean> WindowCollectionReadOnly
-        {
-            get { return _arrayList; }
-        }
+        public ICollection<EventBean> WindowCollectionReadOnly => _arrayList;
 
-        public int WindowCount
-        {
-            get { return _arrayList.Count; }
-        }
+        public int WindowCount => _arrayList.Count;
 
-        public int NumEventsInsertBuf
-        {
-            get { return WindowCount; }
-        }
+        public int NumEventsInsertBuf => WindowCount;
     }
 }

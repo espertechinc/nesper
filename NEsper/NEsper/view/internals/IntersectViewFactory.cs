@@ -38,9 +38,9 @@ namespace com.espertech.esper.view.internals
         private IThreadLocal<IntersectAsymetricViewLocalState> _asymetricViewLocalState;
         private readonly IThreadLocalManager _threadLocalManager;
 
-        public IntersectViewFactory(IThreadLocalManager threadLocalManager)
+        public IntersectViewFactory(IContainer container)
         {
-            _threadLocalManager = threadLocalManager;
+            _threadLocalManager = container.ThreadLocalManager();
         }
 
         /// <summary>

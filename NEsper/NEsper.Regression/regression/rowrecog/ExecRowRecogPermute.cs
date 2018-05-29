@@ -35,22 +35,22 @@ namespace com.espertech.esper.regression.rowrecog
     
             RunEquivalent(epService, "MAtCh_Recognize_Permute(A)",
                     "(A)");
-            RunEquivalent(epService, "Match_recognize_permute(A,B)",
+            RunEquivalent(epService, "match_recognize_permute(A,B)",
                     "(A B|B A)");
-            RunEquivalent(epService, "Match_recognize_permute(A,B,C)",
+            RunEquivalent(epService, "match_recognize_permute(A,B,C)",
                     "(A B C|A C B|B A C|B C A|C A B|C B A)");
-            RunEquivalent(epService, "Match_recognize_permute(A,B,C,D)",
+            RunEquivalent(epService, "match_recognize_permute(A,B,C,D)",
                     "(A B C D|A B D C|A C B D|A C D B|A D B C|A D C B|B A C D|B A D C|B C A D|B C D A|B D A C|B D C A|C A B D|C A D B|C B A D|C B D A|C D A B|C D B A|D A B C|D A C B|D B A C|D B C A|D C A B|D C B A)");
     
-            RunEquivalent(epService, "Match_recognize_permute((A B), C)",
+            RunEquivalent(epService, "match_recognize_permute((A B), C)",
                     "((A B) C|C (A B))");
-            RunEquivalent(epService, "Match_recognize_permute((A|B), (C D), E)",
+            RunEquivalent(epService, "match_recognize_permute((A|B), (C D), E)",
                     "((A|B) (C D) E|(A|B) E (C D)|(C D) (A|B) E|(C D) E (A|B)|E (A|B) (C D)|E (C D) (A|B))");
     
-            RunEquivalent(epService, "A Match_recognize_permute(B,C) D",
+            RunEquivalent(epService, "A match_recognize_permute(B,C) D",
                     "A (B C|C B) D");
     
-            RunEquivalent(epService, "Match_recognize_permute(A, Match_recognize_permute(B, C))",
+            RunEquivalent(epService, "match_recognize_permute(A, match_recognize_permute(B, C))",
                     "(A (B C|C B)|(B C|C B) A)");
         }
     
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regression.rowrecog
                     "match_recognize (\n" +
                     "  partition by device\n" +
                     "  measures A.id as a_id, B.id as b_id\n" +
-                    "  pattern (Match_recognize_permute(A, B))\n" +
+                    "  pattern (match_recognize_permute(A, B))\n" +
                     "  define \n" +
                     "\tA as A.temp < 100, \n" +
                     "\tB as B.temp >= 100)";
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regression.rowrecog
     
         private void RunPermute(EPServiceProvider epService, bool soda) {
             TryPermute(epService, soda, "(A B C)|(A C B)|(B A C)|(B C A)|(C A B)|(C B A)");
-            TryPermute(epService, soda, "(Match_recognize_permute(A,B,C))");
+            TryPermute(epService, soda, "(match_recognize_permute(A,B,C))");
         }
     
         public void TryPermute(EPServiceProvider epService, bool soda, string pattern) {

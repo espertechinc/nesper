@@ -208,15 +208,15 @@ namespace com.espertech.esper.regression.rowrecog
                 foreach (string measure in measures.Split(',')) {
                     buf.Append(delimiter);
                     Object value = received[i].Get(ReplaceBrackets(measure) + "val");
-                    buf.Append(value);
+                    buf.Append(value.RenderAny());
                     delimiter = ",";
                 }
                 receivedText[i] = buf.ToString();
             }
     
             if (testDesc.Expected.Length != received.Length) {
-                Log.Info("expected: " + CompatExtensions.Render(testDesc.Expected));
-                Log.Info("received: " + CompatExtensions.Render(receivedText));
+                Log.Info("expected: " + testDesc.Expected.Render());
+                Log.Info("received: " + receivedText.Render());
                 Assert.AreEqual(testDesc.Expected.Length, received.Length, message);
             }
     

@@ -60,7 +60,7 @@ namespace com.espertech.esper.regression.dataflow
                     "SupportOpCountFutureOneA(out_17) {}\n";
             epService.EPAdministrator.CreateEPL(epl);
     
-            var futureOneA = new DefaultSupportCaptureOp<object>(1, SupportContainer.Instance.LockManager());
+            var futureOneA = new DefaultSupportCaptureOp(1, SupportContainer.Instance.LockManager());
             var operators = new Dictionary<string, Object>();
             operators.Put("SupportOpCountFutureOneA", futureOneA);
     
@@ -96,10 +96,10 @@ namespace com.espertech.esper.regression.dataflow
                     "SupportOpCountFutureTwoB(OutTwo) {}\n";
             epService.EPAdministrator.CreateEPL(epl);
     
-            var futureOneA = new DefaultSupportCaptureOp<object>(2, SupportContainer.Instance.LockManager());
-            var futureOneB = new DefaultSupportCaptureOp<object>(2, SupportContainer.Instance.LockManager());
-            var futureTwoA = new DefaultSupportCaptureOp<object>(2, SupportContainer.Instance.LockManager());
-            var futureTwoB = new DefaultSupportCaptureOp<object>(2, SupportContainer.Instance.LockManager());
+            var futureOneA = new DefaultSupportCaptureOp(2, SupportContainer.Instance.LockManager());
+            var futureOneB = new DefaultSupportCaptureOp(2, SupportContainer.Instance.LockManager());
+            var futureTwoA = new DefaultSupportCaptureOp(2, SupportContainer.Instance.LockManager());
+            var futureTwoB = new DefaultSupportCaptureOp(2, SupportContainer.Instance.LockManager());
     
             var operators = new Dictionary<string, Object>();
             operators.Put("SupportOpCountFutureOneA", futureOneA);
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regression.dataflow
                     "DefaultSupportCaptureOp(FinalResult) {}\n";
             epService.EPAdministrator.CreateEPL(epl);
     
-            var future = new DefaultSupportCaptureOp<object>(1, SupportContainer.Instance.LockManager());
+            var future = new DefaultSupportCaptureOp(1, SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions()
                     .OperatorProvider(new DefaultSupportGraphOpProvider(future));
     

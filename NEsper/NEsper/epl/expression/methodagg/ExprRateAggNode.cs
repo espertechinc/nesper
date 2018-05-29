@@ -40,7 +40,7 @@ namespace com.espertech.esper.epl.expression.methodagg
                     "The rate aggregation function minimally requires a numeric constant or expression as a parameter.");
             }
 
-            ExprNode first = positionalParams[0];
+            var first = positionalParams[0];
             if (first.IsConstantResult)
             {
                 const string message =
@@ -68,6 +68,16 @@ namespace com.espertech.esper.epl.expression.methodagg
                     throw new ExprValidationException(message);
                 }
 
+                var optionalFilter = this.OptionalFilter;
+                if (optionalFilter == null)
+                {
+                    this.PositionalParams = ExprNodeUtility.EMPTY_EXPR_ARRAY;
+                }
+                else
+                {
+                    this.PositionalParams = new ExprNode[] { optionalFilter };
+                }
+
                 return
                     validationContext.EngineImportService.AggregationFactoryFactory.MakeRate(
                         validationContext.StatementExtensionSvcContext, this, true, intervalTime,
@@ -90,10 +100,9 @@ namespace com.espertech.esper.epl.expression.methodagg
                 throw new ExprValidationException(
                     "The rate aggregation function does not allow the current engine timestamp as a parameter");
             }
-            if (positionalParams.Length > 1)
-            {
-                if (!TypeHelper.IsNumeric(positionalParams[1].ExprEvaluator.ReturnType))
-                {
+            if (((positionalParams.Length == 2) && (this.OptionalFilter == null)) ||
+                ((positionalParams.Length > 2) && (this.OptionalFilter != null))) {
+                if (!TypeHelper.IsNumeric(positionalParams[1].ExprEvaluator.ReturnType)) {
                     throw new ExprValidationException(
                         "The rate aggregation function accepts an expression returning a numeric value to accumulate as an optional second parameter");
                 }
@@ -111,6 +120,8 @@ namespace com.espertech.esper.epl.expression.methodagg
                     validationContext.EngineImportService.TimeAbacus);
         }
 
+        protected override int MaxPositionalParams => 2;
+
         public override string AggregationFunctionName => "rate";
 
         protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
@@ -118,6 +129,6 @@ namespace com.espertech.esper.epl.expression.methodagg
             return node is ExprRateAggNode;
         }
 
-        protected override bool IsFilterExpressionAsLastParameter => false;
+        protected override bool IsFilterExpressionAsLastParameter => true;
     }
 } // end of namespace

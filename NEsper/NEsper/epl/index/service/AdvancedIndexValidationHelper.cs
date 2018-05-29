@@ -67,8 +67,8 @@ namespace com.espertech.esper.epl.index.service
             string indexTypeName, bool isColumn, int num, string name, Type expectedType, Type receivedType)
         {
             return MakeEx(indexTypeName, isColumn, num, name,
-                expectedType.GetTypeNameFullyQualPretty(),
-                receivedType.GetTypeNameFullyQualPretty());
+                expectedType.GetCleanName(),
+                receivedType.GetCleanName());
         }
 
         private static ExprValidationException MakeEx(
@@ -76,7 +76,7 @@ namespace com.espertech.esper.epl.index.service
         {
             return MakeEx(indexTypeName, isColumn, num, name,
                 expectedType,
-                receivedType.GetTypeNameFullyQualPretty());
+                receivedType.GetCleanName());
         }
 
         private static ExprValidationException MakeEx(

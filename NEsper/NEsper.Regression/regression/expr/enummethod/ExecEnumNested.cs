@@ -60,21 +60,21 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             var bean = PersonSales.Make();
             epService.EPRuntime.SendEvent(bean);
-    
-            var sales = (ICollection<Sale>) listener.AssertOneGetNewAndReset().Get("val");
+
+            var sales = listener.AssertOneGetNewAndReset().Get("val").UnwrapIntoList<Sale>();
             EPAssertionUtil.AssertEqualsExactOrder(new object[]{bean.Sales[0]}, sales.ToArray());
         }
     
         private void RunAssertionCorrelated(EPServiceProvider epService) {
     
-            var eplFragment = "select Contained.where(x => x = (Contained.FirstOf(y => y.p00 = x.p00 ))) as val from Bean";
+            var eplFragment = "select Contained.where(x => x = (Contained.firstOf(y => y.p00 = x.p00 ))) as val from Bean";
             var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
     
             var bean = SupportBean_ST0_Container.Make2Value("E1,2", "E2,1", "E3,3");
             epService.EPRuntime.SendEvent(bean);
-            var result = (ICollection<SupportBean_ST0>) listener.AssertOneGetNewAndReset().Get("val");
+            var result = listener.AssertOneGetNewAndReset().Get("val").Unwrap<SupportBean_ST0>();
             Assert.AreEqual(3, result.Count);  // this would be 1 if the cache is invalid
         }
     
@@ -83,12 +83,12 @@ namespace com.espertech.esper.regression.expr.enummethod
             var listener = new SupportUpdateListener();
     
             // try "in" with "ISet<string> multivalues"
-            epService.EPAdministrator.CreateEPL("select * from ContainerEvent(level1s.AnyOf(x=>x.level2s.AnyOf(y => 'A' in (y.multivalues))))").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select * from ContainerEvent(level1s.anyOf(x=>x.level2s.anyOf(y => 'A' in (y.multivalues))))").Events += listener.Update;
             TryAssertionAnyOf(epService, listener);
             epService.EPAdministrator.DestroyAllStatements();
     
             // try "in" with "string singlevalue"
-            epService.EPAdministrator.CreateEPL("select * from ContainerEvent(level1s.AnyOf(x=>x.level2s.AnyOf(y => y.singlevalue = 'A')))").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select * from ContainerEvent(level1s.anyOf(x=>x.level2s.anyOf(y => y.singlevalue = 'A')))").Events += listener.Update;
             TryAssertionAnyOf(epService, listener);
             epService.EPAdministrator.DestroyAllStatements();
         }

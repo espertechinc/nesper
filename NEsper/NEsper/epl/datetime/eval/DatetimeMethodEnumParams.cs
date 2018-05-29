@@ -147,5 +147,11 @@ namespace com.espertech.esper.epl.datetime.eval
                                 new DotMethodFPParam(INPUT_INTERVAL, EPLExpressionParamType.ANY, null),
                                 new DotMethodFPParam("maximum distance between start and end timestamps", EPLExpressionParamType.TIME_PERIOD_OR_SEC, null)),
                         };
+
+        public static readonly DotMethodFP[] FORMAT = new DotMethodFP[]{
+            new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY),
+            new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY,
+                new DotMethodFPParam("a string-type format", EPLExpressionParamType.SPECIFIC, typeof(string)))
+        };
     }
 }

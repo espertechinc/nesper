@@ -42,7 +42,7 @@ namespace com.espertech.esper.supportregression.bean
 
         public string Id => id;
 
-        public double X => x.Value;
+        public double? X => x;
 
         public double Y => y.Value;
 

@@ -111,10 +111,9 @@ namespace com.espertech.esper.events.xml
 
         private static object GetParseTextValue(XmlNode node, SimpleTypeParser parser)
         {
-            if (node == null) return null;
-
-            var text = node.InnerText;
-            if (string.IsNullOrEmpty(text)) return null;
+            var text = node?.InnerText;
+            if (text == null)
+                return null;
 
             return parser.Invoke(text);
         }
@@ -123,10 +122,7 @@ namespace com.espertech.esper.events.xml
         {
             if (node is XContainer container)
             {
-                var text = string.Concat(container.Nodes());
-                if (string.IsNullOrEmpty(text)) return null;
-
-                return parser.Invoke(text);
+                return string.Concat(container.Nodes());
             }
 
             return null;

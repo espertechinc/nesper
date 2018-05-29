@@ -117,7 +117,7 @@ namespace com.espertech.esper.regression.client
                             "when matched and (select cnt from ScanCountTable where src = sw.src and dst = sw.dst) < 10\n" +
                             "  then delete\n" +
                             "  then insert into OutputAlerts select 'DONE' as type, ScanCountTable[src, dst].cnt as cnt, null as contributors \n" +
-                            "when matched and DetectionTime.after(current_timestamp, 16 hours)\n" +
+                            "when matched and detectionTime.after(current_timestamp, 16 hours)\n" +
                             "  then delete\n" +
                             "  then insert into OutputAlerts select 'EXPIRED' as type, -1L as cnt, null as contributors;\n" +
                             "\n" +

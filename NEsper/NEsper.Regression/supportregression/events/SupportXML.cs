@@ -12,7 +12,7 @@ using System.IO;
 using System.Xml;
 using com.espertech.esper.client;
 
-namespace com.espertech.esper.regression.events
+namespace com.espertech.esper.supportregression.events
 {
     public class SupportXML
     {

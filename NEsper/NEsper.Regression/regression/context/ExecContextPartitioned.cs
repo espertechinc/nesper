@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionPatternFilter(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("stringContainsX", GetType().FullName, "StringContainsX");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("stringContainsX", GetType(), "StringContainsX");
             string eplContext = "create context IndividualBean partition by TheString from SupportBean";
             epService.EPAdministrator.CreateEPL(eplContext);
     
@@ -227,7 +227,7 @@ namespace com.espertech.esper.regression.context
     
             // incompatible property types
             epl = "create context SegmentedByAString partition by TheString from SupportBean, id from SupportBean_S0";
-            TryInvalid(epService, epl, "Error starting statement: For context 'SegmentedByAString' for context 'SegmentedByAString' found mismatch of property types, property 'TheString' of type 'System.String' compared to property 'id' of type '" + Name.Of<int>() + "' [");
+            TryInvalid(epService, epl, "Error starting statement: For context 'SegmentedByAString' for context 'SegmentedByAString' found mismatch of property types, property 'TheString' of type 'System.String' compared to property 'id' of type '" + Name.Clean<int>() + "' [");
     
             // duplicate type specification
             epl = "create context SegmentedByAString partition by TheString from SupportBean, TheString from SupportBean";

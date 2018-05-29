@@ -14,9 +14,10 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.events.avro;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
+using Newtonsoft.Json;
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
-
+using NEsper.Avro.IO;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.events.avro
@@ -28,7 +29,8 @@ namespace com.espertech.esper.regression.events.avro
             var epl = EventRepresentationChoice.AVRO.GetAnnotationText() + "select 1 as carId, 'abc' as carType from System.Object";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var schema = (Schema) ((AvroSchemaEventType) stmt.EventType).Schema;
-            Assert.AreEqual("{\"type\":\"record\",\"name\":\"anonymous_1_result_\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}", schema.ToString());
+            var schemaAsString = SchemaToJsonEncoder.Encode(schema).ToString(Formatting.None);
+            Assert.AreEqual("{\"type\":\"record\",\"name\":\"anonymous_1_result_\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}", schemaAsString);
             stmt.Dispose();
     
             // schema to-string Avro
@@ -37,8 +39,9 @@ namespace com.espertech.esper.regression.events.avro
                     TypeBuilder.Field("carType",
                         TypeBuilder.StringType(
                             TypeBuilder.Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE))));
+            var schemaTwoAsString = SchemaToJsonEncoder.Encode(schemaTwo).ToString(Formatting.None);
 
-            Assert.AreEqual("{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}", schemaTwo.ToString());
+            Assert.AreEqual("{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}", schemaTwoAsString);
     
             // Define CarLocUpdateEvent event type (example for runtime-configuration interface)
             var schemaThree = SchemaBuilder.Record("CarLocUpdateEvent",

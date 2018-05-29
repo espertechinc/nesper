@@ -79,7 +79,7 @@ namespace com.espertech.esper.regression.expr.expr
                 TryAssertionPriorStreamAndVariable(epService, "NUM_PRIOR_NONCONST");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex, "Error starting statement: Failed to validate select-clause expression 'Prior(NUM_PRIOR_NONCONST,s0)': Prior function requires a constant-value integer-typed index expression as the first parameter");
+                SupportMessageAssertUtil.AssertMessage(ex, "Error starting statement: Failed to validate select-clause expression 'prior(NUM_PRIOR_NONCONST,s0)': Prior function requires a constant-value integer-typed index expression as the first parameter");
             }
         }
     

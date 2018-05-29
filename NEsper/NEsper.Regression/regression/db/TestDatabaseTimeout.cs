@@ -30,8 +30,7 @@ namespace com.espertech.esper.regression.db
         {
             _container = ContainerExtensions.CreateDefaultContainer();
 
-            var configDB = new ConfigurationDBRef();
-            configDB.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative);
+            var configDB = SupportDatabaseService.CreateDefaultConfig();
             configDB.ConnectionLifecycle = ConnectionLifecycleEnum.RETAIN;
 
             Configuration configuration = new Configuration(_container);

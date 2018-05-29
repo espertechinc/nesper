@@ -11,13 +11,10 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util.support;
-
 
 using NUnit.Framework;
 
@@ -52,7 +49,7 @@ namespace com.espertech.esper.regression.events.bean
             epService.EPAdministrator.Configuration.AddEventType("MSTypeOne", mapOuter);
             var listener = new SupportUpdateListener();
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from MSTypeOne");
+            var stmt = epService.EPAdministrator.CreateEPL("select * from MSTypeOne");
             stmt.Events += listener.Update;
     
             var dataInner = new Dictionary<string, Object>();
@@ -65,9 +62,9 @@ namespace com.espertech.esper.regression.events.bean
     
             // send event
             epService.EPRuntime.SendEvent(dataRoot, "MSTypeOne");
-            EventBean eventBean = listener.AssertOneGetNewAndReset();
+            var eventBean = listener.AssertOneGetNewAndReset();
             //Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));    //comment me in
-            EventType eventType = eventBean.EventType;
+            var eventType = eventBean.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(eventType);
     
             // resolve property via fragment
@@ -85,7 +82,7 @@ namespace com.espertech.esper.regression.events.bean
             object[] types = {typeof(int), typeof(int[]), typeof(Map)};
             epService.EPAdministrator.Configuration.AddEventType("OASimple", props, types);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from OASimple");
+            var stmt = epService.EPAdministrator.CreateEPL("select * from OASimple");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -95,9 +92,9 @@ namespace com.espertech.esper.regression.events.bean
     
             // send event
             epService.EPRuntime.SendEvent(dataRoot, "OASimple");
-            EventBean eventBean = listener.AssertOneGetNewAndReset();
+            var eventBean = listener.AssertOneGetNewAndReset();
             //Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));    //comment me in
-            EventType eventType = eventBean.EventType;
+            var eventType = eventBean.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(eventType);
     
             // resolve property via fragment
@@ -120,7 +117,7 @@ namespace com.espertech.esper.regression.events.bean
             mapOuter.Put("p0bean", typeof(SupportBeanComplexProps));
             epService.EPAdministrator.Configuration.AddEventType("Frosty", mapOuter);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select *, p0simple.p1id + 1 as plusone, p0bean as mybean from Frosty");
+            var stmt = epService.EPAdministrator.CreateEPL("select *, p0simple.p1id + 1 as plusone, p0bean as mybean from Frosty");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -133,9 +130,9 @@ namespace com.espertech.esper.regression.events.bean
     
             // send event
             epService.EPRuntime.SendEvent(dataRoot, "Frosty");
-            EventBean eventBean = listener.AssertOneGetNewAndReset();
+            var eventBean = listener.AssertOneGetNewAndReset();
             //  Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));    comment me in
-            EventType eventType = eventBean.EventType;
+            var eventType = eventBean.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(eventType);
     
             // resolve property via fragment
@@ -143,10 +140,10 @@ namespace com.espertech.esper.regression.events.bean
             Assert.AreEqual(11, eventBean.Get("plusone"));
             Assert.AreEqual(10, eventBean.Get("p0simple.p1id"));
     
-            EventBean innerSimpleEvent = (EventBean) eventBean.GetFragment("p0simple");
+            var innerSimpleEvent = (EventBean) eventBean.GetFragment("p0simple");
             Assert.AreEqual(10, innerSimpleEvent.Get("p1id"));
     
-            EventBean innerBeanEvent = (EventBean) eventBean.GetFragment("mybean");
+            var innerBeanEvent = (EventBean) eventBean.GetFragment("mybean");
             Assert.AreEqual("NestedNestedValue", innerBeanEvent.Get("Nested.NestedNested.NestedNestedValue"));
             Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("mybean.Nested.NestedNested")).Get("NestedNestedValue"));
     
@@ -157,15 +154,15 @@ namespace com.espertech.esper.regression.events.bean
             epService.EPAdministrator.Configuration.AddEventType("WheatLev0", new string[]{"p1id"}, new object[]{typeof(int)});
             epService.EPAdministrator.Configuration.AddEventType("WheatRoot", new string[]{"p0simple", "p0bean"}, new object[]{"WheatLev0", typeof(SupportBeanComplexProps)});
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select *, p0simple.p1id + 1 as plusone, p0bean as mybean from WheatRoot");
+            var stmt = epService.EPAdministrator.CreateEPL("select *, p0simple.p1id + 1 as plusone, p0bean as mybean from WheatRoot");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new object[]{new object[]{10}, SupportBeanComplexProps.MakeDefaultBean()}, "WheatRoot");
     
-            EventBean eventBean = listener.AssertOneGetNewAndReset();
+            var eventBean = listener.AssertOneGetNewAndReset();
             //  Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));    comment me in
-            EventType eventType = eventBean.EventType;
+            var eventType = eventBean.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(eventType);
     
             // resolve property via fragment
@@ -173,10 +170,10 @@ namespace com.espertech.esper.regression.events.bean
             Assert.AreEqual(11, eventBean.Get("plusone"));
             Assert.AreEqual(10, eventBean.Get("p0simple.p1id"));
     
-            EventBean innerSimpleEvent = (EventBean) eventBean.GetFragment("p0simple");
+            var innerSimpleEvent = (EventBean) eventBean.GetFragment("p0simple");
             Assert.AreEqual(10, innerSimpleEvent.Get("p1id"));
     
-            EventBean innerBeanEvent = (EventBean) eventBean.GetFragment("mybean");
+            var innerBeanEvent = (EventBean) eventBean.GetFragment("mybean");
             Assert.AreEqual("NestedNestedValue", innerBeanEvent.Get("Nested.NestedNested.NestedNestedValue"));
             Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("mybean.Nested.NestedNested")).Get("NestedNestedValue"));
     
@@ -185,19 +182,19 @@ namespace com.espertech.esper.regression.events.bean
     
         public void RunAssertionNativeBeanFragment(EPServiceProvider epService) {
             var listener = new SupportUpdateListener();
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from " + typeof(SupportBeanComplexProps).FullName);
+            var stmt = epService.EPAdministrator.CreateEPL("select * from " + typeof(SupportBeanComplexProps).FullName);
             stmt.Events += listener.Update;
             stmt = epService.EPAdministrator.CreateEPL("select * from " + typeof(SupportBeanCombinedProps).FullName);
             stmt.Events += listener.Update;
     
             // assert Nested fragments
             epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
-            EventBean eventBean = listener.AssertOneGetNewAndReset();
+            var eventBean = listener.AssertOneGetNewAndReset();
             SupportEventTypeAssertionUtil.AssertConsistency(eventBean.EventType);
             //Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));
     
             Assert.IsTrue(eventBean.EventType.GetPropertyDescriptor("Nested").IsFragment);
-            EventBean eventNested = (EventBean) eventBean.GetFragment("Nested");
+            var eventNested = (EventBean) eventBean.GetFragment("Nested");
             Assert.AreEqual("NestedValue", eventNested.Get("NestedValue"));
             eventNested = (EventBean) eventBean.GetFragment("Nested?");
             Assert.AreEqual("NestedValue", eventNested.Get("NestedValue"));
@@ -206,25 +203,25 @@ namespace com.espertech.esper.regression.events.bean
             Assert.AreEqual("NestedNestedValue", ((EventBean) eventNested.GetFragment("NestedNested")).Get("NestedNestedValue"));
             Assert.AreEqual("NestedNestedValue", ((EventBean) eventNested.GetFragment("NestedNested?")).Get("NestedNestedValue"));
     
-            EventBean NestedFragment = (EventBean) eventBean.GetFragment("Nested.NestedNested");
+            var NestedFragment = (EventBean) eventBean.GetFragment("Nested.NestedNested");
             Assert.AreEqual("NestedNestedValue", NestedFragment.Get("NestedNestedValue"));
     
             // assert indexed fragments
-            SupportBeanCombinedProps eventObject = SupportBeanCombinedProps.MakeDefaultBean();
+            var eventObject = SupportBeanCombinedProps.MakeDefaultBean();
             epService.EPRuntime.SendEvent(eventObject);
             eventBean = listener.AssertOneGetNewAndReset();
             SupportEventTypeAssertionUtil.AssertConsistency(eventBean.EventType);
             //Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));
     
-            Assert.IsTrue(eventBean.EventType.GetPropertyDescriptor("array").IsFragment);
-            Assert.IsTrue(eventBean.EventType.GetPropertyDescriptor("array").IsIndexed);
-            EventBean[] eventArray = (EventBean[]) eventBean.GetFragment("array");
+            Assert.IsTrue(eventBean.EventType.GetPropertyDescriptor("Array").IsFragment);
+            Assert.IsTrue(eventBean.EventType.GetPropertyDescriptor("Array").IsIndexed);
+            var eventArray = (EventBean[]) eventBean.GetFragment("Array");
             Assert.AreEqual(3, eventArray.Length);
     
-            EventBean eventElement = eventArray[0];
+            var eventElement = eventArray[0];
             Assert.AreSame(eventObject.Array[0].GetMapped("0ma"), eventElement.Get("Mapped('0ma')"));
-            Assert.AreSame(eventObject.Array[0].GetMapped("0ma"), ((EventBean) eventBean.GetFragment("array[0]")).Get("Mapped('0ma')"));
-            Assert.AreSame(eventObject.Array[0].GetMapped("0ma"), ((EventBean) eventBean.GetFragment("array[0]?")).Get("Mapped('0ma')"));
+            Assert.AreSame(eventObject.Array[0].GetMapped("0ma"), ((EventBean) eventBean.GetFragment("Array[0]")).Get("Mapped('0ma')"));
+            Assert.AreSame(eventObject.Array[0].GetMapped("0ma"), ((EventBean) eventBean.GetFragment("Array[0]?")).Get("Mapped('0ma')"));
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -239,7 +236,7 @@ namespace com.espertech.esper.regression.events.bean
             mapOuter.Put("p0array", "HomerunLev0[]");
             epService.EPAdministrator.Configuration.AddEventType("HomerunRoot", mapOuter);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from HomerunRoot");
+            var stmt = epService.EPAdministrator.CreateEPL("select * from HomerunRoot");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -252,22 +249,22 @@ namespace com.espertech.esper.regression.events.bean
     
             // send event
             epService.EPRuntime.SendEvent(dataRoot, "HomerunRoot");
-            EventBean eventBean = listener.AssertOneGetNewAndReset();
+            var eventBean = listener.AssertOneGetNewAndReset();
             //  Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));    comment me in
-            EventType eventType = eventBean.EventType;
+            var eventType = eventBean.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(eventType);
     
             // resolve property via fragment
             Assert.IsTrue(eventType.GetPropertyDescriptor("p0simple").IsFragment);
             Assert.IsTrue(eventType.GetPropertyDescriptor("p0array").IsFragment);
     
-            EventBean innerSimpleEvent = (EventBean) eventBean.GetFragment("p0simple");
+            var innerSimpleEvent = (EventBean) eventBean.GetFragment("p0simple");
             Assert.AreEqual(10, innerSimpleEvent.Get("p1id"));
     
-            EventBean[] innerArrayAllEvent = (EventBean[]) eventBean.GetFragment("p0array");
+            var innerArrayAllEvent = (EventBean[]) eventBean.GetFragment("p0array");
             Assert.AreEqual(10, innerArrayAllEvent[0].Get("p1id"));
     
-            EventBean innerArrayElementEvent = (EventBean) eventBean.GetFragment("p0array[0]");
+            var innerArrayElementEvent = (EventBean) eventBean.GetFragment("p0array[0]");
             Assert.AreEqual(10, innerArrayElementEvent.Get("p1id"));
     
             // resolve property via getter
@@ -284,29 +281,29 @@ namespace com.espertech.esper.regression.events.bean
             epService.EPAdministrator.Configuration.AddEventType("GoalLev0", new string[]{"p1id"}, new object[]{typeof(int)});
             epService.EPAdministrator.Configuration.AddEventType("GoalRoot", new string[]{"p0simple", "p0array"}, new object[]{"GoalLev0", "GoalLev0[]"});
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from GoalRoot");
+            var stmt = epService.EPAdministrator.CreateEPL("select * from GoalRoot");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             Assert.AreEqual(typeof(object[]), stmt.EventType.UnderlyingType);
     
             epService.EPRuntime.SendEvent(new object[]{new object[]{10}, new object[]{new object[]{20}, new object[]{21}}}, "GoalRoot");
     
-            EventBean eventBean = listener.AssertOneGetNewAndReset();
+            var eventBean = listener.AssertOneGetNewAndReset();
             //  Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));    comment me in
-            EventType eventType = eventBean.EventType;
+            var eventType = eventBean.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(eventType);
     
             // resolve property via fragment
             Assert.IsTrue(eventType.GetPropertyDescriptor("p0simple").IsFragment);
             Assert.IsTrue(eventType.GetPropertyDescriptor("p0array").IsFragment);
     
-            EventBean innerSimpleEvent = (EventBean) eventBean.GetFragment("p0simple");
+            var innerSimpleEvent = (EventBean) eventBean.GetFragment("p0simple");
             Assert.AreEqual(10, innerSimpleEvent.Get("p1id"));
     
-            EventBean[] innerArrayAllEvent = (EventBean[]) eventBean.GetFragment("p0array");
+            var innerArrayAllEvent = (EventBean[]) eventBean.GetFragment("p0array");
             Assert.AreEqual(20, innerArrayAllEvent[0].Get("p1id"));
     
-            EventBean innerArrayElementEvent = (EventBean) eventBean.GetFragment("p0array[0]");
+            var innerArrayElementEvent = (EventBean) eventBean.GetFragment("p0array[0]");
             Assert.AreEqual(20, innerArrayElementEvent.Get("p1id"));
     
             // resolve property via getter
@@ -327,7 +324,7 @@ namespace com.espertech.esper.regression.events.bean
             mapOuter.Put("p0simple", typeLev0);
             epService.EPAdministrator.Configuration.AddEventType("FlywheelRoot", mapOuter);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from FlywheelRoot");
+            var stmt = epService.EPAdministrator.CreateEPL("select * from FlywheelRoot");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -339,9 +336,9 @@ namespace com.espertech.esper.regression.events.bean
     
             // send event
             epService.EPRuntime.SendEvent(dataRoot, "FlywheelRoot");
-            EventBean eventBean = listener.AssertOneGetNewAndReset();
+            var eventBean = listener.AssertOneGetNewAndReset();
             //  Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));    comment me in
-            EventType eventType = eventBean.EventType;
+            var eventType = eventBean.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(eventType);
     
             Assert.IsFalse(eventType.GetPropertyDescriptor("p0simple").IsFragment);
@@ -370,7 +367,7 @@ namespace com.espertech.esper.regression.events.bean
             epService.EPAdministrator.Configuration.AddEventType("GistMapOne", typeMap);
             epService.EPAdministrator.Configuration.AddEventType("GistMapTwo", typeMap);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from pattern[one=GistMapOne until two=GistMapTwo]");
+            var stmt = epService.EPAdministrator.CreateEPL("select * from pattern[one=GistMapOne until two=GistMapTwo]");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -381,7 +378,7 @@ namespace com.espertech.esper.regression.events.bean
             dataMap.Put("bean", new SupportBean("E1", 100));
             dataMap.Put("beanarray", new SupportBean[]{new SupportBean("E1", 100), new SupportBean("E2", 200)});
             dataMap.Put("complex", SupportBeanComplexProps.MakeDefaultBean());
-            dataMap.Put("complexarray", new SupportBeanComplexProps[]{SupportBeanComplexProps.MakeDefaultBean()});
+            dataMap.Put("complexarray", new []{ SupportBeanComplexProps.MakeDefaultBean() });
             dataMap.Put("map", dataInner);
             dataMap.Put("maparray", new Map[]{dataInner, dataInner});
     
@@ -396,9 +393,9 @@ namespace com.espertech.esper.regression.events.bean
             dataMapThree.Put("id", 3);
             epService.EPRuntime.SendEvent(dataMapThree, "GistMapTwo");
     
-            EventBean eventBean = listener.AssertOneGetNewAndReset();
+            var eventBean = listener.AssertOneGetNewAndReset();
             // Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));
-            EventType eventType = eventBean.EventType;
+            var eventType = eventBean.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(eventType);
     
             Assert.AreEqual(1, ((EventBean) eventBean.GetFragment("one[0]")).Get("id"));
@@ -435,7 +432,7 @@ namespace com.espertech.esper.regression.events.bean
             epService.EPAdministrator.Configuration.AddEventType("CashMapOne", props, types);
             epService.EPAdministrator.Configuration.AddEventType("CashMapTwo", props, types);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from pattern[one=CashMapOne until two=CashMapTwo]");
+            var stmt = epService.EPAdministrator.CreateEPL("select * from pattern[one=CashMapOne until two=CashMapTwo]");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -459,9 +456,9 @@ namespace com.espertech.esper.regression.events.bean
             dataArrayThree[0] = 3;
             epService.EPRuntime.SendEvent(dataArrayThree, "CashMapTwo");
     
-            EventBean eventBean = listener.AssertOneGetNewAndReset();
+            var eventBean = listener.AssertOneGetNewAndReset();
             // Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));
-            EventType eventType = eventBean.EventType;
+            var eventType = eventBean.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(eventType);
     
             Assert.AreEqual(1, ((EventBean) eventBean.GetFragment("one[0]")).Get("id"));
@@ -475,11 +472,11 @@ namespace com.espertech.esper.regression.events.bean
             Assert.AreEqual("E2", ((EventBean) eventBean.GetFragment("one[0].beanarray[1]")).Get("TheString"));
             Assert.AreEqual("E2", ((EventBean) eventBean.GetFragment("two.beanarray[1]")).Get("TheString"));
     
-            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("one[0].complex.Nested.NestedNested")).Get("NestedNestedValue"));
-            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("two.complex.Nested.NestedNested")).Get("NestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("one[0].complex.nested.nestedNested")).Get("NestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("two.complex.nested.nestedNested")).Get("NestedNestedValue"));
     
-            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("one[0].complexarray[0].Nested.NestedNested")).Get("NestedNestedValue"));
-            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("two.complexarray[0].Nested.NestedNested")).Get("NestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("one[0].complexarray[0].nested.nestedNested")).Get("NestedNestedValue"));
+            Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("two.complexarray[0].nested.nestedNested")).Get("NestedNestedValue"));
     
             Assert.AreEqual(2000, ((EventBean) eventBean.GetFragment("one[0].map")).Get("p2id"));
             Assert.AreEqual(2000, ((EventBean) eventBean.GetFragment("two.map")).Get("p2id"));
@@ -503,7 +500,7 @@ namespace com.espertech.esper.regression.events.bean
             mapOuter.Put("p0array", "TXTypeLev0[]");
             epService.EPAdministrator.Configuration.AddEventType("TXTypeRoot", mapOuter);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from TXTypeRoot");
+            var stmt = epService.EPAdministrator.CreateEPL("select * from TXTypeRoot");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -519,19 +516,19 @@ namespace com.espertech.esper.regression.events.bean
     
             // send event
             epService.EPRuntime.SendEvent(dataRoot, "TXTypeRoot");
-            EventBean eventBean = listener.AssertOneGetNewAndReset();
+            var eventBean = listener.AssertOneGetNewAndReset();
             //  Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));    comment me in
-            EventType eventType = eventBean.EventType;
+            var eventType = eventBean.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(eventType);
     
             Assert.AreEqual(11, ((EventBean) eventBean.GetFragment("p0simple.p1simple")).Get("IntPrimitive"));
             Assert.AreEqual("A2", ((EventBean) eventBean.GetFragment("p0simple.p1array[1]")).Get("TheString"));
-            Assert.AreEqual("simple", ((EventBean) eventBean.GetFragment("p0simple.p1complex")).Get("simpleProperty"));
-            Assert.AreEqual("simple", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0]")).Get("simpleProperty"));
+            Assert.AreEqual("Simple", ((EventBean) eventBean.GetFragment("p0simple.p1complex")).Get("SimpleProperty"));
+            Assert.AreEqual("Simple", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0]")).Get("SimpleProperty"));
             Assert.AreEqual("NestedValue", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0].Nested")).Get("NestedValue"));
             Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0].Nested.NestedNested")).Get("NestedNestedValue"));
     
-            EventBean assertEvent = (EventBean) eventBean.GetFragment("p0simple");
+            var assertEvent = (EventBean) eventBean.GetFragment("p0simple");
             Assert.AreEqual("E1", assertEvent.Get("p1simple.TheString"));
             Assert.AreEqual(11, ((EventBean) assertEvent.GetFragment("p1simple")).Get("IntPrimitive"));
             Assert.AreEqual(22, ((EventBean) assertEvent.GetFragment("p1array[1]")).Get("IntPrimitive"));
@@ -559,7 +556,7 @@ namespace com.espertech.esper.regression.events.bean
             object[] typesOuter = {"LocalTypeLev0", "LocalTypeLev0[]"};
             epService.EPAdministrator.Configuration.AddEventType("LocalTypeRoot", propsOuter, typesOuter);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from LocalTypeRoot");
+            var stmt = epService.EPAdministrator.CreateEPL("select * from LocalTypeRoot");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             Assert.AreEqual(typeof(object[]), stmt.EventType.UnderlyingType);
@@ -570,19 +567,19 @@ namespace com.espertech.esper.regression.events.bean
     
             // send event
             epService.EPRuntime.SendEvent(dataRoot, "LocalTypeRoot");
-            EventBean eventBean = listener.AssertOneGetNewAndReset();
+            var eventBean = listener.AssertOneGetNewAndReset();
             //  Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));    comment me in
-            EventType eventType = eventBean.EventType;
+            var eventType = eventBean.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(eventType);
     
             Assert.AreEqual(11, ((EventBean) eventBean.GetFragment("p0simple.p1simple")).Get("IntPrimitive"));
             Assert.AreEqual("A2", ((EventBean) eventBean.GetFragment("p0simple.p1array[1]")).Get("TheString"));
-            Assert.AreEqual("simple", ((EventBean) eventBean.GetFragment("p0simple.p1complex")).Get("simpleProperty"));
-            Assert.AreEqual("simple", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0]")).Get("simpleProperty"));
+            Assert.AreEqual("Simple", ((EventBean) eventBean.GetFragment("p0simple.p1complex")).Get("simpleProperty"));
+            Assert.AreEqual("Simple", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0]")).Get("simpleProperty"));
             Assert.AreEqual("NestedValue", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0].Nested")).Get("NestedValue"));
             Assert.AreEqual("NestedNestedValue", ((EventBean) eventBean.GetFragment("p0simple.p1complexarray[0].Nested.NestedNested")).Get("NestedNestedValue"));
     
-            EventBean assertEvent = (EventBean) eventBean.GetFragment("p0simple");
+            var assertEvent = (EventBean) eventBean.GetFragment("p0simple");
             Assert.AreEqual("E1", assertEvent.Get("p1simple.TheString"));
             Assert.AreEqual(11, ((EventBean) assertEvent.GetFragment("p1simple")).Get("IntPrimitive"));
             Assert.AreEqual(22, ((EventBean) assertEvent.GetFragment("p1array[1]")).Get("IntPrimitive"));
@@ -616,7 +613,7 @@ namespace com.espertech.esper.regression.events.bean
             mapOuter.Put("p0array", "JimTypeLev0[]");
             epService.EPAdministrator.Configuration.AddEventType("JimTypeRoot", mapOuter);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from JimTypeRoot");
+            var stmt = epService.EPAdministrator.CreateEPL("select * from JimTypeRoot");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -633,9 +630,9 @@ namespace com.espertech.esper.regression.events.bean
     
             // send event
             epService.EPRuntime.SendEvent(dataRoot, "JimTypeRoot");
-            EventBean eventBean = listener.AssertOneGetNewAndReset();
+            var eventBean = listener.AssertOneGetNewAndReset();
             //  Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));    comment me in
-            EventType eventType = eventBean.EventType;
+            var eventType = eventBean.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(eventType);
     
             Assert.AreEqual(10, ((EventBean) eventBean.GetFragment("p0simple.p1simple")).Get("p2id"));
@@ -644,7 +641,7 @@ namespace com.espertech.esper.regression.events.bean
             Assert.AreEqual(10, ((EventBean) eventBean.GetFragment("p0simple.p1array[0]")).Get("p2id"));
     
             // resolve property via fragment
-            EventBean assertEvent = (EventBean) eventBean.GetFragment("p0simple");
+            var assertEvent = (EventBean) eventBean.GetFragment("p0simple");
             Assert.AreEqual(10, assertEvent.Get("p1simple.p2id"));
             Assert.AreEqual(10, ((EventBean) assertEvent.GetFragment("p1simple")).Get("p2id"));
     
@@ -672,7 +669,7 @@ namespace com.espertech.esper.regression.events.bean
             epService.EPAdministrator.Configuration.AddEventType("JackTypeLev0", new string[]{"p1simple", "p1array"}, new object[]{"JackTypeLev1", "JackTypeLev1[]"});
             epService.EPAdministrator.Configuration.AddEventType("JackTypeRoot", new string[]{"p0simple", "p0array"}, new object[]{"JackTypeLev0", "JackTypeLev0[]"});
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from JackTypeRoot");
+            var stmt = epService.EPAdministrator.CreateEPL("select * from JackTypeRoot");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             Assert.AreEqual(typeof(object[]), stmt.EventType.UnderlyingType);
@@ -683,9 +680,9 @@ namespace com.espertech.esper.regression.events.bean
     
             // send event
             epService.EPRuntime.SendEvent(dataRoot, "JackTypeRoot");
-            EventBean eventBean = listener.AssertOneGetNewAndReset();
+            var eventBean = listener.AssertOneGetNewAndReset();
             //  Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));    comment me in
-            EventType eventType = eventBean.EventType;
+            var eventType = eventBean.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(eventType);
     
             Assert.AreEqual(10, ((EventBean) eventBean.GetFragment("p0simple.p1simple")).Get("p2id"));
@@ -694,7 +691,7 @@ namespace com.espertech.esper.regression.events.bean
             Assert.AreEqual(10, ((EventBean) eventBean.GetFragment("p0simple.p1array[0]")).Get("p2id"));
     
             // resolve property via fragment
-            EventBean assertEvent = (EventBean) eventBean.GetFragment("p0simple");
+            var assertEvent = (EventBean) eventBean.GetFragment("p0simple");
             Assert.AreEqual(10, assertEvent.Get("p1simple.p2id"));
             Assert.AreEqual(10, ((EventBean) assertEvent.GetFragment("p1simple")).Get("p2id"));
     
@@ -734,7 +731,7 @@ namespace com.espertech.esper.regression.events.bean
             mapOuter.Put("p0array", "MMInnerMap[]");
             epService.EPAdministrator.Configuration.AddEventType("MMOuterMap", mapOuter);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from MMOuterMap");
+            var stmt = epService.EPAdministrator.CreateEPL("select * from MMOuterMap");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -754,26 +751,26 @@ namespace com.espertech.esper.regression.events.bean
     
             // send event
             epService.EPRuntime.SendEvent(dataOuter, "MMOuterMap");
-            EventBean eventBean = listener.AssertOneGetNewAndReset();
+            var eventBean = listener.AssertOneGetNewAndReset();
             // Log.Info(SupportEventTypeAssertionUtil.Print(eventBean));     comment me in
-            EventType eventType = eventBean.EventType;
+            var eventType = eventBean.EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(eventType);
     
             // Fragment-to-simple
             Assert.IsTrue(eventType.GetPropertyDescriptor("p0simple").IsFragment);
             Assert.AreEqual(typeof(int), eventType.GetFragmentType("p0simple").FragmentType.GetPropertyDescriptor("p1innerId").PropertyType);
-            EventBean p0simpleEvent = (EventBean) eventBean.GetFragment("p0simple");
+            var p0simpleEvent = (EventBean) eventBean.GetFragment("p0simple");
             Assert.AreEqual(50, p0simpleEvent.Get("p1innerId"));
             p0simpleEvent = (EventBean) eventBean.GetFragment("p0array[0]");
             Assert.AreEqual(50, p0simpleEvent.Get("p1innerId"));
     
             // Fragment-to-bean
-            EventBean[] p0arrayEvents = (EventBean[]) eventBean.GetFragment("p0array");
+            var p0arrayEvents = (EventBean[]) eventBean.GetFragment("p0array");
             Assert.AreSame(p0arrayEvents[0].EventType, p0simpleEvent.EventType);
             Assert.AreEqual("string1", eventBean.Get("p0array[0].p1bean.TheString"));
             Assert.AreEqual("string1", ((EventBean) eventBean.GetFragment("p0array[0].p1bean")).Get("TheString"));
     
-            EventBean innerOne = (EventBean) eventBean.GetFragment("p0array[0]");
+            var innerOne = (EventBean) eventBean.GetFragment("p0array[0]");
             Assert.AreEqual("string1", ((EventBean) innerOne.GetFragment("p1bean")).Get("TheString"));
             Assert.AreEqual("string1", innerOne.Get("p1bean.TheString"));
             innerOne = (EventBean) eventBean.GetFragment("p0simple");

@@ -18,7 +18,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regression.support;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.resultset.outputlimit
@@ -867,8 +867,8 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void TryAssertionSingle(EPServiceProvider epService, EPStatement stmt, SupportUpdateListener listener) {
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("mySum"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("volume"));
+            Assert.AreEqual(typeof(double), stmt.EventType.GetPropertyType("mySum"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("volume"));
     
             SendEvent(epService, SYMBOL_DELL, 10, 100);
             Assert.IsTrue(listener.IsInvoked);
@@ -1048,8 +1048,8 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void TryAssertionDefault(EPServiceProvider epService, EPStatement stmt, SupportUpdateListener listener) {
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("volume"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("mySum"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("volume").GetBoxedType());
+            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("mySum").GetBoxedType());
     
             SendEvent(epService, SYMBOL_IBM, 500, 20);
             Assert.IsFalse(listener.GetAndClearIsInvoked());
@@ -1081,8 +1081,8 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         private void TryAssertionAll(EPServiceProvider epService, EPStatement stmt, SupportUpdateListener listener) {
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("volume"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("mySum"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("volume").GetBoxedType());
+            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("mySum").GetBoxedType());
     
             SendEvent(epService, SYMBOL_IBM, 500, 20);
             Assert.IsFalse(listener.GetAndClearIsInvoked());

@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.pattern
             string text = "select * from pattern [b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:withinmax(10.001,1)]";
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.CreateWildcard();
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Expression filter = Expressions.Eq("id", "B3");
             PatternExpr pattern = Patterns.TimerWithinMax(10.001, 1, Patterns.Filter(Filter.Create(EVENT_B_CLASS, filter), "b"));
             model.FromClause = FromClause.Create(PatternStream.Create(pattern));

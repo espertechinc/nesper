@@ -117,7 +117,10 @@ namespace com.espertech.esper.epl.datetime.interval
                     }
                     else
                     {
-                        throw new ExprValidationException("For date-time method '" + methodNameUse + "' the first parameter expression returns '" + _evaluatorTimestamp.ReturnType.FullName + "', however requires a DateTime or Long-type return value or event (with timestamp)");
+                        throw new ExprValidationException(
+                            "For date-time method '" + methodNameUse +
+                            "' the first parameter expression returns '" + _evaluatorTimestamp.ReturnType.GetCleanName() + 
+                            "', however requires a DateTime or Long-type return value or event (with timestamp)");
                     }
                 }
             }

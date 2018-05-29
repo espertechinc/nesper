@@ -10,7 +10,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-
+using System.Reflection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
 
@@ -286,7 +286,6 @@ namespace com.espertech.esper.compat.magic
             // Return the compiled lambda method
             return eLambda.Compile();
         }
-
         #endregion
     }
 }

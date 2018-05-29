@@ -6,19 +6,16 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using NUnit.Framework;
-
-using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.dataflow.annotations;
 using com.espertech.esper.supportregression.execution;
 
-using static com.espertech.esper.supportregression.bean.SupportBeanConstants;
+using NUnit.Framework;
+
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
 namespace com.espertech.esper.regression.dataflow {
@@ -79,19 +76,19 @@ namespace com.espertech.esper.regression.dataflow {
             // test simple properties
             MyOperatorOne.Operators.Clear();
             EPStatement stmtGraph = epService.EPAdministrator.CreateEPL(
-                "create dataflow MyGraph " + typeof(MyOperatorOne).FullName + " {" +
+                "create dataflow MyGraph " + typeof(MyOperatorOne).Name + " {" +
                 "  TheString = 'a'," +
-                "  theInt: 1," +
-                "  theBool: true," +
-                "  theLongOne: 1L," +
-                "  theLongTwo: 2," +
-                "  theLongThree: null," +
-                "  theDoubleOne: 1d," +
-                "  theDoubleTwo: 2," +
-                "  theFloatOne: 1f," +
-                "  theFloatTwo: 2," +
+                "  TheInt: 1," +
+                "  TheBool: true," +
+                "  TheLongOne: 1L," +
+                "  TheLongTwo: 2," +
+                "  TheLongThree: null," +
+                "  TheDoubleOne: 1d," +
+                "  TheDoubleTwo: 2," +
+                "  TheFloatOne: 1f," +
+                "  TheFloatTwo: 2," +
                 "  TheStringWithSetter: 'b'," +
-                "  theSystemProperty: systemProperties('log4j.configuration')" +
+                "  TheSystemProperty: systemProperties('Path')" +
                 "}");
             epService.EPRuntime.DataFlowRuntime.Instantiate("MyGraph");
             Assert.AreEqual(1, MyOperatorOne.Operators.Count);
@@ -115,8 +112,8 @@ namespace com.espertech.esper.regression.dataflow {
             // test array etc. properties
             MyOperatorTwo.Operators.Clear();
             epService.EPAdministrator.CreateEPL(
-                "create dataflow MyGraph " + typeof(MyOperatorTwo).FullName + " {\n" +
-                "  TheStringArray: ['a', \"b\"],\n" +
+                "create dataflow MyGraph " + typeof(MyOperatorTwo).Name + " {\n" +
+                "  theStringArray: ['a', \"b\"],\n" +
                 "  theIntArray: [1, 2, 3],\n" +
                 "  theObjectArray: ['a', 1],\n" +
                 "  theMap: {\n" +
@@ -145,107 +142,79 @@ namespace com.espertech.esper.regression.dataflow {
         }
 
         [DataFlowOperator]
-        public class MyOperatorOne {
-            private static IList<MyOperatorOne> operators = new List<MyOperatorOne>();
+        public class MyOperatorOne
+        {
+            public static IList<MyOperatorOne> Operators { get; } = new List<MyOperatorOne>();
 
-            public static IList<MyOperatorOne> Operators => operators;
-
-            public MyOperatorOne() {
-                operators.Add(this);
+            public MyOperatorOne()
+            {
+                Operators.Add(this);
             }
 
-            [DataFlowOpParameter] private string theString;
-            [DataFlowOpParameter] private string theNotSetString;
-            [DataFlowOpParameter] private int theInt;
-            [DataFlowOpParameter] private bool theBool;
-            [DataFlowOpParameter] private long? theLongOne;
-            [DataFlowOpParameter] private long theLongTwo;
-            [DataFlowOpParameter] private long theLongThree;
-            [DataFlowOpParameter] private double theDoubleOne;
-            [DataFlowOpParameter] private double? theDoubleTwo;
-            [DataFlowOpParameter] private float theFloatOne;
-            [DataFlowOpParameter] private float? theFloatTwo;
-            [DataFlowOpParameter] private string theSystemProperty;
+            private string _theStringWithSetter;
 
-            private string theStringWithSetter;
+            [DataFlowOpParameter]
+            public string TheString { get; set; }
 
-            public string TheString => theString;
+            [DataFlowOpParameter]
+            public string TheNotSetString { get; set; }
 
-            public string TheNotSetString => theNotSetString;
+            [DataFlowOpParameter]
+            public int TheInt { get; set; }
 
-            public int TheInt => theInt;
+            [DataFlowOpParameter]
+            public bool TheBool { get; set; }
 
-            public bool TheBool => theBool;
+            [DataFlowOpParameter]
+            public long? TheLongOne { get; set; }
 
-            public long? TheLongOne => theLongOne;
+            [DataFlowOpParameter]
+            public long TheLongTwo { get; set; }
 
-            public long TheLongTwo => theLongTwo;
+            [DataFlowOpParameter]
+            public long? TheLongThree { get; set; }
 
-            public long? TheLongThree => theLongThree;
+            [DataFlowOpParameter]
+            public float TheFloatOne { get; set; }
 
-            public float TheFloatOne => theFloatOne;
+            [DataFlowOpParameter]
+            public float? TheFloatTwo { get; set; }
 
-            public float? TheFloatTwo => theFloatTwo;
+            [DataFlowOpParameter]
+            public double TheDoubleOne { get; set; }
 
-            public double TheDoubleOne => theDoubleOne;
+            [DataFlowOpParameter]
+            public double? TheDoubleTwo { get; set; }
 
-            public double? TheDoubleTwo => theDoubleTwo;
-
+            [DataFlowOpParameter]
             public string TheStringWithSetter {
-                get => theStringWithSetter;
-                set => TheStringWithSetter = ">" + value + "<";
+                get => _theStringWithSetter;
+                set => _theStringWithSetter = ">" + value + "<";
             }
 
-            public string TheSystemProperty => theSystemProperty;
+            [DataFlowOpParameter]
+            public string TheSystemProperty { get; set; }
         }
 
         [DataFlowOperator]
         public class MyOperatorTwo {
-
-            private static readonly IList<MyOperatorTwo> operators = new List<MyOperatorTwo>();
-
-            public static IList<MyOperatorTwo> Operators => operators;
+            public static IList<MyOperatorTwo> Operators { get; } = new List<MyOperatorTwo>();
 
             public MyOperatorTwo() {
-                operators.Add(this);
+                Operators.Add(this);
             }
 
-            private string[] theStringArray;
-            private int[] theIntArray;
-            private object[] theObjectArray;
-            private IDictionary<string, object> theMap;
-            private MyOperatorTwoInner theInnerOp;
-            private MyOperatorTwoInterface theInnerOpInterface;
+            public string[] TheStringArray { get; set; }
 
-            public string[] TheStringArray {
-                get => theStringArray;
-                set => theStringArray = value;
-            }
+            public int[] TheIntArray { get; set; }
 
-            public int[] TheIntArray {
-                get => theIntArray;
-                set => theIntArray = value;
-            }
+            public object[] TheObjectArray { get; set; }
 
-            public object[] TheObjectArray {
-                get => theObjectArray;
-                set => theObjectArray = value;
-            }
+            public IDictionary<string, object> TheMap { get; set; }
 
-            public IDictionary<string, object> TheMap {
-                get => theMap;
-                set => theMap = value;
-            }
+            public MyOperatorTwoInner TheInnerOp { get; set; }
 
-            public MyOperatorTwoInner TheInnerOp {
-                get => theInnerOp;
-                set => theInnerOp = value;
-            }
-
-            public MyOperatorTwoInterface TheInnerOpInterface {
-                get => theInnerOpInterface;
-                set => theInnerOpInterface = value;
-            }
+            public MyOperatorTwoInterface TheInnerOpInterface { get; set; }
         }
 
         public class MyOperatorTwoInner {

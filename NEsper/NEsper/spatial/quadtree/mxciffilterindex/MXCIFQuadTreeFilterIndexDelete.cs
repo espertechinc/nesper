@@ -7,8 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Drawing;
+
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.spatial.quadtree.core;
 using com.espertech.esper.spatial.quadtree.mxcif;
@@ -24,8 +23,7 @@ namespace com.espertech.esper.spatial.quadtree.mxciffilterindex
         {
             MXCIFQuadTreeNode<object> root = tree.Root;
             MXCIFQuadTreeFilterIndexCheckBB.CheckBB(root.Bb, x, y, width, height);
-            var replacement = DeleteFromNode(x, y, width, height, root, tree);
-            tree.Root = replacement;
+            tree.Root = DeleteFromNode(x, y, width, height, root, tree);
         }
 
         private static MXCIFQuadTreeNode<object> DeleteFromNode(
@@ -117,10 +115,9 @@ namespace com.espertech.esper.spatial.quadtree.mxciffilterindex
         private static int MergeChildNodes(ICollection<XYWHRectangleWValue<TL>> target, object data)
         {
             if (data == null) return 0;
-            if (data is XYWHRectangleWValue<TL>)
+            if (data is XYWHRectangleWValue<TL> dataRect)
             {
-                var p = (XYWHRectangleWValue<TL>) data;
-                target.Add(p);
+                target.Add(dataRect);
                 return 1;
             }
 

@@ -208,7 +208,7 @@ namespace NEsper.Avro.Core
             {
                 throw new EventAdapterException(
                     "Type by name '" + proposedType.Name + "' is not a compatible type " +
-                    "(target type underlying is '" + Name.Of(existingType.UnderlyingType) + "', " +
+                    "(target type underlying is '" + Name.Clean(existingType.UnderlyingType) + "', " +
                     "source type underlying is '" + proposedType.UnderlyingType.Name + "')");
             }
 

@@ -19,7 +19,7 @@ using com.espertech.esper.supportregression.execution;
 namespace com.espertech.esper.regression.events.revision
 {
     public class ExecEventRevisionWindowed : RegressionExecution {
-        private readonly string[] fields = "K0,P1,P5".Split(',');
+        private readonly string[] _fields = "K0,P1,P5".Split(',');
     
         public override void Configure(Configuration configuration) {
             // first revision event type
@@ -37,7 +37,12 @@ namespace com.espertech.esper.regression.events.revision
     
             // second revision event type
             configuration.AddEventType("MyMap", MakeMap(
-                    new object[][]{new object[] {"P5", typeof(string)}, new object[] {"P1", typeof(string)}, new object[] {"K0", typeof(string)}, new object[] {"m0", typeof(string)}}));
+                    new object[][] {
+                        new object[] {"P5", typeof(string)},
+                        new object[] {"P1", typeof(string)},
+                        new object[] {"K0", typeof(string)},
+                        new object[] {"m0", typeof(string)}
+                    }));
             configRev = new ConfigurationRevisionEventType();
             configRev.KeyPropertyNames = new string[]{"P5", "P1"};
             configRev.AddNameBaseEventType("MyMap");
@@ -50,6 +55,7 @@ namespace com.espertech.esper.regression.events.revision
             if (SupportConfigFactory.SkipTest(typeof(ExecEventRevisionWindowed))) {
                 return;
             }
+
             RunAssertionSubclassInterface(epService);
             RunAssertionMultiPropertyMapMixin(epService);
             RunAssertionUnique(epService);
@@ -66,11 +72,15 @@ namespace com.espertech.esper.regression.events.revision
             config.AddNameDeltaEventType("ISupportDeltaFive");
             epService.EPAdministrator.Configuration.AddRevisionEventType("MyInterface", config);
     
-            EPStatement stmtCreateWin = epService.EPAdministrator.CreateEPL("create window MyInterfaceWindow#keepall as select * from MyInterface");
-            epService.EPAdministrator.CreateEPL("insert into MyInterfaceWindow select * from ISupportRevisionFull");
-            epService.EPAdministrator.CreateEPL("insert into MyInterfaceWindow select * from ISupportDeltaFive");
+            EPStatement stmtCreateWin = epService.EPAdministrator.CreateEPL
+                ("create window MyInterfaceWindow#keepall as select * from MyInterface");
+            epService.EPAdministrator.CreateEPL
+                ("insert into MyInterfaceWindow select * from ISupportRevisionFull");
+            epService.EPAdministrator.CreateEPL
+                ("insert into MyInterfaceWindow select * from ISupportDeltaFive");
     
-            EPStatement consumerOne = epService.EPAdministrator.CreateEPL("@Audit select irstream K0,P0,P1 from MyInterfaceWindow");
+            EPStatement consumerOne = epService.EPAdministrator.CreateEPL
+                ("@Audit select irstream K0,P0,P1 from MyInterfaceWindow");
             var listenerOne = new SupportUpdateListener();
             consumerOne.Events += listenerOne.Update;
             string[] fields = "K0,P0,P1".Split(',');
@@ -95,12 +105,17 @@ namespace com.espertech.esper.regression.events.revision
     
         private void RunAssertionMultiPropertyMapMixin(EPServiceProvider epService) {
             string[] fields = "K0,P1,P5,m0".Split(',');
-            EPStatement stmtCreateWin = epService.EPAdministrator.CreateEPL("create window RevMap#length(3) as select * from RevisableMap");
-            epService.EPAdministrator.CreateEPL("insert into RevMap select * from MyMap");
-            epService.EPAdministrator.CreateEPL("insert into RevMap select * from D1");
-            epService.EPAdministrator.CreateEPL("insert into RevMap select * from D5");
+            EPStatement stmtCreateWin = epService.EPAdministrator.CreateEPL
+                ("create window RevMap#length(3) as select * from RevisableMap");
+            epService.EPAdministrator.CreateEPL
+                ("insert into RevMap select * from MyMap");
+            epService.EPAdministrator.CreateEPL
+                ("insert into RevMap select * from D1");
+            epService.EPAdministrator.CreateEPL
+                ("insert into RevMap select * from D5");
     
-            EPStatement consumerOne = epService.EPAdministrator.CreateEPL("select irstream * from RevMap order by K0");
+            EPStatement consumerOne = epService.EPAdministrator.CreateEPL
+                ("select irstream * from RevMap order by K0");
             var listenerOne = new SupportUpdateListener();
             consumerOne.Events += listenerOne.Update;
     
@@ -135,45 +150,58 @@ namespace com.espertech.esper.regression.events.revision
         }
     
         private void RunAssertionUnique(EPServiceProvider epService) {
-            EPStatement stmtCreateWin = epService.EPAdministrator.CreateEPL("create window RevQuote#unique(P1) as select * from RevisableQuote");
-            epService.EPAdministrator.CreateEPL("insert into RevQuote select * from FullEvent");
-            epService.EPAdministrator.CreateEPL("insert into RevQuote select * from D1");
-            epService.EPAdministrator.CreateEPL("insert into RevQuote select * from D5");
+            var stmtCreateWin = epService.EPAdministrator.CreateEPL
+                ("create window RevQuote#unique(P1) as select * from RevisableQuote");
+            epService.EPAdministrator.CreateEPL
+                ("insert into RevQuote select * from FullEvent");
+            epService.EPAdministrator.CreateEPL
+                ("insert into RevQuote select * from D1");
+            epService.EPAdministrator.CreateEPL
+                ("insert into RevQuote select * from D5");
     
-            EPStatement consumerOne = epService.EPAdministrator.CreateEPL("select irstream * from RevQuote");
+            var consumerOne = epService.EPAdministrator.CreateEPL
+                ("select irstream * from RevQuote");
             var listenerOne = new SupportUpdateListener();
             consumerOne.Events += listenerOne.Update;
     
             epService.EPRuntime.SendEvent(new SupportRevisionFull("a", "a10", "a50"));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"a", "a10", "a50"});
-            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new object[]{"a", "a10", "a50"});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), _fields, new object[]{"a", "a10", "a50"});
+            EPAssertionUtil.AssertProps(stmtCreateWin.First(), _fields, new object[]{"a", "a10", "a50"});
     
             epService.EPRuntime.SendEvent(new SupportDeltaFive("a", "a11", "a51"));
-            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new object[]{"a", "a11", "a51"});
-            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new object[]{"a", "a10", "a50"});
+            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], _fields, new object[]{"a", "a11", "a51"});
+            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], _fields, new object[]{"a", "a10", "a50"});
             listenerOne.Reset();
-            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new object[]{"a", "a11", "a51"});
+            EPAssertionUtil.AssertProps(stmtCreateWin.First(), _fields, new object[]{"a", "a11", "a51"});
     
             epService.EPRuntime.SendEvent(new SupportDeltaFive("b", "b10", "b50"));
             epService.EPRuntime.SendEvent(new SupportRevisionFull("b", "b10", "b50"));
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), fields, new object[]{"b", "b10", "b50"});
-            EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields, new object[][]{new object[] {"a", "a11", "a51"}, new object[] {"b", "b10", "b50"}});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), _fields, new object[]{"b", "b10", "b50"});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreateWin.GetEnumerator(), _fields, new object[][] {
+                new object[] {"a", "a11", "a51"},
+                new object[] {"b", "b10", "b50"}
+            });
     
             epService.EPRuntime.SendEvent(new SupportDeltaFive("b", "a11", "b51"));
-            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new object[]{"b", "a11", "b51"});
-            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new object[]{"a", "a11", "a51"});
-            EPAssertionUtil.AssertProps(stmtCreateWin.First(), fields, new object[]{"b", "a11", "b51"});
+            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], _fields, new object[]{"b", "a11", "b51"});
+            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], _fields, new object[]{"a", "a11", "a51"});
+            EPAssertionUtil.AssertProps(stmtCreateWin.First(), _fields, new object[]{"b", "a11", "b51"});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
         private void RunAssertionGroupLength(EPServiceProvider epService) {
-            EPStatement stmtCreateWin = epService.EPAdministrator.CreateEPL("create window RevQuote#groupwin(p1)#length(2) as select * from RevisableQuote");
-            epService.EPAdministrator.CreateEPL("insert into RevQuote select * from FullEvent");
-            epService.EPAdministrator.CreateEPL("insert into RevQuote select * from D1");
-            epService.EPAdministrator.CreateEPL("insert into RevQuote select * from D5");
+            EPStatement stmtCreateWin = epService.EPAdministrator.CreateEPL
+                ("create window RevQuote#groupwin(P1)#length(2) as select * from RevisableQuote");
+            epService.EPAdministrator.CreateEPL
+                ("insert into RevQuote select * from FullEvent");
+            epService.EPAdministrator.CreateEPL
+                ("insert into RevQuote select * from D1");
+            epService.EPAdministrator.CreateEPL
+                ("insert into RevQuote select * from D5");
     
-            EPStatement consumerOne = epService.EPAdministrator.CreateEPL("select irstream * from RevQuote order by K0 asc");
+            EPStatement consumerOne = epService.EPAdministrator.CreateEPL
+                ("select irstream * from RevQuote order by K0 asc");
             var listenerOne = new SupportUpdateListener();
             consumerOne.Events += listenerOne.Update;
     
@@ -184,20 +212,20 @@ namespace com.espertech.esper.regression.events.revision
             epService.EPRuntime.SendEvent(new SupportDeltaFive("d", "P3", "d50"));
     
             listenerOne.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields, new object[][]{new object[] {"a", "P1", "a51"}, new object[] {"b", "P2", "b50"}, new object[] {"c", "P3", "c50"}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), _fields, new object[][]{new object[] {"a", "P1", "a51"}, new object[] {"b", "P2", "b50"}, new object[] {"c", "P3", "c50"}});
     
             epService.EPRuntime.SendEvent(new SupportDeltaFive("b", "P1", "b51"));
-            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new object[]{"b", "P1", "b51"});
-            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new object[]{"b", "P2", "b50"});
+            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], _fields, new object[]{"b", "P1", "b51"});
+            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], _fields, new object[]{"b", "P2", "b50"});
             listenerOne.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields, new object[][]{new object[] {"a", "P1", "a51"}, new object[] {"b", "P1", "b51"}, new object[] {"c", "P3", "c50"}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), _fields, new object[][]{new object[] {"a", "P1", "a51"}, new object[] {"b", "P1", "b51"}, new object[] {"c", "P3", "c50"}});
     
             epService.EPRuntime.SendEvent(new SupportDeltaFive("c", "P1", "c51"));
-            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], fields, new object[]{"c", "P1", "c51"});
-            EPAssertionUtil.AssertProps(listenerOne.LastOldData[1], fields, new object[]{"c", "P3", "c50"});
-            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], fields, new object[]{"a", "P1", "a51"});
+            EPAssertionUtil.AssertProps(listenerOne.LastNewData[0], _fields, new object[]{"c", "P1", "c51"});
+            EPAssertionUtil.AssertProps(listenerOne.LastOldData[1], _fields, new object[]{"c", "P3", "c50"});
+            EPAssertionUtil.AssertProps(listenerOne.LastOldData[0], _fields, new object[]{"a", "P1", "a51"});
             listenerOne.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), fields, new object[][]{new object[] {"b", "P1", "b51"}, new object[] {"c", "P1", "c51"}});
+            EPAssertionUtil.AssertPropsPerRow(stmtCreateWin.GetEnumerator(), _fields, new object[][]{new object[] {"b", "P1", "b51"}, new object[] {"c", "P1", "c51"}});
     
             epService.EPAdministrator.DestroyAllStatements();
         }

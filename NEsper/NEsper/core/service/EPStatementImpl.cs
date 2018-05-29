@@ -350,7 +350,7 @@ namespace com.espertech.esper.core.service
             StatementContext.VariableService.SetLocalVersion();
             if (_parentView == null)
             {
-                return EnumerationHelper<EventBean>.Empty();
+                return EnumerationHelper.Empty<EventBean>();
             }
 
             IEnumerator<EventBean> theEnumerator;

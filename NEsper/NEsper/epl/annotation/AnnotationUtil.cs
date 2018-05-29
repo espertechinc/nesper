@@ -328,9 +328,9 @@ namespace com.espertech.esper.epl.annotation
                 {
                     throw new AttributeException(
                         "Annotation '" + attributeTypeName + "' requires a " +
-                        propertyInfo.PropertyType.FullName + "-typed value for attribute '" +
+                        propertyInfo.PropertyType.GetCleanName() + "-typed value for attribute '" +
                         propertyName + "' but received a " +
-                        propertyValue.GetType().FullName + "-typed value");
+                        propertyValue.GetType().GetCleanName() + "-typed value");
                 }
 
                 var array = (Array)propertyValue;
@@ -357,9 +357,9 @@ namespace com.espertech.esper.epl.annotation
                         {
                             throw new AttributeException(
                                 "Annotation '" + attributeTypeName + "' requires a " +
-                                expectElementType.FullName + "-typed value for array elements for attribute '" +
+                                expectElementType.GetCleanName() + "-typed value for array elements for attribute '" +
                                 propertyName + "' but received a " +
-                                oldValue.GetType().FullName + "-typed value");
+                                oldValue.GetType().GetCleanName() + "-typed value");
                         }
 
                         expectedArray.SetValue(newValue, ii);

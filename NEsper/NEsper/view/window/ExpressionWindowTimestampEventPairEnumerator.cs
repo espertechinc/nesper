@@ -40,15 +40,9 @@ namespace com.espertech.esper.view.window
             _events.Reset();
         }
 
-        object IEnumerator.Current
-        {
-            get { return Current; }
-        }
+        object IEnumerator.Current => Current;
 
-        public EventBean Current
-        {
-            get { return _events.Current.TheEvent; }
-        }
+        public EventBean Current => _events.Current.TheEvent;
 
         #endregion
     }

@@ -6,14 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
@@ -26,8 +21,7 @@ namespace com.espertech.esper.regression.db
     {
         public override void Configure(Configuration configuration)
         {
-            var configDB = new ConfigurationDBRef();
-            configDB.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative);
+            var configDB = SupportDatabaseService.CreateDefaultConfig();
             configDB.ConnectionLifecycle = ConnectionLifecycleEnum.RETAIN;
             configDB.LRUCache = 100000;
             configDB.ConnectionCatalog = "test";

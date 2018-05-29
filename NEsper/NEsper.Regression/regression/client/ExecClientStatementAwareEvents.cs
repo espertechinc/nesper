@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using com.espertech.esper.client;
@@ -21,7 +22,7 @@ namespace com.espertech.esper.regression.client
 {
     public class ExecClientStatementAwareEvents : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            configuration.AddEventType("Bean", typeof(SupportBean));
+            configuration.AddEventType<SupportBean>("Bean");
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -152,28 +153,28 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionOrderOfInvocation(EPServiceProvider epService) {
-            string stmtText = "select * from Bean";
-            EPStatement statement = epService.EPAdministrator.CreateEPL(stmtText);
-    
-            var awareListeners = new MyStmtAwareUpdateListener[2];
-            var updateListeners = new MyUpdateListener[awareListeners.Length];
-            var invoked = new List<object>();
-            for (int i = 0; i < awareListeners.Length; i++) {
-                awareListeners[i] = new MyStmtAwareUpdateListener(invoked);
-                updateListeners[i] = new MyUpdateListener(invoked);
-            }
-    
-            statement.Events += awareListeners[0].Update;
-            statement.Events += updateListeners[1].Update;
-            statement.Events += updateListeners[0].Update;
-            statement.Events += awareListeners[1].Update;
-    
+            const string stmtText = "select * from Bean";
+
+            var statement = epService.EPAdministrator.CreateEPL(stmtText);
+
+            var id1 = Guid.NewGuid();
+            var id2 = Guid.NewGuid();
+            var id3 = Guid.NewGuid();
+            var id4 = Guid.NewGuid();
+            var invoked = new List<Guid>();
+
+            statement.Events += (sender, args) => invoked.Add(id1);
+            statement.Events += (sender, args) => invoked.Add(id3);
+            statement.Events += (sender, args) => invoked.Add(id2);
+            statement.Events += (sender, args) => invoked.Add(id4);
+
             epService.EPRuntime.SendEvent(new SupportBean());
-    
-            Assert.AreEqual(updateListeners[1], invoked[0]);
-            Assert.AreEqual(updateListeners[0], invoked[1]);
-            Assert.AreEqual(awareListeners[0], invoked[2]);
-            Assert.AreEqual(awareListeners[1], invoked[3]);
+
+            Assert.That(invoked.Count, Is.EqualTo(4));
+            Assert.That(invoked[0], Is.EqualTo(id1));
+            Assert.That(invoked[1], Is.EqualTo(id3));
+            Assert.That(invoked[2], Is.EqualTo(id2));
+            Assert.That(invoked[3], Is.EqualTo(id4));
 
             statement.RemoveAllEventHandlers();
     

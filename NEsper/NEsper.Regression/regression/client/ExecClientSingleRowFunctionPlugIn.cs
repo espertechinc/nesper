@@ -32,8 +32,7 @@ namespace com.espertech.esper.regression.client
     {
         public override void Configure(Configuration configuration)
         {
-            configuration.AddPlugInSingleRowFunction(
-                "singlerow", typeof(MySingleRowFunctionTwo).FullName, "TestSingleRow");
+            configuration.AddPlugInSingleRowFunction("singlerow", typeof(MySingleRowFunctionTwo), "TestSingleRow");
             configuration.AddPlugInSingleRowFunction("power3", typeof(MySingleRowFunction), "ComputePower3");
             configuration.AddPlugInSingleRowFunction("chainTop", typeof(MySingleRowFunction), "GetChainTop");
             configuration.AddPlugInSingleRowFunction("surroundx", typeof(MySingleRowFunction), "Surroundx");
@@ -143,7 +142,7 @@ namespace com.espertech.esper.regression.client
             SupportMessageAssertUtil.TryInvalid(
                 epService,
                 "select MyItemProducerInvalidNoType(TheString).where(v => v.id='id1') as c0 from SupportBean",
-                "Error starting statement: Failed to validate select-clause expression 'MyItemProducerInvalidNoType(theStri...(68 chars)': Method 'MyItemProducerEventBeanArray' returns EventBean-array but does not provide the event type name [");
+                "Error starting statement: Failed to validate select-clause expression 'MyItemProducerInvalidNoType(TheStri...(68 chars)': Method 'MyItemProducerEventBeanArray' returns EventBean-array but does not provide the event type name [");
 
             // test invalid: event type name invalid
             entry.Name = "myItemProducerInvalidWrongType";
@@ -152,7 +151,7 @@ namespace com.espertech.esper.regression.client
             SupportMessageAssertUtil.TryInvalid(
                 epService,
                 "select MyItemProducerInvalidWrongType(TheString).where(v => v.id='id1') as c0 from SupportBean",
-                "Error starting statement: Failed to validate select-clause expression 'MyItemProducerInvalidWrongType(theS...(74 chars)': Method 'MyItemProducerEventBeanArray' returns event type 'dummy' and the event type cannot be found [select MyItemProducerInvalidWrongType(TheString).where(v => v.id='id1') as c0 from SupportBean]");
+                "Error starting statement: Failed to validate select-clause expression 'MyItemProducerInvalidWrongType(TheS...(74 chars)': Method 'MyItemProducerEventBeanArray' returns event type 'dummy' and the event type cannot be found [select MyItemProducerInvalidWrongType(TheString).where(v => v.id='id1') as c0 from SupportBean]");
 
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -202,13 +201,13 @@ namespace com.espertech.esper.regression.client
                 MakePair(typeof(MySingleRowFunction).FullName + ".VarargsW2ParamWCtx('a', 'b')", "CTX+a,b,"));
 
             RunVarargAssertion(
-                epService, MakePair("VarargsOnlyObject('a', 1, new BigInteger('2'))", "a,1,2"));
+                epService, MakePair("VarargsOnlyObject('a', 1, new BigInteger(2))", "a,1,2"));
 
             RunVarargAssertion(
-                epService, MakePair("VarargsOnlyNumber(1f, 2L, 3, new BigInteger('4'))", "1.0,2,3,4"));
+                epService, MakePair("VarargsOnlyNumber(1f, 2L, 3, new BigInteger(4))", "1.0,2,3,4"));
 
             RunVarargAssertion(
-                epService, MakePair("VarargsOnlyNumber(1f, 2L, 3, new BigInteger('4'))", "1.0,2,3,4"));
+                epService, MakePair("VarargsOnlyNumber(1f, 2L, 3, new BigInteger(4))", "1.0,2,3,4"));
 
             RunVarargAssertion(
                 epService,
@@ -236,7 +235,7 @@ namespace com.espertech.esper.regression.client
 
             // test select-clause
             var fields = new[] {"c0", "c1"};
-            var text = "select IsNullValue(*, 'TheString') as c0," +
+            var text = "select isNullValue(*, 'TheString') as c0," +
                        "ExecClientSingleRowFunctionPlugIn.LocalIsNullValue(*, 'TheString') as c1 from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
@@ -292,7 +291,7 @@ namespace com.espertech.esper.regression.client
 
         private void RunAssertionPropertyOrSingleRowMethod(EPServiceProvider epService)
         {
-            var text = "select Surroundx('test') as val from SupportBean";
+            var text = "select surroundx('test') as val from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -304,7 +303,7 @@ namespace com.espertech.esper.regression.client
 
         private void RunAssertionChainMethod(EPServiceProvider epService)
         {
-            var text = "select ChainTop().ChainValue(12,IntPrimitive) as val from SupportBean";
+            var text = "select chainTop().ChainValue(12,IntPrimitive) as val from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -323,7 +322,7 @@ namespace com.espertech.esper.regression.client
 
         private void RunAssertionSingleMethod(EPServiceProvider epService)
         {
-            var text = "select Power3(IntPrimitive) as val from SupportBean";
+            var text = "select power3(IntPrimitive) as val from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -340,7 +339,7 @@ namespace com.espertech.esper.regression.client
             TryAssertionSingleMethod(epService, listener);
 
             stmt.Dispose();
-            text = "select Power3(2) as val from SupportBean";
+            text = "select power3(2) as val from SupportBean";
             stmt = epService.EPAdministrator.CreateEPL(text);
             stmt.Events += listener.Update;
 
@@ -348,7 +347,7 @@ namespace com.espertech.esper.regression.client
             stmt.Dispose();
 
             // test passing a context as well
-            text = "@Name('A') select Power3Context(IntPrimitive) as val from SupportBean";
+            text = "@Name('A') select power3Context(IntPrimitive) as val from SupportBean";
             stmt = epService.EPAdministrator.CreateEPL(text, (object) "my_user_object");
             stmt.Events += listener.Update;
 
@@ -365,13 +364,12 @@ namespace com.espertech.esper.regression.client
 
             // test exception behavior
             // logged-only
-            epService.EPAdministrator.CreateEPL("select ThrowExceptionLogMe() from SupportBean").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select throwExceptionLogMe() from SupportBean").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             epService.EPAdministrator.DestroyAllStatements();
 
             // rethrow
-            epService.EPAdministrator.CreateEPL("@Name('S0') select ThrowExceptionRethrow() from SupportBean")
-                .Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("@Name('S0') select throwExceptionRethrow() from SupportBean").Events += listener.Update;
             try
             {
                 epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -380,13 +378,13 @@ namespace com.espertech.esper.regression.client
             catch (EPException ex)
             {
                 Assert.AreEqual(
-                    "java.lang.RuntimeException: Unexpected exception in statement 'S0': Invocation exception when invoking method 'throwexception' of class 'com.espertech.esper.supportregression.client.MySingleRowFunction' passing parameters [] for statement 'S0': RuntimeException : This is a 'throwexception' generated exception",
+                    "com.espertech.esper.client.EPException: Unexpected exception in statement 'S0': Invocation exception when invoking method 'ThrowException' of class 'com.espertech.esper.supportregression.client.MySingleRowFunction' passing parameters [] for statement 'S0': System.Exception : This is a 'throwexception' generated exception",
                     ex.Message);
                 epService.EPAdministrator.DestroyAllStatements();
             }
 
             // NPE when boxed is null
-            epService.EPAdministrator.CreateEPL("@Name('S1') select Power3Rethrow(IntBoxed) from SupportBean")
+            epService.EPAdministrator.CreateEPL("@Name('S1') select power3Rethrow(IntBoxed) from SupportBean")
                 .Events += listener.Update;
             try
             {
@@ -396,7 +394,7 @@ namespace com.espertech.esper.regression.client
             catch (EPException ex)
             {
                 Assert.AreEqual(
-                    "java.lang.RuntimeException: Unexpected exception in statement 'S1': NullPointerException invoking method 'computePower3' of class 'com.espertech.esper.supportregression.client.MySingleRowFunction' in parameter 0 passing parameters [null] for statement 'S1': The method expects a primitive int value but received a null value",
+                    "com.espertech.esper.client.EPException: Unexpected exception in statement 'S1': NullPointerException invoking method 'ComputePower3' of class 'com.espertech.esper.supportregression.client.MySingleRowFunction' in parameter 0 passing parameters [null] for statement 'S1': The method expects a primitive Int32 value but received a null value",
                     ex.Message);
             }
         }
@@ -423,14 +421,14 @@ namespace com.espertech.esper.regression.client
         {
             try
             {
-                var text = "select Singlerow('a', 'b') from " + typeof(SupportBean).FullName;
+                var text = "select singlerow('a', 'b') from " + typeof(SupportBean).FullName;
                 epService.EPAdministrator.CreateEPL(text);
             }
             catch (EPStatementException ex)
             {
                 SupportMessageAssertUtil.AssertMessage(
                     ex,
-                    "Error starting statement: Failed to validate select-clause expression 'Singlerow(\"a\",\"b\")': Could not find static method named 'testSingleRow' in class 'com.espertech.esper.supportregression.client.MySingleRowFunctionTwo' with matching parameter number and expected parameter type(s) 'System.String, System.String' (nearest match found was 'testSingleRow' taking type(s) 'System.String, System.Int32')");
+                    "Error starting statement: Failed to validate select-clause expression 'singlerow(\"a\",\"b\")': Could not find static method named 'TestSingleRow' in class 'com.espertech.esper.supportregression.client.MySingleRowFunctionTwo' with matching parameter number and expected parameter type(s) 'System.String, System.String' (nearest match found was 'TestSingleRow' taking type(s) 'System.String, System.Int32')");
             }
         }
 
@@ -528,10 +526,10 @@ namespace com.espertech.esper.regression.client
         {
             var stmt = epService.EPAdministrator.CreateEPL(
                 "select " +
-                "java.util.Collections.List('a') as c0, " +
-                "java.util.Collections.List({'a'}) as c1, " +
-                "java.util.Collections.List('a', 'b') as c2, " +
-                "java.util.Collections.List({'a', 'b'}) as c3 " +
+                "com.espertech.esper.compat.collections.CompatExtensions.AsList('a') as c0, " +
+                "com.espertech.esper.compat.collections.CompatExtensions.AsList({'a'}) as c1, " +
+                "com.espertech.esper.compat.collections.CompatExtensions.AsList('a', 'b') as c2, " +
+                "com.espertech.esper.compat.collections.CompatExtensions.AsList({'a', 'b'}) as c3 " +
                 "from SupportBean");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

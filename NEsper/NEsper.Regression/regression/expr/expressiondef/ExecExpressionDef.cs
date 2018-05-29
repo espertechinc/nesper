@@ -13,6 +13,7 @@ using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
@@ -123,12 +124,12 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var epl =
                     "@Audit('exprdef') " +
                             "expression last2X {\n" +
-                            "  p => WindowOne(WindowOne.col1 = p.TheString).TakeLast(2)\n" +
+                            "  p => WindowOne(WindowOne.col1 = p.TheString).takeLast(2)\n" +
                             "} " +
                             "expression last2Y {\n" +
-                            "  p => WindowTwo(WindowTwo.col1 = p.TheString).TakeLast(2).selectFrom(q => q.col2)\n" +
+                            "  p => WindowTwo(WindowTwo.col1 = p.TheString).takeLast(2).selectFrom(q => q.col2)\n" +
                             "} " +
-                            "select Last2X(sb).selectFrom(a => a.col2).sequenceEqual(Last2Y(sb)) as val from SupportBean as sb";
+                            "select last2X(sb).selectFrom(a => a.col2).sequenceEqual(last2Y(sb)) as val from SupportBean as sb";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -148,7 +149,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
                     "  when TheString = 'B' then new { col1 = 'Y', col2 = 20 } " +
                     "end" +
                     "} " +
-                    "insert into OtherStream select Gettotal(sb) as val0 from SupportBean sb";
+                    "insert into OtherStream select gettotal(sb) as val0 from SupportBean sb";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -174,10 +175,10 @@ namespace com.espertech.esper.regression.expr.expressiondef
         }
     
         private void RunAssertionAnnotationOrder(EPServiceProvider epService) {
-            var epl = "expression scalar {1} @Name('test') select Scalar() from SupportBean_ST0";
+            var epl = "expression scalar {1} @Name('test') select scalar() from SupportBean_ST0";
             TryAssertionAnnotation(epService, epl);
     
-            epl = "@Name('test') expression scalar {1} select Scalar() from SupportBean_ST0";
+            epl = "@Name('test') expression scalar {1} select scalar() from SupportBean_ST0";
             TryAssertionAnnotation(epService, epl);
         }
     
@@ -186,11 +187,11 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("Scalar()"));
+            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("scalar()"));
             Assert.AreEqual("test", stmt.Name);
     
             epService.EPRuntime.SendEvent(new SupportBean_ST0("E1", 1));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "Scalar()".Split(','), new object[]{1});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "scalar()".Split(','), new object[]{1});
     
             stmt.Dispose();
         }
@@ -203,7 +204,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
                     "expression mini {" +
                     " (select min(IntPrimitive) from SupportBean#keepall)" +
                     "} " +
-                    "select p00/Maxi() as val0, p00/Mini() as val1 " +
+                    "select p00/maxi() as val0, p00/mini() as val1 " +
                     "from SupportBean_ST0#lastevent";
             TryAssertionMultiResult(epService, eplOne);
     
@@ -211,7 +212,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
                     "expression subq {" +
                     " (select max(IntPrimitive) as maxi, min(IntPrimitive) as mini from SupportBean#keepall)" +
                     "} " +
-                    "select p00/Subq().maxi as val0, p00/Subq().mini as val1 " +
+                    "select p00/subq().maxi as val0, p00/subq().mini as val1 " +
                     "from SupportBean_ST0#lastevent";
             TryAssertionMultiResult(epService, eplTwo);
     
@@ -219,7 +220,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
                     "expression subq alias for " +
                     " { (select max(IntPrimitive) as maxi, min(IntPrimitive) as mini from SupportBean#keepall) }" +
                     " " +
-                    "select p00/Subq().maxi as val0, p00/Subq().mini as val1 " +
+                    "select p00/subq().maxi as val0, p00/subq().mini as val1 " +
                     "from SupportBean_ST0#lastevent";
             TryAssertionMultiResult(epService, eplTwoAlias);
         }
@@ -248,7 +249,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var eplDeclare = "expression subq {" +
                     " (x, y) => (select TheString from SupportBean#keepall where TheString = x.id and IntPrimitive = y.p10)" +
                     "} " +
-                    "select Subq(one, two) as val1 " +
+                    "select subq(one, two) as val1 " +
                     "from SupportBean_ST0#lastevent as one, SupportBean_ST1#lastevent as two";
             TryAssertionSubqueryCross(epService, eplDeclare);
     
@@ -282,7 +283,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
                     "expression subq {" +
                     " x => (select IntPrimitive from SupportBean#keepall where TheString = x.pcommon)" +   // a common field
                     "} " +
-                    "select Subq(one) as val1, Subq(two) as val2 " +
+                    "select subq(one) as val1, subq(two) as val2 " +
                     "from SupportBean_ST0#lastevent as one, SupportBean_ST1#lastevent as two";
             TryAssertionSubqueryJoinSameField(epService, eplDeclare);
     
@@ -319,11 +320,11 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var eplDeclare = "expression subqOne {" +
                     " x => (select id from SupportBean_ST0#keepall where p00 = x.IntPrimitive)" +
                     "} " +
-                    "select TheString as val0, SubqOne(t) as val1 from SupportBean as t";
+                    "select TheString as val0, subqOne(t) as val1 from SupportBean as t";
             TryAssertionSubqueryCorrelated(epService, eplDeclare);
     
             var eplAlias = "expression subqOne alias for {(select id from SupportBean_ST0#keepall where p00 = t.IntPrimitive)} " +
-                    "select TheString as val0, SubqOne(t) as val1 from SupportBean as t";
+                    "select TheString as val0, subqOne(t) as val1 from SupportBean as t";
             TryAssertionSubqueryCorrelated(epService, eplAlias);
         }
     
@@ -353,7 +354,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
         private void RunAssertionSubqueryUncorrelated(EPServiceProvider epService) {
             var eplDeclare = "expression subqOne {(select id from SupportBean_ST0#lastevent)} " +
-                    "select TheString as val0, SubqOne() as val1 from SupportBean as t";
+                    "select TheString as val0, subqOne() as val1 from SupportBean as t";
             TryAssertionSubqueryUncorrelated(epService, eplDeclare);
     
             var eplAlias = "expression subqOne alias for {(select id from SupportBean_ST0#lastevent)} " +
@@ -384,11 +385,11 @@ namespace com.espertech.esper.regression.expr.expressiondef
         }
     
         private void RunAssertionSubqueryNamedWindowUncorrelated(EPServiceProvider epService) {
-            var eplDeclare = "expression subqnamedwin { MyWindow.where(x => x.val1 > 10).OrderBy(x => x.val0) } " +
-                    "select Subqnamedwin() as c0, Subqnamedwin().where(x => x.val1 < 100) as c1 from SupportBean_ST0 as t";
+            var eplDeclare = "expression subqnamedwin { MyWindow.where(x => x.val1 > 10).orderBy(x => x.val0) } " +
+                    "select subqnamedwin() as c0, subqnamedwin().where(x => x.val1 < 100) as c1 from SupportBean_ST0 as t";
             TryAssertionSubqueryNamedWindowUncorrelated(epService, eplDeclare);
     
-            var eplAlias = "expression subqnamedwin alias for {MyWindow.where(x => x.val1 > 10).OrderBy(x => x.val0)}" +
+            var eplAlias = "expression subqnamedwin alias for {MyWindow.where(x => x.val1 > 10).orderBy(x => x.val0)}" +
                     "select subqnamedwin as c0, subqnamedwin.where(x => x.val1 < 100) as c1 from SupportBean_ST0";
             TryAssertionSubqueryNamedWindowUncorrelated(epService, eplAlias);
         }
@@ -406,25 +407,25 @@ namespace com.espertech.esper.regression.expr.expressiondef
             stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmt.EventType, fieldsSelected, new Type[]
             {
-                typeof(ICollection<object>), typeof(ICollection<object>)
+                typeof(ICollection<Map>), typeof(ICollection<Map>)
             });
     
             epService.EPRuntime.SendEvent(new SupportBean("E0", 0));
             epService.EPRuntime.SendEvent(new SupportBean_ST0("ID0", 0));
-            EPAssertionUtil.AssertPropsPerRow(ToArrayMap((ICollection<object>) listener.AssertOneGetNew().Get("c0")), fieldsInside, null);
-            EPAssertionUtil.AssertPropsPerRow(ToArrayMap((ICollection<object>) listener.AssertOneGetNew().Get("c1")), fieldsInside, null);
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertOneGetNew().Get("c0").UnwrapIntoArray<Map>(), fieldsInside, null);
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertOneGetNew().Get("c1").UnwrapIntoArray<Map>(), fieldsInside, null);
             listener.Reset();
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 11));
             epService.EPRuntime.SendEvent(new SupportBean_ST0("ID1", 0));
-            EPAssertionUtil.AssertPropsPerRow(ToArrayMap((ICollection<object>) listener.AssertOneGetNew().Get("c0")), fieldsInside, new object[][]{new object[] {"E1"}});
-            EPAssertionUtil.AssertPropsPerRow(ToArrayMap((ICollection<object>) listener.AssertOneGetNew().Get("c1")), fieldsInside, new object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertOneGetNew().Get("c0").UnwrapIntoArray<Map>(), fieldsInside, new object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertOneGetNew().Get("c1").UnwrapIntoArray<Map>(), fieldsInside, new object[][]{new object[] {"E1"}});
             listener.Reset();
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 500));
             epService.EPRuntime.SendEvent(new SupportBean_ST0("ID2", 0));
-            EPAssertionUtil.AssertPropsPerRow(ToArrayMap((ICollection<object>) listener.AssertOneGetNew().Get("c0")), fieldsInside, new object[][]{new object[] {"E1"}, new object[] {"E2"}});
-            EPAssertionUtil.AssertPropsPerRow(ToArrayMap((ICollection<object>) listener.AssertOneGetNew().Get("c1")), fieldsInside, new object[][]{new object[] {"E1"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertOneGetNew().Get("c0").UnwrapIntoArray<Map>(), fieldsInside, new object[][]{new object[] {"E1"}, new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertOneGetNew().Get("c1").UnwrapIntoArray<Map>(), fieldsInside, new object[][]{new object[] {"E1"}});
             listener.Reset();
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -435,21 +436,21 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var epl = "expression subqnamedwin {" +
                     "  x => MyWindow(val0 = x.key0).where(y => val1 > 10)" +
                     "} " +
-                    "select Subqnamedwin(t) as c0 from SupportBean_ST0 as t";
+                    "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
             TryAssertionSubqNWCorrelated(epService, epl);
     
             // more or less prefixes
             epl = "expression subqnamedwin {" +
                     "  x => MyWindow(val0 = x.key0).where(y => y.val1 > 10)" +
                     "} " +
-                    "select Subqnamedwin(t) as c0 from SupportBean_ST0 as t";
+                    "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
             TryAssertionSubqNWCorrelated(epService, epl);
     
             // with property-explicit stream name
             epl = "expression subqnamedwin {" +
                     "  x => MyWindow(MyWindow.val0 = x.key0).where(y => y.val1 > 10)" +
                     "} " +
-                    "select Subqnamedwin(t) as c0 from SupportBean_ST0 as t";
+                    "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
             TryAssertionSubqNWCorrelated(epService, epl);
     
             // with alias
@@ -463,7 +464,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             epl = "expression subqnamedwin {" +
                     "  x => MyWindowTwo(MyWindowTwo.id = x.id).where(y => y.p00 > 10)" +
                     "} " +
-                    "select Subqnamedwin(t) as c0 from SupportBean_ST0 as t";
+                    "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
             epService.EPAdministrator.CreateEPL(epl);
         }
     
@@ -476,26 +477,28 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, fieldSelected, new Type[]{typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, fieldSelected, new Type[] {
+                typeof(ICollection<Map>)
+            });
     
             epService.EPRuntime.SendEvent(new SupportBean("E0", 0));
             epService.EPRuntime.SendEvent(new SupportBean_ST0("ID0", "x", 0));
-            EPAssertionUtil.AssertPropsPerRow(ToArrayMap((ICollection<object>) listener.AssertOneGetNew().Get("c0")), fieldInside, null);
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertOneGetNew().Get("c0").UnwrapIntoArray<Map>(), fieldInside, null);
             listener.Reset();
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 11));
             epService.EPRuntime.SendEvent(new SupportBean_ST0("ID1", "x", 0));
-            EPAssertionUtil.AssertPropsPerRow(ToArrayMap((ICollection<object>) listener.AssertOneGetNew().Get("c0")), fieldInside, null);
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertOneGetNew().Get("c0").UnwrapIntoArray<Map>(), fieldInside, null);
             listener.Reset();
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 12));
             epService.EPRuntime.SendEvent(new SupportBean_ST0("ID2", "E2", 0));
-            EPAssertionUtil.AssertPropsPerRow(ToArrayMap((ICollection<object>) listener.AssertOneGetNew().Get("c0")), fieldInside, new object[][]{new object[] {"E2"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertOneGetNew().Get("c0").UnwrapIntoArray<Map>(), fieldInside, new object[][]{new object[] {"E2"}});
             listener.Reset();
     
             epService.EPRuntime.SendEvent(new SupportBean("E3", 13));
             epService.EPRuntime.SendEvent(new SupportBean_ST0("E3", "E3", 0));
-            EPAssertionUtil.AssertPropsPerRow(ToArrayMap((ICollection<object>) listener.AssertOneGetNew().Get("c0")), fieldInside, new object[][]{new object[] {"E3"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertOneGetNew().Get("c0").UnwrapIntoArray<Map>(), fieldInside, new object[][]{new object[] {"E3"}});
             listener.Reset();
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -513,12 +516,17 @@ namespace com.espertech.esper.regression.expr.expressiondef
                     "expression countC {" +
                     "   count(*) " +
                     "} " +
-                    "select SumA(t) as val1, SumB(t) as val2, SumA(t)/SumB(t) as val3, CountC() as val4 from SupportBean as t";
+                    "select sumA(t) as val1, sumB(t) as val2, sumA(t)/sumB(t) as val3, countC() as val4 from SupportBean as t";
     
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[]{typeof(int?), typeof(int?), typeof(double?), typeof(long)});
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[] {
+                typeof(int),
+                typeof(int),
+                typeof(double?),
+                typeof(long)
+            });
     
             epService.EPRuntime.SendEvent(GetSupportBean(5, 6));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{5, 6, 5 / 6d, 1L});
@@ -530,10 +538,10 @@ namespace com.espertech.esper.regression.expr.expressiondef
         }
     
         private void RunAssertionSplitStream(EPServiceProvider epService) {
-            var epl = "expression myLittleExpression { @event => false }" +
+            var epl = "expression myLittleExpression { event => false }" +
                     "on SupportBean as myEvent " +
-                    " insert into ABC select * where MyLittleExpression(myEvent)" +
-                    " insert into DEF select * where not MyLittleExpression(myEvent)";
+                    " insert into ABC select * where myLittleExpression(myEvent)" +
+                    " insert into DEF select * where not myLittleExpression(myEvent)";
             epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
     
@@ -544,7 +552,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
         private void RunAssertionAggregationAccess(EPServiceProvider epService) {
             var eplDeclare = "expression wb {s => window(*).where(y => y.IntPrimitive > 2) }" +
-                    "select Wb(t) as val1 from SupportBean#keepall as t";
+                    "select wb(t) as val1 from SupportBean#keepall as t";
             TryAssertionAggregationAccess(epService, eplDeclare);
     
             var eplAlias = "expression wb alias for {window(*).where(y => y.IntPrimitive > 2)}" +
@@ -557,7 +565,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var epl =
                     "expression lambda1 { o => 1 * o.IntPrimitive }\n" +
                             "expression lambda2 { o => 3 * o.IntPrimitive }\n" +
-                            "select sum(Lambda1(e)) as c0, sum(Lambda2(e)) as c1 from SupportBean as e";
+                            "select sum(lambda1(e)) as c0, sum(lambda2(e)) as c1 from SupportBean as e";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
@@ -575,14 +583,17 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val1".Split(','), new Type[]{typeof(ICollection<object>), typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val1".Split(','), new Type[] {
+                typeof(ICollection<SupportBean>),
+                typeof(ICollection<SupportBean>)
+            });
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
-            var outArray = ToArray((ICollection<object>) listener.AssertOneGetNewAndReset().Get("val1"));
+            var outArray = listener.AssertOneGetNewAndReset().Get("val1").UnwrapIntoArray<SupportBean>();
             Assert.AreEqual(0, outArray.Length);
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 3));
-            outArray = ToArray((ICollection<object>) listener.AssertOneGetNewAndReset().Get("val1"));
+            outArray = listener.AssertOneGetNewAndReset().Get("val1").UnwrapIntoArray<SupportBean>();
             Assert.AreEqual(1, outArray.Length);
             Assert.AreEqual("E2", outArray[0].TheString);
     
@@ -594,17 +605,17 @@ namespace com.espertech.esper.regression.expr.expressiondef
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             var eplScalarDeclare = "expression scalarfilter {s => Strvals.where(y => y != 'E1') } " +
-                    "select Scalarfilter(t).where(x => x != 'E2') as val1 from SupportCollection as t";
+                    "select scalarfilter(t).where(x => x != 'E2') as val1 from SupportCollection as t";
             TryAssertionScalarReturn(epService, eplScalarDeclare);
     
             var eplScalarAlias = "expression scalarfilter alias for {Strvals.where(y => y != 'E1')}" +
-                    "select Scalarfilter.where(x => x != 'E2') as val1 from SupportCollection";
+                    "select scalarfilter.where(x => x != 'E2') as val1 from SupportCollection";
             TryAssertionScalarReturn(epService, eplScalarAlias);
     
             // test with cast and with on-select and where-clause use
             var inner = "case when myEvent.myObject = 'X' then 0 else Cast(myEvent.myObject, long) end ";
             var eplCaseDeclare = "expression theExpression { myEvent => " + inner + "} " +
-                    "on MyEvent as myEvent select mw.* from MyWindowFirst as mw where mw.myObject = TheExpression(myEvent)";
+                    "on MyEvent as myEvent select mw.* from MyWindowFirst as mw where mw.myObject = theExpression(myEvent)";
             TryAssertionNamedWindowCast(epService, eplCaseDeclare, "First");
     
             var eplCaseAlias = "expression theExpression alias for {" + inner + "}" +
@@ -615,7 +626,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
         private void TryAssertionNamedWindowCast(EPServiceProvider epService, string epl, string windowPostfix) {
     
             epService.EPAdministrator.CreateEPL("create window MyWindow" + windowPostfix + "#keepall as (myObject long)");
-            epService.EPAdministrator.CreateEPL("insert into MyWindow" + windowPostfix + "(myObject) select Cast(IntPrimitive, long) from SupportBean");
+            epService.EPAdministrator.CreateEPL("insert into MyWindow" + windowPostfix + "(myObject) select cast(IntPrimitive, long) from SupportBean");
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -640,7 +651,9 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val1".Split(','), new Type[]{typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val1".Split(','), new Type[] {
+                typeof(ICollection<string>)
+            });
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2,E3,E4"));
             LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val1", "E3", "E4");
@@ -651,19 +664,19 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
         private void RunAssertionEventTypeAndSODA(EPServiceProvider epService) {
     
-            var fields = new string[]{"FZero()", "FOne(t)", "FTwo(t,t)", "FThree(t,t)"};
+            var fields = new string[]{ "fZero()", "fOne(t)", "fTwo(t,t)", "fThree(t,t)" };
             var eplDeclared = "" +
                     "expression fZero {10} " +
                     "expression fOne {x => x.IntPrimitive} " +
                     "expression fTwo {(x,y) => x.IntPrimitive+y.IntPrimitive} " +
                     "expression fThree {(x,y) => x.IntPrimitive+100} " +
-                    "select FZero(), FOne(t), FTwo(t,t), FThree(t,t) from SupportBean as t";
+                    "select fZero(), fOne(t), fTwo(t,t), fThree(t,t) from SupportBean as t";
             var eplFormatted = "" +
                     "expression fZero {10}" + NEWLINE +
                     "expression fOne {x => x.IntPrimitive}" + NEWLINE +
                     "expression fTwo {(x,y) => x.IntPrimitive+y.IntPrimitive}" + NEWLINE +
                     "expression fThree {(x,y) => x.IntPrimitive+100}" + NEWLINE +
-                    "select FZero(), FOne(t), FTwo(t,t), FThree(t,t)" + NEWLINE +
+                    "select fZero(), fOne(t), fTwo(t,t), fThree(t,t)" + NEWLINE +
                     "from SupportBean as t";
             var stmt = epService.EPAdministrator.CreateEPL(eplDeclared);
             var listener = new SupportUpdateListener();
@@ -712,13 +725,13 @@ namespace com.espertech.esper.regression.expr.expressiondef
     
             var eplDeclare = "" +
                     "expression one {x1 => x1.Contained.where(y => y.p00 < 10) } " +
-                    "expression two {x2 => One(x2).where(y => y.p00 > 1)  } " +
-                    "select One(s0c) as val1, Two(s0c) as val2 from SupportBean_ST0_Container as s0c";
+                    "expression two {x2 => one(x2).where(y => y.p00 > 1)  } " +
+                    "select one(s0c) as val1, two(s0c) as val2 from SupportBean_ST0_Container as s0c";
             TryAssertionOneParameterLambdaReturn(epService, eplDeclare);
     
             var eplAliasWParen = "" +
                     "expression one alias for {Contained.where(y => y.p00 < 10)}" +
-                    "expression two alias for {One().where(y => y.p00 > 1)}" +
+                    "expression two alias for {one().where(y => y.p00 > 1)}" +
                     "select one as val1, two as val2 from SupportBean_ST0_Container as s0c";
             TryAssertionOneParameterLambdaReturn(epService, eplAliasWParen);
     
@@ -734,19 +747,18 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, "val1,val2".Split(','), new Type[]
-            {
-                typeof(ICollection<object>), typeof(ICollection<object>)
-            });
+            LambdaAssertionUtil.AssertTypes(
+                stmt.EventType, "val1,val2".Split(','), new Type[] {
+                    typeof(ICollection<SupportBean_ST0>),
+                    typeof(ICollection<SupportBean_ST0>)
+                });
     
             var theEvent = SupportBean_ST0_Container.Make3Value("E1,K1,1", "E2,K2,2", "E20,K20,20");
             epService.EPRuntime.SendEvent(theEvent);
-            var resultVal1 = ((ICollection<object>) listener.LastNewData[0].Get("val1")).ToArray();
-            EPAssertionUtil.AssertEqualsExactOrder(new object[]{theEvent.Contained[0], theEvent.Contained[1]}, resultVal1
-            );
-            var resultVal2 = ((ICollection<object>) listener.LastNewData[0].Get("val2")).ToArray();
-            EPAssertionUtil.AssertEqualsExactOrder(new object[]{theEvent.Contained[1]}, resultVal2
-            );
+            var resultVal1 = listener.LastNewData[0].Get("val1").UnwrapIntoArray<SupportBean_ST0>();
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{theEvent.Contained[0], theEvent.Contained[1]}, resultVal1);
+            var resultVal2 = listener.LastNewData[0].Get("val2").UnwrapIntoArray<SupportBean_ST0>();
+            EPAssertionUtil.AssertEqualsExactOrder(new object[]{theEvent.Contained[1]}, resultVal2);
     
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -754,7 +766,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
         private void RunAssertionNoParameterArithmetic(EPServiceProvider epService) {
     
             var eplDeclared = "expression getEnumerationSource {1} " +
-                    "select GetEnumerationSource() as val1, GetEnumerationSource()*5 as val2 from SupportBean";
+                    "select getEnumerationSource() as val1, getEnumerationSource()*5 as val2 from SupportBean";
             TryAssertionNoParameterArithmetic(epService, eplDeclared);
     
             var eplDeclaredNoParen = "expression getEnumerationSource {1} " +
@@ -783,12 +795,12 @@ namespace com.espertech.esper.regression.expr.expressiondef
         private void RunAssertionNoParameterVariable(EPServiceProvider epService) {
             var eplDeclared = "expression one {myvar} " +
                     "expression two {myvar * 10} " +
-                    "select One() as val1, Two() as val2, One() * Two() as val3 from SupportBean";
+                    "select one() as val1, two() as val2, one() * two() as val3 from SupportBean";
             TryAssertionNoParameterVariable(epService, eplDeclared);
     
             var eplAlias = "expression one alias for {myvar} " +
                     "expression two alias for {myvar * 10} " +
-                    "select One() as val1, Two() as val2, one * two as val3 from SupportBean";
+                    "select one() as val1, two() as val2, one * two as val3 from SupportBean";
             TryAssertionNoParameterVariable(epService, eplAlias);
         }
     
@@ -813,7 +825,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
         }
     
         private void RunAssertionWhereClauseExpression(EPServiceProvider epService) {
-            var eplNoAlias = "expression one {x=>x.BoolPrimitive} select * from SupportBean as sb where One(sb)";
+            var eplNoAlias = "expression one {x=>x.BoolPrimitive} select * from SupportBean as sb where one(sb)";
             TryAssertionWhereClauseExpression(epService, eplNoAlias);
     
             var eplAlias = "expression one alias for {BoolPrimitive} select * from SupportBean as sb where one";
@@ -842,7 +854,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean_ST0: Failed to validate filter expression 'p00=IntPrimitive': Property named 'IntPrimitive' is not valid in any stream [expression abc {(select * from SupportBean_ST0#lastevent as st0 where p00=IntPrimitive)} select abc() from SupportBean]");
     
             epl = "expression abc {x=>Strvals.where(x=> x != 'E1')} select abc(str) from SupportCollection str";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'abc(str)': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'Strvals.Where()': Error validating enumeration method 'where', the lambda-parameter name 'x' has already been declared in this context [expression abc {x=>Strvals.where(x=> x != 'E1')} select abc(str) from SupportCollection str]");
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'abc(str)': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'Strvals.where()': Error validating enumeration method 'where', the lambda-parameter name 'x' has already been declared in this context [expression abc {x=>Strvals.where(x=> x != 'E1')} select abc(str) from SupportCollection str]");
     
             epl = "expression abc {avg(IntPrimitive)} select abc() from SupportBean";
             TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'abc()': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'avg(IntPrimitive)': Property named 'IntPrimitive' is not valid in any stream [expression abc {avg(IntPrimitive)} select abc() from SupportBean]");
@@ -869,7 +881,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'abc(1)': Expression 'abc' requires a stream name as a parameter [expression abc {x=>x} select abc(1) from SupportBean sb]");
     
             epl = "expression abc {x=>IntPrimitive} select * from SupportBean sb where abc(sb)";
-            TryInvalid(epService, epl, "Filter expression not returning a bool value: 'abc(sb)' [expression abc {x=>IntPrimitive} select * from SupportBean sb where abc(sb)]");
+            TryInvalid(epService, epl, "Filter expression not returning a boolean value: 'abc(sb)' [expression abc {x=>IntPrimitive} select * from SupportBean sb where abc(sb)]");
     
             epl = "expression abc {x=>x.IntPrimitive = 0} select * from SupportBean#lastevent sb1, SupportBean#lastevent sb2 where abc(*)";
             TryInvalid(epService, epl, "Error validating expression: Failed to validate filter expression 'abc(*)': Expression 'abc' only allows a wildcard parameter if there is a single stream available, please use a stream or tag name instead [expression abc {x=>x.IntPrimitive = 0} select * from SupportBean#lastevent sb1, SupportBean#lastevent sb2 where abc(*)]");
@@ -879,26 +891,6 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var b = new SupportBean(null, intPrimitive);
             b.IntBoxed = intBoxed;
             return b;
-        }
-    
-        private SupportBean[] ToArray<T>(ICollection<T> it) {
-            var result = new List<SupportBean>();
-            foreach (object item in it) {
-                result.Add((SupportBean) item);
-            }
-            return result.ToArray();
-        }
-    
-        private Map[] ToArrayMap(ICollection<object> it) {
-            if (it == null) {
-                return null;
-            }
-            var result = new List<Map>();
-            foreach (var item in it) {
-                var map = (Map) item;
-                result.Add(map);
-            }
-            return result.ToArray();
         }
     
         public class MyEvent {

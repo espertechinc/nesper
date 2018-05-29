@@ -57,17 +57,17 @@ namespace com.espertech.esper.filter
     
         public override EventEvaluator Get(object filterConstant) {
             var point = (XYPoint) filterConstant;
-            return PointRegionQuadTreeFilterIndexGet.Get<EventEvaluator>(point.X, point.Y, _quadTree);
+            return PointRegionQuadTreeFilterIndexGet<EventEvaluator>.Get(point.X, point.Y, _quadTree);
         }
     
         public override void Put(object filterConstant, EventEvaluator evaluator) {
             var point = (XYPoint) filterConstant;
-            PointRegionQuadTreeFilterIndexSet.Set<EventEvaluator>(point.X, point.Y, evaluator, _quadTree);
+            PointRegionQuadTreeFilterIndexSet<EventEvaluator>.Set(point.X, point.Y, evaluator, _quadTree);
         }
     
         public override void Remove(object filterConstant) {
             var point = (XYPoint) filterConstant;
-            PointRegionQuadTreeFilterIndexDelete.Delete<EventEvaluator>(point.X, point.Y, _quadTree);
+            PointRegionQuadTreeFilterIndexDelete<EventEvaluator>.Delete(point.X, point.Y, _quadTree);
         }
 
         public override int Count => PointRegionQuadTreeFilterIndexCount.Count(_quadTree);

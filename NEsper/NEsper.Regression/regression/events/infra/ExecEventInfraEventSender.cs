@@ -14,8 +14,10 @@ using Avro.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.supportregression.bean;
+using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
@@ -27,6 +29,8 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regression.events.infra
 {
+    using Map = IDictionary<string, object>;
+
     public class ExecEventInfraEventSender : RegressionExecution {
     
         public override void Configure(Configuration configuration) {
@@ -49,17 +53,17 @@ namespace com.espertech.esper.regression.events.infra
             // Map
             RunAssertionSuccess(epService, MAP_TYPENAME, new Dictionary<string, object>());
             RunAssertionInvalid(epService, MAP_TYPENAME, new SupportBean(),
-                    "Unexpected event object of type " + typeof(SupportBean).FullName + ", expected Map");
+                "Unexpected event object of type " + Name.Clean<SupportBean>() + ", expected " + Name.Clean<Map>());
     
             // Object-Array
             RunAssertionSuccess(epService, OA_TYPENAME, new object[]{});
             RunAssertionInvalid(epService, OA_TYPENAME, new SupportBean(),
-                    "Unexpected event object of type " + typeof(SupportBean).FullName + ", expected object[]");
+                "Unexpected event object of type " + Name.Clean<SupportBean>() + ", expected " + Name.Clean<object[]>());
     
             // XML
             RunAssertionSuccess(epService, XML_TYPENAME, SupportXML.GetDocument("<myevent/>").DocumentElement);
             RunAssertionInvalid(epService, XML_TYPENAME, new SupportBean(),
-                    "Unexpected event object type '" + typeof(SupportBean).FullName + "' encountered, please supply a org.w3c.dom.XmlDocument or Element node");
+                    "Unexpected event object type '" + typeof(SupportBean).FullName + "' encountered, please supply a XmlDocument or XmlElement node");
             RunAssertionInvalid(epService, XML_TYPENAME, SupportXML.GetDocument("<xxxx/>"),
                     "Unexpected root element name 'xxxx' encountered, expected a root element name of 'myevent'");
     

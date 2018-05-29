@@ -43,11 +43,11 @@ namespace com.espertech.esper.supportregression.timer
 	        switch (enumValue)
 	        {
 	            case SupportDateTimeFieldType.CAL:
-                    return input => input.CaldateEnd;
+                    return input => input.caldateEnd;
                 case SupportDateTimeFieldType.DATE:
-	                return input => input.UtildateEnd;
+	                return input => input.utildateEnd;
                 case SupportDateTimeFieldType.MSEC:
-	                return input => input.LongdateEnd;
+	                return input => input.longdateEnd;
                 default:
                     throw new ArgumentException();
 	        }

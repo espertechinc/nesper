@@ -18,7 +18,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.type;
-
+using com.espertech.esper.util;
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
 using NUnit.Framework;
@@ -73,22 +73,22 @@ namespace com.espertech.esper.regression.expr.expr
             EventBean resultBean = listener.GetNewDataListFlattened()[1];
     
             var rows = new object[][]{
-                new object[] {"prev(1,IntPrimitive)", typeof(int)},
+                new object[] {"prev(1,IntPrimitive)", typeof(int?)},
                 new object[] {"prev(1,sb)", typeof(SupportBean)},
-                new object[] {"prevtail(1,IntPrimitive)", typeof(int)},
+                new object[] {"prevtail(1,IntPrimitive)", typeof(int?) },
                 new object[] {"prevtail(1,sb)", typeof(SupportBean)},
-                new object[] {"prevwindow(IntPrimitive)", typeof(int[])},
+                new object[] {"prevwindow(IntPrimitive)", typeof(int?[])},
                 new object[] {"prevwindow(sb)", typeof(SupportBean[])},
-                new object[] {"prevcount(IntPrimitive)", typeof(long)},
-                new object[] {"prevcount(sb)", typeof(long)}
+                new object[] {"prevcount(IntPrimitive)", typeof(long?) },
+                new object[] {"prevcount(sb)", typeof(long?) }
             };
             for (int i = 0; i < rows.Length; i++) {
                 string message = "For prop '" + rows[i][0] + "'";
                 EventPropertyDescriptor prop = stmt.EventType.PropertyDescriptors[i];
                 Assert.AreEqual(rows[i][0], prop.PropertyName, message);
-                Assert.AreEqual(rows[i][1], prop.PropertyType, message);
+                Assert.AreEqual(rows[i][1].GetBoxedType(), prop.PropertyType.GetBoxedType(), message);
                 Object result = resultBean.Get(prop.PropertyName);
-                Assert.AreEqual(prop.PropertyType, result.GetType(), message);
+                Assert.AreEqual(prop.PropertyType.GetBoxedType(), result.GetType().GetBoxedType(), message);
             }
     
             stmt.Dispose();
@@ -976,7 +976,7 @@ namespace com.espertech.esper.regression.expr.expr
             Assert.AreEqual(prevTail1Symbol, eventBean.Get("prevTail1Symbol"));
             Assert.AreEqual(prevTail1Price, eventBean.Get("prevTail1Price"));
             Assert.AreEqual(prevcount, eventBean.Get("prevCountPrice"));
-            EPAssertionUtil.AssertEqualsExactOrder((object[]) eventBean.Get("prevWindowPrice"), prevwindow);
+            EPAssertionUtil.AssertEqualsExactOrder(eventBean.Get("prevWindowPrice").Unwrap<object>(), prevwindow);
         }
 
         private void AssertNewEvents(
@@ -1034,7 +1034,7 @@ namespace com.espertech.esper.regression.expr.expr
             Assert.AreEqual(prevTail1Symbol, eventBean.Get("prevTail1Symbol"));
             Assert.AreEqual(prevTail1Price, eventBean.Get("prevTail1Price"));
             Assert.AreEqual(prevCount, eventBean.Get("prevCountPrice"));
-            EPAssertionUtil.AssertEqualsExactOrder((object[]) eventBean.Get("prevWindowPrice"), prevWindow);
+            EPAssertionUtil.AssertEqualsExactOrder(eventBean.Get("prevWindowPrice").Unwrap<object>(), prevWindow);
     
             listener.Reset();
         }
@@ -1189,7 +1189,7 @@ namespace com.espertech.esper.regression.expr.expr
             Assert.AreEqual(prevTail0Price, theEvent.Get("prevTail0Price"));
             Assert.AreEqual(prevTail1Price, theEvent.Get("prevTail1Price"));
             Assert.AreEqual(countPrice, theEvent.Get("countPrice"));
-            EPAssertionUtil.AssertEqualsExactOrder(windowPrice, (object[]) theEvent.Get("windowPrice"));
+            EPAssertionUtil.AssertEqualsExactOrder(windowPrice, theEvent.Get("windowPrice").Unwrap<object>());
         }
     
         private void AssertCountAndPrice(EventBean theEvent, long total, double? price) {
@@ -1269,7 +1269,7 @@ namespace com.espertech.esper.regression.expr.expr
             string[] doubles = doubleList.Split(',');
             var result = new Object[doubles.Length];
             for (int i = 0; i < result.Length; i++) {
-                result[i] = double.Parse(doubles[i]);
+                result[i] = DoubleValue.ParseString(doubles[i]);
             }
             return result;
         }

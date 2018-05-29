@@ -28,7 +28,7 @@ namespace com.espertech.esper.regression.expr.expr
             RunAssertionInstanceofSimple(epService);
             RunAssertionInstanceofStringAndNull_OM(epService);
             RunAssertionInstanceofStringAndNull_Compile(epService);
-            RunAssertionDynamicPropertyJavaTypes(epService);
+            RunAssertionDynamicPropertyTypes(epService);
             RunAssertionDynamicSuperTypeAndInterface(epService);
         }
     
@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.expr.expr
                     " instanceof(TheString, System.Single, char, byte) as t3, " +
                     " instanceof(IntPrimitive, System.Int32) as t4, " +
                     " instanceof(IntPrimitive, long) as t5, " +
-                    " instanceof(IntPrimitive, long, long, object) as t6, " +
+                    " instanceof(IntPrimitive, long, long, System.Object) as t6, " +
                     " instanceof(FloatBoxed, long, float) as t7 " +
                     " from " + typeof(SupportBean).FullName;
     
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regression.expr.expr
                     .Add(Expressions.InstanceOf("TheString", "string"), "t0")
                     .Add(Expressions.InstanceOf(Expressions.Property("TheString"), "float", "string", "int"), "t1");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(stmtText, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -119,14 +119,14 @@ namespace com.espertech.esper.regression.expr.expr
             stmt.Dispose();
         }
     
-        private void RunAssertionDynamicPropertyJavaTypes(EPServiceProvider epService) {
+        private void RunAssertionDynamicPropertyTypes(EPServiceProvider epService) {
             string stmtText = "select instanceof(item?, string) as t0, " +
                     " instanceof(item?, int) as t1, " +
                     " instanceof(item?, System.Single) as t2, " +
                     " instanceof(item?, System.Single, char, byte) as t3, " +
                     " instanceof(item?, System.Int32) as t4, " +
                     " instanceof(item?, long) as t5, " +
-                    " instanceof(item?, long, long, object) as t6, " +
+                    " instanceof(item?, long, System.ValueType) as t6, " +
                     " instanceof(item?, long, float) as t7 " +
                     " from " + typeof(SupportMarkerInterface).FullName;
     

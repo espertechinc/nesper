@@ -18,13 +18,10 @@ namespace com.espertech.esper.spatial.quadtree.mxcif
             H = h;
         }
 
-        public double X { get; }
-
-        public double Y { get; }
-
-        public double W { get; }
-
-        public double H { get; }
+        public double X;
+        public double Y;
+        public double W;
+        public double H;
 
         public bool CoordinateEquals(double otherX, double otherY, double otherWidth, double otherHeight)
         {

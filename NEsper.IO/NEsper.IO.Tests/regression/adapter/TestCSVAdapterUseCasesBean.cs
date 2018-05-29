@@ -45,7 +45,10 @@ namespace com.espertech.esperio.regression.adapter
             SupportUpdateListener listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
-            var inputAdapter = new CSVInputAdapter(_baseUseCase.EPService, new AdapterInputSource(
+            var inputAdapter = new CSVInputAdapter(
+                _container, 
+                _baseUseCase.EPService, 
+                new AdapterInputSource(
                 TestCSVAdapterUseCases.CSV_FILENAME_ONELINE_TRADE), "ReadWrite");
             inputAdapter.Start();
     

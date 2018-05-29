@@ -10,8 +10,10 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportregression.bean;
+using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.multithread;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.multithread
@@ -23,7 +25,7 @@ namespace com.espertech.esper.regression.multithread
     
         public override void Configure(Configuration configuration)
         {
-            var configDB = new ConfigurationDBRef();
+            var configDB = SupportDatabaseService.CreateDefaultConfig();
             configDB.ConnectionLifecycle = ConnectionLifecycleEnum.RETAIN;
             configDB.ConnectionCatalog = "test";
             configDB.ConnectionTransactionIsolation = System.Data.IsolationLevel.Serializable;

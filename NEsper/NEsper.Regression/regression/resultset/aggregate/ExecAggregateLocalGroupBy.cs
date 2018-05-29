@@ -20,13 +20,15 @@ using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.resultset.aggregate
 {
     public class ExecAggregateLocalGroupBy : RegressionExecution {
-        public static readonly string PLAN_CALLBACK_HOOK = "@Hook(type=" + typeof(HookType).FullName + ".INTERNAL_AGGLOCALLEVEL,hook='" + typeof(SupportAggLevelPlanHook).FullName + "')";
+        public static readonly string PLAN_CALLBACK_HOOK = 
+            "@Hook(" +
+            "Type=" + typeof(HookType).FullName + ".INTERNAL_AGGLOCALLEVEL," +
+            "Hook='" + typeof(SupportAggLevelPlanHook).FullName + "')";
     
         public override void Run(EPServiceProvider epService) {
             foreach (var clazz in new[]{typeof(SupportBean), typeof(SupportBean_S0), typeof(SupportBean_S1)}) {
@@ -44,8 +46,8 @@ namespace com.espertech.esper.regression.resultset.aggregate
         private void RunAssertionInvalid(EPServiceProvider epService) {
     
             // not valid with count-min-sketch
-            SupportMessageAssertUtil.TryInvalid(epService, "create table MyTable(approx CountMinSketch(group_by:TheString) @Type(SupportBean))",
-                    "Error starting statement: Failed to validate table-column expression 'CountMinSketch(group_by:TheString)': Count-min-sketch aggregation function 'countMinSketch'  expects either no parameter or a single json parameter object");
+            SupportMessageAssertUtil.TryInvalid(epService, "create table MyTable(approx countMinSketch(group_by:TheString) @Type(SupportBean))",
+                    "Error starting statement: Failed to validate table-column expression 'countMinSketch(group_by:TheString)': Count-min-sketch aggregation function 'countMinSketch'  expects either no parameter or a single json parameter object");
     
             // not allowed with tables
             SupportMessageAssertUtil.TryInvalid(epService, "create table MyTable(col sum(int, group_by:TheString) @Type(SupportBean))",
@@ -57,7 +59,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
             // invalid group-by expression
             SupportMessageAssertUtil.TryInvalid(epService, "select sum(IntPrimitive, group_by:sum(IntPrimitive)) from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'sum(IntPrimitive,group_by:sum(intPr...(44 chars)': Group-by expressions cannot contain aggregate functions");
+                    "Error starting statement: Failed to validate select-clause expression 'sum(IntPrimitive,group_by:sum(IntPr...(44 chars)': Group-by expressions cannot contain aggregate functions");
     
             // other functions don't accept this named parameter
             SupportMessageAssertUtil.TryInvalid(epService, "select coalesce(0, 1, group_by:TheString) from SupportBean",
@@ -458,10 +460,10 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     " countever(*, IntPrimitive>0, group_by:()) as c1," +
                     " countever(*, group_by:(TheString)) as c2," +
                     " countever(*, group_by:()) as c3," +
-                    " Concatstring(Convert.ToString(IntPrimitive), group_by:(TheString)) as c4," +
-                    " Concatstring(Convert.ToString(IntPrimitive), group_by:()) as c5," +
-                    " Sc(IntPrimitive, group_by:(TheString)) as c6," +
-                    " Sc(IntPrimitive, group_by:()) as c7," +
+                    " concatstring(Convert.ToString(IntPrimitive), group_by:(TheString)) as c4," +
+                    " concatstring(Convert.ToString(IntPrimitive), group_by:()) as c5," +
+                    " sc(IntPrimitive, group_by:(TheString)) as c6," +
+                    " sc(IntPrimitive, group_by:()) as c7," +
                     " leaving(group_by:(TheString)) as c8," +
                     " leaving(group_by:()) as c9," +
                     " rate(3, group_by:(TheString)) as c10," +
@@ -493,7 +495,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     null, null, 20, -1});
     
             // plug-in aggregation function can also take other parameters
-            epService.EPAdministrator.CreateEPL("select Sc(IntPrimitive, dummy:1)," +
+            epService.EPAdministrator.CreateEPL("select sc(IntPrimitive, dummy:1)," +
                     "Concatstring(Convert.ToString(IntPrimitive), dummy2:(1,2,3)) from SupportBean");
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -572,20 +574,24 @@ namespace com.espertech.esper.regression.resultset.aggregate
             stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{10, 10, 10,
-                    0.0d, 10d, 10, 10, 10, 10, 10, 10, 10, 10, 10.0, 0L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{
+                10, 10, 10, 0.0d, 10d, 10, 10, 10, 10, 10, 10, 10, 10, 10.0, 0.0d
+            });
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{20, 10 + 20, 20,
-                    0.0d, 20d, 20, 20, 20, 20, 20, 20, 20, 20, 20.0, 0L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{
+                20, 10 + 20, 20, 0.0d, 20d, 20, 20, 20, 20, 20, 20, 20, 20, 20.0, 0.0d
+            });
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 30));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{30, 10 + 20 + 30, 10 + 30,
-                    10.0d, 20d, 30, 30, 10, 10, 30, 30, 10, 10, 20.0, 14L});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{
+                30, 10 + 20 + 30, 10 + 30, 10.0d, 20d, 30, 30, 10, 10, 30, 30, 10, 10, 20.0, 14.0d
+            });
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 40));
-            var expected = new object[]{40, 10 + 20 + 30 + 40, 20 + 40,
-                    10.0d, 30d, 40, 40, 20, 20, 40, 40, 20, 20, 30.0, 14L};
+            var expected = new object[]{
+                40, 10 + 20 + 30 + 40, 20 + 40, 10.0d, 30d, 40, 40, 20, 20, 40, 40, 20, 20, 30.0, 14.0d
+            };
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, expected);
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -762,10 +768,10 @@ namespace com.espertech.esper.regression.resultset.aggregate
         private void TryAssertionEnumMethods(EPServiceProvider epService, bool grouped) {
             string epl =
                     "select" +
-                            " window(*, group_by:()).FirstOf() as c0," +
-                            " window(*, group_by:TheString).FirstOf() as c1," +
-                            " window(IntPrimitive, group_by:()).FirstOf() as c2," +
-                            " window(IntPrimitive, group_by:TheString).FirstOf() as c3," +
+                            " window(*, group_by:()).firstOf() as c0," +
+                            " window(*, group_by:TheString).firstOf() as c1," +
+                            " window(IntPrimitive, group_by:()).firstOf() as c2," +
+                            " window(IntPrimitive, group_by:TheString).firstOf() as c3," +
                             " first(*, group_by:()).IntPrimitive as c4," +
                             " first(*, group_by:TheString).IntPrimitive as c5 " +
                             " from SupportBean#keepall " +

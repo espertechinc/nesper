@@ -19,8 +19,8 @@ using NUnit.Framework;
 namespace com.espertech.esper.regression.pattern
 {
     public class ExecPatternInvalid : RegressionExecution {
-        private static readonly string EVENT_NUM = typeof(SupportBean_N).Name;
-        private static readonly string EVENT_COMPLEX = typeof(SupportBeanComplexProps).Name;
+        private static readonly string EVENT_NUM = typeof(SupportBean_N).FullName;
+        private static readonly string EVENT_COMPLEX = typeof(SupportBeanComplexProps).FullName;
         private static readonly string EVENT_ALLTYPES = typeof(SupportBean).FullName;
     
         public override void Run(EPServiceProvider epService) {
@@ -31,7 +31,12 @@ namespace com.espertech.esper.regression.pattern
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
             string exceptionText = GetSyntaxExceptionPattern(epService, EVENT_NUM + "(DoublePrimitive='ss'");
-            Assert.AreEqual("Incorrect syntax near end-of-input expecting a closing parenthesis ')' but found end-of-input at line 1 column 77, please check the filter specification within the pattern expression [" + typeof(SupportBean_N).FullName + "(DoublePrimitive='ss']", exceptionText);
+            Assert.AreEqual(
+                "Incorrect syntax near end-of-input expecting a closing parenthesis ')' " +
+                "but found end-of-input at line 1 column 77, " +
+                "please check the filter specification within the " +
+                "pattern expression [" + Name.Of<SupportBean_N>() + "(DoublePrimitive='ss']",
+                exceptionText);
     
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.CreateEPL("select * from pattern[(not a=SupportBean) -> SupportBean(TheString=a.TheString)]");
@@ -74,7 +79,7 @@ namespace com.espertech.esper.regression.pattern
             SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern guard '" + typeof(SupportBean).FullName + " where timer:within()': Timer-within guard requires a single numeric or time period parameter [");
     
             // class not found
-            exception = GetStatementExceptionPattern(epService, "dummypkg.Dummy()");
+            exception = GetStatementExceptionPattern(epService, "dummypkg.dummy()");
             SupportMessageAssertUtil.AssertMessage(exception, "Failed to resolve event type: Event type or class named 'dummypkg.dummy' was not found [");
     
             // simple property not found
@@ -87,11 +92,11 @@ namespace com.espertech.esper.regression.pattern
     
             // property wrong type
             exception = GetStatementExceptionPattern(epService, EVENT_NUM + "(IntPrimitive='s')");
-            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'IntPrimitive=\"s\"': Implicit conversion from datatype 'string' to '" + Name.Of<int>() + "' is not allowed [");
+            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'IntPrimitive=\"s\"': Implicit conversion from datatype '" + Name.Clean<string>() + "' to '" + Name.Clean<int>() + "' is not allowed [");
     
             // property not a primitive type
             exception = GetStatementExceptionPattern(epService, EVENT_COMPLEX + "(nested=1)");
-            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'nested=1': Implicit conversion from datatype '" + Name.Of<int>() + "' to 'SupportBeanSpecialGetterNested' is not allowed [");
+            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'nested=1': Implicit conversion from datatype '" + Name.Clean<int>() + "' to '" + Name.Clean<SupportBeanComplexProps.SupportBeanSpecialGetterNested>() + "' is not allowed [");
     
             // no tag matches prior use
             exception = GetStatementExceptionPattern(epService, EVENT_NUM + "(DoublePrimitive=x.abc)");
@@ -99,23 +104,23 @@ namespace com.espertech.esper.regression.pattern
     
             // range not valid on string
             exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + "(TheString in [1:2])");
-            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'TheString between 1 and 2': Implicit conversion from datatype 'string' to numeric is not allowed [");
+            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'TheString between 1 and 2': Implicit conversion from datatype '" + Name.Clean<string>() + "' to numeric is not allowed [");
     
             // range does not allow string params
             exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + "(DoubleBoxed in ['a':2])");
-            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'DoubleBoxed between \"a\" and 2': Implicit conversion from datatype 'string' to numeric is not allowed [");
+            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'DoubleBoxed between \"a\" and 2': Implicit conversion from datatype '" + Name.Clean<string>() + "' to numeric is not allowed [");
     
             // invalid observer arg
             exception = GetStatementExceptionPattern(epService, "timer:at(9l)");
-            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern observer 'timer:at(9)': Invalid number of parameters for timer:at [timer:at(9l)]");
+            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern observer 'timer:at(9L)': Invalid number of parameters for timer:at [timer:at(9l)]");
     
             // invalid guard arg
             exception = GetStatementExceptionPattern(epService, EVENT_ALLTYPES + " where timer:within('s')");
-            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern guard '" + typeof(SupportBean).FullName + " where timer:within(\"s\")': Timer-within guard requires a single numeric or time period parameter [");
+            SupportMessageAssertUtil.AssertMessage(exception, "Invalid parameter for pattern guard '" + Name.Clean<SupportBean>() + " where timer:within(\"s\")': Timer-within guard requires a single numeric or time period parameter [");
     
             // use-result property is wrong type
             exception = GetStatementExceptionPattern(epService, "x=" + EVENT_ALLTYPES + " -> " + EVENT_ALLTYPES + "(DoublePrimitive=x.BoolBoxed)");
-            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'DoublePrimitive=x.BoolBoxed': Implicit conversion from datatype 'bool?' to 'double?' is not allowed [");
+            SupportMessageAssertUtil.AssertMessage(exception, "Failed to validate filter expression 'DoublePrimitive=x.BoolBoxed': Implicit conversion from datatype '" + Name.Clean<bool?>() + "' to '" + Name.Clean<double?>() + "' is not allowed [");
     
             // named-parameter for timer:at or timer:interval
             exception = GetStatementExceptionPattern(epService, "timer:interval(interval:10)");
@@ -125,7 +130,7 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionUseResult(EPServiceProvider epService) {
-            string @event = typeof(SupportBean_N).Name;
+            string @event = typeof(SupportBean_N).FullName;
     
             TryValid(epService, "na=" + @event + " -> nb=" + @event + "(DoublePrimitive = na.DoublePrimitive)");
             TryInvalid(epService, "xx=" + @event + " -> nb=" + @event + "(DoublePrimitive = na.DoublePrimitive)");

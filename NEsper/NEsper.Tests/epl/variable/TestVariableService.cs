@@ -34,13 +34,12 @@ namespace com.espertech.esper.epl.variable
         public void SetUp()
         {
             _container = SupportContainer.Reset();
-            _service = new VariableServiceImpl(10000, 
+            _service = new VariableServiceImpl(
+                _container, 10000, 
                 new SchedulingServiceImpl(
                     new TimeSourceServiceImpl(),
                     _container.Resolve<ILockManager>()),
-                _container.Resolve<EventAdapterService>(), null,
-                _container.Resolve<IReaderWriterLockManager>(),
-                _container.Resolve<IThreadLocalManager>());
+                _container.Resolve<EventAdapterService>(), null);
             _engineImportService = SupportEngineImportServiceFactory.Make(
                 _container.Resolve<ClassLoaderProvider>());
         }
@@ -165,13 +164,13 @@ namespace com.espertech.esper.epl.variable
         {
             _container = SupportContainer.Reset();
             _service = new VariableServiceImpl(
+                _container,
                 VariableServiceImpl.ROLLOVER_READER_BOUNDARY - 100, 
                 10000,
                 new SchedulingServiceImpl(
                     new TimeSourceServiceImpl(), _container.Resolve<ILockManager>()), 
                 _container.Resolve<EventAdapterService>(),
-                null,
-                _container.Resolve<IReaderWriterLockManager>());
+                null);
 
             String[] variables = "a,b,c,d".Split(',');
 

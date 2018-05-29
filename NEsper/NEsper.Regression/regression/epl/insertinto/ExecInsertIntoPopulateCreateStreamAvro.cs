@@ -67,7 +67,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             Assert.AreEqual(1L, @event.Get("myLong"));
             EPAssertionUtil.AssertEqualsExactOrder(new long[] {1L, 2L}, @event.Get("myLongArray").UnwrapIntoArray<long>());
             Assert.IsTrue(Collections.AreEqual(new byte[]{1, 2, 3}, @event.Get("myByteArray").UnwrapIntoArray<byte>()));
-            Assert.AreEqual("{k1=v1}", ((Map) @event.Get("myMap")).ToString());
+            Assert.AreEqual("[k1=v1]", @event.Get("myMap").UnwrapStringDictionary().Render());
     
             statement.Dispose();
         }
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             Assert.AreEqual(1, @event.Get("myInt"));
             EPAssertionUtil.AssertEqualsExactOrder(new long[] {1L, 2L}, @event.Get("myLongArray").UnwrapIntoArray<long>());
             Assert.IsTrue(Collections.AreEqual(new byte[]{1, 2, 3}, @event.Get("myByteArray").UnwrapIntoArray<byte>()));
-            Assert.AreEqual("{k1=v1}", ((Map) @event.Get("myMap")).ToString());
+            Assert.AreEqual("[k1=v1]", @event.Get("myMap").UnwrapStringDictionary().Render());
     
             var designSchema = SchemaBuilder.Record(
                 "name",

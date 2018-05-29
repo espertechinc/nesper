@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.spatial.quadtree.core;
@@ -14,28 +13,24 @@ using com.espertech.esper.spatial.quadtree.pointregion;
 
 namespace com.espertech.esper.spatial.quadtree.prqdfilterindex
 {
-    public class PointRegionQuadTreeFilterIndexGet
+    public class PointRegionQuadTreeFilterIndexGet<TL>
     {
-        public static TL Get<TL>(double x, double y, PointRegionQuadTree<object> tree)
+        public static TL Get(double x, double y, PointRegionQuadTree<object> tree)
         {
             PointRegionQuadTreeFilterIndexCheckBB.CheckBB(tree.Root.Bb, x, y);
-            return Get<TL>(x, y, tree.Root);
+            return Get(x, y, tree.Root);
         }
 
-        private static TL Get<TL>(double x, double y, PointRegionQuadTreeNode node)
+        private static TL Get(double x, double y, PointRegionQuadTreeNode node)
         {
-            if (node is PointRegionQuadTreeNodeLeaf<object>)
-            {
+            if (node is PointRegionQuadTreeNodeLeaf<object>) {
                 var leaf = (PointRegionQuadTreeNodeLeaf<object>) node;
-                if (leaf.Points == null)
-                {
+                if (leaf.Points == null) {
                     return default(TL);
                 }
 
-                if (leaf.Points is XYPointWValue<TL> value)
-                {
-                    if (value.X == x && value.Y == y)
-                    {
+                if (leaf.Points is XYPointWValue<TL> value) {
+                    if (value.X == x && value.Y == y) {
                         return value.Value;
                     }
 
@@ -43,10 +38,8 @@ namespace com.espertech.esper.spatial.quadtree.prqdfilterindex
                 }
 
                 var collection = (ICollection<XYPointWValue<TL>>) leaf.Points;
-                foreach (XYPointWValue<TL> point in collection)
-                {
-                    if (point.X == x && point.Y == y)
-                    {
+                foreach (XYPointWValue<TL> point in collection) {
+                    if (point.X == x && point.Y == y) {
                         return point.Value;
                     }
                 }
@@ -56,16 +49,15 @@ namespace com.espertech.esper.spatial.quadtree.prqdfilterindex
 
             var branch = (PointRegionQuadTreeNodeBranch) node;
             var q = node.Bb.GetQuadrant(x, y);
-            switch (q)
-            {
+            switch (q) {
                 case QuadrantEnum.NW:
-                    return Get<TL>(x, y, branch.Nw);
+                    return Get(x, y, branch.Nw);
                 case QuadrantEnum.NE:
-                    return Get<TL>(x, y, branch.Ne);
+                    return Get(x, y, branch.Ne);
                 case QuadrantEnum.SW:
-                    return Get<TL>(x, y, branch.Sw);
+                    return Get(x, y, branch.Sw);
                 default:
-                    return Get<TL>(x, y, branch.Se);
+                    return Get(x, y, branch.Se);
             }
         }
     }

@@ -7,13 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
@@ -28,8 +25,7 @@ namespace com.espertech.esper.regression.db
     {
         public override void Run(EPServiceProvider epService)
         {
-            var configDB = new ConfigurationDBRef();
-            configDB.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative);
+            var configDB = SupportDatabaseService.CreateDefaultConfig();
             configDB.ConnectionLifecycle = ConnectionLifecycleEnum.RETAIN;
             var configuration = SupportConfigFactory.GetConfiguration();
             configuration.AddDatabaseReference("MyDB", configDB);
@@ -38,8 +34,7 @@ namespace com.espertech.esper.regression.db
                 SupportContainer.Instance, "TestDatabaseJoinRetained", configuration);
             epServiceRetained.Initialize();
     
-            configDB = new ConfigurationDBRef();
-            configDB.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative);
+            configDB = SupportDatabaseService.CreateDefaultConfig();
             configDB.ConnectionLifecycle = ConnectionLifecycleEnum.POOLED;
             configuration = SupportConfigFactory.GetConfiguration();
             configuration.AddDatabaseReference("MyDB", configDB);
@@ -148,10 +143,14 @@ namespace com.espertech.esper.regression.db
     
             for (var i = 0; i < 20; i++) {
                 var num = i + 1;
-                var col2 = Convert.ToString(Math.Round((float) num / 10));
+                var col2 = Convert.ToString(Math.Round((float) num / 10, MidpointRounding.AwayFromZero));
                 var bean = new SupportBean_S0(num);
                 epServiceRetained.EPRuntime.SendEvent(bean);
-                EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), new string[]{"id", "mycol3", "mycol2"}, new object[]{num, num, col2});
+                var testEventBean = listener.AssertOneGetNewAndReset();
+                EPAssertionUtil.AssertProps(
+                    testEventBean,
+                    new string[]{"id", "mycol3", "mycol2"}, 
+                    new object[]{num, num, col2});
             }
     
             statement.Dispose();

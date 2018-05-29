@@ -95,19 +95,19 @@ namespace com.espertech.esper.regression.client
                     "Failed to process statement annotations: Annotation 'MyAnnotationValue' has duplicate attribute values for attribute 'Value' [@MyAnnotationValue(Value='a', Value='a') select * from Bean]");
             TryInvalid(epService, "@ABC select * from Bean", false,
                     "Failed to process statement annotations: Failed to resolve @-annotation class: Could not load annotation class by name 'ABCAttribute', please check imports [@ABC select * from Bean]");
-    
+
             TryInvalid(epService, "@MyAnnotationSimple(5) select * from Bean", false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationSimple' does not have an attribute 'Value' [@MyAnnotationSimple(5) select * from Bean]");
+                    "Failed to process statement annotations: Failed to find property Value in annotation type MyAnnotationSimple [@MyAnnotationSimple(5) select * from Bean]");
             TryInvalid(epService, "@MyAnnotationSimple(null) select * from Bean", false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationSimple' does not have an attribute 'Value' [@MyAnnotationSimple(null) select * from Bean]");
-    
+                    "Failed to process statement annotations: Failed to find property Value in annotation type MyAnnotationSimple [@MyAnnotationSimple(null) select * from Bean]");
+
             TryInvalid(epService, "@MyAnnotationValue select * from Bean", false,
                     "Failed to process statement annotations: Annotation 'MyAnnotationValue' requires a value for attribute 'Value' [@MyAnnotationValue select * from Bean]");
     
             TryInvalid(epService, "@MyAnnotationValue(5) select * from Bean", false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValue' requires a string-typed value for attribute 'Value' but received a System.Int32-typed value [@MyAnnotationValue(5) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValue' requires a String-typed value for attribute 'Value' but received a System.Int32-typed value [@MyAnnotationValue(5) select * from Bean]");
             TryInvalid(epService, "@MyAnnotationValueArray(Value=\"ABC\", IntArray={}, DoubleArray={}, StringArray={}) select * from Bean", false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a long[]-typed value for attribute 'Value' but received a string-typed value [@MyAnnotationValueArray(Value=\"ABC\", IntArray={}, DoubleArray={}, StringArray={}) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a System.Int64[]-typed value for attribute 'Value' but received a System.String-typed value [@MyAnnotationValueArray(Value=\"ABC\", IntArray={}, DoubleArray={}, StringArray={}) select * from Bean]");
             TryInvalid(epService, "@MyAnnotationValueEnum(a.b.CC) select * from Bean", false,
                     "Annotation enumeration value 'a.b.CC' not recognized as an enumeration class, please check imports or type used [@MyAnnotationValueEnum(a.b.CC) select * from Bean]");
     
@@ -159,12 +159,12 @@ namespace com.espertech.esper.regression.client
             stmt.Dispose();
     
             // try pattern
-            stmtText = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(Name='UserId', Value='Value') every Bean";
+            stmtText = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(Name='UserId', Value='value') every Bean";
             stmt = epService.EPAdministrator.CreatePattern(stmtText);
             TryAssertion(stmt);
             stmt.Dispose();
     
-            stmtText = "@" + typeof(Name).FullName + "('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") every Bean";
+            stmtText = "@" + typeof(NameAttribute).FullName + "('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") every Bean";
             stmt = epService.EPAdministrator.CreatePattern(stmtText);
             TryAssertion(stmt);
     
@@ -240,14 +240,14 @@ namespace com.espertech.esper.regression.client
                             "@MyAnnotationValue('abc') " +
                             "@MyAnnotationValueDefaulted " +
                             "@MyAnnotationValueEnum(SupportEnum=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_3) " +
-                            "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=true,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5) " +
+                            "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=True,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5) " +
                             "@Name('STMTONE') " +
                             "select * from Bean";
             var stmtTextFormatted = "@MyAnnotationSimple" + NEWLINE +
                     "@MyAnnotationValue('abc')" + NEWLINE +
                     "@MyAnnotationValueDefaulted" + NEWLINE +
                     "@MyAnnotationValueEnum(SupportEnum=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_3)" + NEWLINE +
-                    "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=true,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5)" + NEWLINE +
+                    "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=True,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5)" + NEWLINE +
                     "@Name('STMTONE')" + NEWLINE +
                     "select *" + NEWLINE +
                     "from Bean";
@@ -341,7 +341,7 @@ namespace com.espertech.esper.regression.client
             foreach (var aTestdata in testdata) {
                 var innerStmt = epService.EPAdministrator.CreateEPL(aTestdata[0]);
                 var spi = (EPStatementSPI) innerStmt;
-                Assert.AreEqual("Error on " + aTestdata[0], RemoveNewlines(aTestdata[1]), RemoveNewlines(spi.ExpressionNoAnnotations));
+                Assert.AreEqual(RemoveNewlines(aTestdata[1]), RemoveNewlines(spi.ExpressionNoAnnotations), "Error on " + aTestdata[0]);
                 Assert.IsFalse(((EPStatementSPI) innerStmt).IsNameProvided);
             }
     
@@ -358,7 +358,7 @@ namespace com.espertech.esper.regression.client
             var stmtText =
                     "@MyAnnotationNested(\n" +
                             "            NestableSimple=@MyAnnotationNestableSimple,\n" +
-                            "            NestableValues=@MyAnnotationNestableValues(val=999, arr={2, 1}),\n" +
+                            "            NestableValues=@MyAnnotationNestableValues(Val=999, Arr={2, 1}),\n" +
                             "            NestableNestable=@MyAnnotationNestableNestable(\"CDF\")\n" +
                             "    ) " +
                             "select * from Bean";

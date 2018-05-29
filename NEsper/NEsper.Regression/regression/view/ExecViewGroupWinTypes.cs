@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.view
             EPStatement stmt = epService.EPAdministrator.CreateEPL(viewStmt);
     
             Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("IntPrimitive"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("LongBoxed"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("LongBoxed"));
             Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("stddev"));
             Assert.AreEqual(8, stmt.EventType.PropertyNames.Length);
         }

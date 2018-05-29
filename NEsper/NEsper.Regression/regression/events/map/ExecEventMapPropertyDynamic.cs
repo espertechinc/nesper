@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
@@ -44,7 +43,7 @@ namespace com.espertech.esper.regression.events.map
                                 "indexed[1]? as t5, " +
                                 "mapped('keyOne')? as t6, " +
                                 "innermap.indexedTwo[0]? as t7, " +
-                                "innermap.MappedTwo('keyTwo')? as t8 " +
+                                "innermap.mappedTwo('keyTwo')? as t8 " +
                                 "from MyLevel2#length(5)";
             var statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
@@ -109,9 +108,9 @@ namespace com.espertech.esper.regression.events.map
                                 "exists(dynamicOne?) as t3, " +
                                 "exists(dynamicTwo?) as t4, " +
                                 "exists(indexed[1]?) as t5, " +
-                                "exists(Mapped('keyOne')?) as t6, " +
+                                "exists(mapped('keyOne')?) as t6, " +
                                 "exists(innermap.indexedTwo[0]?) as t7, " +
-                                "exists(innermap.MappedTwo('keyTwo')?) as t8 " +
+                                "exists(innermap.mappedTwo('keyTwo')?) as t8 " +
                                 "from MyLevel2#length(5)";
             var statement = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
@@ -167,7 +166,7 @@ namespace com.espertech.esper.regression.events.map
         private void RunAssertionMapWithinMap2LevelsInvalid(EPServiceProvider epService)
         {
             var properties = new Properties();
-            properties.Put("innermap", typeof(IDictionary).FullName);
+            properties.Put("innermap", typeof(IDictionary<string, object>).FullName);
             epService.EPAdministrator.Configuration.AddEventType("MyLevel2", properties);
 
             var statementText = "select innermap.int as t0 from MyLevel2#length(5)";
@@ -239,7 +238,8 @@ namespace com.espertech.esper.regression.events.map
         private IDictionary<string, object> MakeMap(object[,] pairs)
         {
             var map = new Dictionary<string, object>();
-            for (var i = 0; i < pairs.Length; i++)
+            var len = pairs.GetLength(0);
+            for (var i = 0; i < len; i++)
             {
                 map.Put((string) pairs[i, 0], pairs[i, 1]);
             }

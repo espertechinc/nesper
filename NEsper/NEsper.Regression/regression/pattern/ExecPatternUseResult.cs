@@ -55,7 +55,7 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void RunAssertionNumeric(EPServiceProvider epService) {
-            string @event = typeof(SupportBean_N).Name;
+            string @event = typeof(SupportBean_N).FullName;
     
             EventCollection events = EventCollectionFactory.GetSetThreeExternalClock(0, 1000);
             var testCaseList = new CaseList();

@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
         private void RunAssertionInvalidAggMatchSingleFunc(EPServiceProvider epService) {
             // sum
             TryInvalidAggMatch(epService, "var1", "sum(double)", false, "sum(IntPrimitive)",
-                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double)' and received 'sum(IntPrimitive)': The required parameter type is " + Name.Clean<double>() + " and provided is int [");
+                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double)' and received 'sum(IntPrimitive)': The required parameter type is " + Name.Clean<double>(false) + " and provided is " + Name.Clean<int>(false) + " [");
             TryInvalidAggMatch(epService, "var1", "sum(double)", false, "count(*)",
                     "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double)' and received 'count(*)': Not a 'sum' aggregation [");
             TryInvalidAggMatch(epService, "var1", "sum(double)", false, "sum(DoublePrimitive, TheString='a')",
@@ -121,7 +121,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             // plug-in single-func
             epService.EPAdministrator.Configuration.AddPlugInAggregationFunctionFactory("myaggsingle", typeof(MyAggregationFunctionFactory));
             TryInvalidAggMatch(epService, "var1", "Myaggsingle()", false, "leaving()",
-                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'Myaggsingle(*)' and received 'leaving(*)': Not a 'myaggsingle' aggregation [");
+                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'Myaggsingle(*)' and received 'leaving(*)': Not a 'Myaggsingle' aggregation [");
         }
     
         private void RunAssertionInvalidAggMatchMultiFunc(EPServiceProvider epService) {
@@ -147,10 +147,10 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             // plug-in
             //
-            var config = new ConfigurationPlugInAggregationMultiFunction(SupportAggMFFuncExtensions.GetFunctionNames(), typeof(SupportAggMFFactory).Name);
+            var config = new ConfigurationPlugInAggregationMultiFunction(SupportAggMFFuncExtensions.GetFunctionNames(), typeof(SupportAggMFFactory));
             epService.EPAdministrator.Configuration.AddPlugInAggregationMultiFunction(config);
-            TryInvalidAggMatch(epService, "var1", "Se1() @Type(SupportBean)", true, "window(*)",
-                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'Se1(*)' and received 'window(*)': Not a 'se1' aggregation [");
+            TryInvalidAggMatch(epService, "var1", "se1() @Type(SupportBean)", true, "window(*)",
+                    "Error starting statement: Incompatible aggregation function for table 'var1' column 'value', expecting 'se1(*)' and received 'window(*)': Not a 'se1' aggregation [");
         }
     
         private void TryInvalidAggMatch(EPServiceProvider epService, string name, string declared, bool unbound, string provided, string messageOrNull) {
@@ -187,11 +187,11 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             // multiple value
             SupportMessageAssertUtil.TryInvalid(epService, "create table v1 (abc window(*) @Type(SupportBean) @Type(SupportBean))",
-                    "Error starting statement: For column 'abc' multiple annotations provided named 'type' [");
+                    "Error starting statement: For column 'abc' multiple annotations provided named 'Type' [");
     
             // wrong value
             SupportMessageAssertUtil.TryInvalid(epService, "create table v1 (abc window(*) @Type(1))",
-                    "Error starting statement: For column 'abc' string value expected for annotation 'type' [");
+                    "Error starting statement: For column 'abc' string value expected for annotation 'Type' [");
     
             // unknown type provided
             SupportMessageAssertUtil.TryInvalid(epService, "create table v1 (abc window(*) @Type(xx))",
@@ -199,7 +199,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("singlerow", GetType().FullName, "mySingleRowFunction");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("singlerow", GetType(), "MySingleRowFunction");
             epService.EPAdministrator.CreateEPL("create table aggvar_grouped_string (key string primary key, total count(*))");
             epService.EPAdministrator.CreateEPL("create table aggvar_twogrouped (keyone string primary key, keytwo string primary key, total count(*))");
             epService.EPAdministrator.CreateEPL("create table aggvar_grouped_int (key int primary key, total count(*))");
@@ -230,7 +230,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "Error starting statement: Failed to validate table-column expression 'window(IntPrimitive)': For tables columns, the window aggregation function requires the 'window(*)' declaration [");
             SupportMessageAssertUtil.TryInvalid(epService, "create table aggvar_invalid as (mywindow last(*)@Type(SupportBean))", "skip");
             SupportMessageAssertUtil.TryInvalid(epService, "create table aggvar_invalid as (mywindow window(sb.*)@Type(SupportBean)", "skip");
-            SupportMessageAssertUtil.TryInvalid(epService, "create table aggvar_invalid as (mymax MaxBy(IntPrimitive) @Type(SupportBean))",
+            SupportMessageAssertUtil.TryInvalid(epService, "create table aggvar_invalid as (mymax maxby(IntPrimitive) @Type(SupportBean))",
                     "Error starting statement: Failed to validate table-column expression 'maxby(IntPrimitive)': For tables columns, the aggregation function requires the 'sorted(*)' declaration [");
             // same column multiple times
             SupportMessageAssertUtil.TryInvalid(epService, "create table aggvar_invalid as (mycount count(*),mycount count(*))",
@@ -262,7 +262,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "Error starting statement: Invalid into-table clause: Failed to find table by name 'xxx' [");
             // group-by key type and count of group-by expressions
             SupportMessageAssertUtil.TryInvalid(epService, "into table aggvar_grouped_string select count(*) as total from SupportBean group by IntPrimitive",
-                    "Error starting statement: Incompatible type returned by a group-by expression for use with table 'aggvar_grouped_string', the group-by expression 'IntPrimitive' returns '" + Name.Of<int>() + "' but the table expects 'System.String' [");
+                    "Error starting statement: Incompatible type returned by a group-by expression for use with table 'aggvar_grouped_string', the group-by expression 'IntPrimitive' returns '" + Name.Clean<int>() + "' but the table expects 'System.String' [");
             SupportMessageAssertUtil.TryInvalid(epService, "into table aggvar_grouped_string select count(*) as total from SupportBean group by TheString, IntPrimitive",
                     "Error starting statement: Incompatible number of group-by expressions for use with table 'aggvar_grouped_string', the table expects 1 group-by expressions and provided are 2 group-by expressions [");
             SupportMessageAssertUtil.TryInvalid(epService, "into table aggvar_ungrouped select count(*) as total from SupportBean group by TheString",
@@ -291,16 +291,16 @@ namespace com.espertech.esper.regression.nwtable.tbl
             SupportMessageAssertUtil.TryInvalid(epService, "select aggvar_grouped_string.total from SupportBean",
                     "Error starting statement: Failed to validate select-clause expression 'aggvar_grouped_string.total': Failed to resolve property 'aggvar_grouped_string.total' to a stream or nested property in a stream [");
             SupportMessageAssertUtil.TryInvalid(epService, "select aggvar_grouped_string[5].total from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'aggvar_grouped_string[5].total': Incompatible type returned by a key expression for use with table 'aggvar_grouped_string', the key expression '5' returns '" + Name.Of<int>() + "' but the table expects 'System.String' [select aggvar_grouped_string[5].total from SupportBean]");
+                    "Error starting statement: Failed to validate select-clause expression 'aggvar_grouped_string[5].total': Incompatible type returned by a key expression for use with table 'aggvar_grouped_string', the key expression '5' returns '" + Name.Clean<int>() + "' but the table expects 'System.String' [select aggvar_grouped_string[5].total from SupportBean]");
             // top-level variable use without "keys" function
-            SupportMessageAssertUtil.TryInvalid(epService, "select Aggvar_grouped_string.Something() from SupportBean",
-                    "Invalid use of variable 'aggvar_grouped_string', unrecognized use of function 'something', expected 'Keys()' [");
+            SupportMessageAssertUtil.TryInvalid(epService, "select aggvar_grouped_string.something() from SupportBean",
+                    "Invalid use of variable 'aggvar_grouped_string', unrecognized use of function 'something', expected 'keys()' [");
             SupportMessageAssertUtil.TryInvalid(epService, "select dummy['a'] from SupportBean",
                     "Error starting statement: Failed to validate select-clause expression 'dummy[\"a\"]': A table 'dummy' could not be found [select dummy['a'] from SupportBean]");
             SupportMessageAssertUtil.TryInvalid(epService, "select aggvarctx.dummy from SupportBean",
                     "Error starting statement: Failed to validate select-clause expression 'aggvarctx.dummy': A column 'dummy' could not be found for table 'aggvarctx' [select aggvarctx.dummy from SupportBean]");
-            SupportMessageAssertUtil.TryInvalid(epService, "select Aggvarctx_ungrouped_window.win.Dummy(123) from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'aggvarctx_ungrouped_window.win.dumm...(41 chars)': Failed to resolve 'aggvarctx_ungrouped_window.win.dummy' to a property, single-row function, aggregation function, script, stream or class name [select Aggvarctx_ungrouped_window.win.Dummy(123) from SupportBean]");
+            SupportMessageAssertUtil.TryInvalid(epService, "select aggvarctx_ungrouped_window.win.dummy(123) from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'aggvarctx_ungrouped_window.win.dumm...(41 chars)': Failed to resolve 'aggvarctx_ungrouped_window.win.dummy' to a property, single-row function, aggregation function, script, stream or class name [select aggvarctx_ungrouped_window.win.dummy(123) from SupportBean]");
             SupportMessageAssertUtil.TryInvalid(epService, "context MyOtherContext select aggvarctx.total from SupportBean",
                     "Error starting statement: Failed to validate select-clause expression 'aggvarctx.total': Table by name 'aggvarctx' has been declared for context 'MyContext' and can only be used within the same context [context MyOtherContext select aggvarctx.total from SupportBean]");
             SupportMessageAssertUtil.TryInvalid(epService, "context MyOtherContext select aggvarctx.total from SupportBean",
@@ -323,10 +323,10 @@ namespace com.espertech.esper.regression.nwtable.tbl
             SupportMessageAssertUtil.TryInvalid(epService, "select * from aggvar_grouped_string[books]",
                     "Contained-event expressions are not supported with tables");
             // join invalid
-            SupportMessageAssertUtil.TryInvalid(epService, "select aggvar_grouped_int[1].total.CountMinSketchFrequency(TheString) from SupportBean",
+            SupportMessageAssertUtil.TryInvalid(epService, "select aggvar_grouped_int[1].total.countMinSketchFrequency(TheString) from SupportBean",
                     "Error starting statement: Failed to validate select-clause expression 'aggvar_grouped_int[1].total.countMi...(62 chars)': Invalid combination of aggregation state and aggregation accessor [");
-            SupportMessageAssertUtil.TryInvalid(epService, "select Total.CountMinSketchFrequency(TheString) from aggvar_grouped_int, SupportBean unidirectional",
-                    "Error starting statement: Failed to validate select-clause expression 'total.CountMinSketchFrequency(TheString)': Failed to validate method-chain expression 'total.CountMinSketchFrequency(TheString)': Invalid combination of aggregation state and aggregation accessor [");
+            SupportMessageAssertUtil.TryInvalid(epService, "select total.countMinSketchFrequency(TheString) from aggvar_grouped_int, SupportBean unidirectional",
+                    "Error starting statement: Failed to validate select-clause expression 'total.countMinSketchFrequency(TheString)': Failed to validate method-chain expression 'total.countMinSketchFrequency(TheString)': Invalid combination of aggregation state and aggregation accessor [");
             // cannot be marked undirectional
             SupportMessageAssertUtil.TryInvalid(epService, "select * from aggvar_grouped_int unidirectional, SupportBean",
                     "Error starting statement: Tables cannot be marked as unidirectional [");

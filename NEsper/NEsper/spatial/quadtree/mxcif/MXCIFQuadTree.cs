@@ -31,8 +31,8 @@ namespace com.espertech.esper.spatial.quadtree.mxcif
         private readonly int _leafCapacity;
         private readonly int _maxTreeHeight;
         private MXCIFQuadTreeNode<TL> _root;
-    
-        public MXCIFQuadTree(int leafCapacity, int maxTreeHeight, MXCIFQuadTreeNode<TL> root)
+
+        internal MXCIFQuadTree(int leafCapacity, int maxTreeHeight, MXCIFQuadTreeNode<TL> root)
         {
             _leafCapacity = leafCapacity;
             _maxTreeHeight = maxTreeHeight;

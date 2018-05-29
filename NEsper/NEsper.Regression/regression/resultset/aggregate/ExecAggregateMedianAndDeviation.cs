@@ -76,7 +76,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                 .SetStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH);
 
             FromClause fromClause = FromClause.Create(
-                    FilterStream.Create(typeof(SupportBeanString).Name, "one").AddView(View.Create("length", Expressions.Constant(100))),
+                    FilterStream.Create(typeof(SupportBeanString).FullName, "one").AddView(View.Create("length", Expressions.Constant(100))),
                     FilterStream.Create(typeof(SupportMarketDataBean).FullName, "two").AddView(View.Create("length", Expressions.Constant(5))));
             model.FromClause = fromClause;
             model.WhereClause = Expressions.And().Add(
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                 .Add(Expressions.EqProperty("one.TheString", "two.symbol"));
 
             model.GroupByClause = GroupByClause.Create("symbol");
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string epl = "select irstream symbol, " +
                     "median(price) as myMedian, " +
@@ -143,10 +143,10 @@ namespace com.espertech.esper.regression.resultset.aggregate
         private void TryAssertionStmt(EPServiceProvider epService, SupportUpdateListener listener, EPStatement stmt) {
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("myMedian"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("myDistMedian"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("myStdev"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("myAvedev"));
+            Assert.AreEqual(typeof(double), stmt.EventType.GetPropertyType("myMedian"));
+            Assert.AreEqual(typeof(double), stmt.EventType.GetPropertyType("myDistMedian"));
+            Assert.AreEqual(typeof(double), stmt.EventType.GetPropertyType("myStdev"));
+            Assert.AreEqual(typeof(double), stmt.EventType.GetPropertyType("myAvedev"));
     
             SendEvent(epService, SYMBOL_DELL, 10);
             AssertEvents(listener, SYMBOL_DELL,

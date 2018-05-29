@@ -23,7 +23,14 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.expr
 {
-    public class ExecExprCaseExpr : RegressionExecution {
+    public class ExecExprCaseExpr : RegressionExecution
+    {
+        public override void Configure(Configuration configuration)
+        {
+            base.Configure(configuration);
+            configuration.AddImport(typeof(CompatExtensions));
+        }
+
         public override void Run(EPServiceProvider epService) {
             RunAssertionCaseSyntax1Sum(epService);
             RunAssertionCaseSyntax1Sum_OM(epService);
@@ -72,7 +79,7 @@ namespace com.espertech.esper.regression.expr.expr
                     .Add(Expressions.Eq("symbol", "GE"), Expressions.Property("volume"))
                     .Add(Expressions.Eq("symbol", "DELL"), Expressions.Sum("price")), "p1");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarketDataBean).FullName).AddView("win", "length", Expressions.Constant(10)));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string caseExpr = "select case" +
                     " when symbol=\"GE\" then volume" +
@@ -150,7 +157,7 @@ namespace com.espertech.esper.regression.expr.expr
                     .SetElse(Expressions.Property("volume"))
                     .Add(Expressions.Eq("symbol", "DELL"), Expressions.Multiply(Expressions.Property("volume"), Expressions.Constant(3))), "p1");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarketDataBean).FullName).AddView("length", Expressions.Constant(10)));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string caseExpr = "select case " +
                     "when symbol=\"DELL\" then volume*3 " +
@@ -264,22 +271,22 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionCaseSyntax2StringsNBranches(EPServiceProvider epService) {
             // Test of the various coercion user cases.
             string caseExpr = "select case IntPrimitive" +
-                    " when 1 then bool?.ToString(BoolPrimitive) " +
-                    " when 2 then bool?.ToString(BoolBoxed) " +
-                    " when 3 then Convert.ToString(IntPrimitive) " +
-                    " when 4 then Convert.ToString(IntBoxed)" +
-                    " when 5 then Long.ToString(LongPrimitive) " +
-                    " when 6 then Long.ToString(LongBoxed) " +
-                    " when 7 then Character.ToString(charPrimitive) " +
-                    " when 8 then Character.ToString(charBoxed) " +
-                    " when 9 then Short.ToString(ShortPrimitive) " +
-                    " when 10 then Short.ToString(ShortBoxed) " +
-                    " when 11 then Byte.ToString(bytePrimitive) " +
-                    " when 12 then Byte.ToString(byteBoxed) " +
-                    " when 13 then Float.ToString(FloatPrimitive) " +
-                    " when 14 then Float.ToString(FloatBoxed) " +
-                    " when 15 then double?.ToString(DoublePrimitive) " +
-                    " when 16 then double?.ToString(DoubleBoxed) " +
+                    " when 1 then CompatExtensions.RenderAny(BoolPrimitive) " +
+                    " when 2 then CompatExtensions.RenderAny(BoolBoxed) " +
+                    " when 3 then CompatExtensions.RenderAny(IntPrimitive) " +
+                    " when 4 then CompatExtensions.RenderAny(IntBoxed)" +
+                    " when 5 then CompatExtensions.RenderAny(LongPrimitive) " +
+                    " when 6 then CompatExtensions.RenderAny(LongBoxed) " +
+                    " when 7 then CompatExtensions.RenderAny(charPrimitive) " +
+                    " when 8 then CompatExtensions.RenderAny(charBoxed) " +
+                    " when 9 then CompatExtensions.RenderAny(ShortPrimitive) " +
+                    " when 10 then CompatExtensions.RenderAny(ShortBoxed) " +
+                    " when 11 then CompatExtensions.RenderAny(bytePrimitive) " +
+                    " when 12 then CompatExtensions.RenderAny(byteBoxed) " +
+                    " when 13 then CompatExtensions.RenderAny(FloatPrimitive) " +
+                    " when 14 then CompatExtensions.RenderAny(FloatBoxed) " +
+                    " when 15 then CompatExtensions.RenderAny(DoublePrimitive) " +
+                    " when 16 then CompatExtensions.RenderAny(DoubleBoxed) " +
                     " when 17 then TheString " +
                     " else 'x' end as p1 " +
                     " from " + typeof(SupportBean).FullName + "#length(1)";
@@ -291,11 +298,11 @@ namespace com.espertech.esper.regression.expr.expr
     
             SendSupportBeanEvent(epService, true, new bool?(false), 1, new int?(0), 0L, 0L, '0', 'a', (short) 0, (short) 0, (byte) 0, (byte) 0, 0.0f, (float) 0, 0.0, new double?(0.0), null, SupportEnum.ENUM_VALUE_1);
             EventBean theEvent = listener.GetAndResetLastNewData()[0];
-            Assert.AreEqual("true", theEvent.Get("p1"));
+            Assert.AreEqual("True", theEvent.Get("p1"));
     
             SendSupportBeanEvent(epService, true, new bool?(false), 2, new int?(0), 0L, 0L, '0', 'a', (short) 0, (short) 0, (byte) 0, (byte) 0, 0.0f, (float) 0, 0.0, new double?(0.0), null, SupportEnum.ENUM_VALUE_1);
             theEvent = listener.GetAndResetLastNewData()[0];
-            Assert.AreEqual("false", theEvent.Get("p1"));
+            Assert.AreEqual("False", theEvent.Get("p1"));
     
             SendSupportBeanEvent(epService, true, new bool?(false), 3, new int?(0), 0L, 0L, '0', 'a', (short) 0, (short) 0, (byte) 0, (byte) 0, 0.0f, (float) 0, 0.0, new double?(0.0), null, SupportEnum.ENUM_VALUE_1);
             theEvent = listener.GetAndResetLastNewData()[0];
@@ -433,7 +440,7 @@ namespace com.espertech.esper.regression.expr.expr
                     .Add(Expressions.Constant(3), Expressions.Constant(null)), "p1");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName)
                 .AddView("length", Expressions.Constant(100)));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             Assert.AreEqual(caseExpr, model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -455,7 +462,7 @@ namespace com.espertech.esper.regression.expr.expr
                     "end as p1 from " + typeof(SupportBean).FullName + "#length(100)";
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(caseExpr);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(caseExpr, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -507,7 +514,7 @@ namespace com.espertech.esper.regression.expr.expr
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("p1"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("p1"));
     
             SendSupportBeanEvent(epService, null);
             Assert.AreEqual(1L, listener.AssertOneGetNewAndReset().Get("p1"));
@@ -607,8 +614,8 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionCaseSyntax2EnumChecks(EPServiceProvider epService) {
             string caseExpr = "select case supportEnum " +
-                    " when " + typeof(SupportEnum).FullName + ".GetValueForEnum(0) then 1 " +
-                    " when " + typeof(SupportEnum).FullName + ".GetValueForEnum(1) then 2 " +
+                    " when " + Name.Of<SupportEnumHelper>() + ".GetValueForEnum(0) then 1 " +
+                    " when " + Name.Of<SupportEnumHelper>() + ".GetValueForEnum(1) then 2 " +
                     " end as p1 " +
                     " from " + typeof(SupportBeanWithEnum).FullName + "#length(10)";
     
@@ -634,16 +641,16 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionCaseSyntax2EnumResult(EPServiceProvider epService) {
             string caseExpr = "select case IntPrimitive * 2 " +
-                    " when 2 then " + typeof(SupportEnum).FullName + ".GetValueForEnum(0) " +
-                    " when 4 then " + typeof(SupportEnum).FullName + ".GetValueForEnum(1) " +
-                    " else " + typeof(SupportEnum).FullName + ".GetValueForEnum(2) " +
+                    " when 2 then " + Name.Of<SupportEnumHelper>() + ".GetValueForEnum(0) " +
+                    " when 4 then " + Name.Of<SupportEnumHelper>() + ".GetValueForEnum(1) " +
+                    " else " + Name.Of<SupportEnumHelper>() + ".GetValueForEnum(2) " +
                     " end as p1 " +
                     " from " + typeof(SupportBean).FullName + "#length(10)";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(caseExpr);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            Assert.AreEqual(typeof(SupportEnum), stmt.EventType.GetPropertyType("p1"));
+            Assert.AreEqual(typeof(SupportEnum?), stmt.EventType.GetPropertyType("p1"));
     
             SendSupportBeanEvent(epService, 1);
             EventBean theEvent = listener.GetAndResetLastNewData()[0];

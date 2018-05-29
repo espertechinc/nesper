@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.pattern
                     Patterns.Filter(EVENT_B_CLASS, "b"),
                     Patterns.Or(Patterns.Filter(EVENT_D_CLASS, "d"), Patterns.Filter(EVENT_A_CLASS, "a")));
             model.FromClause = FromClause.Create(PatternStream.Create(pattern));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             string text = "select * from pattern [b=" + EVENT_B_CLASS + " -> d=" + EVENT_D_CLASS + " or a=" + EVENT_A_CLASS + "]";
             Assert.AreEqual(text, model.ToEPL());
             testCase = new EventExpressionCase(model);

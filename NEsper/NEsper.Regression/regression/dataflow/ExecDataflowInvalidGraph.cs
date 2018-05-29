@@ -63,7 +63,7 @@ namespace com.espertech.esper.regression.dataflow
     
             // op is some other class
             SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "MyGraph", "create dataflow MyGraph Random {}",
-                    "Failed to instantiate data flow 'MyGraph': Failed to resolve operator 'Random', operator class System.Random does not declare the DataFlowOperator annotation or implement the DataFlowSourceOperator interface");
+                    "Failed to instantiate data flow 'MyGraph': Failed to resolve operator 'Random', operator class System.Random does not declare the DataFlowOperatorAttribute annotation or implement the DataFlowSourceOperator interface");
     
             // input stream not found
             SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "MyGraph", "create dataflow MyGraph DefaultSupportCaptureOp(nostream) {}",
@@ -78,8 +78,8 @@ namespace com.espertech.esper.regression.dataflow
                     "Failed to instantiate data flow 'MyGraph': Failed to find writable property 'dummy' for class");
     
             // inject properties: property invalid type
-            SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "MyGraph", "create dataflow MyGraph MyTestOp {TheString: 1}",
-                    "Failed to instantiate data flow 'MyGraph': Property 'TheString' of class com.espertech.esper.regression.dataflow.ExecDataflowInvalidGraph$MyTestOp expects an System.String but receives a value of type " + Name.Of<int>() + "");
+            SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "MyGraph", "create dataflow MyGraph MyTestOp {theString: 1}",
+                    "Failed to instantiate data flow 'MyGraph': Property 'theString' of class com.espertech.esper.regression.dataflow.ExecDataflowInvalidGraph+MyTestOp expects an System.String but receives a value of type " + Name.Clean<int>(false) + "");
     
             // two incompatible input streams: different types
             epl = "create dataflow MyGraph " +
@@ -135,7 +135,7 @@ namespace com.espertech.esper.regression.dataflow
                     "DefaultSupportSourceOp -> out1<SupportBean_A> {}\n" +
                     "MySBInputOp(out1) {}";
             SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "MyGraph", epl,
-                    "Failed to instantiate data flow 'MyGraph': Failed to find onInput method on for operator 'MySBInputOp#1(out1)' class com.espertech.esper.regression.dataflow.ExecDataflowInvalidGraph$MySBInputOp, expected an onInput method that takes any of {Object, Object[");
+                    "Failed to instantiate data flow 'MyGraph': Failed to find OnInput method on for operator 'MySBInputOp#1(out1)' class com.espertech.esper.regression.dataflow.ExecDataflowInvalidGraph+MySBInputOp, expected an OnInput method that takes any of {Object, Object[");
     
             // same schema defined twice
             epl = "create dataflow MyGraph " +

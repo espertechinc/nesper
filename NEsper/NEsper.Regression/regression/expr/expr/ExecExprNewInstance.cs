@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.expr.expr
             RunAssertionStreamAlias(epService);
     
             // try variable
-            epService.EPAdministrator.CreateEPL("create constant variable var cnt = new com.espertech.esper.compat.AtomicLong(1)");
+            epService.EPAdministrator.CreateEPL("create constant variable com.espertech.esper.compat.AtomicLong cnt = new com.espertech.esper.compat.AtomicLong(1)");
     
             // try shallow invalid cases
             SupportMessageAssertUtil.TryInvalid(epService, "select new Dummy() from SupportBean",
@@ -44,7 +44,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             epService.EPAdministrator.Configuration.AddImport(typeof(MyClassNoCtor));
             SupportMessageAssertUtil.TryInvalid(epService, "select new MyClassNoCtor() from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'new MyClassNoCtor()': Failed to find a suitable constructor for class ");
+                    "Error starting statement: Failed to validate select-clause expression 'new MyClassNoCtor()': Failed to find a suitable constructor for type ");
         }
     
         private void RunAssertionStreamAlias(EPServiceProvider epService) {
@@ -69,12 +69,14 @@ namespace com.espertech.esper.regression.expr.expr
                     "new SupportBean(\"A\",IntPrimitive) as c0, " +
                     "new SupportBean(\"B\",IntPrimitive+10), " +
                     "new SupportBean() as c2, " +
-                    "new SupportBean(\"ABC\",0).TheString as c3 " +
+                    "new SupportBean(\"ABC\",0).get_TheString() as c3 " +
                     "from SupportBean";
             var stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            var expectedAggType = new object[][]{new object[] {"c0", typeof(SupportBean)}, new object[] {"new SupportBean(\"B\",IntPrimitive+10)", typeof(SupportBean)}};
+            var expectedAggType = new object[][]{new object[] {"c0", typeof(SupportBean)}, new object[] {
+                "new SupportBean(\"B\",IntPrimitive+10)", typeof(SupportBean)
+            }};
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedAggType, stmt.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
             var fields = "TheString,IntPrimitive".Split(',');

@@ -24,7 +24,12 @@ namespace com.espertech.esper.regression.resultset.querytype
 {
     public class ExecQuerytypeHaving : RegressionExecution {
         private const string SYMBOL_DELL = "DELL";
-    
+
+        public override void Configure(Configuration configuration) {
+            base.Configure(configuration);
+            configuration.AddImport(typeof(Math));
+        }
+
         public override void Run(EPServiceProvider epService) {
             RunAssertionHavingWildcardSelect(epService);
             RunAssertionStatementOM(epService);
@@ -71,7 +76,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarketDataBean).FullName)
                 .AddView("length", Expressions.Constant(5)));
             model.HavingClause = Expressions.Lt(Expressions.Property("price"), Expressions.Avg("price"));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string epl = "select irstream symbol, price, avg(price) as avgPrice " +
                     "from " + typeof(SupportMarketDataBean).FullName + "#length(5) " +
@@ -154,10 +159,10 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void RunNoAggregationJoin(EPServiceProvider epService, string filterClause) {
-            string epl = "select irstream a.price as aPrice, b.price as bPrice, Math.max(a.price, b.price) - Math.min(a.price, b.price) as spread " +
+            string epl = "select irstream a.price as aPrice, b.price as bPrice, Math.Max(a.price, b.price) - Math.Min(a.price, b.price) as spread " +
                     "from " + typeof(SupportMarketDataBean).FullName + "(symbol='SYM1')#length(1) as a, " +
                     typeof(SupportMarketDataBean).FullName + "(symbol='SYM2')#length(1) as b " +
-                    filterClause + " Math.max(a.price, b.price) - Math.min(a.price, b.price) >= 1.4";
+                    filterClause + " Math.Max(a.price, b.price) - Math.Min(a.price, b.price) >= 1.4";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -247,8 +252,8 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void TryAssertion(EPServiceProvider epService, SupportUpdateListener listener, EPStatement stmt) {
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(double), stmt.EventType.GetPropertyType("price"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("avgPrice"));
+            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("price").GetBoxedType());
+            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("avgPrice").GetBoxedType());
     
             SendEvent(epService, SYMBOL_DELL, 10);
             Assert.IsFalse(listener.IsInvoked);

@@ -6,6 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using com.espertech.esper.epl.expression.core;
+
 namespace com.espertech.esper.epl.agg.aggregator
 {
     public class AggregatorRateFilter : AggregatorRate
@@ -17,28 +20,40 @@ namespace com.espertech.esper.epl.agg.aggregator
 
         public override void Enter(object value)
         {
-            var arr = (object[]) value;
-            var pass = arr[arr.Length - 1];
-            if (true.Equals(pass))
-            {
-                if (arr.Length == 2)
-                    base.EnterValueSingle(arr[0]);
-                else
-                    base.EnterValueArr(arr);
+            if (value is object[] arr) {
+                var pass = arr[arr.Length - 1];
+                if (true.Equals(pass)) {
+                    if (arr.Length == 2) {
+                        base.EnterValueSingle(arr[0]);
+                    }
+                    else {
+                        base.EnterValueArr(arr);
+                    }
+                }
+
+                return;
             }
+
+            throw new ArgumentException("invalid value", nameof(value));
         }
 
         public override void Leave(object value)
         {
-            var arr = (object[]) value;
-            var pass = (bool?) arr[arr.Length - 1];
-            if (true.Equals(pass))
-            {
-                if (arr.Length == 2)
-                    base.LeaveValueSingle(arr[0]);
-                else
-                    base.LeaveValueArr(arr);
+            if (value is object[] arr) {
+                var pass = arr[arr.Length - 1];
+                if (true.Equals(pass)) {
+                    if (arr.Length == 2) {
+                        base.LeaveValueSingle(arr[0]);
+                    }
+                    else {
+                        base.LeaveValueArr(arr);
+                    }
+                }
+
+                return;
             }
+
+            throw new ArgumentException("invalid value", nameof(value));
         }
     }
 } // end of namespace

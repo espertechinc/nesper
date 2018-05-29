@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.client.annotation;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
@@ -96,8 +97,10 @@ namespace com.espertech.esper.regression.epl.subselect
                 MaxAmount = maxAmount;
             }
 
+            [PropertyName("key")]
             public string Key { get; }
 
+            [PropertyName("maxAmount")]
             public double MaxAmount { get; }
         }
     }

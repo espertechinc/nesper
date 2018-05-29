@@ -32,7 +32,7 @@ namespace com.espertech.esper.supportunit.epl.parse
             var container = SupportContainer.Instance;
             return ParseAndWalkEPL(expression, 
                 SupportEngineImportServiceFactory.Make(container),
-                new VariableServiceImpl(0, null, container.Resolve<EventAdapterService>(), null, container.RWLockManager(), container.ThreadLocalManager()));
+                new VariableServiceImpl(container, 0, null, container.Resolve<EventAdapterService>(), null));
         }
 
         public static EPLTreeWalkerListener ParseAndWalkEPL(String expression, EngineImportService engineImportService, VariableService variableService)

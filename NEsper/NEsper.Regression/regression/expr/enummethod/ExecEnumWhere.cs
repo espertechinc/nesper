@@ -80,7 +80,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
-                typeof(ICollection<object>), typeof(ICollection<object>)
+                typeof(ICollection<string>), typeof(ICollection<string>)
             });
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2,E3"));
@@ -102,11 +102,13 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             // test boolean
             eplFragment = "select " +
-                    "boolvals.where(x => x) as val0 " +
+                    "Boolvals.where(x => x) as val0 " +
                     "from SupportCollection";
             stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val0".Split(','), new Type[]{typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val0".Split(','), new Type[] {
+                typeof(ICollection<bool?>)
+            });
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeBoolean("true,true,false"));
             LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val0", true, true);

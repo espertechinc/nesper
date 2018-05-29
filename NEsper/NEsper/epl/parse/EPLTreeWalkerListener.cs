@@ -278,7 +278,21 @@ namespace com.espertech.esper.epl.parse
         }
     
         public void ExitLibFunction(EsperEPL2GrammarParser.LibFunctionContext ctx) {
-            ASTLibFunctionHelper.HandleLibFunc(_tokenStream, ctx, _configurationInformation, _engineImportService, _astExprNodeMap, _plugInAggregations, _engineURI, _expressionDeclarations, _exprDeclaredService, _scriptExpressions, _contextDescriptor, _tableService, _statementSpec, _variableService);
+            ASTLibFunctionHelper.HandleLibFunc(
+                _container,
+                _tokenStream, ctx, 
+                _configurationInformation, 
+                _engineImportService, 
+                _astExprNodeMap, 
+                _plugInAggregations, 
+                _engineURI, 
+                _expressionDeclarations, 
+                _exprDeclaredService, 
+                _scriptExpressions, 
+                _contextDescriptor, 
+                _tableService, 
+                _statementSpec, 
+                _variableService);
         }
     
         public void ExitMatchRecog(EsperEPL2GrammarParser.MatchRecogContext ctx) {
@@ -1360,7 +1374,13 @@ namespace com.espertech.esper.epl.parse
                     }
                 }
 
-                var found = ExprDeclaredHelper.GetExistsDeclaredExpr(propertyName, Collections.GetEmptyList<ExprNode>(), _expressionDeclarations.Expressions, _exprDeclaredService, _contextDescriptor);
+                var found = ExprDeclaredHelper.GetExistsDeclaredExpr(
+                    _container,
+                    propertyName, 
+                    Collections.GetEmptyList<ExprNode>(),
+                    _expressionDeclarations.Expressions, 
+                    _exprDeclaredService, 
+                    _contextDescriptor);
                 if (found != null) {
                     exprNode = found;
                 }

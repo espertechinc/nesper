@@ -140,11 +140,11 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             // delete rows
             var listener = new SupportUpdateListener();
             stmtCreate.Events += listener.Update;
-            long startTime = DateTimeHelper.CurrentTimeMillis;
+            long startTime = PerformanceObserver.MilliTime;
             for (int i = 0; i < 10000; i++) {
                 SendSupportBean_A(epService, "S" + i);
             }
-            long endTime = DateTimeHelper.CurrentTimeMillis;
+            long endTime = PerformanceObserver.MilliTime;
             long delta = endTime - startTime;
             Assert.IsTrue(delta < 500, "Delta=" + delta);
     

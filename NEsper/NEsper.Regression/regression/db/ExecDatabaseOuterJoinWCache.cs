@@ -20,8 +20,7 @@ namespace com.espertech.esper.regression.db
     {
         public override void Configure(Configuration configuration)
         {
-            var configDB = new ConfigurationDBRef();
-            configDB.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative);
+            var configDB = SupportDatabaseService.CreateDefaultConfig();
             configDB.ConnectionCatalog = "test";
             configDB.SetExpiryTimeCache(60, 120);
 

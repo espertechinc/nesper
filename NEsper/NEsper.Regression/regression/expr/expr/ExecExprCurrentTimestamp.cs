@@ -69,7 +69,7 @@ namespace com.espertech.esper.regression.expr.expr
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.Create().Add(Expressions.CurrentTimestamp(), "t0");
             model.FromClause = FromClause.Create().Add(FilterStream.Create(typeof(SupportBean).FullName));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(stmtText, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -91,14 +91,14 @@ namespace com.espertech.esper.regression.expr.expr
             string stmtText = "select current_timestamp() as t0 from " + typeof(SupportBean).FullName;
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(stmtText, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("t0"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("t0"));
     
             SendTimer(epService, 777);
             epService.EPRuntime.SendEvent(new SupportBean());

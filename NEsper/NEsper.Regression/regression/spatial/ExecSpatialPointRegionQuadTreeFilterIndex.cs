@@ -45,13 +45,13 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunAssertionFilterIndexTypeAssertion(EPServiceProvider epService) {
-            string eplNoIndex = "select * from SupportSpatialAABB(Point(0, 0).Inside(Rectangle(x, y, width, height)))";
+            var eplNoIndex = "select * from SupportSpatialAABB(point(0, 0).inside(rectangle(x, y, width, height)))";
             SupportFilterHelper.AssertFilterMulti(epService, eplNoIndex, "SupportSpatialAABB", new SupportFilterItem[][] {
                 new []{SupportFilterItem.BoolExprFilterItem}
             });
     
-            string eplIndexed = "expression myindex {Pointregionquadtree(0, 0, 100, 100)}" +
-                    "select * from SupportSpatialAABB(Point(0, 0, filterindex:myindex).Inside(Rectangle(x, y, width, height)))";
+            var eplIndexed = "expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
+                    "select * from SupportSpatialAABB(point(0, 0, filterindex:myindex).inside(rectangle(x, y, width, height)))";
             SupportFilterHelper.AssertFilterMulti(epService, eplIndexed, "SupportSpatialAABB", new SupportFilterItem[][] {
                 new []{new SupportFilterItem("x,y,width,height/myindex/pointregionquadtree/0.0,0.0,100.0,100.0,4.0,20.0", FilterOperator.ADVANCED_INDEX)}
             });
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.spatial
     
     
         private void RunAssertionFilterIndexUnoptimized(EPServiceProvider epService) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select * from SupportSpatialAABB(Point(5, 10).Inside(Rectangle(x, y, width, height)))");
+            var stmt = epService.EPAdministrator.CreateEPL("select * from SupportSpatialAABB(point(5, 10).inside(rectangle(x, y, width, height)))");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -73,12 +73,13 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunAssertionFilterIndexPerfStatement(EPServiceProvider epService) {
-            EPPreparedStatement prepared = epService.EPAdministrator.PrepareEPL("expression myindex {Pointregionquadtree(0, 0, 100, 100)}" +
-                    "select * from SupportSpatialAABB(Point(?, ?, filterindex:myindex).Inside(Rectangle(x, y, width, height)))");
+            var prepared = epService.EPAdministrator.PrepareEPL(
+                "expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
+                "select * from SupportSpatialAABB(point(?, ?, filterindex:myindex).inside(rectangle(x, y, width, height)))");
             var listener = new SupportUpdateListener();
     
-            for (int x = 0; x < 100; x++) {
-                for (int y = 0; y < 20; y++) {
+            for (var x = 0; x < 100; x++) {
+                for (var y = 0; y < 20; y++) {
                     prepared.SetObject(1, x);
                     prepared.SetObject(2, y);
                     epService.EPAdministrator.Create(prepared).Events += listener.Update;
@@ -90,8 +91,8 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunAssertionFilterIndexPerfPattern(EPServiceProvider epService) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("expression myindex {Pointregionquadtree(0, 0, 100, 100)}" +
-                    "select * from pattern [every p=SupportSpatialPoint -> SupportSpatialAABB(Point(p.px, p.py, filterindex:myindex).Inside(Rectangle(x, y, width, height)))]");
+            var stmt = epService.EPAdministrator.CreateEPL("expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
+                    "select * from pattern [every p=SupportSpatialPoint -> SupportSpatialAABB(point(p.px, p.py, filterindex:myindex).inside(rectangle(x, y, width, height)))]");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -104,8 +105,8 @@ namespace com.espertech.esper.regression.spatial
         private void RunAssertionFilterIndexPerfContextPartition(EPServiceProvider epService) {
     
             epService.EPAdministrator.CreateEPL("create context PerPointCtx initiated by SupportSpatialPoint ssp");
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("expression myindex {Pointregionquadtree(0, 0, 100, 100)}" +
-                    "context PerPointCtx select count(*) from SupportSpatialAABB(Point(context.ssp.px, context.ssp.py, filterindex:myindex).Inside(Rectangle(x, y, width, height)))");
+            var stmt = epService.EPAdministrator.CreateEPL("expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
+                    "context PerPointCtx select count(*) from SupportSpatialAABB(point(context.ssp.px, context.ssp.py, filterindex:myindex).inside(rectangle(x, y, width, height)))");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     

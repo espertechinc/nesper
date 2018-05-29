@@ -42,7 +42,7 @@ namespace com.espertech.esper.core.service
             _engineURI = engineURI;
             _hasPreprocessing = false;
             _preprocessors = new ConcurrentDictionary<EventType, NullableObject<InternalEventRouterPreprocessor>>();
-            _descriptors = new Dictionary<UpdateDesc, IRDescEntry>();
+            _descriptors = new LinkedHashMap<UpdateDesc, IRDescEntry>();
         }
 
         /// <summary>Return true to indicate that there is pre-processing to take place. </summary>

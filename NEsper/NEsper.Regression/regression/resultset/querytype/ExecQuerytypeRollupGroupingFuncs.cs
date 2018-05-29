@@ -17,7 +17,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.util;
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
 using NUnit.Framework;
@@ -44,14 +44,14 @@ namespace com.espertech.esper.regression.resultset.querytype
             epService.EPRuntime.SendEvent(new CarEvent("opel", "france", 7000));
             epService.EPRuntime.SendEvent(new CarEvent("opel", "germany", 7000));
     
-            string epl = "select name, place, sum(count), Grouping(name), Grouping(place), Grouping_id(name, place) as gid " +
-                    "from CarWindow group by grouping Sets((name, place),name, place,())";
+            string epl = "select name, place, sum(count), grouping(name), grouping(place), grouping_id(name, place) as gid " +
+                    "from CarWindow group by grouping sets((name, place),name, place,())";
             EPOnDemandQueryResult result = epService.EPRuntime.ExecuteQuery(epl);
     
-            Assert.AreEqual(typeof(int?), result.EventType.GetPropertyType("Grouping(name)"));
-            Assert.AreEqual(typeof(int?), result.EventType.GetPropertyType("gid"));
+            Assert.AreEqual(typeof(int?), result.EventType.GetPropertyType("grouping(name)").GetBoxedType());
+            Assert.AreEqual(typeof(int?), result.EventType.GetPropertyType("gid").GetBoxedType());
     
-            var fields = new string[]{"name", "place", "sum(count)", "Grouping(name)", "Grouping(place)", "gid"};
+            var fields = new string[]{"name", "place", "sum(count)", "grouping(name)", "grouping(place)", "gid"};
             EPAssertionUtil.AssertPropsPerRow(result.Array, fields, new object[][]{
                     new object[] {"skoda", "france", 10000, 0, 0, 0},
                     new object[] {"skoda", "germany", 5000, 0, 0, 0},
@@ -73,8 +73,8 @@ namespace com.espertech.esper.regression.resultset.querytype
             epService.EPAdministrator.Configuration.AddEventType(typeof(CarEvent));
     
             // try simple
-            string epl = "select name, place, sum(count), Grouping(name), Grouping(place), Grouping_id(name,place) as gid " +
-                    "from CarEvent group by grouping Sets((name, place), name, place, ())";
+            string epl = "select name, place, sum(count), grouping(name), grouping(place), grouping_id(name,place) as gid " +
+                    "from CarEvent group by grouping sets((name, place), name, place, ())";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
             TryAssertionDocSampleCarEvent(epService, listener);
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regression.resultset.querytype
         }
     
         private void TryAssertionDocSampleCarEvent(EPServiceProvider epService, SupportUpdateListener listener) {
-            var fields = new string[]{"name", "place", "sum(count)", "Grouping(name)", "Grouping(place)", "gid"};
+            var fields = new string[]{"name", "place", "sum(count)", "grouping(name)", "grouping(place)", "gid"};
             epService.EPRuntime.SendEvent(new CarEvent("skoda", "france", 100));
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][]{
                     new object[] {"skoda", "france", 100, 0, 0, 0},
@@ -118,15 +118,15 @@ namespace com.espertech.esper.regression.resultset.querytype
             epService.EPAdministrator.Configuration.AddEventType(typeof(CarEvent));
     
             // test uncorrelated subquery and expression-declaration and single-row func
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("myfunc", typeof(GroupingSupportFunc).Name, "myfunc");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("myfunc", typeof(GroupingSupportFunc), "Myfunc");
             epService.EPAdministrator.CreateEPL("create expression myExpr {x=> '|' || x.name || '|'}");
             epService.EPAdministrator.Configuration.AddEventType(typeof(CarInfoEvent));
-            string epl = "select Myfunc(" +
-                    "  name, place, sum(count), Grouping(name), Grouping(place), Grouping_id(name, place)," +
+            string epl = "select myfunc(" +
+                    "  name, place, sum(count), grouping(name), grouping(place), grouping_id(name, place)," +
                     "  (select refId from CarInfoEvent#lastevent), " +
-                    "  MyExpr(ce)" +
+                    "  myExpr(ce)" +
                     "  )" +
-                    "from CarEvent ce group by grouping Sets((name, place),name, place,())";
+                    "from CarEvent ce group by grouping sets((name, place),name, place,())";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -162,23 +162,23 @@ namespace com.espertech.esper.regression.resultset.querytype
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             // invalid use of function
-            string expected = "Failed to validate select-clause expression 'Grouping(TheString)': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select Grouping(TheString) from SupportBean]";
-            TryInvalid(epService, "select Grouping(TheString) from SupportBean", "Error starting statement: " + expected);
-            TryInvalid(epService, "select TheString, sum(IntPrimitive) from SupportBean(Grouping(TheString) = 1) group by Rollup(TheString)",
-                    "Failed to validate filter expression 'Grouping(TheString)=1': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select TheString, sum(IntPrimitive) from SupportBean(Grouping(TheString) = 1) group by Rollup(TheString)]");
-            TryInvalid(epService, "select TheString, sum(IntPrimitive) from SupportBean where Grouping(TheString) = 1 group by Rollup(TheString)",
-                    "Failed to validate filter expression 'Grouping(TheString)=1': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select TheString, sum(IntPrimitive) from SupportBean where Grouping(TheString) = 1 group by Rollup(TheString)]");
-            TryInvalid(epService, "select TheString, sum(IntPrimitive) from SupportBean group by Rollup(Grouping(TheString))",
-                    "Error starting statement: The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select TheString, sum(IntPrimitive) from SupportBean group by Rollup(Grouping(TheString))]");
+            string expected = "Failed to validate select-clause expression 'grouping(TheString)': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select grouping(TheString) from SupportBean]";
+            TryInvalid(epService, "select grouping(TheString) from SupportBean", "Error starting statement: " + expected);
+            TryInvalid(epService, "select TheString, sum(IntPrimitive) from SupportBean(grouping(TheString) = 1) group by Rollup(TheString)",
+                    "Failed to validate filter expression 'grouping(TheString)=1': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select TheString, sum(IntPrimitive) from SupportBean(grouping(TheString) = 1) group by Rollup(TheString)]");
+            TryInvalid(epService, "select TheString, sum(IntPrimitive) from SupportBean where grouping(TheString) = 1 group by Rollup(TheString)",
+                    "Failed to validate filter expression 'grouping(TheString)=1': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select TheString, sum(IntPrimitive) from SupportBean where grouping(TheString) = 1 group by Rollup(TheString)]");
+            TryInvalid(epService, "select TheString, sum(IntPrimitive) from SupportBean group by Rollup(grouping(TheString))",
+                    "Error starting statement: The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select TheString, sum(IntPrimitive) from SupportBean group by Rollup(grouping(TheString))]");
     
             // invalid parameters
-            TryInvalid(epService, "select TheString, sum(IntPrimitive), Grouping(LongPrimitive) from SupportBean group by Rollup(TheString)",
-                    "Error starting statement: Group-by with rollup requires a fully-aggregated query, the query is not full-aggregated because of property 'LongPrimitive' [select TheString, sum(IntPrimitive), Grouping(LongPrimitive) from SupportBean group by Rollup(TheString)]");
-            TryInvalid(epService, "select TheString, sum(IntPrimitive), Grouping(TheString||'x') from SupportBean group by Rollup(TheString)",
-                    "Error starting statement: Failed to find expression 'TheString||\"x\"' among group-by expressions [select TheString, sum(IntPrimitive), Grouping(TheString||'x') from SupportBean group by Rollup(TheString)]");
+            TryInvalid(epService, "select TheString, sum(IntPrimitive), grouping(LongPrimitive) from SupportBean group by Rollup(TheString)",
+                    "Error starting statement: Group-by with rollup requires a fully-aggregated query, the query is not full-aggregated because of property 'LongPrimitive' [select TheString, sum(IntPrimitive), grouping(LongPrimitive) from SupportBean group by Rollup(TheString)]");
+            TryInvalid(epService, "select TheString, sum(IntPrimitive), grouping(TheString||'x') from SupportBean group by Rollup(TheString)",
+                    "Error starting statement: Failed to find expression 'TheString||\"x\"' among group-by expressions [select TheString, sum(IntPrimitive), grouping(TheString||'x') from SupportBean group by Rollup(TheString)]");
     
-            TryInvalid(epService, "select TheString, sum(IntPrimitive), Grouping_id(TheString, TheString) from SupportBean group by Rollup(TheString)",
-                    "Error starting statement: Duplicate expression 'TheString' among grouping function parameters [select TheString, sum(IntPrimitive), Grouping_id(TheString, TheString) from SupportBean group by Rollup(TheString)]");
+            TryInvalid(epService, "select TheString, sum(IntPrimitive), grouping_id(TheString, TheString) from SupportBean group by Rollup(TheString)",
+                    "Error starting statement: Duplicate expression 'TheString' among grouping function parameters [select TheString, sum(IntPrimitive), grouping_id(TheString, TheString) from SupportBean group by Rollup(TheString)]");
         }
     
         public class GroupingSupportFunc {

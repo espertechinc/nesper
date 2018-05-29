@@ -40,10 +40,10 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionEqualsAll(EPServiceProvider epService) {
             string[] fields = "eq,neq,sqlneq,nneq".Split(',');
             string stmtText = "select " +
-                    "IntPrimitive=All(1,IntBoxed) as eq, " +
-                    "IntPrimitive!=All(1,IntBoxed) as neq, " +
-                    "IntPrimitive<>All(1,IntBoxed) as sqlneq, " +
-                    "not IntPrimitive=All(1,IntBoxed) as nneq " +
+                    "IntPrimitive=all(1,IntBoxed) as eq, " +
+                    "IntPrimitive!=all(1,IntBoxed) as neq, " +
+                    "IntPrimitive<>all(1,IntBoxed) as sqlneq, " +
+                    "not IntPrimitive=all(1,IntBoxed) as nneq " +
                     "from SupportBean(TheString like \"E%\")";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -148,8 +148,8 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionRelationalOpAllArray(EPServiceProvider epService) {
             string[] fields = "g,ge".Split(',');
             string stmtText = "select " +
-                    "LongBoxed>All({1,2},intArr,intCol) as g, " +
-                    "LongBoxed>=All({1,2},intArr,intCol) as ge " +
+                    "LongBoxed>all({1,2},intArr,intCol) as g, " +
+                    "LongBoxed>=all({1,2},intArr,intCol) as ge " +
                     "from ArrayBean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -434,7 +434,7 @@ namespace com.espertech.esper.regression.expr.expr
                 epService.EPAdministrator.CreateEPL(stmtText);
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Failed to validate select-clause expression 'intArr=All(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr = all (1, 2, 3) as r1 from ArrayBean]", ex.Message);
+                Assert.AreEqual("Error starting statement: Failed to validate select-clause expression 'intArr=all(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr = all (1, 2, 3) as r1 from ArrayBean]", ex.Message);
             }
     
             try {
@@ -442,7 +442,7 @@ namespace com.espertech.esper.regression.expr.expr
                 epService.EPAdministrator.CreateEPL(stmtText);
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Failed to validate select-clause expression 'intArr>All(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr > all (1, 2, 3) as r1 from ArrayBean]", ex.Message);
+                Assert.AreEqual("Error starting statement: Failed to validate select-clause expression 'intArr>all(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr > all (1, 2, 3) as r1 from ArrayBean]", ex.Message);
             }
         }
     

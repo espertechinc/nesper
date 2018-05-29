@@ -155,7 +155,7 @@ namespace com.espertech.esper.regression.client
             stmt.Events += (sender, args) => { };
             Assert.AreEqual("LISTENER_ADD;", observer.EventsAsString);
             Assert.IsNotNull(observer.LastContext);
-            Assert.IsTrue(observer.LastContext[0] is UpdateListener);
+            Assert.IsTrue(observer.LastContext[0] is UpdateEventHandler);
     
             observer.Flush();
             stmt.RemoveAllEventHandlers();

@@ -14,7 +14,6 @@ using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.agg.access
@@ -40,30 +39,13 @@ namespace com.espertech.esper.epl.agg.access
             Size = 0;
         }
     
-        public void ApplyEnter(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
+        public virtual void ApplyEnter(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
         {
             var theEvent = eventsPerStream[Spec.StreamId];
             if (theEvent == null) {
                 return;
             }
-            if (ReferenceEvent(theEvent)) {
-                Object comparable = GetComparable(Spec.Criteria, eventsPerStream, true, exprEvaluatorContext);
-                Object existing = Sorted.Get(comparable);
-                if (existing == null) {
-                    Sorted.Put(comparable, theEvent);
-                }
-                else if (existing is EventBean) {
-                    var coll = new LinkedList<object>();
-                    coll.AddLast(existing);
-                    coll.AddLast(theEvent);
-                    Sorted.Put(comparable, coll);
-                }
-                else {
-                    var q = (LinkedList<object>)existing;
-                    q.AddLast(theEvent);
-                }
-                Size++;
-            }
+            ReferenceAdd(theEvent, eventsPerStream, exprEvaluatorContext);
         }
     
         protected virtual bool ReferenceEvent(EventBean theEvent) {
@@ -76,31 +58,13 @@ namespace com.espertech.esper.epl.agg.access
             return true;
         }
     
-        public void ApplyLeave(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
+        public virtual void ApplyLeave(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
         {
-            EventBean theEvent = eventsPerStream[Spec.StreamId];
+            var theEvent = eventsPerStream[Spec.StreamId];
             if (theEvent == null) {
                 return;
             }
-            if (DereferenceEvent(theEvent)) {
-                Object comparable = GetComparable(Spec.Criteria, eventsPerStream, false, exprEvaluatorContext);
-                Object existing = Sorted.Get(comparable);
-                if (existing != null) {
-                    if (existing.Equals(theEvent)) {
-                        Sorted.Remove(comparable);
-                        Size--;
-                    }
-                    else if (existing is LinkedList<object>)
-                    {
-                        var q = (LinkedList<object>)existing;
-                        q.Remove(theEvent);
-                        if (q.IsEmpty()) {
-                            Sorted.Remove(comparable);
-                        }
-                        Size--;
-                    }
-                }
-            }
+            DereferenceRemove(theEvent, eventsPerStream, exprEvaluatorContext);
         }
 
         public EventBean FirstValue
@@ -149,44 +113,100 @@ namespace com.espertech.esper.epl.agg.access
             return new AggregationStateSortedWrappingCollection(Sorted, Size);
         }
 
-        public int Count
-        {
-            get { return Size; }
-        }
+        public int Count => Size;
 
-        public static Object GetComparable(ExprEvaluator[] criteria, EventBean[] eventsPerStream, bool istream, ExprEvaluatorContext exprEvaluatorContext)
+        public static Object GetComparable(
+            ExprEvaluator[] criteria,
+            EventBean[] eventsPerStream,
+            bool istream,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (criteria.Length == 1) {
                 return criteria[0].Evaluate(new EvaluateParams(eventsPerStream, istream, exprEvaluatorContext));
             }
-            else
-            {
+            else {
                 var result = new Object[criteria.Length];
                 var count = 0;
-                foreach (ExprEvaluator expr in criteria) {
+                foreach (var expr in criteria) {
                     result[count++] = expr.Evaluate(new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
                 }
+
                 return new MultiKeyUntyped(result);
             }
         }
-    
+
+        protected void ReferenceAdd(
+            EventBean theEvent, 
+            EventBean[] eventsPerStream, 
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            if (ReferenceEvent(theEvent))
+            {
+                var comparable = GetComparable(Spec.Criteria, eventsPerStream, true, exprEvaluatorContext);
+                var existing = Sorted.Get(comparable);
+                if (existing == null)
+                {
+                    Sorted.Put(comparable, theEvent);
+                }
+                else if (existing is EventBean eventBean) {
+                    var coll = new ArrayDeque<EventBean>(2);
+                    coll.Add(eventBean);
+                    coll.Add(theEvent);
+                    Sorted.Put(comparable, coll);
+                } else {
+                    var arrayDeque = (ArrayDeque<EventBean>) existing;
+                    arrayDeque.Add(theEvent);
+                }
+                Size++;
+            }
+        }
+
+        protected void DereferenceRemove(
+            EventBean theEvent, 
+            EventBean[] eventsPerStream, 
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            if (DereferenceEvent(theEvent))
+            {
+                var comparable = GetComparable(Spec.Criteria, eventsPerStream, false, exprEvaluatorContext);
+                var existing = Sorted.Get(comparable);
+                if (existing != null)
+                {
+                    if (existing.Equals(theEvent))
+                    {
+                        Sorted.Remove(comparable);
+                        Size--;
+                    }
+                    else if (existing is ArrayDeque<EventBean> arrayDeque) {
+                        arrayDeque.Remove(theEvent);
+                        if (arrayDeque.IsEmpty())
+                        {
+                            Sorted.Remove(comparable);
+                        }
+                        Size--;
+                    }
+                }
+            }
+        }
+
         private EventBean CheckedPayload(Object value)
         {
-            if (value is EventBean) {
-                return (EventBean) value;
-            } 
-            else if (value is IEnumerable<EventBean>)
-            {
+            if (value is EventBean eventBean) {
+                return eventBean;
+            }
+            else if (value is ArrayDeque<EventBean> arrayDeque) {
+                return arrayDeque.First;
+            }
+            else if (value is IEnumerable<EventBean>) {
                 return ((IEnumerable<EventBean>) value).First();
             }
-            else if (value is IEnumerable)
-            {
+            else if (value is IEnumerable) {
                 var @enum = ((IEnumerable) value).GetEnumerator();
                 @enum.MoveNext();
                 return @enum.Current as EventBean;
             }
 
-            throw new ArgumentException("invalid value", "value");
+            throw new ArgumentException("invalid value", nameof(value));
         }
     }
 }

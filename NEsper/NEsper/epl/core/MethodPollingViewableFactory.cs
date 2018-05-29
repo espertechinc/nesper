@@ -430,7 +430,7 @@ namespace com.espertech.esper.epl.core
             {
                 throw new ExprValidationException(
                     "Getter method '" + typeGetterMethod.Name + "' does not return " +
-                    metadataClass.GetTypeNameFullyQualPretty());
+                    metadataClass.GetCleanName());
             }
 
             return typeGetterMethod;

@@ -65,7 +65,7 @@ namespace com.espertech.esper.regression.dataflow
     
         private void RunAssertion(EPServiceProvider epService) {
     
-            var future = new DefaultSupportCaptureOp<object>(1, SupportContainer.Instance.LockManager());
+            var future = new DefaultSupportCaptureOp(1, SupportContainer.Instance.LockManager());
             var source = new MyObjectArrayGraphSource(Collections.List(
                     new object[]{"trade", "GE", 100d, 1000L, null, null}, // vwap = 100, minPrice=100
                     new object[]{"quote", "GE", null, null, 99.5d, 2000L}  //

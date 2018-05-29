@@ -619,22 +619,22 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             TryInvalid(epService, "select * from SupportBean, method:Dummy.Dummy()#length(100) where 1=2",
                     "Error starting statement: Method data joins do not allow views onto the data, view 'length' is not valid in this context [select * from SupportBean, method:Dummy.Dummy()#length(100) where 1=2]");
     
-            TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".dummy where 1=2",
-                    "Error starting statement: Could not find public static method named 'dummy' in class '" + typeof(SupportStaticMethodLib).FullName + "' [");
+            TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).GetCleanName() + ".dummy where 1=2",
+                    "Error starting statement: Could not find public static method named 'dummy' in class '" + typeof(SupportStaticMethodLib).GetCleanName() + "' [");
     
-            TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".MinusOne(10) where 1=2",
-                    "Error starting statement: Invalid return type for static method 'MinusOne' of class '" + typeof(SupportStaticMethodLib).FullName + "', expecting a class [");
+            TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).GetCleanName() + ".MinusOne(10) where 1=2",
+                    "Error starting statement: Invalid return type for static method 'MinusOne' of class '" + typeof(SupportStaticMethodLib).GetCleanName() + "', expecting a class [");
     
-            TryInvalid(epService, "select * from SupportBean, xyz:" + typeof(SupportStaticMethodLib).FullName + ".FetchArrayNoArg() where 1=2",
-                    "Expecting keyword 'method', found 'xyz' [select * from SupportBean, xyz:" + typeof(SupportStaticMethodLib).FullName + ".FetchArrayNoArg() where 1=2]");
+            TryInvalid(epService, "select * from SupportBean, xyz:" + typeof(SupportStaticMethodLib).GetCleanName() + ".FetchArrayNoArg() where 1=2",
+                    "Expecting keyword 'method', found 'xyz' [select * from SupportBean, xyz:" + typeof(SupportStaticMethodLib).GetCleanName() + ".FetchArrayNoArg() where 1=2]");
     
-            TryInvalid(epService, "select * from method:" + typeof(SupportStaticMethodLib).FullName + ".FetchBetween(s1.value, s1.value) as s0, method:" + typeof(SupportStaticMethodLib).FullName + ".FetchBetween(s0.value, s0.value) as s1",
+            TryInvalid(epService, "select * from method:" + typeof(SupportStaticMethodLib).GetCleanName() + ".FetchBetween(s1.value, s1.value) as s0, method:" + typeof(SupportStaticMethodLib).GetCleanName() + ".FetchBetween(s0.value, s0.value) as s1",
                     "Error starting statement: Circular dependency detected between historical streams [");
     
-            TryInvalid(epService, "select * from method:" + typeof(SupportStaticMethodLib).FullName + ".FetchBetween(s0.value, s0.value) as s0, method:" + typeof(SupportStaticMethodLib).FullName + ".FetchBetween(s0.value, s0.value) as s1",
+            TryInvalid(epService, "select * from method:" + typeof(SupportStaticMethodLib).GetCleanName() + ".FetchBetween(s0.value, s0.value) as s0, method:" + typeof(SupportStaticMethodLib).GetCleanName() + ".FetchBetween(s0.value, s0.value) as s1",
                     "Error starting statement: Parameters for historical stream 0 indicate that the stream is subordinate to itself as stream parameters originate in the same stream [");
     
-            TryInvalid(epService, "select * from method:" + typeof(SupportStaticMethodLib).FullName + ".FetchBetween(s0.value, s0.value) as s0",
+            TryInvalid(epService, "select * from method:" + typeof(SupportStaticMethodLib).GetCleanName() + ".FetchBetween(s0.value, s0.value) as s0",
                     "Error starting statement: Parameters for historical stream 0 indicate that the stream is subordinate to itself as stream parameters originate in the same stream [");
     
             epService.EPAdministrator.Configuration.AddImport(typeof(SupportMethodInvocationJoinInvalid));
@@ -642,10 +642,10 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                     "Error starting statement: Could not find getter method for method invocation, expected a method by name 'ReadRowNoMetadataMetadata' accepting no parameters [select * from method:SupportMethodInvocationJoinInvalid.ReadRowNoMetadata()]");
     
             TryInvalid(epService, "select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()",
-                    "Error starting statement: Getter method 'ReadRowWrongMetadataMetadata' does not return " + typeof(IDictionary<string, object>).FullName + " [select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()]");
+                    "Error starting statement: Getter method 'ReadRowWrongMetadataMetadata' does not return " + typeof(IDictionary<string, object>).GetCleanName() + " [select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()]");
     
             TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".InvalidOverloadForJoin(null)",
-                    "Error starting statement: Method by name 'InvalidOverloadForJoin' is overloaded in class '" + typeof(SupportStaticMethodLib).FullName + "' and overloaded methods do not return the same type");
+                    "Error starting statement: Method by name 'InvalidOverloadForJoin' is overloaded in class '" + typeof(SupportStaticMethodLib).GetCleanName() + "' and overloaded methods do not return the same type");
         }
     
         private void TryAssertionUDFAndScriptReturningEvents(EPServiceProvider epService, string methodName) {

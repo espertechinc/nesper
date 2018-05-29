@@ -71,7 +71,7 @@ namespace com.espertech.esper.regression.events.infra
             RunAssertion(epService, EventRepresentationChoice.MAP, "");
             RunAssertion(
                 epService, EventRepresentationChoice.AVRO,
-                "@AvroSchemaField(name='myid',schema='[\"int\",{\"type\":\"string\",\"avro.string\":\"string\"},\"null\"]')");
+                "@AvroSchemaField(Name='myid',Schema='[\"int\",{\"type\":\"string\",\"avro.string\":\"string\"},\"null\"]')");
             RunAssertion(epService, EventRepresentationChoice.DEFAULT, "");
         }
 

@@ -17,7 +17,7 @@ namespace com.espertech.esper.regression.client
             configuration.EngineDefaults.Threading.IsThreadPoolInbound = true;
             configuration.EngineDefaults.Threading.ThreadPoolInboundNumThreads = 2;
             configuration.AddEventType(typeof(MyEvent));
-            configuration.AddPlugInSingleRowFunction("sleepaLittle", GetType().FullName, "SleepaLittle");
+            configuration.AddPlugInSingleRowFunction("sleepaLittle", GetType(), "SleepaLittle");
         }
     
         public override void Run(EPServiceProvider epService) {

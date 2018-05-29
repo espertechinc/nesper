@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
+using com.espertech.esper.client.annotation;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.supportregression.bean;
@@ -39,13 +40,14 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("select varagg[p00, id].p0 as value from SupportBean_S0")
                 .Events += listener.Update;
             var stmtUpdate = epService.EPAdministrator.CreateEPL(
-                "on MyUpdateEvent update varagg var p0 = newValue " +
+                "on MyUpdateEvent update varagg set p0 = newValue " +
                 "where k1 = keyOne and k2 = keyTwo");
             stmtUpdate.Events += listenerUpdate.Update;
 
             var expectedType = new[]
             {
-                new object[] {"keyOne", typeof(string)}, new object[] {"keyTwo", typeof(int?)},
+                new object[] {"keyOne", typeof(string)},
+                new object[] {"keyTwo", typeof(int)},
                 new object[] {"p0", typeof(long)}
             };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(
@@ -64,7 +66,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             // try property method invocation
             epService.EPAdministrator.CreateEPL("create table MyTableSuppBean as (sb SupportBean)");
             epService.EPAdministrator.CreateEPL(
-                "on SupportBean_S0 update MyTableSuppBean sb set Sb.LongPrimitive = 10");
+                "on SupportBean_S0 update MyTableSuppBean sb set sb.set_LongPrimitive(10)");
         }
 
         private void AssertValues(
@@ -90,10 +92,11 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 NewValue = newValue;
             }
 
+            [PropertyName("k1")]
             public string K1 { get; }
-
+            [PropertyName("k2")]
             public int K2 { get; }
-
+            [PropertyName("newValue")]
             public int NewValue { get; }
         }
     }

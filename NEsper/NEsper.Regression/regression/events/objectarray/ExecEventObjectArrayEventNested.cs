@@ -44,7 +44,7 @@ namespace com.espertech.esper.regression.events.objectarray
                 epService.EPAdministrator.Configuration.AddEventType("ABC", new string[]{"p0"}, new Type[]{typeof(long)});
                 Assert.Fail();
             } catch (ConfigurationException ex) {
-                Assert.AreEqual("Event type named 'ABC' has already been declared with differing column name or type information: Type by name 'ABC' in property 'p0' expected " + Name.Of<int>() + " but receives class " + Name.Clean<long>(), ex.Message);
+                Assert.AreEqual("Event type named 'ABC' has already been declared with differing column name or type information: Type by name 'ABC' in property 'p0' expected " + Name.Clean<int>() + " but receives " + Name.Clean<long>(), ex.Message);
             }
     
             TryInvalid(epService, new string[]{"a"}, new object[]{new SupportBean()}, "Nestable type configuration encountered an unexpected property type of 'SupportBean' for property 'a', expected Type or DataMap or the name of a previously-declared Map or ObjectArray type");
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regression.events.objectarray
             IDictionary<string, Object> mappedDef = MakeMap(new object[][]{new object[] {"p0", typeof(Map)}});
             epService.EPAdministrator.Configuration.AddEventType("MyMappedPropertyMap", mappedDef);
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select P0('k1') as a from MyMappedPropertyMap");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("select p0('k1') as a from MyMappedPropertyMap");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regression.events.objectarray
             IDictionary<string, Object> mappedDefOuter = MakeMap(new object[][]{new object[] {"outer", mappedDef}});
             epService.EPAdministrator.Configuration.AddEventType("MyMappedPropertyMapOuter", mappedDefOuter);
     
-            stmt = epService.EPAdministrator.CreateEPL("select Outer.P0('k1') as a from MyMappedPropertyMapOuter");
+            stmt = epService.EPAdministrator.CreateEPL("select outer.p0('k1') as a from MyMappedPropertyMapOuter");
             stmt.Events += listener.Update;
     
             IDictionary<string, Object> eventOuter = MakeMap(new object[][]{new object[] {"outer", theEvent}});
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regression.events.objectarray
             IDictionary<string, Object> mappedDefOuterTwo = MakeMap(new object[][]{new object[] {"outerTwo", typeof(SupportBeanComplexProps)}});
             epService.EPAdministrator.Configuration.AddEventType("MyMappedPropertyMapOuterTwo", mappedDefOuterTwo);
     
-            stmt = epService.EPAdministrator.CreateEPL("select OuterTwo.MapProperty('xOne') as a from MyMappedPropertyMapOuterTwo");
+            stmt = epService.EPAdministrator.CreateEPL("select outerTwo.MapProperty('xOne') as a from MyMappedPropertyMapOuterTwo");
             stmt.Events += listener.Update;
     
             IDictionary<string, Object> eventOuterTwo = MakeMap(new object[][]{new object[] {"outerTwo", SupportBeanComplexProps.MakeDefaultBean()}});
@@ -164,9 +164,9 @@ namespace com.espertech.esper.regression.events.objectarray
             epService.EPRuntime.SendEvent(new object[]{theEvent}, "MyObjectArrayMapOuter");
     
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a,b,c,d,e".Split(','), new object[]{1, 2, 3, n0_1, n0_2});
-            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("a"));
-            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("b"));
-            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("c"));
+            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("a"));
+            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("b"));
+            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("c"));
             Assert.AreEqual(typeof(Map), stmt.EventType.GetPropertyType("d"));
             Assert.AreEqual(typeof(Map[]), stmt.EventType.GetPropertyType("e"));
     
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regression.events.objectarray
             epService.EPRuntime.SendEvent(new object[]{theEvent}, "MyObjectArrayMapOuter");
     
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a,b,c,d,e".Split(','), new object[]{1, 2, 3, n0_1, n0_2});
-            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("a"));
+            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("a"));
     
             stmt.Dispose();
         }

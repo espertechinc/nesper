@@ -64,15 +64,16 @@ namespace com.espertech.esper.regression.multithread
             var threadPool = Executors.NewFixedThreadPool(numThreads);
             var future = new Future<bool>[numThreads];
             for (int i = 0; i < numThreads; i++) {
-                future[i] = threadPool.Submit(new StmtNamedWindowSubqueryAggCallable(i, epService, numEventsPerThread, targetStatement));
+                future[i] = threadPool.Submit(
+                    new StmtNamedWindowSubqueryAggCallable(i, epService, numEventsPerThread, targetStatement));
             }
     
             threadPool.Shutdown();
-            threadPool.AwaitTermination(10, TimeUnit.SECONDS);
+            threadPool.AwaitTermination(TimeSpan.FromSeconds(10));
     
             // total up result
             for (int i = 0; i < numThreads; i++) {
-                bool result = future[i].GetValueOrDefault();
+                bool result = future[i].GetValue(TimeSpan.FromSeconds(60));
                 Assert.IsTrue(result);
             }
     

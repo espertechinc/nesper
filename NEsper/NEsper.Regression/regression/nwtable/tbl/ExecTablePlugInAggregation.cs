@@ -63,13 +63,17 @@ namespace com.espertech.esper.regression.nwtable.tbl
         private void RunAssertionPlugInAccess_RefCountedMap(EPServiceProvider epService) {
     
             var config = new ConfigurationPlugInAggregationMultiFunction(
-                    "referenceCountedMap,referenceCountLookup".Split(','), typeof(ReferenceCountedMapMultiValueFactory).Name);
+                    "referenceCountedMap,referenceCountLookup".Split(','), typeof(ReferenceCountedMapMultiValueFactory));
             epService.EPAdministrator.Configuration.AddPlugInAggregationMultiFunction(config);
     
-            epService.EPAdministrator.CreateEPL("create table varaggRCM (wordCount ReferenceCountedMap(string))");
-            epService.EPAdministrator.CreateEPL("into table varaggRCM select ReferenceCountedMap(TheString) as wordCount from SupportBean#length(3)");
+            epService.EPAdministrator
+                .CreateEPL("create table varaggRCM (wordCount referenceCountedMap(string))");
+            epService.EPAdministrator
+                .CreateEPL("into table varaggRCM select referenceCountedMap(TheString) as wordCount from SupportBean#length(3)");
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select VaraggRCM.wordCount.ReferenceCountLookup(p00) as c0 from SupportBean_S0").Events += listener.Update;
+            epService.EPAdministrator
+                .CreateEPL("select varaggRCM.wordCount.referenceCountLookup(p00) as c0 from SupportBean_S0")
+                .Events += listener.Update;
     
             string words = "the,house,is,green";
             SendWordAssert(epService, listener, "the", words, new int?[]{1, null, null, null});
@@ -85,13 +89,18 @@ namespace com.espertech.esper.regression.nwtable.tbl
             Assert.AreEqual(expected, listener.AssertOneGetNewAndReset().Get("c0"));
         }
     
-        private void SendWordAssert(EPServiceProvider epService, SupportUpdateListener listener, string word, string wordCSV, int?[] counts) {
+        private void SendWordAssert(
+            EPServiceProvider epService,
+            SupportUpdateListener listener, 
+            string word, 
+            string wordCSV,
+            int?[] counts) {
             epService.EPRuntime.SendEvent(new SupportBean(word, 0));
     
             string[] words = wordCSV.Split(',');
             for (int i = 0; i < words.Length; i++) {
                 epService.EPRuntime.SendEvent(new SupportBean_S0(0, words[i]));
-                int? count = (int?) listener.AssertOneGetNewAndReset().Get("c0");
+                var count = listener.AssertOneGetNewAndReset().Get("c0").AsBoxedInt();
                 Assert.AreEqual(counts[i], count, "failed for word '" + words[i] + "'");
             }
         }
@@ -166,14 +175,16 @@ namespace com.espertech.esper.regression.nwtable.tbl
             public void AddAggregationFunction(PlugInAggregationMultiFunctionDeclarationContext declarationContext) {
             }
     
-            public PlugInAggregationMultiFunctionHandler ValidateGetHandler(PlugInAggregationMultiFunctionValidationContext validationContext) {
-                if (validationContext.FunctionName.Equals("referenceCountedMap")) {
-                    return new ReferenceCountedMapFunctionHandler(SHARED_STATE_KEY);
+            public PlugInAggregationMultiFunctionHandler ValidateGetHandler(PlugInAggregationMultiFunctionValidationContext validationContext)
+            {
+                switch (validationContext.FunctionName) {
+                    case "referenceCountedMap":
+                        return new ReferenceCountedMapFunctionHandler(SHARED_STATE_KEY);
+                    case "referenceCountLookup":
+                        ExprEvaluator eval = validationContext.ParameterExpressions[0].ExprEvaluator;
+                        return new ReferenceCountLookupFunctionHandler(SHARED_STATE_KEY, eval);
                 }
-                if (validationContext.FunctionName.Equals("referenceCountLookup")) {
-                    ExprEvaluator eval = validationContext.ParameterExpressions[0].ExprEvaluator;
-                    return new ReferenceCountLookupFunctionHandler(SHARED_STATE_KEY, eval);
-                }
+
                 throw new ArgumentException("Unexpected function name '" + validationContext.FunctionName);
             }
         }
@@ -266,7 +277,11 @@ namespace com.espertech.esper.regression.nwtable.tbl
             {
                 var mystate = (RefCountedMapState) state;
                 var lookupKey = _exprEvaluator.Evaluate(evalParams);
-                return mystate.CountPerReference.Get(lookupKey);
+                if (mystate.CountPerReference.TryGetValue(lookupKey, out var result)) {
+                    return result;
+                }
+
+                return null;
             }
 
             public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EvaluateParams evalParams)

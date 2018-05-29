@@ -32,7 +32,7 @@ namespace com.espertech.esper.epl.agg.factory
 
         public bool IsAccessAggregation => false;
 
-        public Type ResultType => typeof(double?);
+        public Type ResultType => typeof(double);
 
         public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
         {

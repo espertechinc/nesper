@@ -20,8 +20,8 @@ namespace com.espertech.esper.regression.expr.datetime
     
         public override void Run(EPServiceProvider epService) {
             var config = new ConfigurationEventTypeLegacy();
-            config.StartTimestampPropertyName = "LongdateStart";
-            config.EndTimestampPropertyName = "LongdateEnd";
+            config.StartTimestampPropertyName = "longdateStart";
+            config.EndTimestampPropertyName = "longdateEnd";
             epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportTimeStartEndA), config);
             epService.EPAdministrator.Configuration.AddEventType("B", typeof(SupportTimeStartEndB), config);
     
@@ -39,13 +39,13 @@ namespace com.espertech.esper.regression.expr.datetime
             string eplBefore = "select a.Key as c0 from AWindow as a, B b unidirectional where a.before(b)";
             RunAssertion(epService, eplBefore, "2002-05-30T09:00:00.000", 0, "AEarlier");
     
-            string eplBeforeMSec = "select a.Key as c0 from AWindow as a, B b unidirectional where a.LongdateEnd.before(b.LongdateStart)";
+            string eplBeforeMSec = "select a.Key as c0 from AWindow as a, B b unidirectional where a.longdateEnd.before(b.longdateStart)";
             RunAssertion(epService, eplBeforeMSec, "2002-05-30T09:00:00.000", 0, "AEarlier");
     
-            string eplBeforeMSecMix1 = "select a.Key as c0 from AWindow as a, B b unidirectional where a.LongdateEnd.before(b)";
+            string eplBeforeMSecMix1 = "select a.Key as c0 from AWindow as a, B b unidirectional where a.longdateEnd.before(b)";
             RunAssertion(epService, eplBeforeMSecMix1, "2002-05-30T09:00:00.000", 0, "AEarlier");
     
-            string eplBeforeMSecMix2 = "select a.Key as c0 from AWindow as a, B b unidirectional where a.before(b.LongdateStart)";
+            string eplBeforeMSecMix2 = "select a.Key as c0 from AWindow as a, B b unidirectional where a.before(b.longdateStart)";
             RunAssertion(epService, eplBeforeMSecMix2, "2002-05-30T09:00:00.000", 0, "AEarlier");
     
             // assert AFTER

@@ -34,9 +34,9 @@ namespace com.espertech.esper.events
         {
             _container = SupportContainer.Reset();
             _adapterService = new EventAdapterServiceImpl(
+                _container,
                 new EventTypeIdGeneratorImpl(), 5, null,
-                SupportEngineImportServiceFactory.Make(_container),
-                _container.LockManager());
+                SupportEngineImportServiceFactory.Make(_container));
         }
     
         [Test]

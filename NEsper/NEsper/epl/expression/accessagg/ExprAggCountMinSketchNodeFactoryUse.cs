@@ -93,7 +93,12 @@ namespace com.espertech.esper.epl.expression.accessagg
                 var parent = Parent;
                 if (parent.AggType == CountMinSketchAggType.ADD)
                 {
-                    return new CountMinSketchAggAgentAdd(_addOrFrequencyEvaluator);
+                    if (parent.OptionalFilter == null) {
+                        return new CountMinSketchAggAgentAdd(_addOrFrequencyEvaluator);
+                    }
+
+                    return new CountMinSketchAggAgentAddFilter(
+                        _addOrFrequencyEvaluator, parent.OptionalFilter.ExprEvaluator);
                 }
 
                 throw new IllegalStateException(

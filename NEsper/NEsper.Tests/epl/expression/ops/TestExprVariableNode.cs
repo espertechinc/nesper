@@ -28,8 +28,7 @@ namespace com.espertech.esper.epl.expression.ops
         {
             _container = SupportContainer.Reset();
 
-            _variableService = new VariableServiceImpl(
-                100, null, null, null, _container.RWLockManager(), _container.ThreadLocalManager());
+            _variableService = new VariableServiceImpl(_container, 100, null, null, null);
             _variableService.CreateNewVariable(null, "var1", "string", true, false, false, null, null);
             _variableService.CreateNewVariable(null, "dummy", "string", true, false, false, null, null);
             _variableService.CreateNewVariable(null, "IntPrimitive", "int", true, false, false, null, null);

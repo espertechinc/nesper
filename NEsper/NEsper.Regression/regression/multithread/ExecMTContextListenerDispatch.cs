@@ -63,20 +63,18 @@ namespace com.espertech.esper.regression.multithread
 
             var threadPool = Executors.NewFixedThreadPool(numThreads);
             var futures = new Future<bool>[numThreads];
-            long startTime = DateTimeHelper.CurrentTimeMillis;
+            var delta = PerformanceObserver.TimeMillis(
+                () => {
 
-            for (int i = 0; i < numThreads; i++)
-            {
-                var callable = new SendEventCallable(i, epService, events[i].GetEnumerator());
-                futures[i] = threadPool.Submit(callable);
-            }
+                    for (int i = 0; i < numThreads; i++) {
+                        var callable = new SendEventCallable(i, epService, events[i].GetEnumerator());
+                        futures[i] = threadPool.Submit(callable);
+                    }
 
-            foreach (var future in futures)
-            {
-                Assert.AreEqual(true, future.GetValueOrDefault());
-            }
-
-            long delta = DateTimeHelper.CurrentTimeMillis - startTime;
+                    foreach (var future in futures) {
+                        Assert.AreEqual(true, future.GetValue(TimeSpan.FromSeconds(60)));
+                    }
+                });
 
             threadPool.Shutdown();
             threadPool.AwaitTermination(10, TimeUnit.SECONDS);

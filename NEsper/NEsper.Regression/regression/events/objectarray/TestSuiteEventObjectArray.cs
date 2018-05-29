@@ -51,7 +51,7 @@ namespace com.espertech.esper.regression.events.objectarray
         }
     
         [Test]
-        public void TestExecEventObjectArrayEventNestedPojo() {
+        public void TestExecEventObjectArrayEventNestedPono() {
             RegressionRunner.Run(new ExecEventObjectArrayEventNestedPono());
         }
     

@@ -238,7 +238,7 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionSameEventCompile(EPServiceProvider epService) {
             string stmtText = "select (select * from S1#length(1000)) as events1 from S1";
             EPStatementObjectModel subquery = epService.EPAdministrator.CompileEPL(stmtText);
-            subquery = (EPStatementObjectModel) SerializableObjectCopier.Copy(subquery);
+            subquery = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, subquery);
     
             EPStatement stmt = epService.EPAdministrator.Create(subquery);
             var listener = new SupportUpdateListener();
@@ -264,7 +264,7 @@ namespace com.espertech.esper.regression.epl.subselect
             var model = new EPStatementObjectModel();
             model.FromClause = FromClause.Create(FilterStream.Create("S1"));
             model.SelectClause = SelectClause.Create().Add(Expressions.Subquery(subquery), "events1");
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string stmtText = "select (select * from S1#length(1000)) as events1 from S1";
             Assert.AreEqual(stmtText, model.ToEPL());
@@ -406,7 +406,7 @@ namespace com.espertech.esper.regression.epl.subselect
             var model = new EPStatementObjectModel();
             model.FromClause = FromClause.Create(FilterStream.Create("S0", "s0"));
             model.SelectClause = SelectClause.Create().Add(Expressions.Subquery(subquery), "value");
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string stmtText = "select (select prev(1,id) from S1#length(1000) where id=s0.id) as value from S0 as s0";
             Assert.AreEqual(stmtText, model.ToEPL());

@@ -555,7 +555,7 @@ namespace com.espertech.esper.events
         {
             if (!(otherType is BaseNestableEventType))
             {
-                return string.Format("Type by name '{0}' is not a compatible type (target type underlying is '{1}')", otherType.Name, compat.Name.Of(otherType.UnderlyingType));
+                return string.Format("Type by name '{0}' is not a compatible type (target type underlying is '{1}')", otherType.Name, compat.Name.Clean(otherType.UnderlyingType));
             }
 
             var other = (BaseNestableEventType)otherType;

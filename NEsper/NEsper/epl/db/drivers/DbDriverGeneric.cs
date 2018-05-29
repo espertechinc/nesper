@@ -8,6 +8,11 @@
 
 using System;
 using System.Data.Common;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
+
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 
 namespace com.espertech.esper.epl.db.drivers
 {
@@ -15,8 +20,9 @@ namespace com.espertech.esper.epl.db.drivers
     /// A generic database driver.
     /// </summary>
     [Serializable]
-    public class DbDriverGeneric : BaseDbDriver
+    public class DbDriverGeneric : BaseDbDriver, ISerializable
     {
+        private readonly String _dbProviderFactoryName;
         private readonly DbProviderFactory _dbProviderFactory;
         private readonly bool _isPositional;
         private readonly String _paramPrefix;
@@ -45,6 +51,7 @@ namespace com.espertech.esper.epl.db.drivers
             string paramPrefix)
             : this(dbProviderFactoryManager.GetFactory(factoryName), isPositional, paramPrefix)
         {
+            _dbProviderFactoryName = factoryName;
         }
 
         /// <summary>
@@ -56,10 +63,36 @@ namespace com.espertech.esper.epl.db.drivers
         public DbDriverGeneric(DbProviderFactory dbProviderFactory, bool isPositional, string paramPrefix)
         {
             _dbProviderFactory = dbProviderFactory;
+            _dbProviderFactoryName = dbProviderFactory.GetType().FullName; // half-baked
             _isPositional = isPositional;
             _paramPrefix = paramPrefix;
         }
-        
+
+        protected DbDriverGeneric(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            var container = (IContainer)context.Context;
+            if (container == null)
+            {
+                throw new IllegalStateException("context is not set to container");
+            }
+
+            var dbProviderFactoryManager = container.Resolve<DbProviderFactoryManager>();
+            var dbProviderFactoryName = info.GetString("_dbProviderFactoryName");
+
+            _dbProviderFactory = dbProviderFactoryManager.GetFactory(dbProviderFactoryName);
+            _isPositional = info.GetBoolean("_isPositional");
+            _paramPrefix = info.GetString("_paramPrefix");
+        }
+
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("_isPositional", _isPositional);
+            info.AddValue("_paramPrefix", _paramPrefix);
+            info.AddValue("_dbProviderFactoryName", _dbProviderFactoryName);
+        }
+
         /// <summary>
         /// Factory method that is used to create instance of a connection.
         /// </summary>

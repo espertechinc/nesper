@@ -159,7 +159,7 @@ namespace com.espertech.esper.epl.named
         public override IEnumerator<EventBean> GetEnumerator()
         {
             if (_lastResult == null)
-                return EnumerationHelper<EventBean>.Empty();
+                return EnumerationHelper.Empty<EventBean>();
             return ((IEnumerable<EventBean>)_lastResult).GetEnumerator();
         }
     }

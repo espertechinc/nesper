@@ -18,7 +18,7 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.events;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.events.map
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regression.events.map
                 return result;
             }
             for (int i = 0; i < entries.Length; i++) {
-                result.Put((string) entries[i][0], entries[i][1]);
+                result.Put(entries[i][0].ToString(), entries[i][1]);
             }
             return result;
         }
@@ -130,7 +130,9 @@ namespace com.espertech.esper.regression.events.map
                 epService.EPRuntime.SendEvent(new object[0], "MyMap");
                 Assert.Fail();
             } catch (EPException ex) {
-                Assert.AreEqual("Event type named 'MyMap' has not been defined or is not a Object-array event type, the name 'MyMap' refers to a Map event type", ex.Message);
+                Assert.AreEqual("Event type named 'MyMap' has not been defined or is not a Object-array event type, the name 'MyMap' refers to a " +
+                                typeof(IDictionary<string, object>).GetCleanName() +
+                                " event type", ex.Message);
             }
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -148,8 +150,8 @@ namespace com.espertech.esper.regression.events.map
             Assert.AreEqual(true, type.Metadata.IsApplicationPreConfiguredStatic);
     
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
-                    new EventPropertyDescriptor("myInt", typeof(int?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("myString", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("myInt", typeof(int), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("myString", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("beanA", typeof(SupportBeanComplexProps), null, false, false, false, false, true),
                     new EventPropertyDescriptor("myStringArray", typeof(string[]), typeof(string), false, false, true, false, false),
             }, type.PropertyDescriptors);
@@ -246,9 +248,9 @@ namespace com.espertech.esper.regression.events.map
             statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(_map, "myMapEvent");
-            Assert.AreEqual("nestedValue", listener.LastNewData[0].Get("nested"));
+            Assert.AreEqual("NestedValue", listener.LastNewData[0].Get("nested"));
             Assert.AreEqual(2, listener.LastNewData[0].Get("indexed"));
-            Assert.AreEqual("nestedNestedValue", listener.LastNewData[0].Get("nestednested"));
+            Assert.AreEqual("NestedNestedValue", listener.LastNewData[0].Get("nestednested"));
             statement.Stop();
         }
     

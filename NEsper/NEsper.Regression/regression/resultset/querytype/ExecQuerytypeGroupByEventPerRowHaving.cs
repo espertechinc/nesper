@@ -15,8 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
-
+using com.espertech.esper.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.resultset.querytype
@@ -97,8 +96,8 @@ namespace com.espertech.esper.regression.resultset.querytype
         private void TryAssertionSum(EPServiceProvider epService, SupportUpdateListener listener, EPStatement stmt) {
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("volume"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("mySum"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("volume").GetBoxedType());
+            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("mySum").GetBoxedType());
     
             string[] fields = "symbol,volume,mySum".Split(',');
             SendEvent(epService, SYMBOL_DELL, 10000, 49);

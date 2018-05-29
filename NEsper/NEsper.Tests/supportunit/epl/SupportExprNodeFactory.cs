@@ -410,10 +410,8 @@ namespace com.espertech.esper.supportunit.epl
             EngineImportService engineImportService = SupportEngineImportServiceFactory.Make(container);
 
 	        VariableService variableService = new VariableServiceImpl(
-	            0, new SchedulingServiceImpl(new TimeSourceServiceImpl(), container),
-	            container.Resolve<EventAdapterService>(), null,
-	            container.RWLockManager(),
-	            container.ThreadLocalManager());
+	            container, 0, new SchedulingServiceImpl(new TimeSourceServiceImpl(), container),
+	            container.Resolve<EventAdapterService>(), null);
 	        variableService.CreateNewVariable(null, "IntPrimitive", typeof(int?).FullName, false, false, false, 10, engineImportService);
 	        variableService.AllocateVariableState("IntPrimitive", EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, false);
 	        variableService.CreateNewVariable(null, "var1", typeof(string).FullName, false, false, false, "my_variable_value", engineImportService);

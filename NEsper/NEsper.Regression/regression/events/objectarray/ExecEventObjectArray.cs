@@ -93,7 +93,7 @@ namespace com.espertech.esper.regression.events.objectarray
     
             EPAssertionUtil.AssertEqualsAnyOrder(new[]{
                     new EventPropertyDescriptor("myInt", typeof(int?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("myString", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("myString", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("beanA", typeof(SupportBeanComplexProps), null, false, false, false, false, true),
             }, type.PropertyDescriptors);
         }
@@ -183,9 +183,9 @@ namespace com.espertech.esper.regression.events.objectarray
             statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new object[]{3, "some string", SupportBeanComplexProps.MakeDefaultBean()}, "MyObjectArrayEvent");
-            Assert.AreEqual("nestedValue", listener.LastNewData[0].Get("nested"));
+            Assert.AreEqual("NestedValue", listener.LastNewData[0].Get("nested"));
             Assert.AreEqual(2, listener.LastNewData[0].Get("indexed"));
-            Assert.AreEqual("nestedNestedValue", listener.LastNewData[0].Get("nestednested"));
+            Assert.AreEqual("NestedNestedValue", listener.LastNewData[0].Get("nestednested"));
             statement.Stop();
         }
     

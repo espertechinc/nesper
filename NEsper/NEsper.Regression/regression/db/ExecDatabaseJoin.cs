@@ -7,13 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Data;
-using System.Data.Common;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.client.time;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.container;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.db.drivers;
 using com.espertech.esper.supportregression.bean;
@@ -31,8 +28,7 @@ namespace com.espertech.esper.regression.db
         private const string ALL_FIELDS = "mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal";
     
         public override void Configure(Configuration configuration) {
-            var configDB = new ConfigurationDBRef();
-            configDB.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative);
+            var configDB = SupportDatabaseService.CreateDefaultConfig();
             configDB.ConnectionLifecycle = ConnectionLifecycleEnum.RETAIN;
             configDB.ConnectionCatalog = "test";
             configDB.ConnectionTransactionIsolation = IsolationLevel.Serializable;
@@ -61,7 +57,7 @@ namespace com.espertech.esper.regression.db
             RunAssertionSimpleJoinLeft(epService);
             RunAssertionRestartStatement(epService);
             RunAssertionSimpleJoinRight(epService);
-            RunAssertionMySQLDatabaseConnection(epService);
+            RunAssertionSQLDatabaseConnection(epService);
         }
     
         private void RunAssertion3Stream(EPServiceProvider epService) {
@@ -203,7 +199,7 @@ namespace com.espertech.esper.regression.db
                     FilterStream.Create(typeof(SupportBean).FullName, "s1").AddView(View.Create("time_batch", Expressions.Constant(10))
                     ));
             model.FromClause = fromClause;
-            SerializableObjectCopier.Copy(model);
+            SerializableObjectCopier.Copy(epService.Container, model);
     
             Assert.AreEqual("select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from sql:MyDB[\"select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from mytesttable where ${IntPrimitive} = mytesttable.mybigint\"] as s0, " + typeof(SupportBean).FullName + "#time_batch(10) as s1",
                     model.ToEPL());
@@ -219,7 +215,7 @@ namespace com.espertech.esper.regression.db
                     typeof(SupportBean).FullName + "#time_batch(10 sec) as s1";
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
-            SerializableObjectCopier.Copy(model);
+            SerializableObjectCopier.Copy(epService.Container, model);
             EPStatement stmt = epService.EPAdministrator.Create(model);
             RuntestTimeBatch(epService, stmt);
         }
@@ -263,9 +259,12 @@ namespace com.espertech.esper.regression.db
             string stmtText = "select myvarchar from " +
                     " sql:MyDB ['select mychar,, from mytesttable where '] as s0," +
                     typeof(SupportBeanComplexProps).FullName + " as s1";
-    
-            SupportMessageAssertUtil.TryInvalid(epService, stmtText,
-                    "Error starting statement: Error in statement 'select mychar,, from mytesttable where ', failed to obtain result metadata, consider turning off metadata interrogation via configuration, please check the statement, reason: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ' from mytesttable where' at line 1");
+
+            SupportMessageAssertUtil.TryInvalid(
+                epService, stmtText,
+                "Error starting statement: Error in statement 'select mychar,, from mytesttable where ', failed to obtain result metadata, consider turning off metadata interrogation via configuration, please check the statement, " +
+                "reason: 42601: syntax error at or near");
+                //" near ' from mytesttable where' at line 1");
         }
     
         private void RunAssertionInvalidBothHistorical(EPServiceProvider epService) {
@@ -356,7 +355,7 @@ namespace com.espertech.esper.regression.db
             statement.Events += listener.Update;
     
             SendEventS0(epService, 1);
-            AssertReceived(listener, 1, 10, "A", "Z", true, 5000.0m, 100.0m, 1.2, 1.3);
+            AssertReceived(listener, 1, 10, "A", "Z", true, 5000.0m, 100.0m, 1.2, 1.3f);
         }
     
         private void RunAssertionWithPattern(EPServiceProvider epService) {
@@ -403,7 +402,7 @@ namespace com.espertech.esper.regression.db
             statement.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
-            AssertReceived(listener, 10, 100, "J", "P", true, null, 1000.0m, 10.2, 10.3);
+            AssertReceived(listener, 10, 100, "J", "P", true, null, 1000.0m, 10.2, 10.3f);
     
             statement.Dispose();
         }
@@ -418,7 +417,7 @@ namespace com.espertech.esper.regression.db
             statement.Events += listener.Update;
     
             SendEventS0(epService, 1);
-            AssertReceived(listener, 1, 10, "A", "Z", true, 5000.0m, 100.0m, 1.2, 1.3);
+            AssertReceived(listener, 1, 10, "A", "Z", true, 5000.0m, 100.0m, 1.2, 1.3f);
     
             statement.Dispose();
         }
@@ -457,7 +456,7 @@ namespace com.espertech.esper.regression.db
             statement.Events += listener.Update;
     
             EventType eventType = statement.EventType;
-            Assert.AreEqual(typeof(long), eventType.GetPropertyType("mybigint"));
+            Assert.AreEqual(typeof(long?), eventType.GetPropertyType("mybigint"));
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("myint"));
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("myvarchar"));
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("mychar"));
@@ -465,10 +464,10 @@ namespace com.espertech.esper.regression.db
             Assert.AreEqual(typeof(decimal?), eventType.GetPropertyType("mynumeric"));
             Assert.AreEqual(typeof(decimal?), eventType.GetPropertyType("mydecimal"));
             Assert.AreEqual(typeof(double?), eventType.GetPropertyType("mydouble"));
-            Assert.AreEqual(typeof(double?), eventType.GetPropertyType("myreal"));
+            Assert.AreEqual(typeof(float?), eventType.GetPropertyType("myreal"));
     
             SendEventS0(epService, 1);
-            AssertReceived(listener, 1, 10, "A", "Z", true, 5000.0m, 100.0m, 1.2, 1.3);
+            AssertReceived(listener, 1, 10, "A", "Z", true, 5000.0m, 100.0m, 1.2, 1.3f);
     
             statement.Dispose();
         }
@@ -483,7 +482,7 @@ namespace com.espertech.esper.regression.db
             decimal? mynumeric,
             decimal? mydecimal,
             double? mydouble, 
-            double? myreal)
+            float? myreal)
         {
             EventBean theEvent = listener.AssertOneGetNewAndReset();
             AssertReceived(theEvent, mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal);
@@ -499,7 +498,7 @@ namespace com.espertech.esper.regression.db
             decimal? mynumeric,
             decimal? mydecimal,
             double? mydouble, 
-            double? myreal)
+            float? myreal)
         {
             Assert.AreEqual(mybigint, theEvent.Get("mybigint"));
             Assert.AreEqual(myint, theEvent.Get("myint"));
@@ -513,11 +512,11 @@ namespace com.espertech.esper.regression.db
             Assert.AreEqual(myreal, theEvent.Get("myreal"));
         }
 
-        private void RunAssertionMySQLDatabaseConnection(EPServiceProvider epService) {
+        private void RunAssertionSQLDatabaseConnection(EPServiceProvider epService) {
             var dbProviderFactoryManager = SupportContainer.Instance
                 .Resolve<DbProviderFactoryManager>();
             var dbProviderFactory = dbProviderFactoryManager.GetFactory(
-                SupportDatabaseService.MYSQLDB_PROVIDER_TYPE);
+                SupportDatabaseService.PGSQLDB_PROVIDER_TYPE);
 
             var properties = SupportDatabaseService.DefaultProperties;
             var builder = dbProviderFactory.CreateConnectionStringBuilder();

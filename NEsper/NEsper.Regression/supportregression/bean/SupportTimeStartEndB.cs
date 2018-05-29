@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using com.espertech.esper.client.annotation;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.supportregression.bean
@@ -30,16 +31,22 @@ namespace com.espertech.esper.supportregression.bean
             CaldateEnd = caldateEnd;
         }
 
+        [PropertyName("longdateStart")]
         public long? LongdateStart { get; private set; }
 
+        [PropertyName("utildateStart")]
         public DateTimeOffset? UtildateStart { get; private set; }
 
+        [PropertyName("caldateStart")]
         public DateTimeEx CaldateStart { get; private set; }
 
+        [PropertyName("longdateEnd")]
         public long? LongdateEnd { get; private set; }
 
+        [PropertyName("utildateEnd")]
         public DateTimeOffset? UtildateEnd { get; private set; }
 
+        [PropertyName("caldateEnd")]
         public DateTimeEx CaldateEnd { get; private set; }
 
         public string Key { get; set; }

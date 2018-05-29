@@ -42,9 +42,6 @@ namespace com.espertech.esper.view.window
             return new RandomAccessByIndexGetter();
         }
 
-        public override string ViewName
-        {
-            get { return "Expression"; }
-        }
+        public override string ViewName => "Expression";
     }
 }

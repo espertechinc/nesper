@@ -31,9 +31,9 @@ namespace com.espertech.esper.regression.client
         private void RunAssertionBindWildcardJoin(EPServiceProvider epService) {
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL("select * from SupportBean");
             TryInvalid(this, stmtOne, "Subscriber object does not provide a public method by name 'Update'");
-            TryInvalid(new DummySubscriberEmptyUpd(), stmtOne, "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type " + Name.Of<SupportBean>());
-            TryInvalid(new DummySubscriberMultipleUpdate(), stmtOne, "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type " + Name.Of<SupportBean>());
-            TryInvalid(new DummySubscriberUpdate(), stmtOne, "Subscriber method named 'Update' for parameter number 1 is not assignable, expecting type '" + Name.Of<SupportBean>() + "' but found type '" + Name.Of<SupportMarketDataBean>() + "'");
+            TryInvalid(new DummySubscriberEmptyUpd(), stmtOne, "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type " + Name.Clean<SupportBean>());
+            TryInvalid(new DummySubscriberMultipleUpdate(), stmtOne, "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type " + Name.Clean<SupportBean>());
+            TryInvalid(new DummySubscriberUpdate(), stmtOne, "Subscriber method named 'Update' for parameter number 1 is not assignable, expecting type '" + Name.Clean<SupportBean>() + "' but found type '" + Name.Clean<SupportMarketDataBean>() + "'");
             TryInvalid(new DummySubscriberPrivateUpd(), stmtOne, "Subscriber object does not provide a public method by name 'Update'");
     
             EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select IntPrimitive from SupportBean");

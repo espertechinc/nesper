@@ -246,7 +246,8 @@ namespace com.espertech.esper.regression.view
     
         private void RunAssertionExpressionGrouped(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBeanTimestamp));
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select irstream * from SupportBeanTimestamp#groupwin(timestamp.DayOfWeek)#length(2)");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL
+                ("select irstream * from SupportBeanTimestamp#groupwin(timestamp.getDayOfWeek())#length(2)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -262,13 +263,14 @@ namespace com.espertech.esper.regression.view
             // further math tests can be found in the view unit test
             EPAdministrator admin = epService.EPAdministrator;
             admin.Configuration.AddEventType("Market", typeof(SupportMarketDataBean));
-            EPStatement statement = admin.CreateEPL("select * from Market#groupwin(symbol)#length(1000000)#correl(price, volume, feed)");
+            EPStatement statement = admin.CreateEPL
+                ("select * from Market#groupwin(symbol)#length(1000000)#correl(Price, Volume, Feed)");
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
     
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("correlation"));
     
-            var fields = new string[]{"symbol", "correlation", "feed"};
+            var fields = new string[]{ "symbol", "correlation", "Feed" };
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("ABC", 10.0, 1000L, "f1"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"ABC", Double.NaN, "f1"});
@@ -289,7 +291,8 @@ namespace com.espertech.esper.regression.view
             // further math tests can be found in the view unit test
             EPAdministrator admin = epService.EPAdministrator;
             admin.Configuration.AddEventType("Market", typeof(SupportMarketDataBean));
-            EPStatement statement = admin.CreateEPL("select * from Market#groupwin(symbol)#length(1000000)#linest(price, volume, feed)");
+            EPStatement statement = admin.CreateEPL
+                ("select * from Market#groupwin(symbol)#length(1000000)#linest(Price, Volume, Feed)");
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
     
@@ -305,15 +308,15 @@ namespace com.espertech.esper.regression.view
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YStandardDeviationSample"));
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YSum"));
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YVariance"));
-            Assert.AreEqual(typeof(long), statement.EventType.GetPropertyType("dataPoints"));
-            Assert.AreEqual(typeof(long), statement.EventType.GetPropertyType("n"));
+            Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("dataPoints"));
+            Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("n"));
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumX"));
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumXSq"));
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumXY"));
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumY"));
             Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumYSq"));
     
-            var fields = new string[]{"symbol", "slope", "YIntercept", "feed"};
+            var fields = new string[]{"symbol", "slope", "YIntercept", "Feed" };
     
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("ABC", 10.0, 50000L, "f1"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"ABC", Double.NaN, Double.NaN, "f1"});

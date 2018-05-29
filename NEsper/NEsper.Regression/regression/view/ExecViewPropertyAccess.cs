@@ -19,12 +19,14 @@ namespace com.espertech.esper.regression.view
         public override void Run(EPServiceProvider epService)
         {
             var epl = "select Mapped('keyOne') as a," +
-                      "indexed[1] as b, nested.nestedNested.nestedNestedValue as c, mapProperty, " +
-                      "arrayProperty[0] " +
+                      "Indexed[1] as b, " +
+                      "Nested.NestedNested.NestedNestedValue as c, " +
+                      "MapProperty, " +
+                      "ArrayProperty[0] " +
                       "  from " + typeof(SupportBeanComplexProps).FullName + "#length(3) " +
                       " where Mapped('keyOne') = 'valueOne' and " +
-                      " indexed[1] = 2 and " +
-                      " nested.nestedNested.nestedNestedValue = 'nestedNestedValue'";
+                      " Indexed[1] = 2 and " +
+                      " Nested.NestedNested.NestedNestedValue = 'NestedNestedValue'";
 
             var testView = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -36,8 +38,8 @@ namespace com.espertech.esper.regression.view
             Assert.AreEqual(eventObject.GetMapped("keyOne"), theEvent.Get("a"));
             Assert.AreEqual(eventObject.GetIndexed(1), theEvent.Get("b"));
             Assert.AreEqual(eventObject.Nested.NestedNested.NestedNestedValue, theEvent.Get("c"));
-            Assert.AreEqual(eventObject.MapProperty, theEvent.Get("mapProperty"));
-            Assert.AreEqual(eventObject.ArrayProperty[0], theEvent.Get("arrayProperty[0]"));
+            Assert.AreEqual(eventObject.MapProperty, theEvent.Get("MapProperty"));
+            Assert.AreEqual(eventObject.ArrayProperty[0], theEvent.Get("ArrayProperty[0]"));
 
             eventObject.SetIndexed(1, int.MinValue);
             Assert.IsFalse(listener.IsInvoked);

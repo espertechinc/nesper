@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.dataflow
                     "} " +
                     "DefaultSupportCaptureOp(thedata) {}");
     
-            var captureOp = new DefaultSupportCaptureOp<object>(SupportContainer.Instance.LockManager());
+            var captureOp = new DefaultSupportCaptureOp(SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions()
                     .OperatorProvider(new DefaultSupportGraphOpProvider(captureOp));
     
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regression.dataflow
         private void RunAssertionInvalid(EPServiceProvider epService) {
             // test no statement name or statement filter provided
             SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "DF1", "create dataflow DF1 EPStatementSource -> abc {}",
-                    "Failed to instantiate data flow 'DF1': Failed initialization for operator 'EPStatementSource': Failed to find required 'statementName' or 'statementFilter' parameter");
+                    "Failed to instantiate data flow 'DF1': Failed initialization for operator 'EPStatementSource': Failed to find required 'StatementName' or 'StatementFilter' parameter");
     
             // invalid: no output stream
             SupportDataFlowAssertionUtil.TryInvalidInstantiate(epService, "DF1", "create dataflow DF1 EPStatementSource { statementName : 'abc' }",
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regression.dataflow
                     "EPStatementSource -> thedata<AllObjects> {} " +
                     "DefaultSupportCaptureOp(thedata) {}");
     
-            var captureOp = new DefaultSupportCaptureOp<object>(SupportContainer.Instance.LockManager());
+            var captureOp = new DefaultSupportCaptureOp(SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions();
             var myFilter = new MyFilter();
             options.ParameterProvider(new DefaultSupportGraphParamProvider(Collections.SingletonDataMap("statementFilter", myFilter)));
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regression.dataflow
                     "} " +
                     "DefaultSupportCaptureOp(thedata) {}");
     
-            var captureOp = new DefaultSupportCaptureOp<object>(2, SupportContainer.Instance.LockManager());
+            var captureOp = new DefaultSupportCaptureOp(2, SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions()
                     .OperatorProvider(new DefaultSupportGraphOpProvider(captureOp));
     

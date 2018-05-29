@@ -186,7 +186,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             var model = new EPStatementObjectModel();
             eventRepresentationEnum.AddAnnotationForNonMap(model);
             Expression where = Expressions.Eq("b", 10);
-            model.CreateWindow = CreateWindowClause.Create("MyWindowIWOM", View.Create("keepall"))
+            model.CreateWindow = CreateWindowClause.Create("MyWindowIWOMTwo", View.Create("keepall"))
                 .SetIsInsert(true)
                 .SetInsertWhereClause(where);
             model.SelectClause = SelectClause.CreateWildcard();

@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.expr.filter
         public override void Configure(Configuration configuration) {
             var func = new ConfigurationPlugInSingleRowFunction();
             func.FunctionClassName = GetType().FullName;
-            func.FunctionMethodName = "myCustomOkFunction";
+            func.FunctionMethodName = "MyCustomOkFunction";
             func.FilterOptimizable = FilterOptimizableEnum.ENABLED;
             func.IsRethrowExceptions = true;
             func.Name = "myCustomOkFunction";
@@ -53,7 +53,7 @@ namespace com.espertech.esper.regression.expr.filter
     
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                "libE1True", typeof(MyLib).FullName, "LibE1True", FilterOptimizableEnum.ENABLED);
+                "libE1True", typeof(MyLib), "LibE1True", FilterOptimizableEnum.ENABLED);
     
             RunAssertionInAndNotInKeywordMultivalue(epService);
             RunAssertionOptimizablePerf(epService);
@@ -78,13 +78,13 @@ namespace com.espertech.esper.regression.expr.filter
             TryInArrayContextProvided(epService);
     
             SupportMessageAssertUtil.TryInvalid(epService, "select * from pattern[every a=MyEventInKeywordValue -> SupportBean(IntPrimitive in (a.longs))]",
-                    "Implicit conversion from datatype 'long' to 'int' for property 'IntPrimitive' is not allowed (strict filter type coercion)");
+                    "Implicit conversion from datatype 'Int64' to 'Int32' for property 'IntPrimitive' is not allowed (strict filter type coercion)");
         }
     
         private void RunAssertionOptimizablePerf(EPServiceProvider epService)
         {
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                "libSplit", typeof(MyLib).FullName, "LibSplit", FilterOptimizableEnum.ENABLED);
+                "libSplit", typeof(MyLib), "LibSplit", FilterOptimizableEnum.ENABLED);
     
             // create listeners
             int count = 10;
@@ -101,11 +101,11 @@ namespace com.espertech.esper.regression.expr.filter
     
             // declared expression (...) = value
             epService.EPAdministrator.CreateEPL("create expression thesplit {TheString => LibSplit(TheString)}");
-            TryOptimizableEquals(epService, "select * from SupportBean(Thesplit(*) = !NUM!)", listeners);
+            TryOptimizableEquals(epService, "select * from SupportBean(thesplit(*) = !NUM!)", listeners);
     
             // declared expression (...) implied true
             epService.EPAdministrator.CreateEPL("create expression theE1Test {TheString => LibE1True(TheString)}");
-            TryOptimizableBoolean(epService, "select * from SupportBean(TheE1Test(*))");
+            TryOptimizableBoolean(epService, "select * from SupportBean(theE1Test(*))");
     
             // typeof(e)
             TryOptimizableTypeOf(epService);
@@ -141,17 +141,17 @@ namespace com.espertech.esper.regression.expr.filter
             string epl;
     
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                "funcOne", typeof(MyLib).FullName, "LibSplit", FilterOptimizableEnum.DISABLED);
+                "funcOne", typeof(MyLib), "LibSplit", FilterOptimizableEnum.DISABLED);
             epl = "select * from SupportBean(funcOne(TheString) = 0)";
             AssertFilterSingle(epService, epl, FilterSpecCompiler.PROPERTY_NAME_BOOLEAN_EXPRESSION, FilterOperator.BOOLEAN_EXPRESSION);
     
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                "funcOneWDefault", typeof(MyLib).FullName, "LibSplit");
+                "funcOneWDefault", typeof(MyLib), "LibSplit");
             epl = "select * from SupportBean(funcOneWDefault(TheString) = 0)";
             AssertFilterSingle(epService, epl, "funcOneWDefault(TheString)", FilterOperator.EQUAL);
     
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                "funcTwo", typeof(MyLib).FullName, "LibSplit", FilterOptimizableEnum.ENABLED);
+                "funcTwo", typeof(MyLib), "LibSplit", FilterOptimizableEnum.ENABLED);
             epl = "select * from SupportBean(funcTwo(TheString) = 0)";
             AssertFilterSingle(epService, epl, "funcTwo(TheString)", FilterOperator.EQUAL);
     
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regression.expr.filter
             epl = "select * from SupportBean(funcTwo( TheString ) > 10)";
             AssertFilterSingle(epService, epl, "funcTwo(TheString)", FilterOperator.GREATER);
     
-            epService.EPAdministrator.CreateEPL("create expression thesplit {TheString => FuncOne(TheString)}");
+            epService.EPAdministrator.CreateEPL("create expression thesplit {TheString => funcOne(TheString)}");
     
             epl = "select * from SupportBean(thesplit(*) = 0)";
             AssertFilterSingle(epService, epl, "thesplit(*)", FilterOperator.EQUAL);
@@ -183,10 +183,10 @@ namespace com.espertech.esper.regression.expr.filter
         }
     
         private void RunAssertionPatternUDFFilterOptimizable(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("myCustomBigDecimalEquals",
-                    GetType().FullName, "MyCustomDecimalEquals");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
+                "myCustomDecimalEquals", GetType(), "MyCustomDecimalEquals");
     
-            string epl = "select * from pattern[a=SupportBean() -> b=SupportBean(MyCustomDecimalEquals(a.DecimalBoxed, b.DecimalBoxed))]";
+            string epl = "select * from pattern[a=SupportBean() -> b=SupportBean(myCustomDecimalEquals(a.DecimalBoxed, b.DecimalBoxed))]";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
@@ -306,7 +306,7 @@ namespace com.espertech.esper.regression.expr.filter
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(SerializableObjectCopier.Copy(prototype));
+            epService.EPRuntime.SendEvent(SerializableObjectCopier.Copy(epService.Container, prototype));
             Assert.IsTrue(listener.IsInvokedAndReset());
     
             stmt.Dispose();
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regression.expr.filter
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(SerializableObjectCopier.Copy(prototype));
+            epService.EPRuntime.SendEvent(SerializableObjectCopier.Copy(epService.Container, prototype));
             Assert.IsFalse(listener.IsInvokedAndReset());
     
             stmt.Dispose();
@@ -330,10 +330,10 @@ namespace com.espertech.esper.regression.expr.filter
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(prototype), 1, true);
-            AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(prototype), 2, true);
+            AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(epService.Container, prototype), 1, true);
+            AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(epService.Container, prototype), 2, true);
     
-            AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(prototype), 3, false);
+            AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(epService.Container, prototype), 3, false);
             SupportFilterHelper.AssertFilterMulti(stmt, "SupportBean", new[]
             {
                 new[]{new SupportFilterItem("IntPrimitive", FilterOperator.IN_LIST_OF_VALUES)},
@@ -348,10 +348,10 @@ namespace com.espertech.esper.regression.expr.filter
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(prototype), 0, true);
-            AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(prototype), 3, true);
+            AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(epService.Container, prototype), 0, true);
+            AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(epService.Container, prototype), 3, true);
     
-            AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(prototype), 1, false);
+            AssertInKeywordReceivedPattern(epService, listener, SerializableObjectCopier.Copy(epService.Container, prototype), 1, false);
             SupportFilterHelper.AssertFilterMulti(stmt, "SupportBean", new[]
             {
                 new[]{new SupportFilterItem("IntPrimitive", FilterOperator.NOT_IN_LIST_OF_VALUES)},
@@ -870,7 +870,7 @@ namespace com.espertech.esper.regression.expr.filter
     
         private void TryOptimizableMethodInvocationContext(EPServiceProvider epService) {
             _methodInvocationContextFilterOptimized = null;
-            epService.EPAdministrator.CreateEPL("select * from SupportBean e where MyCustomOkFunction(e) = \"OK\"");
+            epService.EPAdministrator.CreateEPL("select * from SupportBean e where myCustomOkFunction(e) = \"OK\"");
             epService.EPRuntime.SendEvent(new SupportBean());
             Assert.AreEqual("default", _methodInvocationContextFilterOptimized.EngineURI);
             Assert.AreEqual("myCustomOkFunction", _methodInvocationContextFilterOptimized.FunctionName);

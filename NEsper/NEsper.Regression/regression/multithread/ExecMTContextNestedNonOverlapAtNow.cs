@@ -24,18 +24,18 @@ namespace com.espertech.esper.regression.multithread
 
         public override void Run(EPServiceProvider defaultEpService) {
             var configuration = new Configuration(SupportContainer.Instance);
-            EPServiceProvider epService = EPServiceProviderManager.GetProvider(
-                SupportContainer.Instance, this.GetType().Name, configuration);
+            var epService = EPServiceProviderManager.GetProvider(
+                SupportContainer.Instance, GetType().FullName, configuration);
             epService.Initialize();
             Thread.Sleep(100); // allow time for start up
     
             epService.EPAdministrator.Configuration.AddEventType(typeof(TestEvent));
             epService.EPAdministrator.CreateEPL("create context theContext " +
-                    "context perPartition partition by partitionKey from TestEvent," +
+                    "context perPartition partition by PartitionKey from TestEvent," +
                     "context per10Seconds start @now end after 100 milliseconds");
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL("context theContext " +
-                    "select sum(value) as thesum, count(*) as thecnt, context.perPartition.key1 as thekey " +
+                    "select sum(Value) as thesum, count(*) as thecnt, context.perPartition.key1 as thekey " +
                     "from TestEvent output snapshot when terminated");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

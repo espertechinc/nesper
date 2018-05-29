@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using com.espertech.esper.compat;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.util;
@@ -80,7 +80,7 @@ namespace com.espertech.esper.epl.expression.ops
             }
             catch (CoercionException)
             {
-                throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to '{1}' is not allowed", typeTwo.FullName, typeOne.FullName));
+                throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to '{1}' is not allowed", Name.Clean(typeTwo), Name.Clean(typeOne)));
             }
 
             // Check if we need to coerce

@@ -10,6 +10,7 @@ using System;
 using System.IO;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.util;
 
@@ -22,16 +23,22 @@ namespace com.espertech.esper.events.bean
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private readonly IContainer _container;
         private readonly BeanEventType _beanEventType;
         private readonly EventAdapterService _eventAdapterService;
 
         /// <summary>
         /// Ctor.
         /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="beanEventType">event type</param>
         /// <param name="eventAdapterService">for creating the event object</param>
-        public BeanEventBeanSerializableCopyMethod(BeanEventType beanEventType, EventAdapterService eventAdapterService)
+        public BeanEventBeanSerializableCopyMethod(
+            IContainer container,
+            BeanEventType beanEventType, 
+            EventAdapterService eventAdapterService)
         {
+            _container = container;
             _beanEventType = beanEventType;
             _eventAdapterService = eventAdapterService;
         }
@@ -42,7 +49,7 @@ namespace com.espertech.esper.events.bean
             Object copied;
             try
             {
-                copied = SerializableObjectCopier.Copy(underlying);
+                copied = SerializableObjectCopier.Copy(_container, underlying);
             }
             catch (IOException e)
             {

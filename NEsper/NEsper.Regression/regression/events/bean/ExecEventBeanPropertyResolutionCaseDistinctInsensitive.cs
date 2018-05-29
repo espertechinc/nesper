@@ -17,7 +17,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.events.bean
@@ -28,21 +27,23 @@ namespace com.espertech.esper.regression.events.bean
         }
     
         public override void Run(EPServiceProvider epService) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select MYPROPERTY, myproperty, myProperty from " + typeof(SupportBeanDupProperty).FullName);
+            var stmt = epService.EPAdministrator.CreateEPL("select MYPROPERTY, myproperty, myProperty from " + typeof(SupportBeanDupProperty).FullName);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-    
+
             epService.EPRuntime.SendEvent(new SupportBeanDupProperty("lowercamel", "uppercamel", "upper", "lower"));
-            EventBean result = listener.AssertOneGetNewAndReset();
+
+            var result = listener.AssertOneGetNewAndReset();
+
             Assert.AreEqual("upper", result.Get("MYPROPERTY"));
             Assert.AreEqual("lower", result.Get("myproperty"));
-            Assert.IsTrue(result.Get("myProperty").Equals("lowercamel") || result.Get("myProperty").Equals("uppercamel")); // JDK6 versus JDK7 JavaBean inspector
-    
+            Assert.IsTrue(result.Get("myProperty").Equals("lowercamel") || result.Get("myProperty").Equals("uppercamel"));
+
             try {
-                epService.EPAdministrator.CreateEPL("select MyProperty from " + typeof(SupportBeanDupProperty).FullName);
+                epService.EPAdministrator.CreateEPL("select MyProPerty from " + typeof(SupportBeanDupProperty).FullName);
                 Assert.Fail();
             } catch (EPException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex, "Unexpected exception starting statement: Unable to determine which property to use for \"MyProperty\" because more than one property matched [");
+                SupportMessageAssertUtil.AssertMessage(ex, "Unexpected exception starting statement: Unable to determine which property to use for \"MyProPerty\" because more than one property matched [");
                 // expected
             }
         }

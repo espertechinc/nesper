@@ -118,42 +118,27 @@ namespace com.espertech.esper.view.window
             return _timeBatchViewFactory.MakeView(_agentInstanceContext);
         }
 
-        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation
-        {
-            get { return _timeDeltaComputation; }
-        }
+        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation => _timeDeltaComputation;
 
         /// <summary>
         /// Gets the reference point to use to anchor interval start and end dates to.
         /// </summary>
         /// <value>is the millisecond reference point.</value>
-        public long? InitialReferencePoint
-        {
-            get { return _initialReferencePoint; }
-        }
+        public long? InitialReferencePoint => _initialReferencePoint;
 
         /// <summary>
         /// True for force-output.
         /// </summary>
         /// <value>indicates force-output</value>
-        public bool IsForceOutput
-        {
-            get { return _isForceOutput; }
-        }
+        public bool IsForceOutput => _isForceOutput;
 
         /// <summary>
         /// True for start-eager.
         /// </summary>
         /// <value>indicates start-eager</value>
-        public bool IsStartEager
-        {
-            get { return _isStartEager; }
-        }
+        public bool IsStartEager => _isStartEager;
 
-        public override EventType EventType
-        {
-            get { return Parent.EventType; }
-        }
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
@@ -341,9 +326,6 @@ namespace com.espertech.esper.view.window
             }
         }
 
-        public ViewFactory ViewFactory
-        {
-            get { return _timeBatchViewFactory; }
-        }
+        public ViewFactory ViewFactory => _timeBatchViewFactory;
     }
 } // end of namespace

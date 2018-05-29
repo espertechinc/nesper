@@ -49,7 +49,7 @@ namespace com.espertech.esper.epl.expression.baseagg
         /// <summary>
         /// Indicator for whether the aggregation is distinct - i.e. only unique values are considered.
         /// </summary>
-        private bool _isDistinct;
+        private readonly bool _isDistinct;
 
         /// <summary>
         /// Returns the aggregation function name for representation in a generate expression string.
@@ -58,6 +58,8 @@ namespace com.espertech.esper.epl.expression.baseagg
         public abstract string AggregationFunctionName { get; }
 
         protected abstract bool IsFilterExpressionAsLastParameter { get; }
+
+        protected virtual int MaxPositionalParams => 1;
 
         public AggregationResultFuture AggregationResultFuture => _aggregationResultFuture;
 
@@ -120,7 +122,7 @@ namespace com.espertech.esper.epl.expression.baseagg
                 ExprNodeUtility.ValidateNoSpecialsGroupByExpressions(new ExprNode[] {_optionalFilter});
             }
             if (_optionalFilter != null && IsFilterExpressionAsLastParameter) {
-                if (paramDesc.PositionalParams.Length > 1) {
+                if (paramDesc.PositionalParams.Length > MaxPositionalParams) {
                     throw new ExprValidationException("Only a single filter expression can be provided");
                 }
                 _positionalParams = ExprNodeUtility.AddExpression(paramDesc.PositionalParams, _optionalFilter);
@@ -278,7 +280,7 @@ namespace com.espertech.esper.epl.expression.baseagg
                     "Invalid filter expression parameter to the aggregation function '" +
                     AggregationFunctionName +
                     "' is expected to return a bool value but returns " +
-                    filterEvaluator.ReturnType.GetTypeNameFullyQualPretty());
+                    filterEvaluator.ReturnType.GetCleanName());
             }
         }
 

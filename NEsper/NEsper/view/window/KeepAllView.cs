@@ -56,19 +56,9 @@ namespace com.espertech.esper.view.window
 
         /// <summary>Returns the (optional) collection handling random access to window contents for prior or previous events. </summary>
         /// <value>buffer for events</value>
-        public ViewUpdatedCollection ViewUpdatedCollection
-        {
-            get { return _viewUpdatedCollection; }
-        }
+        public ViewUpdatedCollection ViewUpdatedCollection => _viewUpdatedCollection;
 
-        public override EventType EventType
-        {
-            get
-            {
-                // The event type is the parent view's event type
-                return Parent.EventType;
-            }
-        }
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
@@ -125,14 +115,8 @@ namespace com.espertech.esper.view.window
             viewDataVisitor.VisitPrimary(_indexedEvents, true, _keepAllViewFactory.ViewName, null);
         }
 
-        public LinkedHashSet<EventBean> IndexedEvents
-        {
-            get { return _indexedEvents; }
-        }
+        public LinkedHashSet<EventBean> IndexedEvents => _indexedEvents;
 
-        public ViewFactory ViewFactory
-        {
-            get { return _keepAllViewFactory; }
-        }
+        public ViewFactory ViewFactory => _keepAllViewFactory;
     }
 }

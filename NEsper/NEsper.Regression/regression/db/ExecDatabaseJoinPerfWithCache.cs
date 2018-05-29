@@ -27,8 +27,7 @@ namespace com.espertech.esper.regression.db {
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public override void Configure(Configuration configuration) {
-            var configDB = new ConfigurationDBRef();
-            configDB.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative);
+            var configDB = SupportDatabaseService.CreateDefaultConfig();
             configDB.ConnectionLifecycle = ConnectionLifecycleEnum.RETAIN;
 
             // Turn this cache setting off to turn off indexing since without cache there is no point in indexing.
@@ -179,7 +178,7 @@ namespace com.espertech.esper.regression.db {
             var startTime = PerformanceObserver.MilliTime;
             for (var i = 0; i < 200; i++) {
                 var num = i + 1;
-                var col2 = Convert.ToString(Math.Round((float) num / 10), CultureInfo.InvariantCulture);
+                var col2 = Convert.ToString(Math.Round((float) num / 10, MidpointRounding.AwayFromZero), CultureInfo.InvariantCulture);
                 var bean = new SupportBean_S0(num);
                 epService.EPRuntime.SendEvent(bean);
                 EPAssertionUtil.AssertProps(

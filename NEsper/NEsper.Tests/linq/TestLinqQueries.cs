@@ -176,8 +176,8 @@ namespace com.espertech.esper.linq
         public void TestOuterJoin()
         {
             var sample =
-                "@IterableUnbound select irstream marketData.Amount, priceEvent.Sym from " + Name.Of<SupportTradeEvent>() + " as marketData " +
-                "left outer join " + Name.Of<SupportPriceEvent>() + " as priceEvent on marketData.CCYPair = priceEvent.Sym";
+                "@IterableUnbound select irstream marketData.Amount, priceEvent.Sym from " + Name.Clean<SupportTradeEvent>() + " as marketData " +
+                "left outer join " + Name.Clean<SupportPriceEvent>() + " as priceEvent on marketData.CCYPair = priceEvent.Sym";
             var sampleModel = _serviceProvider.EPAdministrator.CompileEPL(sample);
             var sampleModelEPL = sampleModel.ToEPL();
 

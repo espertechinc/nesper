@@ -92,20 +92,22 @@ namespace com.espertech.esper.regression.epl.other
             configXML.RootElementName = "MyXMLEvent";
             epService.EPAdministrator.Configuration.AddEventType("MyXmlEvent", configXML);
 
-            epService.EPAdministrator.CreateEPL("insert into SupportBeanStream select * from SupportBean");
+            epService.EPAdministrator.CreateEPL(
+                "insert into SupportBeanStream select * from SupportBean");
             epService.EPAdministrator.CreateEPL(
                 "insert into SupportBeanStreamTwo select * from pattern[a=SupportBean -> b=SupportBean]");
-            epService.EPAdministrator.CreateEPL("insert into SupportBeanStreamRO select * from SupportBeanReadOnly");
+            epService.EPAdministrator.CreateEPL(
+                "insert into SupportBeanStreamRO select * from SupportBeanReadOnly");
 
             TryInvalid(
                 epService, "update istream SupportBeanStream set IntPrimitive=LongPrimitive",
-                "Error starting statement: Invalid assignment of column 'LongPrimitive' of type 'long' to event property 'IntPrimitive' typed as 'int', column and parameter types mismatch [update istream SupportBeanStream set IntPrimitive=LongPrimitive]");
+                "Error starting statement: Invalid assignment of column 'LongPrimitive' of type 'System.Int64' to event property 'IntPrimitive' typed as 'System.Int32', column and parameter types mismatch [update istream SupportBeanStream set IntPrimitive=LongPrimitive]");
             TryInvalid(
                 epService, "update istream SupportBeanStream set xxx='abc'",
                 "Error starting statement: Property 'xxx' is not available for write access [update istream SupportBeanStream set xxx='abc']");
             TryInvalid(
                 epService, "update istream SupportBeanStream set IntPrimitive=null",
-                "Error starting statement: Invalid assignment of column 'null' of null type to event property 'IntPrimitive' typed as 'int', nullable type mismatch [update istream SupportBeanStream set IntPrimitive=null]");
+                "Error starting statement: Invalid assignment of column 'null' of null type to event property 'IntPrimitive' typed as 'System.Int32', nullable type mismatch [update istream SupportBeanStream set IntPrimitive=null]");
             TryInvalid(
                 epService, "update istream SupportBeanStreamTwo set a.IntPrimitive=10",
                 "Error starting statement: Property 'a.IntPrimitive' is not available for write access [update istream SupportBeanStreamTwo set a.IntPrimitive=10]");
@@ -119,14 +121,14 @@ namespace com.espertech.esper.regression.epl.other
                 epService, "update istream SupportBean set LongPrimitive=LongPrimitive where sum(IntPrimitive) = 1",
                 "Error starting statement: Aggregation functions may not be used within an update-clause [update istream SupportBean set LongPrimitive=LongPrimitive where sum(IntPrimitive) = 1]");
             TryInvalid(
-                epService, "update istream SupportBean set LongPrimitive=Prev(1, LongPrimitive)",
-                "Error starting statement: Previous function cannot be used in this context [update istream SupportBean set LongPrimitive=Prev(1, LongPrimitive)]");
+                epService, "update istream SupportBean set LongPrimitive=prev(1, LongPrimitive)",
+                "Error starting statement: Previous function cannot be used in this context [update istream SupportBean set LongPrimitive=prev(1, LongPrimitive)]");
             TryInvalid(
                 epService, "update istream MyXmlEvent set abc=1",
                 "Error starting statement: Property 'abc' is not available for write access [update istream MyXmlEvent set abc=1]");
             TryInvalid(
-                epService, "update istream SupportBeanErrorTestingOne set value='1'",
-                "Error starting statement: The update-clause requires the underlying event representation to support copy (via Serializable by default) [update istream SupportBeanErrorTestingOne set value='1']");
+                epService, "update istream SupportBeanErrorTestingOne set Value='1'",
+                "Error starting statement: The update-clause requires the underlying event representation to support copy (via Serializable by default) [update istream SupportBeanErrorTestingOne set Value='1']");
             TryInvalid(
                 epService,
                 "update istream SupportBean set LongPrimitive=(select p0 from MyMapTypeInv#lastevent where TheString=p3)",
@@ -386,44 +388,44 @@ namespace com.espertech.esper.regression.epl.other
             EPStatement stmtInsert =
                 epService.EPAdministrator.CreateEPL("insert into BaseOne select p0 as i, p1 as p from MyMapTypeIDB");
             epService.EPAdministrator.CreateEPL(
-                "@Name('a') update istream BaseInterface set i='XYZ' where i like 'E%'");
+                "@Name('a') update istream BaseInterface set I='XYZ' where I like 'E%'");
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("select * from BaseOne");
             var listener = new SupportUpdateListener();
             stmtSelect.Events += listener.Update;
 
-            string[] fields = "i,p".Split(',');
+            string[] fields = "I,P".Split(',');
             epService.EPRuntime.SendEvent(MakeMap("p0", "E1", "p1", "E1"), "MyMapTypeIDB");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"XYZ", "E1"});
 
             epService.EPRuntime.SendEvent(MakeMap("p0", "F1", "p1", "E2"), "MyMapTypeIDB");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"F1", "E2"});
 
-            epService.EPAdministrator.CreateEPL("@Priority(2) @Name('b') update istream BaseOne set i='BLANK'");
+            epService.EPAdministrator.CreateEPL("@Priority(2) @Name('b') update istream BaseOne set I='BLANK'");
 
             epService.EPRuntime.SendEvent(MakeMap("p0", "somevalue", "p1", "E3"), "MyMapTypeIDB");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"BLANK", "E3"});
 
-            epService.EPAdministrator.CreateEPL("@Priority(3) @Name('c') update istream BaseOneA set i='FINAL'");
+            epService.EPAdministrator.CreateEPL("@Priority(3) @Name('c') update istream BaseOneA set I='FINAL'");
 
             epService.EPRuntime.SendEvent(MakeMap("p0", "somevalue", "p1", "E4"), "MyMapTypeIDB");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"BLANK", "E4"});
 
             stmtInsert.Stop();
             stmtInsert = epService.EPAdministrator.CreateEPL(
-                "insert into BaseOneA select p0 as i, p1 as p, 'a' as pa from MyMapTypeIDB");
+                "insert into BaseOneA select p0 as I, p1 as P, 'a' as pa from MyMapTypeIDB");
 
             epService.EPRuntime.SendEvent(MakeMap("p0", "somevalue", "p1", "E5"), "MyMapTypeIDB");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"FINAL", "E5"});
 
             stmtInsert.Stop();
             stmtInsert = epService.EPAdministrator.CreateEPL(
-                "insert into BaseOneB select p0 as i, p1 as p, 'b' as pb from MyMapTypeIDB");
+                "insert into BaseOneB select p0 as I, p1 as P, 'b' as pb from MyMapTypeIDB");
 
             epService.EPRuntime.SendEvent(MakeMap("p0", "somevalue", "p1", "E6"), "MyMapTypeIDB");
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {"BLANK", "E6"});
 
             stmtInsert.Stop();
-            stmtInsert = epService.EPAdministrator.CreateEPL("insert into BaseTwo select p0 as i, p1 as p from MyMapTypeIDB");
+            stmtInsert = epService.EPAdministrator.CreateEPL("insert into BaseTwo select p0 as I, p1 as P from MyMapTypeIDB");
 
             stmtSelect.Stop();
             stmtSelect = epService.EPAdministrator.CreateEPL("select * from BaseInterface");
@@ -664,13 +666,13 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionCopyMethod(EPServiceProvider epService)
         {
             epService.EPAdministrator.CreateEPL("insert into ABCStreamCM select * from SupportBeanCopyMethod");
-            epService.EPAdministrator.CreateEPL("update istream ABCStreamCM set valOne = 'x', valTwo='y'");
+            epService.EPAdministrator.CreateEPL("update istream ABCStreamCM set ValOne = 'x', ValTwo='y'");
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select * from ABCStreamCM").Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBeanCopyMethod("1", "2"));
             EPAssertionUtil.AssertProps(
-                listener.AssertOneGetNewAndReset(), "valOne,valTwo".Split(','), new object[] {"x", "y"});
+                listener.AssertOneGetNewAndReset(), "ValOne,ValTwo".Split(','), new object[] {"x", "y"});
 
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -766,32 +768,24 @@ namespace com.espertech.esper.regression.epl.other
         {
             var listenerInsert = new SupportUpdateListener();
             var listeners = new SupportUpdateListener[5];
-            for (int i = 0; i < listeners.Length; i++)
-            {
+            for (int i = 0; i < listeners.Length; i++) {
                 listeners[i] = new SupportUpdateListener();
             }
 
             string[] fields = "TheString,IntPrimitive,value1".Split(',');
             epService.EPAdministrator.CreateEPL("insert into ABCStreamLD select *, 'orig' as value1 from SupportBean")
                 .Events += listenerInsert.Update;
-            epService.EPAdministrator
-                .CreateEPL(
-                    "@Name('A') update istream ABCStreamLD set TheString='A', value1='a' where IntPrimitive in (1,2)")
+            epService.EPAdministrator.CreateEPL("@Name('A') update istream ABCStreamLD set TheString='A', value1='a' where IntPrimitive in (1,2)")
                 .Events += listeners[0].Update;
-            epService.EPAdministrator
-                .CreateEPL(
-                    "@Name('B') update istream ABCStreamLD set TheString='B', value1='b' where IntPrimitive in (1,3)")
+            epService.EPAdministrator.CreateEPL("@Name('B') update istream ABCStreamLD set TheString='B', value1='b' where IntPrimitive in (1,3)")
                 .Events += listeners[1].Update;
-            epService.EPAdministrator
-                .CreateEPL(
-                    "@Name('C') update istream ABCStreamLD set TheString='C', value1='c' where IntPrimitive in (2,3)")
+            epService.EPAdministrator.CreateEPL("@Name('C') update istream ABCStreamLD set TheString='C', value1='c' where IntPrimitive in (2,3)")
                 .Events += listeners[2].Update;
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select * from ABCStreamLD").Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(
-                listenerInsert.AssertOneGetNewAndReset(), fields, new object[] {"E1", 1, "orig"});
+            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), fields, new object[] {"E1", 1, "orig"});
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetOld(), fields, new object[] {"E1", 1, "orig"});
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNew(), fields, new object[] {"A", 1, "a"});
             EPAssertionUtil.AssertProps(listeners[1].AssertOneGetOld(), fields, new object[] {"A", 1, "a"});
@@ -801,8 +795,7 @@ namespace com.espertech.esper.regression.epl.other
             Reset(listeners);
 
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertProps(
-                listenerInsert.AssertOneGetNewAndReset(), fields, new object[] {"E2", 2, "orig"});
+            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), fields, new object[] {"E2", 2, "orig"});
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetOld(), fields, new object[] {"E2", 2, "orig"});
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNew(), fields, new object[] {"A", 2, "a"});
             Assert.IsFalse(listeners[1].IsInvoked);
@@ -812,8 +805,7 @@ namespace com.espertech.esper.regression.epl.other
             Reset(listeners);
 
             epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
-            EPAssertionUtil.AssertProps(
-                listenerInsert.AssertOneGetNewAndReset(), fields, new object[] {"E3", 3, "orig"});
+            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), fields, new object[] {"E3", 3, "orig"});
             Assert.IsFalse(listeners[0].IsInvoked);
             EPAssertionUtil.AssertProps(listeners[1].AssertOneGetOld(), fields, new object[] {"E3", 3, "orig"});
             EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNew(), fields, new object[] {"B", 3, "b"});
@@ -829,8 +821,7 @@ namespace com.espertech.esper.regression.epl.other
         {
             var listenerInsert = new SupportUpdateListener();
             var listeners = new SupportUpdateListener[5];
-            for (int i = 0; i < listeners.Length; i++)
-            {
+            for (int i = 0; i < listeners.Length; i++) {
                 listeners[i] = new SupportUpdateListener();
             }
 
@@ -849,8 +840,7 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPAdministrator.CreateEPL("@Name('E') update istream ABCStreamLDM set TheString='E', value1='e'");
 
             epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
-            EPAssertionUtil.AssertProps(
-                listenerInsert.AssertOneGetNewAndReset(), fields, new object[] {"E4", 4, "orig"});
+            EPAssertionUtil.AssertProps(listenerInsert.AssertOneGetNewAndReset(), fields, new object[] {"E4", 4, "orig"});
             Assert.IsFalse(listeners[0].IsInvoked);
             EPAssertionUtil.AssertProps(listeners[1].AssertOneGetOld(), fields, new object[] {"A", 4, "a"});
             EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNew(), fields, new object[] {"B", 4, "b"});
@@ -964,6 +954,7 @@ namespace com.espertech.esper.regression.epl.other
             public string I { get; set; }
         }
 
+        [Serializable]
         public class BaseOneA : BaseOne
         {
             public BaseOneA()
@@ -978,6 +969,7 @@ namespace com.espertech.esper.regression.epl.other
             public string Pa { get; set; }
         }
 
+        [Serializable]
         public class BaseOneB : BaseOne
         {
             public BaseOneB()

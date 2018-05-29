@@ -136,7 +136,11 @@ namespace com.espertech.esper.core.service
                     }
                 }
             }
-            return new ExceptionHandlingService(engineURI, exceptionHandlers, conditionHandlers);
+
+            return new ExceptionHandlingService(
+                engineURI,
+                exceptionHandlers,
+                conditionHandlers);
         }
 
         /// <summary>
@@ -758,12 +762,13 @@ namespace com.espertech.esper.core.service
                     throw new ConfigurationException("Failed to initialize Esper-Avro: " + e.Message, e);
                 }
             }
+
             var eventAdapterService = new EventAdapterServiceImpl(
+                container,
                 eventTypeIdGenerator,
-                configSnapshot.EngineDefaults.EventMeta.AnonymousCacheSize, 
+                configSnapshot.EngineDefaults.EventMeta.AnonymousCacheSize,
                 avroHandler,
-                engineImportService,
-                lockManager);
+                engineImportService);
             Init(eventAdapterService, configSnapshot, engineImportService, resourceManager);
 
             // New read-write lock for concurrent event processing
@@ -821,12 +826,11 @@ namespace com.espertech.esper.core.service
             var timerService = new TimerServiceImpl(epServiceProvider.URI, msecTimerResolution);
 
             var variableService = new VariableServiceImpl(
+                container,
                 configSnapshot.EngineDefaults.Variables.MsecVersionRelease,
                 schedulingService,
                 eventAdapterService,
-                null,
-                rwLockManager,
-                threadLocalManager);
+                null);
 
             InitVariables(variableService, configSnapshot.Variables, engineImportService);
 
@@ -955,7 +959,7 @@ namespace com.espertech.esper.core.service
                 new ContextControllerFactoryFactorySvcImpl(),
                 new ContextManagerFactoryServiceImpl(),
                 new EPStatementFactoryDefault(),
-                new RegexHandlerFactoryDefault(),
+                new RegexHandlerFactoryDefault(container),
                 new ViewableActivatorFactoryDefault(),
                 new FilterNonPropertyRegisteryServiceImpl(),
                 new ResultSetProcessorHelperFactoryImpl(),

@@ -58,7 +58,7 @@ namespace com.espertech.esper.regression.epl.subselect
             model.FromClause = FromClause.Create(FilterStream.Create("S0"));
             model.SelectClause = SelectClause.Create()
                 .Add(Expressions.SubqueryExists(subquery), "value");
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string stmtText = "select exists (select * from S1#length(1000)) as value from S0";
             Assert.AreEqual(stmtText, model.ToEPL());
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionExistsInSelectCompile(EPServiceProvider epService) {
             string stmtText = "select exists (select * from S1#length(1000)) as value from S0";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(stmtText, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -188,7 +188,7 @@ namespace com.espertech.esper.regression.epl.subselect
             model.SelectClause = SelectClause.Create("id");
             model.FromClause = FromClause.Create(FilterStream.Create("S0"));
             model.WhereClause = Expressions.Not(Expressions.SubqueryExists(subquery));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string stmtText = "select id from S0 where not exists (select * from S1#length(1000))";
             Assert.AreEqual(stmtText, model.ToEPL());
@@ -214,7 +214,7 @@ namespace com.espertech.esper.regression.epl.subselect
         private void RunAssertionNotExists_Compile(EPServiceProvider epService) {
             string stmtText = "select id from S0 where not exists (select * from S1#length(1000))";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(stmtText, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);

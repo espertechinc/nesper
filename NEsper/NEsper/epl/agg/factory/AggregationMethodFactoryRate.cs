@@ -40,7 +40,7 @@ namespace com.espertech.esper.epl.agg.factory
 
         public bool IsAccessAggregation => false;
 
-        public Type ResultType => typeof(double?);
+        public Type ResultType => typeof(double);
 
         public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
         {
@@ -58,14 +58,18 @@ namespace com.espertech.esper.epl.agg.factory
         {
             if (_isEver)
             {
-                if (_parent.PositionalParams.Length == 0)
+                if (_parent.PositionalParams.Length == 0) {
                     return new AggregatorRateEver(_intervalTime, _timeAbacus.OneSecond, _timeProvider);
-                else
+                }
+                else {
                     return new AggregatorRateEverFilter(_intervalTime, _timeAbacus.OneSecond, _timeProvider);
+                }
             }
 
-            if (_parent.OptionalFilter != null)
+            if (_parent.OptionalFilter != null) {
                 return new AggregatorRateFilter(_timeAbacus.OneSecond);
+            }
+
             return new AggregatorRate(_timeAbacus.OneSecond);
         }
 

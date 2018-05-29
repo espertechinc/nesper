@@ -51,7 +51,57 @@ namespace com.espertech.esper.util
         {
             WIDENING_CONVERSIONS = new Dictionary<Type, ICollection<Type>>();
 
-            // Initialize the map of wrapper conversions
+            AddWideningConversion<char>(
+                typeof(byte),
+                typeof(char), typeof(char?));
+
+            AddWideningConversion<sbyte>(
+                typeof(sbyte), typeof(sbyte?));
+            AddWideningConversion<byte>(
+                typeof(byte), typeof(byte?));
+
+            AddWideningConversion<short>(
+                typeof(sbyte), typeof(byte),
+                typeof(short), typeof(short?));
+            AddWideningConversion<int>(
+                typeof(sbyte), typeof(short),
+                typeof(byte), typeof(ushort),
+                typeof(int), typeof(int?));
+            AddWideningConversion<long>(
+                typeof(sbyte), typeof(short), typeof(int),
+                typeof(byte), typeof(ushort), typeof(uint),
+                typeof(long), typeof(long?));
+
+            AddWideningConversion<ushort>(
+                typeof(sbyte), typeof(short), typeof(byte),
+                typeof(ushort), typeof(ushort?));
+            AddWideningConversion<uint>(
+                typeof(sbyte), typeof(short), typeof(int),
+                typeof(byte), typeof(ushort),
+                typeof(uint), typeof(uint?));
+            AddWideningConversion<ulong>(
+                typeof(sbyte), typeof(short), typeof(int),
+                typeof(byte), typeof(ushort), typeof(uint),
+                typeof(ulong), typeof(ulong?));
+
+            AddWideningConversion<float>(
+                typeof(sbyte), typeof(short), typeof(int), typeof(long),
+                typeof(byte), typeof(ushort), typeof(uint), typeof(ulong),
+                typeof(float), typeof(float?));
+            AddWideningConversion<double>(
+                typeof(sbyte), typeof(short), typeof(int), typeof(long),
+                typeof(byte), typeof(ushort), typeof(uint), typeof(ulong),
+                typeof(float),
+                typeof(double), typeof(double?));
+            AddWideningConversion<decimal>(
+                typeof(sbyte), typeof(short), typeof(int), typeof(long),
+                typeof(byte), typeof(ushort), typeof(uint), typeof(ulong),
+                typeof(float), typeof(double),
+                typeof(decimal), typeof(decimal?));
+
+
+#if false
+// Initialize the map of wrapper conversions
             var boolWrappers = InitWrappingConversions<bool, bool?>();
             var charWrappers = InitWrappingConversions<char, char?>();
             var byteWrappers = InitWrappingConversions<byte, byte?>();
@@ -92,6 +142,12 @@ namespace com.espertech.esper.util
             wideningConversions.AddAll(doubleWrappers);
             WIDENING_CONVERSIONS.Put(typeof(decimal), new HashSet<Type>(wideningConversions));
             WIDENING_CONVERSIONS.Put(typeof(decimal?), new HashSet<Type>(wideningConversions));
+#endif
+        }
+
+        private static void AddWideningConversion<T>(params Type[] sourceTypes)
+        {
+            WIDENING_CONVERSIONS.Put(typeof(T), new HashSet<Type>(sourceTypes));
         }
 
         /// <summary>

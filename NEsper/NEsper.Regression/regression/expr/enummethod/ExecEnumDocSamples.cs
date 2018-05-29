@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
@@ -14,7 +15,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lrreport;
 using com.espertech.esper.supportregression.execution;
-
 
 using NUnit.Framework;
 
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "create schema PriceEvent (symbol string, price double);\n" +
                     "create schema OrderEvent (orderId string, pricedata PriceEvent);\n" +
                     "select (select pricedata from OrderEvent#unique(orderId))\n" +
-                    ".AnyOf(v => v.symbol = 'GE') as has_ge from SettlementEvent(symbol = 'GE')";
+                    ".anyOf(v => v.symbol = 'GE') as has_ge from SettlementEvent(symbol = 'GE')";
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
     
             // subquery with aggregation
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             Assert.AreEqual("Z1", zones[0].Name);
             stmt.Dispose();
     
-            epl = "select ZoneWindow(name in ('Z4', 'Z5', 'Z3')).where(z => Inrect(z.rectangle, location)) as zones from Item";
+            epl = "select ZoneWindow(Name in ('Z4', 'Z5', 'Z3')).where(z => Inrect(z.rectangle, location)) as zones from Item";
             stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += listener.Update;
     
@@ -190,7 +190,7 @@ namespace com.espertech.esper.regression.expr.enummethod
         private void RunAssertionUDFSingleRow(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddImport(typeof(ZoneFactory));
     
-            string epl = "select ZoneFactory.Zones.where(z => Inrect(z.rectangle, item.location)) as zones\n" +
+            string epl = "select ZoneFactory.GetZones().where(z => Inrect(z.rectangle, item.location)) as zones\n" +
                     "from Item as item";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -208,8 +208,8 @@ namespace com.espertech.esper.regression.expr.enummethod
             string epl = "expression passengers {\n" +
                     "  lr => lr.items.where(l => l.type='P')\n" +
                     "}\n" +
-                    "select Passengers(lr) as p," +
-                    "Passengers(lr).where(x => assetId = 'P01') as p2 from LocationReport lr";
+                    "select passengers(lr) as p," +
+                    "passengers(lr).where(x => assetId = 'P01') as p2 from LocationReport lr";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -232,25 +232,25 @@ namespace com.espertech.esper.regression.expr.enummethod
             AssertStmt(epService, "select Items.average(i => Distance(i.location.x,i.location.y,0,0)) as avgdistance from LocationReport");
             AssertStmt(epService, "select Items.countof(i => Distance(i.location.x,i.location.y,0,0)<20) as cntcenter from LocationReport");
             AssertStmt(epService, "select Items.firstof(i => Distance(i.location.x,i.location.y,0,0)<20) as firstcenter from LocationReport");
-            AssertStmt(epService, "select Items.Lastof().assetId as firstcenter from LocationReport");
-            AssertStmt(epService, "select Items.Lastof(i => Distance(i.location.x,i.location.y,0,0)<20) as lastcenter from LocationReport");
-            AssertStmt(epService, "select Items.where(i => i.type=\"L\").Groupby(i => assetIdPassenger) as luggagePerPerson from LocationReport");
+            AssertStmt(epService, "select Items.lastof().assetId as firstcenter from LocationReport");
+            AssertStmt(epService, "select Items.lastof(i => Distance(i.location.x,i.location.y,0,0)<20) as lastcenter from LocationReport");
+            AssertStmt(epService, "select Items.where(i => i.type=\"L\").groupby(i => assetIdPassenger) as luggagePerPerson from LocationReport");
             AssertStmt(epService, "select Items.where((p,ind) => p.type=\"P\" and ind>2) from LocationReport");
-            AssertStmt(epService, "select Items.Groupby(k => assetId,v => Distance(v.location.x,v.location.y,0,0)) as distancePerItem from LocationReport");
+            AssertStmt(epService, "select Items.groupby(k => assetId,v => Distance(v.location.x,v.location.y,0,0)) as distancePerItem from LocationReport");
             AssertStmt(epService, "select Items.min(i => Distance(i.location.x,i.location.y,0,0)) as mincenter from LocationReport");
             AssertStmt(epService, "select Items.max(i => Distance(i.location.x,i.location.y,0,0)) as maxcenter from LocationReport");
             AssertStmt(epService, "select Items.minBy(i => Distance(i.location.x,i.location.y,0,0)) as minItemCenter from LocationReport");
             AssertStmt(epService, "select Items.minBy(i => Distance(i.location.x,i.location.y,0,0)).assetId as minItemCenter from LocationReport");
-            AssertStmt(epService, "select Items.OrderBy(i => Distance(i.location.x,i.location.y,0,0)) as itemsOrderedByDist from LocationReport");
+            AssertStmt(epService, "select Items.orderBy(i => Distance(i.location.x,i.location.y,0,0)) as itemsOrderedByDist from LocationReport");
             AssertStmt(epService, "select Items.selectFrom(i => assetId) as itemAssetIds from LocationReport");
-            AssertStmt(epService, "select Items.take(5) as first5Items, items.TakeLast(5) as last5Items from LocationReport");
+            AssertStmt(epService, "select Items.take(5) as first5Items, items.takeLast(5) as last5Items from LocationReport");
             AssertStmt(epService, "select Items.ToMap(k => k.assetId,v => Distance(v.location.x,v.location.y,0,0)) as assetDistance from LocationReport");
-            AssertStmt(epService, "select Items.Where(i => i.assetId=\"L001\").Union(items.where(i => i.type=\"P\")) as itemsUnion from LocationReport");
-            AssertStmt(epService, "select (select name from Zone#unique(name)).OrderBy() as orderedZones from pattern [every timer:interval(30)]");
+            AssertStmt(epService, "select Items.Where(i => i.assetId=\"L001\").union(items.where(i => i.type=\"P\")) as itemsUnion from LocationReport");
+            AssertStmt(epService, "select (select name from Zone#unique(name)).orderBy() as orderedZones from pattern [every timer:interval(30)]");
             epService.EPAdministrator.CreateEPL("create schema MyEvent as (seqone string[], seqtwo string[])");
-            AssertStmt(epService, "select Seqone.sequenceEqual(seqtwo) from MyEvent");
-            AssertStmt(epService, "select window(assetId).OrderBy() as orderedAssetIds from Item#time(10) group by assetId");
-            AssertStmt(epService, "select prevwindow(assetId).OrderBy() as orderedAssetIds from Item#time(10) as items");
+            AssertStmt(epService, "select seqone.sequenceEqual(seqtwo) from MyEvent");
+            AssertStmt(epService, "select window(assetId).orderBy() as orderedAssetIds from Item#time(10) group by assetId");
+            AssertStmt(epService, "select prevwindow(assetId).orderBy() as orderedAssetIds from Item#time(10) as items");
             AssertStmt(epService, "select GetZoneNames().where(z => z!=\"Z1\") from pattern [every timer:interval(30)]");
             AssertStmt(epService, "select Items.selectFrom(i => new{assetId,distanceCenter=Distance(i.location.x,i.location.y,0,0)}) as itemInfo from LocationReport");
             AssertStmt(epService, "select Items.leastFrequent(i => type) as leastFreqType from LocationReport");
@@ -258,11 +258,11 @@ namespace com.espertech.esper.regression.expr.enummethod
             string epl = "expression myquery {itm => " +
                     "(select * from Zone#keepall).where(z => Inrect(z.rectangle,itm.location))" +
                     "} " +
-                    "select assetId, Myquery(item) as subq, Myquery(item).where(z => z.name=\"Z01\") as assetItem " +
+                    "select assetId, myquery(item) as subq, myquery(item).where(z => z.name=\"Z01\") as assetItem " +
                     "from Item as item";
             AssertStmt(epService, epl);
     
-            AssertStmt(epService, "select Za.items.Except(zb.items) as itemsCompared from LocationReport as za unidirectional, LocationReport#length(10) as zb");
+            AssertStmt(epService, "select za.Items.except(zb.Items) as itemsCompared from LocationReport as za unidirectional, LocationReport#length(10) as zb");
         }
     
         private void RunAssertionScalarArray(EPServiceProvider epService) {
@@ -271,37 +271,37 @@ namespace com.espertech.esper.regression.expr.enummethod
             Validate(epService, "{1, 2, 3}.aggregate(0, (result, value) => result + value)", 6);
             Validate(epService, "{1, 2, 3}.allOf(v => v > 0)", true);
             Validate(epService, "{1, 2, 3}.allOf(v => v > 1)", false);
-            Validate(epService, "{1, 2, 3}.AnyOf(v => v > 1)", true);
-            Validate(epService, "{1, 2, 3}.AnyOf(v => v > 3)", false);
+            Validate(epService, "{1, 2, 3}.anyOf(v => v > 1)", true);
+            Validate(epService, "{1, 2, 3}.anyOf(v => v > 3)", false);
             Validate(epService, "{1, 2, 3}.average()", 2.0);
             Validate(epService, "{1, 2, 3}.countOf()", 3);
             Validate(epService, "{1, 2, 3}.countOf(v => v < 2)", 1);
-            Validate(epService, "{1, 2, 3}.Except({1})", new object[]{2, 3});
-            Validate(epService, "{1, 2, 3}.Intersect({2,3})", new object[]{2, 3});
-            Validate(epService, "{1, 2, 3}.FirstOf()", 1);
-            Validate(epService, "{1, 2, 3}.FirstOf(v => v / 2 = 1)", 2);
-            Validate(epService, "{1, 2, 3}.Intersect({2, 3})", new object[]{2, 3});
-            Validate(epService, "{1, 2, 3}.LastOf()", 3);
-            Validate(epService, "{1, 2, 3}.LastOf(v => v < 3)", 2);
+            Validate(epService, "{1, 2, 3}.except({1})", new object[]{2, 3});
+            Validate(epService, "{1, 2, 3}.intersect({2,3})", new object[]{2, 3});
+            Validate(epService, "{1, 2, 3}.firstOf()", 1);
+            Validate(epService, "{1, 2, 3}.firstOf(v => v / 2 = 1)", 2);
+            Validate(epService, "{1, 2, 3}.intersect({2, 3})", new object[]{2, 3});
+            Validate(epService, "{1, 2, 3}.lastOf()", 3);
+            Validate(epService, "{1, 2, 3}.lastOf(v => v < 3)", 2);
             Validate(epService, "{1, 2, 3, 2, 1}.leastFrequent()", 3);
             Validate(epService, "{1, 2, 3, 2, 1}.max()", 3);
             Validate(epService, "{1, 2, 3, 2, 1}.min()", 1);
             Validate(epService, "{1, 2, 3, 2, 1, 2}.mostFrequent()", 2);
-            Validate(epService, "{2, 3, 2, 1}.OrderBy()", new object[]{1, 2, 2, 3});
+            Validate(epService, "{2, 3, 2, 1}.orderBy()", new object[]{1, 2, 2, 3});
             Validate(epService, "{2, 3, 2, 1}.distinctOf()", new object[]{2, 3, 1});
             Validate(epService, "{2, 3, 2, 1}.Reverse()", new object[]{1, 2, 3, 2});
             Validate(epService, "{1, 2, 3}.sequenceEqual({1})", false);
             Validate(epService, "{1, 2, 3}.sequenceEqual({1, 2, 3})", true);
             Validate(epService, "{1, 2, 3}.sumOf()", 6);
             Validate(epService, "{1, 2, 3}.take(2)", new object[]{1, 2});
-            Validate(epService, "{1, 2, 3}.TakeLast(2)", new object[]{2, 3});
+            Validate(epService, "{1, 2, 3}.takeLast(2)", new object[]{2, 3});
             Validate(epService, "{1, 2, 3}.takeWhile(v => v < 3)", new object[]{1, 2});
             Validate(epService, "{1, 2, 3}.takeWhile((v,ind) => ind < 2)", new object[]{1, 2});
             Validate(epService, "{1, 2, -1, 4, 5, 6}.takeWhile((v,ind) => ind < 5 and v > 0)", new object[]{1, 2});
             Validate(epService, "{1, 2, 3}.takeWhileLast(v => v > 1)", new object[]{2, 3});
             Validate(epService, "{1, 2, 3}.takeWhileLast((v,ind) => ind < 2)", new object[]{2, 3});
             Validate(epService, "{1, 2, -1, 4, 5, 6}.takeWhileLast((v,ind) => ind < 5 and v > 0)", new object[]{4, 5, 6});
-            Validate(epService, "{1, 2, 3}.Union({4, 5})", new object[]{1, 2, 3, 4, 5});
+            Validate(epService, "{1, 2, 3}.union({4, 5})", new object[]{1, 2, 3, 4, 5});
             Validate(epService, "{1, 2, 3}.where(v => v != 2)", new object[]{1, 3});
         }
     

@@ -28,13 +28,6 @@ namespace com.espertech.esper.events.arr
         private readonly BeanEventPropertyGetter _nestedGetter;
         private readonly int _propertyIndex;
 
-        public static Object GetArrayValue(Object[] array, int propertyIndex, int index)
-        {
-            // If the oa does not contain the key, this is allowed and represented as null
-            Object value = array [propertyIndex];
-            return BaseNestableEventUtil.GetBNArrayValueAtIndexWithNullCheck(value, index);
-        }
-
         /// <summary>Ctor. </summary>
         /// <param name="propertyIndex">the property to look at</param>
         /// <param name="nestedGetter">the getter for the map entry</param>
@@ -58,7 +51,9 @@ namespace com.espertech.esper.events.arr
 
         public Object GetObjectArray(Object[] array)
         {
-            return GetArrayValue(array, _propertyIndex, _index);
+            // If the map does not contain the key, this is allowed and represented as null
+            Object value = array[_propertyIndex];
+            return BaseNestableEventUtil.GetBeanArrayValue(_nestedGetter, value, _index);
         }
 
         public bool IsObjectArrayExistsProperty(Object[] array)
@@ -69,7 +64,7 @@ namespace com.espertech.esper.events.arr
         public override Object Get(EventBean eventBean)
         {
             var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
-            return GetArrayValue(array, _propertyIndex, _index);
+            return GetObjectArray(array);
         }
 
         public override bool IsExistsProperty(EventBean eventBean)

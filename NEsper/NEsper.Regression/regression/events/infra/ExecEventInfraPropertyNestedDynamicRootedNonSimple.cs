@@ -55,7 +55,14 @@ namespace com.espertech.esper.regression.events.infra
             var inner = SupportBeanComplexProps.MakeDefaultBean();
             var beanTests = new[]{
                     new Pair<SupportMarkerInterface, ValueWithExistsFlag[]>(new SupportBeanDynRoot("xxx"), notExists),
-                    new Pair<SupportMarkerInterface, ValueWithExistsFlag[]>(new SupportBeanDynRoot(inner), AllExist(inner.GetIndexed(0), inner.GetIndexed(1), inner.ArrayProperty[1], inner.GetMapped("keyOne"), inner.GetMapped("keyTwo"), inner.MapProperty.Get("xOne"))),
+                    new Pair<SupportMarkerInterface, ValueWithExistsFlag[]>(new SupportBeanDynRoot(inner), AllExist(
+                        inner.GetIndexed(0), 
+                        inner.GetIndexed(1), 
+                        inner.ArrayProperty[1], 
+                        inner.GetMapped("keyOne"), 
+                        inner.GetMapped("keyTwo"), 
+                        inner.MapProperty.Get("xOne")
+                        )),
             };
             RunAssertion(epService, BEAN_TYPE.Name, FBEAN, null, beanTests, typeof(object));
     
@@ -68,7 +75,14 @@ namespace com.espertech.esper.regression.events.infra
             var mapOne = Collections.SingletonDataMap("item", mapNestedOne);
             var mapTests = new[]{
                     new Pair<Map, ValueWithExistsFlag[]>(Collections.EmptyDataMap, notExists),
-                    new Pair<Map, ValueWithExistsFlag[]>(mapOne, new[]{Exists(1), Exists(2), NotExists(), Exists(100), Exists(200), NotExists()}),
+                    new Pair<Map, ValueWithExistsFlag[]>(mapOne, new[] {
+                        Exists(1),
+                        Exists(2),
+                        NotExists(),
+                        Exists(100),
+                        Exists(200),
+                        NotExists()
+                    }),
             };
             RunAssertion(epService, MAP_TYPENAME, FMAP, null, mapTests, typeof(object));
     
@@ -86,7 +100,14 @@ namespace com.espertech.esper.regression.events.infra
                     new Pair<string, ValueWithExistsFlag[]>("", notExists),
                     new Pair<string, ValueWithExistsFlag[]>("<item>" +
                             "<indexed>1</indexed><indexed>2</indexed><mapped id=\"keyOne\">3</mapped><mapped id=\"keyTwo\">4</mapped>" +
-                            "</item>", new[]{Exists("1"), Exists("2"), NotExists(), Exists("3"), Exists("4"), NotExists()})
+                            "</item>", new[] {
+                        Exists("1"),
+                        Exists("2"),
+                        NotExists(),
+                        Exists("3"),
+                        Exists("4"),
+                        NotExists()
+                    })
             };
             RunAssertion(epService, XML_TYPENAME, FXML, XML_TO_VALUE, xmlTests, typeof(XmlNode));
     
@@ -103,7 +124,14 @@ namespace com.espertech.esper.regression.events.infra
             var avroTests = new[]{
                     new Pair<GenericRecord, ValueWithExistsFlag[]>(new GenericRecord(schema), notExists),
                     new Pair<GenericRecord, ValueWithExistsFlag[]>(datumOne, notExists),
-                    new Pair<GenericRecord, ValueWithExistsFlag[]>(datumTwo, new[]{Exists(1), Exists(2), NotExists(), Exists(3), Exists(4), NotExists()}),
+                    new Pair<GenericRecord, ValueWithExistsFlag[]>(datumTwo, new[] {
+                        Exists(1),
+                        Exists(2),
+                        NotExists(),
+                        Exists(3),
+                        Exists(4),
+                        NotExists()
+                    }),
             };
             RunAssertion(epService, AVRO_TYPENAME, FAVRO, null, avroTests, typeof(object));
         }
@@ -124,12 +152,12 @@ namespace com.espertech.esper.regression.events.infra
                     "exists(item?.indexed[1]?) as exists_indexed2, " +
                     "item?.arrayProperty[1]? as array, " +
                     "exists(item?.arrayProperty[1]?) as exists_array, " +
-                    "item?.Mapped('keyOne') as mapped1, " +
-                    "exists(item?.Mapped('keyOne')) as exists_mapped1, " +
-                    "item?.Mapped('keyTwo')? as mapped2,  " +
-                    "exists(item?.Mapped('keyTwo')?) as exists_mapped2,  " +
-                    "item?.MapProperty('xOne')? as map, " +
-                    "exists(item?.MapProperty('xOne')?) as exists_map " +
+                    "item?.mapped('keyOne') as mapped1, " +
+                    "exists(item?.mapped('keyOne')) as exists_mapped1, " +
+                    "item?.mapped('keyTwo')? as mapped2,  " +
+                    "exists(item?.mapped('keyTwo')?) as exists_mapped2,  " +
+                    "item?.mapProperty('xOne')? as map, " +
+                    "exists(item?.mapProperty('xOne')?) as exists_map " +
                     " from " + typename;
     
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
@@ -144,7 +172,7 @@ namespace com.espertech.esper.regression.events.infra
     
             foreach (var pair in tests) {
                 send.Invoke(epService, pair.First);
-                SupportEventInfra.AssertValuesMayConvert(listener.AssertOneGetNewAndReset(), propertyNames, (ValueWithExistsFlag[]) pair.Second, optionalValueConversion);
+                AssertValuesMayConvert(listener.AssertOneGetNewAndReset(), propertyNames, pair.Second, optionalValueConversion);
             }
     
             stmt.Dispose();

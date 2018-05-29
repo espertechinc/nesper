@@ -29,9 +29,9 @@ namespace com.espertech.esper.regression.events.bean
             configField.AccessorStyle = AccessorStyleEnum.PUBLIC;
             epService.EPAdministrator.Configuration.AddEventType(typeof(MyEventWithField).Name, typeof(MyEventWithField).AssemblyQualifiedName, configField);
             var eventField = new MyEventWithField();
-            eventField.otherEventsIterable = Collections.List(new OtherEvent("id1"));
-            eventField.otherEventsMap = Collections.SingletonMap("key", new OtherEvent("id2"));
-            eventField.otherEventsList = Collections.List(new OtherEvent("id3"));
+            eventField.OtherEventsIterable = Collections.List(new OtherEvent("id1"));
+            eventField.OtherEventsMap = Collections.SingletonMap("key", new OtherEvent("id2"));
+            eventField.OtherEventsList = Collections.List(new OtherEvent("id3"));
     
             var configCglib = new ConfigurationEventTypeLegacy();
             epService.EPAdministrator.Configuration.AddEventType(typeof(MyEventWithMethodWCGLIB).Name, typeof(MyEventWithMethodWCGLIB).AssemblyQualifiedName, configCglib);
@@ -48,7 +48,9 @@ namespace com.espertech.esper.regression.events.bean
         }
     
         private void TryAssertionIterable(EPServiceProvider epService, Type typeClass, Object @event) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select otherEventsIterable[0] as c0, OtherEventsMap('key') as c1, otherEventsList[0] as c2 from " + typeClass.Name);
+            var stmt = epService.EPAdministrator.CreateEPL(
+                "select OtherEventsIterable[0] as c0, OtherEventsMap('key') as c1, OtherEventsList[0] as c2 " + 
+                "from " + typeClass.Name);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -100,9 +102,9 @@ namespace com.espertech.esper.regression.events.bean
 
         public class MyEventWithField
         {
-            public IEnumerable<OtherEvent> otherEventsIterable;
-            public IDictionary<string, OtherEvent> otherEventsMap;
-            public IList<OtherEvent> otherEventsList;
+            public IEnumerable<OtherEvent> OtherEventsIterable;
+            public IDictionary<string, OtherEvent> OtherEventsMap;
+            public IList<OtherEvent> OtherEventsList;
         }
 
         public class OtherEvent

@@ -36,11 +36,11 @@ namespace com.espertech.esper.regression.events.avro
             var innerSchema = SchemaBuilder.Record(
                 "InnerSchema", TypeBuilder.Field("mymap", TypeBuilder.Map(TypeBuilder.StringType())));
             var recordSchema = SchemaBuilder.Record(
-                "InnerSchema", TypeBuilder.Field("i", innerSchema));
+                "OuterSchema", TypeBuilder.Field("i", innerSchema));
             var avro = new ConfigurationEventTypeAvro(recordSchema);
             epService.EPAdministrator.Configuration.AddEventTypeAvro("MyNestedMap", avro);
     
-            var stmt = epService.EPAdministrator.CreateEPL("select I.Mymap('x') as c0 from MyNestedMap");
+            var stmt = epService.EPAdministrator.CreateEPL("select i.mymap('x') as c0 from MyNestedMap");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     

@@ -20,8 +20,6 @@ using com.espertech.esper.supportregression.bean;
 
 using NUnit.Framework;
 
-using static NUnit.Framework.Assert;
-
 namespace com.espertech.esper.supportregression.util
 {
     public class SupportSpatialUtil
@@ -33,7 +31,7 @@ namespace com.espertech.esper.supportregression.util
                 BoundingBox box = rectangles[i];
                 SendRectangle(epService, "R" + box.ToString(), box.MinX, box.MinY, box.MaxX - box.MinX, box.MaxY - box.MinY);
                 var c0 = listener.AssertOneGetNewAndReset().Get("c0").ToString();
-                Assert.AreEqual("for box " + i, matches[i], c0);
+                Assert.AreEqual(matches[i], c0, "for box " + i);
             }
         }
     
@@ -115,16 +113,19 @@ namespace com.espertech.esper.supportregression.util
             return rows;
         }
     
-        public static void SendAssertSpatialAABB(EPServiceProvider epService, SupportUpdateListener listener, int numX, int numY, long deltaMSec) {
-            var start = PerformanceObserver.MilliTime;
-            for (var x = 0; x < numX; x++) {
-                for (var y = 0; y < numY; y++) {
-                    epService.EPRuntime.SendEvent(new SupportSpatialAABB("", x, y, 0.1, 0.1));
-                    listener.AssertOneGetNewAndReset();
-                }
-            }
-            var delta = DateTimeHelper.CurrentTimeMillis - start;
-            Assert.IsTrue(delta < deltaMSec, "Delta: " + delta);
+        public static void SendAssertSpatialAABB(EPServiceProvider epService, SupportUpdateListener listener, int numX, int numY, long deltaMSec)
+        {
+            var delta = PerformanceObserver.TimeMillis(
+                () => {
+                    for (var x = 0; x < numX; x++) {
+                        for (var y = 0; y < numY; y++) {
+                            epService.EPRuntime.SendEvent(new SupportSpatialAABB("", x, y, 0.1, 0.1));
+                            listener.AssertOneGetNewAndReset();
+                        }
+                    }
+                });
+
+            Assert.That(delta, Is.LessThan(deltaMSec));
         }
     }
 } // end of namespace

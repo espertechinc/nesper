@@ -386,13 +386,13 @@ namespace com.espertech.esper.regression.view
         [Test]
         public void TestInvalid()
         {
-            SupportMessageAssertUtil.TryInvalid(_epService, "select * from " + Name.Of<SupportBeanTimestamp>() + "#time_order(bump, 10 sec)",
+            SupportMessageAssertUtil.TryInvalid(_epService, "select * from " + Name.Clean<SupportBeanTimestamp>() + "#time_order(bump, 10 sec)",
             "Error starting statement: Error attaching view to event stream: Invalid parameter expression 0 for Time-Order view: Failed to validate view parameter expression 'bump': Property named 'bump' is not valid in any stream [");
 
-            SupportMessageAssertUtil.TryInvalid(_epService, "select * from " + Name.Of<SupportBeanTimestamp>() + "#time_order(10 sec)",
+            SupportMessageAssertUtil.TryInvalid(_epService, "select * from " + Name.Clean<SupportBeanTimestamp>() + "#time_order(10 sec)",
             "Error starting statement: Error attaching view to event stream: Time-Order view requires the expression supplying timestamp values, and a numeric or time period parameter for interval size [");
 
-            SupportMessageAssertUtil.TryInvalid(_epService, "select * from " + Name.Of<SupportBeanTimestamp>() + "#time_order(timestamp, abc)",
+            SupportMessageAssertUtil.TryInvalid(_epService, "select * from " + Name.Clean<SupportBeanTimestamp>() + "#time_order(timestamp, abc)",
             "Error starting statement: Error attaching view to event stream: Invalid parameter expression 1 for Time-Order view: Failed to validate view parameter expression 'abc': Property named 'abc' is not valid in any stream (did you mean 'Id'?) [");
         }
     

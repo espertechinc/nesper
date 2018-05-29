@@ -42,12 +42,12 @@ namespace com.espertech.esper.regression.script
         }
 
         private void RunAssertionQuoteEscape(EPServiceProvider epService) {
-            var eplSLComment = "create expression F(@params)[\n" +
+            var eplSLComment = "create expression F(params)[\n" +
                                   "  // I'am...\n" +
                                   "];";
             var resultOne = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(eplSLComment);
 
-            var eplMLComment = "create expression G(@params)[\n" +
+            var eplMLComment = "create expression G(params)[\n" +
                                   "  /* I'params am[] */" +
                                   "];";
             var resultTwo = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(eplMLComment);
@@ -187,6 +187,7 @@ namespace com.espertech.esper.regression.script
                 Assert.IsTrue(ex.Message.Contains("Unexpected exception executing script 'abc' for statement '"));
             }
 
+#if INVALID
             // execution problem
             epService.EPAdministrator.DestroyAllStatements();
             var listener = new SupportUpdateListener();
@@ -203,6 +204,7 @@ namespace com.espertech.esper.regression.script
                         "Unexpected exception in statement 'ABC': Non-array value provided to collection"),
                     "Message is: " + ex.Message);
             }
+#endif
 
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -228,7 +230,6 @@ namespace com.espertech.esper.regression.script
         }
 
         private void RunAssertionScripts(EPServiceProvider epService) {
-
             // test different return types
             TryReturnTypes(epService, "jscript");
 
@@ -291,7 +292,7 @@ namespace com.espertech.esper.regression.script
             epService.EPAdministrator.CreateEPL(epl);
 
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select Test('a') as c0 from SupportBean_S0").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select test('a') as c0 from SupportBean_S0").Events += listener.Update;
             listener.Reset();
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0".Split(','), new object[] {-1d});
@@ -314,13 +315,13 @@ namespace com.espertech.esper.regression.script
         }
 
         private void RunAssertionParserSelectNoArgConstant(EPServiceProvider epService) {
-            TryParseJS(epService, "\n\t  return 10.0;    \n\n\t\t", typeof(Object), 10.0);
-            TryParseJS(epService, "return 10.0;", typeof(Object), 10.0);
-            TryParseJS(epService, "return 5*5.0;", typeof(Object), 25.0);
-            TryParseJS(epService, "return \"abc\";", typeof(Object), "abc");
-            TryParseJS(epService, "return  \"abc\"     ;", typeof(Object), "abc");
-            TryParseJS(epService, "return 'def';", typeof(Object), "def");
-            TryParseJS(epService, "return  'def' ;", typeof(Object), "def");
+            TryParseJS(epService, "\n\t  return 10.0;    \n\n\t\t", typeof(object), 10.0);
+            TryParseJS(epService, "return 10.0;", typeof(object), 10.0);
+            TryParseJS(epService, "return 5*5.0;", typeof(object), 25.0);
+            TryParseJS(epService, "return \"abc\";", typeof(object), "abc");
+            TryParseJS(epService, "return  \"abc\"     ;", typeof(object), "abc");
+            TryParseJS(epService, "return 'def';", typeof(object), "def");
+            TryParseJS(epService, "return  'def' ;", typeof(object), "def");
         }
 
         private void RunAssertionJavaScriptStatelessReturnPassArgs(EPServiceProvider epService) {
@@ -337,7 +338,7 @@ namespace com.espertech.esper.regression.script
                 new object[] {new SupportBean("E1", 20), 6765.0},
             };
             TrySelect(
-                epService, "expression double jscript:abc(num) [ " + expression + " ]", "abc(IntPrimitive)", typeof(double?),
+                epService, "expression double jscript:abc(num) [ " + expression + " ]", "abc(IntPrimitive)", typeof(double),
                 testData);
 
             testData = new object[][] {
@@ -345,7 +346,7 @@ namespace com.espertech.esper.regression.script
                 new object[] {new SupportBean("E1", 6), 60.0}
             };
             TrySelect(
-                epService, "expression jscript:abc(myint) [ return myint * 10; ]", "abc(IntPrimitive)", typeof(Object), testData);
+                epService, "expression jscript:abc(myint) [ return myint * 10; ]", "abc(IntPrimitive)", typeof(object), testData);
         }
 
         private void TryVoidReturnType(EPServiceProvider epService, string dialect) {
@@ -357,7 +358,7 @@ namespace com.espertech.esper.regression.script
                 new object[] {new SupportBean("E1", 20), null},
                 new object[] {new SupportBean("E1", 10), null},
             };
-            TrySelect(epService, expression, "mysetter()", typeof(Object), testData);
+            TrySelect(epService, expression, "mysetter()", typeof(object), testData);
 
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -382,11 +383,10 @@ namespace com.espertech.esper.regression.script
         }
 
         private void TryPassVariable(EPServiceProvider epService, string dialect) {
-
             object[][] testData;
             string expression;
 
-            epService.EPAdministrator.CreateEPL("create variable long THRESHOLD = 100");
+            epService.EPAdministrator.CreateEPL("create variable int THRESHOLD = 100");
 
             expression = "expression long " + dialect + ":thresholdAdder(numToAdd, th) [ return th + numToAdd; ]";
             testData = new object[][] {
@@ -415,7 +415,7 @@ namespace com.espertech.esper.regression.script
                 new object[] {new SupportBean("E1", 20), 21},
                 new object[] {new SupportBean("E1", 10), 11},
             };
-            TrySelect(epService, expression, "callIt(sb)", typeof(int?), testData);
+            TrySelect(epService, expression, "callIt(sb)", typeof(int), testData);
 
             epService.EPAdministrator.DestroyAllStatements();
         }
@@ -430,7 +430,7 @@ namespace com.espertech.esper.regression.script
                 $"]");
 
             var stmt = epService.EPAdministrator.CreateEPL(
-                expression + " select callIt() as val0, callIt().TheString as val1 from SupportBean as sb");
+                expression + " select callIt() as val0, callIt().GetTheString() as val1 from SupportBean as sb");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             Assert.AreEqual(typeof(SupportBean), stmt.EventType.GetPropertyType("val0"));
@@ -451,11 +451,11 @@ namespace com.espertech.esper.regression.script
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("val0"));
+            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("val0"));
 
             epService.EPRuntime.SendEvent(new SupportBean());
             EPAssertionUtil.AssertProps(
-                listener.AssertOneGetNewAndReset(), "val0,val1".Split(','), new object[] {9, 5});
+                listener.AssertOneGetNewAndReset(), "val0,val1".Split(','), new object[] {9, DayOfWeek.Thursday});
 
             stmt.Dispose();
 
@@ -467,7 +467,7 @@ namespace com.espertech.esper.regression.script
 
             epService.EPRuntime.SendEvent(new SupportBean());
             EPAssertionUtil.AssertProps(
-                listener.AssertOneGetNewAndReset(), "val0,val1".Split(','), new object[] {9, 5});
+                listener.AssertOneGetNewAndReset(), "val0,val1".Split(','), new object[] {9, DayOfWeek.Thursday});
 
             stmtTwo.Dispose();
         }
@@ -533,7 +533,7 @@ namespace com.espertech.esper.regression.script
             epService.EPRuntime.SendEvent(new SupportBean());
             var outEvent = listener.AssertOneGetNewAndReset();
             foreach (var col in Collections.List("callOne()", "callTwo(1)", "callThree(1,2)")) {
-                Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType(col));
+                Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType(col));
                 Assert.AreEqual(1, outEvent.Get(col));
             }
 
@@ -580,7 +580,12 @@ namespace com.espertech.esper.regression.script
         }
 
         private void TrySelect(
-            EPServiceProvider epService, string scriptPart, string selectExpr, Type expectedType, object[][] testdata) {
+            EPServiceProvider epService, 
+            string scriptPart, 
+            string selectExpr, 
+            Type expectedType, 
+            object[][] testdata)
+        {
             var stmt = epService.EPAdministrator.CreateEPL(
                 scriptPart +
                 " select " + selectExpr + " as val from SupportBean as sb");
@@ -600,7 +605,7 @@ namespace com.espertech.esper.regression.script
             stmt.Dispose();
         }
 
-        private void TryParseJS(EPServiceProvider epService, string js, Type type, Object value) {
+        private void TryParseJS(EPServiceProvider epService, string js, Type type, object value) {
             var stmt = epService.EPAdministrator.CreateEPL(
                 "expression jscript:getResultOne [" +
                 js +
@@ -651,9 +656,17 @@ namespace com.espertech.esper.regression.script
             stmtSelect.Events += listener.Update;
 
             epService.EPRuntime.SendEvent(new SupportBean());
-            var coll = (ICollection<Map>) listener.AssertOneGetNewAndReset().Get("c0");
+            var coll = listener.AssertOneGetNewAndReset().Get("c0")
+                .UnwrapEnumerable<object>()
+                .Select(item => item.UnwrapStringDictionary())
+                .ToArray();
+
             EPAssertionUtil.AssertPropsPerRow(
-                coll.ToArray(), "id".Split(','), new object[][] {new object[] {"id1"}, new object[] {"id3"}});
+                coll, "id".Split(','), 
+                new object[][] {
+                    new object[] {"id1"},
+                    new object[] {"id3"}
+                });
 
             stmtSelect.Dispose();
             stmtScript.Dispose();

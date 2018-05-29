@@ -40,7 +40,7 @@ namespace com.espertech.esper.regression.epl.other
             configuration.AddEventType("Temperature", typeof(SupportTemperatureBean));
     
             configuration.AddPlugInSingleRowFunction(
-                "sleepme", typeof(SupportStaticMethodLib).FullName, "sleep", ValueCacheEnum.ENABLED);
+                "sleepme", typeof(SupportStaticMethodLib), "Sleep", ValueCacheEnum.ENABLED);
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -83,9 +83,10 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionChainedInstance(EPServiceProvider epService) {
     
             var listener = new SupportUpdateListener();
-            epService.EPAdministrator.CreateEPL("select " +
-                    "LevelZero.LevelOne.LevelTwoValue as val0 " +
-                    "from SupportBean").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL(
+                "select " +
+                "LevelZero.GetLevelOne().GetLevelTwoValue() as val0 " +
+                "from SupportBean").Events += listener.Update;
     
             LevelOne.Field = "v1";
             epService.EPRuntime.SendEvent(new SupportBean());
@@ -100,7 +101,7 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionChainedStatic(EPServiceProvider epService) {
     
-            var subexp = "SupportChainTop.Make().GetChildOne(\"abc\",1).GetChildTwo(\"def\").Text";
+            var subexp = "SupportChainTop.Make().GetChildOne(\"abc\",1).GetChildTwo(\"def\").GetText()";
             var statementText = "select " + subexp + " from SupportBean";
             var stmtOne = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
@@ -123,7 +124,7 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionEscape(EPServiceProvider epService) {
-            var statementText = "select SupportStaticMethodLib.`join`(abcstream) as value from SupportBean abcstream";
+            var statementText = "select SupportStaticMethodLib.`Join`(abcstream) as value from SupportBean abcstream";
             var stmtOne = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
             stmtOne.Events += listener.Update;
@@ -139,7 +140,7 @@ namespace com.espertech.esper.regression.epl.other
             var statementText = "insert into ABCStream select SupportStaticMethodLib.MyMapFunc() as mymap, SupportStaticMethodLib.MyArrayFunc() as myindex from SupportBean";
             var stmtOne = epService.EPAdministrator.CreateEPL(statementText);
     
-            statementText = "select Mymap('A') as v0, myindex[1] as v1 from ABCStream";
+            statementText = "select mymap('A') as v0, myindex[1] as v1 from ABCStream";
             var stmtTwo = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
             stmtTwo.Events += listener.Update;
@@ -154,7 +155,7 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionPattern(EPServiceProvider epService) {
             var className = typeof(SupportStaticMethodLib).FullName;
-            var statementText = "select * from pattern [my@event =" + typeof(SupportBean).FullName + "(" +
+            var statementText = "select * from pattern [myevent =" + typeof(SupportBean).FullName + "(" +
                     className + ".DelimitPipe(TheString) = '|a|')]";
             var stmt = epService.EPAdministrator.CreateEPL(statementText);
             var listener = new SupportUpdateListener();
@@ -166,7 +167,7 @@ namespace com.espertech.esper.regression.epl.other
             Assert.IsTrue(listener.IsInvoked);
     
             stmt.Dispose();
-            statementText = "select * from pattern [my@event =" + typeof(SupportBean).FullName + "(" +
+            statementText = "select * from pattern [myevent =" + typeof(SupportBean).FullName + "(" +
                     className + ".DelimitPipe(null) = '|<null>|')]";
             stmt = epService.EPAdministrator.CreateEPL(statementText);
             listener = new SupportUpdateListener();
@@ -210,10 +211,10 @@ namespace com.espertech.esper.regression.epl.other
             var startTime = PerformanceObserver.MilliTime;
             var listener = new SupportUpdateListener();
     
-            var statementText = "select PerformanceObserver.MilliTime " + STREAM_MDB_LEN5;
+            var statementText = "select com.espertech.esper.compat.PerformanceObserver.GetTimeMillis() " + STREAM_MDB_LEN5;
             var stmt = epService.EPAdministrator.CreateEPL(statementText);
             stmt.Events += listener.Update;
-            var result = (long) CreateStatementAndGet(epService, listener, statementText, "PerformanceObserver.MilliTime");
+            var result = (long) CreateStatementAndGet(epService, listener, statementText, "com.espertech.esper.compat.PerformanceObserver.GetTimeMillis()");
             var finishTime = PerformanceObserver.MilliTime;
             Assert.IsTrue(startTime <= result);
             Assert.IsTrue(result <= finishTime);
@@ -236,7 +237,7 @@ namespace com.espertech.esper.regression.epl.other
             try {
                 stmt = epService.EPAdministrator.CreateEPL(statementText);
                 Assert.Fail();
-            } catch (EPStatementException e) {
+            } catch (EPStatementException) {
                 // Expected
             }
         }
@@ -244,10 +245,10 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionSingleParameterOM(EPServiceProvider epService)
         {
             var model = new EPStatementObjectModel();
-            model.SelectClause = SelectClause.Create().Add(Expressions.StaticMethod(Name.Of<BitWriter>(), "Write", 7), "value");
+            model.SelectClause = SelectClause.Create().Add(Expressions.StaticMethod(Name.Clean<BitWriter>(), "Write", 7), "value");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarketDataBean).FullName).AddView("length", Expressions.Constant(5)));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
-            var statementText = "select " + Name.Of<BitWriter>() + ".ToBinaryString(7) as value" + STREAM_MDB_LEN5;
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
+            var statementText = "select " + Name.Clean<BitWriter>() + ".Write(7) as value" + STREAM_MDB_LEN5;
     
             Assert.AreEqual(statementText.Trim(), model.ToEPL());
             var statement = epService.EPAdministrator.Create(model);
@@ -261,9 +262,9 @@ namespace com.espertech.esper.regression.epl.other
         }
     
         private void RunAssertionSingleParameterCompile(EPServiceProvider epService) {
-            var statementText = "select " + Name.Of<BitWriter>() + ".Write(7) as value" + STREAM_MDB_LEN5;
+            var statementText = "select " + Name.Clean<BitWriter>() + ".Write(7) as value" + STREAM_MDB_LEN5;
             var model = epService.EPAdministrator.CompileEPL(statementText);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             Assert.AreEqual(statementText.Trim(), model.ToEPL());
             var statement = epService.EPAdministrator.Create(model);
@@ -279,10 +280,10 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionSingleParameter(EPServiceProvider epService) {
             var listener = new SupportUpdateListener();
     
-            var statementText = "select " + Name.Of<BitWriter>() + ".Write(7) " + STREAM_MDB_LEN5;
+            var statementText = "select " + Name.Clean<BitWriter>() + ".Write(7) " + STREAM_MDB_LEN5;
             var stmt = epService.EPAdministrator.CreateEPL(statementText);
             stmt.Events += listener.Update;
-            var result = AssertStatementAndGetProperty(epService, listener, true, Name.Of<BitWriter>() + ".Write(7)");
+            var result = AssertStatementAndGetProperty(epService, listener, true, Name.Clean<BitWriter>() + ".Write(7)");
             Assert.AreEqual(BitWriter.Write(7), result[0]);
             stmt.Dispose();
     
@@ -312,7 +313,7 @@ namespace com.espertech.esper.regression.epl.other
             statementText = "select System.Math.Max(2,3d) " + STREAM_MDB_LEN5;
             stmt = epService.EPAdministrator.CreateEPL(statementText);
             stmt.Events += listener.Update;
-            Assert.AreEqual(3d, AssertStatementAndGetProperty(epService, listener, true, "System.Math.Max(2,3.0)")[0]);
+            Assert.AreEqual(3d, AssertStatementAndGetProperty(epService, listener, true, "System.Math.Max(2,3.0d)")[0]);
             stmt.Dispose();
     
             statementText = "select Convert.ToInt64(\"123\")" + STREAM_MDB_LEN5;
@@ -342,7 +343,7 @@ namespace com.espertech.esper.regression.epl.other
             Assert.AreEqual("S0", first.StatementName);
             Assert.AreEqual(epService.URI, first.EngineURI);
             Assert.AreEqual(-1, first.ContextPartitionId);
-            Assert.AreEqual("staticMethodWithContext", first.FunctionName);
+            Assert.AreEqual("StaticMethodWithContext", first.FunctionName);
             stmt.Dispose();
         }
     
@@ -370,20 +371,20 @@ namespace com.espertech.esper.regression.epl.other
             Assert.AreEqual(Convert.ToString(44d), result[0]);
             stmt.Dispose();
     
-            statementText = "select Convert.ToString(Math.Pow(price,int?.ValueOf(\"2\"))) " + STREAM_MDB_LEN5;
+            statementText = "select Convert.ToString(Math.Pow(price,Convert.ToInt32(\"2\"))) " + STREAM_MDB_LEN5;
             stmt = epService.EPAdministrator.CreateEPL(statementText);
             stmt.Events += listener.Update;
-            result = AssertStatementAndGetProperty(epService, listener, true, "Convert.ToString(Math.Pow(price,int?.ValueOf(\"2\")))");
+            result = AssertStatementAndGetProperty(epService, listener, true, "Convert.ToString(Math.Pow(price,Convert.ToInt32(\"2\")))");
             Assert.AreEqual(Convert.ToString(100d), result[0]);
             stmt.Dispose();
         }
     
         private void RunAssertionMultipleMethodInvocations(EPServiceProvider epService) {
             var listener = new SupportUpdateListener();
-            var statementText = "select Math.max(2d,price), Math.max(volume,4d)" + STREAM_MDB_LEN5;
+            var statementText = "select Math.Max(2d,price), Math.Max(volume,4d) " + STREAM_MDB_LEN5;
             var stmt = epService.EPAdministrator.CreateEPL(statementText);
             stmt.Events += listener.Update;
-            var props = AssertStatementAndGetProperty(epService, listener, true, "Math.max(2.0,price)", "Math.max(volume,4.0)");
+            var props = AssertStatementAndGetProperty(epService, listener, true, "Math.Max(2.0d,price)", "Math.Max(volume,4.0d)");
             Assert.AreEqual(10d, props[0]);
             Assert.AreEqual(4d, props[1]);
             stmt.Dispose();
@@ -402,7 +403,7 @@ namespace com.espertech.esper.regression.epl.other
             statement.Dispose();
     
             // group-by
-            statementText = "select symbol, sum(price)" + STREAM_MDB_LEN5 + "group by String.ValueOf(symbol)";
+            statementText = "select symbol, sum(price)" + STREAM_MDB_LEN5 + "group by Convert.ToString(symbol)";
             statement = epService.EPAdministrator.CreateEPL(statementText);
             statement.Events += listener.Update;
             Assert.AreEqual(10d, AssertStatementAndGetProperty(epService, listener, true, "sum(price)")[0]);
@@ -544,7 +545,11 @@ namespace com.espertech.esper.regression.epl.other
     
         public class LevelZero
         {
-            public static LevelOne LevelOne => new LevelOne();
+            public static LevelOne GetLevelOne()
+            {
+                return new LevelOne();
+            }
+
         }
     
         public class LevelOne {

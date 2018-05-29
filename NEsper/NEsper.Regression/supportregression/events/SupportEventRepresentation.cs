@@ -8,7 +8,7 @@
 
 using com.espertech.esper.plugin;
 
-namespace com.espertech.esper.regression.events
+namespace com.espertech.esper.supportregression.events
 {
     public class SupportEventRepresentation : PlugInEventRepresentation
     {

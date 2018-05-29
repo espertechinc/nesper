@@ -96,8 +96,7 @@ namespace com.espertech.esper.events.bean
 
         private object GetBeanPropInternal(object @object, int index)
         {
-            try
-            {
+            try {
                 var value = _method.Invoke(@object, null) as Array;
                 if (value == null)
                     return null;
@@ -105,20 +104,19 @@ namespace com.espertech.esper.events.bean
                     return null;
                 return value.GetValue(index);
             }
-            catch (InvalidCastException e)
-            {
+            catch (InvalidCastException e) {
                 throw PropertyUtility.GetMismatchException(_method, @object, e);
             }
-            catch (TargetInvocationException e)
-            {
+            catch (TargetInvocationException e) {
                 throw PropertyUtility.GetInvocationTargetException(_method, e);
             }
-            catch (MemberAccessException e)
-            {
+            catch (TargetException e) {
+                throw PropertyUtility.GetGenericException(_method, e);
+            }
+            catch (MemberAccessException e) {
                 throw PropertyUtility.GetIllegalAccessException(_method, e);
             }
-            catch (ArgumentException e)
-            {
+            catch (ArgumentException e) {
                 throw PropertyUtility.GetIllegalArgumentException(_method, e);
             }
         }

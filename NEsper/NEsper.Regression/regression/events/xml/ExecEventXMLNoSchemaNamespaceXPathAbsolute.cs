@@ -20,7 +20,7 @@ namespace com.espertech.esper.regression.events.xml
         public override void Configure(Configuration configuration) {
             var desc = new ConfigurationEventTypeXMLDOM();
             desc.AddXPathProperty("symbol_a", "//m0:symbol", XPathResultType.String);
-            desc.AddXPathProperty("symbol_b", "//*[local-Name(.) = 'getQuote' and namespace-Uri(.) = 'http://services.samples/xsd']", XPathResultType.String);
+            desc.AddXPathProperty("symbol_b", "//*[local-name(.) = 'getQuote' and namespace-uri(.) = 'http://services.samples/xsd']", XPathResultType.String);
             desc.AddXPathProperty("symbol_c", "/m0:getQuote/m0:request/m0:symbol", XPathResultType.String);
             desc.RootElementName = "getQuote";
             desc.DefaultNamespace = "http://services.samples/xsd";
@@ -37,7 +37,11 @@ namespace com.espertech.esper.regression.events.xml
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            var xml = "<m0:getQuote xmlns:m0=\"http://services.samples/xsd\"><m0:request><m0:symbol>IBM</m0:symbol></m0:request></m0:getQuote>";
+            var xml = "<m0:getQuote xmlns:m0=\"http://services.samples/xsd\">" +
+                      "<m0:request>" +
+                      "<m0:symbol>IBM</m0:symbol>" +
+                      "</m0:request>" +
+                      "</m0:getQuote>";
             //string xml = "<getQuote><request><symbol>IBM</symbol></request></getQuote>";
             var doc = new XmlDocument();
             doc.LoadXml(xml);
@@ -60,7 +64,7 @@ namespace com.espertech.esper.regression.events.xml
             Assert.AreEqual("IBM", theEvent.Get("symbol_b"));
             Assert.AreEqual("IBM", theEvent.Get("symbol_c"));
             Assert.AreEqual("IBM", theEvent.Get("symbol_d"));
-            Assert.AreEqual("", theEvent.Get("symbol_e"));    // should be empty string as we are doing absolute XPath
+            Assert.AreEqual(null, theEvent.Get("symbol_e"));    // should be empty string as we are doing absolute XPath
         }
     }
 } // end of namespace

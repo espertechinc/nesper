@@ -24,10 +24,10 @@ namespace com.espertech.esper.regression.expr.datetime
         }
     
         public override void Run(EPServiceProvider epService) {
-            string[] fields = "val0,val1,val2,val3,val4".Split(',');
+            string[] fields = "val0,val1".Split(',');
             string eplFragment = "select " +
-                    "utildate.Set('hour', 1).Set('minute', 2).Set('second', 3) as val0," +
-                    "longdate.Set('hour', 1).Set('minute', 2).Set('second', 3) as val1" +
+                    "utildate.set('hour', 1).set('minute', 2).set('second', 3) as val0," +
+                    "longdate.set('hour', 1).set('minute', 2).set('second', 3) as val1" +
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
@@ -44,8 +44,8 @@ namespace com.espertech.esper.regression.expr.datetime
     
             stmtFragment.Dispose();
             eplFragment = "select " +
-                    "utildate.Set('hour', 1).Set('minute', 2).Set('second', 3).ToCalendar() as val0," +
-                    "longdate.Set('hour', 1).Set('minute', 2).Set('second', 3).ToCalendar() as val1" +
+                    "utildate.set('hour', 1).set('minute', 2).set('second', 3).toCalendar() as val0," +
+                    "longdate.set('hour', 1).set('minute', 2).set('second', 3).toCalendar() as val1" +
                     " from SupportDateTime";
             stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             stmtFragment.Events += listener.Update;
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regression.expr.datetime
             });
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, SupportDateTime.GetArrayCoerced(expectedTime, "cal", "cal", "cal", "cal", "cal"));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, SupportDateTime.GetArrayCoerced(expectedTime, "cal", "cal"));
         }
     }
 } // end of namespace

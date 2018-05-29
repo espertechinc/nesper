@@ -43,13 +43,13 @@ namespace com.espertech.esper.regression.expr.enummethod
             });
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value("E1,1", "E3,12", "E2,5"));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val"), "E1,E2,E3".Split(','), new object[]{1, 5, 12});
+            EPAssertionUtil.AssertPropsMap(listener.AssertOneGetNewAndReset().Get("val").UnwrapStringDictionary(), "E1,E2,E3".Split(','), new object[]{1, 5, 12});
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value("E1,1", "E3,12", "E2,12", "E1,2"));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val"), "E1,E2,E3".Split(','), new object[]{2, 12, 12});
+            EPAssertionUtil.AssertPropsMap(listener.AssertOneGetNewAndReset().Get("val").UnwrapStringDictionary(), "E1,E2,E3".Split(','), new object[]{2, 12, 12});
     
             epService.EPRuntime.SendEvent(new SupportBean_ST0_Container(Collections.SingletonList(new SupportBean_ST0(null, null))));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val"), "E1,E2,E3".Split(','), new object[]{null, null, null});
+            EPAssertionUtil.AssertPropsMap(listener.AssertOneGetNewAndReset().Get("val").UnwrapStringDictionary(), "E1,E2,E3".Split(','), new object[]{null, null, null});
             stmtFragment.Dispose();
     
             // test scalar-coll with lambda
@@ -60,19 +60,25 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "from SupportCollection";
             EPStatement stmtLambda = epService.EPAdministrator.CreateEPL(eplLambda);
             stmtLambda.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtLambda.EventType, fields, new Type[]{typeof(Map)});
+            LambdaAssertionUtil.AssertTypes(stmtLambda.EventType, fields, new Type[] {
+                typeof(IDictionary<object, object>)
+            });
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E2,E1,E3"));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), "E1,E2,E3".Split(','), new object[]{1, 2, 3});
+            EPAssertionUtil.AssertPropsMap(
+                listener.AssertOneGetNewAndReset().Get("val0").UnwrapDictionary(),
+                "E1,E2,E3".Split(','), new object[]{1, 2, 3});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1"));
-            EPAssertionUtil.AssertPropsMap((Map) listener.AssertOneGetNewAndReset().Get("val0"), "E1".Split(','), new object[]{1});
+            EPAssertionUtil.AssertPropsMap(
+                listener.AssertOneGetNewAndReset().Get("val0").UnwrapDictionary(),
+                "E1".Split(','), new object[]{1});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString(null));
             Assert.IsNull(listener.AssertOneGetNewAndReset().Get("val0"));
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString(""));
-            Assert.AreEqual(0, ((Map) listener.AssertOneGetNewAndReset().Get("val0")).Count);
+            Assert.AreEqual(0, listener.AssertOneGetNewAndReset().Get("val0").Unwrap<object>().Count);
         }
     }
 } // end of namespace

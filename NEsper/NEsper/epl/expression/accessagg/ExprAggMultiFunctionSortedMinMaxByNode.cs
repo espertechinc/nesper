@@ -259,7 +259,7 @@ namespace com.espertech.esper.epl.expression.accessagg
             if (PositionalParams.Length == 0)
                 throw new ExprValidationException("Missing the sort criteria expression");
 
-            var message = "For tables columns, the aggregation function requires the 'Sorted(*)' declaration";
+            var message = "For tables columns, the aggregation function requires the 'sorted(*)' declaration";
             if (!_sortedwin && !_ever) throw new ExprValidationException(message);
             if (validationContext.StreamTypeService.StreamNames.Length == 0)
                 throw new ExprValidationException("'Sorted' requires that the event type is provided");

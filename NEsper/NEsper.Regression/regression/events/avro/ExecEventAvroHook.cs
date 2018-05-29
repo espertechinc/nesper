@@ -60,14 +60,18 @@ namespace com.espertech.esper.regression.events.avro
             Schema schema = SchemaBuilder.Record("MyEventSchema", TypeBuilder.Field("isodate", TypeBuilder.StringType(
                 TypeBuilder.Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_ARRAY_VALUE))));
             epService.EPAdministrator.Configuration.AddEventTypeAvro("MyEvent", new ConfigurationEventTypeAvro(schema));
-    
+            epService.EPAdministrator.Configuration.AddEventType<MyEventWithDateTimeOffset>();
+            epService.EPAdministrator.Configuration.AddEventType<MyEventWithDateTimeEx>();
+
             // invalid without explicit conversion
-            SupportMessageAssertUtil.TryInvalid(epService,
-                "insert into MyEvent(isodate) select zdt from MyEventWithZonedDateTime",
-                "Error starting statement: Invalid assignment of column 'isodate' of type 'java.time.ZonedDateTime' to event property 'isodate' typed as 'java.lang.CharSequence', column and parameter types mismatch");
-    
+            SupportMessageAssertUtil.TryInvalid(
+                epService,
+                "insert into MyEvent(isodate) select dto from MyEventWithDateTimeOffset",
+                "Error starting statement: Invalid assignment of column 'isodate' of type '" + Name.Of<DateTimeOffset>(false) + "' to event property 'isodate' typed as '" + Name.Of<char[]>(false) + "', column and parameter types mismatch"
+                );
+
             // with hook
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("insert into MyEvent(isodate) select ldt from MyEventWithLocalDateTime");
+            var stmt = epService.EPAdministrator.CreateEPL("insert into MyEvent(isodate) select dtx from MyEventWithDateTimeEx");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -79,9 +83,12 @@ namespace com.espertech.esper.regression.events.avro
         }
     
         /// <summary>Schema-from-Type</summary>
-        private void RunAssertionSchemaFromClass(EPServiceProvider epService) {
-    
-            string epl = EventRepresentationChoice.AVRO.GetAnnotationText() + "insert into MyEventOut select " + GetType().FullName + ".MakeLocalDateTime() as isodate from SupportBean as e1";
+        private void RunAssertionSchemaFromClass(EPServiceProvider epService)
+        {
+
+            string epl = EventRepresentationChoice.AVRO.GetAnnotationText() +
+                         "insert into MyEventOut select " + GetType().FullName + 
+                         ".MakeDateTime() as isodate from SupportBean as e1";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

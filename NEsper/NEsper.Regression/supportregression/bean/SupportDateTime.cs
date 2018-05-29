@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.client.annotation;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.supportregression.bean

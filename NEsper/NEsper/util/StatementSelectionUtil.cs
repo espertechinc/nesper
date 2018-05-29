@@ -137,7 +137,7 @@ namespace com.espertech.esper.util
             {
                 throw new EPException(
                     "Invalid expression, expected a bool return type for expression and received '" +
-                    evaluator.ReturnType.GetTypeNameFullyQualPretty() +
+                    evaluator.ReturnType.GetCleanName() +
                     "' for expression '" + ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(expression) + "'");
             }
 

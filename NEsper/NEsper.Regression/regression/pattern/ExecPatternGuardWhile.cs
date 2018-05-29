@@ -53,7 +53,7 @@ namespace com.espertech.esper.regression.pattern
             string text = "select * from pattern [(every b=" + EVENT_B_CLASS + ") while (b.id!=\"B3\")]";
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.CreateWildcard();
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Expression guardExpr = Expressions.Neq("b.id", "B3");
             PatternExpr every = Patterns.Every(Patterns.Filter(Filter.Create(EVENT_B_CLASS), "b"));
             PatternExpr patternGuarded = Patterns.WhileGuard(every, guardExpr);

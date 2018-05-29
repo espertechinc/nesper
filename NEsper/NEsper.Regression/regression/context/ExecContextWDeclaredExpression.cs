@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.context
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("expression getLabelThree { context.label } " +
                     "context MyCtx " +
-                    "select GetLabelOne() as c0, GetLabelTwo() as c1, GetLabelThree() as c2 from SupportBean").Events += listener.Update;
+                    "select getLabelOne() as c0, getLabelTwo() as c1, getLabelThree() as c2 from SupportBean").Events += listener.Update;
     
             TryAssertionExpression(epService, listener);
     

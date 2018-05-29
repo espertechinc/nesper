@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.IO;
 using com.espertech.esper.spatial.quadtree.mxcif;
 
 namespace com.espertech.esper.spatial.quadtree.mxciffilterindex
@@ -18,6 +19,6 @@ namespace com.espertech.esper.spatial.quadtree.mxciffilterindex
             Value = value;
         }
 
-        public L Value { get; set; }
+        internal L Value;
     }
 } // end of namespace

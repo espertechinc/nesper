@@ -60,9 +60,9 @@ namespace com.espertech.esper.regression.epl.other
                     "c0 as f0, " +
                     "c0.col1 as f1, " +
                     "c1 as f2, " +
-                    "c1.LastOf().col1 as f3, " +
+                    "c1.lastOf().col1 as f3, " +
                     "c1 as f4, " +
-                    "c1.LastOf().col1 as f5 " +
+                    "c1.lastOf().col1 as f5 " +
                     "from DStream").Events += listenerProps.Update;
     
             object eventOne = SendEvent(epService, rep, "E1");
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regression.epl.other
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL("select " +
                     "c0 as f0, " +
-                    "c0.LastOf().col1 as f1 " +
+                    "c0.lastOf().col1 as f1 " +
                     "from DStream").Events += listener.Update;
     
             var eventOne = new object[]{"E1", null};

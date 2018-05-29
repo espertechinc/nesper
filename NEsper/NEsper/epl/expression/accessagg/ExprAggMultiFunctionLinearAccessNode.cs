@@ -228,10 +228,12 @@ namespace com.espertech.esper.epl.expression.accessagg
                 return new LinearAggregationFactoryDesc(factory, containedType, scalarCollectionComponentType);
             }
 
-            var stateKey = new AggregationStateKeyWStream(streamNum, containedType,
-                AggregationStateTypeWStream.DATAWINDOWACCESS_LINEAR, new ExprNode[0], optionalFilter);
+            var stateKey = new AggregationStateKeyWStream(
+                streamNum, containedType,
+                AggregationStateTypeWStream.DATAWINDOWACCESS_LINEAR, 
+                new ExprNode[0], optionalFilter);
 
-            var optionalFilterEval = optionalFilter == null ? null : optionalFilter.ExprEvaluator;
+            var optionalFilterEval = optionalFilter?.ExprEvaluator;
             var stateFactory = validationContext.EngineImportService.AggregationFactoryFactory.MakeLinear(
                 validationContext.StatementExtensionSvcContext, this, streamNum, optionalFilterEval);
             var factoryX = new ExprAggMultiFunctionLinearAccessNodeFactoryAccess(this, accessor, accessorResultType,
@@ -247,7 +249,7 @@ namespace com.espertech.esper.epl.expression.accessagg
             ExprValidationContext validationContext)
         {
             var message = "For tables columns, the " + stateType.GetName().ToLowerInvariant() +
-                          " aggregation function requires the 'Window(*)' declaration";
+                          " aggregation function requires the 'window(*)' declaration";
             if (stateType != AggregationStateType.WINDOW) throw new ExprValidationException(message);
             if (childNodes.Length == 0 || childNodes.Length > 1 || !(childNodes[0] is ExprWildcard))
                 throw new ExprValidationException(message);

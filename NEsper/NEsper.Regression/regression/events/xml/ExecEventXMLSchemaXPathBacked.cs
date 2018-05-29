@@ -11,6 +11,7 @@ using System.Xml.XPath;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.container;
+using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util.support;
@@ -55,7 +56,7 @@ namespace com.espertech.esper.regression.events.xml
     
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
                     new EventPropertyDescriptor("nested1", typeof(XmlNode), null, false, false, false, false, !xpath),
-                    new EventPropertyDescriptor("prop4", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("prop4", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("nested3", typeof(XmlNode), null, false, false, false, false, !xpath),
                     new EventPropertyDescriptor("customProp", typeof(double?), null, false, false, false, false, false),
             }, type.PropertyDescriptors);
@@ -64,7 +65,7 @@ namespace com.espertech.esper.regression.events.xml
                     "select nested1 as nodeProp," +
                             "prop4 as nested1Prop," +
                             "nested1.prop2 as nested2Prop," +
-                            "nested3.Nested4('a').prop5[1] as complexProp," +
+                            "nested3.nested4('a').prop5[1] as complexProp," +
                             "nested1.nested2.prop3[2] as indexedProp," +
                             "customProp," +
                             "prop4.attr2 as attrOneProp," +
@@ -77,13 +78,13 @@ namespace com.espertech.esper.regression.events.xml
             SupportEventTypeAssertionUtil.AssertConsistency(type);
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
                     new EventPropertyDescriptor("nodeProp", typeof(XmlNode), null, false, false, false, false, !xpath),
-                    new EventPropertyDescriptor("nested1Prop", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("nested1Prop", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("nested2Prop", typeof(bool?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("complexProp", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("complexProp", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("indexedProp", typeof(int?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("customProp", typeof(double?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("attrOneProp", typeof(bool?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("attrTwoProp", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("attrTwoProp", typeof(string), typeof(char), false, false, true, false, false),
             }, type.PropertyDescriptors);
     
             XmlDocument eventDoc = SupportXML.SendDefaultEvent(epService.EPRuntime, "test");
@@ -91,7 +92,7 @@ namespace com.espertech.esper.regression.events.xml
             Assert.IsNotNull(updateListener.LastNewData);
             EventBean theEvent = updateListener.LastNewData[0];
     
-            Assert.AreSame(eventDoc.DocumentElement.ChildNodes.Item(1), theEvent.Get("nodeProp"));
+            Assert.AreSame(eventDoc.DocumentElement.ChildNodes.Item(0), theEvent.Get("nodeProp"));
             Assert.AreEqual("SAMPLE_V6", theEvent.Get("nested1Prop"));
             Assert.AreEqual(true, theEvent.Get("nested2Prop"));
             Assert.AreEqual("SAMPLE_V8", theEvent.Get("complexProp"));

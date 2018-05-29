@@ -12,11 +12,9 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.time;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
-using com.espertech.esperio;
 using com.espertech.esperio.csv;
 using com.espertech.esperio.support.util;
 
@@ -105,10 +103,10 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
     	public void TestRun()
     	{
-    		_coordinator.Coordinate(new CSVInputAdapter(_timestampsNotLooping));
-    		_coordinator.Coordinate(new CSVInputAdapter(_timestampsLooping));
-    		_coordinator.Coordinate(new CSVInputAdapter(_noTimestampsNotLooping));
-    		_coordinator.Coordinate(new CSVInputAdapter(_noTimestampsLooping));
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _timestampsNotLooping));
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _timestampsLooping));
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _noTimestampsNotLooping));
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _noTimestampsLooping));
     
     		// TimeInMillis is 0
     		Assert.IsFalse(_listener.GetAndClearIsInvoked());
@@ -188,7 +186,7 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
     	public void TestRunTillNull()
     	{
-    		_coordinator.Coordinate(new CSVInputAdapter(_epService, _timestampsNotLooping));
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _epService, _timestampsNotLooping));
     		_coordinator.Start();
     
     		// TimeInMillis is 100
@@ -228,8 +226,8 @@ namespace com.espertech.esperio.regression.adapter
     	public void TestNotUsingEngineThread()
     	{
     		_coordinator = new AdapterCoordinatorImpl(_epService, false);
-    		_coordinator.Coordinate(new CSVInputAdapter(_epService, _noTimestampsNotLooping));
-    		_coordinator.Coordinate(new CSVInputAdapter(_epService, _timestampsNotLooping));
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _epService, _noTimestampsNotLooping));
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _epService, _timestampsNotLooping));
     
     		long startTime = Environment.TickCount;
     		_coordinator.Start();
@@ -251,8 +249,8 @@ namespace com.espertech.esperio.regression.adapter
     	public void TestExternalTimer()
     	{
     		_coordinator = new AdapterCoordinatorImpl(_epService, false, true, false);
-    		_coordinator.Coordinate(new CSVInputAdapter(_epService, _noTimestampsNotLooping));
-    		_coordinator.Coordinate(new CSVInputAdapter(_epService, _timestampsNotLooping));
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _epService, _noTimestampsNotLooping));
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _epService, _timestampsNotLooping));
     
     		long startTime = Environment.TickCount;
     		_coordinator.Start();

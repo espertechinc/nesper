@@ -17,6 +17,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util;
@@ -193,8 +194,8 @@ namespace com.espertech.esper.regression.events.infra
             foreach (var property in fields)
             {
                 Assert.AreEqual(
-                    property.StartsWith("Exists") ? typeof(bool?) : typeof(int?),
-                    TypeHelper.GetBoxedType(statement.EventType.GetPropertyType(property)));
+                    property.StartsWith("exists") ? typeof(bool?) : typeof(int?),
+                    statement.EventType.GetPropertyType(property).GetBoxedType());
             }
 
             send.Invoke(epService, 1, 2, 3, 4);

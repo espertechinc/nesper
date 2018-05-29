@@ -32,8 +32,14 @@ namespace com.espertech.esper.regression.spatial
             configuration.EngineDefaults.Logging.IsEnableQueryPlan = true;
         }
     
-        public override void Run(EPServiceProvider epService) {
-            foreach (var clazz in Collections.List(typeof(SupportSpatialAABB), typeof(SupportSpatialEventRectangle), typeof(SupportSpatialDualAABB))) {
+        public override void Run(EPServiceProvider epService)
+        {
+            var clazzes = Collections.List(
+                typeof(SupportSpatialAABB), 
+                typeof(SupportSpatialEventRectangle), 
+                typeof(SupportSpatialDualAABB));
+
+            foreach (var clazz in clazzes) {
                 epService.EPAdministrator.Configuration.AddEventType(clazz);
             }
     
@@ -42,13 +48,13 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunAssertionFilterIndexTypeAssertion(EPServiceProvider epService) {
-            string eplNoIndex = "select * from SupportSpatialEventRectangle(Rectangle(0, 0, 1, 1).Intersects(Rectangle(x, y, width, height)))";
+            string eplNoIndex = "select * from SupportSpatialEventRectangle(rectangle(0, 0, 1, 1).intersects(rectangle(x, y, width, height)))";
             SupportFilterHelper.AssertFilterMulti(epService, eplNoIndex, "SupportSpatialEventRectangle", new SupportFilterItem[][] {
                 new []{SupportFilterItem.BoolExprFilterItem}
             });
     
-            string eplIndexed = "expression myindex {Mxcifquadtree(0, 0, 100, 100)}" +
-                    "select * from SupportSpatialEventRectangle(Rectangle(10, 20, 5, 6, filterindex:myindex).Intersects(Rectangle(x, y, width, height)))";
+            string eplIndexed = "expression myindex {mxcifquadtree(0, 0, 100, 100)}" +
+                    "select * from SupportSpatialEventRectangle(rectangle(10, 20, 5, 6, filterindex:myindex).intersects(rectangle(x, y, width, height)))";
             EPStatement statement = SupportFilterHelper.AssertFilterMulti(epService, eplIndexed, "SupportSpatialEventRectangle", new SupportFilterItem[][] {
                 new []{new SupportFilterItem("x,y,width,height/myindex/mxcifquadtree/0.0,0.0,100.0,100.0,4.0,20.0", FilterOperator.ADVANCED_INDEX)}
             });
@@ -65,12 +71,12 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunAssertionFilterIndexPerfPattern(EPServiceProvider epService) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("expression myindex {Mxcifquadtree(0, 0, 100, 100)}" +
-                    "select * from pattern [every p=SupportSpatialEventRectangle -> SupportSpatialAABB(Rectangle(p.x, p.y, p.width, p.height, filterindex:myindex).Intersects(Rectangle(x, y, width, height)))]");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL("expression myindex {mxcifquadtree(0, 0, 100, 100)}" +
+                    "select * from pattern [every p=SupportSpatialEventRectangle -> SupportSpatialAABB(rectangle(p.x, p.y, p.width, p.height, filterindex:myindex).intersects(rectangle(x, y, width, height)))]");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            SendSpatialEventRectanges(epService, 100, 50);
+            SendSpatialEventRectangles(epService, 100, 50);
             SendAssertSpatialAABB(epService, listener, 100, 50, 1000);
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -81,7 +87,7 @@ namespace com.espertech.esper.regression.spatial
             Assert.AreEqual(expected, listener.IsInvokedAndReset());
         }
     
-        internal static void SendSpatialEventRectanges(EPServiceProvider epService, int numX, int numY) {
+        internal static void SendSpatialEventRectangles(EPServiceProvider epService, int numX, int numY) {
             for (int x = 0; x < numX; x++) {
                 for (int y = 0; y < numY; y++) {
                     epService.EPRuntime.SendEvent(new SupportSpatialEventRectangle(Convert.ToString(x) + "_" + Convert.ToString(y), (double) x, (double) y, 0.1, 0.2));

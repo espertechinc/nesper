@@ -81,7 +81,7 @@ namespace com.espertech.esper.util
             if (coercer != null)
                 return coercer;
 
-            throw new ArgumentException("Cannot coerce to number subtype " + targetType.FullName);
+            throw new ArgumentException("Cannot coerce to number subtype " + targetType.GetCleanName());
         }
 
         /// <summary>

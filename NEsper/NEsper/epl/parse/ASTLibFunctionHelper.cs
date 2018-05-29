@@ -15,6 +15,7 @@ using Antlr4.Runtime.Tree;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.declexpr;
@@ -111,6 +112,7 @@ namespace com.espertech.esper.epl.parse
         }
 
         public static void HandleLibFunc(
+            IContainer container,
             CommonTokenStream tokenStream,
             EsperEPL2GrammarParser.LibFunctionContext ctx,
             ConfigurationInformation configurationInformation,
@@ -126,7 +128,6 @@ namespace com.espertech.esper.epl.parse
             StatementSpecRaw statementSpec,
             VariableService variableService)
         {
-
             var model = GetModel(ctx, tokenStream);
             var duckType = configurationInformation.EngineDefaults.Expression.IsDuckTyping;
             var udfCache = configurationInformation.EngineDefaults.Expression.IsUdfCache;
@@ -140,8 +141,12 @@ namespace com.espertech.esper.epl.parse
                 var chainSpec = GetLibFunctionChainSpec(model.ChainElements[0], astExprNodeMap);
 
                 var declaredNodeX = ExprDeclaredHelper.GetExistsDeclaredExpr(
-                    model.OptionalClassIdent, Collections.GetEmptyList<ExprNode>(), expressionDeclarations.Expressions,
-                    exprDeclaredService, contextDescriptor);
+                    container,
+                    model.OptionalClassIdent, 
+                    Collections.GetEmptyList<ExprNode>(), 
+                    expressionDeclarations.Expressions,
+                    exprDeclaredService, 
+                    contextDescriptor);
                 if (declaredNodeX != null)
                 {
                     var exprNode = new ExprDotNodeImpl(Collections.SingletonList(chainSpec), duckType, udfCache);
@@ -261,7 +266,11 @@ namespace com.espertech.esper.epl.parse
 
             // try declared or alias expression
             var declaredNode = ExprDeclaredHelper.GetExistsDeclaredExpr(
-                firstFunction, chain[0].Parameters, expressionDeclarations.Expressions, exprDeclaredService,
+                container,
+                firstFunction, 
+                chain[0].Parameters, 
+                expressionDeclarations.Expressions, 
+                exprDeclaredService,
                 contextDescriptor);
             if (declaredNode != null)
             {

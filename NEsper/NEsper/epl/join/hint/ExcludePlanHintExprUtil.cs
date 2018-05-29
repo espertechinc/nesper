@@ -34,6 +34,12 @@ namespace com.espertech.esper.epl.join.hint
 
         public static ObjectArrayEventType GetOAExpressionType(IContainer container)
         {
+            lock (container) {
+                if (!container.Has(OAExpressionTypeName)) {
+                    RegisterExpressionType(container);
+                }
+            }
+
             return container.Resolve<ObjectArrayEventType>(OAExpressionTypeName);
         }
 

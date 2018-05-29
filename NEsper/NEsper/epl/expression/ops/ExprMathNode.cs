@@ -60,7 +60,7 @@ namespace com.espertech.esper.epl.expression.ops
                 if (!childType.IsNumeric())
                 {
                     throw new ExprValidationException(
-                        string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", childType.FullName));
+                        string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", Name.Clean(childType)));
                 }
             }
     

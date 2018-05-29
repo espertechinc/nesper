@@ -61,35 +61,40 @@ namespace com.espertech.esper.events.bean
 
         public object GetBeanPropInternal(Object @object, Object key)
         {
-            try
-            {
-                var result = _method.Invoke(@object, (Object[])null);
-                if (result == null)
-                {
+            try {
+                var result = _method.Invoke(@object, (Object[]) null);
+                if (result == null) {
                     return null;
                 }
-                if (result is Map)
-                {
-                    return ((Map)result).Get(key);
+
+                if (result is Map) {
+                    return ((Map) result).Get(key);
                 }
-                if (result.GetType().IsGenericDictionary())
-                {
-                    return MagicMarker.NewMagicDictionary<object, object>(result).Get(key);
+
+                var resultType = result.GetType();
+                if (resultType.IsGenericDictionary()) {
+                    return MagicMarker
+                        .GetDictionaryFactory(resultType)
+                        .Invoke(result)
+                        .Get(key);
                 }
 
                 return null;
             }
-            catch (InvalidCastException e)
-            {
+            catch (PropertyAccessException) {
+                throw;
+            }
+            catch (InvalidCastException e) {
                 throw PropertyUtility.GetMismatchException(_method, @object, e);
             }
-            catch (TargetInvocationException e)
-            {
+            catch (TargetInvocationException e) {
                 throw PropertyUtility.GetInvocationTargetException(_method, e);
             }
-            catch (ArgumentException e)
-            {
+            catch (ArgumentException e) {
                 throw PropertyUtility.GetIllegalArgumentException(_method, e);
+            }
+            catch (Exception e) {
+                throw PropertyUtility.GetAccessExceptionMethod(_method, e);
             }
         }
 

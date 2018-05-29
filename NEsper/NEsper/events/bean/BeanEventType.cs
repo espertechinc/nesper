@@ -15,6 +15,7 @@ using System.Reflection;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.events.property;
@@ -33,6 +34,7 @@ namespace com.espertech.esper.events.bean
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        private readonly IContainer _container;
         private readonly EventTypeMetadata _metadata;
         private readonly Type _clazz;
         private readonly EventAdapterService _eventAdapterService;
@@ -64,14 +66,16 @@ namespace com.espertech.esper.events.bean
         private IDictionary<string, EventPropertyGetter> _propertyGetterCodegeneratedCache;
 
         /// <summary>
-        ///     Constructor takes a class as an argument.
+        /// Constructor takes a class as an argument.
         /// </summary>
-        /// <param name="clazz">is the class of a java bean or other POJO</param>
-        /// <param name="optionalLegacyDef">optional configuration supplying legacy event type information</param>
-        /// <param name="eventAdapterService">factory for event beans and event types</param>
+        /// <param name="container">The container.</param>
         /// <param name="metadata">event type metadata</param>
         /// <param name="eventTypeId">type id</param>
+        /// <param name="clazz">is the class of a java bean or other POJO</param>
+        /// <param name="eventAdapterService">factory for event beans and event types</param>
+        /// <param name="optionalLegacyDef">optional configuration supplying legacy event type information</param>
         public BeanEventType(
+            IContainer container,
             EventTypeMetadata metadata,
             int eventTypeId,
             Type clazz,
@@ -343,12 +347,12 @@ namespace com.espertech.esper.events.bean
             {
                 if (_clazz.IsSerializable)
                 {
-                    return new BeanEventBeanSerializableCopyMethod(this, _eventAdapterService);
+                    return new BeanEventBeanSerializableCopyMethod(_container, this, _eventAdapterService);
                 }
 
                 if (_clazz.IsInterface)
                 {
-                    return new BeanEventBeanSerializableCopyMethod(this, _eventAdapterService);
+                    return new BeanEventBeanSerializableCopyMethod(_container, this, _eventAdapterService);
                 }
 
                 return null;
@@ -367,7 +371,7 @@ namespace com.espertech.esper.events.bean
             {
                 if (_clazz.IsSerializable)
                 {
-                    return new BeanEventBeanSerializableCopyMethod(this, _eventAdapterService);
+                    return new BeanEventBeanSerializableCopyMethod(_container, this, _eventAdapterService);
                 }
 
                 throw new EPException("Configured copy-method for class '" + _clazz.Name + " not found by name '" + _copyMethodName + "' and type is not Serializable");

@@ -69,17 +69,16 @@ namespace com.espertech.esper.events.bean
 
         public Object GetBeanPropInternal(Object @object, Object key)
         {
-            try
-            {
+            try {
                 var result = _fastMethod.Invoke(@object, null);
-                if (result == null)
-                {
+                if (result == null) {
                     return null;
                 }
-                if (result is Map)
-                {
+
+                if (result is Map) {
                     return ((Map) result).Get(key);
                 }
+
                 if (result.GetType().IsGenericDictionary()) {
                     return MagicMarker
                         .GetDictionaryFactory(result.GetType())
@@ -89,13 +88,17 @@ namespace com.espertech.esper.events.bean
 
                 return null;
             }
-            catch (InvalidCastException e)
-            {
+            catch (PropertyAccessException) {
+                throw;
+            }
+            catch (InvalidCastException e) {
                 throw PropertyUtility.GetMismatchException(_fastMethod.Target, @object, e);
             }
-            catch (TargetInvocationException e)
-            {
+            catch (TargetInvocationException e) {
                 throw PropertyUtility.GetInvocationTargetException(_fastMethod.Target, e);
+            }
+            catch (Exception e) {
+                throw PropertyUtility.GetAccessExceptionMethod(_fastMethod.Target, e);
             }
         }
 

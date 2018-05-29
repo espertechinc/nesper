@@ -36,13 +36,13 @@ namespace com.espertech.esper.regression.db
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
     
-            Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("myint"));
+            Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("myint"));
     
             SendSupportBeanEvent(epService, 10);
-            Assert.AreEqual("10", listener.AssertOneGetNewAndReset().Get("myint"));
+            Assert.AreEqual(10, listener.AssertOneGetNewAndReset().Get("myint"));
     
             SendSupportBeanEvent(epService, 80);
-            Assert.AreEqual("80", listener.AssertOneGetNewAndReset().Get("myint"));
+            Assert.AreEqual(80, listener.AssertOneGetNewAndReset().Get("myint"));
         }
     
         private void SendSupportBeanEvent(EPServiceProvider epService, int intPrimitive) {

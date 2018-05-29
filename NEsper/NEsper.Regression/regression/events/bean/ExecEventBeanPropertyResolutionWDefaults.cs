@@ -25,6 +25,11 @@ namespace com.espertech.esper.regression.events.bean
 
     public class ExecEventBeanPropertyResolutionWDefaults : RegressionExecution
     {
+        public override void Configure(Configuration configuration)
+        {
+            configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_SENSITIVE;
+        }
+
         public override void Run(EPServiceProvider epService)
         {
             RunAssertionReservedKeywordEscape(epService);
@@ -183,7 +188,7 @@ namespace com.espertech.esper.regression.events.bean
             try
             {
                 epService.EPAdministrator.CreateEPL(
-                    "select MyProperty from " + typeof(SupportBeanDupProperty).FullName);
+                    "select MyProPerty from " + typeof(SupportBeanDupProperty).FullName);
                 Assert.Fail();
             }
             catch (EPException)
@@ -197,7 +202,7 @@ namespace com.espertech.esper.regression.events.bean
             epService.EPAdministrator.Configuration.AddEventType(typeof(LocalEventWithEnum));
             epService.EPAdministrator.Configuration.AddImport(typeof(LocalEventEnum));
             epService.EPAdministrator.CreateEPL(
-                "select * from LocalEventWithEnum(localEventEnum=LocalEventEnum.`NEW`)");
+                "select * from LocalEventWithEnum(LocalEventEnum=LocalEventEnum.`NEW`)");
         }
 
         private void TryInvalidControlCharacter(EventBean eventBean)

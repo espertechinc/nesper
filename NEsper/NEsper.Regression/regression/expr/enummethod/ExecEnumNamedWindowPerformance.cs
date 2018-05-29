@@ -48,16 +48,16 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "  x => (select * from Win where IntPrimitive = x.p00)" +
                     "}" +
                     "select " +
-                    "Q(st0).where(x => TheString = key0) as val0, " +
-                    "Q(st0).where(x => TheString = key0) as val1, " +
-                    "Q(st0).where(x => TheString = key0) as val2, " +
-                    "Q(st0).where(x => TheString = key0) as val3, " +
-                    "Q(st0).where(x => TheString = key0) as val4, " +
-                    "Q(st0).where(x => TheString = key0) as val5, " +
-                    "Q(st0).where(x => TheString = key0) as val6, " +
-                    "Q(st0).where(x => TheString = key0) as val7, " +
-                    "Q(st0).where(x => TheString = key0) as val8, " +
-                    "Q(st0).where(x => TheString = key0) as val9 " +
+                    "q(st0).where(x => TheString = key0) as val0, " +
+                    "q(st0).where(x => TheString = key0) as val1, " +
+                    "q(st0).where(x => TheString = key0) as val2, " +
+                    "q(st0).where(x => TheString = key0) as val3, " +
+                    "q(st0).where(x => TheString = key0) as val4, " +
+                    "q(st0).where(x => TheString = key0) as val5, " +
+                    "q(st0).where(x => TheString = key0) as val6, " +
+                    "q(st0).where(x => TheString = key0) as val7, " +
+                    "q(st0).where(x => TheString = key0) as val8, " +
+                    "q(st0).where(x => TheString = key0) as val9 " +
                     "from SupportBean_ST0 st0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regression.expr.enummethod
                     Assert.AreEqual(1050, bean.IntPrimitive);
                 }
             }
-            long delta = DateTimeHelper.CurrentTimeMillis - start;
+            long delta = PerformanceObserver.MilliTime - start;
             Assert.IsTrue(delta < 1000, "Delta = " + delta);
     
             stmt.Dispose();
@@ -88,16 +88,16 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "  x => Win(TheString = x.key0).where(y => IntPrimitive = x.p00)" +
                     "}" +
                     "select " +
-                    "Q(st0) as val0, " +
-                    "Q(st0) as val1, " +
-                    "Q(st0) as val2, " +
-                    "Q(st0) as val3, " +
-                    "Q(st0) as val4, " +
-                    "Q(st0) as val5, " +
-                    "Q(st0) as val6, " +
-                    "Q(st0) as val7, " +
-                    "Q(st0) as val8, " +
-                    "Q(st0) as val9 " +
+                    "q(st0) as val0, " +
+                    "q(st0) as val1, " +
+                    "q(st0) as val2, " +
+                    "q(st0) as val3, " +
+                    "q(st0) as val4, " +
+                    "q(st0) as val5, " +
+                    "q(st0) as val6, " +
+                    "q(st0) as val7, " +
+                    "q(st0) as val8, " +
+                    "q(st0) as val9 " +
                     "from SupportBean_ST0 st0";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regression.expr.enummethod
                     Assert.AreEqual(1050, bean.IntPrimitive);
                 }
             }
-            long delta = DateTimeHelper.CurrentTimeMillis - start;
+            long delta = PerformanceObserver.MilliTime - start;
             Assert.IsTrue(delta < 1000, "Delta = " + delta);
     
             // This will create a single dispatch

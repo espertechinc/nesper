@@ -24,6 +24,7 @@ namespace com.espertech.esper.events.bean
     /// </summary>
     public class BeanEventAdapter : BeanEventTypeFactory
     {
+        private readonly IContainer _container;
         private readonly IDictionary<Type, BeanEventType> _typesPerObject;
         private readonly ILockable _typesPerObjectLock;
         private readonly EventAdapterService _eventAdapterService;
@@ -36,17 +37,19 @@ namespace com.espertech.esper.events.bean
         /// <summary>
         /// Ctor.
         /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="typesPerObject">shareable collection that this adapter writes tofor caching bean types per class</param>
         /// <param name="eventAdapterService">factory for event beans and event types</param>
         /// <param name="eventTypeIdGenerator">The event type id generator.</param>
         public BeanEventAdapter(
+            IContainer container,
             IDictionary<Type, BeanEventType> typesPerObject,
             EventAdapterService eventAdapterService,
-            EventTypeIdGenerator eventTypeIdGenerator,
-            ILockManager lockManager)
+            EventTypeIdGenerator eventTypeIdGenerator)
         {
+            _container = container;
             _typesPerObject = typesPerObject;
-            _typesPerObjectLock = lockManager.CreateLock(GetType());
+            _typesPerObjectLock = _container.LockManager().CreateLock(GetType());
             _typeToLegacyConfigs = new Dictionary<String, ConfigurationEventTypeLegacy>();
             _defaultPropertyResolutionStyle = PropertyResolutionStyle.DEFAULT;
             _eventAdapterService = eventAdapterService;
@@ -66,24 +69,24 @@ namespace com.espertech.esper.events.bean
         /// <value>style to set</value>
         public AccessorStyleEnum DefaultAccessorStyle
         {
-            get { return _defaultAccessorStyle; }
-            set { _defaultAccessorStyle = value; }
+            get => _defaultAccessorStyle;
+            set => _defaultAccessorStyle = value;
         }
 
         /// <summary>Set the additional mappings for legacy classes. </summary>
         /// <value>legacy class information</value>
         public IDictionary<string, ConfigurationEventTypeLegacy> TypeToLegacyConfigs
         {
-            get { return _typeToLegacyConfigs; }
-            set { _typeToLegacyConfigs.PutAll(value); }
+            get => _typeToLegacyConfigs;
+            set => _typeToLegacyConfigs.PutAll(value);
         }
 
         /// <summary>Gets the default property resolution style for class properties. </summary>
         /// <value>resolution style</value>
         public PropertyResolutionStyle DefaultPropertyResolutionStyle
         {
-            get { return _defaultPropertyResolutionStyle; }
-            set { _defaultPropertyResolutionStyle = value; }
+            get => _defaultPropertyResolutionStyle;
+            set => _defaultPropertyResolutionStyle = value;
         }
 
         /// <summary>Creates a new EventType object for a object of the specified class if this is the first time the class has been seen. Else uses a cached EventType instance, i.e. client classes do not need to cache. </summary>
@@ -97,13 +100,22 @@ namespace com.espertech.esper.events.bean
         /// <summary>
         /// Creates a new EventType object for a object of the specified class if this is the first time the class has been seen. Else uses a cached EventType instance, i.e. client classes do not need to cache.
         /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="name">is the name</param>
         /// <param name="clazz">is the class of the object.</param>
         /// <param name="isPreconfiguredStatic">if from static engine config</param>
         /// <param name="isPreconfigured">if configured before use</param>
         /// <param name="isConfigured">if the class is a configuration value, false if discovered</param>
-        /// <returns>EventType implementation for bean class</returns>
-        public BeanEventType CreateBeanType(String name, Type clazz, bool isPreconfiguredStatic, bool isPreconfigured, bool isConfigured)
+        /// <returns>
+        /// EventType implementation for bean class
+        /// </returns>
+        /// <exception cref="ArgumentNullException">clazz - Null value passed as class</exception>
+        public BeanEventType CreateBeanType(
+            String name, 
+            Type clazz, 
+            bool isPreconfiguredStatic, 
+            bool isPreconfigured, 
+            bool isConfigured)
         {
             if (clazz == null)
             {
@@ -132,7 +144,8 @@ namespace com.espertech.esper.events.bean
 
                 int typeId = _eventTypeIdGenerator.GetTypeId(name);
                 EventTypeMetadata metadata = EventTypeMetadata.CreateBeanType(name, clazz, isPreconfiguredStatic, isPreconfigured, isConfigured, TypeClass.APPLICATION);
-                eventType = new BeanEventType(metadata, typeId, clazz, _eventAdapterService, legacyDef);
+                eventType = new BeanEventType(
+                    _container, metadata, typeId, clazz, _eventAdapterService, legacyDef);
                 _typesPerObject.Put(clazz, eventType);
             }
 

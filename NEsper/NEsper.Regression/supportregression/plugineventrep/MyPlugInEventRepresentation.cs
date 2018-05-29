@@ -50,7 +50,7 @@ namespace com.espertech.esper.supportregression.plugineventrep
             IDictionary<String, EventPropertyDescriptor> metadata = new LinkedHashMap<String, EventPropertyDescriptor>();
             foreach (String prop in typeProps)
             {
-                metadata.Put(prop, new EventPropertyDescriptor(prop, typeof(string), null, false, false, false, false, false));
+                metadata.Put(prop, new EventPropertyDescriptor(prop, typeof(string), typeof(char), false, false, true, false, false));
             }
     
             // save type for testing dynamic event object reflection

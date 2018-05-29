@@ -47,8 +47,8 @@ namespace com.espertech.esper.regression.expr.datetime
     
             // try event as input
             var configBean = new ConfigurationEventTypeLegacy();
-            configBean.StartTimestampPropertyName = "LongdateStart";
-            configBean.EndTimestampPropertyName = "LongdateEnd";
+            configBean.StartTimestampPropertyName = "longdateStart";
+            configBean.EndTimestampPropertyName = "longdateEnd";
             epService.EPAdministrator.Configuration.AddEventType("SupportTimeStartEndA", typeof(SupportTimeStartEndA), configBean);
     
             stmt.Dispose();

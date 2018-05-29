@@ -16,35 +16,39 @@ namespace com.espertech.esper.spatial.quadtree.mxciffilterindex
 {
     public class MXCIFQuadTreeFilterIndexCount
     {
-        public static int Count(MXCIFQuadTree<Object> quadTree)
+        public static int Count<TL>(MXCIFQuadTree<TL> quadTree)
         {
             return Count(quadTree.Root);
         }
 
-        private static int Count(MXCIFQuadTreeNode<Object> node)
+        private static int Count<TL>(MXCIFQuadTreeNode<TL> node)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object> leaf)
+            if (node is MXCIFQuadTreeNodeLeaf<TL> leaf)
             {
-                return CountData(leaf.Data);
+                return CountData<TL>(leaf.Data);
             }
 
-            MXCIFQuadTreeNodeBranch<Object> branch = (MXCIFQuadTreeNodeBranch<Object>) node;
-            return Count(branch.Nw) + Count(branch.Ne) + Count(branch.Sw) + Count(branch.Se) + CountData(branch.Data);
+            var branch = (MXCIFQuadTreeNodeBranch<TL>) node;
+            return Count(branch.Nw) +
+                   Count(branch.Ne) + 
+                   Count(branch.Sw) + 
+                   Count(branch.Se) + 
+                   CountData<TL>(branch.Data);
         }
 
-        private static int CountData(Object data)
+        private static int CountData<TL>(Object data)
         {
             if (data == null)
             {
                 return 0;
             }
 
-            if (data is XYWHRectangleWValue<object>)
+            if (data is XYWHRectangleWValue<TL>)
             {
                 return CountCallbacks(data);
             }
 
-            var coll = (ICollection<XYWHRectangleWValue<object>>) data;
+            var coll = (ICollection<XYWHRectangleWValue<TL>>) data;
             int count = 0;
             foreach (var p in coll)
             {

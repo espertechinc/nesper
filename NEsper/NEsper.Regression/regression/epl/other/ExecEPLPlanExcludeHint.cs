@@ -115,7 +115,7 @@ namespace com.espertech.esper.regression.epl.other
             TryAssertionJoin(epService, "@Hint('Exclude_plan(to_streamnum=1)')" + eplWithWhereEquals, planEquals);
             TryAssertionJoin(epService, "@Hint('Exclude_plan(to_streamnum = 1, from_streamnum = 0)')" + eplWithWhereEquals, planEquals);
             TryAssertionJoin(epService, "@Hint('Exclude_plan(opname=\"equals\")')" + eplWithWhereEquals, planFullTableScan);
-            TryAssertionJoin(epService, "@Hint('Exclude_plan(exprs.AnyOf(v=> v=\"p00\"))')" + eplWithWhereEquals, planFullTableScan);
+            TryAssertionJoin(epService, "@Hint('Exclude_plan(exprs.anyOf(v=> v=\"p00\"))')" + eplWithWhereEquals, planFullTableScan);
             TryAssertionJoin(epService, "@Hint('Exclude_plan(\"p10\" in (exprs))')" + eplWithWhereEquals, planFullTableScan);
     
             // test greater (relop)
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regression.epl.other
     
             // invalid return type
             TryInvalid(epService, "@Hint('Exclude_plan(1)') " + epl,
-                    "Error starting statement: Expression provided for hint EXCLUDE_PLAN must return a bool value [@Hint('Exclude_plan(1)') select * from S0 unidirectional, S1#keepall]");
+                    "Error starting statement: Expression provided for hint EXCLUDE_PLAN must return a boolean value [@Hint('Exclude_plan(1)') select * from S0 unidirectional, S1#keepall]");
     
             // invalid expression
             TryInvalid(epService, "@Hint('Exclude_plan(dummy = 1)') " + epl,

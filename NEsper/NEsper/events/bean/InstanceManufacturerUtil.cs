@@ -12,7 +12,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
-
+using com.espertech.esper.util;
 using XLR8.CGLib;
 
 namespace com.espertech.esper.events.bean
@@ -111,7 +111,7 @@ namespace com.espertech.esper.events.bean
             }
             catch (EngineImportException ex)
             {
-                throw new ExprValidationException("Failed to find a suitable constructor for type '" + targetClass.Name + "': " + ex.Message, ex);
+                throw new ExprValidationException("Failed to find a suitable constructor for type '" + targetClass.GetCleanName() + "': " + ex.Message, ex);
             }
         }
     }

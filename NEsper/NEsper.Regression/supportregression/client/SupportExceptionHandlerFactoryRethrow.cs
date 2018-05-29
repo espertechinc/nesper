@@ -19,12 +19,17 @@ namespace com.espertech.esper.supportregression.client
             return Handle;
         }
 
-        public void Handle(ExceptionHandlerContext context)
+        public void Handle(object sender, ExceptionHandlerEventArgs args)
         {
-            throw new ApplicationException(string.Format("Unexpected exception in statement '{0}': {1}",
-                context.StatementName, 
-                context.Exception.Message), 
-                context.Exception);
+            if (!args.IsInboundPoolException) {
+                var context = args.Context;
+                throw new ApplicationException(
+                    string.Format(
+                        "Unexpected exception in statement '{0}': {1}",
+                        context.StatementName,
+                        context.Exception.Message),
+                    context.Exception);
+            }
         }
     }
 }

@@ -16,6 +16,13 @@ namespace com.espertech.esper.compat.container
         /// <summary>
         /// Resolves an object within a container.
         /// </summary>
+        /// <param name="serviceType">Type of the service.</param>
+        /// <returns></returns>
+        object Resolve(Type serviceType);
+
+        /// <summary>
+        /// Resolves an object within a container.
+        /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         T Resolve<T>();
@@ -76,7 +83,7 @@ namespace com.espertech.esper.compat.container
             where T : class;
 
         bool Has(string name);
-
+        bool Has(Type serviceType);
         bool Has<T>();
 
         bool DoesNotHave<T>();

@@ -44,7 +44,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
         }
     
         private void RunAssertionUpdateNonPropertySet(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("increaseIntCopyDouble", GetType().FullName, "IncreaseIntCopyDouble");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("increaseIntCopyDouble", GetType(), "IncreaseIntCopyDouble");
             epService.EPAdministrator.CreateEPL("create window MyWindowUNP#keepall as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindowUNP select * from SupportBean");
             EPStatement stmt = epService.EPAdministrator.CreateEPL("on SupportBean_S0 as sb " +

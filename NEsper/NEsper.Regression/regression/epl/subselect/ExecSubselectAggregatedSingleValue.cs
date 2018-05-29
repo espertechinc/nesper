@@ -65,7 +65,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             // having-clause cannot aggregate over properties from other streams
             stmtText = "select (select last(TheString) from SupportBean#keepall having sum(s0.p00) = 1) as c0 from S0 as s0";
-            TryInvalid(epService, stmtText, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Failed to validate having-clause expression '(sum(s0.p00))=1': Implicit conversion from datatype 'string' to numeric is not allowed for aggregation function 'sum' [");
+            TryInvalid(epService, stmtText, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Failed to validate having-clause expression '(sum(s0.p00))=1': Implicit conversion from datatype 'String' to numeric is not allowed for aggregation function 'sum' [");
     
             // having-clause properties must be aggregated
             stmtText = "select (select last(TheString) from SupportBean#keepall having sum(IntPrimitive) = IntPrimitive) as c0 from S0 as s0";
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regression.epl.subselect
     
             // having-clause not returning boolean
             stmtText = "select (select last(TheString) from SupportBean#keepall having sum(IntPrimitive)) as c0 from S0";
-            TryInvalid(epService, stmtText, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Subselect having-clause expression must return a bool value ");
+            TryInvalid(epService, stmtText, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Subselect having-clause expression must return a boolean value ");
         }
     
         private void RunAssertionGroupedCorrelationInsideHaving(EPServiceProvider epService) {

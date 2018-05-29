@@ -51,10 +51,10 @@ namespace com.espertech.esper.regression.epl.insertinto
                       "    merge IncidentWindow w\n" +
                       "    where e.id = Cast(w.event.id? as string)\n" +
                       "    when not matched\n" +
-                      "        then insert (name, @event) select 'ChildIncident', e \n" +
+                      "        then insert (name, event) select 'ChildIncident', e \n" +
                       "            where e.action = 'INSERT'\n" +
                       "    when matched\n" +
-                      "        then update set w.@event = e \n" +
+                      "        then update set w.event = e \n" +
                       "            where e.action = 'INSERT'\n" +
                       "        then delete\n" +
                       "            where e.action = 'CLEAR';";
@@ -225,8 +225,8 @@ namespace com.espertech.esper.regression.epl.insertinto
             epService.EPAdministrator.CreateEPL(
                 "create " + rep.GetOutputTypeCreateSchemaName() + " schema E1 as (myint long)");
             var message = !rep.IsAvroEvent()
-                ? "Error starting statement: Type by name 'E1' in property 'myint' expected class " + Name.Of<int>() + " but receives class java.lang.long"
-                : "Error starting statement: Type by name 'E1' in property 'myint' expected schema '\"long\"' but received schema '\"int\"'";
+                ? "Error starting statement: Type by name 'E1' in property 'myint' expected " + Name.Clean<int>() + " but receives " + Name.Clean<long>()
+                : "Error starting statement: Type by name 'E1' in property 'myint' expected schema '{\"type\":\"long\"}' but received schema '{\"type\":\"int\"}'";
             SupportMessageAssertUtil.TryInvalid(epService, "insert into E1 select mysrc.* from Src as mysrc", message);
 
             // mismatch in column name

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Globalization;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
@@ -25,19 +26,32 @@ namespace com.espertech.esper.regression.resultset.orderby
     
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+
             string frenchForSin = "p\u00E9ch\u00E9";
             string frenchForFruit = "p\u00EAche";
-    
-            string[] sortedFrench = (frenchForFruit + "," + frenchForSin).Split(',');
+            string[] sortedFrench = new string[] {
+                frenchForFruit,
+                frenchForSin
+            };
+
+            var englishUS = CultureInfo.GetCultureInfo("en-US");
+            var englishUSComparer = StringComparer.Create(englishUS, false);
+
+            CultureInfo.CurrentCulture = englishUS;
+
+            var french = CultureInfo.GetCultureInfo("fr-FR");
+            var frenchComparer = StringComparer.Create(french, false);
+
+            Assert.AreEqual(1, frenchForFruit.CompareTo(frenchForSin));
+            Assert.AreEqual(-1, frenchForSin.CompareTo(frenchForFruit));
+
+            CultureInfo.CurrentCulture = french;
 
 #if FALSE
             Assert.AreEqual(1, frenchForFruit.CompareTo(frenchForSin));
+            Assert.AreEqual(-1, frenchComparer.Compare(frenchForFruit, frenchForSin));
             Assert.AreEqual(-1, frenchForSin.CompareTo(frenchForFruit));
-            Locale.Default = Locale.FRENCH;
-            Assert.AreEqual(1, frenchForFruit.CompareTo(frenchForSin));
-            Assert.AreEqual(-1, Collator.Instance.Compare(frenchForFruit, frenchForSin));
-            Assert.AreEqual(-1, frenchForSin.CompareTo(frenchForFruit));
-            Assert.AreEqual(1, Collator.Instance.Compare(frenchForSin, frenchForFruit));
+            Assert.AreEqual(1, frenchComparer.Compare(frenchForSin, frenchForFruit));
             Assert.IsFalse(frenchForSin.Equals(frenchForFruit));
     
             Collections.Sort(items);
@@ -58,7 +72,10 @@ namespace com.espertech.esper.regression.resultset.orderby
             EPStatement stmtOne = epService.EPAdministrator.CreateEPL(stmtText);
             epService.EPRuntime.SendEvent(new SupportBean(frenchForSin, 1));
             epService.EPRuntime.SendEvent(new SupportBean(frenchForFruit, 1));
-            EPAssertionUtil.AssertPropsPerRow(stmtOne.GetEnumerator(), "TheString".Split(','), new object[][]{new object[] {sortedFrench[0]}, new object[] {sortedFrench[1]}});
+            EPAssertionUtil.AssertPropsPerRow(stmtOne.GetEnumerator(), "TheString".Split(','), new object[][] {
+                new object[] {sortedFrench[0]},
+                new object[] {sortedFrench[1]}
+            });
     
             // test sort view
             var listener = new SupportUpdateListener();

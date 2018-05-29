@@ -10,6 +10,7 @@ using System.Xml;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util.support;
 
@@ -36,9 +37,8 @@ namespace com.espertech.esper.regression.events.xml
         }
     
         public override void Run(EPServiceProvider epService) {
-    
-            string stmtText = "select type?,dyn[1]?,nested.nes2?,Map('a')? from MyEvent";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
+            var stmtText = "select type?,dyn[1]?,nested.nes2?,map('a')? from MyEvent";
+            var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -46,16 +46,16 @@ namespace com.espertech.esper.regression.events.xml
                     new EventPropertyDescriptor("type?", typeof(XmlNode), null, false, false, false, false, false),
                     new EventPropertyDescriptor("dyn[1]?", typeof(XmlNode), null, false, false, false, false, false),
                     new EventPropertyDescriptor("nested.nes2?", typeof(XmlNode), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("Map('a')?", typeof(XmlNode), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("map('a')?", typeof(XmlNode), null, false, false, false, false, false),
             }, stmt.EventType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(stmt.EventType);
     
-            XmlDocument root = SupportXML.SendEvent(epService.EPRuntime, NOSCHEMA_XML);
-            EventBean theEvent = listener.AssertOneGetNewAndReset();
-            Assert.AreSame(root.DocumentElement.ChildNodes.Item(1), theEvent.Get("type?"));
-            Assert.AreSame(root.DocumentElement.ChildNodes.Item(5), theEvent.Get("dyn[1]?"));
-            Assert.AreSame(root.DocumentElement.ChildNodes.Item(7).ChildNodes.Item(1), theEvent.Get("nested.nes2?"));
-            Assert.AreSame(root.DocumentElement.ChildNodes.Item(9), theEvent.Get("Map('a')?"));
+            var root = SupportXML.SendEvent(epService.EPRuntime, NOSCHEMA_XML);
+            var theEvent = listener.AssertOneGetNewAndReset();
+            Assert.AreSame(root.DocumentElement.ChildNodes.Item(0), theEvent.Get("type?"));
+            Assert.AreSame(root.DocumentElement.ChildNodes.Item(1), theEvent.Get("dyn[1]?"));
+            Assert.AreSame(root.DocumentElement.ChildNodes.Item(3).ChildNodes.Item(0), theEvent.Get("nested.nes2?"));
+            Assert.AreSame(root.DocumentElement.ChildNodes.Item(4), theEvent.Get("map('a')?"));
             SupportEventTypeAssertionUtil.AssertConsistency(theEvent);
         }
     }

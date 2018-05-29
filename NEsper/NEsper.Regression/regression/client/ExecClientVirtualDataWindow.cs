@@ -207,8 +207,8 @@ namespace com.espertech.esper.regression.client
             stmtJoinMulti.Events += listener.Update;
             AssertIndexSpec(window.LastRequestedIndex,
                 "TheString=(System.String)|" +
-                "LongPrimitive=(" + TypeHelper.GetTypeNameFullyQualPretty<long?>() + ")",
-                "IntPrimitive[,](" + TypeHelper.GetTypeNameFullyQualPretty<int?>() + ")");
+                "LongPrimitive=(" + TypeHelper.GetCleanName<long?>() + ")",
+                "IntPrimitive[,](" + TypeHelper.GetCleanName<int?>() + ")");
     
             epService.EPRuntime.SendEvent(SupportBeanRange.MakeKeyLong("S1", 50L, 80, 120));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "vdw.TheString".Split(','), new object[]{"S1"});
@@ -257,7 +257,7 @@ namespace com.espertech.esper.regression.client
             stmtSubqMultiKey.Events += listener.Update;
             AssertIndexSpec(window.LastRequestedIndex,
                 "col1=(System.String)|col2=(System.String)",
-                "col3[,](" + TypeHelper.GetTypeNameFullyQualPretty<int?>() + ")");
+                "col3[,](" + TypeHelper.GetCleanName<int?>() + ")");
     
             epService.EPRuntime.SendEvent(new SupportBeanRange("key1", "key2", 5, 10));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0".Split(','), new object[]{"key1"});
@@ -376,7 +376,7 @@ namespace com.espertech.esper.regression.client
             result = epService.EPRuntime.ExecuteQuery("select col1 from MyVDW vdw where col1='key1' and col2='key2' and col3 between 5 and 15");
             AssertIndexSpec(window.LastRequestedIndex,
                 "col1=(System.String)|col2=(System.String)",
-                "col3[,](" + TypeHelper.GetTypeNameFullyQualPretty<double?>() + ")");
+                "col3[,](" + Name.Clean<double>(false) + ")");
             EPAssertionUtil.AssertProps(result.Array[0], "col1".Split(','), new object[]{"key1"});
             EPAssertionUtil.AssertEqualsAnyOrder(new object[]{"key1", "key2", new VirtualDataWindowKeyRange(5d, 15d)}, window.LastAccessKeys);
     
@@ -384,7 +384,7 @@ namespace com.espertech.esper.regression.client
             result = epService.EPRuntime.ExecuteQuery("select col1 from MyVDW vdw where col1='key1' and col2>'key0' and col3 between 5 and 15");
             AssertIndexSpec(window.LastRequestedIndex,
                 "col1=(System.String)",
-                "col3[,](" + TypeHelper.GetTypeNameFullyQualPretty<double?>() + ")|col2>(System.String)");
+                "col3[,](" + Name.Clean<double>(false) + ")|col2>(System.String)");
             EPAssertionUtil.AssertProps(result.Array[0], "col1".Split(','), new object[]{"key1"});
             EPAssertionUtil.AssertEqualsAnyOrder(new object[]{"key1", new VirtualDataWindowKeyRange(5d, 15d), "key0"}, window.LastAccessKeys);
     
@@ -424,7 +424,7 @@ namespace com.espertech.esper.regression.client
             stmtOnDeleteMultiKey.Events += listener.Update;
             AssertIndexSpec(window.LastRequestedIndex,
                 "col1=(System.String)|col2=(System.String)",
-                "col3[,](" + TypeHelper.GetTypeNameFullyQualPretty<int?>() + ")");
+                "col3[,](" + TypeHelper.GetCleanName<int?>() + ")");
             Assert.AreEqual("MyVDW", window.LastRequestedIndex.NamedWindowName);
             Assert.IsNotNull(window.LastRequestedIndex.StatementId);
             Assert.AreEqual("ABC", window.LastRequestedIndex.StatementName);
@@ -441,21 +441,21 @@ namespace com.espertech.esper.regression.client
         private void RunAssertionInvalid(EPServiceProvider epService) {
             string epl;
     
-            epl = "create window ABC.invalid:Invalid() as SupportBean";
-            TryInvalid(epService, epl, "Error starting statement: Virtual data window factory class " + Name.Of<InvalidTypeForTest>() + " does not implement the interface com.espertech.esper.client.hook.VirtualDataWindowFactory [create window ABC.invalid:Invalid() as SupportBean]");
+            epl = "create window ABC.invalid:invalid() as SupportBean";
+            TryInvalid(epService, epl, "Error starting statement: Virtual data window factory class " + Name.Clean<InvalidTypeForTest>() + " does not implement the interface com.espertech.esper.client.hook.VirtualDataWindowFactory [create window ABC.invalid:invalid() as SupportBean]");
     
             epl = "select * from SupportBean.test:vdw()";
             TryInvalid(epService, epl, "Error starting statement: Virtual data window requires use with a named window in the create-window syntax [select * from SupportBean.test:vdw()]");
     
-            epService.EPAdministrator.CreateEPL("create window ABC.test:Testnoindex() as SupportBean");
+            epService.EPAdministrator.CreateEPL("create window ABC.test:testnoindex() as SupportBean");
             epl = "select (select * from ABC) from SupportBean";
             TryInvalid(epService, epl, "Unexpected exception starting statement: Exception obtaining index lookup from virtual data window, the implementation has returned a null index [select (select * from ABC) from SupportBean]");
     
             try {
-                epService.EPAdministrator.CreateEPL("create window ABC.test:Exceptionvdw() as SupportBean");
+                epService.EPAdministrator.CreateEPL("create window ABC.test:exceptionvdw() as SupportBean");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error starting statement: Error attaching view to event stream: Validation exception initializing virtual data window 'ABC': This is a test exception [create window ABC.test:Exceptionvdw() as SupportBean]", ex.Message);
+                Assert.AreEqual("Error starting statement: Error attaching view to event stream: Validation exception initializing virtual data window 'ABC': This is a test exception [create window ABC.test:exceptionvdw() as SupportBean]", ex.Message);
             }
         }
     
@@ -603,7 +603,7 @@ namespace com.espertech.esper.regression.client
                 if (i >= fields.Count)
                     Console.Write("break");
                 VirtualDataWindowLookupFieldDesc field = fields[i];
-                string result = field.PropertyName + field.Operator.Value.GetOp() + "(" + field.LookupValueType.GetTypeNameFullyQualPretty() + ")";
+                string result = field.PropertyName + field.Operator.Value.GetOp() + "(" + field.LookupValueType.GetCleanName() + ")";
                 found.Add(result);
             }
             EPAssertionUtil.AssertEqualsAnyOrder(split, found.ToArray());

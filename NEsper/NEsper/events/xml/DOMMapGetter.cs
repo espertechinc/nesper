@@ -130,13 +130,16 @@ namespace com.espertech.esper.events.xml
 
         private static XObject GetNodeValueLinq(XObject node, String propertyMap, String mapKey)
         {
-            if (node is XContainer asContainer)
-            {
-                return asContainer.Elements()
-                    .Where(e => e.Name.LocalName == propertyMap)
-                    .Select(element => element.Attributes().FirstOrDefault(attr => attr.Name.LocalName == mapKey))
-                    .Where(attribute => attribute != null)
-                    .FirstOrDefault(attribute => attribute.Value == mapKey);
+            if (node is XContainer asContainer) {
+                var elements = asContainer.Elements()
+                    .Where(e => e.Name.LocalName == propertyMap);
+                foreach (var element in elements) {
+                    var result = element.Attributes()
+                        .FirstOrDefault(attribute => attribute.Name.LocalName == "id" && attribute.Value == mapKey);
+                    if (result != null) {
+                        return element;
+                    }
+                }
             }
 
             return null;

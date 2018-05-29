@@ -28,9 +28,9 @@ namespace com.espertech.esper.regression.rowrecog
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
-            RunAssertionMeasurePresence(epService, 0, "B.Count", 1);
-            RunAssertionMeasurePresence(epService, 0, "100+B.Count", 101);
-            RunAssertionMeasurePresence(epService, 1000000, "B.AnyOf(v=>TheString='E2')", true);
+            RunAssertionMeasurePresence(epService, 0, "B.size()", 1);
+            RunAssertionMeasurePresence(epService, 0, "100+B.size()", 101);
+            RunAssertionMeasurePresence(epService, 1000000, "B.anyOf(v=>TheString='E2')", true);
     
             RunAssertionDefineNotPresent(epService, true);
             RunAssertionDefineNotPresent(epService, false);

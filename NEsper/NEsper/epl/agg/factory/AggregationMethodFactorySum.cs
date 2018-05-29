@@ -51,7 +51,10 @@ namespace com.espertech.esper.epl.agg.factory
         public AggregationMethod Make()
         {
             var method = MakeSumAggregator(_inputValueType, _parent.HasFilter);
-            if (!_parent.IsDistinct) return method;
+            if (!_parent.IsDistinct) {
+                return method;
+            }
+
             return AggregationMethodFactoryUtil.MakeDistinctAggregator(method, _parent.HasFilter);
         }
 
@@ -74,51 +77,86 @@ namespace com.espertech.esper.epl.agg.factory
 
         private Type GetSumAggregatorType(Type type)
         {
-            if (type == typeof(BigInteger)) return typeof(BigInteger);
+            if (type == typeof(BigInteger)) {
+                return typeof(BigInteger);
+            }
 
-            if (type.IsDecimal()) return typeof(decimal);
+            if (type.IsDecimal()) {
+                return typeof(decimal);
+            }
 
-            if (type == typeof(long) || type == typeof(long)) return typeof(long);
+            if (type == typeof(long?) || type == typeof(long)) {
+                return typeof(long);
+            }
 
-            if (type == typeof(int?) || type == typeof(int)) return typeof(int);
+            if (type == typeof(int?) || type == typeof(int)) {
+                return typeof(int);
+            }
 
-            if (type == typeof(double?) || type == typeof(double)) return typeof(double);
+            if (type == typeof(double?) || type == typeof(double)) {
+                return typeof(double);
+            }
 
-            if (type == typeof(float?) || type == typeof(float)) return typeof(float);
+            if (type == typeof(float?) || type == typeof(float)) {
+                return typeof(float);
+            }
 
             return typeof(int);
         }
 
         private AggregationMethod MakeSumAggregator(Type type, bool hasFilter)
         {
-            if (!hasFilter)
-            {
-                if (type == typeof(BigInteger)) return new AggregatorSumBigInteger();
+            if (!hasFilter) {
+                if (type.IsBigInteger()) {
+                    return new AggregatorSumBigInteger();
+                }
 
-                if (type.IsDecimal()) return new AggregatorSumDecimal();
+                if (type.IsDecimal()) {
+                    return new AggregatorSumDecimal();
+                }
 
-                if (type == typeof(long) || type == typeof(long)) return new AggregatorSumLong();
+                if (type == typeof(long?) || type == typeof(long)) {
+                    return new AggregatorSumLong();
+                }
 
-                if (type == typeof(int?) || type == typeof(int)) return new AggregatorSumInteger();
+                if (type == typeof(int?) || type == typeof(int)) {
+                    return new AggregatorSumInteger();
+                }
 
-                if (type == typeof(double?) || type == typeof(double)) return new AggregatorSumDouble();
+                if (type == typeof(double?) || type == typeof(double)) {
+                    return new AggregatorSumDouble();
+                }
 
-                if (type == typeof(float?) || type == typeof(float)) return new AggregatorSumFloat();
+                if (type == typeof(float?) || type == typeof(float)) {
+                    return new AggregatorSumFloat();
+                }
 
                 return new AggregatorSumNumInteger();
             }
 
-            if (type.IsBigInteger()) return new AggregatorSumBigIntegerFilter();
+            if (type.IsBigInteger()) {
+                return new AggregatorSumBigIntegerFilter();
+            }
 
-            if (type.IsDecimal()) return new AggregatorSumDecimalFilter();
+            if (type.IsDecimal()) {
+                return new AggregatorSumDecimalFilter();
+            }
 
-            if (type == typeof(long) || type == typeof(long)) return new AggregatorSumLongFilter();
+            if (type == typeof(long) || type == typeof(long)) {
+                return new AggregatorSumLongFilter();
+            }
 
-            if (type == typeof(int?) || type == typeof(int)) return new AggregatorSumIntegerFilter();
+            if (type == typeof(int?) || type == typeof(int)) {
+                return new AggregatorSumIntegerFilter();
+            }
 
-            if (type == typeof(double?) || type == typeof(double)) return new AggregatorSumDoubleFilter();
+            if (type == typeof(double?) || type == typeof(double)) {
+                return new AggregatorSumDoubleFilter();
+            }
 
-            if (type == typeof(float?) || type == typeof(float)) return new AggregatorSumFloatFilter();
+            if (type == typeof(float?) || type == typeof(float)) {
+                return new AggregatorSumFloatFilter();
+            }
 
             return new AggregatorSumNumIntegerFilter();
         }

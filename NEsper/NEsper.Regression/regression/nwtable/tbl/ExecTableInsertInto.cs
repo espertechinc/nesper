@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Avro.Generic;
 using com.espertech.esper.client;
+using com.espertech.esper.client.annotation;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -28,7 +29,12 @@ namespace com.espertech.esper.regression.nwtable.tbl
     public class ExecTableInsertInto : RegressionExecution {
     
         public override void Run(EPServiceProvider epService) {
-            foreach (var clazz in new Type[]{typeof(SupportBean), typeof(SupportBean_S0), typeof(SupportBean_S1), typeof(SupportBean_S2)}) {
+            foreach (var clazz in new Type[] {
+                typeof(SupportBean),
+                typeof(SupportBean_S0),
+                typeof(SupportBean_S1),
+                typeof(SupportBean_S2)
+            }) {
                 epService.EPAdministrator.Configuration.AddEventType(clazz);
             }
     
@@ -196,7 +202,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
         private void TryAssertionWildcard(EPServiceProvider epService, bool bean, EventRepresentationChoice? rep) {
             if (bean) {
-                epService.EPAdministrator.CreateEPL("create schema MySchema as " + typeof(MyP0P1Event).Name);
+                epService.EPAdministrator.CreateEPL("create schema MySchema as " + typeof(MyP0P1Event).FullName);
             } else {
                 epService.EPAdministrator.CreateEPL("create " + rep.Value.GetOutputTypeCreateSchemaName() + " schema MySchema (p0 string, p1 string)");
             }
@@ -225,19 +231,22 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             epService.EPAdministrator.DestroyAllStatements();
         }
-    
-        public class MyP0P1Event {
-            private readonly string p0;
-            private readonly string p1;
-    
-            public MyP0P1Event(string p0, string p1) {
-                this.p0 = p0;
-                this.p1 = p1;
-            }
+    }
 
-            public string P0 => p0;
+    public class MyP0P1Event
+    {
+        private readonly string _p0;
+        private readonly string _p1;
 
-            public string P1 => p1;
+        public MyP0P1Event(string p0, string p1)
+        {
+            _p0 = p0;
+            _p1 = p1;
         }
+
+        [PropertyName("p0")]
+        public string P0 => _p0;
+        [PropertyName("p1")]
+        public string P1 => _p1;
     }
 } // end of namespace

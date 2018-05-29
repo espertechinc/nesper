@@ -139,5 +139,17 @@ namespace com.espertech.esper.epl.spec
                 throw new IllegalStateException("Failed to make representative node for outer join criteria");
             }
         }
+
+        public static bool HasOnClauses(OuterJoinDesc[] outerJoinDescList)
+        {
+            foreach (OuterJoinDesc desc in outerJoinDescList)
+            {
+                if (desc.OptLeftNode != null)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

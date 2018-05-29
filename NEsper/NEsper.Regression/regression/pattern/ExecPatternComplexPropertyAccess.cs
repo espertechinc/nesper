@@ -39,56 +39,56 @@ namespace com.espertech.esper.regression.pattern
             testCase.Add("e1", "s", events.GetEvent("e1"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(indexed[1] = 2)");
+            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(Indexed[1] = 2)");
             testCase.Add("e1", "s", events.GetEvent("e1"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(indexed[0] = 2)");
+            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(Indexed[0] = 2)");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(arrayProperty[1] = 20)");
+            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(ArrayProperty[1] = 20)");
             testCase.Add("e1", "s", events.GetEvent("e1"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(arrayProperty[1] in (10:30))");
+            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(ArrayProperty[1] in (10:30))");
             testCase.Add("e1", "s", events.GetEvent("e1"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(arrayProperty[2] = 20)");
+            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(ArrayProperty[2] = 20)");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(nested.nestedValue = 'nestedValue')");
+            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(Nested.NestedValue = 'NestedValue')");
             testCase.Add("e1", "s", events.GetEvent("e1"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(nested.nestedValue = 'dummy')");
+            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(Nested.NestedValue = 'dummy')");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(nested.nestedNested.nestedNestedValue = 'nestedNestedValue')");
+            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(Nested.NestedNested.NestedNestedValue = 'NestedNestedValue')");
             testCase.Add("e1", "s", events.GetEvent("e1"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(nested.nestedNested.nestedNestedValue = 'x')");
+            testCase = new EventExpressionCase("s=" + EVENT_COMPLEX + "(Nested.NestedNested.NestedNestedValue = 'x')");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("s=" + EVENT_NESTED + "(indexed[1].Mapped('1mb').value = '1ma1')");
+            testCase = new EventExpressionCase("s=" + EVENT_NESTED + "(Indexed[1].Mapped('1mb').Value = '1ma1')");
             testCase.Add("e2", "s", events.GetEvent("e2"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("s=" + EVENT_NESTED + "(indexed[0].Mapped('1ma').value = 'x')");
+            testCase = new EventExpressionCase("s=" + EVENT_NESTED + "(Indexed[0].Mapped('1ma').Value = 'x')");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("s=" + EVENT_NESTED + "(array[0].Mapped('0ma').value = '0ma0')");
+            testCase = new EventExpressionCase("s=" + EVENT_NESTED + "(Array[0].Mapped('0ma').Value = '0ma0')");
             testCase.Add("e2", "s", events.GetEvent("e2"));
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("s=" + EVENT_NESTED + "(array[2].Mapped('x').value = 'x')");
+            testCase = new EventExpressionCase("s=" + EVENT_NESTED + "(Array[2].Mapped('x').Value = 'x')");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("s=" + EVENT_NESTED + "(array[879787].Mapped('x').value = 'x')");
+            testCase = new EventExpressionCase("s=" + EVENT_NESTED + "(Array[879787].Mapped('x').Value = 'x')");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("s=" + EVENT_NESTED + "(array[0].Mapped('xxx').value = 'x')");
+            testCase = new EventExpressionCase("s=" + EVENT_NESTED + "(Array[0].Mapped('xxx').Value = 'x')");
             testCaseList.AddTest(testCase);
     
             var util = new PatternTestHarness(events, testCaseList, this.GetType());
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regression.pattern
         private void RunAssertionIndexedFilterProp(EPServiceProvider epService) {
             var testListener = new SupportUpdateListener();
             string type = typeof(SupportBeanComplexProps).FullName;
-            string pattern = "every a=" + type + "(indexed[0]=3)";
+            string pattern = "every a=" + type + "(Indexed[0]=3)";
     
             EPStatement stmt = epService.EPAdministrator.CreatePattern(pattern);
             stmt.Events += testListener.Update;
@@ -120,7 +120,7 @@ namespace com.espertech.esper.regression.pattern
     
         private void RunAssertionIndexedValueProp(EPServiceProvider epService) {
             string type = typeof(SupportBeanComplexProps).FullName;
-            string pattern = "every a=" + type + " -> b=" + type + "(indexed[0] = a.indexed[0])";
+            string pattern = "every a=" + type + " -> b=" + type + "(Indexed[0] = a.Indexed[0])";
     
             EPStatement stmt = epService.EPAdministrator.CreatePattern(pattern);
             RunIndexedValueProp(epService, stmt);
@@ -133,11 +133,11 @@ namespace com.espertech.esper.regression.pattern
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.CreateWildcard();
             PatternExpr pattern = Patterns.FollowedBy(Patterns.EveryFilter(type, "a"),
-                    Patterns.Filter(Filter.Create(type, Expressions.EqProperty("indexed[0]", "a.indexed[0]")), "b"));
+                    Patterns.Filter(Filter.Create(type, Expressions.EqProperty("Indexed[0]", "a.Indexed[0]")), "b"));
             model.FromClause = FromClause.Create(PatternStream.Create(pattern));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
-            string patternText = "select * from pattern [every a=" + type + " -> b=" + type + "(indexed[0]=a.indexed[0])]";
+            string patternText = "select * from pattern [every a=" + type + " -> b=" + type + "(Indexed[0]=a.Indexed[0])]";
             Assert.AreEqual(patternText, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -148,9 +148,9 @@ namespace com.espertech.esper.regression.pattern
         private void RunAssertionIndexedValuePropCompile(EPServiceProvider epService) {
             string type = typeof(SupportBeanComplexProps).FullName;
     
-            string patternText = "select * from pattern [every a=" + type + " -> b=" + type + "(indexed[0]=a.indexed[0])]";
+            string patternText = "select * from pattern [every a=" + type + " -> b=" + type + "(Indexed[0]=a.Indexed[0])]";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(patternText);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(patternText, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);

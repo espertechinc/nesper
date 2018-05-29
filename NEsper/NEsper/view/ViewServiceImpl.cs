@@ -156,17 +156,19 @@ namespace com.espertech.esper.view
 
             }
 
+            var container = context.Container;
+
             ViewFactory retainPolicy;
             if (isUnion)
             {
-                var viewFactory = (UnionViewFactory)context.ViewResolutionService.Create("internal", "union");
+                var viewFactory = (UnionViewFactory)context.ViewResolutionService.Create(container, "internal", "union");
                 viewFactory.ParentEventType = parentEventType;
                 viewFactory.ViewFactories = dataWindowViews;
                 retainPolicy = viewFactory;
             }
             else
             {
-                var viewFactory = (IntersectViewFactory)context.ViewResolutionService.Create("internal", "intersect");
+                var viewFactory = (IntersectViewFactory)context.ViewResolutionService.Create(container, "internal", "intersect");
                 viewFactory.ParentEventType = parentEventType;
                 viewFactory.ViewFactories = dataWindowViews;
                 retainPolicy = viewFactory;

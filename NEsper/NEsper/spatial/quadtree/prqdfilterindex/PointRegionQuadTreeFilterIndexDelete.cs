@@ -14,24 +14,24 @@ using com.espertech.esper.spatial.quadtree.pointregion;
 
 namespace com.espertech.esper.spatial.quadtree.prqdfilterindex
 {
-    public class PointRegionQuadTreeFilterIndexDelete
+    public class PointRegionQuadTreeFilterIndexDelete<TL>
     {
-        public static void Delete<TL>(double x, double y, PointRegionQuadTree<object> tree)
+        public static void Delete(double x, double y, PointRegionQuadTree<object> tree)
         {
             var root = tree.Root;
             PointRegionQuadTreeFilterIndexCheckBB.CheckBB(root.Bb, x, y);
-            var replacement = DeleteFromNode<TL>(x, y, root, tree);
+            var replacement = DeleteFromNode(x, y, root, tree);
             tree.Root = replacement;
         }
 
-        private static PointRegionQuadTreeNode DeleteFromNode<TL>(
+        private static PointRegionQuadTreeNode DeleteFromNode(
             double x, double y,
             PointRegionQuadTreeNode node,
             PointRegionQuadTree<object> tree)
         {
             if (node is PointRegionQuadTreeNodeLeaf<object> leaf)
             {
-                var removed = DeleteFromPoints<TL>(x, y, leaf.Points);
+                var removed = DeleteFromPoints(x, y, leaf.Points);
                 if (removed)
                 {
                     leaf.DecCount();
@@ -44,13 +44,13 @@ namespace com.espertech.esper.spatial.quadtree.prqdfilterindex
             var branch = (PointRegionQuadTreeNodeBranch) node;
             var quadrant = node.Bb.GetQuadrant(x, y);
             if (quadrant == QuadrantEnum.NW)
-                branch.Nw = DeleteFromNode<TL>(x, y, branch.Nw, tree);
+                branch.Nw = DeleteFromNode(x, y, branch.Nw, tree);
             else if (quadrant == QuadrantEnum.NE)
-                branch.Ne = DeleteFromNode<TL>(x, y, branch.Ne, tree);
+                branch.Ne = DeleteFromNode(x, y, branch.Ne, tree);
             else if (quadrant == QuadrantEnum.SW)
-                branch.Sw = DeleteFromNode<TL>(x, y, branch.Sw, tree);
+                branch.Sw = DeleteFromNode(x, y, branch.Sw, tree);
             else
-                branch.Se = DeleteFromNode<TL>(x, y, branch.Se, tree);
+                branch.Se = DeleteFromNode(x, y, branch.Se, tree);
 
             if (!(branch.Nw is PointRegionQuadTreeNodeLeaf<object> nwLeaf) ||
                 !(branch.Ne is PointRegionQuadTreeNodeLeaf<object> neLeaf) ||
@@ -69,7 +69,7 @@ namespace com.espertech.esper.spatial.quadtree.prqdfilterindex
             return new PointRegionQuadTreeNodeLeaf<object>(branch.Bb, branch.Level, collection, count);
         }
 
-        private static bool DeleteFromPoints<TL>(double x, double y, object points)
+        private static bool DeleteFromPoints(double x, double y, object points)
         {
             XYPointWValue<TL> point;
 
@@ -94,7 +94,7 @@ namespace com.espertech.esper.spatial.quadtree.prqdfilterindex
             return point.X == x && point.Y == y;
         }
 
-        private static int MergeChildNodes<TL>(ICollection<XYPointWValue<TL>> target, object points)
+        private static int MergeChildNodes(ICollection<XYPointWValue<TL>> target, object points)
         {
             if (points == null) return 0;
             if (points is XYPointWValue<TL>)

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.plugin;
 using com.espertech.esper.supportregression.bean;
@@ -66,9 +67,11 @@ namespace com.espertech.esper.regression.client
             EPStatement stmtScalarArray = epService.EPAdministrator.CreateEPL(eplScalarArray);
             stmtScalarArray.Events += listener.Update;
     
-            var expectedScalarArray = new object[][]{
-                    new object[] {"c0", typeof(string[]), null, null}, new object[] {"c1", typeof(int[]), null, null},
-                    new object[] {"c2", typeof(bool?), null, null}, new object[] {"c3", typeof(bool?), null, null},
+            var expectedScalarArray = new []{
+                new object[] {"c0", typeof(string[]), null, null},
+                new object[] {"c1", typeof(int[]), null, null},
+                new object[] {"c2", typeof(bool), null, null},
+                new object[] {"c3", typeof(bool), null, null},
             };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedScalarArray, stmtScalarArray.EventType, SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
     
@@ -93,19 +96,21 @@ namespace com.espertech.esper.regression.client
             stmtScalarColl.Events += listener.Update;
     
             var expectedScalarColl = new object[][]{
-                    new object[] {"c0", typeof(ICollection<object>), null, null}, new object[] {"c1", typeof(ICollection<object>), null, null},
-                    new object[] {"c2", typeof(bool?), null, null}, new object[] {"c3", typeof(bool?), null, null},
+                new object[] {"c0", typeof(ICollection<string>), null, null},
+                new object[] {"c1", typeof(ICollection<int>), null, null},
+                new object[] {"c2", typeof(bool), null, null},
+                new object[] {"c3", typeof(bool), null, null},
             };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedScalarColl, stmtScalarColl.EventType, SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"E1"}, (ICollection<object>) listener.AssertOneGetNew().Get("c0"));
-            EPAssertionUtil.AssertEqualsExactOrder(new object[]{1}, (ICollection<object>) listener.AssertOneGetNew().Get("c1"));
+            EPAssertionUtil.AssertEqualsExactOrder(new string[]{"E1"}, listener.AssertOneGetNew().Get("c0").Unwrap<string>());
+            EPAssertionUtil.AssertEqualsExactOrder(new int[]{1}, listener.AssertOneGetNew().Get("c1").Unwrap<int>());
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsScalarColl, new object[]{true, true});
     
             epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            EPAssertionUtil.AssertEqualsExactOrder(new object[]{"E1", "E2"}, (ICollection<object>) listener.AssertOneGetNew().Get("c0"));
-            EPAssertionUtil.AssertEqualsExactOrder(new object[]{1, 2}, (ICollection<object>) listener.AssertOneGetNew().Get("c1"));
+            EPAssertionUtil.AssertEqualsExactOrder(new string[]{"E1", "E2"}, listener.AssertOneGetNew().Get("c0").Unwrap<string>());
+            EPAssertionUtil.AssertEqualsExactOrder(new int[]{1, 2}, listener.AssertOneGetNew().Get("c1").Unwrap<int>());
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fieldsScalarColl, new object[]{false, false});
             stmtScalarColl.Dispose();
     
@@ -122,9 +127,11 @@ namespace com.espertech.esper.regression.client
             stmtSingleEvent.Events += listener.Update;
     
             var expectedSingleEvent = new object[][]{
-                    new object[] {"c0", typeof(SupportBean), "SupportBean", false},
-                    new object[] {"c1", typeof(bool?), null, null}, new object[] {"c2", typeof(bool?), null, null},
-                    new object[] {"c3", typeof(string), null, null}, new object[] {"c4", typeof(int?), null, null},
+                new object[] {"c0", typeof(SupportBean), "SupportBean", false},
+                new object[] {"c1", typeof(bool), null, null},
+                new object[] {"c2", typeof(bool), null, null},
+                new object[] {"c3", typeof(string), null, null},
+                new object[] {"c4", typeof(int?), null, null},
             };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedSingleEvent, stmtSingleEvent.EventType, SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
     
@@ -140,16 +147,17 @@ namespace com.espertech.esper.regression.client
             // test single-event return
             string[] fieldsEnumEvent = "c0,c1,c2".Split(',');
             string eplEnumEvent = "select " +
-                    "Ee() as c0, " +
-                    "Ee().allOf(v => v.TheString = 'E1') as c1, " +
-                    "Ee().allOf(v => v.IntPrimitive = 1) as c2 " +
+                    "ee() as c0, " +
+                    "ee().allOf(v => v.TheString = 'E1') as c1, " +
+                    "ee().allOf(v => v.IntPrimitive = 1) as c2 " +
                     "from SupportBean";
             EPStatement stmtEnumEvent = epService.EPAdministrator.CreateEPL(eplEnumEvent);
             stmtEnumEvent.Events += listener.Update;
     
             var expectedEnumEvent = new object[][]{
-                    new object[] {"c0", typeof(SupportBean[]), "SupportBean", true},
-                    new object[] {"c1", typeof(bool?), null, null}, new object[] {"c2", typeof(bool?), null, null}
+                new object[] {"c0", typeof(SupportBean[]), "SupportBean", true},
+                new object[] {"c1", typeof(bool), null, null},
+                new object[] {"c2", typeof(bool), null, null}
             };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedEnumEvent, stmtEnumEvent.EventType, SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
     
@@ -250,7 +258,8 @@ namespace com.espertech.esper.regression.client
     
             // add overlapping config with regular agg function
             try {
-                epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(SupportAggMFFunc.SCALAR.GetName(), "somefactory", "somename");
+                epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
+                    SupportAggMFFunc.SCALAR.GetName(), "somefactory", "somename");
                 Assert.Fail();
             } catch (ConfigurationException ex) {
                 Assert.AreEqual("Aggregation multi-function by name 'ss' is already defined", ex.Message);

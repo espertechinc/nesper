@@ -73,7 +73,7 @@ namespace com.espertech.esper.regression.events.map
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
                     new EventPropertyDescriptor("base3", typeof(long), null, false, false, false, false, false),
                     new EventPropertyDescriptor("base2", typeof(IDictionary<string, object>), null, false, false, false, true, false),
-                    new EventPropertyDescriptor("base1", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("base1", typeof(string), typeof(char), false, false, true, false, false),
             }, statementTwoSelectAll.EventType.PropertyDescriptors);
     
             try {

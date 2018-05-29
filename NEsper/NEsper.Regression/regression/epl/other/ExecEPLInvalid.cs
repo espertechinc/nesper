@@ -119,8 +119,10 @@ namespace com.espertech.esper.regression.epl.other
             TryValid(epService, streamDef + "sa.IntPrimitive >= sa.IntBoxed and sa.DoublePrimitive <= sa.DoubleBoxed");
             TryValid(epService, streamDef + "sa.IntPrimitive > (sa.IntBoxed + sb.DoublePrimitive)");
             TryInvalid(epService, streamDef + "sa.IntPrimitive >= sa.TheString");
-            TryInvalid(epService, streamDef + "sa.BoolBoxed >= sa.BoolPrimitive");
-    
+            
+            // boolean testing valid as of 5.2
+            //TryInvalid(epService, streamDef + "sa.BoolBoxed >= sa.BoolPrimitive");
+
             // Try some nested
             TryValid(epService, streamDef + "(sa.IntPrimitive=3) or (sa.IntBoxed=3 and sa.IntPrimitive=1)");
             TryValid(epService, streamDef + "((sa.IntPrimitive>3) or (sa.IntBoxed<3)) and sa.BoolBoxed=false");

@@ -57,7 +57,7 @@ namespace com.espertech.esper.client.soda
             writer.Write(Operator);
             if (IsAll)
             {
-                writer.Write("all (");
+                writer.Write("all(");
             }
             else
             {

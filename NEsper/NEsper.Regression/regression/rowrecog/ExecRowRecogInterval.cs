@@ -58,7 +58,7 @@ namespace com.espertech.esper.regression.rowrecog
     
             stmt.Dispose();
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(text);
-            SerializableObjectCopier.Copy(model);
+            SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(text, model.ToEPL());
             stmt = epService.EPAdministrator.Create(model);
             stmt.Events += listener.Update;

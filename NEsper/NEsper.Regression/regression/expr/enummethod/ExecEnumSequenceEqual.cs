@@ -66,7 +66,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val0".Split(','), new Type[]{typeof(bool?)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val0".Split(','), new Type[]{typeof(bool)});
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2,E3", "E1,E2,E3"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{true});

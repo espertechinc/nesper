@@ -8,8 +8,10 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 
 using com.espertech.esper.compat;
+using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
 
 namespace com.espertech.esper.epl.metric
 {
@@ -51,12 +53,55 @@ namespace com.espertech.esper.epl.metric
         public static extern Int32 GetCurrentWin32ThreadId();
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern bool GetThreadTimes(IntPtr hThread, out long lpCreationTime,
-           out long lpExitTime, out long lpKernelTime, out long lpUserTime);
+        private static extern bool GetThreadTimes(
+            IntPtr hThread, 
+            out FILETIME lpCreationTime,
+            out FILETIME lpExitTime, 
+            out FILETIME lpKernelTime, 
+            out FILETIME lpUserTime);
 
         [DllImport("kernel32.dll")]
-        static extern IntPtr GetCurrentThread();
+        private static extern IntPtr GetCurrentThread();
 #endif
+
+        public static void ExecCpuBound(Func<long, long, bool> cpuAction)
+        {
+#if MONO
+#else
+            FILETIME lCreationTime;
+            FILETIME lExitTime;
+            FILETIME lUserTimeA;
+            FILETIME lKernelTimeA;
+            FILETIME lUserTimeB;
+            FILETIME lKernelTimeB;
+
+            IntPtr thread = GetCurrentThread();
+
+            GetThreadTimes(thread, out lCreationTime, out lExitTime, out lUserTimeA, out lKernelTimeA);
+
+            // Calculate the time, not that the numbers represent 100-nanosecond intervals since
+            // January 1, 601 (UTC).
+            // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724284(v=vs.85).aspx
+
+            var kernelTimeA = (((long)lKernelTimeA.dwHighDateTime) << 32) | ((long)lKernelTimeA.dwLowDateTime);
+            var userTimeA = (((long)lUserTimeA.dwHighDateTime) << 32) | ((long)lUserTimeA.dwLowDateTime);
+            var kernelTimeB = kernelTimeA;
+            var userTimeB = userTimeA;
+            var continuation = true;
+
+            do
+            {
+                continuation = cpuAction.Invoke(
+                    100L * (kernelTimeB - kernelTimeA),
+                    100L * (userTimeB - userTimeA));
+
+                GetThreadTimes(thread, out lCreationTime, out lExitTime, out lUserTimeB, out lKernelTimeB);
+
+                kernelTimeB = (((long)lKernelTimeB.dwHighDateTime) << 32) | ((long)lKernelTimeB.dwLowDateTime);
+                userTimeB = (((long)lUserTimeB.dwHighDateTime) << 32) | ((long)lUserTimeB.dwLowDateTime);
+            } while (continuation);
+#endif
+        }
 
         /// <summary>
         /// Calls the specified observable call.
@@ -90,23 +135,36 @@ namespace com.espertech.esper.epl.metric
                     lWallTimeB - lWallTimeA);
 #else
 
-                long lCreationTime, lExitTime;
-                long lUserTimeA, lKernelTimeA;
-                long lUserTimeB, lKernelTimeB;
+                FILETIME lCreationTime;
+                FILETIME lExitTime;
+                FILETIME lUserTimeA;
+                FILETIME lKernelTimeA;
+                FILETIME lUserTimeB;
+                FILETIME lKernelTimeB;
+
                 IntPtr thread = GetCurrentThread();
                 long lWallTimeA = PerformanceObserverMono.NanoTime;
 
                 GetThreadTimes(thread, out lCreationTime, out lExitTime, out lUserTimeA, out lKernelTimeA);
                 observableCall.Invoke();
                 GetThreadTimes(thread, out lCreationTime, out lExitTime, out lUserTimeB, out lKernelTimeB);
-
+                
                 long lWallTimeB = PerformanceObserverMono.NanoTime;
-                long lTimeA = (lKernelTimeA + lUserTimeA);
-                long lTimeB = (lKernelTimeB + lUserTimeB);
+
+                // Calculate the time, not that the numbers represent 100-nanosecond intervals since
+                // January 1, 601 (UTC).
+                // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724284(v=vs.85).aspx
+
+                var kernelTimeA = (((long) lKernelTimeA.dwHighDateTime) << 32) | ((long) lKernelTimeA.dwLowDateTime);
+                var kernelTimeB = (((long) lKernelTimeB.dwHighDateTime) << 32) | ((long) lKernelTimeB.dwLowDateTime);
+                var userTimeA = (((long) lUserTimeA.dwHighDateTime) << 32) | ((long) lUserTimeA.dwLowDateTime);
+                var userTimeB = (((long) lUserTimeB.dwHighDateTime) << 32) | ((long) lUserTimeB.dwLowDateTime);
+
+                var execTimeNano = 100 * (userTimeB - userTimeA + kernelTimeB - kernelTimeA);
 
                 perfCollector.Invoke(
                     statementMetricHandle,
-                    100 * (lTimeB - lTimeA),
+                    execTimeNano,
                     lWallTimeB - lWallTimeA,
                     numInput);
 #endif

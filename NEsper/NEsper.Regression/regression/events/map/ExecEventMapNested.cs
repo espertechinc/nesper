@@ -100,7 +100,7 @@ namespace com.espertech.esper.regression.events.map
                     new object[]{"A1", "val1", null, null});
             EPAssertionUtil.AssertProps(received, "b1,b2,b3,b4".Split(','),
                     new object[]{ExecEventMap.GetNestedKeyMap(testdata, "map", "objectOne"), 10, "val2", 300});
-            EPAssertionUtil.AssertProps(received, "c1,c2".Split(','), new object[]{2, "nestedValue"});
+            EPAssertionUtil.AssertProps(received, "c1,c2".Split(','), new object[]{2, "NestedValue"});
             EPAssertionUtil.AssertProps(received, "d1,d2,d3".Split(','),
                     new object[]{300, ExecEventMap.GetNestedKeyMap(testdata, "map", "mapOne", "objectTwo"), ExecEventMap.GetNestedKeyMap(testdata, "map", "mapOne", "nodefmapTwo")});
             EPAssertionUtil.AssertProps(received, "e1,e2,e3".Split(','),
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regression.events.map
             epService.EPRuntime.SendEvent(testdata, "NestedMap");
     
             received = listener.AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(received, "simple,@object,nodefmap,map".Split(','),
+            EPAssertionUtil.AssertProps(received, "simple,object,nodefmap,map".Split(','),
                     new object[]{"abc", new SupportBean_A("A1"), testdata.Get("nodefmap"), testdata.Get("map")});
             EPAssertionUtil.AssertProps(received, "a1,a2,a3,a4".Split(','),
                     new object[]{"A1", "val1", null, null});

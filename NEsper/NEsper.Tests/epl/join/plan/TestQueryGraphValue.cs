@@ -52,8 +52,12 @@ namespace com.espertech.esper.epl.join.plan
                     new object[][] { new object[] { null, "C", "B", QueryGraphRangeEnum.RANGE_CLOSED, "A" } });
         }
     
-        private ExprIdentNode MakeIdent(string prop) {
-            return new ExprIdentNodeImpl(new BeanEventType(null, 0, typeof(MyEvent), _container.Resolve<EventAdapterService>(), null), prop, 1);
+        private ExprIdentNode MakeIdent(string prop)
+        {
+            return new ExprIdentNodeImpl(
+                new BeanEventType(
+                    _container, null, 0, typeof(MyEvent),
+                    _container.Resolve<EventAdapterService>(), null), prop, 1);
         }
     
         private void TryAdd(string propertyKeyOne, QueryGraphRangeEnum opOne, ExprIdentNode valueOne,

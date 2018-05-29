@@ -50,7 +50,7 @@ namespace com.espertech.esper.regression.dataflow
     
             // invalid filter expressions
             TryInvalidInstantiate(epService, "TheString = 1",
-                    "Failed to instantiate data flow 'MySelect': Failed validation for operator 'Filter': Failed to validate filter dataflow operator expression 'TheString=1': Implicit conversion from datatype '" + Name.Of<int>() + "' to '" + Name.Of<string>() + "' is not allowed");
+                    "Failed to instantiate data flow 'MySelect': Failed validation for operator 'Filter': Failed to validate filter dataflow operator expression 'TheString=1': Implicit conversion from datatype '" + Name.Clean<int>() + "' to '" + Name.Clean<string>() + "' is not allowed");
     
             TryInvalidInstantiate(epService, "prev(TheString, 1) = 'abc'",
                     "Failed to instantiate data flow 'MySelect': Failed validation for operator 'Filter': Invalid filter dataflow operator expression 'prev(TheString,1)=\"abc\"': Aggregation, sub-select, previous or prior functions are not supported in this context");

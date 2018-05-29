@@ -33,11 +33,13 @@ namespace com.espertech.esper.regression.events.bean
     
             epService.EPRuntime.SendEvent(new SupportBeanDupProperty("lowercamel", "uppercamel", "upper", "lower"));
             EventBean result = listener.AssertOneGetNewAndReset();
-            Assert.AreEqual("upper", result.Get("MYPROPERTY"));
-            Assert.AreEqual("lower", result.Get("myproperty"));
-            Assert.IsTrue(result.Get("myProperty").Equals("lowercamel") || result.Get("myProperty").Equals("uppercamel")); // JDK6 versus JDK7 JavaBean inspector
-            Assert.AreEqual("upper", result.Get("MyProperty"));
-    
+
+            Assert.AreEqual(result.EventType.PropertyNames.Length, 4);
+            Assert.AreEqual(result.Get("MYPROPERTY"), "upper");
+            Assert.AreEqual(result.Get("MyProperty"), "uppercamel");
+            Assert.AreEqual(result.Get("myProperty"), "lowercamel");
+            Assert.AreEqual(result.Get("myproperty"), "lower");
+
             stmt = epService.EPAdministrator.CreateEPL("select " +
                     "NESTED.NESTEDVALUE as val1, " +
                     "ARRAYPROPERTY[0] as val2, " +
@@ -47,7 +49,7 @@ namespace com.espertech.esper.regression.events.bean
             stmt.Events += listener.Update;
             epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
             EventBean theEvent = listener.AssertOneGetNewAndReset();
-            Assert.AreEqual("nestedValue", theEvent.Get("val1"));
+            Assert.AreEqual("NestedValue", theEvent.Get("val1"));
             Assert.AreEqual(10, theEvent.Get("val2"));
             Assert.AreEqual("valueOne", theEvent.Get("val3"));
             Assert.AreEqual(1, theEvent.Get("val4"));

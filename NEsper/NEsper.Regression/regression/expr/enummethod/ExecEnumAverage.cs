@@ -16,6 +16,7 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.regression.expr.enummethod
 {
@@ -118,10 +119,10 @@ namespace com.espertech.esper.regression.expr.enummethod
             string epl;
     
             epl = "select Strvals.average() from SupportCollection";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Strvals.Average()': Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of numeric values as input, received collection of string [select Strvals.average() from SupportCollection]");
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Strvals.average()': Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of numeric values as input, received collection of String [select Strvals.average() from SupportCollection]");
     
             epl = "select Beans.average() from Bean";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'beans.average()': Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" + typeof(SupportBean).FullName + "'");
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Beans.average()': Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" + typeof(SupportBean).GetCleanName() + "'");
         }
     
         private SupportBean Make(int? intBoxed, double? doubleBoxed, long longBoxed, int decimalBoxed) {

@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.index.service;
 using com.espertech.esper.epl.join.table;
@@ -41,7 +42,8 @@ namespace com.espertech.esper.epl.index.quadtree
 
         public ICollection<EventBean> QueryRange(double x, double y, double width, double height)
         {
-            return (ICollection<EventBean>) PointRegionQuadTreeRowIndexQuery.QueryRange(_quadTree, x, y, width, height);
+            return PointRegionQuadTreeRowIndexQuery.QueryRange(_quadTree, x, y, width, height)
+                .Unwrap<EventBean>();
         }
 
         public void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext)

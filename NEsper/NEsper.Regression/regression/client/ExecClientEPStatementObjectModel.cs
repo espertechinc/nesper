@@ -21,7 +21,7 @@ namespace com.espertech.esper.regression.client
     public class ExecClientEPStatementObjectModel : RegressionExecution {
         public override void Run(EPServiceProvider epService) {
             RunAssertionCreateFromOM(epService);
-            RunAssertionCreateFromOMComplete();
+            RunAssertionCreateFromOMComplete(epService);
             RunAssertionCompileToOM(epService);
             RunAssertionEPLtoOMtoStmt(epService);
             RunAssertionPrecedenceExpressions(epService);
@@ -35,7 +35,7 @@ namespace com.espertech.esper.regression.client
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.CreateWildcard();
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName));
-            SerializableObjectCopier.Copy(model);
+            SerializableObjectCopier.Copy(epService.Container, model);
     
             var stmt = epService.EPAdministrator.Create(model, "s1");
             var listener = new SupportUpdateListener();
@@ -51,7 +51,7 @@ namespace com.espertech.esper.regression.client
         // This is a simple EPL only.
         // Each OM/SODA Api is tested in it's respective unit test (i.e. TestInsertInto), including ToEPL()
         //
-        private void RunAssertionCreateFromOMComplete() {
+        private void RunAssertionCreateFromOMComplete(EPServiceProvider epService) {
             var model = new EPStatementObjectModel();
             model.InsertInto = InsertIntoClause.Create("ReadyStreamAvg", "line", "avgAge");
             model.SelectClause = SelectClause.Create()
@@ -66,20 +66,20 @@ namespace com.espertech.esper.regression.client
             model.OrderByClause = OrderByClause.Create("line");
     
             Assert.AreEqual("insert into ReadyStreamAvg(line, avgAge) select line, avg(age) as avgAge from " + typeof(SupportBean).FullName + "(line in (1,8,10))#time(10) as RS where waverId is not null group by line having avg(age)<0 output every 10 seconds order by line", model.ToEPL());
-            SerializableObjectCopier.Copy(model);
+            SerializableObjectCopier.Copy(epService.Container, model);
         }
     
         private void RunAssertionCompileToOM(EPServiceProvider epService) {
             var stmtText = "select * from " + typeof(SupportBean).FullName;
             var model = epService.EPAdministrator.CompileEPL(stmtText);
-            SerializableObjectCopier.Copy(model);
+            SerializableObjectCopier.Copy(epService.Container, model);
             Assert.IsNotNull(model);
         }
     
         private void RunAssertionEPLtoOMtoStmt(EPServiceProvider epService) {
             var stmtText = "select * from " + typeof(SupportBean).FullName;
             var model = epService.EPAdministrator.CompileEPL(stmtText);
-            SerializableObjectCopier.Copy(model);
+            SerializableObjectCopier.Copy(epService.Container, model);
     
             var stmt = epService.EPAdministrator.Create(model, "s1");
             var listener = new SupportUpdateListener();

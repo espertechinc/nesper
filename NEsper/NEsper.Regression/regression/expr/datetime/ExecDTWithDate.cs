@@ -32,37 +32,40 @@ namespace com.espertech.esper.regression.expr.datetime
             string startTime = "2002-05-30T09:00:00.000";
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(startTime)));
     
-            string[] fields = "val0,val1,val2,val3,val4,val5".Split(',');
+            string[] fields = "val0,val1,val2,val3".Split(',');
             string eplFragment = "select " +
-                    "current_timestamp.WithDate(varyear, varmonth, varday) as val0," +
-                    "utildate.WithDate(varyear, varmonth, varday) as val1," +
-                    "longdate.WithDate(varyear, varmonth, varday) as val2" +
+                    "current_timestamp.withDate(varyear, varmonth, varday) as val0," +
+                    "utildate.withDate(varyear, varmonth, varday) as val1," +
+                    "longdate.withDate(varyear, varmonth, varday) as val2," +
+                    "caldate.withDate(varyear, varmonth, varday) as val3 " +
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
-                typeof(long?), typeof(DateTimeOffset?), typeof(long?)
+                typeof(long?), typeof(DateTimeOffset?), typeof(long?), typeof(DateTimeEx)
             });
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(null));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[] {
-                SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null
+                SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null
             });
     
             string expectedTime = "2004-09-03T09:00:00.000";
             epService.EPRuntime.SetVariableValue("varyear", 2004);
-            epService.EPRuntime.SetVariableValue("varmonth", 8);
+            epService.EPRuntime.SetVariableValue("varmonth", 9);
             epService.EPRuntime.SetVariableValue("varday", 3);
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, SupportDateTime.GetArrayCoerced(expectedTime, "long", "util", "long", "cal"));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
+                SupportDateTime.GetArrayCoerced(expectedTime, "long", "util", "long", "cal"));
     
             expectedTime = "2002-09-30T09:00:00.000";
             epService.EPRuntime.SetVariableValue("varyear", null);
-            epService.EPRuntime.SetVariableValue("varmonth", 8);
+            epService.EPRuntime.SetVariableValue("varmonth", 9);
             epService.EPRuntime.SetVariableValue("varday", null);
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, SupportDateTime.GetArrayCoerced(expectedTime, "long", "util", "long", "cal"));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
+                SupportDateTime.GetArrayCoerced(expectedTime, "long", "util", "long", "cal"));
         }
     }
 } // end of namespace

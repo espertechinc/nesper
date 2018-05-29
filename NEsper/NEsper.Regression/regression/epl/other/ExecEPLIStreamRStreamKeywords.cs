@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.epl.other
             model.SelectClause = SelectClause.CreateWildcard(StreamSelector.RSTREAM_ONLY);
             FromClause fromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName).AddView(View.Create("length", Expressions.Constant(3))));
             model.FromClause = fromClause;
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             Assert.AreEqual(stmtText, model.ToEPL());
             EPStatement statement = epService.EPAdministrator.Create(model);
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionRStreamOnly_Compile(EPServiceProvider epService) {
             string stmtText = "select rstream * from " + typeof(SupportBean).FullName + "#length(3)";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             Assert.AreEqual(stmtText, model.ToEPL());
             EPStatement statement = epService.EPAdministrator.Create(model);

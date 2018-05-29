@@ -12,6 +12,7 @@ using System.Text;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
@@ -44,10 +45,10 @@ namespace com.espertech.esper.regression.rowrecog
                     " after match skip to current row" +
                     " pattern (A W+ X+ Y+ Z+)" +
                     " define" +
-                    " W as W.IntPrimitive<Prev(W.IntPrimitive)," +
-                    " X as X.IntPrimitive>Prev(X.IntPrimitive)," +
-                    " Y as Y.IntPrimitive<Prev(Y.IntPrimitive)," +
-                    " Z as Z.IntPrimitive>Prev(Z.IntPrimitive)" +
+                    " W as W.IntPrimitive<prev(W.IntPrimitive)," +
+                    " X as X.IntPrimitive>prev(X.IntPrimitive)," +
+                    " Y as Y.IntPrimitive<prev(Y.IntPrimitive)," +
+                    " Z as Z.IntPrimitive>prev(Z.IntPrimitive)" +
                     ")";
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(text);
@@ -262,15 +263,15 @@ namespace com.espertech.esper.regression.rowrecog
                 }
             }
 
-            Array.Sort(expected);
-            Array.Sort(matchesText);
+            expected.SortInPlace();
+            matchesText.SortInPlace();
     
             Assert.AreEqual(matches.Length, expected.Length, "For event " + theEvent);
             for (int i = 0; i < expected.Length; i++) {
                 if (!expected[i].Equals(matchesText[i])) {
                     Log.Info("expected:" + expected[i]);
                     Log.Info("  actual:" + expected[i]);
-                    Assert.AreEqual("Sending event " + theEvent + " row " + rowCount, expected[i], matchesText[i]);
+                    Assert.AreEqual(expected[i], matchesText[i], "Sending event " + theEvent + " row " + rowCount);
                 }
             }
     
@@ -284,7 +285,7 @@ namespace com.espertech.esper.regression.rowrecog
                 buf.Append(delimiter);
                 buf.Append(prop.PropertyName);
                 buf.Append("=");
-                buf.Append(theEvent.Get(prop.PropertyName));
+                buf.Append(theEvent.Get(prop.PropertyName).RenderAny());
                 delimiter = ",";
             }
             return buf.ToString();

@@ -24,16 +24,5 @@ namespace com.espertech.esper.regression.script
         public void TestExecScriptExpressionConfiguration() {
             RegressionRunner.Run(new ExecScriptExpressionConfiguration());
         }
-    
-        [Test]
-        public void TestExecScriptSandboxJSR223() {
-            //RegressionRunner.Run(new ExecScriptSandboxJSR223());
-        }
-    
-        [Test]
-        public void TestExecScriptSandboxMVEL() {
-            //RegressionRunner.Run(new ExecScriptSandboxMVEL());
-        }
-    
     }
 } // end of namespace

@@ -315,8 +315,11 @@ namespace com.espertech.esper.epl.named
             if (!en.MoveNext()) {
                 return Collections.GetEmptyList<EventBean>();
             }
+
             var list = new ArrayDeque<EventBean>();
             if (filterExpr != null) {
+                // rewind the enumerator by one value
+                en = en.Prepend(en.Current);
                 ExprNodeUtility.ApplyFilterExpressionIterable(en, filterExpr.ExprEvaluator, _agentInstanceContext, list);
             } else {
                 do {

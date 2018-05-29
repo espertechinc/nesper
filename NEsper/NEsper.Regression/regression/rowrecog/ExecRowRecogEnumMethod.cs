@@ -35,7 +35,7 @@ namespace com.espertech.esper.regression.rowrecog
                     + "pattern (A B+ C) "
                     + "define "
                     + "B as B.IntPrimitive > A.IntPrimitive, "
-                    + "C as C.DoublePrimitive > B.FirstOf().IntPrimitive)";
+                    + "C as C.DoublePrimitive > B.firstOf().IntPrimitive)";
             // can also be expressed as: B[0].intPrimitive
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;

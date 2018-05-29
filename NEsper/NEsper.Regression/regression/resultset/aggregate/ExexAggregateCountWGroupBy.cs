@@ -47,7 +47,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     .Add(Expressions.Eq("symbol", "IBM"))
                     .Add(Expressions.Eq("symbol", "GE"));
             model.GroupByClause = GroupByClause.Create("symbol");
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string epl = "select irstream symbol, " +
                     "count(*) as countAll, " +
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "where symbol=\"DELL\" or symbol=\"IBM\" or symbol=\"GE\" " +
                     "group by symbol";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(epl, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);

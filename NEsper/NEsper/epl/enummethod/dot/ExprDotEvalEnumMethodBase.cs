@@ -63,9 +63,9 @@ namespace com.espertech.esper.epl.enummethod.dot
             IList<ExprNode> parameters,
             ExprValidationContext validationContext)
         {
-            var eventTypeColl = EPTypeHelper.GetEventTypeMultiValued(typeInfo);
-            var eventTypeBean = EPTypeHelper.GetEventTypeSingleValued(typeInfo);
-            var collectionComponentType = EPTypeHelper.GetClassMultiValued(typeInfo);
+            var eventTypeColl = typeInfo.GetEventTypeMultiValued();
+            var eventTypeBean = typeInfo.GetEventTypeSingleValued();
+            var collectionComponentType = typeInfo.GetClassMultiValued();
 
             _enumMethodEnum = enumMethodEnum;
             _enumMethodUsedName = enumMethodUsedName;
@@ -76,7 +76,7 @@ namespace com.espertech.esper.epl.enummethod.dot
                 throw new ExprValidationException(
                     "Invalid input for built-in enumeration method '" + enumMethodUsedName +
                     "', expecting collection of event-type or scalar values as input, received " +
-                    EPTypeHelper.ToTypeDescriptive(typeInfo));
+                    typeInfo.ToTypeDescriptive());
             }
 
             // compile parameter abstract for validation against available footprints
@@ -108,7 +108,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             {
                 var message = "Invalid input for built-in enumeration method '" + enumMethodUsedName + "' and " +
                                  footprint.Parameters.Length + "-parameter footprint, expecting collection of ";
-                var received = " as input, received " + EPTypeHelper.ToTypeDescriptive(typeInfo);
+                var received = " as input, received " + typeInfo.ToTypeDescriptive();
                 if (footprint.Input == DotMethodFPInputEnum.EVENTCOLL && eventTypeColl == null)
                 {
                     throw new ExprValidationException(message + "events" + received);

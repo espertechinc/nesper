@@ -101,10 +101,10 @@ namespace com.espertech.esper.regression.resultset.aggregate
         private void RunAssertionMethodPlugIn(EPServiceProvider epService)
         {
             epService.EPAdministrator.Configuration.AddPlugInAggregationFunctionFactory(
-                "concatMethodAgg", typeof(MyMethodAggFuncFactory).Name);
+                "concatMethodAgg", typeof(MyMethodAggFuncFactory));
 
             var fields = "c0".Split(',');
-            var epl = "select ConcatMethodAgg(TheString, filter:TheString like 'A%') as c0 from SupportBean";
+            var epl = "select concatMethodAgg(TheString, filter:TheString like 'A%') as c0 from SupportBean";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -120,9 +120,9 @@ namespace com.espertech.esper.regression.resultset.aggregate
         private void RunAssertionIntoTableCountMinSketch(EPServiceProvider epService)
         {
             var epl =
-                "create table WordCountTable(wordcms CountMinSketch());\n" +
-                "into table WordCountTable select CountMinSketchAdd(TheString, filter:IntPrimitive > 0) as wordcms from SupportBean;\n" +
-                "@Name('stmt') select WordCountTable.wordcms.CountMinSketchFrequency(p00) as c0 from SupportBean_S0;\n";
+                "create table WordCountTable(wordcms countMinSketch());\n" +
+                "into table WordCountTable select countMinSketchAdd(TheString, filter:IntPrimitive > 0) as wordcms from SupportBean;\n" +
+                "@Name('stmt') select WordCountTable.wordcms.countMinSketchFrequency(p00) as c0 from SupportBean_S0;\n";
 
             var deploymentResult = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             var listener = new SupportUpdateListener();
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             // invalid filter expression name parameter: multiple values
             SupportMessageAssertUtil.TryInvalid(
                 epService, "select sum(IntPrimitive, filter:(IntPrimitive, DoublePrimitive)) from SupportBean",
-                "Error starting statement: Failed to validate select-clause expression 'sum(IntPrimitive,filter:(intPrimiti...(55 chars)': Filter named parameter requires a single expression returning a bool-typed value");
+                "Error starting statement: Failed to validate select-clause expression 'sum(IntPrimitive,filter:(IntPrimiti...(55 chars)': Filter named parameter requires a single expression returning a boolean-typed value");
 
             // multiple filter expressions
             SupportMessageAssertUtil.TryInvalid(
@@ -277,7 +277,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
             // invalid filter expression name parameter: not returning boolean
             SupportMessageAssertUtil.TryInvalid(
                 epService, "select sum(IntPrimitive, filter:IntPrimitive) from SupportBean",
-                "Error starting statement: Failed to validate select-clause expression 'sum(IntPrimitive,filter:IntPrimitive)': Filter named parameter requires a single expression returning a bool-typed value");
+                "Error starting statement: Failed to validate select-clause expression 'sum(IntPrimitive,filter:IntPrimitive)': Filter named parameter requires a single expression returning a boolean-typed value");
 
             // create-table does not allow filters
             SupportMessageAssertUtil.TryInvalid(
@@ -647,13 +647,25 @@ namespace com.espertech.esper.regression.resultset.aggregate
         }
 
         private void SendEventAssertSQLFuncs(
-            EPServiceProvider epService, SupportUpdateListener listener, string theString, int intPrimitive,
+            EPServiceProvider epService,
+            SupportUpdateListener listener,
+            string theString,
+            int intPrimitive,
             double doublePrimitive,
-            object cAvedev, object cAvg, object cCount,
-            object cMax, object cFmax, object cMaxever, object cFmaxever,
+            object cAvedev,
+            object cAvg, 
+            object cCount,
+            object cMax,
+            object cFmax, 
+            object cMaxever, 
+            object cFmaxever,
             object cMedian,
-            object cMin, object cFmin, object cMinever, object cFminever,
-            object cStddev, object cSum)
+            object cMin,
+            object cFmin, 
+            object cMinever,
+            object cFminever,
+            object cStddev,
+            object cSum)
         {
             var sb = new SupportBean(theString, intPrimitive);
             sb.DoublePrimitive = doublePrimitive;

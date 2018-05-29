@@ -58,7 +58,7 @@ namespace com.espertech.esper.regression.pattern
             model.SelectClause = SelectClause.CreateWildcard();
             PatternExpr pattern = Patterns.Every(Patterns.And(Patterns.Filter(EVENT_B_CLASS, "b"), Patterns.Filter(EVENT_D_CLASS, "d")));
             model.FromClause = FromClause.Create(PatternStream.Create(pattern));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual("select * from pattern [every (b=" + EVENT_B_CLASS + " and d=" + EVENT_D_CLASS + ")]", model.ToEPL());
             testCase = new EventExpressionCase(model);
             testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));

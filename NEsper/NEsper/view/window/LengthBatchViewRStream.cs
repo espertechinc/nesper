@@ -58,15 +58,9 @@ namespace com.espertech.esper.view.window
 
         /// <summary>Returns the number of events to batch (data window size). </summary>
         /// <value>batch size</value>
-        public int Size
-        {
-            get { return _size; }
-        }
+        public int Size => _size;
 
-        public override EventType EventType
-        {
-            get { return Parent.EventType; }
-        }
+        public override EventType EventType => Parent.EventType;
 
         public void InternalHandleRemoved(EventBean oldData)
         {
@@ -174,9 +168,6 @@ namespace com.espertech.esper.view.window
             viewDataVisitor.VisitPrimary(LastBatch, true, _lengthBatchViewFactory.ViewName, null);
         }
 
-        public ViewFactory ViewFactory
-        {
-            get { return _lengthBatchViewFactory; }
-        }
+        public ViewFactory ViewFactory => _lengthBatchViewFactory;
     }
 }

@@ -284,7 +284,7 @@ namespace com.espertech.esper.epl.expression.time
             }
             if ((_hasMonth || _hasYear) && (returnType.GetBoxedType() != typeof(int?)))
             {
-                throw new ExprValidationException("Time period expressions with month or year component require integer values, received a " + returnType.FullName + " value");
+                throw new ExprValidationException("Time period expressions with month or year component require integer values, received a " + returnType.GetCleanName() + " value");
             }
             if (expression is ExprVariableNode)
             {
@@ -302,7 +302,7 @@ namespace com.espertech.esper.epl.expression.time
                 if (result == null)
                 {
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprTimePeriod(null); }
-                    throw new EPException("Failed to evaluate time period, received a null value for '" + ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(this) + "'");
+                    throw new EPException("Failed to evaluate time period, received a null value for '" + this.ToExpressionStringMinPrecedenceSafe() + "'");
                 }
                 seconds += _adders[i].Compute(result.Value);
             }

@@ -11,9 +11,6 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
@@ -28,7 +25,7 @@ namespace com.espertech.esper.regression.epl.other
         public override void Configure(Configuration configuration) {
             configuration.AddEventType<SupportBean>();
             configuration.AddEventType<SupportBean_S0>();
-            configuration.AddEventType(typeof(SupportCollection));
+            configuration.AddEventType<SupportCollection>();
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -46,7 +43,7 @@ namespace com.espertech.esper.regression.epl.other
     
             epService.EPAdministrator.CreateEPL("create expression int jscript:abc(p1, p2) [return p1*p2;]");
             TryInvalid(epService, "create expression int jscript:abc(a, a) [return p1*p2;]",
-                    "Error starting statement: Script 'abc' that takes the same number of parameters has already been declared [create expression int jscript:abc(a, a) [p1*p2]]");
+                    "Error starting statement: Script 'abc' that takes the same number of parameters has already been declared [create expression int jscript:abc(a, a) [return p1*p2;]]");
         }
     
         private void RunAssertionParseSpecialAndMixedExprAndScript(EPServiceProvider epService) {
@@ -69,7 +66,7 @@ namespace com.espertech.esper.regression.epl.other
                     "   Strvals.where(y => y != 'E1') " +
                     "}";
             epService.EPAdministrator.CreateEPL(eplExpr);
-            string eplSelect = "select Scalarfilter(t).where(x => x != 'E2') as val1 from SupportCollection as t";
+            string eplSelect = "select scalarfilter(t).where(x => x != 'E2') as val1 from SupportCollection as t";
             epService.EPAdministrator.CreateEPL(eplSelect).Events += listener.Update;
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2,E3,E4"));
             LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val1", "E3", "E4");
@@ -80,7 +77,7 @@ namespace com.espertech.esper.regression.epl.other
             var beanType = typeof(SupportBean).FullName;
             var eplScript = $"create expression {beanType} jscript:callIt() [ return host.newObj(host.resolveType('{beanType}'), 'E1', 10); ]";
             epService.EPAdministrator.CreateEPL(eplScript);
-            epService.EPAdministrator.CreateEPL("select callIt() as val0, callIt().TheString as val1 from SupportBean as sb").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select callIt() as val0, callIt().get_TheString() as val1 from SupportBean as sb").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean());
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "val0.TheString,val0.IntPrimitive,val1".Split(','), new object[]{"E1", 10, "E1"});
     
@@ -174,7 +171,7 @@ namespace com.espertech.esper.regression.epl.other
                     "create table MyInfra(TheString string, IntPrimitive int)";
             epService.EPAdministrator.CreateEPL(eplCreate);
             epService.EPAdministrator.CreateEPL("insert into MyInfra select TheString, IntPrimitive from SupportBean");
-            epService.EPAdministrator.CreateEPL("select Myexpr() as c0 from SupportBean_S0").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select myexpr() as c0 from SupportBean_S0").Events += listener.Update;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 100));
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0".Split(','), new object[]{100});
@@ -184,19 +181,26 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionExprAndScriptLifecycleAndFilter(EPServiceProvider epService) {
             // expression assertion
-            TryAssertionLifecycleAndFilter(epService, "create expression myFilter {sb => IntPrimitive = 1}",
-                    "select * from SupportBean(myFilter(sb)) as sb",
-                    "create expression MyFilter {sb => IntPrimitive = 2}");
+            TryAssertionLifecycleAndFilter(
+                epService,
+                "create expression myFilter {sb => IntPrimitive = 1}",
+                "select * from SupportBean(myFilter(sb)) as sb",
+                "create expression myFilter {sb => IntPrimitive = 2}");
     
             // script assertion
-            TryAssertionLifecycleAndFilter(epService, "create expression bool jsscript:myFilter(IntPrimitive) [return IntPrimitive==1]",
-                    "select * from SupportBean(myFilter(IntPrimitive)) as sb",
-                    "create expression bool jscript:myFilter(IntPrimitive) [return IntPrimitive==2]");
+            TryAssertionLifecycleAndFilter(
+                epService, 
+                "create expression bool jscript:myFilter(IntPrimitive) [return IntPrimitive==1]",
+                "select * from SupportBean(myFilter(IntPrimitive)) as sb",
+                "create expression bool jscript:myFilter(IntPrimitive) [return IntPrimitive==2]");
         }
-    
-        private void TryAssertionLifecycleAndFilter(EPServiceProvider epService, string expressionBefore,
-                                                    string selector,
-                                                    string expressionAfter) {
+
+        private void TryAssertionLifecycleAndFilter(
+            EPServiceProvider epService,
+            string expressionBefore,
+            string selector,
+            string expressionAfter)
+        {
             var l1 = new SupportUpdateListener();
             var l2 = new SupportUpdateListener();
     

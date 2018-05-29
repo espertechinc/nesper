@@ -16,6 +16,7 @@ using com.espertech.esper.regression.events;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.epl;
+using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 
 

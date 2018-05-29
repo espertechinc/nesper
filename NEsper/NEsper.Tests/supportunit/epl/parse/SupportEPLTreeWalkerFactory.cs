@@ -46,9 +46,8 @@ namespace com.espertech.esper.supportunit.epl.parse
             return MakeWalker(
                 tokenStream,
                 SupportEngineImportServiceFactory.Make(container),
-                new VariableServiceImpl(0, null, container.Resolve<EventAdapterService>(), null, 
-                    container.RWLockManager(), 
-                    container.ThreadLocalManager()));
+                new VariableServiceImpl(
+                    container, 0, null, container.Resolve<EventAdapterService>(), null));
         }
     }
 }

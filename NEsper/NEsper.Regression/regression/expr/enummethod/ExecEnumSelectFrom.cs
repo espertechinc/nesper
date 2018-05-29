@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
@@ -69,7 +70,7 @@ namespace com.espertech.esper.regression.expr.enummethod
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val0".Split(','), new Type[]{typeof(ICollection<object>) });
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, "val0".Split(','), new Type[]{typeof(ICollection<string>) });
     
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value("E1,12", "E2,11", "E3,2"));
             LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val0", "E1", "E2", "E3");
@@ -92,7 +93,10 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "from SupportCollection";
             EPStatement stmtLambda = epService.EPAdministrator.CreateEPL(eplLambda);
             stmtLambda.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtLambda.EventType, fields, new Type[]{typeof(ICollection<object>), typeof(ICollection<object>) });
+            LambdaAssertionUtil.AssertTypes(stmtLambda.EventType, fields, new Type[] {
+                typeof(ICollection<int>),
+                typeof(ICollection<int>)
+            });
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E2,E1,E5,E4"));
             LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val0", 2, 1, 5, 4);
@@ -116,8 +120,10 @@ namespace com.espertech.esper.regression.expr.enummethod
             if (result == null) {
                 return null;
             }
-            ICollection<Map> val = (ICollection<Map>) result;
-            return val.ToArray();
+
+            return result.Unwrap<object>()
+                .Cast<Map>()
+                .ToArray();
         }
     }
 } // end of namespace

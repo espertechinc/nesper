@@ -25,7 +25,7 @@ namespace com.espertech.esper.regression.epl.other
     public class ExecEPLStaticFunctionsNoUDFCache : RegressionExecution {
         public override void Configure(Configuration configuration) {
             configuration.AddImport(typeof(SupportStaticMethodLib).FullName);
-            configuration.AddPlugInSingleRowFunction("sleepme", typeof(SupportStaticMethodLib).FullName, "Sleep", ValueCacheEnum.ENABLED);
+            configuration.AddPlugInSingleRowFunction("sleepme", typeof(SupportStaticMethodLib), "Sleep", ValueCacheEnum.ENABLED);
             configuration.EngineDefaults.Expression.IsUdfCache = false;
             configuration.AddEventType("Temperature", typeof(SupportTemperatureBean));
         }

@@ -88,9 +88,9 @@ namespace com.espertech.esper.events.bean
 
             EPServiceProviderManager.PurgeAllProviders();
 
-            _eventTypeSimple = new BeanEventType(null, 0, typeof(SupportBeanSimple), _container.Resolve<EventAdapterService>(), null);
-            _eventTypeComplex = new BeanEventType(null, 0, typeof(SupportBeanComplexProps), _container.Resolve<EventAdapterService>(), null);
-            _eventTypeNested = new BeanEventType(null, 0, typeof(SupportBeanCombinedProps), _container.Resolve<EventAdapterService>(), null);
+            _eventTypeSimple = new BeanEventType(_container, null, 0, typeof(SupportBeanSimple), _container.Resolve<EventAdapterService>(), null);
+            _eventTypeComplex = new BeanEventType(_container, null, 0, typeof(SupportBeanComplexProps), _container.Resolve<EventAdapterService>(), null);
+            _eventTypeNested = new BeanEventType(_container, null, 0, typeof(SupportBeanCombinedProps), _container.Resolve<EventAdapterService>(), null);
 
             _objSimple = new SupportBeanSimple("a", 20);
             _objComplex = SupportBeanComplexProps.MakeDefaultBean();
@@ -108,13 +108,13 @@ namespace com.espertech.esper.events.bean
 
             Assert.That(_eventTypeSimple.GetCopyMethod(copyFields), Is.InstanceOf<BeanEventBeanSerializableCopyMethod>());
 
-            var nonSerializable = new BeanEventType(null, 0, typeof(NonSerializableNonCopyable), _container.Resolve<EventAdapterService>(), null);
+            var nonSerializable = new BeanEventType(_container, null, 0, typeof(NonSerializableNonCopyable), _container.Resolve<EventAdapterService>(), null);
             Assert.That(nonSerializable.GetCopyMethod(copyFields), Is.Null);
 
             var config = new ConfigurationEventTypeLegacy();
             config.CopyMethod = "MyCopyMethod";
 
-            nonSerializable = new BeanEventType(null, 0, typeof(NonSerializableNonCopyable), _container.Resolve<EventAdapterService>(), config);
+            nonSerializable = new BeanEventType(_container, null, 0, typeof(NonSerializableNonCopyable), _container.Resolve<EventAdapterService>(), config);
             try {
                 nonSerializable.GetCopyMethod(copyFields);   // also logs error
                 Assert.Fail();
@@ -122,10 +122,10 @@ namespace com.espertech.esper.events.bean
                 // expected
             }
 
-            var myCopyable = new BeanEventType(null, 0, typeof(MyCopyable), _container.Resolve<EventAdapterService>(), config);
+            var myCopyable = new BeanEventType(_container, null, 0, typeof(MyCopyable), _container.Resolve<EventAdapterService>(), config);
             Assert.That(myCopyable.GetCopyMethod(copyFields), Is.InstanceOf<BeanEventBeanConfiguredCopyMethod>());   // also logs error
 
-            var myCopyableAndSer = new BeanEventType(null, 0, typeof(MyCopyableAndSerializable), _container.Resolve<EventAdapterService>(), config);
+            var myCopyableAndSer = new BeanEventType(_container, null, 0, typeof(MyCopyableAndSerializable), _container.Resolve<EventAdapterService>(), config);
             Assert.That(myCopyableAndSer.GetCopyMethod(copyFields), Is.InstanceOf<BeanEventBeanConfiguredCopyMethod>());   // also logs error
         }
 
@@ -300,7 +300,7 @@ namespace com.espertech.esper.events.bean
         [Test]
         public void TestGetDeepSuperTypes()
         {
-            var type = new BeanEventType(null, 1, typeof(ISupportAImplSuperGImplPlus), _container.Resolve<EventAdapterService>(), null);
+            var type = new BeanEventType(_container, null, 1, typeof(ISupportAImplSuperGImplPlus), _container.Resolve<EventAdapterService>(), null);
 
             var deepSuperTypes = new List<EventType>(type.DeepSuperTypes);
 
@@ -342,7 +342,7 @@ namespace com.espertech.esper.events.bean
         [Test]
         public void TestGetSuperTypes()
         {
-            _eventTypeSimple = new BeanEventType(null, 1, typeof(ISupportAImplSuperGImplPlus), _container.Resolve<EventAdapterService>(), null);
+            _eventTypeSimple = new BeanEventType(_container, null, 1, typeof(ISupportAImplSuperGImplPlus), _container.Resolve<EventAdapterService>(), null);
 
             var superTypes = _eventTypeSimple.SuperTypes;
             Assert.AreEqual(5, superTypes.Length);
@@ -350,11 +350,11 @@ namespace com.espertech.esper.events.bean
             Assert.IsTrue(superTypes.Contains(t => t.UnderlyingType == typeof(ISupportB)));
             Assert.IsTrue(superTypes.Contains(t => t.UnderlyingType == typeof(ISupportC)));
 
-            _eventTypeSimple = new BeanEventType(null, 1, typeof(Object), _container.Resolve<EventAdapterService>(), null);
+            _eventTypeSimple = new BeanEventType(_container, null, 1, typeof(Object), _container.Resolve<EventAdapterService>(), null);
             superTypes = _eventTypeSimple.SuperTypes;
             Assert.AreEqual(null, superTypes);
 
-            var type = new BeanEventType(null, 1, typeof(ISupportD), _container.Resolve<EventAdapterService>(), null);
+            var type = new BeanEventType(_container, null, 1, typeof(ISupportD), _container.Resolve<EventAdapterService>(), null);
             Assert.AreEqual(3, type.PropertyNames.Length);
             EPAssertionUtil.AssertEqualsAnyOrder(
                     type.PropertyNames,

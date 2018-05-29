@@ -111,10 +111,10 @@ namespace com.espertech.esper.regression.expr.enummethod
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[] {
-                typeof(ICollection<object>),
-                typeof(ICollection<object>),
-                typeof(ICollection<object>),
-                typeof(ICollection<object>)
+                typeof(ICollection<string>),
+                typeof(ICollection<string>),
+                typeof(ICollection<string>),
+                typeof(ICollection<string>)
             });
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2,E3,E4"));

@@ -47,12 +47,13 @@ namespace com.espertech.esper.regression.client
             SendTimer(epService, 1000);
     
             var statements = new EPStatement[5];
-            statements[0] = epService.EPAdministrator.CreateEPL("select * from " + typeof(StatementMetric).FullName, "stmt_metrics");
             var listener = new SupportUpdateListener();
-            statements[0].Events += listener.Update;
-    
-            statements[1] = epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.TakeCPUTime(LongPrimitive)", "cpuStmtOne");
             var listenerTwo = new SupportUpdateListener();
+
+            statements[0] = epService.EPAdministrator.CreateEPL("select * from " + typeof(StatementMetric).FullName, "stmt_metrics");
+            statements[0].Events += listener.Update;
+
+            statements[1] = epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.TakeCPUTime(LongPrimitive)", "cpuStmtOne");
             statements[1].Events += listenerTwo.Update;
             statements[2] = epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive=2)#keepall where MyMetricFunctions.TakeCPUTime(LongPrimitive)", "cpuStmtTwo");
             statements[2].Events += listenerTwo.Update;

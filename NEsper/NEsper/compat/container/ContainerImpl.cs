@@ -16,6 +16,7 @@ namespace com.espertech.esper.compat.container
 {
     public class ContainerImpl : IContainer
     {
+        private readonly Guid _id;
         private readonly IWindsorContainer _container;
 
         /// <summary>
@@ -24,10 +25,21 @@ namespace com.espertech.esper.compat.container
         /// <param name="container">The container.</param>
         public ContainerImpl(IWindsorContainer container)
         {
+            _id = Guid.NewGuid();
             _container = container;
         }
 
         public IWindsorContainer WindsorContainer => _container;
+
+        /// <summary>
+        /// Resolves an object within a container.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public object Resolve(Type serviceType)
+        {
+            return _container.Resolve(serviceType);
+        }
 
         /// <summary>
         /// Resolves an object within a container.
@@ -92,6 +104,11 @@ namespace com.espertech.esper.compat.container
         public bool Has<T>()
         {
             return _container.Kernel.HasComponent(typeof(T));
+        }
+
+        public bool Has(Type serviceType)
+        {
+            return _container.Kernel.HasComponent(serviceType);
         }
 
         public bool DoesNotHave<T>()

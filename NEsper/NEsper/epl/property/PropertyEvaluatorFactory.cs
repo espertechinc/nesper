@@ -28,6 +28,8 @@ using com.espertech.esper.schedule;
 using com.espertech.esper.script;
 using com.espertech.esper.util;
 
+using static com.espertech.esper.util.TypeHelper;
+
 namespace com.espertech.esper.epl.property
 {
     /// <summary>
@@ -64,7 +66,7 @@ namespace com.espertech.esper.epl.property
         /// Event type by name ' + atom.OptionalResultEventType + ' could not be found
         /// or
         /// Event type ' + streamEventType.Name + ' underlying type  + streamEventType.UnderlyingType.Name +
-        /// cannot be assigned a value of type  + returnType.GetTypeNameFullyQualPretty()
+        /// cannot be assigned a value of type  + returnType.GetCleanName()
         /// or
         /// Return type of expression ' + ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(atom.SplitterExpression) + ' is ' + returnType.Name + ', expected an Iterable or array result
         /// or
@@ -227,8 +229,8 @@ namespace com.espertech.esper.epl.property
                             {
                                 throw new ExprValidationException(
                                     "Event type '" + streamEventType.Name + "' underlying type " +
-                                    streamEventType.UnderlyingType.FullName +
-                                    " cannot be assigned a value of type " + TypeHelper.GetTypeNameFullyQualPretty(returnType));
+                                    streamEventType.UnderlyingType.GetCleanName() +
+                                    " cannot be assigned a value of type " + returnType.GetCleanName());
                             }
                         }
                         else if (GenericExtensions.IsGenericEnumerable(returnType) || returnType.IsImplementsInterface<IEnumerable>())
@@ -240,7 +242,7 @@ namespace com.espertech.esper.epl.property
                             throw new ExprValidationException(
                                 "Return type of expression '" +
                                 ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(atom.SplitterExpression) + "' is '" +
-                                returnType.FullName + "', expected an Iterable or array result");
+                                returnType.GetCleanName() + "', expected an Iterable or array result");
                         }
                         containedEventEval = new ContainedEventEvalExprNode(evaluator, eventBeanFactory);
                     }

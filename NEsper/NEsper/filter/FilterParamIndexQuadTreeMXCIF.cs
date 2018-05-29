@@ -61,12 +61,12 @@ namespace com.espertech.esper.filter
     
         public override void Put(object filterConstant, EventEvaluator evaluator) {
             var rect = (XYWHRectangle) filterConstant;
-            MXCIFQuadTreeFilterIndexSet.Set(rect.X, rect.Y, rect.W, rect.H, evaluator, _quadTree);
+            MXCIFQuadTreeFilterIndexSet<EventEvaluator>.Set(rect.X, rect.Y, rect.W, rect.H, evaluator, _quadTree);
         }
     
         public override void Remove(object filterConstant) {
             var rect = (XYWHRectangle) filterConstant;
-            MXCIFQuadTreeFilterIndexDelete<object>.Delete(rect.X, rect.Y, rect.W, rect.H, _quadTree);
+            MXCIFQuadTreeFilterIndexDelete<EventEvaluator>.Delete(rect.X, rect.Y, rect.W, rect.H, _quadTree);
         }
     
         public override int Count => MXCIFQuadTreeFilterIndexCount.Count(_quadTree);

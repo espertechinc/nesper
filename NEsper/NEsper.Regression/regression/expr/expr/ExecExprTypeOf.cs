@@ -69,13 +69,13 @@ namespace com.espertech.esper.regression.expr.expr
             var fields = new[]{"typeof(prop?)", "typeof(key)"};
     
             SendSchemaEvent(epService, 1, "E1");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"int?", "string"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{ "Int32", "String" });
     
             SendSchemaEvent(epService, "test", "E2");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"string", "string"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{ "String", "String" });
     
             SendSchemaEvent(epService, null, "E3");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{null, "string"});
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{ null, "String" });
         }
     
         private void SendSchemaEvent(EPServiceProvider epService, object prop, string key) {
@@ -195,7 +195,7 @@ namespace com.espertech.esper.regression.expr.expr
             stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new ISupportAImpl(null, null));
-            Assert.AreEqual(typeof(ISupportAImpl).Name, listener.AssertOneGetNewAndReset().Get("t0"));
+            Assert.AreEqual(typeof(ISupportAImpl).FullName, listener.AssertOneGetNewAndReset().Get("t0"));
     
             epService.EPRuntime.SendEvent(new ISupportABCImpl(null, null, null, null));
             Assert.AreEqual("ISupportABCImpl", listener.AssertOneGetNewAndReset().Get("t0"));

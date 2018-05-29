@@ -59,7 +59,7 @@ namespace com.espertech.esper.view
 
         public IEnumerator<EventBean> GetEnumerator()
         {
-            return EnumerationHelper<EventBean>.Empty();
+            return EnumerationHelper.Empty<EventBean>();
             //return ((IEnumerable<EventBean>) null).GetEnumerator();
         }
     }

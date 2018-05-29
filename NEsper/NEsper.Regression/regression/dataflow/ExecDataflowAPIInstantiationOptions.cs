@@ -88,29 +88,24 @@ namespace com.espertech.esper.regression.dataflow
             epService.EPAdministrator.DestroyAllStatements();
         }
     
-        public class MyOp : DataFlowSourceOperator {
-    
+        public class MyOp : DataFlowSourceOperator
+        {
             private readonly string _id;
     
-            [DataFlowOpParameter]
-            private string _propOne;
-    
-            [DataFlowOpParameter]
-            private string _propTwo;
-    
-            [DataFlowOpParameter]
-            private string _propThree;
+            [DataFlowOpParameter] private string propOne;
+            [DataFlowOpParameter] private string propTwo;
+            [DataFlowOpParameter] private string propThree;
     
             public MyOp(string id) {
-                this._id = id;
+                _id = id;
             }
     
             public void Next() {
             }
 
             public string PropOne {
-                get { return _propOne; }
-                set { _propOne = value; }
+                get { return propOne; }
+                set { propOne = value; }
             }
 
             public string Id {
@@ -118,11 +113,11 @@ namespace com.espertech.esper.regression.dataflow
             }
 
             public string PropTwo {
-                get { return _propTwo; }
+                get { return propTwo; }
             }
 
             public string PropThree {
-                get { return _propThree; }
+                get { return propThree; }
             }
 
             public DataFlowOpInitializeResult Initialize(DataFlowOpInitializateContext context) {
@@ -138,7 +133,7 @@ namespace com.espertech.esper.regression.dataflow
     
         public class MyParameterProvider : EPDataFlowOperatorParameterProvider
         {
-            private IDictionary<string, EPDataFlowOperatorParameterProviderContext> _contextMap = 
+            private readonly IDictionary<string, EPDataFlowOperatorParameterProviderContext> _contextMap = 
                 new Dictionary<string, EPDataFlowOperatorParameterProviderContext>();
             private readonly IDictionary<string, Object> _values;
 

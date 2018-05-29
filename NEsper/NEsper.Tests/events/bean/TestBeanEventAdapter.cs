@@ -31,10 +31,10 @@ namespace com.espertech.esper.events.bean
         {
             _container = SupportContainer.Reset();
             _beanEventTypeFactory = new BeanEventAdapter(
-                new ConcurrentDictionary<Type, BeanEventType>(), 
-                _container.Resolve<EventAdapterService>(), 
-                new EventTypeIdGeneratorImpl(),
-                _container.LockManager());
+                _container,
+                new ConcurrentDictionary<Type, BeanEventType>(),
+                _container.Resolve<EventAdapterService>(),
+                new EventTypeIdGeneratorImpl());
         }
 
         [Test]

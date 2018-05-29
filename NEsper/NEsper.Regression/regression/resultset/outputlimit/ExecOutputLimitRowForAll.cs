@@ -543,7 +543,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
     
             // statement object model test
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
-            SerializableObjectCopier.Copy(model);
+            SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(epl, model.ToEPL());
     
             stmt.Dispose();

@@ -9,16 +9,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.client;
+using com.espertech.esper.client.annotation;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util.support;
-
 
 using NUnit.Framework;
 
@@ -68,7 +66,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             epService.EPAdministrator.CreateEPL("into table varaggMS select window(*) as eventset, " +
                     "sum(IntPrimitive) as total from SupportBean#length(2)");
             epService.EPAdministrator.CreateEPL("on SupportBean_S0 merge varaggMS " +
-                    "when matched then insert into ResultStream select eventset, total, eventset.TakeLast(1) as c0");
+                    "when matched then insert into ResultStream select eventset, total, eventset.takeLast(1) as c0");
             epService.EPAdministrator.CreateEPL("select * from ResultStream").Events += listener.Update;
     
             var e1 = new SupportBean("E1", 15);
@@ -103,7 +101,10 @@ namespace com.espertech.esper.regression.nwtable.tbl
                 string key = split[i];
                 epService.EPRuntime.SendEvent(new SupportBean_S0(0, key));
                 string expectedString = expected[i] ? key : null;
-                Assert.AreEqual(listener.AssertOneGetNewAndReset().Get("c0"), "failed for key '" + key + "'", expectedString);
+                Assert.That(
+                    listener.AssertOneGetNewAndReset().Get("c0"),
+                    Is.EqualTo(expectedString),
+                    "failed for key '" + key + "'");
             }
         }
     
@@ -129,7 +130,10 @@ namespace com.espertech.esper.regression.nwtable.tbl
             stmtRead.Events += listener.Update;
     
             // assert selected column types
-            var expectedAggType = new object[][]{new object[] {"c0", typeof(string)}, new object[] {"c1", typeof(int?)}};
+            var expectedAggType = new object[][] {
+                new object[] {"c0", typeof(string)},
+                new object[] {"c1", typeof(int)}
+            };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedAggType, stmtRead.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
             // assert no row
@@ -186,7 +190,12 @@ namespace com.espertech.esper.regression.nwtable.tbl
             stmtRead.Events += listener.Update;
     
             // assert selected column types
-            var expectedAggType = new object[][]{new object[] {"c0", typeof(string)}, new object[] {"c1", typeof(int?)}, new object[] {"c2", typeof(int?[])}, new object[] {"c3", typeof(int?)}};
+            var expectedAggType = new object[][]{
+                new object[] { "c0", typeof(string) },
+                new object[] { "c1", typeof(int) },
+                new object[] { "c2", typeof(int[]) },
+                new object[] { "c3", typeof(int) }
+            };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedAggType, stmtRead.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
             // assert no row
@@ -251,7 +260,11 @@ namespace com.espertech.esper.regression.nwtable.tbl
             stmtRead.Events += listener.Update;
     
             // assert selected column types
-            var expectedAggType = new object[][]{new object[] {"c0", typeof(int?)}, new object[] {"c1", typeof(string)}, new object[] {"c2", typeof(string)}};
+            var expectedAggType = new object[][] {
+                new object[] {"c0", typeof(int)},
+                new object[] {"c1", typeof(string)},
+                new object[] {"c2", typeof(string)}
+            };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedAggType, stmtRead.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
             // assert no row
@@ -268,7 +281,11 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     " when matched and LongPrimitive<0 then" +
                     " delete";
             EPStatement stmtMerge = SupportModelHelper.CreateByCompileOrParse(epService, soda, eplMerge);
-            var expectedType = new object[][]{new object[] {"keyOne", typeof(int?)}, new object[] {"keyTwo", typeof(string)}, new object[] {"prop", typeof(string)}};
+            var expectedType = new object[][] {
+                new object[] {"keyOne", typeof(int)},
+                new object[] {"keyTwo", typeof(string)},
+                new object[] {"prop", typeof(string)}
+            };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedType, stmtMerge.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
     
@@ -308,45 +325,17 @@ namespace com.espertech.esper.regression.nwtable.tbl
         }
     
         public class LocalSubBean {
-            private int keyOne;
-            private string keyTwo;
-            private string prop;
-    
-            public int GetKeyOne() {
-                return keyOne;
-            }
-    
-            public void SetKeyOne(int keyOne) {
-                this.keyOne = keyOne;
-            }
-    
-            public string GetKeyTwo() {
-                return keyTwo;
-            }
-    
-            public void SetKeyTwo(string keyTwo) {
-                this.keyTwo = keyTwo;
-            }
-    
-            public string GetProp() {
-                return prop;
-            }
-    
-            public void SetProp(string prop) {
-                this.prop = prop;
-            }
+            [PropertyName("keyOne")]
+            public int KeyOne { get; set; }
+            [PropertyName("keyTwo")]
+            public string KeyTwo { get; set; }
+            [PropertyName("prop")]
+            public string Prop { get; set; }
         }
     
         public class LocalBean {
-            private LocalSubBean val0;
-    
-            public LocalSubBean GetVal0() {
-                return val0;
-            }
-    
-            public void SetVal0(LocalSubBean val0) {
-                this.val0 = val0;
-            }
+            [PropertyName("val0")]
+            public LocalSubBean Val0 { get; set; }
         }
     }
 } // end of namespace

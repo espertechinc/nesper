@@ -8,10 +8,11 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
@@ -34,7 +35,7 @@ namespace com.espertech.esper.regression.expr.enummethod
         public override void Run(EPServiceProvider epService)
         {
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                "extractAfterUnderscore", GetType().FullName, "extractAfterUnderscore");
+                "extractAfterUnderscore", GetType(), "ExtractAfterUnderscore");
 
             RunAssertionKeySelectorOnly(epService);
             RunAssertionKeyValueSelector(epService);
@@ -71,25 +72,28 @@ namespace com.espertech.esper.regression.expr.enummethod
             Assert.IsNull(listener.AssertOneGetNewAndReset().Get("val"));
 
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value());
-            Assert.AreEqual(0, ((Map) listener.AssertOneGetNewAndReset().Get("val")).Count);
+            Assert.AreEqual(0, listener.AssertOneGetNewAndReset().Get("val").UnwrapEnumerable<object>().Count());
             stmtFragment.Dispose();
 
             // test scalar
             var eplScalar = "select Strvals.GroupBy(c => extractAfterUnderscore(c)) as val from SupportCollection";
             var stmtScalar = epService.EPAdministrator.CreateEPL(eplScalar);
             stmtScalar.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtScalar.EventType, "val".Split(','), new[] {typeof(Map)});
+            LambdaAssertionUtil.AssertTypes(stmtScalar.EventType, "val".Split(','), new[] {
+                typeof(IDictionary<object, ICollection<object>>)
+            });
 
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1_2,E2_1,E3_2"));
             EPAssertionUtil.AssertMapOfCollection(
-                (Map) listener.AssertOneGetNewAndReset().Get("val"), "2,1".Split(','),
+                listener.AssertOneGetNewAndReset().Get("val").UnwrapStringDictionary(),
+                "2,1".Split(','),
                 new[] {"E1_2,E3_2", "E2_1"}, GetExtractorScalar());
 
             epService.EPRuntime.SendEvent(SupportCollection.MakeString(null));
             Assert.IsNull(listener.AssertOneGetNewAndReset().Get("val"));
 
             epService.EPRuntime.SendEvent(SupportCollection.MakeString(""));
-            Assert.AreEqual(0, ((Map) listener.AssertOneGetNewAndReset().Get("val")).Count);
+            Assert.AreEqual(0, listener.AssertOneGetNewAndReset().Get("val").Unwrap<object>().Count);
 
             stmtScalar.Dispose();
         }
@@ -111,32 +115,36 @@ namespace com.espertech.esper.regression.expr.enummethod
 
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value("E1,1", "E1,2", "E2,5"));
             EPAssertionUtil.AssertMapOfCollection(
-                (Map) listener.AssertOneGetNewAndReset().Get("val"), "E1,E2".Split(','),
+                listener.AssertOneGetNewAndReset().Get("val").UnwrapStringDictionary(),
+                "E1,E2".Split(','),
                 new[] {"1,2", "5"}, extractor);
 
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value(null));
             Assert.IsNull(listener.AssertOneGetNewAndReset().Get("val"));
 
             epService.EPRuntime.SendEvent(SupportBean_ST0_Container.Make2Value());
-            Assert.AreEqual(0, ((Map) listener.AssertOneGetNewAndReset().Get("val")).Count);
+            Assert.AreEqual(0, listener.AssertOneGetNewAndReset().Get("val").Unwrap<object>().Count);
 
             // test scalar
             var eplScalar =
                 "select Strvals.GroupBy(k => extractAfterUnderscore(k), v => v) as val from SupportCollection";
             var stmtScalar = epService.EPAdministrator.CreateEPL(eplScalar);
             stmtScalar.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtScalar.EventType, "val".Split(','), new[] {typeof(Map)});
+            LambdaAssertionUtil.AssertTypes(stmtScalar.EventType, "val".Split(','), new[] {
+                typeof(IDictionary<object, ICollection<object>>)
+            });
 
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1_2,E2_1,E3_2"));
             EPAssertionUtil.AssertMapOfCollection(
-                (Map) listener.AssertOneGetNewAndReset().Get("val"), "2,1".Split(','),
+                listener.AssertOneGetNewAndReset().Get("val").UnwrapStringDictionary(),
+                "2,1".Split(','),
                 new[] {"E1_2,E3_2", "E2_1"}, GetExtractorScalar());
 
             epService.EPRuntime.SendEvent(SupportCollection.MakeString(null));
             Assert.IsNull(listener.AssertOneGetNewAndReset().Get("val"));
 
             epService.EPRuntime.SendEvent(SupportCollection.MakeString(""));
-            Assert.AreEqual(0, ((Map) listener.AssertOneGetNewAndReset().Get("val")).Count);
+            Assert.AreEqual(0, listener.AssertOneGetNewAndReset().Get("val").Unwrap<object>().Count);
 
             stmtScalar.Dispose();
         }

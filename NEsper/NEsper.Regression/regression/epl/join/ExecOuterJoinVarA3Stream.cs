@@ -148,7 +148,7 @@ namespace com.espertech.esper.regression.epl.join
             fromClause.Add(OuterJoinQualifier.Create("s0.p00", OuterJoinType.LEFT, "s1.p10"));
             fromClause.Add(OuterJoinQualifier.Create("s0.p00", OuterJoinType.LEFT, "s2.p20"));
             model.FromClause = fromClause;
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             Assert.AreEqual("select * from " + typeof(SupportBean_S0).FullName + "#keepall as s0 left outer join " + typeof(SupportBean_S1).FullName + "#keepall as s1 on s0.p00 = s1.p10 left outer join " + typeof(SupportBean_S2).FullName + "#keepall as s2 on s0.p00 = s2.p20", model.ToEPL());
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regression.epl.join
                     "left outer join " + EVENT_S2 + "#length(1000) as s2 on s0.p00 = s2.p20";
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             EPStatement stmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;

@@ -67,7 +67,9 @@ namespace com.espertech.esper.regression.view
             beans[0] = MakeEvent(SYMBOL_CSCO, 50);
             epService.EPRuntime.SendEvent(beans[0]);
 
-            object[] result = top3Prices.Cast<object>().ToArray();
+            object[] result = top3Prices
+                .Select(x => x.Underlying)
+                .ToArray();
             EPAssertionUtil.AssertEqualsExactOrder(new[]{beans[0]}, result);
             Assert.IsTrue(testListener.IsInvoked);
             EPAssertionUtil.AssertEqualsExactOrder((object[]) null, testListener.LastOldData);
@@ -86,7 +88,10 @@ namespace com.espertech.esper.regression.view
             epService.EPRuntime.SendEvent(beans[4]);
             epService.EPRuntime.SendEvent(beans[5]);
 
-            result = top3Prices.Cast<object>().ToArray();
+            result = top3Prices
+                .Select(x => x.Underlying)
+                .ToArray();
+
             EPAssertionUtil.AssertEqualsExactOrder(new[]{beans[4], beans[3], beans[5]}, result);
     
             beans[6] = MakeEvent(SYMBOL_CSCO, 110);
@@ -97,7 +102,10 @@ namespace com.espertech.esper.regression.view
             epService.EPRuntime.SendEvent(beans[7]);
             epService.EPRuntime.SendEvent(beans[8]);
     
-            result = top3Prices.Cast<object>().ToArray();
+            result = top3Prices
+                .Select(x => x.Underlying)
+                .ToArray();
+
             EPAssertionUtil.AssertEqualsExactOrder(new[]{beans[3], beans[8], beans[7]}, result);
     
             top3Prices.Dispose();

@@ -13,6 +13,8 @@ using com.espertech.esper.client;
 using com.espertech.esper.codegen.core;
 using com.espertech.esper.codegen.model.blocks;
 using com.espertech.esper.codegen.model.expression;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.events.map;
 
 using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
@@ -36,13 +38,17 @@ namespace com.espertech.esper.events.arr
 
         public override Object HandleNestedValue(Object value)
         {
-            if (value is Map)
-            {
-                return _mapGetter.GetMap((Map)value);
+            if (value == null) {
+                return null;
             }
-            else if (value is EventBean)
-            {
-                return _mapGetter.Get((EventBean)value);
+            else if (value is Map) {
+                return _mapGetter.GetMap((Map) value);
+            }
+            else if (value is EventBean) {
+                return _mapGetter.Get((EventBean) value);
+            }
+            else if (value.GetType().IsGenericStringDictionary()) {
+                return _mapGetter.GetMap(value.AsStringDictionary());
             }
 
             return null;

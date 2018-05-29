@@ -13,6 +13,7 @@ using System.Xml.XPath;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.container;
+using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util.support;
@@ -38,7 +39,7 @@ namespace com.espertech.esper.regression.events.xml
             sensorcfg.AddNamespacePrefix("ss", "SensorSchema");
             sensorcfg.AddXPathProperty("idarray", "//ss:Tag/ss:ID", XPathResultType.NodeSet, "string[]");
             sensorcfg.AddXPathPropertyFragment("tagArray", "//ss:Tag", XPathResultType.NodeSet, "TagEvent");
-            sensorcfg.AddXPathPropertyFragment("tagOne", "//ss:Tag[Position() = 1]", XPathResultType.Any, "TagEvent");
+            sensorcfg.AddXPathPropertyFragment("tagOne", "//ss:Tag[position() = 1]", XPathResultType.Any, "TagEvent");
             sensorcfg.SchemaResource = _schemaUri;
             configuration.EngineDefaults.ViewResources.IsIterableUnbound = true;
             configuration.AddEventType("SensorEvent", sensorcfg);

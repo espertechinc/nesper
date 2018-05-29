@@ -245,7 +245,7 @@ namespace com.espertech.esper.epl.core
             if (!(@object is AggregationFunctionFactory))
             {
                 throw new EngineImportException(
-                    "Aggregation class by name '" + className + "' does not implement AggregationFunctionFactory");
+                    "Aggregation class by name '" + Name.Of(clazz) + "' does not implement AggregationFunctionFactory");
             }
 
             return (AggregationFunctionFactory) @object;
@@ -626,13 +626,13 @@ namespace com.espertech.esper.epl.core
             {
                 message += string.Format(
                     "method named '{0}' in class '{1}' with matching parameter number and expected parameter type(s) '{2}'",
-                    methodName, clazz.GetTypeNameFullyQualPretty(), expected);
+                    methodName, clazz.GetCleanName(), expected);
             }
             else
             {
                 message += string.Format(
                     "method named '{0}' in class '{1}' taking no parameters", methodName,
-                    clazz.GetTypeNameFullyQualPretty());
+                    clazz.GetCleanName());
             }
 
             if (e.NearestMissMethod != null)
@@ -660,12 +660,12 @@ namespace com.espertech.esper.epl.core
             var message = "Could not find constructor ";
             if (paramTypes.Length > 0)
             {
-                message += "in class '" + clazz.GetTypeNameFullyQualPretty() +
+                message += "in class '" + clazz.GetCleanName() +
                            "' with matching parameter number and expected parameter type(s) '" + expected + "'";
             }
             else
             {
-                message += "in class '" + clazz.GetTypeNameFullyQualPretty() + "' taking no parameters";
+                message += "in class '" + clazz.GetCleanName() + "' taking no parameters";
             }
 
             if (e.NearestMissCtor != null)
@@ -756,6 +756,10 @@ namespace com.espertech.esper.epl.core
             var lastIndex = importName.LastIndexOf(typeName);
             if (lastIndex == -1)
             {
+                return false;
+            }
+
+            if (lastIndex == 0) {
                 return false;
             }
 

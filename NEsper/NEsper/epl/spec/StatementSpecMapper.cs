@@ -2813,8 +2813,10 @@ namespace com.espertech.esper.epl.spec
                 {
                     var name = chain[0].Name;
                     var declared = ExprDeclaredHelper.GetExistsDeclaredExpr(
-                        name, chain[0].Parameters, mapContext.ExpressionDeclarations.Values,
-                        mapContext.ExprDeclaredService, mapContext.ContextDescriptor);
+                        mapContext.Container, name, chain[0].Parameters, 
+                        mapContext.ExpressionDeclarations.Values,
+                        mapContext.ExprDeclaredService, 
+                        mapContext.ContextDescriptor);
                     if (declared != null)
                     {
                         return declared;

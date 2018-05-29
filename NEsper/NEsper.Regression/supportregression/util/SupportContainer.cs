@@ -9,6 +9,7 @@
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
+using com.espertech.esper.epl.db.drivers;
 using com.espertech.esper.events;
 
 namespace com.espertech.esper.supportregression.util
@@ -19,8 +20,7 @@ namespace com.espertech.esper.supportregression.util
 
         static SupportContainer()
         {
-            var driverType = typeof(MySql.Data.MySqlClient.MySqlClientFactory);
-            Instance = CreateContainer();
+            Reset();
         }
 
         public static T Resolve<T>()
@@ -30,7 +30,9 @@ namespace com.espertech.esper.supportregression.util
 
         public static IContainer Reset()
         {
-            return Instance = CreateContainer();
+            Instance = CreateContainer();
+            DbDriverPgSQL.Register(Instance);
+            return Instance;
         }
 
         private static IContainer CreateContainer()
@@ -45,7 +47,7 @@ namespace com.espertech.esper.supportregression.util
 
             container.Register<EventAdapterService>(
                 xx => SupportEventAdapterService.Allocate(
-                    container.LockManager(), container.ClassLoaderProvider()),
+                    container, container.ClassLoaderProvider()),
                 Lifespan.Singleton);
 
             container

@@ -22,6 +22,8 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regression.epl.other
 {
+    using Map = IDictionary<string, object>;
+
     public class ExecEPLSelectWildcardWAdditional : RegressionExecution {
         public override void Configure(Configuration configuration) {
             var typeMap = new Dictionary<string, object>();
@@ -50,7 +52,7 @@ namespace com.espertech.esper.regression.epl.other
                 .Add(Expressions.Concat("myString", "myString"), "concat");
             model.FromClause = FromClause.Create(FilterStream.Create(eventName)
                 .AddView(View.Create("win", "length", Expressions.Constant(5))));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string text = "select *, myString||myString as concat from " + eventName + ".win:length(5)";
             Assert.AreEqual(text, model.ToEPL());
@@ -61,9 +63,9 @@ namespace com.espertech.esper.regression.epl.other
             AssertSimple(epService, listener);
     
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
-                    new EventPropertyDescriptor("myString", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("myInt", typeof(int), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("concat", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("MyString", typeof(string), typeof(char), false, false, true, false, false),
+                    new EventPropertyDescriptor("MyInt", typeof(int), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("concat", typeof(string), typeof(char), false, false, true, false, false),
             }, statement.EventType.PropertyDescriptors);
     
             statement.Dispose();
@@ -216,7 +218,7 @@ namespace com.espertech.esper.regression.epl.other
     
         private void RunAssertionInvalidRepeatedProperties(EPServiceProvider epService) {
             string eventName = typeof(SupportBeanSimple).FullName;
-            string text = "select *, myString||myString as myString from " + eventName + "#length(5)";
+            string text = "select *, myString||myString as MyString from " + eventName + "#length(5)";
     
             try {
                 epService.EPAdministrator.CreateEPL(text);
@@ -248,11 +250,11 @@ namespace com.espertech.esper.regression.epl.other
             properties.Put("myInt", 0);
             AssertProperties(properties, listener);
     
-            Assert.AreEqual(typeof(Pair<object, object>), listener.LastNewData[0].EventType.UnderlyingType);
-            Assert.IsTrue(listener.LastNewData[0].Underlying is Pair<object, object>);
-            var pair = (Pair<object,object>) listener.LastNewData[0].Underlying;
+            Assert.AreEqual(typeof(Pair<object, Map>), listener.LastNewData[0].EventType.UnderlyingType);
+            Assert.IsTrue(listener.LastNewData[0].Underlying is Pair<object, Map>);
+            var pair = (Pair<object, Map>) listener.LastNewData[0].Underlying;
             Assert.AreEqual(theEvent, pair.First);
-            Assert.AreEqual("stringstring", ((IDictionary<string, object>) pair.Second).Get("concat"));
+            Assert.AreEqual("stringstring", ((Map) pair.Second).Get("concat"));
         }
     
         private void AssertCommonProperties(EPServiceProvider epService, SupportUpdateListener listener) {

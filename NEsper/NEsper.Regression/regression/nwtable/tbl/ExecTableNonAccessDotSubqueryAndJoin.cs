@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
                     "col1 as c1_1, mt.col1 as c1_2, " +
                     "col2 as c2_1, mt.col2 as c2_2, " +
                     "col2.minBy() as c2_3, mt.col2.MaxBy() as c2_4, " +
-                    "col2.sorted().FirstOf() as c2_5, mt.col2.sorted().FirstOf() as c2_6, " +
+                    "col2.sorted().firstOf() as c2_5, mt.col2.sorted().firstOf() as c2_6, " +
                     "col3.mostFrequent() as c3_1, mt.col3.mostFrequent() as c3_2, " +
                     "col4 as c4_1 " +
                     "from SupportBean unidirectional, MyTable as mt";
@@ -71,14 +71,16 @@ namespace com.espertech.esper.regression.nwtable.tbl
     
             var expectedType = new object[][]{
                     new object[] {"c0_1", typeof(string)}, new object[] {"c0_2", typeof(string)},
-                    new object[] {"c1_1", typeof(int?)}, new object[] {"c1_2", typeof(int?)},
+                    new object[] {"c1_1", typeof(int)}, new object[] {"c1_2", typeof(int)},
                     new object[] {"c2_1", typeof(SupportBean[])}, new object[] {"c2_2", typeof(SupportBean[])},
                     new object[] {"c2_3", typeof(SupportBean)}, new object[] {"c2_4", typeof(SupportBean)},
                     new object[] {"c2_5", typeof(SupportBean)}, new object[] {"c2_6", typeof(SupportBean)},
                     new object[] {"c3_1", typeof(int?)}, new object[] {"c3_2", typeof(int?)},
                     new object[] {"c4_1", typeof(SupportBean[])}
             };
-            SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedType, stmtSelect.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
+            SupportEventTypeAssertionUtil.AssertEventTypeProperties(
+                expectedType, stmtSelect.EventType, SupportEventTypeAssertionEnum.NAME,
+                SupportEventTypeAssertionEnum.TYPE);
     
             MakeSendSupportBean(epService, null, -1);
             EventBean @event = listener.AssertOneGetNewAndReset();
@@ -90,11 +92,11 @@ namespace com.espertech.esper.regression.nwtable.tbl
             EPAssertionUtil.AssertProps(@event, "c4_1".Split(','), new object[]{sentSB});
     
             // unnamed column
-            string eplSelectUnnamed = "select Col2.sorted().FirstOf(), mt.col2.sorted().FirstOf()" +
+            string eplSelectUnnamed = "select col2.sorted().firstOf(), mt.col2.sorted().firstOf()" +
                     " from SupportBean unidirectional, MyTable mt";
             EPStatement stmtSelectUnnamed = epService.EPAdministrator.CreateEPL(eplSelectUnnamed);
-            var expectedTypeUnnamed = new object[][]{new object[] {"col2.sorted().FirstOf()", typeof(SupportBean)},
-                    new object[] {"mt.col2.sorted().FirstOf()", typeof(SupportBean)}};
+            var expectedTypeUnnamed = new object[][]{new object[] {"col2.sorted().firstOf()", typeof(SupportBean)},
+                    new object[] {"mt.col2.sorted().firstOf()", typeof(SupportBean)}};
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedTypeUnnamed, stmtSelectUnnamed.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
             // invalid: ambiguous resolution

@@ -9,6 +9,7 @@
 using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util.support;
 
@@ -30,7 +31,7 @@ namespace com.espertech.esper.regression.events.xml
     
             EPStatement stmtInsert = epService.EPAdministrator.CreateEPL("insert into MyNestedStream select nested1 from TestXMLSchemaType");
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
-                    new EventPropertyDescriptor("nested1", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("nested1", typeof(string), typeof(char), false, false, true, false, false),
             }, stmtInsert.EventType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(stmtInsert.EventType);
     

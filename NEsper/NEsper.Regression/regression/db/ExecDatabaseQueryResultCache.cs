@@ -121,8 +121,7 @@ namespace com.espertech.esper.regression.db
 
         private ConfigurationDBRef GetDefaultConfig()
         {
-            var configDB = new ConfigurationDBRef();
-            configDB.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative);
+            var configDB = SupportDatabaseService.CreateDefaultConfig();
             configDB.ConnectionLifecycle = ConnectionLifecycleEnum.RETAIN;
             return configDB;
         }

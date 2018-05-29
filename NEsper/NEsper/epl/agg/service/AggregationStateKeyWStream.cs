@@ -54,9 +54,9 @@ namespace com.espertech.esper.epl.agg.service
 
             if (_filterExprNode == null)
             {
-                return _filterExprNode == null;
+                return that._filterExprNode == null;
             }
-            return _filterExprNode != null && ExprNodeUtility.DeepEquals(_filterExprNode, that._filterExprNode, false);
+            return that._filterExprNode != null && ExprNodeUtility.DeepEquals(_filterExprNode, that._filterExprNode, false);
         }
     
         public override int GetHashCode()

@@ -54,14 +54,8 @@ namespace com.espertech.esper.view.window
             return new RelativeAccessByEventNIndexGetterImpl();
         }
 
-        public bool IsIncludeTriggeringEvent
-        {
-            get { return _includeTriggeringEvent; }
-        }
+        public bool IsIncludeTriggeringEvent => _includeTriggeringEvent;
 
-        public override string ViewName
-        {
-            get { return "Expression-batch"; }
-        }
+        public override string ViewName => "Expression-batch";
     }
 }

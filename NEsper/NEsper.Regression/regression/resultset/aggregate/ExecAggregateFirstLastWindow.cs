@@ -205,7 +205,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "Error starting statement: Failed to validate select-clause expression 'last(*)': The 'last' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead [select last(*) from SupportBean#lastevent sa, SupportBean#lastevent sb]");
     
             TryInvalid(epService, "select TheString, (select first(*) from SupportBean#lastevent sa) from SupportBean#lastevent sb",
-                    "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Failed to validate select-clause expression 'First(*)': The 'first' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead [select TheString, (select first(*) from SupportBean#lastevent sa) from SupportBean#lastevent sb]");
+                    "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Failed to validate select-clause expression 'first(*)': The 'first' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead [select TheString, (select first(*) from SupportBean#lastevent sa) from SupportBean#lastevent sb]");
     
             TryInvalid(epService, "select window(x.*) from SupportBean#lastevent",
                     "Error starting statement: Failed to validate select-clause expression 'window(x.*)': Stream by name 'x' could not be found among all streams [select window(x.*) from SupportBean#lastevent]");
@@ -221,7 +221,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "Error starting statement: Failed to validate select-clause expression 'window(x.IntPrimitive,10)': The 'window' aggregation function does not accept an index expression; Use 'first' or 'last' instead [");
     
             TryInvalid(epService, "select first(x.*, 10d) from SupportBean#lastevent as x",
-                    "Error starting statement: Failed to validate select-clause expression 'First(x.*,10.0)': The 'first' aggregation function requires an index expression that returns an integer value [select first(x.*, 10d) from SupportBean#lastevent as x]");
+                    "Error starting statement: Failed to validate select-clause expression 'first(x.*,10.0d)': The 'first' aggregation function requires an index expression that returns an integer value [select first(x.*, 10d) from SupportBean#lastevent as x]");
         }
     
         private void RunAssertionSubquery(EPServiceProvider epService) {
@@ -356,7 +356,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     "window(sa.*) as w1, " +
                     "last(*) as l1 " +
                     "from SupportBean#length(2) as sa " +
-                    "having SupportStaticMethodLib.AlwaysTrue({First(sa.DoublePrimitive + sa.IntPrimitive), " +
+                    "having SupportStaticMethodLib.AlwaysTrue({first(sa.DoublePrimitive + sa.IntPrimitive), " +
                     "first(sa.IntPrimitive), window(sa.*), last(*)})";
             stmt = epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += listener.Update;

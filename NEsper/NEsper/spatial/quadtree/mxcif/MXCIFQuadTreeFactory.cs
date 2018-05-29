@@ -10,20 +10,20 @@ using com.espertech.esper.spatial.quadtree.core;
 
 namespace com.espertech.esper.spatial.quadtree.mxcif
 {
-    public class MXCIFQuadTreeFactory<L>
+    internal class MXCIFQuadTreeFactory<L>
         where L : class
     {
         public static readonly int DEFAULT_LEAF_CAPACITY = 4;
         public static readonly int DEFAULT_MAX_TREE_HEIGHT = 20;
-    
-        public static MXCIFQuadTree<L> Make(double x, double y, double width, double height, int leafCapacity, int maxTreeHeight)
+
+        internal static MXCIFQuadTree<L> Make(double x, double y, double width, double height, int leafCapacity, int maxTreeHeight)
         {
             var bb = new BoundingBox(x, y, x + width, y + height);
             var leaf = new MXCIFQuadTreeNodeLeaf<L>(bb, 1, default(L), 0);
             return new MXCIFQuadTree<L>(leafCapacity, maxTreeHeight, leaf);
         }
-    
-        public static MXCIFQuadTree<L> Make(double x, double y, double width, double height)
+
+        internal static MXCIFQuadTree<L> Make(double x, double y, double width, double height)
         {
             return Make(x, y, width, height, DEFAULT_LEAF_CAPACITY, DEFAULT_MAX_TREE_HEIGHT);
         }

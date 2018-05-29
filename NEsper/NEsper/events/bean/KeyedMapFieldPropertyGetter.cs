@@ -61,31 +61,37 @@ namespace com.espertech.esper.events.bean
 
         public Object GetBeanPropInternal(Object @object, Object key)
         {
-            try
-            {
+            try {
                 var result = _field.GetValue(@object);
-                if (result == null)
-                {
+                if (result == null) {
                     return null;
                 }
-                if (result is Map)
-                {
-                    return ((Map)result).Get(key);
+
+                if (result is Map) {
+                    return ((Map) result).Get(key);
                 }
-                if (result.GetType().IsGenericDictionary())
-                {
-                    return MagicMarker.NewMagicDictionary<object, object>(result).Get(key);
+
+                var resultType = result.GetType();
+                if (resultType.IsGenericDictionary()) {
+                    return MagicMarker
+                        .GetDictionaryFactory(resultType)
+                        .Invoke(result)
+                        .Get(key);
                 }
 
                 return null;
             }
-            catch (InvalidCastException e)
-            {
+            catch (PropertyAccessException) {
+                throw;
+            }
+            catch (InvalidCastException e) {
                 throw PropertyUtility.GetMismatchException(_field, @object, e);
             }
-            catch (ArgumentException e)
-            {
+            catch (ArgumentException e) {
                 throw PropertyUtility.GetIllegalArgumentException(_field, e);
+            }
+            catch (Exception e) {
+                throw PropertyUtility.GetAccessExceptionField(_field, e);
             }
         }
 

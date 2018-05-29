@@ -301,7 +301,7 @@ namespace com.espertech.esper.regression.epl.join
                     FilterStream.Create(typeof(SupportBean_S1).FullName, "s1").AddView("keepall"));
             fromClause.Add(OuterJoinQualifier.Create("s0.p00", OuterJoinType.LEFT, "s1.p10").Add("s1.p11", "s0.p01"));
             model.FromClause = fromClause;
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string stmtText = "select s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11 from " + typeof(SupportBean_S0).FullName + "#keepall as s0 left outer join " + typeof(SupportBean_S1).FullName + "#keepall as s1 on s0.p00 = s1.p10 and s1.p11 = s0.p01";
             Assert.AreEqual(stmtText, model.ToEPL());

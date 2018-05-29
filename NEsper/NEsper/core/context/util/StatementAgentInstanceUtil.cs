@@ -501,7 +501,7 @@ namespace com.espertech.esper.core.context.util
 
                     agentInstanceContext.EpStatementAgentInstanceHandle.InternalDispatch();
                 }
-                catch (Exception ex)
+               catch (Exception ex)
                 {
                     servicesContext.ExceptionHandlingService.HandleException(
                         ex, agentInstanceContext.EpStatementAgentInstanceHandle, ExceptionHandlerExceptionType.PROCESS,

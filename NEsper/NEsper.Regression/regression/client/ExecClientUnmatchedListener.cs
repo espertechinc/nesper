@@ -64,8 +64,10 @@ namespace com.espertech.esper.regression.client
             theEvent = SendEvent(epService, "E1");
             Assert.AreEqual(1, listener.Received.Count);
             Assert.AreSame(theEvent, listener.Received[0].Underlying);
+
+            epService.EPRuntime.RemoveAllUnmatchedEventHandlers();
         }
-    
+
         private void RunAssertionUnmatchedCreateStatement(EPServiceProvider epService) {
             var listener = new UnmatchListenerCreateStmt(epService);
             epService.EPRuntime.UnmatchedEvent += listener.Update;
@@ -79,6 +81,7 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(0, listener.Received.Count);
     
             epService.EPAdministrator.DestroyAllStatements();
+            epService.EPRuntime.RemoveAllUnmatchedEventHandlers();
         }
     
         private void RunAssertionUnmatchedInsertInto(EPServiceProvider epService) {
@@ -106,8 +109,10 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(1, listener.Received.Count);
             Assert.AreEqual("E3", listener.Received[0].Get("TheString"));
             listener.Reset();
+
+            epService.EPRuntime.RemoveAllUnmatchedEventHandlers();
         }
-    
+
         private SupportBean SendEvent(EPServiceProvider epService, string theString) {
             var bean = new SupportBean();
             bean.TheString = theString;

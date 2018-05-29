@@ -163,7 +163,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             {
                 TryInvalidFAF(
                     epService, epl,
-                    "Error executing statement: Invalid assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as '" + Name.Of<int>() + "', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
+                    "Error executing statement: Invalid assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as '" + Name.Clean<int>() + "', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
             }
 
             epl = "insert into MyInfra(IntPrimitive, TheString) select 1";
@@ -907,11 +907,10 @@ namespace com.espertech.esper.regression.nwtable.infra
             // test update via UDF and setter
             if (isNamedWindow)
             {
-                epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                    "doubleInt", GetType().FullName, "doubleInt");
+                epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("doubleInt", GetType(), "DoubleInt");
                 epService.EPRuntime.ExecuteQuery("delete from MyInfra");
                 epService.EPRuntime.SendEvent(new SupportBean("A", 10));
-                epService.EPRuntime.ExecuteQuery("update MyInfra mw set Mw.TheString = 'XYZ', DoubleInt(mw)");
+                epService.EPRuntime.ExecuteQuery("update MyInfra mw set Mw.TheString = 'XYZ', doubleInt(mw)");
                 EPAssertionUtil.AssertPropsPerRow(
                     epService.EPAdministrator.GetStatement("TheInfra").GetEnumerator(),
                     "TheString,IntPrimitive".Split(','), new[] {new object[] {"XYZ", 20}});

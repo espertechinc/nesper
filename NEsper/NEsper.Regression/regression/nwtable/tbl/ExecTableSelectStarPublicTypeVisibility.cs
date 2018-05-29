@@ -6,8 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
@@ -48,7 +49,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             var expectedType = new object[][]
             {
                 new object[]{"key", typeof(string)},
-                new object[]{"totalInt", typeof(int?)},
+                new object[]{"totalInt", typeof(int)},
                 new object[]{"p0", typeof(string)},
                 new object[]{"winsb", typeof(SupportBean[])},
                 new object[]{"totalLong", typeof(long)},
@@ -195,8 +196,8 @@ namespace com.espertech.esper.regression.nwtable.tbl
 
             // try subquery
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                "pluginServiceEventBean", GetType().FullName, "myServiceEventBean");
-            var eplSubquery = "select (select PluginServiceEventBean(mt) from MyTable as mt) as c0 " +
+                "pluginServiceEventBean", GetType(), "MyServiceEventBean");
+            var eplSubquery = "select (select pluginServiceEventBean(mt) from MyTable as mt) as c0 " +
                               "from SupportBean_S2";
             var stmtSubquery = epService.EPAdministrator.CreateEPL(eplSubquery);
             stmtSubquery.Events += listener.Update;
@@ -228,10 +229,10 @@ namespace com.espertech.esper.regression.nwtable.tbl
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
-            Assert.AreEqual(typeof(Collection<>), stmt.EventType.GetPropertyType("mt"));
+            Assert.AreEqual(typeof(ICollection<object[]>), stmt.EventType.GetPropertyType("mt"));
 
             epService.EPRuntime.SendEvent(new SupportBean_S2(0));
-            var coll = listener.AssertOneGetNewAndReset().Get("mt").Unwrap<object>();
+            var coll = listener.AssertOneGetNewAndReset().Get("mt").Unwrap<object[]>();
             AssertEventUnd(coll.First(), rowValues);
 
             stmt.Dispose();

@@ -39,12 +39,16 @@ namespace com.espertech.esper.supportregression.execution
                 }
             }
 
+#if CATCH_RETHROW
             try {
+#endif
                 execution.Run(epService);
+#if CATCH_RETHROW
             }
             catch (Exception ex) {
                 throw new EPRuntimeException("Exception thrown: " + ex.Message, ex);
             }
+#endif
 
             if (!execution.ExcludeWhenInstrumented()) {
                 if (InstrumentationHelper.ENABLED) {

@@ -134,7 +134,7 @@ namespace com.espertech.esper.core.support
                 new ScheduleBucket(1),
                 new EPStatementHandle(statementId, "name1", "epl1", StatementType.SELECT, "epl1", false, null, 0, false, false, new MultiMatchHandlerFactoryImpl().GetDefaultHandler()),
                 new ViewResolutionServiceImpl(new PluggableObjectRegistryImpl(new PluggableObjectCollection[]{ViewEnumHelper.BuiltinViews}), null, null),
-                new PatternObjectResolutionServiceImpl(null),
+                new PatternObjectResolutionServiceImpl(container, null),
                 null,
                 null,
                 null,

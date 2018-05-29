@@ -43,7 +43,14 @@ namespace com.espertech.esper.epl.expression.methodagg
             }
 
             var num = second.ExprEvaluator.Evaluate(new EvaluateParams(null, true, validationContext.ExprEvaluatorContext));
-            int size = num.AsInt();
+            var size = num.AsInt();
+
+            var optionalFilter = OptionalFilter;
+            if (optionalFilter != null)
+            {
+                PositionalParams = ExprNodeUtility.AddExpression(positionalParams, optionalFilter);
+            }
+
 
             return validationContext.EngineImportService.AggregationFactoryFactory.MakeNth(validationContext.StatementExtensionSvcContext, this, first.ExprEvaluator.ReturnType, size);
         }

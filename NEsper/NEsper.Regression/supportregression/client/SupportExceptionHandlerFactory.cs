@@ -41,18 +41,19 @@ namespace com.espertech.esper.supportregression.client
             private readonly List<ExceptionHandlerContextUnassociated> _inboundPoolContexts =
                 new List<ExceptionHandlerContextUnassociated>();
 
-            public void Handle(ExceptionHandlerContext context) {
-                _contexts.Add(context);
+            public void Handle(object sender, ExceptionHandlerEventArgs eventArgs)
+            {
+                if (eventArgs.IsInboundPoolException) {
+                    _inboundPoolContexts.Add(eventArgs.InboundPoolContext);
+                }
+                else {
+                    _contexts.Add(eventArgs.Context);
+                }
             }
 
             public IList<ExceptionHandlerContext> Contexts => _contexts;
 
             public IList<ExceptionHandlerContextUnassociated> InboundPoolContexts => _inboundPoolContexts;
-
-            public void HandleInboundPoolUnassociated(ExceptionHandlerContextUnassociated context)
-            {
-                _inboundPoolContexts.Add(context);
-            }
         }
     }
 }

@@ -1214,8 +1214,13 @@ namespace com.espertech.esper.core.service
             {
                 StatementLifecycleSvcUtil.WalkStatement(spec, visitor);
 
-                groupByRollupExpressions = GroupByExpressionHelper.GetGroupByRollupExpressions(spec.GroupByExpressions,
-                        spec.SelectClauseSpec, spec.HavingExprRootNode, spec.OrderByList, visitor);
+                groupByRollupExpressions = GroupByExpressionHelper.GetGroupByRollupExpressions(
+                    servicesContext.Container,
+                    spec.GroupByExpressions,
+                    spec.SelectClauseSpec, 
+                    spec.HavingExprRootNode, 
+                    spec.OrderByList,
+                    visitor);
 
                 var subselects = visitor.Subselects;
                 if (!visitor.ChainedExpressionsDot.IsEmpty())

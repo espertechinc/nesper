@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.events.objectarray
                 epService.EPRuntime.SendEvent(new Dictionary<string, object>(), "MyMapNestedObjectArray");
                 Assert.Fail();
             } catch (EPException ex) {
-                Assert.AreEqual("Event type named 'MyMapNestedObjectArray' has not been defined or is not a Map event type, the name 'MyMapNestedObjectArray' refers to a System.Object(Array) event type", ex.Message);
+                Assert.AreEqual("Event type named 'MyMapNestedObjectArray' has not been defined or is not a Map event type, the name 'MyMapNestedObjectArray' refers to a System.Object[] event type", ex.Message);
             }
         }
     }

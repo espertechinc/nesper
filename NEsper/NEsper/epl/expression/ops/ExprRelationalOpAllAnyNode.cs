@@ -196,7 +196,7 @@ namespace com.espertech.esper.epl.expression.ops
             {
                 if (!coercionType.IsNumeric())
                 {
-                    throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", coercionType.FullName));
+                    throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", Name.Clean(coercionType)));
                 }
             }
 

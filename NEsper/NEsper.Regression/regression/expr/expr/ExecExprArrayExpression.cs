@@ -95,15 +95,15 @@ namespace com.espertech.esper.regression.expr.expr
             EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("oneEleArray"), new int?[]{1});
             EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("intArray"), new int?[]{1, 2, 3});
             EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("intNullArray"), new int?[]{1, null});
-            EPAssertionUtil.AssertEqualsExactOrder((long[]) theEvent.Get("longArray"), new long[]{1L, 10L});
+            EPAssertionUtil.AssertEqualsExactOrder((long?[]) theEvent.Get("longArray"), new long?[]{1L, 10L});
             EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("mixedArray"), new object[]{"a", 1, 1e20});
             EPAssertionUtil.AssertEqualsExactOrder((double?[]) theEvent.Get("doubleArray"), new double?[]{1d, 1.1, 1e20});
-            EPAssertionUtil.AssertEqualsExactOrder((long[]) theEvent.Get("intLongArray"), new long[]{5L, 6L});
+            EPAssertionUtil.AssertEqualsExactOrder((long?[]) theEvent.Get("intLongArray"), new long?[]{5L, 6L});
             EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("nullArray"), new object[]{null});
             EPAssertionUtil.AssertEqualsExactOrder((string[]) theEvent.Get("func"), new string[]{"a", "b"});
             EPAssertionUtil.AssertEqualsExactOrder((bool?[]) theEvent.Get("boolArray"), new bool?[]{true, false});
             EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("dynIntArr"), new int?[]{10});
-            EPAssertionUtil.AssertEqualsExactOrder((long[]) theEvent.Get("dynLongArr"), new long[]{10L, 999L});
+            EPAssertionUtil.AssertEqualsExactOrder((long?[]) theEvent.Get("dynLongArr"), new long?[]{10L, 999L});
             EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("dynMixedArr"), new object[]{10, "a"});
             EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("dynCalcArr"), new int?[]{10, 20, 30});
             EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("dynCalcArrNulls"), new object[]{null, null, "aa"});
@@ -124,22 +124,22 @@ namespace com.espertech.esper.regression.expr.expr
             Schema nullArraySchema = SchemaBuilder.Array(NullType());
     
             var stmtText =
-                    "@AvroSchemaField(name='emptyArray', schema='" + intArraySchema.ToString() + "')" +
-                            "@AvroSchemaField(name='mixedArray', schema='" + mixedArraySchema.ToString() + "')" +
-                            "@AvroSchemaField(name='nullArray', schema='" + nullArraySchema.ToString() + "')" +
-                            EventRepresentationChoice.AVRO.GetAnnotationText() +
-                            "select {'a', 'b'} as stringArray," +
-                            "{} as emptyArray," +
-                            "{1} as oneEleArray," +
-                            "{1,2,3} as intArray," +
-                            "{1,null} as intNullArray," +
-                            "{1L,10L} as longArray," +
-                            "{'a',1, 1e20} as mixedArray," +
-                            "{1, 1.1d, 1e20} as doubleArray," +
-                            "{5, 6L} as intLongArray," +
-                            "{null} as nullArray," +
-                            "{true, false} as boolArray" +
-                            " from " + typeof(SupportBean).FullName;
+                    "@AvroSchemaField(Name='emptyArray', Schema='" + intArraySchema + "')" +
+                    "@AvroSchemaField(Name='mixedArray', Schema='" + mixedArraySchema + "')" +
+                    "@AvroSchemaField(Name='nullArray', Schema='" + nullArraySchema + "')" +
+                    EventRepresentationChoice.AVRO.GetAnnotationText() +
+                    "select {'a', 'b'} as stringArray," +
+                    "{} as emptyArray," +
+                    "{1} as oneEleArray," +
+                    "{1,2,3} as intArray," +
+                    "{1,null} as intNullArray," +
+                    "{1L,10L} as longArray," +
+                    "{'a',1, 1e20} as mixedArray," +
+                    "{1, 1.1d, 1e20} as doubleArray," +
+                    "{5, 6L} as intLongArray," +
+                    "{null} as nullArray," +
+                    "{true, false} as boolArray" +
+                    " from " + typeof(SupportBean).FullName;
     
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regression.expr.expr
                 .Add(Expressions.Array().Add(Expressions.Constant(1)).Add(2).Add(3), "intArray");
 
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(stmtText, model.ToEPL());
     
             var stmt = epService.EPAdministrator.Create(model);

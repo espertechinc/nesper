@@ -63,6 +63,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="regression\db\TestDatabaseTimeout.cs" />
     <Compile Remove="regression\script\ExecScriptSandboxJSR223.cs" />
     <Compile Remove="regression\script\ExecScriptSandboxMVEL.cs" />
   </ItemGroup>
@@ -71,15 +72,25 @@
     <PackageReference Include="Apache.Avro" Version="1.7.7.2" />
     <PackageReference Include="Common.Logging" Version="3.4.1" />
     <PackageReference Include="Common.Logging.Log4Net208" Version="3.4.1" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="2.0.0" />
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="2.0.1" />
-    <PackageReference Include="MySql.Data" Version="8.0.10-rc" />
-    <PackageReference Include="NUnit" Version="3.9.0" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="2.0.2" />
+    <PackageReference Include="NUnit" Version="3.10.1" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.108" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\NEsper.Avro\NEsper.Avro.csproj" />
-    <ProjectReference Include="..\NEsper.Scripting.ClearScript\NEsper.Scripting.ClearScript.csproj" />
+    <ProjectReference Include="..\NEsper.Data.PgSQL\NEsper.Data.PgSQL.csproj" />
     <ProjectReference Include="..\NEsper\NEsper.csproj" />
+    <ProjectReference Include="..\..\NEsper.Avro\NEsper.Avro.csproj" />
+    <ProjectReference Include="..\NEsper.Data.MySQL\NEsper.Data.MySQL.csproj" />
+    <ProjectReference Include="..\NEsper.Scripting.ClearScript\NEsper.Scripting.ClearScript.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="NEsperRegressionConfig.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

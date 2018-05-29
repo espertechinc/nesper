@@ -28,9 +28,9 @@ namespace com.espertech.esper.regression.context
 {
     public class ExecContextInitTermTemporalFixed : RegressionExecution {
     
-        public override void Configure(Configuration configuration) {
-            var configDB = new ConfigurationDBRef();
-            configDB.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative);
+        public override void Configure(Configuration configuration)
+        {
+            var configDB = SupportDatabaseService.CreateDefaultConfig();
 
             configuration.AddDatabaseReference("MyDB", configDB);
             configuration.AddEventType<SupportBean>("SupportBean");
@@ -583,7 +583,7 @@ namespace com.espertech.esper.regression.context
         }
     
         private void RunAssertionNWSameContextOnExpr(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("makeBean", GetType().FullName, "SingleRowPluginMakeBean");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("makeBean", GetType(), "SingleRowPluginMakeBean");
             SendTimeEvent(epService, "2002-05-1T08:00:00.000");
             epService.EPAdministrator.CreateEPL("create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)");
     
@@ -694,23 +694,28 @@ namespace com.espertech.esper.regression.context
             var contextListener = new SupportUpdateListener();
             stmtContext.Events += contextListener.Update;
             stmtContext.Subscriber = new MiniSubscriber();
-    
-            var stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context NineToFive " +
-                    "select * from SupportBean");
-            stmtOne.Events += new SupportUpdateListener().Update;
+
+            var stmtOneListener = new SupportUpdateListener();
+            var stmtOne = epService.EPAdministrator.CreateEPL(
+                "@Name('A') context NineToFive select * from SupportBean", stmtOneListener);
+            stmtOne.Events += stmtOneListener.Update;
     
             SendTimeAndAssert(epService, "2002-05-1T08:59:30.000", false, 1);
             SendTimeAndAssert(epService, "2002-05-1T08:59:59.999", false, 1);
             SendTimeAndAssert(epService, "2002-05-1T09:00:00.000", true, 1);
-    
-            var stmtTwo = epService.EPAdministrator.CreateEPL("@Name('B') context NineToFive select * from SupportBean");
-            stmtTwo.Events += new SupportUpdateListener().Update;
+
+            var stmtTwoListener = new SupportUpdateListener();
+            var stmtTwo = epService.EPAdministrator.CreateEPL(
+                "@Name('B') context NineToFive select * from SupportBean", stmtTwoListener);
+            stmtTwo.Events += stmtTwoListener.Update;
     
             SendTimeAndAssert(epService, "2002-05-1T16:59:59.000", true, 2);
             SendTimeAndAssert(epService, "2002-05-1T17:00:00.000", false, 2);
-    
-            var stmtThree = epService.EPAdministrator.CreateEPL("@Name('C') context NineToFive select * from SupportBean");
-            stmtThree.Events += new SupportUpdateListener().Update;
+
+            var stmtThreeListener = new SupportUpdateListener();
+            var stmtThree = epService.EPAdministrator.CreateEPL(
+                "@Name('C') context NineToFive select * from SupportBean", stmtThreeListener);
+            stmtThree.Events += stmtThreeListener.Update;
     
             SendTimeAndAssert(epService, "2002-05-2T08:59:59.999", false, 3);
             SendTimeAndAssert(epService, "2002-05-2T09:00:00.000", true, 3);
@@ -727,18 +732,20 @@ namespace com.espertech.esper.regression.context
             Assert.AreEqual(contextEPL, model.ToEPL());
             var stmt = epService.EPAdministrator.Create(model);
             Assert.AreEqual(contextEPL, stmt.Text);
-    
+
             // test built-in properties
-            var stmtLast = epService.EPAdministrator.CreateEPL("@Name('A') context NineToFive " +
-                    "select context.name as c1, context.startTime as c2, context.endTime as c3, TheString as c4 from SupportBean");
             var listener = new SupportUpdateListener();
+            var stmtLast = epService.EPAdministrator.CreateEPL(
+                "@Name('A') context NineToFive " +
+                "select context.name as c1, context.startTime as c2, context.endTime as c3, TheString as c4 from SupportBean",
+                listener);
             stmtLast.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             var theEvent = listener.AssertOneGetNewAndReset();
             Assert.AreEqual("NineToFive", theEvent.Get("c1"));
-            Assert.AreEqual("2002-05-03T16:59:59.000", DateTimeHelper.Print(theEvent.Get("c2").AsDateTime()));
-            Assert.AreEqual("2002-05-03T17:00:00.000", DateTimeHelper.Print(theEvent.Get("c3").AsDateTime()));
+            Assert.AreEqual("2002-05-03 16:59:59.000", DateTimeHelper.Print(theEvent.Get("c2").AsDateTime()));
+            Assert.AreEqual("2002-05-03 17:00:00.000", DateTimeHelper.Print(theEvent.Get("c3").AsDateTime()));
             Assert.AreEqual("E1", theEvent.Get("c4"));
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -752,16 +759,18 @@ namespace com.espertech.esper.regression.context
             SendTimeEvent(epService, "2002-05-1T09:15:00.000");
             var stmtContext = epService.EPAdministrator.CreateEPL("@Name('context') create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)");
             Assert.AreEqual(1, ctxMgmtService.ContextCount);
-    
-            var stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context NineToFive select * from SupportBean");
-            stmtOne.Events += new SupportUpdateListener().Update;
+
+            var stmtOneListener = new SupportUpdateListener();
+            var stmtOne = epService.EPAdministrator.CreateEPL("@Name('A') context NineToFive select * from SupportBean", stmtOneListener);
+            stmtOne.Events += stmtOneListener.Update;
     
             SendTimeAndAssert(epService, "2002-05-1T09:16:00.000", true, 1);
             SendTimeAndAssert(epService, "2002-05-1T16:59:59.000", true, 1);
             SendTimeAndAssert(epService, "2002-05-1T17:00:00.000", false, 1);
-    
-            var stmtTwo = epService.EPAdministrator.CreateEPL("@Name('B') context NineToFive select * from SupportBean");
-            stmtTwo.Events += new SupportUpdateListener().Update;
+
+            var stmtTwoListener = new SupportUpdateListener();
+            var stmtTwo = epService.EPAdministrator.CreateEPL("@Name('B') context NineToFive select * from SupportBean", stmtTwoListener);
+            stmtTwo.Events += stmtTwoListener.Update;
     
             SendTimeAndAssert(epService, "2002-05-2T08:59:59.999", false, 2);
             SendTimeAndAssert(epService, "2002-05-2T09:15:00.000", true, 2);

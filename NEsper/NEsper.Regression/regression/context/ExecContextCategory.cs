@@ -116,7 +116,7 @@ namespace com.espertech.esper.regression.context
     
             // not a bool expression
             epl = "create context ACtx group IntPrimitive as grp1 from SupportBean";
-            TryInvalid(epService, epl, "Error starting statement: Filter expression not returning a bool value: 'IntPrimitive' [");
+            TryInvalid(epService, epl, "Error starting statement: Filter expression not returning a boolean value: 'IntPrimitive' [");
     
             // validate statement not applicable filters
             epService.EPAdministrator.CreateEPL("create context ACtx group IntPrimitive < 10 as cat1 from SupportBean");

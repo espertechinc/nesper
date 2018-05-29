@@ -30,15 +30,16 @@ namespace com.espertech.esper.regression.events.infra
         public override void Configure(Configuration configuration) {
             var avroSchema = SchemaBuilder.Record(AVRO_TYPENAME,
                     TypeBuilder.Field("IntPrimitive", TypeBuilder.IntType()));
+
             string avroSchemaText = avroSchema.ToString().Replace("\"", "&quot;");
     
             string xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                     "<esper-configuration>\t\n" +
                     "\t<event-type name=\"MyStaticBean\" class=\"" + typeof(SupportBean).FullName + "\"/>\n" +
                     "\t<event-type name=\"" + MAP_TYPENAME + "\">\n" +
-                    "\t\t<java-util-map>\n" +
+                    "\t\t<map>\n" +
                     "\t  \t\t<map-property name=\"IntPrimitive\" class=\"int\"/>\n" +
-                    "\t  \t</java-util-map>\n" +
+                    "\t  \t</map>\n" +
                     "\t</event-type>\n" +
                     "\t\n" +
                     "\t<event-type name=\"" + OA_TYPENAME + "\">\n" +
@@ -64,7 +65,7 @@ namespace com.espertech.esper.regression.events.infra
             RunAssertion(epService, "MyStaticBean", FBEAN, new SupportBean("E1", 10));
     
             // Map
-            RunAssertion(epService, MAP_TYPENAME, FMAP, Collections.SingletonMap("IntPrimitive", 10));
+            RunAssertion(epService, MAP_TYPENAME, FMAP, Collections.SingletonMap<string, object>("IntPrimitive", 10));
     
             // Object-Array
             RunAssertion(epService, OA_TYPENAME, FOA, new object[]{10});

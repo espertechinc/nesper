@@ -214,7 +214,7 @@ namespace com.espertech.esper.regression.expr.expr
             // test aggregation-sum, multiplication and division all together; test for ESPER-340
             stmt.Dispose();
             stmt = epService.EPAdministrator.CreateEPL(
-                    "select (sum(bigdecTwo * DecimalOne)/sum(DecimalOne)) as avgRate from SupportBeanNumeric");
+                    "select (sum(DecimalTwo * DecimalOne)/sum(DecimalOne)) as avgRate from SupportBeanNumeric");
             stmt.Events += listener.Update;
             listener.Reset();
             Assert.AreEqual(typeof(decimal?), stmt.EventType.GetPropertyType("avgRate"));
@@ -338,7 +338,7 @@ namespace com.espertech.esper.regression.expr.expr
         private void RunAssertionCastAndUDF(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddImport(typeof(SupportStaticMethodLib).FullName);
             EPStatement stmt = epService.EPAdministrator.CreateEPL(
-                    "select SupportStaticMethodLib.MyBigIntFunc(Cast(2, BigInteger)) as v1, SupportStaticMethodLib.MyBigDecFunc(Cast(3d, decimal)) as v2 from SupportBeanNumeric");
+                    "select SupportStaticMethodLib.MyBigIntFunc(cast(2, BigInteger)) as v1, SupportStaticMethodLib.MyDecimalFunc(cast(3d, decimal)) as v2 from SupportBeanNumeric");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     

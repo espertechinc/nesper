@@ -178,6 +178,7 @@ namespace com.espertech.esper.epl.db.drivers
                 DbParameter myParam = myCommand.CreateParameter();
                 myParam.IsNullable = true;
                 myParam.ParameterName = parameterName;
+                myParam.Value = DBNull.Value;
                 myCommand.Parameters.Add(myParam);
             }
 
@@ -247,10 +248,7 @@ namespace com.espertech.esper.epl.db.drivers
         /// Gets the fragments.
         /// </summary>
         /// <value>The fragments.</value>
-        public virtual IEnumerable<PlaceholderParser.Fragment> Fragments
-        {
-            get { return _fragments; }
-        }
+        public virtual IEnumerable<PlaceholderParser.Fragment> Fragments => _fragments;
 
         /// <summary>
         /// Gets the pseudo text.
@@ -284,10 +282,7 @@ namespace com.espertech.esper.epl.db.drivers
         /// Gets the command text.
         /// </summary>
         /// <value>The command text.</value>
-        public virtual String CommandText
-        {
-            get { return _dbCommandText; }
-        }
+        public virtual String CommandText => _dbCommandText;
 
         #region DbDriverCommand Members
 
@@ -295,45 +290,30 @@ namespace com.espertech.esper.epl.db.drivers
         /// Gets the driver associated with this command.
         /// </summary>
         /// <value></value>
-        public virtual DbDriver Driver
-        {
-            get { return _driver; }
-        }
+        public virtual DbDriver Driver => _driver;
 
         /// <summary>
         /// Gets the meta data.
         /// </summary>
-        /// <value>The meta data.</value>
-        public virtual QueryMetaData MetaData
-        {
-            get { return new QueryMetaData(InputParameters, OutputParameters); }
-        }
+        /// <returns>The meta data.</returns>
+        public virtual QueryMetaData GetMetaData() => new QueryMetaData(InputParameters, OutputParameters);
 
         /// <summary>
         /// Gets the meta data settings associated with this command.
         /// </summary>
-        public ColumnSettings MetaDataSettings
-        {
-            get { return _metadataSettings; }
-        }
+        public ColumnSettings MetaDataSettings => _metadataSettings;
 
         /// <summary>
         /// Gets a list of parameters.
         /// </summary>
         /// <value>The parameters.</value>
-        public virtual SQLParameterDesc ParameterDescription
-        {
-            get { return GetParameters(_fragments); }
-        }
+        public virtual SQLParameterDesc ParameterDescription => GetParameters(_fragments);
 
         /// <summary>
         /// Gets the input parameters.
         /// </summary>
         /// <value>The input parameters.</value>
-        public virtual IList<String> InputParameters
-        {
-            get { return _inputParameters; }
-        }
+        public virtual IList<String> InputParameters => _inputParameters;
 
         /// <summary>
         /// Gets the output parameters.
@@ -351,10 +331,7 @@ namespace com.espertech.esper.epl.db.drivers
                 return _outputParameters;
             }
 
-            protected set
-            {
-                _outputParameters = value;
-            }
+            protected set => _outputParameters = value;
         }
 
         /// <summary>
@@ -396,8 +373,7 @@ namespace com.espertech.esper.epl.db.drivers
                         String text = "Error in statement '" + _dbCommandText +
                                       "', failed to obtain result metadata, consider turning off metadata interrogation via configuration";
                         Log.Error(text, ex);
-                        throw new ExprValidationException(text + ", please check the statement, reason: " +
-                                                          ex.Message);
+                        throw new ExprValidationException(text + ", please check the statement, reason: " + ex.Message, ex);
                     }
 
                     if (Log.IsDebugEnabled)
@@ -413,7 +389,7 @@ namespace com.espertech.esper.epl.db.drivers
             {
                 String text = "Error preparing statement '" + _dbCommandText + '\'';
                 Log.Error(text, ex);
-                throw new ExprValidationException(text + ", reason: " + ex.Message);
+                throw new ExprValidationException(text + ", reason: " + ex.Message, ex);
             }
         }
 
@@ -447,10 +423,13 @@ namespace com.espertech.esper.epl.db.drivers
         /// <returns></returns>
         protected virtual String GetColumnSqlType( DataRow schemaDataRow )
         {
-            var providerType = (Int32)schemaDataRow["ProviderType"];
-            var providerTypeAsEnum = (DbType) providerType;
-            var sqlTypeName = EnumHelper.GetName(providerTypeAsEnum);
-            return sqlTypeName;
+            var dataType = (Type) schemaDataRow["DataType"];
+            return dataType.FullName;
+
+            //var providerType = (Int32)schemaDataRow["ProviderType"];
+            //var providerTypeAsEnum = (DbType) providerType;
+            //var sqlTypeName = EnumHelper.GetName(providerTypeAsEnum);
+            //return sqlTypeName;
         }
 
         /// <summary>
@@ -466,10 +445,10 @@ namespace com.espertech.esper.epl.db.drivers
             IDictionary<String, DBOutputTypeDesc> outputProperties = new Dictionary<String, DBOutputTypeDesc>();
             foreach (DataRow dataRow in schemaTable.Rows) 
             {
-                var canBeNull = (Boolean) dataRow["AllowDBNull"];
                 var columnName = (String)dataRow["ColumnName"];
                 var columnType = GetColumnType(dataRow);
                 var sqlTypeName = GetColumnSqlType(dataRow);
+                //var canBeNull = (Boolean)dataRow["AllowDBNull"];
                 //if (canBeNull) {
                 //    columnType = columnType.GetBoxedType();
                 //}

@@ -23,14 +23,15 @@ namespace com.espertech.esper.epl.expression.methodagg
     public class ExprMinMaxAggrNode : ExprAggregateNodeBase
     {
         private readonly MinMaxTypeEnum _minMaxTypeEnum;
-        private readonly bool _hasFilter;
+        private readonly bool _isFFunc;
         private readonly bool _isEver;
-    
-        public ExprMinMaxAggrNode(bool distinct, MinMaxTypeEnum minMaxTypeEnum, bool hasFilter, bool isEver)
+        private bool _hasFilter;
+
+        public ExprMinMaxAggrNode(bool distinct, MinMaxTypeEnum minMaxTypeEnum, bool isFFunc, bool isEver)
             : base(distinct)
         {
             _minMaxTypeEnum = minMaxTypeEnum;
-            _hasFilter = hasFilter;
+            _isFFunc = isFFunc;
             _isEver = isEver;
         }
     
@@ -53,22 +54,26 @@ namespace com.espertech.esper.epl.expression.methodagg
                 }
             }
     
-            if (_hasFilter) {
+            if (_isFFunc) {
                 if (positionalParams.Length < 2) {
                     throw new ExprValidationException(_minMaxTypeEnum.ToString() + "-filtered aggregation function must have a filter expression as a second parameter");
                 }
                 base.ValidateFilter(positionalParams[1].ExprEvaluator);
             }
-            return validationContext.EngineImportService.AggregationFactoryFactory.MakeMinMax(validationContext.StatementExtensionSvcContext, this, child.ExprEvaluator.ReturnType, hasDataWindows);
+
+            _hasFilter = positionalParams.Length == 2;
+
+            return validationContext.EngineImportService.AggregationFactoryFactory.MakeMinMax(
+                validationContext.StatementExtensionSvcContext, this, child.ExprEvaluator.ReturnType, hasDataWindows);
         }
 
         protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node) {
-            var other = node as ExprMinMaxAggrNode;
-            if (other == null)
-            {
-                return false;
+            if (node is ExprMinMaxAggrNode other) {
+                return other._minMaxTypeEnum == _minMaxTypeEnum && 
+                       other._isEver == _isEver;
             }
-            return other._minMaxTypeEnum == this._minMaxTypeEnum && other._isEver == this._isEver;
+
+            return false;
         }
 
         /// <summary>

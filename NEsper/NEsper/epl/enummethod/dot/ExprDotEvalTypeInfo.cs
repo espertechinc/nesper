@@ -104,7 +104,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             }
             else if (Scalar != null)
             {
-                return "class " + TypeHelper.GetTypeNameFullyQualPretty(Scalar);
+                return "class " + TypeHelper.GetCleanName(Scalar);
             }
             else
             {

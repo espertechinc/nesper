@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.context
             configuration.AddEventType<SupportBean>();
             configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
             configuration.EngineDefaults.Logging.IsEnableExecutionDebug = true;
-            configuration.AddPlugInSingleRowFunction("toArray", GetType().FullName, "ToArray");
+            configuration.AddPlugInSingleRowFunction("toArray", GetType(), "ToArray");
         }
 
         public override void Run(EPServiceProvider epService)

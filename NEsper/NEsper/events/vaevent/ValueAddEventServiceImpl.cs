@@ -33,11 +33,12 @@ namespace com.espertech.esper.events.vaevent
         /// <summary>Map of revision event stream and variant stream processor. </summary>
         protected readonly IDictionary<String, ValueAddEventProcessor> VariantProcessors;
 
-        private ILockManager _lockManager;
+        private readonly ILockManager _lockManager;
 
         /// <summary>Ctor. </summary>
         public ValueAddEventServiceImpl(ILockManager lockManager)
         {
+            _lockManager = lockManager;
             SpecificationsByRevisionName = new Dictionary<String, RevisionSpec>().WithNullSupport();
             ProcessorsByNamedWindow = new Dictionary<String, ValueAddEventProcessor>().WithNullSupport();
             VariantProcessors = new Dictionary<String, ValueAddEventProcessor>().WithNullSupport();

@@ -140,7 +140,7 @@ namespace com.espertech.esper.regression.nwtable.infra
             {
                 var text = namedWindow
                     ? "Unexpected exception in statement 'create': Unique index violation, index 'I1' is a unique index and key 'E1' already exists"
-                    : "java.lang.RuntimeException: Unexpected exception in statement 'insert': Unique index violation, index 'I1' is a unique index and key 'E1' already exists";
+                    : "com.espertech.esper.client.EPException: Unexpected exception in statement 'insert': Unique index violation, index 'I1' is a unique index and key 'E1' already exists";
                 Assert.AreEqual(text, ex.Message);
             }
 
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 epService.EPAdministrator.CreateEPL("create table MyTable (p0 string, sumint sum(int))");
                 SupportMessageAssertUtil.TryInvalid(
                     epService, "create index MyIndex on MyTable(p0)",
-                    "Error starting statement: Tables without primary key Column(s) do not allow creating an index [");
+                    "Error starting statement: Tables without primary key column(s) do not allow creating an index [");
             }
 
             epService.EPAdministrator.DestroyAllStatements();

@@ -392,7 +392,7 @@ namespace com.espertech.esper.regression.nwtable.infra
     
             if (namedWindow) {
                 epl = "on SupportBean_A as up merge MergeInfra as mv where mv.TheString=id when matched then insert select *";
-                SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Validation failed in when-not-matched (clause 1): Expression-returned event type 'SupportBean_A' with underlying type '" + typeof(SupportBean_A).FullName + "' cannot be converted to target event type 'MergeInfra' with underlying type '" + typeof(SupportBean).FullName + "' [on SupportBean_A as up merge MergeInfra as mv where mv.TheString=id when matched then insert select *]");
+                SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Validation failed in when-not-matched (clause 1): Expression-returned event type 'SupportBean_A' with underlying type '" + Name.Clean<SupportBean_A>() + "' cannot be converted to target event type 'MergeInfra' with underlying type '" + Name.Clean<SupportBean>() + "' [on SupportBean_A as up merge MergeInfra as mv where mv.TheString=id when matched then insert select *]");
             }
     
             epl = "on SupportBean as up merge MergeInfra as mv";

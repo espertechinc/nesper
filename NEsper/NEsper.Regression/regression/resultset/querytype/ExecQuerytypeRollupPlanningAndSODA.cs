@@ -6,111 +6,110 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.IO;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.client.soda;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.agg.rollup;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.resultset.querytype
 {
-    public class ExecQuerytypeRollupPlanningAndSODA : RegressionExecution {
-        public static readonly string PLAN_CALLBACK_HOOK = "@Hook(type=" + typeof(HookType).FullName + ".INTERNAL_GROUPROLLUP_PLAN,hook='" + typeof(SupportGroupRollupPlanHook).FullName + "')";
+    public class ExecQuerytypeRollupPlanningAndSODA : RegressionExecution
+    {
+        public static readonly string PLAN_CALLBACK_HOOK = string.Format(
+            "@Hook(Type={0}.INTERNAL_GROUPROLLUP_PLAN,Hook='{1}')", 
+            typeof(HookType).FullName, 
+            typeof(SupportGroupRollupPlanHook).FullName);
     
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType(typeof(ABCProp));
     
             // plain rollup
-            Validate(epService, "a", "Rollup(a)", new string[]{"a", ""});
-            Validate(epService, "a, b", "Rollup(a, b)", new string[]{"a,b", "a", ""});
-            Validate(epService, "a, b, c", "Rollup(a, b, c)", new string[]{"a,b,c", "a,b", "a", ""});
-            Validate(epService, "a, b, c, d", "Rollup(a, b, c, d)", new string[]{"a,b,c,d", "a,b,c", "a,b", "a", ""});
+            Validate(epService, "a", "rollup(a)", new string[]{"a", ""});
+            Validate(epService, "a, b", "rollup(a, b)", new string[]{"a,b", "a", ""});
+            Validate(epService, "a, b, c", "rollup(a, b, c)", new string[]{"a,b,c", "a,b", "a", ""});
+            Validate(epService, "a, b, c, d", "rollup(a, b, c, d)", new string[]{"a,b,c,d", "a,b,c", "a,b", "a", ""});
     
             // rollup with unenclosed
-            Validate(epService, "a, b", "a, Rollup(b)", new string[]{"a,b", "a"});
-            Validate(epService, "a, b, c", "a, b, Rollup(c)", new string[]{"a,b,c", "a,b"});
-            Validate(epService, "a, b, c", "a, Rollup(b, c)", new string[]{"a,b,c", "a,b", "a"});
-            Validate(epService, "a, b, c, d", "a, b, Rollup(c, d)", new string[]{"a,b,c,d", "a,b,c", "a,b"});
-            Validate(epService, "a, b, c, d, e", "a, b, Rollup(c, d, e)", new string[]{"a,b,c,d,e", "a,b,c,d", "a,b,c", "a,b"});
+            Validate(epService, "a, b", "a, rollup(b)", new string[]{"a,b", "a"});
+            Validate(epService, "a, b, c", "a, b, rollup(c)", new string[]{"a,b,c", "a,b"});
+            Validate(epService, "a, b, c", "a, rollup(b, c)", new string[]{"a,b,c", "a,b", "a"});
+            Validate(epService, "a, b, c, d", "a, b, rollup(c, d)", new string[]{"a,b,c,d", "a,b,c", "a,b"});
+            Validate(epService, "a, b, c, d, e", "a, b, rollup(c, d, e)", new string[]{"a,b,c,d,e", "a,b,c,d", "a,b,c", "a,b"});
     
             // plain cube
-            Validate(epService, "a", "Cube(a)", new string[]{"a", ""});
-            Validate(epService, "a, b", "Cube(a, b)", new string[]{"a,b", "a", "b", ""});
-            Validate(epService, "a, b, c", "Cube(a, b, c)", new string[]{"a,b,c", "a,b", "a,c", "a", "b,c", "b", "c", ""});
-            Validate(epService, "a, b, c, d", "Cube(a, b, c, d)", new string[]{"a,b,c,d", "a,b,c", "a,b,d",
+            Validate(epService, "a", "cube(a)", new string[]{"a", ""});
+            Validate(epService, "a, b", "cube(a, b)", new string[]{"a,b", "a", "b", ""});
+            Validate(epService, "a, b, c", "cube(a, b, c)", new string[]{"a,b,c", "a,b", "a,c", "a", "b,c", "b", "c", ""});
+            Validate(epService, "a, b, c, d", "cube(a, b, c, d)", new string[]{"a,b,c,d", "a,b,c", "a,b,d",
                     "a,b", "a,c,d", "a,c", "a,d", "a",
                     "b,c,d", "b,c", "b,d", "b",
                     "c,d", "c", "d", ""});
     
             // cube with unenclosed
-            Validate(epService, "a, b", "a, Cube(b)", new string[]{"a,b", "a"});
-            Validate(epService, "a, b, c", "a, Cube(b, c)", new string[]{"a,b,c", "a,b", "a,c", "a"});
-            Validate(epService, "a, b, c, d", "a, Cube(b, c, d)", new string[]{"a,b,c,d", "a,b,c", "a,b,d", "a,b", "a,c,d", "a,c", "a,d", "a"});
-            Validate(epService, "a, b, c, d", "a, b, Cube(c, d)", new string[]{"a,b,c,d", "a,b,c", "a,b,d", "a,b"});
+            Validate(epService, "a, b", "a, cube(b)", new string[]{"a,b", "a"});
+            Validate(epService, "a, b, c", "a, cube(b, c)", new string[]{"a,b,c", "a,b", "a,c", "a"});
+            Validate(epService, "a, b, c, d", "a, cube(b, c, d)", new string[]{"a,b,c,d", "a,b,c", "a,b,d", "a,b", "a,c,d", "a,c", "a,d", "a"});
+            Validate(epService, "a, b, c, d", "a, b, cube(c, d)", new string[]{"a,b,c,d", "a,b,c", "a,b,d", "a,b"});
     
             // plain grouping set
-            Validate(epService, "a", "grouping Sets(a)", new string[]{"a"});
-            Validate(epService, "a", "grouping Sets(a)", new string[]{"a"});
-            Validate(epService, "a, b", "grouping Sets(a, b)", new string[]{"a", "b"});
-            Validate(epService, "a, b", "grouping Sets(a, b, (a, b), ())", new string[]{"a", "b", "a,b", ""});
-            Validate(epService, "a, b", "grouping Sets(a, (a, b), (), b)", new string[]{"a", "a,b", "", "b"});
-            Validate(epService, "a, b, c", "grouping Sets((a, b), (a, c), (), (b, c))", new string[]{"a,b", "a,c", "", "b,c"});
-            Validate(epService, "a, b", "grouping Sets((a, b))", new string[]{"a,b"});
-            Validate(epService, "a, b, c", "grouping Sets((a, b, c), ())", new string[]{"a,b,c", ""});
-            Validate(epService, "a, b, c", "grouping Sets((), (a, b, c), (b, c))", new string[]{"", "a,b,c", "b,c"});
+            Validate(epService, "a", "grouping sets(a)", new string[]{"a"});
+            Validate(epService, "a", "grouping sets(a)", new string[]{"a"});
+            Validate(epService, "a, b", "grouping sets(a, b)", new string[]{"a", "b"});
+            Validate(epService, "a, b", "grouping sets(a, b, (a, b), ())", new string[]{"a", "b", "a,b", ""});
+            Validate(epService, "a, b", "grouping sets(a, (a, b), (), b)", new string[]{"a", "a,b", "", "b"});
+            Validate(epService, "a, b, c", "grouping sets((a, b), (a, c), (), (b, c))", new string[]{"a,b", "a,c", "", "b,c"});
+            Validate(epService, "a, b", "grouping sets((a, b))", new string[]{"a,b"});
+            Validate(epService, "a, b, c", "grouping sets((a, b, c), ())", new string[]{"a,b,c", ""});
+            Validate(epService, "a, b, c", "grouping sets((), (a, b, c), (b, c))", new string[]{"", "a,b,c", "b,c"});
     
             // grouping sets with unenclosed
-            Validate(epService, "a, b", "a, grouping Sets(b)", new string[]{"a,b"});
-            Validate(epService, "a, b, c", "a, grouping Sets(b, c)", new string[]{"a,b", "a,c"});
-            Validate(epService, "a, b, c", "a, grouping Sets((b, c))", new string[]{"a,b,c"});
-            Validate(epService, "a, b, c, d", "a, b, grouping Sets((), c, d, (c, d))", new string[]{"a,b", "a,b,c", "a,b,d", "a,b,c,d"});
+            Validate(epService, "a, b", "a, grouping sets(b)", new string[]{"a,b"});
+            Validate(epService, "a, b, c", "a, grouping sets(b, c)", new string[]{"a,b", "a,c"});
+            Validate(epService, "a, b, c", "a, grouping sets((b, c))", new string[]{"a,b,c"});
+            Validate(epService, "a, b, c, d", "a, b, grouping sets((), c, d, (c, d))", new string[]{"a,b", "a,b,c", "a,b,d", "a,b,c,d"});
     
             // multiple grouping sets
-            Validate(epService, "a, b", "grouping Sets(a), grouping Sets(b)", new string[]{"a,b"});
-            Validate(epService, "a, b, c", "grouping Sets(a), grouping Sets(b, c)", new string[]{"a,b", "a,c"});
-            Validate(epService, "a, b, c, d", "grouping Sets(a, b), grouping Sets(c, d)", new string[]{"a,c", "a,d", "b,c", "b,d"});
-            Validate(epService, "a, b, c", "grouping Sets((), a), grouping Sets(b, c)", new string[]{"b", "c", "a,b", "a,c"});
-            Validate(epService, "a, b, c, d", "grouping Sets(a, b, c), grouping Sets(d)", new string[]{"a,d", "b,d", "c,d"});
-            Validate(epService, "a, b, c, d, e", "grouping Sets(a, b, c), grouping Sets(d, e)", new string[]{"a,d", "a,e", "b,d", "b,e", "c,d", "c,e"});
+            Validate(epService, "a, b", "grouping sets(a), grouping sets(b)", new string[]{"a,b"});
+            Validate(epService, "a, b, c", "grouping sets(a), grouping sets(b, c)", new string[]{"a,b", "a,c"});
+            Validate(epService, "a, b, c, d", "grouping sets(a, b), grouping sets(c, d)", new string[]{"a,c", "a,d", "b,c", "b,d"});
+            Validate(epService, "a, b, c", "grouping sets((), a), grouping sets(b, c)", new string[]{"b", "c", "a,b", "a,c"});
+            Validate(epService, "a, b, c, d", "grouping sets(a, b, c), grouping sets(d)", new string[]{"a,d", "b,d", "c,d"});
+            Validate(epService, "a, b, c, d, e", "grouping sets(a, b, c), grouping sets(d, e)", new string[]{"a,d", "a,e", "b,d", "b,e", "c,d", "c,e"});
     
             // multiple rollups
-            Validate(epService, "a, b, c", "Rollup(a, b), Rollup(c)", new string[]{"a,b,c", "a,b", "a,c", "a", "c", ""});
-            Validate(epService, "a, b, c, d", "Rollup(a, b), Rollup(c, d)", new string[]{"a,b,c,d", "a,b,c", "a,b", "a,c,d", "a,c", "a", "c,d", "c", ""});
+            Validate(epService, "a, b, c", "rollup(a, b), rollup(c)", new string[]{"a,b,c", "a,b", "a,c", "a", "c", ""});
+            Validate(epService, "a, b, c, d", "rollup(a, b), rollup(c, d)", new string[]{"a,b,c,d", "a,b,c", "a,b", "a,c,d", "a,c", "a", "c,d", "c", ""});
     
             // grouping sets with rollup or cube inside
-            Validate(epService, "a, b, c", "grouping Sets(a, Rollup(b, c))", new string[]{"a", "b,c", "b", ""});
-            Validate(epService, "a, b, c", "grouping Sets(a, Cube(b, c))", new string[]{"a", "b,c", "b", "c", ""});
-            Validate(epService, "a, b", "grouping Sets(Rollup(a, b))", new string[]{"a,b", "a", ""});
-            Validate(epService, "a, b", "grouping Sets(Cube(a, b))", new string[]{"a,b", "a", "b", ""});
-            Validate(epService, "a, b, c, d", "grouping Sets((a, b), Rollup(c, d))", new string[]{"a,b", "c,d", "c", ""});
-            Validate(epService, "a, b, c, d", "grouping Sets(a, b, Rollup(c, d))", new string[]{"a", "b", "c,d", "c", ""});
+            Validate(epService, "a, b, c", "grouping sets(a, rollup(b, c))", new string[]{"a", "b,c", "b", ""});
+            Validate(epService, "a, b, c", "grouping sets(a, cube(b, c))", new string[]{"a", "b,c", "b", "c", ""});
+            Validate(epService, "a, b", "grouping sets(rollup(a, b))", new string[]{"a,b", "a", ""});
+            Validate(epService, "a, b", "grouping sets(cube(a, b))", new string[]{"a,b", "a", "b", ""});
+            Validate(epService, "a, b, c, d", "grouping sets((a, b), rollup(c, d))", new string[]{"a,b", "c,d", "c", ""});
+            Validate(epService, "a, b, c, d", "grouping sets(a, b, rollup(c, d))", new string[]{"a", "b", "c,d", "c", ""});
     
             // cube and rollup with combined expression
-            Validate(epService, "a, b, c", "Cube((a, b), c)", new string[]{"a,b,c", "a,b", "c", ""});
-            Validate(epService, "a, b, c", "Rollup((a, b), c)", new string[]{"a,b,c", "a,b", ""});
-            Validate(epService, "a, b, c, d", "Cube((a, b), (c, d))", new string[]{"a,b,c,d", "a,b", "c,d", ""});
-            Validate(epService, "a, b, c, d", "Rollup((a, b), (c, d))", new string[]{"a,b,c,d", "a,b", ""});
-            Validate(epService, "a, b, c", "Cube(a, (b, c))", new string[]{"a,b,c", "a", "b,c", ""});
-            Validate(epService, "a, b, c", "Rollup(a, (b, c))", new string[]{"a,b,c", "a", ""});
-            Validate(epService, "a, b, c", "grouping Sets(Rollup((a, b), c))", new string[]{"a,b,c", "a,b", ""});
+            Validate(epService, "a, b, c", "cube((a, b), c)", new string[]{"a,b,c", "a,b", "c", ""});
+            Validate(epService, "a, b, c", "rollup((a, b), c)", new string[]{"a,b,c", "a,b", ""});
+            Validate(epService, "a, b, c, d", "cube((a, b), (c, d))", new string[]{"a,b,c,d", "a,b", "c,d", ""});
+            Validate(epService, "a, b, c, d", "rollup((a, b), (c, d))", new string[]{"a,b,c,d", "a,b", ""});
+            Validate(epService, "a, b, c", "cube(a, (b, c))", new string[]{"a,b,c", "a", "b,c", ""});
+            Validate(epService, "a, b, c", "rollup(a, (b, c))", new string[]{"a,b,c", "a", ""});
+            Validate(epService, "a, b, c", "grouping sets(rollup((a, b), c))", new string[]{"a,b,c", "a,b", ""});
     
             // multiple cubes and rollups
-            Validate(epService, "a, b, c, d", "Rollup(a, b), Rollup(c, d)", new string[]{"a,b,c,d", "a,b,c", "a,b",
+            Validate(epService, "a, b, c, d", "rollup(a, b), rollup(c, d)", new string[]{"a,b,c,d", "a,b,c", "a,b",
                     "a,c,d", "a,c", "a", "c,d", "c", ""});
-            Validate(epService, "a, b", "Cube(a), Cube(b)", new string[]{"a,b", "a", "b", ""});
-            Validate(epService, "a, b, c", "Cube(a, b), Cube(c)", new string[]{"a,b,c", "a,b", "a,c", "a", "b,c", "b", "c", ""});
+            Validate(epService, "a, b", "cube(a), cube(b)", new string[]{"a,b", "a", "b", ""});
+            Validate(epService, "a, b, c", "cube(a, b), cube(c)", new string[]{"a,b,c", "a,b", "a,c", "a", "b,c", "b", "c", ""});
         }
     
         private void Validate(EPServiceProvider epService, string selectClause, string groupByClause, string[] expectedCSV) {
@@ -150,7 +149,7 @@ namespace com.espertech.esper.regression.resultset.querytype
             Assert.AreEqual(expectedCSV.Length, received.Length, "Received: " + ToCSV(received));
             for (int i = 0; i < expectedCSV.Length; i++) {
                 string receivedCSV = ToCSV(received[i]);
-                Assert.AreEqual("Failed at row " + i, expectedCSV[i], receivedCSV);
+                Assert.AreEqual(expectedCSV[i], receivedCSV, "Failed at row " + i);
             }
         }
     
@@ -175,59 +174,36 @@ namespace com.espertech.esper.regression.resultset.querytype
             }
             return writer.ToString();
         }
-    
-        public class ABCProp {
-            private readonly string a;
-            private readonly string b;
-            private readonly string c;
-            private readonly string d;
-            private readonly string e;
-            private readonly string f;
-            private readonly string g;
-            private readonly string h;
-    
-            private ABCProp(string a, string b, string c, string d, string e, string f, string g, string h) {
-                this.a = a;
-                this.b = b;
-                this.c = c;
-                this.d = d;
-                this.e = e;
-                this.f = f;
-                this.g = g;
-                this.h = h;
+
+        public class ABCProp
+        {
+            private ABCProp(string a, string b, string c, string d, string e, string f, string g, string h)
+            {
+                A = a;
+                B = b;
+                C = c;
+                D = d;
+                E = e;
+                F = f;
+                G = g;
+                H = h;
             }
-    
-            public string GetA() {
-                return a;
-            }
-    
-            public string GetB() {
-                return b;
-            }
-    
-            public string GetC() {
-                return c;
-            }
-    
-            public string GetD() {
-                return d;
-            }
-    
-            public string GetE() {
-                return e;
-            }
-    
-            public string GetF() {
-                return f;
-            }
-    
-            public string GetG() {
-                return g;
-            }
-    
-            public string GetH() {
-                return h;
-            }
+
+            public string A { get; }
+
+            public string B { get; }
+
+            public string C { get; }
+
+            public string D { get; }
+
+            public string E { get; }
+
+            public string F { get; }
+
+            public string G { get; }
+
+            public string H { get; }
         }
     }
 } // end of namespace

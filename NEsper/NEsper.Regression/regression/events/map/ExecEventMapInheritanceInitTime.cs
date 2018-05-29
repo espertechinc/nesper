@@ -45,9 +45,9 @@ namespace com.espertech.esper.regression.events.map
         public override void Run(EPServiceProvider epService) {
     
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
-                    new EventPropertyDescriptor("base", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("sub1", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("suba", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("base", typeof(string), typeof(char), false, false, true, false, false),
+                    new EventPropertyDescriptor("sub1", typeof(string), typeof(char), false, false, true, false, false),
+                    new EventPropertyDescriptor("suba", typeof(string), typeof(char), false, false, true, false, false),
             }, ((EPServiceProviderSPI) epService).EventAdapterService.GetEventTypeByName("SubAEvent").PropertyDescriptors);
     
             RunAssertionMapInheritance(epService);

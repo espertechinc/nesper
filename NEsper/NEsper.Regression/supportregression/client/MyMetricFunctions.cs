@@ -11,6 +11,8 @@ using System.Threading;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.metric;
 
 namespace com.espertech.esper.supportregression.client
 {
@@ -29,9 +31,13 @@ namespace com.espertech.esper.supportregression.client
             var before = current;
             var target = current+ nanoSecTarget;
 
-            for (; current < target; current = PerformanceObserver.NanoTime)
-            {
-            }
+            StatementMetricHandleExtension.ExecCpuBound(
+                (ktime, utime) => {
+                    Thread.SpinWait(100);
+                    return ktime < nanoSecTarget;
+                });
+
+            current = PerformanceObserver.NanoTime;
 
             Log.Info("TakeCPUTime: {0} / {1}", nanoSecTarget, current - before);
 

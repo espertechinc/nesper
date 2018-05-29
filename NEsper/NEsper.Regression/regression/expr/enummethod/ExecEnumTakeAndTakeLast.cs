@@ -37,8 +37,8 @@ namespace com.espertech.esper.regression.expr.enummethod
                     "Contained.take(1) as val1," +
                     "Contained.take(0) as val2," +
                     "Contained.take(-1) as val3," +
-                    "Contained.TakeLast(2) as val4," +
-                    "Contained.TakeLast(1) as val5" +
+                    "Contained.takeLast(2) as val4," +
+                    "Contained.takeLast(1) as val5" +
                     " from Bean";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -100,13 +100,18 @@ namespace com.espertech.esper.regression.expr.enummethod
             string epl = "select " +
                     "Strvals.take(2) as val0," +
                     "Strvals.take(1) as val1," +
-                    "Strvals.TakeLast(2) as val2," +
-                    "Strvals.TakeLast(1) as val3" +
+                    "Strvals.takeLast(2) as val2," +
+                    "Strvals.takeLast(1) as val3" +
                     " from SupportCollection";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[]{typeof(ICollection<object>), typeof(ICollection<object>), typeof(ICollection<object>), typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[] {
+                typeof(ICollection<string>),
+                typeof(ICollection<string>),
+                typeof(ICollection<string>),
+                typeof(ICollection<string>)
+            });
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E1,E2,E3"));
             LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val0", "E1", "E2");

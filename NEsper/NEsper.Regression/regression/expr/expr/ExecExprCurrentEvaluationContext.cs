@@ -35,14 +35,14 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunAssertionExecCtx(EPServiceProvider epService, bool soda) {
             string epl = "select " +
-                    "Current_evaluation_context() as c0, " +
-                    "Current_evaluation_context(), " +
-                    "Current_evaluation_context().EngineURI as c2 from SupportBean";
+                    "current_evaluation_context() as c0, " +
+                    "current_evaluation_context(), " +
+                    "current_evaluation_context().get_EngineURI() as c2 from SupportBean";
             EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl, "my_user_object");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            Assert.AreEqual(typeof(EPLExpressionEvaluationContext), stmt.EventType.GetPropertyType("Current_evaluation_context()"));
+            Assert.AreEqual(typeof(EPLExpressionEvaluationContext), stmt.EventType.GetPropertyType("current_evaluation_context()"));
     
             epService.EPRuntime.SendEvent(new SupportBean());
             EventBean @event = listener.AssertOneGetNewAndReset();

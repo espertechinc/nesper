@@ -58,9 +58,10 @@ namespace com.espertech.esper.regression.expr.datetime
     
             epService.EPRuntime.SendEvent(SupportDateTime.Make(null));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{
-                    SupportDateTime.GetValueCoerced(startTime, "util"), null, null, null, null, null,
-                    SupportDateTime.GetValueCoerced(startTime, "cal"), null, null, null, null, null,
-                    SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null});
+                SupportDateTime.GetValueCoerced(startTime, "util"), null, null,
+                SupportDateTime.GetValueCoerced(startTime, "cal"), null, null,
+                SupportDateTime.GetValueCoerced(startTime, "long"), null, null
+            });
         }
     }
 } // end of namespace

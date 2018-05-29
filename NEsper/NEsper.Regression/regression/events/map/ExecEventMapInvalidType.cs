@@ -21,13 +21,20 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regression.events.map
 {
-    public class ExecEventMapInvalidType : RegressionExecution {
+    public class ExecEventMapInvalidType : RegressionExecution
+    {
         public override void Run(EPServiceProvider epService) {
-            IDictionary<string, Object> invalid = ExecEventMap.MakeMap(new object[][]{new object[] {new SupportBean(), null}});
+#if NOT_VALID_TEST
+            var invalid = ExecEventMap.MakeMap(new object[][] {
+                new object[] {
+                    new SupportBean(), null
+                }
+            });
             TryInvalid(epService, invalid, typeof(SupportBean).FullName + " cannot be cast to System.String");
     
             invalid = ExecEventMap.MakeMap(new object[][]{new object[] {"abc", new SupportBean()}});
             TryInvalid(epService, invalid, "Nestable type configuration encountered an unexpected property type of 'SupportBean' for property 'abc', expected Type or DataMap or the name of a previously-declared Map or ObjectArray type");
+#endif
         }
     
         private void TryInvalid(EPServiceProvider epService, IDictionary<string, Object> config, string message) {

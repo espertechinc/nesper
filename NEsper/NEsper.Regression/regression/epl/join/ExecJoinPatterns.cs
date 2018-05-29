@@ -200,13 +200,13 @@ namespace com.espertech.esper.regression.epl.join
             EventBean theEvent = updateListener.AssertOneGetNewAndReset();
     
             IDictionary<string, EventBean> result = theEvent.Get("s0")
-                .UnwrapDictionary()
+                .UnwrapStringDictionary()
                 .Transform(k => k, v => (EventBean) v, k => k, v => v);
             Assert.AreSame(s0, result.Get("es0").Underlying);
             Assert.AreSame(s1, result.Get("es1").Underlying);
 
             result = theEvent.Get("s1")
-                .UnwrapDictionary()
+                .UnwrapStringDictionary()
                 .Transform(k => k, v => (EventBean) v, k => k, v => v);
             Assert.AreSame(s2, result.Get("es2").Underlying);
             Assert.AreSame(s3, result.Get("es3").Underlying);

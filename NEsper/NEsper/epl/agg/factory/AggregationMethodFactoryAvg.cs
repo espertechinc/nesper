@@ -89,7 +89,7 @@ namespace com.espertech.esper.epl.agg.factory
         {
             if (type.IsDecimal() || type.IsBigInteger())
                 return typeof(decimal);
-            return typeof(double?);
+            return typeof(double);
         }
 
         private AggregationMethod MakeAvgAggregator(Type type, bool hasFilter, MathContext optionalMathContext)
@@ -101,8 +101,9 @@ namespace com.espertech.esper.epl.agg.factory
                 return new AggregatorAvgFilter();
             }
 
-            if (type == typeof(decimal) || type == typeof(BigInteger))
+            if (type.IsDecimal() || type.IsBigInteger())
                 return new AggregatorAvgDecimal(optionalMathContext);
+
             return new AggregatorAvg();
         }
     }

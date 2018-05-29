@@ -625,7 +625,7 @@ namespace com.espertech.esper.core.service
                 Object obj;
                 try
                 {
-                    obj = Activator.CreateInstance(clazz);
+                    obj = _engine.Container.CreateInstance<object>(clazz);
                 }
                 catch (TypeLoadException)
                 {
@@ -942,7 +942,7 @@ namespace com.espertech.esper.core.service
                 Object pluginLoaderObj;
                 try
                 {
-                    pluginLoaderObj = Activator.CreateInstance(pluginLoaderClass);
+                    pluginLoaderObj = _engine.Container.CreateInstance<object>(pluginLoaderClass);
                 }
                 catch (TypeLoadException)
                 {
@@ -1007,7 +1007,7 @@ namespace com.espertech.esper.core.service
                     configuration.EventTypesAvro.Clear();
                 }
 
-                var copy = (Configuration) SerializableObjectCopier.Copy(configuration);
+                var copy = (Configuration) SerializableObjectCopier.Copy(_container, configuration);
                 copy.TransientConfiguration = configuration.TransientConfiguration;
                 copy.Container = _container; // transition to this container??
 

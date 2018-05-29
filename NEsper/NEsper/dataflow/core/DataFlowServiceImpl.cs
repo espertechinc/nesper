@@ -286,13 +286,14 @@ namespace com.espertech.esper.dataflow.core
             }
         }
 
-        private EPDataFlowInstance InstantiateInternal(String dataFlowName,
-                                                       EPDataFlowInstantiationOptions options,
-                                                       CreateDataFlowDesc desc,
-                                                       StatementContext statementContext,
-                                                       EPServicesContext servicesContext,
-                                                       AgentInstanceContext agentInstanceContext,
-                                                       IDictionary<GraphOperatorSpec, Attribute[]> operatorAnnotations)
+        private EPDataFlowInstance InstantiateInternal(
+            String dataFlowName,
+            EPDataFlowInstantiationOptions options,
+            CreateDataFlowDesc desc,
+            StatementContext statementContext,
+            EPServicesContext servicesContext,
+            AgentInstanceContext agentInstanceContext,
+            IDictionary<GraphOperatorSpec, Attribute[]> operatorAnnotations)
         {
             if (options == null)
             {
@@ -427,7 +428,7 @@ namespace com.espertech.esper.dataflow.core
                 // use non-factory class if provided
                 try
                 {
-                    operatorObject = Activator.CreateInstance(clazz);
+                    operatorObject = _epService.Container.CreateInstance<object>(clazz);
                 }
                 catch (Exception e)
                 {

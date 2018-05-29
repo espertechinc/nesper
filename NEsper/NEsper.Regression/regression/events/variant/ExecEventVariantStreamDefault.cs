@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.events.variant
     
             epService.EPAdministrator.CreateEPL("insert into AllEvents select * from SupportBean");
             epService.EPAdministrator.CreateEPL("create window MainEventWindow#length(10000) as AllEvents");
-            epService.EPAdministrator.CreateEPL("insert into MainEventWindow select " + this.GetType().Name + ".PreProcessEvent(@event) from AllEvents as event");
+            epService.EPAdministrator.CreateEPL("insert into MainEventWindow select " + GetType().Name + ".PreProcessEvent(event) from AllEvents as event");
     
             EPStatement statement = epService.EPAdministrator.CreateEPL("select * from MainEventWindow where TheString = 'E'");
             statement.AddEventHandlerWithReplay((new SupportUpdateListener()).Update);
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regression.events.variant
             Assert.AreSame(eventTwo, listenerOne.AssertOneGetNewAndReset().Underlying);
     
             stmt.Dispose();
-            string fields = "TheString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,enumValue";
+            string fields = "TheString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,EnumValue";
             stmt = epService.EPAdministrator.CreateEPL("select " + fields + " from MyVariantStreamOne");
             stmt.Events += listenerOne.Update;
             AssertEventTypeDefault(stmt.EventType);
@@ -148,62 +148,62 @@ namespace com.espertech.esper.regression.events.variant
             stmt.Events += listenerOne.Update;
             EventType eventType = stmt.EventType;
     
-            string[] expected = "p0,p1,p2,p3,p4,p5,indexed,mapped,inneritem".Split(',');
+            string[] expected = "P0,P1,P2,P3,P4,P5,Indexed,Mapped,Inneritem".Split(',');
             string[] propertyNames = eventType.PropertyNames;
             EPAssertionUtil.AssertEqualsAnyOrder(expected, propertyNames);
-            Assert.AreEqual(typeof(ISupportBaseAB), eventType.GetPropertyType("p0"));
-            Assert.AreEqual(typeof(ISupportAImplSuperG), eventType.GetPropertyType("p1"));
-            Assert.AreEqual(typeof(object), eventType.GetPropertyType("p2"));
-            Assert.AreEqual(typeof(IList<object>), eventType.GetPropertyType("p3"));
-            Assert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("p4"));
-            Assert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("p5"));
-            Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("indexed"));
-            Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("mapped"));
-            Assert.AreEqual(typeof(SupportBeanVariantOne.SupportBeanVariantOneInner), eventType.GetPropertyType("inneritem"));
+            Assert.AreEqual(typeof(ISupportBaseAB), eventType.GetPropertyType("P0"));
+            Assert.AreEqual(typeof(ISupportAImplSuperG), eventType.GetPropertyType("P1"));
+            Assert.AreEqual(typeof(object), eventType.GetPropertyType("P2"));
+            Assert.AreEqual(typeof(IList<object>), eventType.GetPropertyType("P3"));
+            Assert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("P4"));
+            Assert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("P5"));
+            Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("Indexed"));
+            Assert.AreEqual(typeof(IDictionary<string, string>), eventType.GetPropertyType("Mapped"));
+            Assert.AreEqual(typeof(SupportBeanVariantOne.SupportBeanVariantOneInner), eventType.GetPropertyType("Inneritem"));
     
             stmt.Dispose();
-            stmt = epService.EPAdministrator.CreateEPL("select p0,p1,p2,p3,p4,p5,indexed[0] as p6,indexArr[1] as p7,MappedKey('a') as p8,inneritem as p9,inneritem.val as p10 from MyVariantStreamTwo");
+            stmt = epService.EPAdministrator.CreateEPL("select P0,P1,P2,P3,P4,P5,Indexed[0] as P6,IndexArr[1] as P7,MappedKey('a') as P8,inneritem as P9,inneritem.val as P10 from MyVariantStreamTwo");
             stmt.Events += listenerOne.Update;
             eventType = stmt.EventType;
-            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("p6"));
-            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("p7"));
-            Assert.AreEqual(typeof(string), eventType.GetPropertyType("p8"));
-            Assert.AreEqual(typeof(SupportBeanVariantOne.SupportBeanVariantOneInner), eventType.GetPropertyType("p9"));
-            Assert.AreEqual(typeof(string), eventType.GetPropertyType("p10"));
+            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("P6"));
+            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("P7"));
+            Assert.AreEqual(typeof(string), eventType.GetPropertyType("P8"));
+            Assert.AreEqual(typeof(SupportBeanVariantOne.SupportBeanVariantOneInner), eventType.GetPropertyType("P9"));
+            Assert.AreEqual(typeof(string), eventType.GetPropertyType("P10"));
     
             var ev1 = new SupportBeanVariantOne();
             epService.EPRuntime.SendEvent(ev1);
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), "p6,p7,p8,p9,p10".Split(','), new object[]{1, 2, "val1", ev1.Inneritem, ev1.Inneritem.Val});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), "P6,P7,P8,P9,P10".Split(','), new object[]{1, 2, "val1", ev1.Inneritem, ev1.Inneritem.Val});
     
             var ev2 = new SupportBeanVariantTwo();
             epService.EPRuntime.SendEvent(ev2);
-            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), "p6,p7,p8,p9,p10".Split(','), new object[]{10, 20, "val2", ev2.Inneritem, ev2.Inneritem.Val});
+            EPAssertionUtil.AssertProps(listenerOne.AssertOneGetNewAndReset(), "P6,P7,P8,P9,P10".Split(','), new object[]{10, 20, "val2", ev2.Inneritem, ev2.Inneritem.Val});
     
             epService.EPAdministrator.DestroyAllStatements();
         }
     
         private void AssertEventTypeDefault(EventType eventType) {
-            string[] expected = "TheString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,enumValue".Split(',');
+            string[] expected = "TheString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,EnumValue".Split(',');
             string[] propertyNames = eventType.PropertyNames;
             EPAssertionUtil.AssertEqualsAnyOrder(expected, propertyNames);
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("TheString"));
             Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("BoolBoxed"));
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("IntPrimitive"));
-            Assert.AreEqual(typeof(long), eventType.GetPropertyType("LongPrimitive"));
+            Assert.AreEqual(typeof(long?), eventType.GetPropertyType("LongPrimitive"));
             Assert.AreEqual(typeof(double?), eventType.GetPropertyType("DoublePrimitive"));
-            Assert.AreEqual(typeof(SupportEnum), eventType.GetPropertyType("enumValue"));
+            Assert.AreEqual(typeof(SupportEnum?), eventType.GetPropertyType("EnumValue"));
             foreach (string expectedProp in expected) {
                 Assert.IsNotNull(eventType.GetGetter(expectedProp));
                 Assert.IsTrue(eventType.IsProperty(expectedProp));
             }
     
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
-                    new EventPropertyDescriptor("TheString", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("TheString", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("BoolBoxed", typeof(bool?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("IntPrimitive", typeof(int?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("LongPrimitive", typeof(long), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("LongPrimitive", typeof(long?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("DoublePrimitive", typeof(double?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("enumValue", typeof(SupportEnum), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("EnumValue", typeof(SupportEnum?), null, false, false, false, false, false),
             }, eventType.PropertyDescriptors);
         }
     

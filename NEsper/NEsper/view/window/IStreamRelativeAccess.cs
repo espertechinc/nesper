@@ -117,10 +117,7 @@ namespace com.espertech.esper.view.window
             // No action required
         }
 
-        public int NumEventsInsertBuf
-        {
-            get { return _indexPerEvent.Count; }
-        }
+        public int NumEventsInsertBuf => _indexPerEvent.Count;
     }
 
     public interface IStreamRelativeAccessUpdateObserver

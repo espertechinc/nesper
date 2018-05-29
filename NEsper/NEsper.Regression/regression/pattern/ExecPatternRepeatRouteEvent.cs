@@ -14,6 +14,7 @@ using com.espertech.esper.client.time;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.regression.events;
 using com.espertech.esper.supportregression.bean;
+using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 
 using NUnit.Framework;

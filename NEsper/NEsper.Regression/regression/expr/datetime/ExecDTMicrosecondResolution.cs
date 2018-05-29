@@ -55,11 +55,11 @@ namespace com.espertech.esper.regression.expr.datetime
                 .SetMillis(4);
 
             string select =
-                    "longdate.WithTime(1, 2, 3, 4) as c0," +
+                    "longdate.withTime(1, 2, 3, 4) as c0," +
                             "longdate.set('hour', 1).set('minute', 2).set('second', 3).set('millisecond', 4).toCalendar() as c1," +
                             "longdate.get('month') as c2," +
                             "current_timestamp.get('month') as c3," +
-                            "current_timestamp.minuteOfHour as c4," +
+                            "current_timestamp.getMinuteOfHour() as c4," +
                             "current_timestamp.toDate() as c5," +
                             "current_timestamp.toCalendar() as c6," +
                             "current_timestamp.minus(1) as c7";
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regression.expr.datetime
             EPServiceProviderIsolated isolated = epService.GetEPServiceIsolated("isolated");
             isolated.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
-            EPStatement stmt = isolated.EPAdministrator.CreateEPL("select * from MyEvent(id='A') as a unidirectional, MyEvent(id='B')#lastevent as b where a.withDate(2002, 4, 30).before(b)", "s0", null);
+            EPStatement stmt = isolated.EPAdministrator.CreateEPL("select * from MyEvent(id='A') as a unidirectional, MyEvent(id='B')#lastevent as b where a.withDate(2002, 5, 30).before(b)", "s0", null);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     

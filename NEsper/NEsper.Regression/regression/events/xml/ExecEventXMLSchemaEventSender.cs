@@ -14,7 +14,7 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 
-using static com.espertech.esper.regression.events.SupportXML;
+using static com.espertech.esper.supportregression.events.SupportXML;
 
 using NUnit.Framework;
 

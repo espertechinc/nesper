@@ -66,7 +66,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
                     .Add(Expressions.Eq("symbol", "IBM"))
                     .Add(Expressions.Eq("symbol", "GE"));
             model.GroupByClause = GroupByClause.Create("symbol");
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string epl = "select irstream symbol, " +
                     "min(volume) as minVol, " +
@@ -192,10 +192,10 @@ namespace com.espertech.esper.regression.resultset.aggregate
         private void TryAssertionMinMax(EPServiceProvider epService, SupportUpdateListener listener, EPStatement stmt) {
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("minVol"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("maxVol"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("minDistVol"));
-            Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("maxDistVol"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("minVol"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("maxVol"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("minDistVol"));
+            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("maxDistVol"));
     
             SendEvent(epService, SYMBOL_DELL, 50L);
             AssertEvents(listener, SYMBOL_DELL, null, null, null, null,

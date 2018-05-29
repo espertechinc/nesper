@@ -643,14 +643,14 @@ namespace com.espertech.esper.core.service
 
                 try
                 {
-                    using (_services.EventProcessingRWLock.AcquireReadLock())
-                    {
-                        try
-                        {
+                    using (_services.EventProcessingRWLock.AcquireReadLock()) {
+                        try {
                             ProcessMatches(eventBean);
                         }
-                        catch (Exception ex)
-                        {
+                        catch (EPException) {
+                            throw;
+                        }
+                        catch (Exception ex) {
                             ThreadData.MatchesArrayThreadLocal.Clear();
                             throw new EPException(ex);
                         }

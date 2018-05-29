@@ -24,11 +24,11 @@ namespace com.espertech.esper.regression.db
 {
     public class ExecDatabaseHintHook : RegressionExecution {
         public override void Configure(Configuration configuration) {
-            var configDB = new ConfigurationDBRef();
-            configDB.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative);
+            var configDB = SupportDatabaseService.CreateDefaultConfig();
             configDB.ConnectionLifecycle = ConnectionLifecycleEnum.RETAIN;
             configDB.ConnectionCatalog = "test";
             configDB.ConnectionTransactionIsolation = IsolationLevel.Serializable;
+            configuration.AddDatabaseReference("MyDB", configDB);
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.db
             epService.EPAdministrator.Configuration.AddVariable("myvariableOCC", typeof(int), 10);
     
             var fields = new string[]{"myint"};
-            string stmtText = "@Hook(type=HookType.SQLCOL, hook='" + typeof(SupportSQLColumnTypeConversion).FullName + "')" +
+            string stmtText = "@Hook(Type=HookType.SQLCOL, Hook='" + typeof(SupportSQLColumnTypeConversion).FullName + "')" +
                     "select * from sql:MyDB ['select myint from mytesttable where myint = ${myvariableOCC}']";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -53,15 +53,15 @@ namespace com.espertech.esper.regression.db
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {false}});
     
             // assert contexts
-            SQLColumnTypeContext type = SupportSQLColumnTypeConversion.GetTypeContexts()[0];
-            Assert.AreEqual("Integer", type.ColumnSqlType);
+            SQLColumnTypeContext type = SupportSQLColumnTypeConversion.TypeContexts[0];
+            Assert.AreEqual("System.Int32", type.ColumnSqlType);
             Assert.AreEqual("MyDB", type.Db);
             Assert.AreEqual("select myint from mytesttable where myint = ${myvariableOCC}", type.Sql);
             Assert.AreEqual("myint", type.ColumnName);
             Assert.AreEqual(1, type.ColumnNumber);
             Assert.AreEqual(typeof(int?), type.ColumnClassType);
     
-            SQLColumnValueContext val = SupportSQLColumnTypeConversion.GetValueContexts()[0];
+            SQLColumnValueContext val = SupportSQLColumnTypeConversion.ValueContexts[0];
             Assert.AreEqual(10, val.ColumnValue);
             Assert.AreEqual("myint", val.ColumnName);
             Assert.AreEqual(1, val.ColumnNumber);
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regression.db
             epService.EPAdministrator.Configuration.AddVariable("myvariableIPC", typeof(Object), "x10");
     
             var fields = new string[]{"myint"};
-            string stmtText = "@Hook(type=HookType.SQLCOL, hook='" + typeof(SupportSQLColumnTypeConversion).FullName + "')" +
+            string stmtText = "@Hook(Type=HookType.SQLCOL, Hook='" + typeof(SupportSQLColumnTypeConversion).FullName + "')" +
                     "select * from sql:MyDB ['select myint from mytesttable where myint = ${myvariableIPC}']";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regression.db
             epService.EPRuntime.SetVariableValue("myvariableIPC", "x60");    // greater 50 turns true
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), fields, new object[][]{new object[] {true}});
     
-            SQLInputParameterContext param = SupportSQLColumnTypeConversion.GetParamContexts()[0];
+            SQLInputParameterContext param = SupportSQLColumnTypeConversion.ParamContexts[0];
             Assert.AreEqual(1, param.ParameterNumber);
             Assert.AreEqual("x60", param.ParameterValue);
     
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regression.db
             epService.EPAdministrator.Configuration.AddVariable("myvariableORC", typeof(int), 10);
     
             string[] fields = "TheString,IntPrimitive".Split(',');
-            string stmtText = "@Hook(type=HookType.SQLROW, hook='" + typeof(SupportSQLOutputRowConversion).FullName + "')" +
+            string stmtText = "@Hook(Type=HookType.SQLROW, Hook='" + typeof(SupportSQLOutputRowConversion).FullName + "')" +
                     "select * from sql:MyDB ['select * from mytesttable where myint = ${myvariableORC}']";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();

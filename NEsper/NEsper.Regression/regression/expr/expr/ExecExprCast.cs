@@ -152,7 +152,7 @@ namespace com.espertech.esper.regression.expr.expr
             try {
                 epService.EPRuntime.SendEvent(new SupportBean_StringAlphabetic("x", "yyyyMMddhhmmss"));
             } catch (EPException ex) {
-                SupportMessageAssertUtil.AssertMessageContains(ex, "Exception parsing date 'x' format 'yyyyMMddhhmmss': Unparseable date: \"x\"");
+                SupportMessageAssertUtil.AssertMessageContains(ex, "Exception parsing date 'x' format 'yyyyMMddhhmmss': String was not recognized as a valid DateTime.");
             }
 
 #if NO_ERROR_IN_CLR
@@ -211,7 +211,7 @@ namespace com.espertech.esper.regression.expr.expr
                     "Error starting statement: Failed to validate select-clause expression 'cast(TheString,date,dateformat:\"BBB...(42 chars)': Invalid date format 'BBBBMMDD' (as obtained from new SimpleDateFormat): Illegal pattern character 'B'");
 #endif
             SupportMessageAssertUtil.TryInvalid(epService, "select cast(TheString, date, dateformat:1) from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'cast(TheString,date,dateformat:1)': Failed to validate named parameter 'dateformat', expected a single expression returning any of the following types: string,DateFormat,DateTimeFormatter");
+                    "Error starting statement: Failed to validate select-clause expression 'cast(TheString,date,dateformat:1)': Failed to validate named parameter 'dateformat', expected a single expression returning a string-typed value");
     
             // invalid input
             SupportMessageAssertUtil.TryInvalid(epService, "select cast(IntPrimitive, date, dateformat:'yyyyMMdd') from SupportBean",
@@ -219,13 +219,7 @@ namespace com.espertech.esper.regression.expr.expr
     
             // invalid target
             SupportMessageAssertUtil.TryInvalid(epService, "select cast(TheString, int, dateformat:'yyyyMMdd') from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'cast(TheString,int,dateformat:\"yyyy...(41 chars)': Use of the 'dateformat' named parameter requires a target type of calendar, date, long, localdatetime, localdate, localtime or zoneddatetime");
-    
-            // invalid parser
-            SupportMessageAssertUtil.TryInvalid(epService, "select cast('xx', date, dateformat:java.time.format.DateTimeFormatter.OfPattern(\"yyyyMMddHHmmssVV\")) from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'cast(\"xx\",date,dateformat:java.time...(91 chars)': Invalid format, expected string-format or DateFormat but received java.time.format.DateTimeFormatter");
-            SupportMessageAssertUtil.TryInvalid(epService, "select cast('xx', localdatetime, dateformat:SimpleDateFormat.Instance) from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'cast(\"xx\",localdatetime,dateformat:...(66 chars)': Invalid format, expected string-format or DateTimeFormatter but received java.text.SimpleDateFormat");
+                    "Error starting statement: Failed to validate select-clause expression 'cast(TheString,int,dateformat:\"yyyy...(41 chars)': Use of the 'dateformat' named parameter requires a target type of long or datetime");
         }
     
         private void RunAssertionDatetimeRenderOutCol(EPServiceProvider epService) {
@@ -300,7 +294,7 @@ namespace com.espertech.esper.regression.expr.expr
             var dateYYMMddDtx = DateTimeEx.GetInstance(TimeZoneInfo.Local, dateYYMMdd);
 
             EPAssertionUtil.AssertProps(
-                listener.AssertOneGetNewAndReset(), "c0,c1,c2,c3,c4,c5,c6,c7,c8".Split(','),
+                listener.AssertOneGetNewAndReset(), "c0,c1,c2,c3,c4,c5,c6,c8".Split(','),
                 new object[]
                 {
                     dateYYMMdd,
@@ -336,9 +330,9 @@ namespace com.espertech.esper.regression.expr.expr
             Assert.AreEqual(typeof(float?), selectTestCase.EventType.GetPropertyType("t2"));
             Assert.AreEqual(typeof(string), selectTestCase.EventType.GetPropertyType("t3"));
             Assert.AreEqual(typeof(int?), selectTestCase.EventType.GetPropertyType("t4"));
-            Assert.AreEqual(typeof(long), selectTestCase.EventType.GetPropertyType("t5"));
+            Assert.AreEqual(typeof(long?), selectTestCase.EventType.GetPropertyType("t5"));
             Assert.AreEqual(typeof(object), selectTestCase.EventType.GetPropertyType("t6"));
-            Assert.AreEqual(typeof(long), selectTestCase.EventType.GetPropertyType("t7"));
+            Assert.AreEqual(typeof(long?), selectTestCase.EventType.GetPropertyType("t7"));
     
             var bean = new SupportBean("abc", 100);
             bean.FloatBoxed = 9.5f;
@@ -396,7 +390,7 @@ namespace com.espertech.esper.regression.expr.expr
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.Create().Add(Expressions.Cast("item?", "double"), "t0");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarkerInterface).FullName));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(stmtText, model.ToEPL());
     
             var selectTestCase = epService.EPAdministrator.Create(model);
@@ -431,7 +425,7 @@ namespace com.espertech.esper.regression.expr.expr
                     "from " + typeof(SupportMarkerInterface).FullName;
     
             var model = epService.EPAdministrator.CompileEPL(stmtText);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             var selectTestCase = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
             Assert.AreEqual(stmtText, model.ToEPL());
@@ -512,11 +506,14 @@ namespace com.espertech.esper.regression.expr.expr
             selectTestCase.Dispose();
         }
     
-        private void RunAssertionCastBoolean(EPServiceProvider epService) {
-            var stmtText = "select cast(BoolPrimitive as " + Name.Clean<bool>() + ") as t0, " +
-                    " cast(BoolBoxed | BoolPrimitive, bool) as t1, " +
-                    " cast(BoolBoxed, string) as t2 " +
-                    " from " + typeof(SupportBean).FullName;
+        private void RunAssertionCastBoolean(EPServiceProvider epService)
+        {
+            var stmtText =
+                "select " +
+                "cast(BoolPrimitive, bool) as t0, " +
+                " cast(BoolBoxed | BoolPrimitive, bool) as t1, " +
+                " cast(BoolBoxed, string) as t2 " +
+                " from " + typeof(SupportBean).FullName;
     
             var selectTestCase = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
@@ -531,14 +528,14 @@ namespace com.espertech.esper.regression.expr.expr
             bean.BoolBoxed = true;
             epService.EPRuntime.SendEvent(bean);
             var theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new object[]{true, true, "true"});
+            AssertResults(theEvent, new object[]{true, true, "True"});
     
             bean = new SupportBean(null, 100);
             bean.BoolPrimitive = false;
             bean.BoolBoxed = false;
             epService.EPRuntime.SendEvent(bean);
             theEvent = listener.AssertOneGetNewAndReset();
-            AssertResults(theEvent, new object[]{false, false, "false"});
+            AssertResults(theEvent, new object[]{false, false, "False"});
     
             bean = new SupportBean(null, 100);
             bean.BoolPrimitive = true;

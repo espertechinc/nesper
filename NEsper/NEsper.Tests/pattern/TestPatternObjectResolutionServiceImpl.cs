@@ -40,7 +40,7 @@ namespace com.espertech.esper.pattern
             var desc = new PluggableObjectCollection();
             desc.AddPatternObjects(init, SupportEngineImportServiceFactory.Make(_container));
             desc.AddObjects(PatternObjectHelper.BuiltinPatternObjects);
-            _service = new PatternObjectResolutionServiceImpl(desc);
+            _service = new PatternObjectResolutionServiceImpl(_container, desc);
         }
     
         [Test]
@@ -70,7 +70,7 @@ namespace com.espertech.esper.pattern
             {
                 var desc = new PluggableObjectCollection();
                 desc.AddPatternObjects(config.ToList(), SupportEngineImportServiceFactory.Make(_container));
-                _service = new PatternObjectResolutionServiceImpl(desc);
+                _service = new PatternObjectResolutionServiceImpl(_container, desc);
                 Assert.Fail();
             }
             catch (ConfigurationException ex)

@@ -40,7 +40,7 @@ namespace com.espertech.esper.linq
         {
             AssertModelEquality(
                 _serviceProvider.From<SupportBean>().Unique(x => x.TheString),
-                "select * from " + Name.Of<SupportBean>() + "#unique(x.TheString)");
+                "select * from " + Name.Clean<SupportBean>() + "#unique(x.TheString)");
         }
 
         private void AssertModelEquality(EsperQuery<SupportBean> stream, string sample)

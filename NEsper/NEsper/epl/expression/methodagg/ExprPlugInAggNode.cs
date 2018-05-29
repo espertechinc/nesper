@@ -38,9 +38,9 @@ namespace com.espertech.esper.epl.expression.methodagg
 	    public ExprPlugInAggNode(bool distinct, AggregationFunctionFactory aggregationFunctionFactory, string functionName)
 	        : base(distinct)
 	    {
-	        _aggregationFunctionFactory = aggregationFunctionFactory;
 	        _functionName = functionName;
-	        aggregationFunctionFactory.FunctionName = functionName;
+	        _aggregationFunctionFactory = aggregationFunctionFactory;
+	        _aggregationFunctionFactory.FunctionName = functionName;
 	    }
 
 	    protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
@@ -115,15 +115,13 @@ namespace com.espertech.esper.epl.expression.methodagg
 
 	    protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
 	    {
-	        var other = node as ExprPlugInAggNode;
-	        if (other == null)
-	        {
-	            return false;
+	        if (node is ExprPlugInAggNode other) {
+	            return other.AggregationFunctionName == AggregationFunctionName;
 	        }
 
-	        return ((ExprAggregateNodeBase) other).AggregationFunctionName.Equals(AggregationFunctionName);
+	        return false;
 	    }
 
-	    protected override bool IsFilterExpressionAsLastParameter => false;
+	    protected override bool IsFilterExpressionAsLastParameter => true;
 	}
 } // end of namespace

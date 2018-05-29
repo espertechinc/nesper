@@ -34,12 +34,12 @@ namespace com.espertech.esper.regression.epl.other
         {
             RunAssertionSetMapPropsBean(epService);
 
-            foreach (EventRepresentationChoice rep in EnumHelper.GetValues<EventRepresentationChoice>())
+            foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>())
             {
                 RunAssertionUpdateIStreamSetMapProps(epService, rep);
             }
 
-            foreach (EventRepresentationChoice rep in EnumHelper.GetValues<EventRepresentationChoice>())
+            foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>())
             {
                 RunAssertionNamedWindowSetMapProps(epService, rep);
             }
@@ -53,7 +53,7 @@ namespace com.espertech.esper.regression.epl.other
 
             epService.EPAdministrator.CreateEPL("insert into MyStream select * from MyMapPropEvent");
 
-            EPStatement stmtUpdOne =
+            var stmtUpdOne =
                 epService.EPAdministrator.CreateEPL("update istream MyStream set Props('abc') = 1, array[2] = 10");
             var listener = new SupportUpdateListener();
             stmtUpdOne.Events += listener.Update;
@@ -72,8 +72,8 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPAdministrator.CreateEPL(
                 eventRepresentationEnum.GetAnnotationText() +
                 " create schema MyInfraType(simple string, myarray int[], mymap Map)");
-            EPStatement stmtUpdTwo = epService.EPAdministrator.CreateEPL(
-                "update istream MyInfraType set simple='A', Mymap('abc') = 1, myarray[2] = 10");
+            var stmtUpdTwo = epService.EPAdministrator.CreateEPL(
+                "update istream MyInfraType set simple='A', mymap('abc') = 1, myarray[2] = 10");
             var listener = new SupportUpdateListener();
             stmtUpdTwo.Events += listener.Update;
 
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regression.epl.other
             }
             else if (eventRepresentationEnum.IsAvroEvent())
             {
-                GenericRecord @event = new GenericRecord(
+                var @event = new GenericRecord(
                     SupportAvroUtil.GetAvroSchema(epService, "MyInfraType").AsRecordSchema());
                 @event.Put("myarray", Collections.List(0, 0, 0, 0, 0));
                 @event.Put("mymap", new Dictionary<string, object>());
@@ -101,11 +101,11 @@ namespace com.espertech.esper.regression.epl.other
             }
 
             EPAssertionUtil.AssertProps(
-                listener.AssertPairGetIRAndReset(), "simple,Mymap('abc'),myarray[2]".Split(','),
+                listener.AssertPairGetIRAndReset(), "simple,mymap('abc'),myarray[2]".Split(','),
                 new object[] {"A", 1, 10}, new object[] {null, null, 0});
 
             epService.EPAdministrator.DestroyAllStatements();
-            foreach (string name in "MyInfraType".Split(','))
+            foreach (var name in "MyInfraType".Split(','))
             {
                 epService.EPAdministrator.Configuration.RemoveEventType(name, true);
             }
@@ -120,7 +120,7 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPAdministrator.CreateEPL(
                 eventRepresentationEnum.GetAnnotationText() +
                 " create schema MyNWInfraType(simple string, myarray int[], mymap Map)");
-            EPStatement stmtWin =
+            var stmtWin =
                 epService.EPAdministrator.CreateEPL("create window MyWindow#keepall as MyNWInfraType");
             epService.EPAdministrator.CreateEPL(
                 eventRepresentationEnum.GetAnnotationText() + " insert into MyWindow select * from MyNWInfraType");
@@ -137,7 +137,7 @@ namespace com.espertech.esper.regression.epl.other
             }
             else if (eventRepresentationEnum.IsAvroEvent())
             {
-                GenericRecord @event = new GenericRecord(
+                var @event = new GenericRecord(
                     SupportAvroUtil.GetAvroSchema(epService, "MyNWInfraType").AsRecordSchema());
                 @event.Put("myarray", Collections.List(0, 0, 0, 0, 0));
                 @event.Put("mymap", new Dictionary<string, object>());
@@ -149,10 +149,10 @@ namespace com.espertech.esper.regression.epl.other
             }
 
             epService.EPAdministrator.CreateEPL(
-                "on SupportBean update MyWindow set simple='A', Mymap('abc') = IntPrimitive, myarray[2] = IntPrimitive");
+                "on SupportBean update MyWindow set simple='A', mymap('abc') = IntPrimitive, myarray[2] = IntPrimitive");
             epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
             EPAssertionUtil.AssertPropsPerRow(
-                stmtWin.GetEnumerator(), "simple,Mymap('abc'),myarray[2]".Split(','),
+                stmtWin.GetEnumerator(), "simple,mymap('abc'),myarray[2]".Split(','),
                 new[] {new object[] {"A", 10, 10}});
 
             // test null and array too small
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regression.epl.other
             }
             else if (eventRepresentationEnum.IsAvroEvent())
             {
-                GenericRecord @event = new GenericRecord(
+                var @event = new GenericRecord(
                     SchemaBuilder.Record("name",
                         TypeBuilder.OptionalString("simple"),
                         TypeBuilder.Field("myarray", TypeBuilder.Array(TypeBuilder.LongType())),
@@ -182,11 +182,11 @@ namespace com.espertech.esper.regression.epl.other
 
             epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                stmtWin.GetEnumerator(), "simple,Mymap('abc'),myarray[2]".Split(','),
+                stmtWin.GetEnumerator(), "simple,mymap('abc'),myarray[2]".Split(','),
                 new[] {new object[] {"A", 20, 20}, new object[] {"A", null, null}});
 
             epService.EPAdministrator.DestroyAllStatements();
-            foreach (string name in "MyNWInfraType,MyWindow".Split(','))
+            foreach (var name in "MyNWInfraType,MyWindow".Split(','))
             {
                 epService.EPAdministrator.Configuration.RemoveEventType(name, true);
             }

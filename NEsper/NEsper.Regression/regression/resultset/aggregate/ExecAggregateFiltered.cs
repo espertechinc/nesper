@@ -279,7 +279,7 @@ namespace com.espertech.esper.regression.resultset.aggregate
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
             TryInvalid(epService, "select count(*, IntPrimitive) from SupportBean",
-                    "Error starting statement: Failed to validate select-clause expression 'count(*,IntPrimitive)': Invalid filter expression parameter to the aggregation function 'count' is expected to return a bool value but returns int [select count(*, IntPrimitive) from SupportBean]");
+                    "Error starting statement: Failed to validate select-clause expression 'count(*,IntPrimitive)': Invalid filter expression parameter to the aggregation function 'count' is expected to return a bool value but returns System.Int32 [select count(*, IntPrimitive) from SupportBean]");
     
             TryInvalid(epService, "select fmin(IntPrimitive) from SupportBean",
                     "Error starting statement: Failed to validate select-clause expression 'min(IntPrimitive)': MIN-filtered aggregation function must have a filter expression as a second parameter [select fmin(IntPrimitive) from SupportBean]");
@@ -303,14 +303,9 @@ namespace com.espertech.esper.regression.resultset.aggregate
         }
     
         public class BlackWhiteEvent {
-            private bool black;
-    
+            public bool IsBlack { get; }
             public BlackWhiteEvent(bool black) {
-                this.black = black;
-            }
-    
-            public bool IsBlack() {
-                return black;
+                IsBlack = black;
             }
         }
     }

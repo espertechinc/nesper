@@ -343,7 +343,7 @@ namespace com.espertech.esper.epl.db
                 {
                     case ConfigurationDBRef.MetadataOriginEnum.METADATA:
                     case ConfigurationDBRef.MetadataOriginEnum.DEFAULT:
-                        queryMetaData = dbCommand.MetaData;
+                        queryMetaData = dbCommand.GetMetaData();
                         break;
                     case ConfigurationDBRef.MetadataOriginEnum.SAMPLE:
                     {
@@ -575,7 +575,7 @@ namespace com.espertech.esper.epl.db
             var sampleSQLFragments = PlaceholderParser.ParsePlaceholder(sampleSQL);
             using (var dbCommand = dbDriver.CreateCommand(sampleSQLFragments, metadataSetting, contextAttributes))
             {
-                return dbCommand.MetaData;
+                return dbCommand.GetMetaData();
             }
         }
 

@@ -1471,7 +1471,11 @@ namespace com.espertech.esper.client.scopetest
         /// <param name="keys">array of key values</param>
         /// <param name="expectedList">for each key a string that is a comma-separated list of values</param>
         /// <param name="collectionValue">the function to apply to each collection value to convert to a string</param>
-        public static void AssertMapOfCollection<V>(IDictionary<object,V> map, string[] keys, string[] expectedList, AssertionCollectionValueString collectionValue)
+        public static void AssertMapOfCollection<V>(
+            IDictionary<object,V> map, 
+            string[] keys, 
+            string[] expectedList, 
+            AssertionCollectionValueString collectionValue)
         {
             ScopeTestHelper.AssertEquals(expectedList.Length, keys.Length);
             if (keys.Length == 0 && map.IsEmpty())
@@ -1495,6 +1499,20 @@ namespace com.espertech.esper.client.scopetest
                     ScopeTestHelper.AssertEquals(itemsExpected[j], received);
                 }
             }
+        }
+
+        public static void AssertMapOfCollection<V>(
+            IDictionary<string, V> map,
+            string[] keys,
+            string[] expectedList,
+            AssertionCollectionValueString collectionValue) {
+
+            AssertMapOfCollection(
+                map.TransformDown<string, object, V>(),
+                keys,
+                expectedList,
+                collectionValue
+            );
         }
 
         private static string RemoveNewline(string raw)

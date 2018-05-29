@@ -19,7 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.view
@@ -41,7 +40,7 @@ namespace com.espertech.esper.regression.view
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
     
             string[] fields = "id".Split(',');
-            string epl = "select irstream * from SupportBeanTimestamp#timeToLive(timestamp)";
+            string epl = "select irstream * from SupportBeanTimestamp#timetolive(timestamp)";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -448,7 +447,7 @@ namespace com.espertech.esper.regression.view
                     "Error starting statement: Error attaching view to event stream: Time-Order view requires the expression supplying timestamp values, and a numeric or time period parameter for interval size [");
     
             SupportMessageAssertUtil.TryInvalid(epService, "select * from " + typeof(SupportBeanTimestamp).FullName + "#time_order(timestamp, abc)",
-                    "Error starting statement: Error attaching view to event stream: Invalid parameter expression 1 for Time-Order view: Failed to validate view parameter expression 'abc': Property named 'abc' is not valid in any stream (did you mean 'id'?) [");
+                    "Error starting statement: Error attaching view to event stream: Invalid parameter expression 1 for Time-Order view: Failed to validate view parameter expression 'abc': Property named 'abc' is not valid in any stream (did you mean 'Id'?) [");
         }
     
         private void RunAssertionPreviousAndPrior(EPServiceProvider epService) {

@@ -38,16 +38,16 @@ namespace com.espertech.esper.regression.expr.expr
     
         public override void Run(EPServiceProvider epService) {
     
-            string stmt = "select Cast(anInt, int) as intVal, " +
-                    "Cast(anDouble, double) as doubleVal, " +
-                    "Cast(anLong, long) as longVal, " +
-                    "Cast(anFloat, float) as floatVal, " +
-                    "Cast(anByte, byte) as byteVal, " +
-                    "Cast(anShort, short) as shortVal, " +
-                    "Cast(IntPrimitive, int) as intOne, " +
-                    "Cast(IntBoxed, int) as intTwo, " +
-                    "Cast(IntPrimitive, " + Name.Clean<long>() + ") as longOne, " +
-                    "Cast(IntBoxed, long) as longTwo " +
+            string stmt = "select cast(anInt, int) as intVal, " +
+                    "cast(anDouble, double) as doubleVal, " +
+                    "cast(anLong, long) as longVal, " +
+                    "cast(anFloat, float) as floatVal, " +
+                    "cast(anByte, byte) as byteVal, " +
+                    "cast(anShort, short) as shortVal, " +
+                    "cast(IntPrimitive, int) as intOne, " +
+                    "cast(IntBoxed, int) as intTwo, " +
+                    "cast(IntPrimitive, " + Name.Clean<long>(false) + ") as longOne, " +
+                    "cast(IntBoxed, long) as longTwo " +
                     "from TestEvent";
     
             EPStatement statement = epService.EPAdministrator.CreateEPL(stmt);

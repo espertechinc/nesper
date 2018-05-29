@@ -59,10 +59,7 @@ namespace com.espertech.esper.view.window
             }
         }
 
-        public EventType EventType
-        {
-            get { return _eventType; }
-        }
+        public EventType EventType => _eventType;
 
         public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
@@ -76,10 +73,7 @@ namespace com.espertech.esper.view.window
             return myView.Size == size && myView.IsEmpty();
         }
 
-        public string ViewName
-        {
-            get { return "Length"; }
-        }
+        public string ViewName => "Length";
 
         public Object MakePreviousGetter()
         {

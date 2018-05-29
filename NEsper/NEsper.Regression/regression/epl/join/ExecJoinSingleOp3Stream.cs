@@ -64,7 +64,7 @@ namespace com.espertech.esper.regression.epl.join
                     Expressions.EqProperty("streamA.id", "streamB.id"),
                     Expressions.EqProperty("streamB.id", "streamC.id"),
                     Expressions.EqProperty("streamA.id", "streamC.id"));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
     
             string epl = "select * from " +
                     EVENT_A + "#length(3) as streamA, " +
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regression.epl.join
                     "and streamA.id=streamC.id";
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             EPStatement srmt = epService.EPAdministrator.Create(model);
             var listener = new SupportUpdateListener();
             srmt.Events += listener.Update;

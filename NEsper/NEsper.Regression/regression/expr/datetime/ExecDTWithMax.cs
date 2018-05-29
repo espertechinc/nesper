@@ -67,7 +67,14 @@ namespace com.espertech.esper.regression.expr.datetime
             stmtFragment.Events += listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]
             {
-                typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?)
+                typeof(DateTimeOffset?),
+                typeof(DateTimeOffset?),
+                typeof(DateTimeOffset?),
+                typeof(DateTimeOffset?),
+                typeof(DateTimeOffset?),
+                typeof(DateTimeOffset?),
+                typeof(DateTimeOffset?),
+                typeof(DateTimeOffset?)
             });
     
             string[] expected = {
@@ -77,12 +84,13 @@ namespace com.espertech.esper.regression.expr.datetime
                     "2002-5-30T23:00:00.000",
                     "2002-5-31T09:00:00.000",
                     "2002-12-30T09:00:00.000",
-                    "292278994-5-30T09:00:00.000",
+                    "9999-05-30T09:00:00.000",
                     "2002-12-26T09:00:00.000"
             };
             string startTime = "2002-05-30T09:00:00.000";
             epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, SupportDateTime.GetArrayCoerced(expected, "util"));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
+                SupportDateTime.GetArrayCoerced(expected, "util"));
     
             stmtFragment.Dispose();
         }

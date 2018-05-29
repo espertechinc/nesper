@@ -47,7 +47,7 @@ namespace com.espertech.esper.regression.events.xml
     
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
                     new EventPropertyDescriptor("nested1", typeof(XmlNode), null, false, false, false, false, true),
-                    new EventPropertyDescriptor("prop4", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("prop4", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("nested3", typeof(XmlNode), null, false, false, false, false, true),
                     new EventPropertyDescriptor("customProp", typeof(double?), null, false, false, false, false, false),
             }, type.PropertyDescriptors);
@@ -63,8 +63,8 @@ namespace com.espertech.esper.regression.events.xml
     
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
                     new EventPropertyDescriptor("nested1", typeof(XmlNode), null, false, false, false, false, true),
-                    new EventPropertyDescriptor("prop4", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("prop5", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("prop4", typeof(string), typeof(char), false, false, true, false, false),
+                    new EventPropertyDescriptor("prop5", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("nested3", typeof(XmlNode), null, false, false, false, false, true),
                     new EventPropertyDescriptor("customProp", typeof(double?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("countProp", typeof(double?), null, false, false, false, false, false),

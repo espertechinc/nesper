@@ -17,6 +17,7 @@ using XLR8.CGLib;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.events;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.core
 {
@@ -33,13 +34,13 @@ namespace com.espertech.esper.epl.core
         {
             try
             {
-                var valueDataMap = value.UnwrapDictionary();
+                var valueDataMap = value.UnwrapStringDictionary();
                 return EventAdapterService.AdapterForTypedMap(valueDataMap, EventType);
             }
             catch (ArgumentException)
             {
-                Log.Warn("Expected map-type for value, but received type '" + value.GetType() + "'");
-                throw new EPException("Expected map-type for value, but received type '" + value.GetType() + "'");
+                Log.Warn("Expected map-type for value, but received type '" + value.GetType().GetCleanName() + "'");
+                throw new EPException("Expected map-type for value, but received type '" + value.GetType().GetCleanName() + "'");
             }
         }
     }

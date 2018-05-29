@@ -434,7 +434,7 @@ namespace com.espertech.esper.util
                                                                  typeof(SupportBean), typeof(SupportBean)
                                                              }));
 
-            Assert.AreEqual("Cannot coerce to String type " + typeof(bool?).FullName,
+            Assert.AreEqual("Cannot coerce to String type " + typeof(bool?).GetCleanName(),
                             TryInvalidGetCommonCoercionType(new[] {typeof(string), typeof(bool?)}));
             TryInvalidGetCommonCoercionType(new[] {typeof(string), typeof(string), typeof(bool?)});
             TryInvalidGetCommonCoercionType(new[] {typeof(bool?), typeof(string), typeof(bool?)});
@@ -583,15 +583,18 @@ namespace com.espertech.esper.util
         {
             var testCases = new[]
                             {
-                                new object[] {new[] {typeof(string), typeof(int)}, "String, Int32"},
-                                new object[] {new[] {typeof(int?), typeof(bool?)}, "Nullable<Int32>, Nullable<Boolean>"},
+                                new object[] {new[] {typeof(string), typeof(int)}, "System.String, System.Int32"},
+                                new object[] {new[] {typeof(int?), typeof(bool?)}, "System.Nullable<System.Int32>, System.Nullable<System.Boolean>"},
                                 new object[] {new Type[] {}, ""},
                                 new object[] {new Type[] {null}, "null (any type)"},
-                                new object[] {new[] {typeof(byte), null}, "Byte, null (any type)"},
+                                new object[] {new[] {typeof(byte), null}, "System.Byte, null (any type)"},
                                 new object[]
                                 {
                                     new[] {typeof(SupportBean), typeof(int[]), typeof(int[][]), typeof(DataMap)},
-                                    "SupportBean, Int32[], Int32[][], IDictionary<String, Object>"
+                                    "com.espertech.esper.supportunit.bean.SupportBean, " +
+                                    "System.Int32[], " +
+                                    "System.Int32[][], " +
+                                    "System.Collections.Generic.IDictionary<System.String, System.Object>"
                                 },
                                 new object[]
                                 {
@@ -600,13 +603,15 @@ namespace com.espertech.esper.util
                                         typeof(SupportBean[]), typeof(SupportEnum),
                                         typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested)
                                     },
-                                    "SupportBean[], SupportEnum, SupportBeanSpecialGetterNested"
+                                    "com.espertech.esper.supportunit.bean.SupportBean[], " +
+                                    "com.espertech.esper.supportunit.bean.SupportEnum, " +
+                                    "com.espertech.esper.supportunit.bean.SupportBeanComplexProps+SupportBeanSpecialGetterNested"
                                 },
                             };
 
             for (int i = 0; i < testCases.Length; i++) {
                 var paramList = (Type[]) testCases[i][0];
-                Assert.AreEqual(testCases[i][1], TypeHelper.GetParameterAsString(paramList, false));
+                Assert.AreEqual(testCases[i][1], TypeHelper.GetParameterAsString(paramList, true));
             }
         }
 

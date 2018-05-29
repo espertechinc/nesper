@@ -10,9 +10,9 @@ using com.espertech.esper.spatial.quadtree.core;
 
 namespace com.espertech.esper.spatial.quadtree.mxcif
 {
-    public class MXCIFQuadTreeNodeLeaf<L> : MXCIFQuadTreeNode<L>
+    internal class MXCIFQuadTreeNodeLeaf<L> : MXCIFQuadTreeNode<L>
     {
-        public MXCIFQuadTreeNodeLeaf(BoundingBox bb, int level, L data, int dataCount)
+        internal MXCIFQuadTreeNodeLeaf(BoundingBox bb, int level, L data, int dataCount)
             : base(bb, level, data, dataCount)
         {
         }

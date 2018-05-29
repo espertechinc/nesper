@@ -18,49 +18,49 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.supportregression.db
 {
-    public class SupportSQLColumnTypeConversion : SQLColumnTypeConversion {
+    public class SupportSQLColumnTypeConversion : SQLColumnTypeConversion
+    {
         private static List<SQLColumnTypeContext> typeContexts;
         private static List<SQLColumnValueContext> valueContexts;
         private static List<SQLInputParameterContext> paramContexts;
-    
+
         static SupportSQLColumnTypeConversion()
         {
             Reset();
         }
-    
-        public static void Reset() {
+
+        public static void Reset()
+        {
             typeContexts = new List<SQLColumnTypeContext>();
             valueContexts = new List<SQLColumnValueContext>();
             paramContexts = new List<SQLInputParameterContext>();
         }
-    
-        public static List<SQLColumnTypeContext> GetTypeContexts() {
-            return typeContexts;
-        }
-    
-        public static List<SQLColumnValueContext> GetValueContexts() {
-            return valueContexts;
-        }
-    
-        public static List<SQLInputParameterContext> GetParamContexts() {
-            return paramContexts;
-        }
-    
-        public Type GetColumnType(SQLColumnTypeContext sqlColumnTypeContext) {
+
+        public static List<SQLColumnTypeContext> TypeContexts => typeContexts;
+
+        public static List<SQLColumnValueContext> ValueContexts => valueContexts;
+
+        public static List<SQLInputParameterContext> ParamContexts => paramContexts;
+
+        public Type GetColumnType(SQLColumnTypeContext sqlColumnTypeContext)
+        {
             typeContexts.Add(sqlColumnTypeContext);
             return typeof(bool?);
         }
-    
-        public Object GetColumnValue(SQLColumnValueContext valueContext) {
+
+        public Object GetColumnValue(SQLColumnValueContext valueContext)
+        {
             valueContexts.Add(valueContext);
             return ((int?) valueContext.ColumnValue) >= 50;
         }
-    
-        public Object GetParameterValue(SQLInputParameterContext inputParameterContext) {
+
+        public Object GetParameterValue(SQLInputParameterContext inputParameterContext)
+        {
             paramContexts.Add(inputParameterContext);
             if (inputParameterContext.ParameterValue is string) {
                 return int.Parse(inputParameterContext.ParameterValue.ToString().Substring(1));
             }
+
             return inputParameterContext.ParameterValue;
         }
     }

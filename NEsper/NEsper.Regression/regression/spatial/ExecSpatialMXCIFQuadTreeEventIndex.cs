@@ -13,7 +13,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.spatial.quadtree.core;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
@@ -59,7 +58,7 @@ namespace com.espertech.esper.regression.spatial
         private void RunAssertionEventIndexTableFireAndForget(EPServiceProvider epService) {
             epService.EPAdministrator.CreateEPL("create table MyTable(id string primary key, tx double, ty double, tw double, th double)");
             epService.EPRuntime.ExecuteQuery("insert into MyTable values ('R1', 10, 20, 5, 6)");
-            epService.EPAdministrator.CreateEPL("create index MyIdxCIFQuadTree on MyTable( (tx, ty, tw, th) Mxcifquadtree(0, 0, 100, 100))");
+            epService.EPAdministrator.CreateEPL("create index MyIdxCIFQuadTree on MyTable( (tx, ty, tw, th) mxcifquadtree(0, 0, 100, 100))");
     
             RunAssertionFAF(epService, 10, 20, 0, 0, true);
             RunAssertionFAF(epService, 9, 19, 1, 1, true);
@@ -73,7 +72,7 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunAssertionFAF(EPServiceProvider epService, double x, double y, double width, double height, bool expected) {
-            EPOnDemandQueryResult result = epService.EPRuntime.ExecuteQuery(IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "select id as c0 from MyTable where Rectangle(tx, ty, tw, th).Intersects(Rectangle(" + x + ", " + y + ", " + width + ", " + height + "))");
+            var result = epService.EPRuntime.ExecuteQuery(IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "select id as c0 from MyTable where rectangle(tx, ty, tw, th).intersects(rectangle(" + x + ", " + y + ", " + width + ", " + height + "))");
             SupportQueryPlanIndexHook.AssertFAFAndReset("MyIdxCIFQuadTree", "EventTableQuadTreeMXCIFImpl");
             if (expected) {
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(result.Array, "c0".Split(','), new object[][]{new object[] {"R1"}});
@@ -83,39 +82,43 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void RunAssertionEventIndexPerformance(EPServiceProvider epService) {
-            string epl = "create window MyRectangleWindow#keepall as (id string, rx double, ry double, rw double, rh double);\n" +
+            var epl = "create window MyRectangleWindow#keepall as (id string, rx double, ry double, rw double, rh double);\n" +
                     "insert into MyRectangleWindow select id, x as rx, y as ry, width as rw, height as rh from SupportSpatialEventRectangle;\n" +
-                    "create index Idx on MyRectangleWindow( (rx, ry, rw, rh) Mxcifquadtree(0, 0, 100, 100));\n" +
-                    "@Name('out') on SupportSpatialAABB select mpw.id as c0 from MyRectangleWindow as mpw where Rectangle(rx, ry, rw, rh).Intersects(Rectangle(x, y, width, height));\n";
-            string deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
+                    "create index Idx on MyRectangleWindow( (rx, ry, rw, rh) mxcifquadtree(0, 0, 100, 100));\n" +
+                    "@Name('out') on SupportSpatialAABB select mpw.id as c0 from MyRectangleWindow as mpw where rectangle(rx, ry, rw, rh).intersects(rectangle(x, y, width, height));\n";
+            var deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.GetStatement("out").Events += listener.Update;
     
-            SendSpatialEventRectanges(epService, 100, 50);
-    
-            long start = PerformanceObserver.MilliTime;
-            for (int x = 0; x < 100; x++) {
-                for (int y = 0; y < 50; y++) {
-                    epService.EPRuntime.SendEvent(new SupportSpatialAABB("R", x, y, 0.5, 0.5));
-                    Assert.AreEqual(Convert.ToString(x) + "_" + Convert.ToString(y), listener.AssertOneGetNewAndReset().Get("c0"));
-                }
-            }
-            long delta = DateTimeHelper.CurrentTimeMillis - start;
-            Assert.IsTrue(delta < 2000, "delta=" + delta);
+            SendSpatialEventRectangles(epService, 100, 50);
+
+            var delta = PerformanceObserver.TimeMillis(
+                () => {
+                    for (var x = 0; x < 100; x++) {
+                        for (var y = 0; y < 50; y++) {
+                            epService.EPRuntime.SendEvent(new SupportSpatialAABB("R", x, y, 0.5, 0.5));
+                            Assert.AreEqual(
+                                Convert.ToString(x) + "_" + Convert.ToString(y),
+                                listener.AssertOneGetNewAndReset().Get("c0"));
+                        }
+                    }
+                });
+
+            Assert.That(delta, Is.LessThan(3000));
     
             epService.EPAdministrator.DeploymentAdmin.Undeploy(deploymentId);
         }
     
         private void RunAssertionEventIndexUnique(EPServiceProvider epService) {
-            string epl = "@Name('win') create window MyRectWindow#keepall as (id string, rx double, ry double, rw double, rh double);\n" +
+            var epl = "@Name('win') create window MyRectWindow#keepall as (id string, rx double, ry double, rw double, rh double);\n" +
                     "@Name('insert') insert into MyRectWindow select id, x as rx, y as ry, width as rw, height as rh from SupportSpatialEventRectangle;\n" +
-                    "@Name('idx') create unique index Idx on MyRectWindow( (rx, ry, rw, rh) Mxcifquadtree(0, 0, 100, 100));\n" +
-                    IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "@Name('out') on SupportSpatialAABB select mpw.id as c0 from MyRectWindow as mpw where Rectangle(rx, ry, rw, rh).Intersects(Rectangle(x, y, width, height));\n";
-            string deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
+                    "@Name('idx') create unique index Idx on MyRectWindow( (rx, ry, rw, rh) mxcifquadtree(0, 0, 100, 100));\n" +
+                    IndexBackingTableInfo.INDEX_CALLBACK_HOOK + "@Name('out') on SupportSpatialAABB select mpw.id as c0 from MyRectWindow as mpw where rectangle(rx, ry, rw, rh).intersects(rectangle(x, y, width, height));\n";
+            var deploymentId = epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl).DeploymentId;
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.GetStatement("out").Events += listener.Update;
     
-            SupportQueryPlanIndexHook.AssertOnExprTableAndReset("Idx", "unique hash={} btree={} advanced={Mxcifquadtree(rx,ry,rw,rh)}");
+            SupportQueryPlanIndexHook.AssertOnExprTableAndReset("Idx", "unique hash={} btree={} advanced={mxcifquadtree(rx,ry,rw,rh)}");
     
             SendEventRectangle(epService, "P1", 10, 15, 1, 2);
             try {
@@ -123,14 +126,14 @@ namespace com.espertech.esper.regression.spatial
                 Assert.Fail();
             } catch (Exception ex) { // we have a handler
                 SupportMessageAssertUtil.AssertMessage(ex,
-                        "Unexpected exception in statement 'win': Unique index violation, index 'Idx' is a unique index and key '(10.0,15.0,1.0,2.0)' already exists");
+                        "Unexpected exception in statement 'win': Unique index violation, index 'Idx' is a unique index and key '(10,15,1,2)' already exists");
             }
     
             epService.EPAdministrator.DeploymentAdmin.Undeploy(deploymentId);
         }
     
         private void RunAssertionEventIndexUnindexed(EPServiceProvider epService) {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select Rectangle(one.x, one.y, one.width, one.height).Intersects(Rectangle(two.x, two.y, two.width, two.height)) as c0 from SupportSpatialDualAABB");
+            var stmt = epService.EPAdministrator.CreateEPL("select rectangle(one.x, one.y, one.width, one.height).intersects(rectangle(two.x, two.y, two.width, two.height)) as c0 from SupportSpatialDualAABB");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
@@ -159,16 +162,16 @@ namespace com.espertech.esper.regression.spatial
     
         private void RunAssertionEventIndexOnTriggerNWInsertRemove(EPServiceProvider epService, bool soda) {
             SupportModelHelper.CreateByCompileOrParse(epService, soda, "create window MyWindow#length(5) as select * from SupportSpatialEventRectangle");
-            SupportModelHelper.CreateByCompileOrParse(epService, soda, "create index MyIndex on MyWindow((x,y,width,height) Mxcifquadtree(0,0,100,100))");
+            SupportModelHelper.CreateByCompileOrParse(epService, soda, "create index MyIndex on MyWindow((x,y,width,height) mxcifquadtree(0,0,100,100))");
             SupportModelHelper.CreateByCompileOrParse(epService, soda, "insert into MyWindow select * from SupportSpatialEventRectangle");
     
-            string epl = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + " on SupportSpatialAABB as aabb " +
-                    "select rects.id as c0 from MyWindow as rects where Rectangle(rects.x,rects.y,rects.width,rects.height).Intersects(Rectangle(aabb.x,aabb.y,aabb.width,aabb.height))";
-            EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
+            var epl = IndexBackingTableInfo.INDEX_CALLBACK_HOOK + " on SupportSpatialAABB as aabb " +
+                    "select rects.id as c0 from MyWindow as rects where rectangle(rects.x,rects.y,rects.width,rects.height).intersects(rectangle(aabb.x,aabb.y,aabb.width,aabb.height))";
+            var stmt = SupportModelHelper.CreateByCompileOrParse(epService, soda, epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            SupportQueryPlanIndexHook.AssertOnExprTableAndReset("MyIndex", "non-unique hash={} btree={} advanced={Mxcifquadtree(x,y,width,height)}");
+            SupportQueryPlanIndexHook.AssertOnExprTableAndReset("MyIndex", "non-unique hash={} btree={} advanced={mxcifquadtree(x,y,width,height)}");
     
             SendEventRectangle(epService, "R1", 10, 40, 1, 1);
             AssertRectanglesManyRow(epService, listener, BOXES, "R1", null, null, null, null);
@@ -215,10 +218,10 @@ namespace com.espertech.esper.regression.spatial
         }
     
         private void SendAssert(EPServiceProvider epService, SupportUpdateListener listener, SupportSpatialAABB one, SupportSpatialAABB two, bool expected) {
-            BoundingBox bbOne = BoundingBox.From(one.X, one.Y, one.Width, one.Height);
+            var bbOne = BoundingBox.From(one.X, one.Y, one.Width, one.Height);
             Assert.AreEqual(expected, bbOne.IntersectsBoxIncludingEnd(two.X, two.Y, two.Width, two.Height));
     
-            BoundingBox bbTwo = BoundingBox.From(two.X, two.Y, two.Width, two.Height);
+            var bbTwo = BoundingBox.From(two.X, two.Y, two.Width, two.Height);
             Assert.AreEqual(expected, bbTwo.IntersectsBoxIncludingEnd(one.X, one.Y, one.Width, one.Height));
     
             epService.EPRuntime.SendEvent(new SupportSpatialDualAABB(one, two));

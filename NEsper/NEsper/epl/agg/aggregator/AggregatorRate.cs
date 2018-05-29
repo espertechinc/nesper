@@ -75,7 +75,7 @@ namespace com.espertech.esper.epl.agg.aggregator
 
         protected void EnterValueSingle(object value)
         {
-            Accumulator += 1;
+            Accumulator++;
             Latest = (long) value;
         }
 
@@ -96,7 +96,7 @@ namespace com.espertech.esper.epl.agg.aggregator
 
         protected void LeaveValueSingle(object value)
         {
-            Accumulator -= 1;
+            Accumulator--;
             Oldest = (long) value;
             if (!_isSet) _isSet = true;
         }

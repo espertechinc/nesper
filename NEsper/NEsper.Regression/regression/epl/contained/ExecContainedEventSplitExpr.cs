@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.epl.contained
         public override void Run(EPServiceProvider epService)
         {
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                "invalidSentence", GetType().FullName, "InvalidSentenceMethod");
+                "invalidSentence", GetType(), "InvalidSentenceMethod");
 
             RunAssertionScriptContextValue(epService);
             RunAssertionSplitExprReturnsEventBean(epService);
@@ -50,11 +50,11 @@ namespace com.espertech.esper.regression.epl.contained
         {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
-            var script = "@Name('mystmt') create expression Object jscript:MyGetScriptContext() [\n" +
-                         "function MyGetScriptContext() {" +
+            var script = "@Name('mystmt') create expression Object jscript:myGetScriptContext() [\n" +
+                         "function myGetScriptContext() {" +
                          "  return epl;\n" +
                          "}" +
-                         "return MyGetScriptContext();" +
+                         "return myGetScriptContext();" +
                          "]";
             epService.EPAdministrator.CreateEPL(script);
 
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regression.epl.contained
         private void RunAssertionSplitExprReturnsEventBean(EPServiceProvider epService)
         {
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                "mySplitUDFReturnEventBeanArray", GetType().FullName, "MySplitUDFReturnEventBeanArray");
+                "mySplitUDFReturnEventBeanArray", GetType(), "MySplitUDFReturnEventBeanArray");
 
             var script = string.Join(
                 "\n",
@@ -140,32 +140,41 @@ namespace com.espertech.esper.regression.epl.contained
             EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum)
         {
             string[] methods;
-            if (eventRepresentationEnum.IsObjectArrayEvent())
-            {
-                methods =
-                    "splitSentenceMethodReturnObjectArray,splitSentenceBeanMethodReturnObjectArray,splitWordMethodReturnObjectArray"
-                        .Split(',');
+            if (eventRepresentationEnum.IsObjectArrayEvent()) {
+                methods = new[] {
+                    "SplitSentenceMethodReturnObjectArray",
+                    "SplitSentenceBeanMethodReturnObjectArray",
+                    "SplitWordMethodReturnObjectArray"
+                };
             }
-            else if (eventRepresentationEnum.IsMapEvent())
-            {
-                methods =
-                    "splitSentenceMethodReturnMap,splitSentenceBeanMethodReturnMap,splitWordMethodReturnMap".Split(',');
+            else if (eventRepresentationEnum.IsMapEvent()) {
+                methods = new[] {
+                    "SplitSentenceMethodReturnMap",
+                    "SplitSentenceBeanMethodReturnMap",
+                    "SplitWordMethodReturnMap"
+                };
             }
-            else if (eventRepresentationEnum.IsAvroEvent())
-            {
-                methods = "splitSentenceMethodReturnAvro,splitSentenceBeanMethodReturnAvro,splitWordMethodReturnAvro"
-                    .Split(',');
+            else if (eventRepresentationEnum.IsAvroEvent()) {
+                methods = new[] {
+                    "SplitSentenceMethodReturnAvro",
+                    "SplitSentenceBeanMethodReturnAvro",
+                    "SplitWordMethodReturnAvro"
+                };
             }
             else
             {
                 throw new IllegalStateException("Unrecognized enum " + eventRepresentationEnum);
             }
 
-            var funcs = "splitSentence,splitSentenceBean,splitWord".Split(',');
+            var funcs = new[] {
+                "SplitSentence",
+                "SplitSentenceBean",
+                "SplitWord"
+            };
             for (var i = 0; i < funcs.Length; i++)
             {
                 epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction(
-                    funcs[i] + "_" + eventRepresentationEnum.GetName(), GetType().FullName, methods[i]);
+                    funcs[i] + "_" + eventRepresentationEnum.GetName(), GetType(), methods[i]);
             }
 
             epService.EPAdministrator.CreateEPL(
@@ -178,7 +187,7 @@ namespace com.espertech.esper.regression.epl.contained
             var fields = "word".Split(',');
 
             // test single-row method
-            var stmtText = "select * from SentenceEvent[splitSentence" + "_" + eventRepresentationEnum.GetName() + "(sentence)@Type(WordEvent)]";
+            var stmtText = "select * from SentenceEvent[SplitSentence" + "_" + eventRepresentationEnum.GetName() + "(sentence)@Type(WordEvent)]";
             var stmt = epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -190,14 +199,21 @@ namespace com.espertech.esper.regression.epl.contained
                 listener.GetAndResetLastNewData(), fields,
                 new[]
                 {
-                    new object[] {"I"}, new object[] {"am"}, new object[] {"testing"}, new object[] {"this"},
+                    new object[] {"I"},
+                    new object[] {"am"},
+                    new object[] {"testing"},
+                    new object[] {"this"},
                     new object[] {"code"}
                 });
 
             SendSentenceEvent(epService, eventRepresentationEnum, "the second event");
             EPAssertionUtil.AssertPropsPerRow(
                 listener.GetAndResetLastNewData(), fields,
-                new[] {new object[] {"the"}, new object[] {"second"}, new object[] {"event"}});
+                new[] {
+                    new object[] {"the"},
+                    new object[] {"second"},
+                    new object[] {"event"}
+                });
 
             stmt.Dispose();
 
@@ -245,8 +261,8 @@ namespace com.espertech.esper.regression.epl.contained
             }
 
             // test multiple splitters
-            stmtText = "select * from SentenceEvent[splitSentence_" + eventRepresentationEnum.GetName() +
-                       "(sentence)@Type(WordEvent)][splitWord_" + eventRepresentationEnum.GetName() +
+            stmtText = "select * from SentenceEvent[SplitSentence_" + eventRepresentationEnum.GetName() +
+                       "(sentence)@Type(WordEvent)][SplitWord_" + eventRepresentationEnum.GetName() +
                        "(word)@Type(CharacterEvent)]";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
             stmt.Events += listener.Update;
@@ -260,7 +276,7 @@ namespace com.espertech.esper.regression.epl.contained
             stmt.Dispose();
 
             // test wildcard parameter
-            stmtText = "select * from SentenceEvent[splitSentenceBean_" + eventRepresentationEnum.GetName() +
+            stmtText = "select * from SentenceEvent[SplitSentenceBean_" + eventRepresentationEnum.GetName() +
                        "(*)@Type(WordEvent)]";
             stmt = epService.EPAdministrator.CreateEPL(stmtText);
             stmt.Events += listener.Update;
@@ -364,14 +380,14 @@ namespace com.espertech.esper.regression.epl.contained
 
             // invalid: event type not found
             TryInvalid(
-                epService,
-                "select * from SentenceEvent[SplitSentence(sentence)@type(XYZ)]",
-                "Event type by name 'XYZ' could not be found [select * from SentenceEvent[SplitSentence(sentence)@type(XYZ)]]");
+                epService, 
+                "select * from SentenceEvent[SplitSentence_" + eventRepresentationEnum.GetName() + "(sentence)@type(XYZ)]",
+                "Event type by name 'XYZ' could not be found");
 
             // invalid lib-function annotation
             TryInvalid(
-                epService,
-                "select * from SentenceEvent[SplitSentence(sentence)@dummy(WordEvent)]",
+                epService, 
+                "select * from SentenceEvent[splitSentence_" + eventRepresentationEnum.GetName() + "(sentence)@dummy(WordEvent)]",
                 "Invalid annotation for property selection, expected 'type' but found 'dummy' in text '@dummy(WordEvent)'");
 
             // invalid type assignment to event type
@@ -380,14 +396,14 @@ namespace com.espertech.esper.regression.epl.contained
                 TryInvalid(
                     epService,
                     "select * from SentenceEvent[InvalidSentence(sentence)@type(WordEvent)]",
-                    "Event type 'WordEvent' underlying type System.object[] cannot be assigned a value of type");
+                    "Event type 'WordEvent' underlying type System.Object[] cannot be assigned a value of type");
             }
             else if (eventRepresentationEnum.IsMapEvent())
             {
                 TryInvalid(
                     epService,
                     "select * from SentenceEvent[InvalidSentence(sentence)@type(WordEvent)]",
-                    "Event type 'WordEvent' underlying type " + Name.Of<IDictionary<string, object>>() +
+                    "Event type 'WordEvent' underlying type " + Name.Clean<IDictionary<string, object>>() +
                     " cannot be assigned a value of type");
             }
             else if (eventRepresentationEnum.IsAvroEvent())

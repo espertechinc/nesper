@@ -66,14 +66,14 @@ namespace com.espertech.esper.regression.events.bean
             epService.EPAdministrator.Configuration.AddEventType("MapEvent", def);
     
             string eplMap = "select " +
-                    "Mapped(TheString) as val0," +
-                    "Indexed(IntPrimitive) as val1 " +
+                    "mapped(TheString) as val0," +
+                    "indexed(IntPrimitive) as val1 " +
                     "from MapEvent#lastevent, SupportBean unidirectional";
             RunAssertionMap(epService, listener, eplMap);
     
             string eplMapPrefixed = "select " +
-                    "sbcp.Mapped(TheString) as val0," +
-                    "sbcp.Indexed(IntPrimitive) as val1 " +
+                    "sbcp.mapped(TheString) as val0," +
+                    "sbcp.indexed(IntPrimitive) as val1 " +
                     "from MapEvent#lastevent sbcp, SupportBean unidirectional";
             RunAssertionMap(epService, listener, eplMapPrefixed);
     
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regression.events.bean
             defType.Put("value", typeof(string));
             defType.Put("properties", typeof(Map));
             epService.EPAdministrator.Configuration.AddEventType("InputEvent", defType);
-            epService.EPAdministrator.CreateEPL("select name,value,Properties(name) = value as ok from InputEvent").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select name,value,properties(name) = value as ok from InputEvent").Events += listener.Update;
     
             listener.Reset();
             epService.EPRuntime.SendEvent(MakeMapEvent("name", "value1", Collections.SingletonDataMap("name", "xxxx")), "InputEvent");
@@ -95,14 +95,14 @@ namespace com.espertech.esper.regression.events.bean
             // test Object-array-type
             epService.EPAdministrator.Configuration.AddEventType("ObjectArrayEvent", new string[]{"mapped", "indexed"}, new object[]{new Dictionary<string, object>(), typeof(int[])});
             string eplObjectArray = "select " +
-                    "Mapped(TheString) as val0," +
-                    "Indexed(IntPrimitive) as val1 " +
+                    "mapped(TheString) as val0," +
+                    "indexed(IntPrimitive) as val1 " +
                     "from ObjectArrayEvent#lastevent, SupportBean unidirectional";
             RunAssertionObjectArray(epService, listener, eplObjectArray);
     
             string eplObjectArrayPrefixed = "select " +
-                    "sbcp.Mapped(TheString) as val0," +
-                    "sbcp.Indexed(IntPrimitive) as val1 " +
+                    "sbcp.mapped(TheString) as val0," +
+                    "sbcp.indexed(IntPrimitive) as val1 " +
                     "from ObjectArrayEvent#lastevent sbcp, SupportBean unidirectional";
             RunAssertionObjectArray(epService, listener, eplObjectArrayPrefixed);
         }

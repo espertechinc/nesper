@@ -238,9 +238,9 @@ namespace com.espertech.esper.regression.resultset.querytype
             // there is NOW a A->null entry
             Assert.IsTrue(listener.GetAndClearIsInvoked());
             Assert.AreEqual(2, listener.LastNewData.Length);
-            Assert.AreEqual(null, listener.LastNewData[0].Get("aprice"));
-            Assert.AreEqual(4.0, listener.LastNewData[1].Get("aprice"));
-            Assert.AreEqual("B", listener.LastNewData[1].Get("symbol"));
+            Assert.AreEqual(null, listener.LastNewData[1].Get("aprice"));
+            Assert.AreEqual(4.0, listener.LastNewData[0].Get("aprice"));
+            Assert.AreEqual("B", listener.LastNewData[0].Get("symbol"));
             SendEvent(epService, "A", 10);
             SendEvent(epService, "A", 20);
             Assert.IsTrue(listener.GetAndClearIsInvoked());

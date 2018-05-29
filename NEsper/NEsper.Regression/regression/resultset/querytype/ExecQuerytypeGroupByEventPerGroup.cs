@@ -45,7 +45,7 @@ namespace com.espertech.esper.regression.resultset.querytype
     
         private void RunAssertionCriteriaByDotMethod(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-            string epl = "select Sb.TheString as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by Sb.TheString";
+            string epl = "select sb.TheString as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.TheString";
             var listener = new SupportUpdateListener();
             epService.EPAdministrator.CreateEPL(epl).Events += listener.Update;
     
@@ -531,8 +531,8 @@ namespace com.espertech.esper.regression.resultset.querytype
     
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("mySum"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("myAvg"));
+            Assert.AreEqual(typeof(double), stmt.EventType.GetPropertyType("mySum"));
+            Assert.AreEqual(typeof(double), stmt.EventType.GetPropertyType("myAvg"));
     
             SendEvent(epService, SYMBOL_DELL, 10);
             AssertEvents(listener, SYMBOL_DELL,

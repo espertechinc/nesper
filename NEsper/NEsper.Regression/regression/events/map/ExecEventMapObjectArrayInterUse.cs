@@ -35,12 +35,18 @@ namespace com.espertech.esper.regression.events.map
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select p0 as c0, p1.im as c1, p2[0].im as c2, p3.om as c3 from OAType");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-    
-            epService.EPRuntime.SendEvent(new object[]{"E1",
-                Collections.SingletonMap("im", "IM1"),
-                new Map[] { Collections.SingletonDataMap("im", "IM2") },
-                Collections.SingletonDataMap("om", "OM1")}, "OAType");
-            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "c0,c1,c2,c3".Split(','), new object[]{"E1", "IM1", "IM2", "OM1"});
+
+            epService.EPRuntime.SendEvent(
+                new object[] {
+                    "E1",
+                    Collections.SingletonMap("im", "IM1"),
+                    new Map[] { Collections.SingletonDataMap("im", "IM2") },
+                    Collections.SingletonDataMap("om", "OM1")
+                }, "OAType");
+            EPAssertionUtil.AssertProps(
+                listener.AssertOneGetNewAndReset(), 
+                "c0,c1,c2,c3".Split(','), 
+                new object[]{"E1", "IM1", "IM2", "OM1"});
     
             epService.EPAdministrator.DestroyAllStatements();
     

@@ -23,9 +23,11 @@ namespace com.espertech.esper.supportunit.epl
     
     public class SupportDatabaseService
 	{
-        protected internal const String ESPER_TEST_CONFIG = "regression/esper.test.readconfig.cfg.xml";
+	    private const string ESPER_LOCAL_CONFIG_FILE = "NEsperConfig.xml";
 
-	    public static readonly ConfigurationDBRef DbConfigReferenceNative;
+	    protected internal const String ESPER_TEST_CONFIG = "regression/esper.test.readconfig.cfg.xml";
+
+        public static readonly ConfigurationDBRef DbConfigReferenceNative;
         public static readonly ConfigurationDBRef DbConfigReferenceODBC;
 
 	    public static readonly DbDriverFactoryConnection DbDriverFactoryNative;
@@ -33,7 +35,7 @@ namespace com.espertech.esper.supportunit.epl
 
         static SupportDatabaseService()
         {
-            var configurationFile = new FileInfo("NEsperConfig.xml");
+            var configurationFile = new FileInfo(ESPER_LOCAL_CONFIG_FILE);
             var configuration = new Configuration(SupportContainer.Instance);
             configuration.Configure(configurationFile);
 
@@ -88,7 +90,7 @@ namespace com.espertech.esper.supportunit.epl
                 var serverPass = Environment.GetEnvironmentVariable("ESPER_MYSQL_PASSWORD");
 
                 if (serverHost == null)
-                    serverHost = "mysql-server";
+                    serverHost = "nesper-mysql-integ.local";
                 if (serverUser == null)
                     serverUser = "esper";
                 if (serverPass == null)

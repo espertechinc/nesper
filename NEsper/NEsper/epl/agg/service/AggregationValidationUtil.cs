@@ -44,9 +44,9 @@ namespace com.espertech.esper.epl.agg.service
                 !TypeHelper.IsSubclassOrImplementsInterface(boxedProvided, boxedRequired))
                 throw new ExprValidationException(
                     "The required parameter type is " +
-                    requiredParam.GetTypeNameFullyQualPretty() +
+                    requiredParam.GetCleanName() +
                     " and provided is " +
-                    providedParam.GetTypeNameFullyQualPretty());
+                    providedParam.GetCleanName());
         }
 
         public static void ValidateAggregationFilter(

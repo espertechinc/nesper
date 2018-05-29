@@ -64,7 +64,7 @@ namespace com.espertech.esper.epl.agg.factory
 
         public bool IsAccessAggregation => false;
 
-        public Type ResultType => typeof(double?);
+        public Type ResultType => typeof(double);
 
         public AggregationAccessor Accessor => throw new IllegalStateException("Not an access aggregation function");
 

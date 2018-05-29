@@ -20,13 +20,10 @@ namespace com.espertech.esper.spatial.quadtree.mxcif
             Count = count;
         }
 
-        public BoundingBox Bb { get; }
-
-        public int Level { get; }
-
-        public TL Data { get; set; }
-
-        public int Count { get; set; }
+        internal BoundingBox Bb; // { get; }
+        internal int Level; // { get; }
+        internal TL Data; // { get; set; }
+        internal int Count; // { get; set; }
 
         public void IncCount(int numAdded)
         {

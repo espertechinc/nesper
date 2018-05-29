@@ -10,9 +10,9 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.script;
 using com.espertech.esper.epl.spec;
 
@@ -20,7 +20,13 @@ namespace com.espertech.esper.epl.declexpr
 {
     public class ExprDeclaredHelper
     {
-        public static ExprDeclaredNodeImpl GetExistsDeclaredExpr(String name, IList<ExprNode> parameters, ICollection<ExpressionDeclItem> expressionDeclarations, ExprDeclaredService exprDeclaredService, ContextDescriptor contextDescriptor)
+        public static ExprDeclaredNodeImpl GetExistsDeclaredExpr(
+            IContainer container,
+            String name,
+            IList<ExprNode> parameters,
+            ICollection<ExpressionDeclItem> expressionDeclarations,
+            ExprDeclaredService exprDeclaredService, 
+            ContextDescriptor contextDescriptor)
         {
             // Find among local expressions
             if (expressionDeclarations.IsNotEmpty())
@@ -29,7 +35,8 @@ namespace com.espertech.esper.epl.declexpr
                 {
                     if (declNode.Name.Equals(name))
                     {
-                        return new ExprDeclaredNodeImpl(declNode, parameters, contextDescriptor);
+                        return new ExprDeclaredNodeImpl(
+                            container, declNode, parameters, contextDescriptor);
                     }
                 }
             }
@@ -38,12 +45,18 @@ namespace com.espertech.esper.epl.declexpr
             ExpressionDeclItem found = exprDeclaredService.GetExpression(name);
             if (found != null)
             {
-                return new ExprDeclaredNodeImpl(found, parameters, contextDescriptor);
+                return new ExprDeclaredNodeImpl(
+                    container, found, parameters, contextDescriptor);
             }
             return null;
         }
 
-        public static ExprNodeScript GetExistsScript(String defaultDialect, String expressionName, IList<ExprNode> parameters, ICollection<ExpressionScriptProvided> scriptExpressions, ExprDeclaredService exprDeclaredService)
+        public static ExprNodeScript GetExistsScript(
+            String defaultDialect,
+            String expressionName, 
+            IList<ExprNode> parameters,
+            ICollection<ExpressionScriptProvided> scriptExpressions,
+            ExprDeclaredService exprDeclaredService)
         {
             if (scriptExpressions.IsNotEmpty())
             {
@@ -63,7 +76,9 @@ namespace com.espertech.esper.epl.declexpr
             return null;
         }
 
-        private static ExpressionScriptProvided FindScript(String name, int parameterCount, ICollection<ExpressionScriptProvided> scriptsByName)
+        private static ExpressionScriptProvided FindScript(
+            String name, int parameterCount, 
+            ICollection<ExpressionScriptProvided> scriptsByName)
         {
             if (scriptsByName == null || scriptsByName.IsEmpty())
             {

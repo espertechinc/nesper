@@ -179,7 +179,7 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             EPAssertionUtil.AssertEqualsAnyOrder(stmtSelectOne.EventType.PropertyNames, new string[]{"a", "b", "c"});
             Assert.AreEqual(typeof(string), stmtCreate.EventType.GetPropertyType("a"));
             Assert.AreEqual(typeof(long), stmtCreate.EventType.GetPropertyType("b"));
-            Assert.AreEqual(typeof(long), stmtCreate.EventType.GetPropertyType("c"));
+            Assert.AreEqual(typeof(long?), stmtCreate.EventType.GetPropertyType("c"));
     
             // create delete stmt
             string stmtTextDelete = "on " + typeof(SupportMarketDataBean).FullName + " as s0 delete from MyWindowNW as s1 where s0.symbol = s1.a";
@@ -279,11 +279,11 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
                 TryAssertionCreateSchemaModelAfter(epService, rep);
             }
     
-            // test model-after for POJO with inheritance
-            epService.EPAdministrator.CreateEPL("create window ParentWindow#keepall as select * from " + typeof(NWTypesParentClass).FullName);
-            epService.EPAdministrator.CreateEPL("insert into ParentWindow select * from " + typeof(NWTypesParentClass).FullName);
-            epService.EPAdministrator.CreateEPL("create window ChildWindow#keepall as select * from " + typeof(NWTypesChildClass).FullName);
-            epService.EPAdministrator.CreateEPL("insert into ChildWindow select * from " + typeof(NWTypesChildClass).FullName);
+            // test model-after for PONO with inheritance
+            epService.EPAdministrator.CreateEPL("create window ParentWindow#keepall as select * from " + typeof(NWTypesParentClass).MaskTypeName());
+            epService.EPAdministrator.CreateEPL("insert into ParentWindow select * from " + typeof(NWTypesParentClass).MaskTypeName());
+            epService.EPAdministrator.CreateEPL("create window ChildWindow#keepall as select * from " + typeof(NWTypesChildClass).MaskTypeName());
+            epService.EPAdministrator.CreateEPL("insert into ChildWindow select * from " + typeof(NWTypesChildClass).MaskTypeName());
     
             var listener = new SupportUpdateListener();
             string parentQuery = "@Name('Parent') select parent from ParentWindow as parent";
@@ -387,8 +387,8 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             Assert.AreEqual(text, model.ToEPL());
             stmtCreate = epService.EPAdministrator.Create(model);
             Assert.AreEqual(typeof(string), stmtCreate.EventType.GetPropertyType("a"));
-            Assert.AreEqual(typeof(int?), stmtCreate.EventType.GetPropertyType("b"));
-            Assert.AreEqual(typeof(int?), stmtCreate.EventType.GetPropertyType("c"));
+            Assert.AreEqual(typeof(int), stmtCreate.EventType.GetPropertyType("b"));
+            Assert.AreEqual(typeof(int), stmtCreate.EventType.GetPropertyType("c"));
             Assert.AreEqual(text, model.ToEPL());
     
             text = "create window MyWindowCTSFour#unique(a)#unique(b) retain-union as (a string, b integer, c integer)";
@@ -446,17 +446,17 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
     
         private void RunAssertionWildcardInheritance(EPServiceProvider epService) {
             // create window
-            string stmtTextCreate = "create window MyWindowWI#keepall as select * from " + typeof(SupportBeanBase).FullName;
+            string stmtTextCreate = "create window MyWindowWI#keepall as select * from " + typeof(SupportBeanBase).MaskTypeName();
             EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
             var listenerWindow = new SupportUpdateListener();
             stmtCreate.Events += listenerWindow.Update;
     
             // create insert into
-            string stmtTextInsertOne = "insert into MyWindowWI select * from " + typeof(SupportBean_A).FullName;
+            string stmtTextInsertOne = "insert into MyWindowWI select * from " + typeof(SupportBean_A).MaskTypeName();
             epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create insert into
-            string stmtTextInsertTwo = "insert into MyWindowWI select * from " + typeof(SupportBean_B).Name;
+            string stmtTextInsertTwo = "insert into MyWindowWI select * from " + typeof(SupportBean_B).MaskTypeName();
             epService.EPAdministrator.CreateEPL(stmtTextInsertTwo);
     
             // create consumer

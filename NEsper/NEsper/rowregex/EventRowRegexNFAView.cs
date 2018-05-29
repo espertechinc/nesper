@@ -41,7 +41,7 @@ namespace com.espertech.esper.rowregex
         private const bool IS_DEBUG = false;
 
         private static readonly IEnumerator<EventBean> NULL_ITERATOR =
-            EnumerationHelper<EventBean>.Empty();
+            EnumerationHelper.Empty<EventBean>();
 
         private readonly EventRowRegexNFAViewFactory _factory;
         private readonly MatchRecognizeSpec _matchRecognizeSpec;

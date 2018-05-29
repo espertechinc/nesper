@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.view
                 epService.EPAdministrator.CreateEPL("select TheString From SupportBean#time(30 seconds) where IntPrimitive group by TheString");
                 Assert.Fail();
             } catch (EPStatementException ex) {
-                Assert.AreEqual("Error validating expression: The where-clause filter expression must return a bool value [Select TheString From SupportBean#time(30 seconds) where IntPrimitive group by TheString]", ex.Message);
+                Assert.AreEqual("Error validating expression: The where-clause filter expression must return a boolean value [select TheString From SupportBean#time(30 seconds) where IntPrimitive group by TheString]", ex.Message);
             }
     
             // invalid return type for filter at runtime
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regression.view
     
             SendSupportBeanEvent(epService, 2, 2, 2, 2);
             EventBean theEvent = listener.GetAndResetLastNewData()[0];
-            Assert.AreEqual(typeof(long), theEvent.EventType.GetPropertyType("p1"));
+            Assert.AreEqual(typeof(long?), theEvent.EventType.GetPropertyType("p1"));
             Assert.AreEqual(4L, theEvent.Get("p1"));
             Assert.AreEqual(typeof(double?), theEvent.EventType.GetPropertyType("p2"));
             Assert.AreEqual(4d, theEvent.Get("p2"));

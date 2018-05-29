@@ -26,7 +26,7 @@ namespace com.espertech.esper.regression.events.xml
             string stmt =
                     "select element1, invalidelement, " +
                             "element4.element41 as nestedElement," +
-                            "element2.Element21('e21_2') as mappedElement," +
+                            "element2.element21('e21_2') as mappedElement," +
                             "element2.element21[1] as indexedElement," +
                             "element3.myattribute as invalidattribute " +
                             "from TestXMLNoSchemaType#length(100)";
@@ -37,10 +37,10 @@ namespace com.espertech.esper.regression.events.xml
     
             // Generate document with the specified in element1 to confirm we have independent events
             SendEvent(epService, "EventA");
-            ExecEventXMLNoSchemaSimpleXMLDOMGetter.AssertDataGetter(updateListener, "EventA", true);
+            ExecEventXMLNoSchemaSimpleXMLDOMGetter.AssertDataGetter(updateListener, "EventA", false);
     
             SendEvent(epService, "EventB");
-            ExecEventXMLNoSchemaSimpleXMLDOMGetter.AssertDataGetter(updateListener, "EventB", true);
+            ExecEventXMLNoSchemaSimpleXMLDOMGetter.AssertDataGetter(updateListener, "EventB", false);
         }
     }
 } // end of namespace

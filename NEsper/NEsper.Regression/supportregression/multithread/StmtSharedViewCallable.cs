@@ -33,10 +33,14 @@ namespace com.espertech.esper.supportregression.multithread
         public bool Call() {
             try {
                 for (int loop = 0; loop < _numRepeats; loop++) {
-                    foreach (string symbol in _symbols) {
-                        Object theEvent = MakeEvent(symbol, loop);
-                        _engine.EPRuntime.SendEvent(theEvent);
-                    }
+                    var execTimeMillis = PerformanceObserver.TimeMillis(
+                        () => {
+                            foreach (string symbol in _symbols) {
+                                Object theEvent = MakeEvent(symbol, loop);
+                                _engine.EPRuntime.SendEvent(theEvent);
+                            }
+                        });
+                    System.Diagnostics.Debug.WriteLine("ExecutionTime: {0}", execTimeMillis);
                 }
             } catch (Exception ex) {
                 Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);

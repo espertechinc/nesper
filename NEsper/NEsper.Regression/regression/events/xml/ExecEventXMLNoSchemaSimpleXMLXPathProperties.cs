@@ -69,12 +69,12 @@ namespace com.espertech.esper.regression.events.xml
             Assert.AreEqual(true, type.Metadata.IsApplicationPreConfiguredStatic);
     
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
-                    new EventPropertyDescriptor("xpathElement1", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("xpathElement1", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("xpathCountE21", typeof(double?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("xpathAttrString", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("xpathAttrString", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("xpathAttrNum", typeof(double?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("xpathAttrBool", typeof(bool?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("stringCastLong", typeof(long), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("stringCastLong", typeof(long?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("stringCastDouble", typeof(double?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("numCastInt", typeof(int?), null, false, false, false, false, false),
             }, type.PropertyDescriptors);

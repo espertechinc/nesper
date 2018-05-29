@@ -90,29 +90,16 @@ namespace com.espertech.esper.view.window
         ///     Returns the field name to get timestamp values from.
         /// </summary>
         /// <value>field name for timestamp values</value>
-        public ExprNode TimestampExpression
-        {
-            get { return _timestampExpression; }
-        }
+        public ExprNode TimestampExpression => _timestampExpression;
 
-        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation
-        {
-            get { return _timeDeltaComputation; }
-        }
+        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation => _timeDeltaComputation;
 
         public View CloneView()
         {
             return _externallyTimedWindowViewFactory.MakeView(AgentInstanceViewFactoryContext);
         }
 
-        public override EventType EventType
-        {
-            get
-            {
-                // The schema is the parent view's schema
-                return Parent.EventType;
-            }
-        }
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
@@ -218,9 +205,6 @@ namespace com.espertech.esper.view.window
             return _viewUpdatedCollection;
         }
 
-        public ViewFactory ViewFactory
-        {
-            get { return _externallyTimedWindowViewFactory; }
-        }
+        public ViewFactory ViewFactory => _externallyTimedWindowViewFactory;
     }
 }

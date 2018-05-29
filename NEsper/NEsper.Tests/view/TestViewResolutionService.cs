@@ -45,10 +45,10 @@ namespace com.espertech.esper.view
                 new[] {"v1", "v2"},
                 new[] {typeof(SupportViewFactoryOne).FullName, typeof(SupportViewFactoryTwo).FullName});
     
-            var factory = _service.Create("a", "v1");
+            var factory = _service.Create(_container, "a", "v1");
             Assert.IsTrue(factory is SupportViewFactoryOne);
     
-            factory = _service.Create("b", "v2");
+            factory = _service.Create(_container, "b", "v2");
             Assert.IsTrue(factory is SupportViewFactoryTwo);
     
             TryInvalid("a", "v3");
@@ -69,7 +69,7 @@ namespace com.espertech.esper.view
         {
             try
             {
-                _service.Create(@namespace, name);
+                _service.Create(_container, @namespace, name);
                 Assert.Fail();
             }
             catch (ViewProcessingException ex)
@@ -81,7 +81,7 @@ namespace com.espertech.esper.view
         [Test]
         public void TestCreate()
         {
-            var viewFactory = _service.Create(ViewEnum.UNIVARIATE_STATISTICS.GetNamespace(), ViewEnum.UNIVARIATE_STATISTICS.GetName());
+            var viewFactory = _service.Create(_container, ViewEnum.UNIVARIATE_STATISTICS.GetNamespace(), ViewEnum.UNIVARIATE_STATISTICS.GetName());
             Assert.IsTrue(viewFactory is UnivariateStatisticsViewFactory);
         }
     
@@ -90,7 +90,7 @@ namespace com.espertech.esper.view
         {
             try
             {
-                _service.Create("dummy", "bumblebee");
+                _service.Create(_container, "dummy", "bumblebee");
                 Assert.IsFalse(true);
             }
             catch (ViewProcessingException ex)

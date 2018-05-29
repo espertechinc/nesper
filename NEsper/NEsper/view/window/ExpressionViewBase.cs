@@ -106,14 +106,7 @@ namespace com.espertech.esper.view.window
             }
         }
 
-        public override EventType EventType
-        {
-            get
-            {
-                // The event type is the parent view's event type
-                return Parent.EventType;
-            }
-        }
+        public override EventType EventType => Parent.EventType;
 
         public override String ToString()
         {

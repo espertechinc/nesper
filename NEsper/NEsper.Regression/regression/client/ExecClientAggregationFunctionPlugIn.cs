@@ -32,7 +32,7 @@ namespace com.espertech.esper.regression.client
             configuration.AddPlugInAggregationFunctionFactory("concatstring", typeof(MyConcatAggregationFunctionFactory));
             configuration.AddPlugInAggregationFunctionFactory("concatstringTwo", typeof(MyConcatTwoAggFunctionFactory));
             configuration.AddPlugInAggregationFunctionFactory("concat", typeof(SupportPluginAggregationMethodTwoFactory));
-            configuration.AddPlugInAggregationFunctionFactory("xxx", typeof(string));
+            configuration.AddPlugInAggregationFunctionFactory("xxx", typeof(object));
             configuration.AddPlugInAggregationFunctionFactory("yyy", "com.NoSuchClass");
             configuration.EngineDefaults.Threading.IsEngineFairlock = true;
         }
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regression.client
     
             string textThree = "select irstream concatstring(TheString) as val from " + typeof(SupportBean).FullName + "#length(10) group by IntPrimitive";
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(textThree);
-            SerializableObjectCopier.Copy(model);
+            SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(textThree, model.ToEPL());
             TryGrouped(epService, null, model);
     
@@ -71,10 +71,10 @@ namespace com.espertech.esper.regression.client
             modelTwo.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName).AddView(null, "length", Expressions.Constant(10)));
             modelTwo.GroupByClause = GroupByClause.Create("IntPrimitive");
             Assert.AreEqual(textFour, modelTwo.ToEPL());
-            SerializableObjectCopier.Copy(modelTwo);
+            SerializableObjectCopier.Copy(epService.Container, modelTwo);
             TryGrouped(epService, null, modelTwo);
     
-            string textFive = "select irstream ConcatstringTwo(TheString) as val from " + typeof(SupportBean).FullName + "#length(10) group by IntPrimitive";
+            string textFive = "select irstream concatstringTwo(TheString) as val from " + typeof(SupportBean).FullName + "#length(10) group by IntPrimitive";
             TryGrouped(epService, textFive, null);
     
             epService.EPAdministrator.DestroyAllStatements();
@@ -150,7 +150,7 @@ namespace com.espertech.esper.regression.client
             try {
                 epService.EPAdministrator.CreateEPL("select concatstring(*) as val from SupportBean#lastevent, SupportBean unidirectional");
             } catch (EPStatementException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex, "Error starting statement: Failed to validate select-clause expression 'Concatstring(*)': The 'concatstring' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead");
+                SupportMessageAssertUtil.AssertMessage(ex, "Error starting statement: Failed to validate select-clause expression 'concatstring(*)': The 'concatstring' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead");
             }
     
             // test distinct
@@ -180,7 +180,7 @@ namespace com.espertech.esper.regression.client
         private void RunAssertionArrayParamsAndDotMethod(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddPlugInAggregationFunctionFactory("countback", typeof(SupportPluginAggregationMethodOneFactory));
     
-            string text = "select irstream Countback({1,2,IntPrimitive}) as val from " + typeof(SupportBean).FullName;
+            string text = "select irstream countback({1,2,IntPrimitive}) as val from " + typeof(SupportBean).FullName;
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regression.client
             epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_A));
             epService.EPAdministrator.Configuration.AddPlugInAggregationFunctionFactory("myagg", typeof(MyAggFuncFactory));
             string[] fields = "val0,val1".Split(',');
-            epService.EPAdministrator.CreateEPL("select (Myagg(id)).TheString as val0, (Myagg(id)).IntPrimitive as val1 from SupportBean_A").Events += listener.Update;
+            epService.EPAdministrator.CreateEPL("select (myagg(id)).get_TheString() as val0, (myagg(id)).get_IntPrimitive() as val1 from SupportBean_A").Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"XX", 1});
@@ -213,7 +213,7 @@ namespace com.espertech.esper.regression.client
     
         private void TryAssertionMultipleParams(EPServiceProvider epService, bool soda) {
     
-            string text = "select irstream Countboundary(1,10,IntPrimitive,*) as val from " + typeof(SupportBean).FullName;
+            string text = "select irstream countboundary(1,10,IntPrimitive,*) as val from " + typeof(SupportBean).FullName;
             EPStatement statement = SupportModelHelper.CreateByCompileOrParse(epService, soda, text);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
@@ -241,7 +241,7 @@ namespace com.espertech.esper.regression.client
         }
     
         private void RunAssertionNoSubnodesRuntimeAdd(EPServiceProvider epService) {
-            string text = "select irstream Countback() as val from " + typeof(SupportBean).FullName;
+            string text = "select irstream countback() as val from " + typeof(SupportBean).FullName;
             EPStatement statement = epService.EPAdministrator.CreateEPL(text);
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
@@ -276,18 +276,18 @@ namespace com.espertech.esper.regression.client
     
         private void RunAssertionFailedValidation(EPServiceProvider epService) {
             try {
-                string text = "select Concat(1) from " + typeof(SupportBean).FullName;
+                string text = "select concat(1) from " + typeof(SupportBean).FullName;
                 epService.EPAdministrator.CreateEPL(text);
             } catch (EPStatementException ex) {
-                SupportMessageAssertUtil.AssertMessage(ex, "Error starting statement: Failed to validate select-clause expression 'Concat(1)': Plug-in aggregation function 'concat' failed validation: Invalid parameter type '" + Name.Of<int>() + "', expecting string [");
+                SupportMessageAssertUtil.AssertMessage(ex, "Error starting statement: Failed to validate select-clause expression 'concat(1)': Plug-in aggregation function 'concat' failed validation: Invalid parameter type '" + Name.Clean<int>() + "', expecting string [");
             }
         }
     
         private void RunAssertionInvalidUse(EPServiceProvider epService) {
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from " + typeof(SupportBean).FullName + " group by Xxx(1)",
-                    "Error in expression: Error resolving aggregation: Aggregation class by name 'System.String' does not implement AggregationFunctionFactory");
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from " + Name.Of<SupportBean>() + " group by xxx(1)",
+                    "Error in expression: Error resolving aggregation: Aggregation class by name '" + Name.Of<object>() + "' does not implement AggregationFunctionFactory");
     
-            SupportMessageAssertUtil.TryInvalid(epService, "select * from " + typeof(SupportBean).FullName + " group by Yyy(1)",
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from " + typeof(SupportBean).FullName + " group by yyy(1)",
                     "Error in expression: Error resolving aggregation: Could not load aggregation factory class by name 'com.NoSuchClass'");
         }
     
@@ -299,7 +299,7 @@ namespace com.espertech.esper.regression.client
             try {
                 epService.EPAdministrator.Configuration.AddPlugInAggregationFunctionFactory("concatstring", typeof(MyConcatAggregationFunction));
                 Assert.Fail();
-            } catch (ConfigurationException ex) {
+            } catch (ConfigurationException) {
                 // expected
             }
         }
@@ -308,23 +308,20 @@ namespace com.espertech.esper.regression.client
             try {
                 epService.EPAdministrator.Configuration.AddPlugInAggregationFunctionFactory(funcName, className);
                 Assert.Fail();
-            } catch (ConfigurationException ex) {
+            } catch (ConfigurationException) {
                 // expected
             }
         }
     
         private void RunAssertionInvalid(EPServiceProvider epService) {
-            SupportMessageAssertUtil.TryInvalid(epService, "select Zzz(TheString) from " + typeof(SupportBean).FullName,
-                    "Error starting statement: Failed to validate select-clause expression 'Zzz(TheString)': Unknown single-row function, aggregation function or mapped or indexed property named 'zzz' could not be resolved");
+            SupportMessageAssertUtil.TryInvalid(epService, "select zzz(TheString) from " + typeof(SupportBean).FullName,
+                    "Error starting statement: Failed to validate select-clause expression 'zzz(TheString)': Unknown single-row function, aggregation function or mapped or indexed property named 'zzz' could not be resolved");
         }
     
         public class MyAggFuncFactory : AggregationFunctionFactory {
-            private static int instanceCount;
+            private static int _instanceCount;
 
-            internal static int InstanceCount
-            {
-                get { return instanceCount; }
-            }
+            internal static int InstanceCount => _instanceCount;
 
             public string FunctionName
             {
@@ -335,35 +332,29 @@ namespace com.espertech.esper.regression.client
             }
     
             public AggregationMethod NewAggregator() {
-                instanceCount++;
+                _instanceCount++;
                 return new MyAggFuncMethod();
             }
 
-            public Type ValueType
-            {
-                get { return typeof(SupportBean); }
-            }
+            public Type ValueType => typeof(SupportBean);
         }
     
         public class MyAggFuncMethod : AggregationMethod {
     
-            private int count;
+            private int _count;
     
             public void Enter(Object value) {
-                count++;
+                _count++;
             }
     
             public void Leave(Object value) {
-                count--;
+                _count--;
             }
 
-            public object Value
-            {
-                get { return new SupportBean("XX", count); }
-            }
+            public object Value => new SupportBean("XX", _count);
 
             public void Clear() {
-                count = 0;
+                _count = 0;
             }
         }
     }

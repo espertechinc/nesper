@@ -94,7 +94,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             EPStatement stmtDeleteFiltered = epService.EPAdministrator.CreateEPL("on SupportBean_S1(id = 1) delete from varagg where key = p10");
             EPStatement stmtDeleteAll = epService.EPAdministrator.CreateEPL("on SupportBean_S1(id = 2) delete from varagg");
     
-            var expectedType = new object[][]{new object[] {"key", typeof(string)}, new object[] {"thesum", typeof(int?)}};
+            var expectedType = new object[][]{new object[] {"key", typeof(string)}, new object[] {"thesum", typeof(int)}};
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedType, stmtDeleteAll.EventType, SupportEventTypeAssertionEnum.NAME, SupportEventTypeAssertionEnum.TYPE);
     
             stmtDeleteFiltered.Events += listenerDeleteFiltered.Update;

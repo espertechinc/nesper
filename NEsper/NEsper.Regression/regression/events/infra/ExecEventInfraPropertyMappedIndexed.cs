@@ -13,6 +13,7 @@ using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.client.annotation;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.supportregression.events;
@@ -31,7 +32,7 @@ using static com.espertech.esper.supportregression.events.SupportEventInfra;
 
 namespace com.espertech.esper.regression.events.infra
 {
-    using Map = IDictionary<string, object>;
+    using StringMap = IDictionary<string, string>;
 
     public class ExecEventInfraPropertyMappedIndexed : RegressionExecution
     {
@@ -98,17 +99,19 @@ namespace com.espertech.esper.regression.events.infra
         }
     
         private void AddMapEventType(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddEventType(MAP_TYPENAME, TwoEntryMap("indexed", typeof(string[]), "mapped", typeof(Map)));
+            epService.EPAdministrator.Configuration.AddEventType(MAP_TYPENAME,
+                TwoEntryMap("indexed", typeof(string[]), "mapped", typeof(IDictionary<string,string>)));
         }
     
         private void AddOAEventType(EPServiceProvider epService) {
-            string[] names = {"indexed", "mapped"};
-            object[] types = {typeof(string[]), typeof(Map)};
+            string[] names = { "indexed", "mapped"};
+            object[] types = {typeof(string[]), typeof(StringMap)};
             epService.EPAdministrator.Configuration.AddEventType(OA_TYPENAME, names, types);
         }
     
         private void AddAvroEventType(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddEventTypeAvro(AVRO_TYPENAME, new ConfigurationEventTypeAvro(GetAvroSchema()));
+            epService.EPAdministrator.Configuration.AddEventTypeAvro(AVRO_TYPENAME, 
+                new ConfigurationEventTypeAvro(GetAvroSchema()));
         }
     
         private static RecordSchema GetAvroSchema()
@@ -127,7 +130,7 @@ namespace com.espertech.esper.regression.events.infra
         }
 
         private void RunAssertionEventInvalidProp(EventBean @event) {
-            foreach (string prop in Collections.List("xxxx", "mapped[1]", "Indexed('a')", "mapped.x", "indexed.x")) {
+            foreach (string prop in Collections.List("xxxx", "mapped[1]", "indexed('a')", "mapped.x", "indexed.x")) {
                 SupportMessageAssertUtil.TryInvalidProperty(@event, prop);
                 SupportMessageAssertUtil.TryInvalidGetFragment(@event, prop);
             }
@@ -139,27 +142,27 @@ namespace com.espertech.esper.regression.events.infra
             var expectedType = new[]
             {
                 new object[]{ "indexed", typeof(string[]), null, null },
-                new object[]{ "mapped", typeof(IDictionary<string, string>), null, null }
+                new object[]{ "mapped", typeof(StringMap), null, null }
             };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedType, eventType, SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
     
-            EPAssertionUtil.AssertEqualsAnyOrder(new[]{"indexed", "mapped"}, eventType.PropertyNames);
+            EPAssertionUtil.AssertEqualsAnyOrder(new[]{"indexed", "mapped" }, eventType.PropertyNames);
     
             Assert.IsNotNull(eventType.GetGetter("mapped"));
-            Assert.IsNotNull(eventType.GetGetter("Mapped('a')"));
+            Assert.IsNotNull(eventType.GetGetter("mapped('a')"));
             Assert.IsNotNull(eventType.GetGetter("indexed"));
             Assert.IsNotNull(eventType.GetGetter("indexed[0]"));
             Assert.IsTrue(eventType.IsProperty("mapped"));
             Assert.IsTrue(eventType.IsProperty("mapped('a')"));
             Assert.IsTrue(eventType.IsProperty("indexed"));
             Assert.IsTrue(eventType.IsProperty("indexed[0]"));
-            Assert.AreEqual(typeof(Map), eventType.GetPropertyType("mapped"));
+            Assert.AreEqual(typeof(StringMap), eventType.GetPropertyType("mapped"));
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("mapped('a')"));
             Assert.AreEqual(typeof(string[]), eventType.GetPropertyType("indexed"));
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("indexed[0]"));
 
             Assert.AreEqual(new EventPropertyDescriptor("indexed", typeof(string[]), typeof(string), false, false, true, false, false), eventType.GetPropertyDescriptor("indexed"));
-            Assert.AreEqual(new EventPropertyDescriptor("mapped", typeof(IDictionary<string, string>), typeof(string), false, false, false, true, false), eventType.GetPropertyDescriptor("mapped"));
+            Assert.AreEqual(new EventPropertyDescriptor("mapped", typeof(StringMap), typeof(string), false, false, false, true, false), eventType.GetPropertyDescriptor("mapped"));
     
             Assert.IsNull(eventType.GetFragmentType("indexed"));
             Assert.IsNull(eventType.GetFragmentType("mapped"));
@@ -168,7 +171,7 @@ namespace com.espertech.esper.regression.events.infra
         private void RunAssertionTypeInvalidProp(EPServiceProvider epService, string typeName) {
             EventType eventType = epService.EPAdministrator.Configuration.GetEventType(typeName);
     
-            foreach (string prop in Collections.List("xxxx", "myString[0]", "Indexed('a')", "indexed.x", "mapped[0]", "mapped.x")) {
+            foreach (string prop in Collections.List("xxxx", "myString[0]", "indexed('a')", "indexed.x", "mapped[0]", "mapped.x")) {
                 Assert.AreEqual(false, eventType.IsProperty(prop));
                 Assert.AreEqual(null, eventType.GetPropertyType(prop));
                 Assert.IsNull(eventType.GetPropertyDescriptor(prop));
@@ -178,16 +181,18 @@ namespace com.espertech.esper.regression.events.infra
         public class MyIMEvent
         {
             private readonly string[] _indexed;
-            private readonly IDictionary<string, string> _mapped;
+            private readonly StringMap _mapped;
     
-            public MyIMEvent(string[] indexed, IDictionary<string, string> mapped)
+            public MyIMEvent(string[] indexed, StringMap mapped)
             {
                 _indexed = indexed;
                 _mapped = mapped;
             }
 
+            [PropertyName("indexed")]
             public string[] Indexed => _indexed;
-            public IDictionary<string, string> Mapped => _mapped;
+            [PropertyName("mapped")]
+            public StringMap Mapped => _mapped;
         }
     }
 } // end of namespace

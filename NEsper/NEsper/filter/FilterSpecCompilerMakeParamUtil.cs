@@ -636,7 +636,9 @@ namespace com.espertech.esper.filter
     
         private static void ThrowConversionError(Type fromType, Type toType, string propertyName)
         {
-            var text = $"Implicit conversion from datatype \'{fromType.Name}\' to \'{toType.Name}\' for property \'{propertyName}\' is not allowed (strict filter type coercion)";
+            var text = string.Format(
+                "Implicit conversion from datatype \'{0}\' to \'{1}\' for property \'{2}\' is not allowed (strict filter type coercion)",
+                fromType.Name, toType.Name, propertyName);
             throw new ExprValidationException(text);
         }
     

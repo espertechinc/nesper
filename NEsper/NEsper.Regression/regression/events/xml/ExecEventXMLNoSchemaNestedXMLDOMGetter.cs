@@ -40,7 +40,7 @@ namespace com.espertech.esper.regression.events.xml
             SendXMLEvent(epService, "<a><b></b></a>");
             theEvent = updateListener.AssertOneGetNewAndReset();
             Assert.AreEqual(null, theEvent.Get("type"));
-            Assert.AreEqual("", theEvent.Get("element1"));
+            Assert.AreEqual(null, theEvent.Get("element1"));
     
             SendXMLEvent(epService, "<a><b><c>text</c></b></a>");
             theEvent = updateListener.AssertOneGetNewAndReset();

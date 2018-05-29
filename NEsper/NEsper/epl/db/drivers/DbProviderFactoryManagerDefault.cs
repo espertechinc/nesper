@@ -7,14 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
 
 using com.espertech.esper.compat.container;
-using com.espertech.esper.util;
-using Castle.Core.Internal;
 
 namespace com.espertech.esper.epl.db.drivers
 {
@@ -73,9 +70,9 @@ namespace com.espertech.esper.epl.db.drivers
         /// <returns></returns>
         private static DbProviderFactory CreateDataProvider(Type candidate)
         {
-            return (DbProviderFactory) candidate
-                .GetConstructor(new Type[0] { })
-                .Invoke(null);
+            var constructor = candidate.GetConstructor(new Type[0]);
+            var factory = (DbProviderFactory) constructor.Invoke(null);
+            return factory;
         }
 
         /// <summary>

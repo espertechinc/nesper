@@ -14,7 +14,7 @@ using com.espertech.esper.client.time;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
-
+using com.espertech.esper.util;
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
 using NUnit.Framework;
@@ -218,8 +218,8 @@ namespace com.espertech.esper.regression.view
         }
     
         private void RunAssertionUDFBuiltin(EPServiceProvider epService) {
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("udf", typeof(LocalUDF).Name, "evaluateExpiryUDF");
-            epService.EPAdministrator.CreateEPL("select * from SupportBean#expr(Udf(TheString, view_reference, expired_count))");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("udf", typeof(LocalUDF), "EvaluateExpiryUDF");
+            epService.EPAdministrator.CreateEPL("select * from SupportBean#expr(udf(TheString, view_reference, expired_count))");
     
             LocalUDF.Result = true;
             epService.EPRuntime.SendEvent(new SupportBean("E1", 0));
@@ -238,12 +238,16 @@ namespace com.espertech.esper.regression.view
             epService.EPAdministrator.DestroyAllStatements();
         }
     
-        private void RunAssertionInvalid(EPServiceProvider epService) {
-            TryInvalid(epService, "select * from SupportBean#expr(1)",
-                    "Error starting statement: Error attaching view to event stream: Invalid return value for expiry expression, expected a bool return value but received int? [select * from SupportBean#expr(1)]");
-    
-            TryInvalid(epService, "select * from SupportBean#expr((select * from SupportBean#lastevent))",
-                    "Error starting statement: Error attaching view to event stream: Invalid expiry expression: Sub-select, previous or prior functions are not supported in this context [select * from SupportBean#expr((select * from SupportBean#lastevent))]");
+        private void RunAssertionInvalid(EPServiceProvider epService)
+        {
+            TryInvalid(
+                epService, "select * from SupportBean#expr(1)",
+                "Error starting statement: Error attaching view to event stream: Invalid return value for expiry expression, expected a bool return value but received " +
+                typeof(int?).GetCleanName() + " [select * from SupportBean#expr(1)]");
+
+            TryInvalid(
+                epService, "select * from SupportBean#expr((select * from SupportBean#lastevent))",
+                "Error starting statement: Error attaching view to event stream: Invalid expiry expression: Sub-select, previous or prior functions are not supported in this context [select * from SupportBean#expr((select * from SupportBean#lastevent))]");
         }
     
         private void RunAssertionNamedWindowDelete(EPServiceProvider epService) {

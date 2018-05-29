@@ -49,7 +49,7 @@ namespace com.espertech.esper.regression.expr.expr
                     .Add(Expressions.BinaryAnd().Add("BoolPrimitive").Add("BoolBoxed"), "myFifthProperty");
 
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName).AddView("length", Expressions.Constant(3)));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(epl, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);

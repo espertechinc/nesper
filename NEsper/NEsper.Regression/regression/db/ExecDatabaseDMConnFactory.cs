@@ -11,8 +11,8 @@ using System.Data;
 using System.Data.Common;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.epl.db;
-using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 
@@ -24,8 +24,7 @@ namespace com.espertech.esper.regression.db
     {
         public override void Configure(Configuration configuration)
         {
-            var configDB = new ConfigurationDBRef();
-            configDB.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative);
+            var configDB = SupportDatabaseService.CreateDefaultConfig();
             configDB.ConnectionLifecycle = ConnectionLifecycleEnum.RETAIN;
             configDB.ConnectionCatalog = "test";
             configDB.ConnectionTransactionIsolation = IsolationLevel.Serializable;
@@ -46,15 +45,14 @@ namespace com.espertech.esper.regression.db
                 () =>
                 {
                     var properties = SupportDatabaseService.DefaultProperties;
-                    var config = new ConfigurationDBRef();
-                    config.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative, properties);
+                    var config = SupportDatabaseService.CreateDefaultConfig(properties);
                     config.ConnectionCatalog = "test";
                     config.ConnectionAutoCommit = false; // not supported yet
                     config.ConnectionTransactionIsolation = IsolationLevel.Unspecified;
                     return new DatabaseDriverConnFactory((DbDriverFactoryConnection)config.ConnectionFactoryDesc, config.ConnectionSettings);
                 });
 
-            TryAndCloseConnection(SupportDatabaseService.DbDriverFactoryNative);
+            TryAndCloseConnection(SupportDatabaseService.DbDriverFactoryDefault);
 
 #if X64
             // ODBC drivers are sensitive to which platform they are installed on; we only test them when performing
@@ -82,8 +80,17 @@ namespace com.espertech.esper.regression.db
             DbCommand stmt;
 
             stmt = connection.CreateCommand();
-            stmt.CommandText = "select 1 from dual";
             stmt.CommandType = CommandType.Text;
+            switch (connection.GetType().Name) {
+                case "MySqlConnection":
+                    stmt.CommandText = "select 1 from dual";
+                    break;
+                case "NpgsqlConnection":
+                    stmt.CommandText = "select 1";
+                    break;
+                default:
+                    throw new IllegalStateException("unrecognized driver");
+            }
 
             using (DbDataReader result = stmt.ExecuteReader())
             {

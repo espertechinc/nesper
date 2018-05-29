@@ -187,8 +187,8 @@ namespace com.espertech.esper.client
             var configDBRef = config.DatabaseReferences.Get("mydb1");
             var dsDef = (DbDriverFactoryConnection)configDBRef.ConnectionFactoryDesc;
 
-            Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverMySQL", dsDef.Driver.GetType().FullName);
-            Assert.AreEqual("Server=mysql-server;Database=tempdb;Uid=esper;Pwd=3sp3rP@ssw0rd;", dsDef.Driver.ConnectionString);
+            Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverPgSQL", dsDef.Driver.GetType().FullName);
+            Assert.AreEqual("Host=nesper-pgsql-integ.local;Database=test;Username=esper;Password=3sp3rP@ssw0rd;", dsDef.Driver.ConnectionString);
             Assert.AreEqual(ConnectionLifecycleEnum.POOLED, configDBRef.ConnectionLifecycle);
 
             Assert.IsNull(configDBRef.ConnectionSettings.AutoCommit);
@@ -207,10 +207,8 @@ namespace com.espertech.esper.client
             configDBRef = config.DatabaseReferences.Get("mydb2");
 
             var dmDef = (DbDriverFactoryConnection)configDBRef.ConnectionFactoryDesc;
-            Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverODBC", dmDef.Driver.GetType().FullName);
-            Assert.AreEqual(
-               "Driver={MySQL ODBC 5.3 Unicode Driver};Server=mysql-server;Database=test;User=esper;Password=3sp3rP@ssw0rd;Option=3",
-               dmDef.Driver.ConnectionString);
+            Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverPgSQL", dmDef.Driver.GetType().FullName);
+            Assert.AreEqual("Host=nesper-pgsql-integ.local;Database=test;Username=esper;Password=3sp3rP@ssw0rd;", dmDef.Driver.ConnectionString);
 
             Assert.AreEqual(ConnectionLifecycleEnum.RETAIN, configDBRef.ConnectionLifecycle);
             Assert.AreEqual(false, configDBRef.ConnectionSettings.AutoCommit);

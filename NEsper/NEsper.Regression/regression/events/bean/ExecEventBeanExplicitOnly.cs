@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.events.bean
             legacyDef.AccessorStyle = AccessorStyleEnum.EXPLICIT;
             legacyDef.CodeGeneration = codeGeneration;
             legacyDef.AddFieldProperty("fieldNestedClassValue", "fieldNestedValue");
-            legacyDef.AddMethodProperty("readNestedClassValue", "ReadNestedValue");
+            legacyDef.AddMethodProperty("ReadNestedClassValue", "ReadNestedValue");
             configuration.AddEventType("MyLegacyNestedEvent", typeof(SupportLegacyBean.LegacyNested).AssemblyQualifiedName, legacyDef);
     
             legacyDef = new ConfigurationEventTypeLegacy();

@@ -29,12 +29,14 @@ namespace com.espertech.esper.epl.expression.methodagg
 
         protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
-            if (PositionalParams.Length > 0)
+            ExprNode[] positionalParams = PositionalParams;
+            if (OptionalFilter == null && positionalParams.Length > 0)
             {
                 throw MakeExceptionExpectedParamNum(0, 0);
             }
 
-            return validationContext.EngineImportService.AggregationFactoryFactory.MakeLeaving(validationContext.StatementExtensionSvcContext, this);
+            return validationContext.EngineImportService.AggregationFactoryFactory
+                .MakeLeaving(validationContext.StatementExtensionSvcContext, this);
         }
 
         public override string AggregationFunctionName => "leaving";

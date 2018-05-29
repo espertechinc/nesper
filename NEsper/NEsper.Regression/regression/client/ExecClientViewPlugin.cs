@@ -22,7 +22,7 @@ namespace com.espertech.esper.regression.client
         public override void Configure(Configuration configuration) {
             configuration.AddEventType("A", typeof(SupportMarketDataBean));
             configuration.AddPlugInView("mynamespace", "flushedsimple", typeof(MyFlushedSimpleViewFactory).FullName);
-            configuration.AddPlugInView("mynamespace", "invalid", typeof(string).FullName);
+            configuration.AddPlugInView("mynamespace", "invalid", typeof(object).FullName);
         }
     
         public override void Run(EPServiceProvider epService) {
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regression.client
             TryInvalid(epService, "select * from A.mynamespace:xxx()",
                 "Error starting statement: View name 'mynamespace:xxx' is not a known view name [select * from A.mynamespace:xxx()]");
             TryInvalid(epService, "select * from A.mynamespace:invalid()",
-                "Error starting statement: Error invoking view factory constructor for view 'invalid', no invocation access for Activator.CreateInstance [select * from A.mynamespace:invalid()]");
+                "Error starting statement: Error casting view factory instance to com.espertech.esper.view.ViewFactory interface for view 'invalid' [select * from A.mynamespace:invalid()]");
         }
     
         private void SendEvent(EPServiceProvider epService, double price) {

@@ -19,7 +19,9 @@ namespace com.espertech.esper.epl.agg.aggregator
 
         public override void Enter(object @object)
         {
-            if (true.Equals(@object)) base.Enter(@object);
+            if (true.Equals(@object)) {
+                base.Enter(@object);
+            }
         }
     }
 } // end of namespace

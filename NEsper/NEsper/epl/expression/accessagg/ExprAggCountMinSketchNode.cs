@@ -123,17 +123,19 @@ namespace com.espertech.esper.epl.expression.accessagg
                 return new ExprAggCountMinSketchNodeFactoryState(stateFactory);
             }
 
+            var positionalParams = PositionalParams;
+
             // validate number of parameters
             if (_aggType == CountMinSketchAggType.ADD || _aggType == CountMinSketchAggType.FREQ)
             {
-                if (ChildNodes.Count == 0 || ChildNodes.Count > 1)
+                if (positionalParams.Length == 0 || positionalParams.Length > 1)
                 {
                     throw new ExprValidationException(MessagePrefix + "requires a single parameter expression");
                 }
             }
             else
             {
-                if (ChildNodes.Count != 0)
+                if (positionalParams.Length != 0)
                 {
                     throw new ExprValidationException(MessagePrefix + "requires a no parameter expressions");
                 }

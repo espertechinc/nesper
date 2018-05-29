@@ -28,10 +28,10 @@ namespace com.espertech.esper.regression.client
     
             TryInvalidSyntax(epService, "select * from A, into",
                     "Incorrect syntax near 'into' (a reserved keyword) at line 1 column 17, please check the from clause");
-    
+
             TryInvalidSyntax(epService, "select * from pattern[A -> B - C]",
-                    "Incorrect syntax near '-' at line 1 column 29, please check the pattern expression within the from clause");
-    
+                    "Incorrect syntax near '-' expecting a right angle bracket ']' but found a minus '-' at line 1 column 29, please check the from clause [select * from pattern[A -> B - C]]");
+
             TryInvalidSyntax(epService, "insert into A (a",
                     "Unexpected end-of-input at line 1 column 16 [insert into A (a]");
     

@@ -36,9 +36,9 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1,val2,val3,val4,val5".Split(',');
             string eplFragment = "select " +
-                    "Contained.OrderBy(x => p00) as val0," +
-                    "Contained.OrderBy(x => 10 - p00) as val1," +
-                    "Contained.OrderBy(x => 0) as val2," +
+                    "Contained.orderBy(x => p00) as val0," +
+                    "Contained.orderBy(x => 10 - p00) as val1," +
+                    "Contained.orderBy(x => 0) as val2," +
                     "Contained.OrderByDesc(x => p00) as val3," +
                     "Contained.OrderByDesc(x => 10 - p00) as val4," +
                     "Contained.OrderByDesc(x => 0) as val5" +
@@ -92,13 +92,16 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1".Split(',');
             string eplFragment = "select " +
-                    "Strvals.OrderBy() as val0, " +
+                    "Strvals.orderBy() as val0, " +
                     "Strvals.OrderByDesc() as val1 " +
                     "from SupportCollection";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(ICollection<object>), typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] {
+                typeof(ICollection<string>),
+                typeof(ICollection<string>)
+            });
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E2,E1,E5,E4"));
             LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val0", "E1", "E2", "E4", "E5");
@@ -111,12 +114,15 @@ namespace com.espertech.esper.regression.expr.enummethod
             // test scalar-coll with lambda
             epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("extractNum", typeof(ExecEnumMinMax.MyService), "ExtractNum");
             string eplLambda = "select " +
-                    "Strvals.OrderBy(v => extractNum(v)) as val0, " +
+                    "Strvals.orderBy(v => extractNum(v)) as val0, " +
                     "Strvals.OrderByDesc(v => extractNum(v)) as val1 " +
                     "from SupportCollection";
             EPStatement stmtLambda = epService.EPAdministrator.CreateEPL(eplLambda);
             stmtLambda.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtLambda.EventType, fields, new Type[]{typeof(ICollection<object>), typeof(ICollection<object>)});
+            LambdaAssertionUtil.AssertTypes(stmtLambda.EventType, fields, new Type[] {
+                typeof(ICollection<string>),
+                typeof(ICollection<string>)
+            });
     
             epService.EPRuntime.SendEvent(SupportCollection.MakeString("E2,E1,E5,E4"));
             LambdaAssertionUtil.AssertValuesArrayScalar(listener, "val0", "E1", "E2", "E4", "E5");
@@ -131,8 +137,8 @@ namespace com.espertech.esper.regression.expr.enummethod
         private void RunAssertionInvalid(EPServiceProvider epService) {
             string epl;
     
-            epl = "select Contained.OrderBy() from Bean";
-            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.OrderBy()': Invalid input for built-in enumeration method 'orderBy' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" + typeof(SupportBean_ST0).FullName + "' [select Contained.OrderBy() from Bean]");
+            epl = "select Contained.orderBy() from Bean";
+            TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.orderBy()': Invalid input for built-in enumeration method 'orderBy' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" + typeof(SupportBean_ST0).FullName + "' [select Contained.orderBy() from Bean]");
         }
     }
 } // end of namespace

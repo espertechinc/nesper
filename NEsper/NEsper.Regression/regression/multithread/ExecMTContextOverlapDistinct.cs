@@ -33,13 +33,15 @@ namespace com.espertech.esper.regression.multithread
             engine.Initialize();
     
             engine.EPAdministrator.Configuration.AddEventType(typeof(TestEvent));
-            engine.EPAdministrator.CreateEPL("create context theContext " +
-                    " initiated by Distinct(partitionKey) TestEvent as test " +
-                    " terminated after 100 milliseconds");
+            engine.EPAdministrator.CreateEPL(
+                "create context theContext " +
+                " initiated by distinct(PartitionKey) TestEvent as test " +
+                " terminated after 100 milliseconds");
     
-            EPStatement stmt = engine.EPAdministrator.CreateEPL("context theContext " +
-                    "select sum(value) as thesum, count(*) as thecnt " +
-                    "from TestEvent output snapshot when terminated");
+            EPStatement stmt = engine.EPAdministrator.CreateEPL(
+                "context theContext " +
+                "select sum(Value) as thesum, count(*) as thecnt " +
+                "from TestEvent output snapshot when terminated");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     

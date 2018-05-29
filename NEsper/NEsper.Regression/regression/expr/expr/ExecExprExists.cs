@@ -113,7 +113,7 @@ namespace com.espertech.esper.regression.expr.expr
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.Create().Add(Expressions.ExistsProperty("item?.IntBoxed"), "t0");
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarkerInterface).FullName));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(stmtText, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regression.expr.expr
                     "from " + typeof(SupportMarkerInterface).FullName;
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(stmtText);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(stmtText, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);

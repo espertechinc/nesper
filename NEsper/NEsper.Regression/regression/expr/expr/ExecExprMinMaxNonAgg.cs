@@ -58,7 +58,7 @@ namespace com.espertech.esper.regression.expr.expr
 
             model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).FullName)
                 .AddView("length", Expressions.Constant(3)));
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(epl, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regression.expr.expr
                     " from " + typeof(SupportBean).FullName + "#length(3)";
     
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
-            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(model);
+            model = (EPStatementObjectModel) SerializableObjectCopier.Copy(epService.Container, model);
             Assert.AreEqual(epl, model.ToEPL());
     
             EPStatement stmt = epService.EPAdministrator.Create(model);

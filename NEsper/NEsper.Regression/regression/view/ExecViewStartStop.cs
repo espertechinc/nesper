@@ -63,7 +63,8 @@ namespace com.espertech.esper.regression.view
     
             // Send an event, view stopped
             SendEvent(epService);
-            Assert.IsNull(sizeStmt.GetEnumerator());
+            Assert.IsNotNull(sizeStmt.GetEnumerator());
+            Assert.That(sizeStmt.GetEnumerator().MoveNext(), Is.False);
     
             // Start view
             sizeStmt.Start();
@@ -75,8 +76,9 @@ namespace com.espertech.esper.regression.view
     
             // Stop view
             sizeStmt.Stop();
-            Assert.IsNull(sizeStmt.GetEnumerator());
-    
+            Assert.IsNotNull(sizeStmt.GetEnumerator());
+            Assert.That(sizeStmt.GetEnumerator().MoveNext(), Is.False);
+
             // Start again, iterator is zero
             sizeStmt.Start();
             Assert.AreEqual(0L, sizeStmt.First().Get("size"));
@@ -102,7 +104,8 @@ namespace com.espertech.esper.regression.view
             // Stop view, send event, view
             sizeStmt.Stop();
             SendEvent(epService);
-            Assert.IsNull(sizeStmt.GetEnumerator());
+            Assert.That(sizeStmt.GetEnumerator(), Is.Not.Null);
+            Assert.That(sizeStmt.GetEnumerator().MoveNext(), Is.False);
             Assert.IsNull(listener.LastNewData);
     
             // Start again

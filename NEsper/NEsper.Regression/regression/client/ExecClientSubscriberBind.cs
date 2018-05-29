@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.collection;
@@ -15,11 +16,12 @@ using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.subscriber;
 using com.espertech.esper.util;
 
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.client
 {
+    using Map = IDictionary<string, object>;
+
     public class ExecClientSubscriberBind : RegressionExecution {
         private static readonly string[] FIELDS = "TheString,IntPrimitive".Split(',');
     
@@ -172,7 +174,7 @@ namespace com.espertech.esper.regression.client
             EventBean theEvent = listener.AssertOneGetNewAndReset();
             Assert.AreEqual("E1", theEvent.Get("TheString"));
             Assert.AreEqual(1, theEvent.Get("IntPrimitive"));
-            Assert.IsTrue(theEvent.Underlying is Pair<object,object>);
+            Assert.That(theEvent.Underlying, Is.InstanceOf<Pair<object,Map>>());
     
             foreach (string property in stmt.EventType.PropertyNames) {
                 EventPropertyGetter getter = stmt.EventType.GetGetter(property);
@@ -240,7 +242,11 @@ namespace com.espertech.esper.regression.client
             stmt.Dispose();
         }
     
-        private void TryAssertionWidening(EPServiceProvider epService, EventRepresentationChoice eventRepresentationEnum, SupportSubscriberRowByRowSpecificBase subscriber) {
+        private void TryAssertionWidening(
+            EPServiceProvider epService, 
+            EventRepresentationChoice eventRepresentationEnum,
+            SupportSubscriberRowByRowSpecificBase subscriber)
+        {
             EPStatement stmt = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " select bytePrimitive, IntPrimitive, LongPrimitive, FloatPrimitive from SupportBean(TheString='E1')");
             stmt.Subscriber = subscriber;
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));

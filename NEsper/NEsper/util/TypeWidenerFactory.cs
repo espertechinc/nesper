@@ -124,21 +124,65 @@ namespace com.espertech.esper.util
                     };
                 }
 
-                if (columnClassBoxed.IsArray && targetClassBoxed.IsArray)
-                {
+                if (columnClassBoxed.IsArray && targetClassBoxed.IsArray) {
                     var columnClassElement = columnClassBoxed.GetElementType();
                     var targetClassElement = targetClassBoxed.GetElementType();
-                    if (columnClassElement.IsAssignmentCompatible(targetClassElement))
-                    {
+
+                    if ((targetClassBoxed == typeof(object[])) && (columnClassElement.IsByRef)) {
+                        return null;
+                    }
+
+                    if (columnClassElement.GetBoxedType() == targetClassElement) {
+                        return source => WidenArray(
+                            source, targetClassElement,
+                            CoercerFactory.GetCoercer(columnClassElement, targetClassElement));
+                    } else if (columnClassElement == targetClassElement.GetBoxedType()) {
+                        return source => WidenArray(
+                            source, targetClassElement,
+                            CoercerFactory.GetCoercer(columnClassElement, targetClassElement));
+                    } else if (columnClassElement.IsAssignmentCompatible(targetClassElement)) {
                         // By definition, columnClassElement and targetClassElement should be
                         // incompatible.  Question is, can we find a coercer between them?
                         var coercer = CoercerFactory.GetCoercer(columnClassElement, targetClassElement);
-                        return source => WidenArray(source, targetClassElement, coercer);
+                        if (coercer != null) {
+                            return source => WidenArray(source, targetClassElement, coercer);
+                        }
                     }
                 }
 
                 if (!columnClassBoxed.IsAssignmentCompatible(targetClassBoxed))
                 {
+                    if (columnType.IsNullable() && writeablePropertyType.IsNullable()) {
+                        // are the underlying nullable types compatible with one another?
+                        var columnGenType = columnType.GetGenericArguments()[0];
+                        var writeablePropertyGenType = writeablePropertyType.GetGenericArguments()[0];
+                        if (writeablePropertyGenType.IsNumeric() &&
+                            columnGenType.IsAssignmentCompatible(writeablePropertyGenType)) {
+                            var instance = new TypeWidenerBoxedNumeric(
+                                CoercerFactory.GetCoercer(columnClassBoxed, targetClassBoxed));
+                            return instance.Widen;
+                        }
+                    } else if (!columnType.IsNullable() && writeablePropertyType.IsNullable()) {
+                        // is the column type compatible with the nullable type?
+                        var writeablePropertyGenType = writeablePropertyType.GetGenericArguments()[0];
+                        if (writeablePropertyGenType.IsNumeric() &&
+                            columnType.IsAssignmentCompatible(writeablePropertyGenType)) {
+                            var instance = new TypeWidenerBoxedNumeric(
+                                CoercerFactory.GetCoercer(columnClassBoxed, targetClassBoxed));
+                            return instance.Widen;
+                        }
+                    } else if (columnType.IsNullable() && !writeablePropertyType.IsNullable()) {
+                        // the target is not nullable, we can live with an exception if the
+                        // value is null after widening.
+                        var columnGenType = columnType.GetGenericArguments()[0];
+                        if (writeablePropertyType.IsNumeric() &&
+                            columnGenType.IsAssignmentCompatible(writeablePropertyType)) {
+                            var instance = new TypeWidenerBoxedNumeric(
+                                CoercerFactory.GetCoercer(columnClassBoxed, targetClassBoxed));
+                            return instance.Widen;
+                        }
+                    }
+
                     var writablePropName = writeablePropertyType.FullName;
                     if (writeablePropertyType.IsArray)
                     {

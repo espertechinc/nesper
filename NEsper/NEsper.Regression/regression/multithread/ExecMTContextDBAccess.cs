@@ -32,8 +32,7 @@ namespace com.espertech.esper.regression.multithread
             configuration.EngineDefaults.Logging.IsEnableADO = true;
             configuration.EngineDefaults.Threading.IsListenerDispatchPreserveOrder = false;
 
-            var configDB = new ConfigurationDBRef();
-            configDB.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative);
+            var configDB = SupportDatabaseService.CreateDefaultConfig();
             configDB.ConnectionLifecycle = ConnectionLifecycleEnum.RETAIN;
             configuration.AddDatabaseReference("MyDB", configDB);
         }
@@ -64,7 +63,7 @@ namespace com.espertech.esper.regression.multithread
                 {
                     // range: 1 to 1000
                     int partition = eventNum + 1;
-                    events[threadNum].Add(new SupportBean(new int?(partition).ToString(), 0));
+                    events[threadNum].Add(new SupportBean(Convert.ToString(partition), 0));
                 }
             }
 
@@ -78,7 +77,7 @@ namespace com.espertech.esper.regression.multithread
 
             foreach (var future in futures)
             {
-                Assert.AreEqual(true, future.GetValueOrDefault());
+                Assert.AreEqual(true, future.GetValue(TimeSpan.FromSeconds(60)));
             }
 
             threadPool.Shutdown();

@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 
@@ -18,15 +19,15 @@ namespace com.espertech.esper.epl.core.eval
     {
         public static ExprValidationException MakeEventTypeCastException(EventType sourceType, EventType targetType) {
             return new ExprValidationException("Expression-returned event type '" + sourceType.Name +
-                        "' with underlying type '" + sourceType.UnderlyingType.FullName +
+                        "' with underlying type '" + Name.Clean(sourceType.UnderlyingType) +
                         "' cannot be converted to target event type '" + targetType.Name +
-                        "' with underlying type '" + targetType.UnderlyingType.FullName + "'");
+                        "' with underlying type '" + Name.Clean(targetType.UnderlyingType) + "'");
         }
     
         public static ExprValidationException MakeEventTypeCastException(Type sourceType, EventType targetType) {
-            return new ExprValidationException("Expression-returned value of type '" + sourceType.FullName +
+            return new ExprValidationException("Expression-returned value of type '" + Name.Clean(sourceType) +
                     "' cannot be converted to target event type '" + targetType.Name +
-                    "' with underlying type '" + targetType.UnderlyingType.FullName + "'");
+                    "' with underlying type '" + Name.Clean(targetType.UnderlyingType) + "'");
         }
     }
 }

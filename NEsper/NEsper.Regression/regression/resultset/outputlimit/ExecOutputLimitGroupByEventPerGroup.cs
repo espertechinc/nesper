@@ -12,6 +12,7 @@ using com.espertech.esper.client.time;
 using com.espertech.esper.regression.support;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
+using com.espertech.esper.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.resultset.outputlimit
@@ -1305,8 +1306,8 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("mySum"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("myAvg"));
+            Assert.AreEqual(typeof(double), stmt.EventType.GetPropertyType("mySum"));
+            Assert.AreEqual(typeof(double), stmt.EventType.GetPropertyType("myAvg"));
 
             SendMDEvent(epService, SYMBOL_DELL, 10);
             Assert.IsFalse(listener.IsInvoked);
@@ -1332,8 +1333,8 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("mySum"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("myAvg"));
+            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("mySum").GetBoxedType());
+            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("myAvg").GetBoxedType());
 
             SendMDEvent(epService, SYMBOL_DELL, 10);
             Assert.IsTrue(listener.IsInvoked);
@@ -1354,8 +1355,8 @@ namespace com.espertech.esper.regression.resultset.outputlimit
         {
             // assert select result type
             Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("mySum"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("myAvg"));
+            Assert.AreEqual(typeof(double), stmt.EventType.GetPropertyType("mySum"));
+            Assert.AreEqual(typeof(double), stmt.EventType.GetPropertyType("myAvg"));
 
             SendMDEvent(epService, SYMBOL_IBM, 70);
             Assert.IsFalse(listener.IsInvoked);

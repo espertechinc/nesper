@@ -53,11 +53,11 @@ namespace com.espertech.esper.regression.expr.expressiondef
                     "}" +
                     "" +
                     "expression nearestOwner {" +
-                    "  lr => LostLuggage(lr).ToMap(key => key.assetId, " +
-                    "     value => Passengers(lr).minBy(p => LRUtil.Distance(value.location.x, value.location.y, p.location.x, p.location.y)))" +
+                    "  lr => lostLuggage(lr).toMap(key => key.assetId, " +
+                    "     value => passengers(lr).minBy(p => LRUtil.Distance(value.location.x, value.location.y, p.location.x, p.location.y)))" +
                     "}" +
                     "" +
-                    "select LostLuggage(lr) as val1, NearestOwner(lr) as val2 from LocationReport lr";
+                    "select lostLuggage(lr) as val1, nearestOwner(lr) as val2 from LocationReport lr";
             var stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             Assert.AreEqual("L00007", val1[1].AssetId);
             Assert.AreEqual("L00008", val1[2].AssetId);
     
-            var val2 = (Map) listener.AssertOneGetNewAndReset().Get("val2");
+            var val2 = listener.AssertOneGetNewAndReset().Get("val2").UnwrapDictionary();
             Assert.AreEqual(3, val2.Count);
             Assert.AreEqual("P00008", ((Item) val2.Get("L00000")).AssetId);
             Assert.AreEqual("P00001", ((Item) val2.Get("L00007")).AssetId);

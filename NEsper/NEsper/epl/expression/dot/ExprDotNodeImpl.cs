@@ -392,7 +392,7 @@ namespace com.espertech.esper.epl.expression.dot
                             throw new ExprValidationException(
                                 "Parameter expression to mapped property '" + propertyName +
                                 "' is expected to return a string-type value but returns " +
-                                paramEval.ReturnType.GetTypeNameFullyQualPretty());
+                                paramEval.ReturnType.GetCleanName());
                         }
 
                         var mappedGetter =
@@ -414,7 +414,7 @@ namespace com.espertech.esper.epl.expression.dot
                             throw new ExprValidationException(
                                 "Parameter expression to mapped property '" + propertyName +
                                 "' is expected to return a int?-type value but returns " +
-                                paramEval.ReturnType.GetTypeNameFullyQualPretty());
+                                paramEval.ReturnType.GetCleanName());
                         }
 
                         var indexedGetter =
@@ -640,7 +640,7 @@ namespace com.espertech.esper.epl.expression.dot
                     throw new ExprValidationException(
                         "Parameter expression to mapped property '" + propertyDesc.PropertyName +
                         "' is expected to return a string-type value but returns " +
-                        parameterEval.ReturnType.GetTypeNameFullyQualPretty());
+                        parameterEval.ReturnType.GetCleanName());
                 }
 
                 var mappedGetter =
@@ -662,7 +662,7 @@ namespace com.espertech.esper.epl.expression.dot
                     throw new ExprValidationException(
                         "Parameter expression to indexed property '" + propertyDesc.PropertyName +
                         "' is expected to return a int-type value but returns " +
-                        parameterEval.ReturnType.GetTypeNameFullyQualPretty());
+                        parameterEval.ReturnType.GetCleanName());
                 }
 
                 var indexedGetter =

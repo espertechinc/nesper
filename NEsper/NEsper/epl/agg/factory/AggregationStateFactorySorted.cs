@@ -28,8 +28,16 @@ namespace com.espertech.esper.epl.agg.factory
 	    {
 	        if (join)
 	        {
+	            if (Spec.OptionalFilter != null) {
+	                return new AggregationStateSortedJoinWFilter(Spec);
+	            }
 	            return new AggregationStateSortedJoin(Spec);
 	        }
+
+	        if (Spec.OptionalFilter != null) {
+	            return new AggregationStateSortedWFilter(Spec);
+	        }
+
 	        return new AggregationStateSortedImpl(Spec);
 	    }
 

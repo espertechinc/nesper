@@ -37,8 +37,8 @@ namespace com.espertech.esper.events
         public void SetUp()
         {
             _container = SupportContainer.Reset();
-            _underlyingEventTypeOne = new BeanEventType(null, 1, typeof(SupportBeanSimple), _container.Resolve<EventAdapterService>(), null);
-            _underlyingEventTypeTwo = new BeanEventType(null, 1, typeof(SupportBean_A), _container.Resolve<EventAdapterService>(), null);
+            _underlyingEventTypeOne = new BeanEventType(_container, null, 1, typeof(SupportBeanSimple), _container.Resolve<EventAdapterService>(), null);
+            _underlyingEventTypeTwo = new BeanEventType(_container, null, 1, typeof(SupportBean_A), _container.Resolve<EventAdapterService>(), null);
             _properties = new Dictionary<String, Object>();
             _properties["additionalString"] = typeof(string);
             _properties["AdditionalInt"] = typeof(int);

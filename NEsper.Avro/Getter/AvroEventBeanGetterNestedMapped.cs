@@ -15,6 +15,7 @@ using Avro.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.codegen.core;
 using com.espertech.esper.codegen.model.expression;
+using com.espertech.esper.compat;
 using com.espertech.esper.events;
 
 using NEsper.Avro.Extensions;
@@ -46,17 +47,25 @@ namespace NEsper.Avro.Getter
             {
                 return null;
             }
-            Map map = (Map)inner.Get(_pos);
+
+            var map = inner.Get(_pos).AsStringDictionary();
             return AvroEventBeanGetterMapped.GetAvroMappedValueWNullCheck(map, _key);
         }
 
         private string GetCodegen(ICodegenContext context)
         {
             return context.AddMethod(typeof(Object), typeof(GenericRecord), "record", GetType())
-                    .DeclareVar(typeof(GenericRecord), "inner", Cast(typeof(GenericRecord), ExprDotMethod(Ref("record"), "Get", Constant(_top))))
-                    .IfRefNullReturnNull("inner")
-                    .DeclareVar(typeof(Map), "map", Cast(typeof(Map), ExprDotMethod(Ref("inner"), "Get", Constant(_pos))))
-                    .MethodReturn(StaticMethod(typeof(AvroEventBeanGetterMapped), "GetAvroMappedValueWNullCheck", Ref("map"), Constant(_key)));
+                .DeclareVar(
+                    typeof(GenericRecord), "inner", Cast(
+                        typeof(GenericRecord),
+                        ExprDotMethod(Ref("record"), "Get", Constant(_top))))
+                .IfRefNullReturnNull("inner")
+                .DeclareVar(
+                    typeof(Map), "map",
+                    Cast(typeof(Map), ExprDotMethod(Ref("inner"), "Get", Constant(_pos))))
+                .MethodReturn(
+                    StaticMethod(
+                        typeof(AvroEventBeanGetterMapped), "GetAvroMappedValueWNullCheck", Ref("map"), Constant(_key)));
         }
 
         public bool IsExistsProperty(EventBean eventBean)

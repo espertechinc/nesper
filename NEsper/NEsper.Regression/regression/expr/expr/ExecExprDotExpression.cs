@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Xml;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.expr.expr
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             var listener = new SupportUpdateListener();
             var stmt = epService.EPAdministrator.CreateEPL(
-                "select sb.equals(maxBy(IntPrimitive)) as c0 from SupportBean as sb");
+                "select sb.Equals(maxBy(IntPrimitive)) as c0 from SupportBean as sb");
             stmt.Events += listener.Update;
 
             SendAssertDotObjectEquals(epService, listener, 10, true);
@@ -63,9 +63,9 @@ namespace com.espertech.esper.regression.expr.expr
             var fields = "c0,c1,c2,c3".Split(',');
             var stmt = epService.EPAdministrator.CreateEPL(
                 "select " +
-                "IntPrimitive = SupportEnumTwo.ENUM_VALUE_1.AssociatedValue as c0," +
+                "IntPrimitive = SupportEnumTwo.ENUM_VALUE_1.GetAssociatedValue() as c0," +
                 "SupportEnumTwo.ENUM_VALUE_2.CheckAssociatedValue(IntPrimitive) as c1, " +
-                "SupportEnumTwo.ENUM_VALUE_3.Nested.Value as c2," +
+                "SupportEnumTwo.ENUM_VALUE_3.GetNested().get_Value() as c2," +
                 "SupportEnumTwo.ENUM_VALUE_2.CheckEventBeanPropInt(sb, 'IntPrimitive') as c3, " +
                 "SupportEnumTwo.ENUM_VALUE_2.CheckEventBeanPropInt(*, 'IntPrimitive') as c4 " +
                 "from SupportBean as sb");
@@ -127,12 +127,12 @@ namespace com.espertech.esper.regression.expr.expr
 
             TryInvalid(
                 epService, "select abc.NoSuchMethod() from SupportBean abc",
-                "Error starting statement: Failed to validate select-clause expression 'abc.NoSuchMethod()': Failed to solve 'noSuchMethod' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
+                "Error starting statement: Failed to validate select-clause expression 'abc.NoSuchMethod()': Failed to solve 'NoSuchMethod' to either a date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'NoSuchMethod': Could not find enumeration method, date-time method or instance method named 'NoSuchMethod' in class '" +
                 typeof(SupportBean).FullName +
                 "' taking no parameters [select abc.NoSuchMethod() from SupportBean abc]");
             TryInvalid(
                 epService, "select abc.GetChildOne(\"abc\", 10).NoSuchMethod() from SupportChainTop abc",
-                "Error starting statement: Failed to validate select-clause expression 'abc.GetChildOne(\"abc\",10).NoSuchMethod()': Failed to solve 'getChildOne' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
+                "Error starting statement: Failed to validate select-clause expression 'abc.GetChildOne(\"abc\",10).NoSuchMethod()': Failed to solve 'GetChildOne' to either a date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'NoSuchMethod': Could not find enumeration method, date-time method or instance method named 'NoSuchMethod' in class '" +
                 typeof(SupportChainChildOne).FullName +
                 "' taking no parameters [select abc.GetChildOne(\"abc\", 10).NoSuchMethod() from SupportChainTop abc]");
         }
@@ -155,8 +155,8 @@ namespace com.espertech.esper.regression.expr.expr
                 new object[] {"level1:10", "level2:20", "level3:30"});
 
             // ESPER-772
-            epService.EPAdministrator.Configuration.AddEventType(typeof(XmlNode));
-            epService.EPAdministrator.Configuration.AddEventType(typeof(NodeData));
+            epService.EPAdministrator.Configuration.AddEventType<Node>();
+            epService.EPAdministrator.Configuration.AddEventType<NodeData>();
 
             epService.EPAdministrator.CreateEPL("create window NodeWindow#unique(id) as Node");
             epService.EPAdministrator.CreateEPL("insert into NodeWindow select * from Node");
@@ -246,11 +246,11 @@ namespace com.espertech.esper.regression.expr.expr
                 "SupportBeanComplexProps", typeof(SupportBeanComplexProps));
 
             var epl = "select " +
-                      "(arrayProperty).Count as size, " +
-                      "(arrayProperty)[0] as get0, " +
-                      "(arrayProperty)[1] as get1, " +
-                      "(arrayProperty)[2] as get2, " +
-                      "(arrayProperty)[3] as get3 " +
+                      "(arrayProperty).size() as size, " +
+                      "(arrayProperty).get(0) as get0, " +
+                      "(arrayProperty).get(1) as get1, " +
+                      "(arrayProperty).get(2) as get2, " +
+                      "(arrayProperty).get(3) as get3 " +
                       "from SupportBeanComplexProps";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -289,8 +289,8 @@ namespace com.espertech.esper.regression.expr.expr
                 "SupportBeanCombinedProps", typeof(SupportBeanCombinedProps));
 
             var epl = "select " +
-                      "(abc).Array.Count as size, " +
-                      "(abc).Array[0].NestLevOneVal as get0 " +
+                      "(abc).GetArray().size() as size, " +
+                      "(abc).GetArray().get(0).GetNestLevOneVal() as get0 " +
                       "from SupportBeanCombinedProps as abc";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();

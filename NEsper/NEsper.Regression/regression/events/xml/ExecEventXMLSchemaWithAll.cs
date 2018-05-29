@@ -11,6 +11,7 @@ using System.Xml.XPath;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.container;
+using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
@@ -57,7 +58,7 @@ namespace com.espertech.esper.regression.events.xml
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
                     new EventPropertyDescriptor("sessionId", typeof(XmlNode), null, false, false, false, false, true),
                     new EventPropertyDescriptor("customerId", typeof(XmlNode), null, false, false, false, false, true),
-                    new EventPropertyDescriptor("url", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("url", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("method", typeof(XmlNode), null, false, false, false, false, true),
             }, type.PropertyDescriptors);
         }

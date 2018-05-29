@@ -49,14 +49,19 @@ namespace com.espertech.esper.regression.events.render
             var json = epService.EPRuntime.EventRenderer.RenderJSON("MyEvent", stmt.First(), jsonOptions);
             Assert.AreEqual(4, MyRenderer.Contexts.Count);
             var contexts = MyRenderer.Contexts;
-            var context = contexts[2];
-            Assert.IsNotNull(context.DefaultRenderer);
-            Assert.AreEqual(1, (int) context.IndexedPropertyIndex);
-            Assert.AreEqual(typeof(MyRendererEvent).Name, context.EventType.Name);
-            Assert.AreEqual("SomeProperties", context.PropertyName);
+            var contextsIndexed = contexts
+                .Where(c => c.PropertyName == "SomeProperties")
+                .ToList();
+
+            Assert.That(contextsIndexed.Count, Is.Not.Zero);
+            Assert.That(contextsIndexed.Count(c => c.IndexedPropertyIndex == 0), Is.EqualTo(1));
+            Assert.That(contextsIndexed.Count(c => c.IndexedPropertyIndex == 1), Is.EqualTo(1));
+            foreach (var context in contextsIndexed) {
+                Assert.AreEqual(typeof(MyRendererEvent).Name, context.EventType.Name);
+            }
 
             var expectedJson =
-                "{ \"MyEvent\": { \"Id\": \"id1\", \"SomeProperties\": [\"index#0=1;index#1=x\", \"index#0=2;index#1=y\"], \"MappedProperty\": { \"key\": \"value\" } } }";
+                "{ \"MyEvent\": { \"Id\": \"id1\", \"MappedProperty\": { \"key\": \"value\" }, \"SomeProperties\": [\"index#0=1;index#1=x\", \"index#0=2;index#1=y\"] } }";
             Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
 
             MyRenderer.Contexts.Clear();
@@ -83,12 +88,12 @@ namespace com.espertech.esper.regression.events.render
 
             var json = epService.EPRuntime.EventRenderer.RenderJSON("MyEvent", stmt.First());
             var expectedJson =
-                "{ \"MyEvent\": { \"p0\": \"abc\", \"p1\": 1, \"p3\": 2, \"p4\": 3.0, \"p2\": { \"Id\": 1, \"p00\": \"p00\", \"p01\": null, \"p02\": null, \"p03\": null } } }";
+                "{ \"MyEvent\": { \"p0\": \"abc\", \"p1\": 1, \"p2\": { \"Id\": 1, \"P00\": \"p00\", \"P01\": null, \"P02\": null, \"P03\": null }, \"p3\": 2, \"p4\": 3.0 } }";
             Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
 
             var xmlOne = epService.EPRuntime.EventRenderer.RenderXML("MyEvent", stmt.First());
             var expected =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <MyEvent> <p0>abc</p0> <p1>1</p1> <p3>2</p3> <p4>3.0</p4> <p2> <Id>1</Id> <p00>p00</p00> </p2> </MyEvent>";
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <MyEvent> <p1>1</p1> <p3>2</p3> <p4>3.0</p4> <p0>abc</p0> <p2> <Id>1</Id> <P00>p00</P00> </p2> </MyEvent>";
             Assert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
 
             stmt.Dispose();
@@ -114,17 +119,17 @@ namespace com.espertech.esper.regression.events.render
 
             var json = epService.EPRuntime.EventRenderer.RenderJSON("MyEvent", stmt.First());
             var expectedJson =
-                "{ \"MyEvent\": { \"stringObjectMap\": { \"abc\": \"def\", \"def\": 123, \"efg\": null } } }";
+                "{ \"MyEvent\": { \"StringObjectMap\": { \"abc\": \"def\", \"def\": 123, \"efg\": null } } }";
             Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
 
             var xmlOne = epService.EPRuntime.EventRenderer.RenderXML("MyEvent", stmt.First());
             var expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                            "<MyEvent>\n" +
-                           "  <stringObjectMap>\n" +
+                           "  <StringObjectMap>\n" +
                            "    <abc>def</abc>\n" +
                            "    <def>123</def>\n" +
                            "    <efg></efg>\n" +
-                           "  </stringObjectMap>\n" +
+                           "  </StringObjectMap>\n" +
                            "</MyEvent>";
             Assert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
 
@@ -133,7 +138,7 @@ namespace com.espertech.esper.regression.events.render
             var xmlTwo = epService.EPRuntime.EventRenderer.RenderXML("MyEvent", stmt.First(), opt);
             var expectedTwo = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                               "<MyEvent>\n" +
-                              "  <stringObjectMap abc=\"def\" def=\"123\"/>\n" +
+                              "  <StringObjectMap abc=\"def\" def=\"123\"/>\n" +
                               "</MyEvent>";
             Assert.AreEqual(RemoveNewline(expectedTwo), RemoveNewline(xmlTwo));
 

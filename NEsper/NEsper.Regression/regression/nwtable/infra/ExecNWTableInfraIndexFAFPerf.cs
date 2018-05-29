@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.nwtable.infra
         public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.Configuration.AddEventType(typeof(MyEvent));
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("justCount", typeof(InvocationCounter).Name, "justCount");
+            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("justCount", typeof(InvocationCounter), "JustCount");
     
             RunAssertionFAFKeyBTreePerformance(epService, true);
             RunAssertionFAFKeyBTreePerformance(epService, false);
@@ -259,40 +259,33 @@ namespace com.espertech.esper.regression.nwtable.infra
                 epService.EPRuntime.SendEvent(new MyEvent("E" + i));
             }
     
-            InvocationCounter.SetCount(0);
-            string fafEPL = "select * from MyInfraIKW as mw where JustCount(mw) and id in ('notfound')";
+            InvocationCounter.Count = 0;
+            string fafEPL = "select * from MyInfraIKW as mw where justCount(mw) and id in ('notfound')";
             epService.EPRuntime.ExecuteQuery(fafEPL);
-            Assert.AreEqual(0, InvocationCounter.GetCount());
+            Assert.AreEqual(0, InvocationCounter.Count);
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfraIKW", false);
         }
     
         public class MyEvent {
-            private string id;
-    
             public MyEvent(string id) {
-                this.id = id;
+                Id = id;
             }
-    
-            public string GetId() {
-                return id;
-            }
+
+            public string Id { get; }
         }
     
         public class InvocationCounter {
-            private static int count;
-    
-            public static void SetCount(int count) {
-                InvocationCounter.count = count;
+            private static int _count;
+
+            public static int Count {
+                get => _count;
+                set => _count = value;
             }
-    
-            public static int GetCount() {
-                return count;
-            }
-    
+
             public static bool JustCount(Object o) {
-                count++;
+                _count++;
                 return true;
             }
         }

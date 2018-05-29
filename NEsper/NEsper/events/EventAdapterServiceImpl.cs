@@ -76,22 +76,22 @@ namespace com.espertech.esper.events
         private readonly IDictionary<String, EventType> _xmldomRootElementNames;
         private readonly IDictionary<String, EventType> _xelementRootElementNames;
 
-        private readonly ILockManager _lockManager;
+        private readonly IContainer _container;
 
         /// <summary>Ctor. </summary>
         public EventAdapterServiceImpl(
+            IContainer container,
             EventTypeIdGenerator eventTypeIdGenerator,
             int anonymousTypeCacheSize,
             EventAdapterAvroHandler avroHandler,
-            EngineImportService engineImportService,
-            ILockManager lockManager)
+            EngineImportService engineImportService)
         {
             _eventTypeIdGenerator = eventTypeIdGenerator;
             _avroHandler = avroHandler;
             _engineImportService = engineImportService;
-            _lockManager = lockManager;
+            _container = container;
 
-            _syncLock = lockManager.CreateLock(GetType());
+            _syncLock = _container.LockManager().CreateLock(GetType());
 
             _nameToTypeMap = new Dictionary<String, EventType>();
             _xmldomRootElementNames = new Dictionary<String, EventType>();
@@ -101,7 +101,9 @@ namespace com.espertech.esper.events
 
             // Share the mapping of class to type with the type creation for thread safety
             _typesPerBean = new ConcurrentDictionary<Type, BeanEventType>();
-            _beanEventAdapter = new BeanEventAdapter(_typesPerBean, this, eventTypeIdGenerator, lockManager);
+
+            _beanEventAdapter = new BeanEventAdapter(
+                _container, _typesPerBean, this, eventTypeIdGenerator);
             _plugInRepresentations = new Dictionary<Uri, PlugInEventRepresentation>();
             _anonymousTypeCache = new EventAdapterServiceAnonymousTypeCache(anonymousTypeCacheSize);
         }
@@ -110,24 +112,18 @@ namespace com.espertech.esper.events
         /// <value>is the default style</value>
         public PropertyResolutionStyle DefaultPropertyResolutionStyle
         {
-            get { return _beanEventAdapter.DefaultPropertyResolutionStyle; }
-            set { _beanEventAdapter.DefaultPropertyResolutionStyle = value; }
+            get => _beanEventAdapter.DefaultPropertyResolutionStyle;
+            set => _beanEventAdapter.DefaultPropertyResolutionStyle = value;
         }
 
         public AccessorStyleEnum DefaultAccessorStyle
         {
-            set { _beanEventAdapter.DefaultAccessorStyle = value; }
+            set => _beanEventAdapter.DefaultAccessorStyle = value;
         }
 
-        public IDictionary<string, EventType> DeclaredEventTypes
-        {
-            get { return new Dictionary<String, EventType>(_nameToTypeMap); }
-        }
+        public IDictionary<string, EventType> DeclaredEventTypes => new Dictionary<String, EventType>(_nameToTypeMap);
 
-        public EngineImportService EngineImportService
-        {
-            get { return _engineImportService; }
-        }
+        public EngineImportService EngineImportService => _engineImportService;
 
         public ICollection<WriteablePropertyDescriptor> GetWriteableProperties(EventType eventType, bool allowAnyType)
         {
@@ -378,10 +374,7 @@ namespace com.espertech.esper.events
             return new EventSenderImpl(handlingFactories, epRuntime, threadingService);
         }
 
-        public BeanEventTypeFactory BeanEventTypeFactory
-        {
-            get { return _beanEventAdapter; }
-        }
+        public BeanEventTypeFactory BeanEventTypeFactory => _beanEventAdapter;
 
         public EventType AddBeanType(
             String eventTypeName,
@@ -467,6 +460,7 @@ namespace com.espertech.esper.events
                     : TypeClass.STREAM;
                 var beanEventType =
                     new BeanEventType(
+                        _container,
                         EventTypeMetadata.CreateBeanType(eventTypeName, clazz, false, false, false, typeClass),
                         _eventTypeIdGenerator.GetTypeId(eventTypeName), clazz, this,
                         _beanEventAdapter.GetClassToLegacyConfigs(clazz.AssemblyQualifiedName));
@@ -983,8 +977,9 @@ namespace com.espertech.esper.events
         public EventType CreateAnonymousBeanType(String eventTypeName, Type clazz)
         {
             var beanEventType = new BeanEventType(
-                EventTypeMetadata.CreateBeanType(
-                    eventTypeName, clazz, false, false, false, TypeClass.ANONYMOUS), -1, clazz, this,
+                _container,
+                EventTypeMetadata.CreateBeanType(eventTypeName, clazz, false, false, false, TypeClass.ANONYMOUS),
+                -1, clazz, this,
                 _beanEventAdapter.GetClassToLegacyConfigs(clazz.AssemblyQualifiedName));
             return _anonymousTypeCache.AddReturnExistingAnonymousType(beanEventType);
         }
@@ -1062,8 +1057,8 @@ namespace com.espertech.esper.events
         /// <value>is the legacy class configs</value>
         public IDictionary<string, ConfigurationEventTypeLegacy> TypeLegacyConfigs
         {
-            set { _beanEventAdapter.TypeToLegacyConfigs = value; }
-            get { return _beanEventAdapter.TypeToLegacyConfigs; }
+            set => _beanEventAdapter.TypeToLegacyConfigs = value;
+            get => _beanEventAdapter.TypeToLegacyConfigs;
         }
 
         public ConfigurationEventTypeLegacy GetTypeLegacyConfigs(String className)
@@ -1071,10 +1066,7 @@ namespace com.espertech.esper.events
             return _beanEventAdapter.GetClassToLegacyConfigs(className);
         }
 
-        public ICollection<EventType> AllTypes
-        {
-            get { return _nameToTypeMap.Values.ToArray(); }
-        }
+        public ICollection<EventType> AllTypes => _nameToTypeMap.Values.ToArray();
 
         public EventType GetEventTypeByName(String eventTypeName)
         {
@@ -1174,7 +1166,7 @@ namespace com.espertech.esper.events
                         metadata,
                         _eventTypeIdGenerator.GetTypeId(eventTypeName),
                         configurationEventTypeXMLDOM,
-                        this, _lockManager);
+                        this, _container.LockManager());
                 }
                 else
                 {
@@ -1187,14 +1179,14 @@ namespace com.espertech.esper.events
                         _eventTypeIdGenerator.GetTypeId(eventTypeName),
                         configurationEventTypeXMLDOM, 
                         optionalSchemaModel, 
-                        this, _lockManager);
+                        this, _container.LockManager());
                 }
 
                 EventType xelementType = new SimpleXElementType(
                     metadata,
                     _eventTypeIdGenerator.GetTypeId(eventTypeName),
                     configurationEventTypeXMLDOM,
-                    this, _lockManager);
+                    this, _container.LockManager());
 
                 _nameToTypeMap.Put(eventTypeName, type);
                 _xmldomRootElementNames.Put(configurationEventTypeXMLDOM.RootElementName, type);
@@ -1391,10 +1383,7 @@ namespace com.espertech.esper.events
             return _avroHandler.AdapterForTypeAvro(avroGenericDataDotRecord, eventType);
         }
 
-        public EventAdapterAvroHandler EventAdapterAvroHandler
-        {
-            get { return _avroHandler; }
-        }
+        public EventAdapterAvroHandler EventAdapterAvroHandler => _avroHandler;
 
         public TypeWidenerCustomizer GetTypeWidenerCustomizer(EventType resultEventType)
         {

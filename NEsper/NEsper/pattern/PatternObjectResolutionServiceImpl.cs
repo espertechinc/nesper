@@ -12,6 +12,7 @@ using System.Reflection;
 
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.pattern.guard;
@@ -27,12 +28,17 @@ namespace com.espertech.esper.pattern
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private readonly IContainer _container;
         private readonly PluggableObjectCollection _patternObjects;
 
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="patternObjects">is the pattern plug-in objects configured</param>
-        public PatternObjectResolutionServiceImpl(PluggableObjectCollection patternObjects)
+        public PatternObjectResolutionServiceImpl(IContainer container, PluggableObjectCollection patternObjects)
         {
+            _container = container;
             _patternObjects = patternObjects;
         }
 
@@ -132,35 +138,18 @@ namespace com.espertech.esper.pattern
             }
 
             Object result;
-            try
-            {
-                result = Activator.CreateInstance(factoryClass);
+            try {
+                result = _container.CreateInstance<object>(factoryClass);
             }
-            catch (TypeInstantiationException ex)
-            {
+            catch (Exception ex) when (
+                ex is TypeInstantiationException ||
+                ex is TargetInvocationException ||
+                ex is ArgumentException || 
+                ex is MemberAccessException) {
                 String message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;
-                message += "' using Activator.CreateInstance";
+                message += "', no invocation access for Container.CreateInstance";
                 throw new PatternObjectException(message, ex);
             }
-            catch (TargetInvocationException ex)
-            {
-                String message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;
-                message += "' using Activator.CreateInstance";
-                throw new PatternObjectException(message, ex);
-            }
-            catch (MethodAccessException ex)
-            {
-                String message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;
-                message += "', no invocation access for Activator.CreateInstance";
-                throw new PatternObjectException(message, ex);
-            }
-            catch (MemberAccessException ex)
-            {
-                String message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;
-                message += "', no invocation access for Activator.CreateInstance";
-                throw new PatternObjectException(message, ex);
-            }
-
             return result;
         }
     }

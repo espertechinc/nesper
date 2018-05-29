@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.expr.datetime
             epService.EPAdministrator.CreateEPL("select timeTaken.RoundCeiling('min') as timeTakenRounded from RFIDEvent");
             epService.EPAdministrator.CreateEPL("select timeTaken.RoundFloor('min') as timeTakenRounded from RFIDEvent");
             epService.EPAdministrator.CreateEPL("select timeTaken.Set('month', 3) as timeTakenMonth from RFIDEvent");
-            epService.EPAdministrator.CreateEPL("select timeTaken.WithDate(2002, 4, 30) as timeTakenDated from RFIDEvent");
+            epService.EPAdministrator.CreateEPL("select timeTaken.withDate(2002, 4, 30) as timeTakenDated from RFIDEvent");
             epService.EPAdministrator.CreateEPL("select timeTaken.WithMax('sec') as timeTakenMaxSec from RFIDEvent");
             epService.EPAdministrator.CreateEPL("select timeTaken.ToCalendar() as timeTakenCal from RFIDEvent");
             epService.EPAdministrator.CreateEPL("select timeTaken.ToDate() as timeTakenDate from RFIDEvent");
@@ -44,12 +44,12 @@ namespace com.espertech.esper.regression.expr.datetime
     
             // test pattern use
             var leg = new ConfigurationEventTypeLegacy();
-            leg.StartTimestampPropertyName = "LongdateStart";
+            leg.StartTimestampPropertyName = "longdateStart";
             epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportTimeStartEndA), leg);
             epService.EPAdministrator.Configuration.AddEventType("B", typeof(SupportTimeStartEndB), leg);
     
-            TryRun(epService, "a.LongdateStart.after(b)", "2002-05-30T09:00:00.000", "2002-05-30T08:59:59.999", true);
-            TryRun(epService, "a.after(b.LongdateStart)", "2002-05-30T09:00:00.000", "2002-05-30T08:59:59.999", true);
+            TryRun(epService, "a.longdateStart.after(b)", "2002-05-30T09:00:00.000", "2002-05-30T08:59:59.999", true);
+            TryRun(epService, "a.after(b.longdateStart)", "2002-05-30T09:00:00.000", "2002-05-30T08:59:59.999", true);
             TryRun(epService, "a.after(b)", "2002-05-30T09:00:00.000", "2002-05-30T08:59:59.999", true);
             TryRun(epService, "a.after(b)", "2002-05-30T08:59:59.999", "2002-05-30T09:00:00.000", false);
         }

@@ -37,10 +37,10 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1,val2,val3".Split(',');
             string eplFragment = "select " +
-                    "Strvals.FirstOf() as val0, " +
-                    "Strvals.LastOf() as val1, " +
-                    "Strvals.FirstOf(x => x like '%1%') as val2, " +
-                    "Strvals.LastOf(x => x like '%1%') as val3 " +
+                    "Strvals.firstOf() as val0, " +
+                    "Strvals.lastOf() as val1, " +
+                    "Strvals.firstOf(x => x like '%1%') as val2, " +
+                    "Strvals.lastOf(x => x like '%1%') as val3 " +
                     " from SupportCollection";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
@@ -69,8 +69,8 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             string[] fields = "val0,val1".Split(',');
             string eplFragment = "select " +
-                    "Contained.FirstOf().p00 as val0, " +
-                    "Contained.LastOf().p00 as val1 " +
+                    "Contained.firstOf().p00 as val0, " +
+                    "Contained.lastOf().p00 as val1 " +
                     " from Bean";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
@@ -95,8 +95,8 @@ namespace com.espertech.esper.regression.expr.enummethod
         private void RunAssertionFirstLastNoPred(EPServiceProvider epService) {
     
             string eplFragment = "select " +
-                    "Contained.FirstOf() as val0, " +
-                    "Contained.LastOf() as val1 " +
+                    "Contained.firstOf() as val0, " +
+                    "Contained.lastOf() as val1 " +
                     " from Bean";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
@@ -126,7 +126,7 @@ namespace com.espertech.esper.regression.expr.enummethod
     
         private void RunAssertionFirstLastPredicate(EPServiceProvider epService) {
     
-            string eplFragment = "select Contained.FirstOf(x => p00 = 9) as val from Bean";
+            string eplFragment = "select Contained.firstOf(x => p00 = 9) as val from Bean";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             var listener = new SupportUpdateListener();
             stmtFragment.Events += listener.Update;

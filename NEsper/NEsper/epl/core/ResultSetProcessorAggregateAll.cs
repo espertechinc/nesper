@@ -311,7 +311,7 @@ namespace com.espertech.esper.epl.core
                     result = ResultSetProcessorUtil.GetSelectJoinEventsHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, joinSet, _prototype.OptionalHavingNode, true, true, _exprEvaluatorContext);
                 }
             }
-            return result != null ? result.GetEnumerator() : EnumerationHelper<EventBean>.Empty();
+            return result != null ? result.GetEnumerator() : EnumerationHelper.Empty<EventBean>();
         }
 
         public void Clear()

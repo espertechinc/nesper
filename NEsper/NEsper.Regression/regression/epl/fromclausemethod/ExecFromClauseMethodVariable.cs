@@ -47,17 +47,17 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
     
             // invalid footprint
             SupportMessageAssertUtil.TryInvalid(epService, "select * from method:MyConstantServiceVariable.FetchABean() as h0",
-                    "Error starting statement: Method footprint does not match the number or type of expression parameters, expecting no parameters in method: Could not find enumeration method, date-time method or instance method named 'fetchABean' in class 'com.espertech.esper.regression.epl.fromclausemethod.ExecFromClauseMethodVariable$MyConstantServiceVariable' taking no parameters (nearest match found was 'fetchABean' taking type(s) 'int') [");
+                    "Error starting statement: Method footprint does not match the number or type of expression parameters, expecting no parameters in method: Could not find enumeration method, date-time method or instance method named 'FetchABean' in class 'com.espertech.esper.regression.epl.fromclausemethod.ExecFromClauseMethodVariable+MyConstantServiceVariable' taking no parameters (nearest match found was 'FetchABean' taking type(s) 'System.Int32') [");
     
             // null variable value and metadata is instance method
             epService.EPAdministrator.Configuration.AddVariable("MyNullMap", typeof(MyMethodHandlerMap), null);
-            SupportMessageAssertUtil.TryInvalid(epService, "select field1, field2 from method:MyNullMap.MapData",
+            SupportMessageAssertUtil.TryInvalid(epService, "select field1, field2 from method:MyNullMap.GetMapData",
                     "Error starting statement: Failed to access variable method invocation metadata: The variable value is null and the metadata method is an instance method");
     
             // variable with context and metadata is instance method
             epService.EPAdministrator.CreateEPL("create context BetweenStartAndEnd start SupportBean end SupportBean");
             epService.EPAdministrator.CreateEPL("context BetweenStartAndEnd create variable " + TypeHelper.MaskTypeName<MyMethodHandlerMap>() + " themap");
-            SupportMessageAssertUtil.TryInvalid(epService, "context BetweenStartAndEnd select field1, field2 from method:themap.MapData",
+            SupportMessageAssertUtil.TryInvalid(epService, "context BetweenStartAndEnd select field1, field2 from method:themap.GetMapData",
                     "Error starting statement: Failed to access variable method invocation metadata: The metadata method is an instance method however the variable is contextual, please declare the metadata method as static or remove the context declaration for the variable");
         }
     
@@ -66,8 +66,8 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             epService.EPAdministrator.Configuration.AddVariable("MyMethodHandlerOA", typeof(MyMethodHandlerOA), new MyMethodHandlerOA("a", "b"));
     
             foreach (string epl in new string[]{
-                    "select field1, field2 from method:MyMethodHandlerMap.MapData",
-                    "select field1, field2 from method:MyMethodHandlerOA.OAData"
+                    "select field1, field2 from method:MyMethodHandlerMap.GetMapData",
+                    "select field1, field2 from method:MyMethodHandlerOA.GetOAData"
             }) {
                 EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
                 EPAssertionUtil.AssertProps(stmt.First(), "field1,field2".Split(','), new object[]{"a", "b"});
@@ -205,18 +205,15 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                 _field2 = field2;
             }
 
-            public IDictionary<string, object> MapDataMetadata
+            public IDictionary<string, object> GetMapDataMetadata()
             {
-                get
-                {
-                    var fields = new Dictionary<string, Object>();
-                    fields.Put("field1", typeof(string));
-                    fields.Put("field2", typeof(string));
-                    return fields;
-                }
+                var fields = new Dictionary<string, Object>();
+                fields.Put("field1", typeof(string));
+                fields.Put("field2", typeof(string));
+                return fields;
             }
 
-            public IDictionary<string, object>[] MapData()
+            public IDictionary<string, object>[] GetMapData()
             {
                 var maps = new IDictionary<string, object>[1];
                 var row = new Dictionary<string, Object>();
@@ -236,20 +233,19 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                 _field2 = field2;
             }
 
-            public static IDictionary<string, object> OADataMetadata
+            public static IDictionary<string, object> GetOADataMetadata()
             {
-                get
-                {
-                    var fields = new LinkedHashMap<string, Object>();
-                    fields.Put("field1", typeof(string));
-                    fields.Put("field2", typeof(string));
-                    return fields;
-                }
+                var fields = new LinkedHashMap<string, Object>();
+                fields.Put("field1", typeof(string));
+                fields.Put("field2", typeof(string));
+                return fields;
             }
 
-            public object[][] OAData
+            public object[][] GetOAData()
             {
-                get { return new object[][] {new object[] {_field1, _field2}}; }
+                return new object[][] {
+                    new object[] { _field1, _field2 }
+                };
             }
         }
     }

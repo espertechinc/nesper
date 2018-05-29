@@ -147,8 +147,8 @@ namespace com.espertech.esper.regression.epl.subselect
             Assert.IsFalse(fragmentType.IsIndexed);
             Assert.IsFalse(fragmentType.IsNative);
             rows = new object[][]{
-                    new object[] {"v1", typeof(int?)},
-                    new object[] {"v2", typeof(int?)},
+                    new object[] {"v1", typeof(int)},
+                    new object[] {"v2", typeof(int)},
                     new object[] {"v3", typeof(int[])},
                     new object[] {"v4", typeof(SupportBean[])},
             };

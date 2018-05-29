@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.client
     
         private void RunAssertionAutoNamePackageAmbigous(EPServiceProvider epService) {
             SupportMessageAssertUtil.TryInvalid(epService, "select * from SupportAmbigousEventType",
-                    "Failed to resolve event type: Failed to resolve name 'SupportAmbigousEventType', the class was ambigously found both in package 'com.espertech.esper.supportregression.bean' and in package 'com.espertech.esper.supportregression.client'");
+                    "Failed to resolve event type: Failed to resolve name 'SupportAmbigousEventType', the class was ambigously found both in namespace 'com.espertech.esper.supportregression.bean' and in namespace 'com.espertech.esper.supportregression.client'");
     
             SupportMessageAssertUtil.TryInvalid(epService, "select * from XXXX",
                     "Failed to resolve event type: Event type or class named 'XXXX' was not found");

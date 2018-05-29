@@ -440,13 +440,13 @@ namespace com.espertech.esper.regression.resultset.outputlimit
                     "Error validating expression: An aggregate function may not appear in a OUTPUT LIMIT clause [select * from MarketData output when sum(count_insert) > 0]");
     
             TryInvalid(epService, "select * from MarketData output when prev(1, count_insert) = 0",
-                    "Error validating expression: Failed to validate output limit expression 'Prev(1,count_insert)=0': Previous function cannot be used in this context [select * from MarketData output when prev(1, count_insert) = 0]");
+                    "Error validating expression: Failed to validate output limit expression 'prev(1,count_insert)=0': Previous function cannot be used in this context [select * from MarketData output when prev(1, count_insert) = 0]");
     
             TryInvalid(epService, "select * from MarketData output when myvardummy",
-                    "Error validating expression: The when-trigger expression in the OUTPUT WHEN clause must return a bool-type value [select * from MarketData output when myvardummy]");
+                    "Error validating expression: The when-trigger expression in the OUTPUT WHEN clause must return a boolean-type value [select * from MarketData output when myvardummy]");
     
             TryInvalid(epService, "select * from MarketData output when true then set myvardummy = 'b'",
-                    "Error starting statement: Error in the output rate limiting clause: Variable 'myvardummy' of declared type " + Name.Of<int>() + " cannot be assigned a value of type System.String [select * from MarketData output when true then set myvardummy = 'b']");
+                    "Error starting statement: Error in the output rate limiting clause: Variable 'myvardummy' of declared type " + Name.Clean<int>() + " cannot be assigned a value of type System.String [select * from MarketData output when true then set myvardummy = 'b']");
     
             TryInvalid(epService, "select * from MarketData output when true then set myvardummy = sum(myvardummy)",
                     "Error validating expression: An aggregate function may not appear in a OUTPUT LIMIT clause [select * from MarketData output when true then set myvardummy = sum(myvardummy)]");

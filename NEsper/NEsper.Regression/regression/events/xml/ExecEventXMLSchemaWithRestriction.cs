@@ -10,6 +10,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.container;
+using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using NUnit.Framework;
@@ -42,7 +43,7 @@ namespace com.espertech.esper.regression.events.xml
                             "<order_amount>202.1</order_amount>" +
                             "</order>");
             EventBean theEvent = updateListener.LastNewData[0];
-            Assert.AreEqual(typeof(double?), theEvent.Get("order_amount").GetType());
+            Assert.AreEqual(typeof(double), theEvent.Get("order_amount").GetType());
             Assert.AreEqual(202.1d, theEvent.Get("order_amount"));
             updateListener.Reset();
         }

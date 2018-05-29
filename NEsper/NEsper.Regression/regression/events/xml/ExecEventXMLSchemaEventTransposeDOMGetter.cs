@@ -12,6 +12,7 @@ using System.Xml;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.container;
+using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util.support;
@@ -40,9 +41,9 @@ namespace com.espertech.esper.regression.events.xml
     
             EPStatement stmtSelect = epService.EPAdministrator.CreateEPL("select nested1.attr1 as attr1, nested1.prop1 as prop1, nested1.prop2 as prop2, nested1.nested2.prop3 as prop3, nested1.nested2.prop3[0] as prop3_0, nested1.nested2 as nested2 from MyNestedStream#lastevent");
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
-                    new EventPropertyDescriptor("prop1", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("prop1", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("prop2", typeof(bool?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("attr1", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("attr1", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("prop3", typeof(int?[]), typeof(int?), false, false, true, false, false),
                     new EventPropertyDescriptor("prop3_0", typeof(int?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("nested2", typeof(XmlNode), null, false, false, false, false, true),
@@ -57,9 +58,9 @@ namespace com.espertech.esper.regression.events.xml
     
             EPStatement stmtInsertWildcard = epService.EPAdministrator.CreateEPL("insert into MyNestedStreamTwo select nested1.* from TestXMLSchemaType#lastevent");
             EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
-                    new EventPropertyDescriptor("prop1", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("prop1", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("prop2", typeof(bool?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("attr1", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("attr1", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("nested2", typeof(XmlNode), null, false, false, false, false, true),
             }, stmtInsertWildcard.EventType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(stmtInsertWildcard.EventType);

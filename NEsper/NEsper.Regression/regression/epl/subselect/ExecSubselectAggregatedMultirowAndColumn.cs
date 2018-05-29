@@ -55,8 +55,8 @@ namespace com.espertech.esper.regression.epl.subselect
             // correlated group-by not allowed
             epl = "select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, s0.id) from S0 as s0";
             SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (property 'id' is not) [select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, s0.id) from S0 as s0]");
-            epl = "select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, s0.P00) from S0 as s0";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (expression 's0.P00' against stream 1 is not)");
+            epl = "select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, s0.get_P00()) from S0 as s0";
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (expression 's0.get_P00()' against stream 1 is not)");
     
             // aggregations not allowed in group-by
             epl = "select (select IntPrimitive, sum(LongPrimitive) from SupportBean#keepall group by sum(IntPrimitive)) from S0 as s0";
@@ -355,7 +355,7 @@ namespace com.espertech.esper.regression.epl.subselect
                     "(select TheString as c0, sum(IntPrimitive) as c1 " +
                     "  from SupportBean#keepall group by TheString)" +
                     "}" +
-                    "select GetGroups() as e1, GetGroups().take(10) as e2 from S0#lastevent()";
+                    "select getGroups() as e1, getGroups().take(10) as e2 from S0#lastevent()";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -474,15 +474,13 @@ namespace com.espertech.esper.regression.epl.subselect
     
         internal static void AssertMapMultiRow(string fieldName, EventBean @event, string sortKey, string[] names, object[][] values)
         {
-            ICollection<Map> subq = @event.Get(fieldName)
-                .Unwrap<object>()
-                .Select(item => (Map) item)
-                .ToList();
-
-            if (values == null && subq == null) {
+            var subx = @event.Get(fieldName).Unwrap<object>();
+            if (subx == null || values == null) {
                 return;
             }
-            var maps = subq
+
+            var maps = subx
+                .Select(item => (Map)item)
                 .OrderBy(map => map.Get(sortKey))
                 .ToArray();
             

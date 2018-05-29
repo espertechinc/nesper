@@ -20,7 +20,9 @@ namespace com.espertech.esper.epl.index.service
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var number = col.Evaluate(new EvaluateParams(eventsPerStream, newData, exprEvaluatorContext));
-            if (number == null) throw InvalidColumnValue(indexName, colName, null, "non-null");
+            if (number == null) {
+                throw InvalidColumnValue(indexName, colName, null, "non-null");
+            }
 
             return number.AsDouble();
         }

@@ -78,16 +78,20 @@ namespace com.espertech.esper.epl.agg.factory
             return ExprMethodAggUtil.GetDefaultEvaluator(_parent.PositionalParams, join, typesPerStream);
         }
 
-        private AggregationMethod MakeMinMaxAggregator(MinMaxTypeEnum minMaxTypeEnum, Type targetType,
+        private AggregationMethod MakeMinMaxAggregator(
+            MinMaxTypeEnum minMaxTypeEnum, Type targetType,
             bool isHasDataWindows, bool hasFilter)
         {
-            if (!hasFilter)
-            {
-                if (!isHasDataWindows) return new AggregatorMinMaxEver(minMaxTypeEnum);
+            if (!hasFilter) {
+                if (!isHasDataWindows) {
+                    return new AggregatorMinMaxEver(minMaxTypeEnum);
+                }
                 return new AggregatorMinMax(minMaxTypeEnum);
             }
 
-            if (!isHasDataWindows) return new AggregatorMinMaxEverFilter(minMaxTypeEnum);
+            if (!isHasDataWindows) {
+                return new AggregatorMinMaxEverFilter(minMaxTypeEnum);
+            }
             return new AggregatorMinMaxFilter(minMaxTypeEnum);
         }
     }

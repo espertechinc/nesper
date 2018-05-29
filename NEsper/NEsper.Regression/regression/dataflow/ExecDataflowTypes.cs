@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.dataflow
 
         private void RunAssertionBeanType(EPServiceProvider epService)
         {
-            epService.EPAdministrator.Configuration.AddImport(typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddImport<SupportBean>();
             epService.EPAdministrator.CreateEPL("create schema SupportBean SupportBean");
             epService.EPAdministrator.CreateEPL(
                 "create dataflow MyDataFlowOne " +
@@ -44,7 +44,7 @@ namespace com.espertech.esper.regression.dataflow
 
             var source = new DefaultSupportSourceOp(new object[] {new SupportBean("E1", 1)});
             var outputOne = new MySupportBeanOutputOp();
-            var outputTwo = new SupportGenericOutputOpWPort<SupportBean>();
+            var outputTwo = new SupportGenericOutputOpWPort();
             var options = new EPDataFlowInstantiationOptions().OperatorProvider(
                 new DefaultSupportGraphOpProvider(source, outputOne, outputTwo));
             var dfOne = epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlowOne", options);
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regression.dataflow
 
             var source = new DefaultSupportSourceOp(new object[] {MakeMap("E1", 1)});
             var outputOne = new MyMapOutputOp();
-            var outputTwo = new DefaultSupportCaptureOp<SupportBean>(SupportContainer.Instance.LockManager());
+            var outputTwo = new DefaultSupportCaptureOp(SupportContainer.Instance.LockManager());
             var options = new EPDataFlowInstantiationOptions().OperatorProvider(
                 new DefaultSupportGraphOpProvider(source, outputOne, outputTwo));
             var dfOne = epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlowOne", options);

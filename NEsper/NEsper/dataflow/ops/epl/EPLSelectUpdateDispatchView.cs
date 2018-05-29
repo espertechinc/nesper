@@ -39,7 +39,7 @@ namespace com.espertech.esper.dataflow.ops.epl
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return EnumerationHelper<EventBean>.Empty();
+            return EnumerationHelper.Empty<EventBean>();
         }
     }
 }

@@ -830,7 +830,7 @@ namespace com.espertech.esper.client
         /// <param name="methodInvocationConfig">is the cache configuration</param>
         public void AddMethodRef(Type clazz, ConfigurationMethodRef methodInvocationConfig)
         {
-            _methodInvocationReferences.Put(clazz.AssemblyQualifiedName, methodInvocationConfig);
+            _methodInvocationReferences.Put(clazz.FullName, methodInvocationConfig);
         }
 
         public IDictionary<string, string> EventTypeNames => _eventClasses;
