@@ -19,7 +19,7 @@ namespace NEsper.Benchmark.Perforator
         private const int TestIterations = 1000000;
         private const int TestCycles = 5;
 
-        private static void MeasurePerformance(string caption, ThreadLocalFactory threadLocalFactory)
+        private static void MeasurePerformance(string caption, IThreadLocalFactory threadLocalFactory)
         {
             for (int cycle = 0; cycle < TestCycles; cycle++)
             {
@@ -47,7 +47,7 @@ namespace NEsper.Benchmark.Perforator
         }
 
         public static void MeasureSlimThreadLocal() { MeasurePerformance("SlimThreadLocal", new SlimThreadLocalFactory()); }
-        public static void MeasureXperThreadLocal() { MeasurePerformance("XperThreadLocal", new XperThreadLocalFactory()); }
+        public static void MeasureXperThreadLocal() { MeasurePerformance("XperThreadLocal", new XFastThreadLocalFactory()); }
         public static void MeasureFastThreadLocal() { MeasurePerformance("FastThreadLocal", new FastThreadLocalFactory()); }
         public static void MeasureSystemThreadLocal() { MeasurePerformance("SystemThreadLocal", new SystemThreadLocalFactory()); }
     }

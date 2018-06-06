@@ -23,6 +23,7 @@ using com.espertech.esper.filter;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
+using com.espertech.esper.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -354,7 +355,7 @@ namespace com.espertech.esper.regression.epl.variable
             try {
                 epService.EPRuntime.SetVariableValue(newValues);
                 Assert.Fail();
-            } catch (VariableValueException ex) {
+            } catch (VariableValueException) {
                 // expected
             }
             AssertVariableValues(epService, new[]{"var1", "var2"}, new object[]{-1, null});
@@ -861,14 +862,20 @@ namespace com.espertech.esper.regression.epl.variable
                     "Error starting statement: Variable by name 'dummy' has not been created or configured");
     
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var1IS = 1",
-                    "Error starting statement: Variable 'var1IS' of declared type System.String cannot be assigned a value of type " + Name.Clean<int>() + "");
+                    string.Format("Error starting statement: Variable 'var1IS' of declared type {0} cannot be assigned a value of type {1}", 
+                        typeof(string).GetCleanName(),
+                        typeof(int).GetCleanName()));
     
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var3IS = 'abc'",
-                    "Error starting statement: Variable 'var3IS' of declared type " + Name.Clean<int>() + " cannot be assigned a value of type System.String");
+                    string.Format("Error starting statement: Variable 'var3IS' of declared type {0} cannot be assigned a value of type {1}", 
+                        typeof(int?).GetCleanName(),
+                        typeof(string).GetCleanName()));
     
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var3IS = DoublePrimitive",
-                    "Error starting statement: Variable 'var3IS' of declared type " + Name.Clean<int>() + " cannot be assigned a value of type System.Double");
-    
+                    string.Format("Error starting statement: Variable 'var3IS' of declared type {0} cannot be assigned a value of type {1}", 
+                        typeof(int?).GetCleanName(),
+                        typeof(double).GetCleanName()));
+
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var2IS = 'false'", null);
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var3IS = 1.1", null);
             TryInvalidSet(epService, "on " + typeof(SupportBean).FullName + " set var3IS = 22222222222222", null);
@@ -888,10 +895,13 @@ namespace com.espertech.esper.regression.epl.variable
     
         private void RunAssertionInvalidInitialization(EPServiceProvider epService) {
             TryInvalid(epService, typeof(int?), "abcdef",
-                    "Error creating variable: Variable 'invalidvar1' of declared type " + Name.Clean<int>() + " cannot be initialized by value 'abcdef': System.FormatException: Input string was not in a correct format.");
+                    string.Format("Error creating variable: Variable 'invalidvar1' of declared type {0} cannot be initialized by value 'abcdef': System.FormatException: Input string was not in a correct format.", 
+                        typeof(int?).GetCleanName()));
     
             TryInvalid(epService, typeof(int?), new double?(11.1),
-                    "Error creating variable: Variable 'invalidvar1' of declared type " + Name.Clean<int>() + " cannot be initialized by a value of type " + Name.Clean<double>(false));
+                    string.Format("Error creating variable: Variable 'invalidvar1' of declared type {0} cannot be initialized by a value of type {1}", 
+                        typeof(int?).GetCleanName(),
+                        typeof(double).GetCleanName()));
     
             TryInvalid(epService, typeof(int), new double?(11.1), null);
             TryInvalid(epService, typeof(string), true, null);

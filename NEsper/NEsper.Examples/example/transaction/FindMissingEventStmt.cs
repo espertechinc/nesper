@@ -10,7 +10,7 @@
 using System;
 using com.espertech.esper.client;
 
-namespace NEsper.Example.Transaction
+namespace NEsper.Examples.Transaction
 {
     public class FindMissingEventStmt
     {

@@ -332,10 +332,7 @@ namespace com.espertech.esper.compat.collections
             	
             	throw new KeyNotFoundException( "Value '" + key + "' not found" ) ;
             }
-            set
-            {
-                SetValue(key, value);
-            }
+            set => SetValue(key, value);
         }
 
         #endregion
@@ -393,10 +390,7 @@ namespace com.espertech.esper.compat.collections
         /// <value></value>
         /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
 
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.

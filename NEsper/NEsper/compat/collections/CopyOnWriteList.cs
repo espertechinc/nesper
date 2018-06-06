@@ -31,10 +31,7 @@ namespace com.espertech.esper.compat.collections
         /// Gets the write lock.
         /// </summary>
         /// <value>The write lock.</value>
-        public ILockable WriteLock
-        {
-            get { return _writerLock; }
-        }
+        public ILockable WriteLock => _writerLock;
 
         /// <summary>
         /// Converts the list to an array.
@@ -133,20 +130,14 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <value></value>
         /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
-        public virtual int Count
-        {
-            get { return _arrayList.Length; }
-        }
+        public virtual int Count => _arrayList.Length;
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
         /// </summary>
         /// <value></value>
         /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
-        public virtual bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public virtual bool IsReadOnly => false;
 
         /// <summary>
         /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
@@ -280,10 +271,7 @@ namespace com.espertech.esper.compat.collections
         /// <value></value>
         public T this[int index]
         {
-            get
-            {
-                return _arrayList[index];
-            }
+            get => _arrayList[index];
             set
             {
                 // Should this be using copy-on-write semantics or

@@ -889,7 +889,7 @@ namespace com.espertech.esper.events.bean
                     setterMethod = MethodResolver.ResolveMethod(
                         _clazz, methodName, new Type[] { typeof(string), typeof(object) }, true, new bool[2], new bool[2]);
                 }
-                catch (EngineNoSuchMethodException e)
+                catch (EngineNoSuchMethodException)
                 {
                     Log.Info(
                         "Failed to find mapped property setter method '" + methodName + "' for writing to property '" +

@@ -845,7 +845,7 @@ namespace com.espertech.esper.epl.core
                         return type;
                     }
 
-                    Log.Warn("Type not found for resolving from name as-is: '{0}'", typeName);
+                    Log.Debug("Type not found for resolving from name as-is: '{0}'", typeName);
                 }
                 else
                 {
@@ -871,7 +871,7 @@ namespace com.espertech.esper.epl.core
                                 return type;
                             }
 
-                            Log.Warn("Type not found for resolving from name as-is: {0}", typeName);
+                            Log.Debug("Type not found for resolving from name as-is: {0}", typeName);
                         }
                         catch (TypeLoadException)
                         {
@@ -889,7 +889,7 @@ namespace com.espertech.esper.epl.core
                             return type;
                         }
 
-                        Log.Warn("Type not found for resolving from name as-is: {0}", typeName);
+                        Log.Debug("Type not found for resolving from name as-is: {0}", typeName);
                     }
                     catch (TypeLoadException)
                     {
@@ -905,7 +905,7 @@ namespace com.espertech.esper.epl.core
                             return type;
                         }
 
-                        Log.Warn("Type not found for resolving from name as-is: {0}", typeName);
+                        Log.Debug("Type not found for resolving from name as-is: {0}", typeName);
                     }
                     catch (TypeLoadException)
                     {

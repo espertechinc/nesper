@@ -9,12 +9,10 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.compat.logging;
+using NEsper.Examples.MatchMaker.eventbean;
 
-using NEsper.Example.MatchMaker.eventbean;
-
-namespace NEsper.Example.MatchMaker.monitor
+namespace NEsper.Examples.MatchMaker.monitor
 {
     public class MatchAlertListener
     {

@@ -90,7 +90,7 @@ namespace com.espertech.esper.view.std
                         parentContainsMergeKeys = false;
                     }
                 }
-                catch (PropertyAccessException ex)
+                catch (PropertyAccessException)
                 {
                     // expected
                     parentContainsMergeKeys = false;

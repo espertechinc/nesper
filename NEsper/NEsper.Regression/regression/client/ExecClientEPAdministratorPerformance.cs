@@ -47,7 +47,7 @@ namespace com.espertech.esper.regression.client
                 try {
                     string text = "select xxx from " + typeof(SupportBean).FullName;
                     epService.EPAdministrator.CreateEPL(text, "s1");
-                } catch (Exception ex) {
+                } catch (Exception) {
                     // expected
                 }
             }

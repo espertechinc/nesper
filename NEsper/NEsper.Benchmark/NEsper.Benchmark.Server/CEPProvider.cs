@@ -11,6 +11,7 @@ using System.Configuration;
 using System.Threading;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.util;
 
 using Configuration = com.espertech.esper.client.Configuration;
@@ -52,7 +53,8 @@ namespace NEsper.Benchmark.Server
 
             public void Init(int sleepListenerMillis)
             {
-                Configuration configuration = new Configuration();
+                var container = ContainerExtensions.CreateDefaultContainer();
+                Configuration configuration = new Configuration(container);
                 configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle =
                     PropertyResolutionStyle.CASE_INSENSITIVE;
                 configuration.AddEventType("Market", typeof(MarketData));

@@ -9,6 +9,7 @@
 using System;
 using System.Threading;
 using com.espertech.esper.client;
+using com.espertech.esper.compat.logging;
 
 namespace NEsper.Examples.StockTicker
 {
@@ -99,6 +100,6 @@ namespace NEsper.Examples.StockTicker
             return true;
         }
     
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

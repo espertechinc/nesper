@@ -33,7 +33,7 @@ namespace com.espertech.esper.epl.expression.ops
             _isNodes = new ExprInstanceofNode[5];
     
             _isNodes[0] = new ExprInstanceofNode(new String[] {"long"}, _container);
-            _isNodes[0].AddChildNode(new SupportExprNode(1l, typeof(long)));
+            _isNodes[0].AddChildNode(new SupportExprNode(1L, typeof(long)));
     
             _isNodes[1] = new ExprInstanceofNode(new String[] {typeof(SupportBean).FullName, "int", "string"}, _container);
             _isNodes[1].AddChildNode(new SupportExprNode("", typeof(string)));
@@ -70,7 +70,7 @@ namespace com.espertech.esper.epl.expression.ops
                 isNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -82,7 +82,7 @@ namespace com.espertech.esper.epl.expression.ops
                 isNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }

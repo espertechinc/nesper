@@ -9,13 +9,13 @@
 
 using com.espertech.esper.client;
 
-namespace com.espertech.esper.example.autoid
+namespace NEsper.Examples.AutoId
 {
 	public class RFIDTagsPerSensorStmt
 	{
 	    public static EPStatement Create(EPAdministrator admin)
 	    {
-            string stmt = "select ID as sensorId, coalesce(sum(countTags), 0) as numTagsPerSensor " +
+            var stmt = "select ID as sensorId, coalesce(sum(countTags), 0) as numTagsPerSensor " +
                           "from AutoIdRFIDExample.win:time(60 sec) " +
                           "where Observation[0].Command = 'READ_PALLET_TAGS_ONLY' " +
                           "group by ID";

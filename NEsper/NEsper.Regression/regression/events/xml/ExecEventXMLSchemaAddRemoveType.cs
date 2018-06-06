@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.events.xml
             try {
                 epService.EPAdministrator.CreateEPL("select p01 from MyXMLEvent");
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 // expected
             }
     
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regression.events.xml
             try {
                 epService.EPAdministrator.CreateEPL("select p01 from MyXMLEvent");
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 // expected
             }
     
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regression.events.xml
             try {
                 epService.EPAdministrator.CreateEPL("select p20 from MyXMLEvent");
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 // expected
             }
         }

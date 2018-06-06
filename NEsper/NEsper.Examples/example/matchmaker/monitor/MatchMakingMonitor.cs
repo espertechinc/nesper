@@ -13,9 +13,9 @@ using System.Reflection;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
 
-using NEsper.Example.MatchMaker.eventbean;
+using NEsper.Examples.MatchMaker.eventbean;
 
-namespace NEsper.Example.MatchMaker.monitor
+namespace NEsper.Examples.MatchMaker.monitor
 {
     public class MatchMakingMonitor
     {

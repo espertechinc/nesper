@@ -60,7 +60,7 @@ namespace com.espertech.esper.epl.expression.ops
                 castNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }

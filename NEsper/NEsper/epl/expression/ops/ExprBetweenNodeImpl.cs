@@ -196,7 +196,6 @@ namespace com.espertech.esper.epl.expression.ops
 
         private IExprBetweenComp MakeComputer(Type compareType, Type valueType, Type lowType, Type highType)
         {
-            IExprBetweenComp computer;
 
             if (compareType == typeof(String))
             {

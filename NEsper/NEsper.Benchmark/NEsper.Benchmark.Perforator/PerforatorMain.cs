@@ -12,10 +12,10 @@ using System.Threading;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.core;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.logger;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events.bean;
 
@@ -23,11 +23,14 @@ namespace NEsper.Benchmark.Perforator
 {
     public class PerforatorMain
     {
+        private static IContainer _container;
+
         const int ThreadCount = 1;
 
         static void Main()
         {
-            log4net.Config.XmlConfigurator.Configure();
+            LoggerNLog.BasicConfig();
+            LoggerNLog.Register();
 
             Process.GetCurrentProcess().PriorityBoostEnabled = true;
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
@@ -71,14 +74,14 @@ namespace NEsper.Benchmark.Perforator
                 TestWithWildcard,
             };
 
-            for (int nn = 0; nn < statementArray.Length; nn++ ) {
-                string statementText = statementArray[nn];
-                Runnable statementAction = statementActions[nn];
+            for (var nn = 0; nn < statementArray.Length; nn++ ) {
+                var statementText = statementArray[nn];
+                var statementAction = statementActions[nn];
                 //Console.WriteLine("=>> {0}", statementText);
 
                 SetupEPL(statementText);
 
-                for (int ii = 0; ii <= 0; ii++)
+                for (var ii = 0; ii <= 0; ii++)
                 {
                     _eventCounter = 0;
 
@@ -118,6 +121,7 @@ namespace NEsper.Benchmark.Perforator
 
             identNode1.Validate(
                 new ExprValidationContext(
+                    _container,
                     streamTypeService,
                     null,
                     null,
@@ -144,13 +148,13 @@ namespace NEsper.Benchmark.Perforator
 
             Console.WriteLine("IdentNode");
 
-            for (int nn = 0; nn < 10; nn++) {
+            for (var nn = 0; nn < 10; nn++) {
                 var eventBean = new BeanEventBean(bidData, bidDataEventType);
                 var eventBeans = new EventBean[] { eventBean };
                 var timeItem = PerformanceObserver.TimeMicro(
                     delegate
                     {
-                        for (int ii = 1000000; ii >= 0; ii--)
+                        for (var ii = 1000000; ii >= 0; ii--)
                         {
                             identNode1.ExprEvaluator.Evaluate(
                                 new EvaluateParams(eventBeans, false, exprEvaluatorContext));
@@ -172,7 +176,9 @@ namespace NEsper.Benchmark.Perforator
         /// </summary>
         static void SetupEsper()
         {
-            Configuration configuration = new Configuration();
+            _container = ContainerExtensions.CreateDefaultContainer();
+
+            var configuration = new Configuration(_container);
             configuration.AddEventType<BidData>();
             configuration.EngineDefaults.Expression.IsUdfCache = true;
             configuration.EngineDefaults.Logging.IsEnableExecutionDebug = false;
@@ -221,17 +227,17 @@ namespace NEsper.Benchmark.Perforator
 
         static void SendBidEventsMT(string statementName)
         {
-            Thread[] threadList = new Thread[ThreadCount];
+            var threadList = new Thread[ThreadCount];
 
-            for (int ii = 0; ii < threadList.Length; ii++) {
-                BidEventDriver bidEventDriver = new BidEventDriver(_espRuntime);
-                Thread thread = new Thread(bidEventDriver.SendBidEvents);
+            for (var ii = 0; ii < threadList.Length; ii++) {
+                var bidEventDriver = new BidEventDriver(_espRuntime);
+                var thread = new Thread(bidEventDriver.SendBidEvents);
                 thread.Name = string.Format("{0}:{1}", statementName, ii);
                 thread.Start();
                 threadList[ii] = thread;
             }
 
-            for (int ii = 0 ; ii < threadList.Length ; ii++ ) {
+            for (var ii = 0 ; ii < threadList.Length ; ii++ ) {
                 threadList[ii].Join();
             }
         }

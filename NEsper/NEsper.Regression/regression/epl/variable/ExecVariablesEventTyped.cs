@@ -52,12 +52,18 @@ namespace com.espertech.esper.regression.epl.variable
             } catch (VariableValueException ex) {
                 Assert.AreEqual("Variable 'vars0_A' of declared event type 'TypeS0' underlying type '" + typeof(SupportBean_S0).GetCleanName() + "' cannot be assigned a value of type '" + typeof(SupportBean_S1).GetCleanName() + "'", ex.Message);
             }
-    
+
             TryInvalid(epService, "on TypeS0 arrival set vars1_A = arrival",
-                    "Error starting statement: Error in variable assignment: Variable 'vars1_A' of declared event type '" + typeof(SupportBean_S1).GetCleanName() + "' underlying type '" + typeof(SupportBean_S1).GetCleanName() + "' cannot be assigned a value of type '" + typeof(SupportBean_S0).GetCleanName() + "'");
-    
+                string.Format(
+                    "Error starting statement: Error in variable assignment: Variable 'vars1_A' of declared event type '{0}' underlying type '{0}' cannot be assigned a value of type '{1}'",
+                    typeof(SupportBean_S1).GetCleanName(),
+                    typeof(SupportBean_S0).GetCleanName()));
+
             TryInvalid(epService, "on TypeS0 arrival set vars0_A = 1",
-                    "Error starting statement: Error in variable assignment: Variable 'vars0_A' of declared event type 'TypeS0' underlying type '" + typeof(SupportBean_S0).GetCleanName() + "' cannot be assigned a value of type '" + Name.Clean<int>() + "'");
+                string.Format(
+                    "Error starting statement: Error in variable assignment: Variable 'vars0_A' of declared event type 'TypeS0' underlying type '{0}' cannot be assigned a value of type '{1}'",
+                    typeof(SupportBean_S0).GetCleanName(),
+                    typeof(int).GetCleanName()));
         }
     
         private void RunAssertionConfig(EPServiceProvider epService) {

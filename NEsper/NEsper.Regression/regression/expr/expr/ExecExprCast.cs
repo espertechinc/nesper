@@ -100,15 +100,15 @@ namespace com.espertech.esper.regression.expr.expr
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-    
+
             epService.EPRuntime.SendEvent(new SupportBean());
             var @event = listener.AssertOneGetNewAndReset();
             SupportDateTimeUtil.CompareDate(@event.Get("c0").AsDateTimeOffset(), 1997, 7, 16, 19, 20, 30, 0, "GMT+00:00");
             SupportDateTimeUtil.CompareDate(@event.Get("c1").AsDateTimeOffset(), 1997, 7, 16, 19, 20, 30, 0, "GMT+01:00");
-            SupportDateTimeUtil.CompareDate(@event.Get("c2").AsDateTimeOffset(), 1997, 7, 16, 19, 20, 30, 0, TimeZone.CurrentTimeZone.StandardName);
+            SupportDateTimeUtil.CompareDate(@event.Get("c2").AsDateTimeOffset(), 1997, 7, 16, 19, 20, 30, 0, TimeZoneInfo.Local.StandardName);
             SupportDateTimeUtil.CompareDate(@event.Get("c3").AsDateTimeOffset(), 1997, 7, 16, 19, 20, 30, 450, "GMT+00:00");
             SupportDateTimeUtil.CompareDate(@event.Get("c4").AsDateTimeOffset(), 1997, 7, 16, 19, 20, 30, 450, "GMT+01:00");
-            SupportDateTimeUtil.CompareDate(@event.Get("c5").AsDateTimeOffset(), 1997, 7, 16, 19, 20, 30, 450, TimeZone.CurrentTimeZone.StandardName);
+            SupportDateTimeUtil.CompareDate(@event.Get("c5").AsDateTimeOffset(), 1997, 7, 16, 19, 20, 30, 450, TimeZoneInfo.Local.StandardName);
             Assert.That(@event.Get("c6").GetType(), Is.EqualTo(typeof(long)));
             Assert.That(@event.Get("c7").GetType(), Is.EqualTo(typeof(DateTimeOffset)));
             foreach (var prop in "c8,c9,c10".Split(',')) {

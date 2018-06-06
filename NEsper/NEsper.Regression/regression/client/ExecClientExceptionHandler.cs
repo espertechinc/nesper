@@ -28,7 +28,7 @@ namespace com.espertech.esper.regression.client
             try {
                 epService.EPRuntime.SendEvent(new SupportBean());
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 /* expected */
             }
         }

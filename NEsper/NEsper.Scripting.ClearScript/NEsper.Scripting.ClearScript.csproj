@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net471;</TargetFrameworks>
-    <!-- <TargetFrameworks>net46;net471;netstandard2.0</TargetFrameworks> -->
+    <TargetFrameworks>net46;net471;</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -44,13 +43,8 @@
     <DefineConstants>$(DefineConstants);NETFULL;NET471;</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
-  </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="ClearScript.V8" Version="5.5.0.1" />
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="2.0.1" />
+    <PackageReference Include="ClearScript.V8" Version="5.5.1" />
   </ItemGroup>
 
   <ItemGroup>

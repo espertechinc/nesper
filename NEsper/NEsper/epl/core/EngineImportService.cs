@@ -12,7 +12,6 @@ using System.Reflection;
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
 using com.espertech.esper.client.util;
-using com.espertech.esper.codegen.core;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.agg.factory;

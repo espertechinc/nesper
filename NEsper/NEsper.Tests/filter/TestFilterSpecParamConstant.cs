@@ -26,7 +26,7 @@ namespace com.espertech.esper.filter
                 new FilterSpecParamConstant(Make("a"), FilterOperator.RANGE_CLOSED, 5);
                 Assert.IsTrue(false);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // Expected exception
             }

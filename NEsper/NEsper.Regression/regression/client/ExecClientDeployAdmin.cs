@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.deploy;
 using com.espertech.esper.client.scopetest;
@@ -509,7 +510,8 @@ namespace com.espertech.esper.regression.client
                 var first = ex.Exceptions[0];
                 Assert.AreEqual(textTwo, first.Expression);
                 Assert.AreEqual(errorTextTwo, first.Inner.Message);
-                EPAssertionUtil.AssertEqualsExactOrder(new[] {"A", "C"}, epService.EPAdministrator.StatementNames);
+                EPAssertionUtil.AssertEqualsAnyOrder(
+                    new[] {"A", "C"}, epService.EPAdministrator.StatementNames);
             }
         }
 

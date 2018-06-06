@@ -193,7 +193,7 @@ namespace com.espertech.esper.filter
             {
                 _eventTypeIndex.MatchEvent(theEvent, matches);
             }
-            catch (FilterLockBackoffException ex)
+            catch (FilterLockBackoffException)
             {
                 // retry on lock back-off
                 // lock-backoff may occur when stateful evaluations take place such as bool expressions that are subqueries
@@ -208,7 +208,7 @@ namespace com.espertech.esper.filter
                         {
                             Thread.Sleep(0);
                         }
-                        catch (ThreadInterruptedException e)
+                        catch (ThreadInterruptedException)
                         {
                             Thread.CurrentThread.Interrupt();
                         }
@@ -225,7 +225,7 @@ namespace com.espertech.esper.filter
                         _eventTypeIndex.MatchEvent(theEvent, matches);
                         break;
                     }
-                    catch (FilterLockBackoffException ex2)
+                    catch (FilterLockBackoffException)
                     {
                         // retried
                     }

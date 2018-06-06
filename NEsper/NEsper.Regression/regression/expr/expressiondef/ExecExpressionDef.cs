@@ -187,7 +187,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("scalar()"));
+            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("scalar()"));
             Assert.AreEqual("test", stmt.Name);
     
             epService.EPRuntime.SendEvent(new SupportBean_ST0("E1", 1));
@@ -710,7 +710,7 @@ namespace com.espertech.esper.regression.expr.expressiondef
         private void TryAssertionTwoParameterArithmetic(EPServiceProvider epService, SupportUpdateListener listener, EPStatement stmt, string[] fields) {
             var props = stmt.EventType.PropertyNames;
             EPAssertionUtil.AssertEqualsAnyOrder(props, fields);
-            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType(fields[0]));
+            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType(fields[0]));
             Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType(fields[1]));
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType(fields[2]));
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType(fields[3]));
@@ -784,7 +784,9 @@ namespace com.espertech.esper.regression.expr.expressiondef
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[]{typeof(int?), typeof(int?)});
+            LambdaAssertionUtil.AssertTypes(stmt.EventType, fields, new Type[] {
+                typeof(int), typeof(int?)
+            });
     
             epService.EPRuntime.SendEvent(new SupportBean());
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{1, 5});

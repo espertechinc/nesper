@@ -75,7 +75,7 @@ namespace com.espertech.esper.events.bean
             try {
                 return _fastMethod.Invoke(@object, new Object[] {key});
             }
-            catch (PropertyAccessException e) {
+            catch (PropertyAccessException) {
                 throw;
             }
             catch (InvalidCastException e) {

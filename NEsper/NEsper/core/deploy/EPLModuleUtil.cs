@@ -171,8 +171,6 @@ namespace com.espertech.esper.core.deploy
 
         public static ParseNode GetModule(EPLModuleParseItem item, String resourceName)
         {
-            Antlr4.Runtime.ICharStream foo;
-
             var input = new NoCaseSensitiveStream(item.Expression);
 
             var lex = ParseHelper.NewLexer(input);

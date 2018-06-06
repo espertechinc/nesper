@@ -6,17 +6,19 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
+using System.Resources;
 using System.Text;
 using System.Xml;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.logger;
 using com.espertech.esper.compat.logging;
+
 using NEsper.Examples.StockTicker.eventbean;
 
-namespace com.espertech.esper.example.autoid
+namespace NEsper.Examples.AutoId
 {
 	public class AutoIdSimMain : IDisposable
     {
@@ -42,9 +44,10 @@ namespace com.espertech.esper.example.autoid
 	
 	    public static void Main(string[] args) 
 	    {
-            log4net.Config.XmlConfigurator.Configure();
+	        LoggerNLog.BasicConfig();
+	        LoggerNLog.Register();
 
-	        if (args.Length < 1) {
+            if (args.Length < 1) {
 	            Console.Out.WriteLine("Arguments are: <numberOfEvents>");
 	            Environment.Exit(-1);
 	        }
@@ -59,11 +62,11 @@ namespace com.espertech.esper.example.autoid
 	        }
 
             // Prime a few assemblies into memory
-            StockTick tempA = new StockTick(null, 0.0);
-	        PriceLimit tempB = new PriceLimit(null, null, 0.0);
+            var tempA = new StockTick(null, 0.0);
+	        var tempB = new PriceLimit(null, null, 0.0);
 
 	        // Run the sample
-            AutoIdSimMain autoIdSimMain = new AutoIdSimMain(events, "AutoIDSim");
+            var autoIdSimMain = new AutoIdSimMain(events, "AutoIDSim");
             autoIdSimMain.Run();
 	    }
 
@@ -84,21 +87,25 @@ namespace com.espertech.esper.example.autoid
 
 	    public void Run()
 	    {
+	        var container = ContainerExtensions.CreateDefaultContainer()
+	            .InitializeDefaultServices()
+	            .InitializeDatabaseDrivers();
+
 	        // load config - this defines the XML event types to be processed
-	        string configFile = "esper.examples.cfg.xml";
-	        Uri url = ResourceManager.ResolveResourceURL(configFile);
-	        Configuration config = new Configuration();
+	        var configFile = "esper.examples.cfg.xml";
+	        var url = container.ResourceManager().ResolveResourceURL(configFile);
+	        var config = new Configuration(container);
 	        config.Configure(url);
 	
 	        // get engine instance
-	        EPServiceProvider epService = EPServiceProviderManager.GetProvider(engineURI, config);
+	        var epService = EPServiceProviderManager.GetProvider(container, engineURI, config);
 	
 	        // set up statement
 	        var rfidStmt = RFIDTagsPerSensorStmt.Create(epService.EPAdministrator);
 	        rfidStmt.Events += LogRate;
 	
 	        // Send events
-	        int eventCount = 0;
+	        var eventCount = 0;
 	        while(eventCount < numEvents) {
 	            SendEvent(epService.EPRuntime);
 	            eventCount++;
@@ -115,26 +122,26 @@ namespace com.espertech.esper.example.autoid
 
         private static void LogRate(EventBean eventBean)
         {
-            string sensorId = (string)eventBean["sensorId"];
-            double numTags = (double)eventBean["numTagsPerSensor"];
+            var sensorId = (string)eventBean["sensorId"];
+            var numTags = (double)eventBean["numTagsPerSensor"];
 
             Log.Info("Sensor " + sensorId + " totals " + numTags + " tags");
         }
 
 	    private void SendEvent(EPRuntime epRuntime)
 	    {
-	        String eventXMLText = GenerateEvent();
-	        XmlDocument simpleDoc = new XmlDocument() ;
+	        var eventXMLText = GenerateEvent();
+	        var simpleDoc = new XmlDocument() ;
 	        simpleDoc.LoadXml(eventXMLText) ;
 	        epRuntime.SendEvent(simpleDoc);
 	    }
 	
 	    private String GenerateEvent()
 	    {
-	        StringBuilder buffer = new StringBuilder();
+	        var buffer = new StringBuilder();
 	        buffer.Append(XML_ROOT);
 	
-	        String sensorId = SENSOR_IDS[RANDOM.Next(SENSOR_IDS.Length)];
+	        var sensorId = SENSOR_IDS[RANDOM.Next(SENSOR_IDS.Length)];
 	        buffer.Append("<pmluid:ID>");
 	        buffer.Append(sensorId);
 	        buffer.Append("</pmluid:ID>");
@@ -142,7 +149,7 @@ namespace com.espertech.esper.example.autoid
 	        buffer.Append("<pmlcore:Observation>");
 	        buffer.Append("<pmlcore:Command>READ_PALLET_TAGS_ONLY</pmlcore:Command>");
 	
-	        for (int i = 0; i < RANDOM.Next(6) + 1; i++)
+	        for (var i = 0; i < RANDOM.Next(6) + 1; i++)
 	        {
 	            buffer.Append("<pmlcore:Tag><pmluid:ID>urn:epc:1:2.24.400</pmluid:ID></pmlcore:Tag>");
 	        }

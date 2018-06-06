@@ -58,7 +58,7 @@ namespace com.espertech.esper.epl.expression.ops
                 _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // Expected
             }
@@ -70,7 +70,7 @@ namespace com.espertech.esper.epl.expression.ops
                 _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }

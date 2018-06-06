@@ -157,7 +157,7 @@ namespace com.espertech.esper.regression.expr.expr
             try {
                 epService.EPAdministrator.CreateEPL(epl);
                 Assert.Fail();
-            } catch (EPStatementException ex) {
+            } catch (EPStatementException) {
                 // expected
             }
         }

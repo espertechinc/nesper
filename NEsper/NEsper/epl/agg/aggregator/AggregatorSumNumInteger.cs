@@ -20,7 +20,6 @@ namespace com.espertech.esper.epl.agg.aggregator
 
         public AggregatorSumNumInteger()
         {
-            System.Diagnostics.Debug.WriteLine("Stop here");
         }
 
         public virtual void Clear()

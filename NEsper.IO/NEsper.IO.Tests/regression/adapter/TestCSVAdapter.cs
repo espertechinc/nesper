@@ -76,7 +76,8 @@ namespace com.espertech.esperio.regression.adapter
                 adapter.Start();
                 Assert.Fail();
             }
-            catch (EPException ex) {
+            catch (EPException)
+            {
                 // Expected
             }
 

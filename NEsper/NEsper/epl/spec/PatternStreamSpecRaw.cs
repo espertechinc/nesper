@@ -727,7 +727,6 @@ namespace com.espertech.esper.epl.spec
             var count = 0;
             foreach (var arrayTag in arrayTags)
             {
-                var index = 0;
                 var found = FindTagNumber(arrayTag, allTagNamesOrdered);
                 indexes[count] = found;
                 count++;

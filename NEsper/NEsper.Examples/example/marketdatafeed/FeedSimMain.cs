@@ -8,13 +8,13 @@
 
 using System;
 using System.Threading;
-
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.logger;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
-using log4net.Config;
 
-namespace com.espertech.esper.example.marketdatafeed
+namespace NEsper.Examples.MarketDataFeed
 {
     public class FeedSimMain
     {
@@ -22,7 +22,8 @@ namespace com.espertech.esper.example.marketdatafeed
 
         public static void Main(String[] args)
         {
-            XmlConfigurator.Configure(); 
+            LoggerNLog.BasicConfig();
+            LoggerNLog.Register();
             
             if (args.Length < 3)
             {
@@ -74,7 +75,7 @@ namespace com.espertech.esper.example.marketdatafeed
             // Run the sample
             Console.WriteLine("Using " + numberOfThreads + " threads with a drop probability of " + dropProbability +
                               "%, for " + numberOfSeconds + " seconds");
-            FeedSimMain feedSimMain = new FeedSimMain(numberOfThreads, dropProbability, numberOfSeconds, true, "FeedSimMain");
+            var feedSimMain = new FeedSimMain(numberOfThreads, dropProbability, numberOfSeconds, true, "FeedSimMain");
             feedSimMain.Run();
         }
 
@@ -101,13 +102,17 @@ namespace com.espertech.esper.example.marketdatafeed
                 Console.ReadKey();
             }
 
+            var container = ContainerExtensions.CreateDefaultContainer()
+                .InitializeDefaultServices()
+                .InitializeDatabaseDrivers();
+
             // Configure engine with event names to make the statements more readable.
             // This could also be done in a configuration file.
-            Configuration configuration = new Configuration();
+            var configuration = new Configuration(container);
             configuration.AddEventType("MarketDataEvent", typeof(MarketDataEvent).FullName);
 
             // Get engine instance
-            EPServiceProvider epService = EPServiceProviderManager.GetProvider(_engineURI, configuration);
+            var epService = EPServiceProviderManager.GetProvider(container, _engineURI, configuration);
 
             // Set up statements
             var tickPerSecStmt = TicksPerSecondStatement.Create(epService.EPAdministrator);
@@ -118,15 +123,15 @@ namespace com.espertech.esper.example.marketdatafeed
 
             // Send events
             var threadPool = new DedicatedExecutorService(string.Empty, _numberOfThreads);
-            MarketDataSendRunnable[] runnables = new MarketDataSendRunnable[_numberOfThreads];
-            for (int i = 0; i < _numberOfThreads; i++)
+            var runnables = new MarketDataSendRunnable[_numberOfThreads];
+            for (var i = 0; i < _numberOfThreads; i++)
             {
                 runnables[i] = new MarketDataSendRunnable(epService);
                 threadPool.Submit(runnables[i].Run);
             }
 
-            int seconds = 0;
-            Random random = new Random();
+            var seconds = 0;
+            var random = new Random();
             while (seconds < _numSeconds)
             {
                 seconds++;
@@ -147,14 +152,14 @@ namespace com.espertech.esper.example.marketdatafeed
                     feedToDropOff = null;
                 }
                 
-                foreach (MarketDataSendRunnable t in runnables) 
+                foreach (var t in runnables) 
                 {
                     t.SetRateDropOffFeed(feedToDropOff);
                 }
             }
 
             Log.Info("Shutting down threadpool");
-            for (int i = 0; i < runnables.Length; i++)
+            for (var i = 0; i < runnables.Length; i++)
             {
                 runnables[i].SetShutdown();
             }

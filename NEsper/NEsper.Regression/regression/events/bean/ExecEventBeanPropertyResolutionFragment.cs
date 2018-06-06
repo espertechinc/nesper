@@ -784,7 +784,7 @@ namespace com.espertech.esper.regression.events.bean
             try {
                 theEvent.Get(property);
                 Assert.Fail();
-            } catch (PropertyAccessException ex) {
+            } catch (PropertyAccessException) {
                 // expected
             }
         }

@@ -107,7 +107,7 @@ namespace com.espertech.esper.regression.view
         private void Sleep(int msec) {
             try {
                 Thread.Sleep(msec);
-            } catch (ThreadInterruptedException e) {
+            } catch (ThreadInterruptedException) {
             }
         }
     }

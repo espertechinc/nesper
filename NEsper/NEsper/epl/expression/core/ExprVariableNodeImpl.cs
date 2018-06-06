@@ -109,11 +109,11 @@ namespace com.espertech.esper.epl.expression.core
                     validationContext.StreamTypeService.ResolveByPropertyName(_variableName, false);
                     throw new ExprValidationException("The variable by name '" + _variableName + "' is ambigous to a property of the same name");
                 }
-                catch (DuplicatePropertyException e)
+                catch (DuplicatePropertyException)
                 {
                     throw new ExprValidationException("The variable by name '" + _variableName + "' is ambigous to a property of the same name");
                 }
-                catch (PropertyNotFoundException e)
+                catch (PropertyNotFoundException)
                 {
                     // expected
                 }

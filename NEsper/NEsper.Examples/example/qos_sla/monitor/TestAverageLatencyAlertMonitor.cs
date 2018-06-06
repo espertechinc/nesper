@@ -8,29 +8,34 @@
 
 using System;
 
+using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
+using NEsper.Examples.QoS_SLA.eventbean;
+
 using NUnit.Framework;
 
-using com.espertech.esper.client;
-using com.espertech.esper.example.qos_sla.eventbean;
-
-namespace com.espertech.esper.example.qos_sla.monitor
+namespace NEsper.Examples.QoS_SLA.monitor
 {
 	[TestFixture]
 	public class TestAverageLatencyAlertMonitor : IDisposable
 	{
-	    private EPRuntime runtime;
+	    private EPRuntime _runtime;
 
 	    [SetUp]
 	    public void SetUp()
 	    {
-            Configuration configuration = new Configuration();
+	        var container = ContainerExtensions.CreateDefaultContainer()
+	            .InitializeDefaultServices()
+	            .InitializeDatabaseDrivers();
+
+            var configuration = new Configuration(container);
             configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 
             EPServiceProviderManager.PurgeDefaultProvider();
-            EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(configuration);
+            var epService = EPServiceProviderManager.GetDefaultProvider(configuration);
 
 	        new AverageLatencyMonitor();
-	        runtime = epService.EPRuntime;
+	        _runtime = epService.EPRuntime;
 	    }
 
 	    [Test]
@@ -40,27 +45,27 @@ namespace com.espertech.esper.example.qos_sla.monitor
 	        String[] customers = {"c0", "c1", "c2"};
 	        OperationMeasurement measurement;
 
-	        for (int i = 0; i < 100; i++)
+	        for (var i = 0; i < 100; i++)
 	        {
-	            for (int index = 0; index < services.Length; index++)
+	            for (var index = 0; index < services.Length; index++)
 	            {
 	                measurement = new OperationMeasurement(services[index], customers[index],
 	                        9950 + i, true);
-	                runtime.SendEvent(measurement);
+	                _runtime.SendEvent(measurement);
 	            }
 	        }
 
 	        // This should generate an alert
 	        measurement = new OperationMeasurement(services[0], customers[0], 10000, true);
-	        runtime.SendEvent(measurement);
+	        _runtime.SendEvent(measurement);
 
 	        // This should generate an alert
 	        measurement = new OperationMeasurement(services[1], customers[1], 10001, true);
-	        runtime.SendEvent(measurement);
+	        _runtime.SendEvent(measurement);
 
 	        // This should not generate an alert
 	        measurement = new OperationMeasurement(services[2], customers[2], 9999, true);
-	        runtime.SendEvent(measurement);
+	        _runtime.SendEvent(measurement);
 	    }
 
 	    public void Dispose()

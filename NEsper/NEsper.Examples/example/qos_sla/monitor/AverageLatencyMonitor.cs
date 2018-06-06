@@ -7,20 +7,19 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.example.qos_sla.eventbean;
+using NEsper.Examples.QoS_SLA.eventbean;
 
-namespace com.espertech.esper.example.qos_sla.monitor
+namespace NEsper.Examples.QoS_SLA.monitor
 {
     public class AverageLatencyMonitor
     {
         public AverageLatencyMonitor()
         {
-            EPAdministrator admin = EPServiceProviderManager.GetDefaultProvider().EPAdministrator;
+            var admin = EPServiceProviderManager.GetDefaultProvider().EPAdministrator;
 
-            EPStatement statView = admin.CreateEPL(
+            var statView = admin.CreateEPL(
                     "select * from " + typeof(OperationMeasurement).FullName +
                     "#groupwin(CustomerId)" +
                     "#groupwin(OperationName)" +

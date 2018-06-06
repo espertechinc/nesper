@@ -76,7 +76,7 @@ namespace com.espertech.esper.regression.client
             try {
                 stmt.AddEventHandlerWithReplay(listener.Update);
                 Assert.Fail();
-            } catch (IllegalStateException ex) {
+            } catch (IllegalStateException) {
                 //
             }
     

@@ -50,7 +50,7 @@ namespace com.espertech.esper.events.bean
                 _getter.Get(SupportEventBeanFactory.CreateObject(""));
                 Assert.Fail();
             }
-            catch (PropertyAccessException ex)
+            catch (PropertyAccessException)
             {
                 // expected
             }

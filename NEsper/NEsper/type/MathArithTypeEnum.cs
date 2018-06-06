@@ -156,7 +156,14 @@ namespace com.espertech.esper.type
         /// or
         /// Could not determine process or type  + value +  type  + coercedType
         /// </exception>
-        public static Computer GetComputer(this MathArithTypeEnum value, Type coercedType, Type typeOne, Type typeTwo, bool isIntegerDivision, bool isDivisionByZeroReturnsNull, MathContext optionalMathContext)
+        public static Computer GetComputer(
+            this MathArithTypeEnum value, 
+            Type coercedType, 
+            Type typeOne, 
+            Type typeTwo, 
+            bool isIntegerDivision, 
+            bool isDivisionByZeroReturnsNull, 
+            MathContext optionalMathContext)
         {
             Type t = Nullable.GetUnderlyingType(coercedType);
             if (t != null)

@@ -339,7 +339,7 @@ namespace com.espertech.esper.util
             {
                 clazz = TypeHelper.GetClassForName(className, engineImportService.GetClassForNameProvider());
             }
-            catch (TypeLoadException e)
+            catch (TypeLoadException)
             {
 
                 if (!className.Contains("."))

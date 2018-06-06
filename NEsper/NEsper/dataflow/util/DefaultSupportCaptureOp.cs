@@ -179,7 +179,7 @@ namespace com.espertech.esper.dataflow.util
                 {
                     Thread.Sleep(50);
                 }
-                catch (ThreadInterruptedException e)
+                catch (ThreadInterruptedException)
                 {
                     return;
                 }

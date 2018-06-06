@@ -52,7 +52,7 @@ namespace com.espertech.esper.view.std
                     SupportStatementContextFactory.MakeContext(_container), null, null);
                 Assert.Fail();
             }
-            catch (ViewParameterException ex)
+            catch (ViewParameterException)
             {
                 // expected
             }

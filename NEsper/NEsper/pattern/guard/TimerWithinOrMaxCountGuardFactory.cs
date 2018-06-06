@@ -57,7 +57,7 @@ namespace com.espertech.esper.pattern.guard
                 throw new GuardParameterException(message);
             }
 
-            if (parameters[1].ExprEvaluator.ReturnType != typeof (int?))
+            if (parameters[1].ExprEvaluator.ReturnType.IsNotInt32())
             {
                 throw new GuardParameterException(message);
             }

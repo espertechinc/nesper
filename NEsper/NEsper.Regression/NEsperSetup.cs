@@ -12,7 +12,11 @@ using Common.Logging.Configuration;
 using Common.Logging.Log4Net;
 
 using NEsper.Avro.Extensions;
+
+#if NETSTANDARD2_0
+#else
 using NEsper.Scripting.ClearScript;
+#endif
 
 using NUnit.Framework;
 
@@ -26,7 +30,10 @@ namespace com.espertech.esper
         [OneTimeSetUp]
         public void RunBeforeAnyTests()
         {
+#if NETSTANDARD2_0
+#else
             var clearScript = typeof(ScriptingEngineJScript);
+#endif
 
             // Ensure that AVRO support is loaded before we change directories
             SchemaBuilder.Record("dummy");

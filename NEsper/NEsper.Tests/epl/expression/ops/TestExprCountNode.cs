@@ -21,8 +21,10 @@ namespace com.espertech.esper.epl.expression.ops
         private ExprCountNode _wildcardCount;
     
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
+            base.SetUp();
+
             ValidatedNodeToTest = MakeNode(5, typeof(int));
     
             _wildcardCount = new ExprCountNode(false);

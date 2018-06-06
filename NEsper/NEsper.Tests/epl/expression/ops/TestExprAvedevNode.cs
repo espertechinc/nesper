@@ -22,8 +22,9 @@ namespace com.espertech.esper.epl.expression.ops
     public class TestExprAvedevNode : TestExprAggregateNodeAdapter
     {
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
+            base.SetUp();
             ValidatedNodeToTest= MakeNode(5, typeof(int));
         }
     

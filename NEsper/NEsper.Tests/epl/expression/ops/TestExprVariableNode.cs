@@ -76,7 +76,7 @@ namespace com.espertech.esper.epl.expression.ops
                 SupportExprNodeFactory.Validate3Stream(varNode);
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // expected
             }

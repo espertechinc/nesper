@@ -31,7 +31,7 @@ namespace com.espertech.esper.regression.client
         public static void SleepaLittle(long time) {
             try {
                 Thread.Sleep((int) time);
-            } catch (ThreadInterruptedException e) {
+            } catch (ThreadInterruptedException) {
             }
         }
     

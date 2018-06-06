@@ -114,7 +114,7 @@ namespace com.espertech.esper.regression.events.bean
                 EPServiceProvider epServiceInner = EPServiceProviderManager.GetDefaultProvider(configuration);
                 epServiceInner.Initialize();
                 Assert.Fail();
-            } catch (ConfigurationException ex) {
+            } catch (ConfigurationException) {
                 // expected
             }
     

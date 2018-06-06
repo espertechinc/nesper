@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.events.map
                 // changing the definition however stops the compatibility
                 epService.EPAdministrator.Configuration.AddEventType("ABC", levelZero2);
                 Assert.Fail();
-            } catch (ConfigurationException ex) {
+            } catch (ConfigurationException) {
                 // expected
             }
         }

@@ -156,8 +156,7 @@ namespace com.espertech.esper.dataflow.core
                         "Data flow by name '" + dataFlowName + "' is currently in STOPPED statement state");
                 }
                 DataFlowStmtDesc stmtDesc = serviceDesc.DataFlowDesc;
-                try
-                {
+                try {
                     return InstantiateInternal(
                         dataFlowName, options, stmtDesc.GraphDesc, stmtDesc.StatementContext, stmtDesc.ServicesContext,
                         stmtDesc.AgentInstanceContext, stmtDesc.OperatorAnnotations);
@@ -864,7 +863,7 @@ namespace com.espertech.esper.dataflow.core
                             {
                                 clazz = engineImportService.ResolveType(typeName, false);
                             }
-                            catch (EngineImportException e)
+                            catch (EngineImportException)
                             {
                                 throw new EPException("Failed to resolve type '" + typeName + "'");
                             }
@@ -1002,7 +1001,7 @@ namespace com.espertech.esper.dataflow.core
                 {
                     factoryClass = engineImportService.ResolveType(StringExtensions.Capitalize(operatorSpec.OperatorName + "Factory"), false);
                 }
-                catch (EngineImportException e)
+                catch (EngineImportException)
                 {
                 }
 
@@ -1233,7 +1232,7 @@ namespace com.espertech.esper.dataflow.core
                     {
                         return new LogicalChannelBindingMethodDesc(method, LogicalChannelBindingTypePassAlong.INSTANCE);
                     }
-                    if (numParams == 2 && paramTypes[0].GetBoxedType() == typeof(int?) && TypeHelper.IsSubclassOrImplementsInterface(paramTypes[1], expectedUnderlying))
+                    if (numParams == 2 && paramTypes[0].IsInt32() && TypeHelper.IsSubclassOrImplementsInterface(paramTypes[1], expectedUnderlying))
                     {
                         return new LogicalChannelBindingMethodDesc(method, new LogicalChannelBindingTypePassAlongWStream(channelDesc.ConsumingOpStreamNum));
                     }

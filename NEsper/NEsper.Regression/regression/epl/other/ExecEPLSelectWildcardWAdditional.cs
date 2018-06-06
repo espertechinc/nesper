@@ -223,7 +223,7 @@ namespace com.espertech.esper.regression.epl.other
             try {
                 epService.EPAdministrator.CreateEPL(text);
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 //Expected
             }
         }

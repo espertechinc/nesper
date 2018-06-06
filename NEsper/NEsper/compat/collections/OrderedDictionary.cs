@@ -31,10 +31,7 @@ namespace com.espertech.esper.compat.collections
         /// Gets the key comparer.
         /// </summary>
         /// <value>The key comparer.</value>
-        public IComparer<TK> KeyComparer
-        {
-            get { return _keyComparer; }
-        }
+        public IComparer<TK> KeyComparer => _keyComparer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderedDictionary{TK,TV}"/> class.
@@ -221,10 +218,7 @@ namespace com.espertech.esper.compat.collections
         /// Gets the count.
         /// </summary>
         /// <value>The count.</value>
-        public int Count
-        {
-            get { return _keyList.Count; }
-        }
+        public int Count => _keyList.Count;
 
         /// <summary>
         /// Gets a value indicating whether this instance is read only.
@@ -232,10 +226,7 @@ namespace com.espertech.esper.compat.collections
         /// <value>
         /// 	<c>true</c> if this instance is read only; otherwise, <c>false</c>.
         /// </value>
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// Determines whether the specified key contains key.
@@ -340,19 +331,13 @@ namespace com.espertech.esper.compat.collections
         /// Gets the keys.
         /// </summary>
         /// <value>The keys.</value>
-        public ICollection<TK> Keys
-        {
-            get { return _keyList; }
-        }
+        public ICollection<TK> Keys => _keyList;
 
         /// <summary>
         /// Gets the values.
         /// </summary>
         /// <value>The values.</value>
-        public ICollection<TV> Values
-        {
-            get { return _valList; }
-        }
+        public ICollection<TV> Values => _valList;
 
         /// <summary>
         /// Returns a dictionary that includes everything up to the specified value.

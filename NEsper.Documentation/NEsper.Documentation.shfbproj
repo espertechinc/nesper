@@ -14,7 +14,7 @@
     <Name>NEsper.Documentation</Name>
     <!-- SHFB properties -->
     <FrameworkVersion>.NET Framework 4.5.2</FrameworkVersion>
-    <OutputPath>..\build\NEsper-6.0.1\docs\</OutputPath>
+    <OutputPath>..\build\NEsper-6.1.0\docs\</OutputPath>
     <HtmlHelpName>NEsper</HtmlHelpName>
     <Language>en-US</Language>
     <TransformComponentArguments>

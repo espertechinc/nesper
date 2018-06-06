@@ -86,8 +86,8 @@ namespace com.espertech.esper.epl.join.plan
         public void AddRelOp(ExprNode propertyKey, QueryGraphRangeEnum op, ExprIdentNode propertyValueIdent, bool isBetweenOrIn)
         {
             // Note: Read as follows:
-            // Console.WriteLine("If I have an index on '" + propertyValue + "' I'm evaluating " + propertyKey + " and finding all values of " + propertyValue + " " + op + " then " + propertyKey);
-    
+            // If I have an index on {propertyValue} I'm evaluating {propertyKey} and finding all values of {propertyValue} {op} then {propertyKey}
+
             // Check if there is an opportunity to convert this to a range or remove an earlier specification
             var existing = FindIdentEntry(propertyValueIdent);
             if (existing == null) {

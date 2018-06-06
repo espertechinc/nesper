@@ -10,13 +10,9 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
-
 
 using NUnit.Framework;
 
@@ -51,7 +47,8 @@ namespace com.espertech.esper.regression.view
             EPAssertionUtil.AssertEqualsExactOrderUnderlying(new SupportBean[]{events[0]}, stmt.GetEnumerator());
     
             SendEvent(events[1], epService);
-            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(), new SupportBean[]{events[0], events[1]}, null);
+            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(),
+                new SupportBean[]{events[0], events[1]}, null);
             EPAssertionUtil.AssertEqualsExactOrderUnderlying(null, stmt.GetEnumerator());
     
             SendEvent(events[2], epService);
@@ -59,7 +56,9 @@ namespace com.espertech.esper.regression.view
             EPAssertionUtil.AssertEqualsExactOrderUnderlying(new SupportBean[]{events[2]}, stmt.GetEnumerator());
     
             SendEvent(events[3], epService);
-            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(), new SupportBean[]{events[2], events[3]}, new SupportBean[]{events[0], events[1]});
+            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(),
+                new SupportBean[]{events[2], events[3]},
+                new SupportBean[]{events[0], events[1]});
             EPAssertionUtil.AssertEqualsExactOrderUnderlying(null, stmt.GetEnumerator());
     
             SendEvent(events[4], epService);
@@ -67,7 +66,9 @@ namespace com.espertech.esper.regression.view
             EPAssertionUtil.AssertEqualsExactOrderUnderlying(new SupportBean[]{events[4]}, stmt.GetEnumerator());
     
             SendEvent(events[5], epService);
-            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(), new SupportBean[]{events[4], events[5]}, new SupportBean[]{events[2], events[3]});
+            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(),
+                new SupportBean[]{events[4], events[5]},
+                new SupportBean[]{events[2], events[3]});
             EPAssertionUtil.AssertEqualsExactOrderUnderlying(null, stmt.GetEnumerator());
     
             stmt.Dispose();
@@ -80,15 +81,20 @@ namespace com.espertech.esper.regression.view
             stmt.Events += listener.Update;
     
             SendEvent(events[0], epService);
-            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(), new SupportBean[]{events[0]}, null);
+            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(),
+                new SupportBean[]{events[0]}, null);
             EPAssertionUtil.AssertEqualsExactOrderUnderlying(null, stmt.GetEnumerator());
     
             SendEvent(events[1], epService);
-            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(), new SupportBean[]{events[1]}, new SupportBean[]{events[0]});
+            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(),
+                new SupportBean[]{events[1]},
+                new SupportBean[]{events[0]});
             EPAssertionUtil.AssertEqualsExactOrderUnderlying(null, stmt.GetEnumerator());
     
             SendEvent(events[2], epService);
-            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(), new SupportBean[]{events[2]}, new SupportBean[]{events[1]});
+            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(),
+                new SupportBean[]{events[2]}, 
+                new SupportBean[]{events[1]});
             EPAssertionUtil.AssertEqualsExactOrderUnderlying(null, stmt.GetEnumerator());
     
             stmt.Dispose();
@@ -109,7 +115,8 @@ namespace com.espertech.esper.regression.view
             EPAssertionUtil.AssertEqualsExactOrderUnderlying(new SupportBean[]{events[0], events[1]}, stmt.GetEnumerator());
     
             SendEvent(events[2], epService);
-            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(), new SupportBean[]{events[0], events[1], events[2]}, null);
+            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(),
+                new SupportBean[]{events[0], events[1], events[2]}, null);
             EPAssertionUtil.AssertEqualsExactOrderUnderlying(null, stmt.GetEnumerator());
     
             SendEvent(events[3], epService);
@@ -121,7 +128,9 @@ namespace com.espertech.esper.regression.view
             EPAssertionUtil.AssertEqualsExactOrderUnderlying(new SupportBean[]{events[3], events[4]}, stmt.GetEnumerator());
     
             SendEvent(events[5], epService);
-            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(), new SupportBean[]{events[3], events[4], events[5]}, new SupportBean[]{events[0], events[1], events[2]});
+            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(),
+                new SupportBean[]{events[3], events[4], events[5]},
+                new SupportBean[]{events[0], events[1], events[2]});
             EPAssertionUtil.AssertEqualsExactOrderUnderlying(null, stmt.GetEnumerator());
     
             stmt.Dispose();
@@ -158,7 +167,9 @@ namespace com.espertech.esper.regression.view
             EPAssertionUtil.AssertEqualsExactOrderUnderlying(null, stmt.GetEnumerator());
     
             SendEvent(events[5], epService);
-            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(), new SupportBean[]{events[3], events[4], events[5]}, new SupportBean[]{events[0], events[1], events[2]});
+            EPAssertionUtil.AssertUnderlyingPerRow(listener.AssertInvokedAndReset(),
+                new SupportBean[]{events[3], events[4], events[5]},
+                new SupportBean[]{events[0], events[1], events[2]});
             EPAssertionUtil.AssertEqualsExactOrderUnderlying(null, stmt.GetEnumerator());
     
             stmt.Dispose();
@@ -169,7 +180,7 @@ namespace com.espertech.esper.regression.view
                 epService.EPAdministrator.CreateEPL(
                         "select * from " + typeof(SupportMarketDataBean).FullName + "#length_batch(0)");
                 Assert.Fail();
-            } catch (Exception ex) {
+            } catch (Exception) {
                 // expected
             }
         }

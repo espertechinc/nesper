@@ -12,7 +12,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
@@ -119,7 +118,7 @@ namespace com.espertech.esper.epl.expression.ops
                 exprLikeRegexpNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // expected
             }

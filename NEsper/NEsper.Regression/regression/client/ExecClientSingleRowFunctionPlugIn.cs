@@ -160,69 +160,69 @@ namespace com.espertech.esper.regression.client
         {
             RunVarargAssertion(
                 epService,
-                MakePair("VarargsOnlyInt(1, 2, 3, 4)", "1,2,3,4"),
-                MakePair("VarargsOnlyInt(1, 2, 3)", "1,2,3"),
-                MakePair("VarargsOnlyInt(1, 2)", "1,2"),
-                MakePair("VarargsOnlyInt(1)", "1"),
-                MakePair("VarargsOnlyInt()", ""));
+                MakePair("varargsOnlyInt(1, 2, 3, 4)", "1,2,3,4"),
+                MakePair("varargsOnlyInt(1, 2, 3)", "1,2,3"),
+                MakePair("varargsOnlyInt(1, 2)", "1,2"),
+                MakePair("varargsOnlyInt(1)", "1"),
+                MakePair("varargsOnlyInt()", ""));
 
             RunVarargAssertion(
-                epService, MakePair("VarargsW1Param('abc', 1.0, 2.0)", "abc,1.0,2.0"),
-                MakePair("VarargsW1Param('abc', 1, 2)", "abc,1.0,2.0"),
-                MakePair("VarargsW1Param('abc', 1)", "abc,1.0"),
-                MakePair("VarargsW1Param('abc')", "abc"));
+                epService, MakePair("varargsW1Param('abc', 1.0, 2.0)", "abc,1.0,2.0"),
+                MakePair("varargsW1Param('abc', 1, 2)", "abc,1.0,2.0"),
+                MakePair("varargsW1Param('abc', 1)", "abc,1.0"),
+                MakePair("varargsW1Param('abc')", "abc"));
 
             RunVarargAssertion(
-                epService, MakePair("VarargsW2Param(1, 2.0, 3L, 4L)", "1,2.0,3,4"),
-                MakePair("VarargsW2Param(1, 2.0, 3L)", "1,2.0,3"),
-                MakePair("VarargsW2Param(1, 2.0)", "1,2.0"),
-                MakePair("VarargsW2Param(1, 2.0, 3, 4L)", "1,2.0,3,4"),
-                MakePair("VarargsW2Param(1, 2.0, 3L, 4L)", "1,2.0,3,4"),
-                MakePair("VarargsW2Param(1, 2.0, 3, 4)", "1,2.0,3,4"),
-                MakePair("VarargsW2Param(1, 2.0, 3L, 4)", "1,2.0,3,4"));
+                epService, MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0,3,4"),
+                MakePair("varargsW2Param(1, 2.0, 3L)", "1,2.0,3"),
+                MakePair("varargsW2Param(1, 2.0)", "1,2.0"),
+                MakePair("varargsW2Param(1, 2.0, 3, 4L)", "1,2.0,3,4"),
+                MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0,3,4"),
+                MakePair("varargsW2Param(1, 2.0, 3, 4)", "1,2.0,3,4"),
+                MakePair("varargsW2Param(1, 2.0, 3L, 4)", "1,2.0,3,4"));
 
             RunVarargAssertion(
-                epService, MakePair("VarargsOnlyWCtx(1, 2, 3)", "CTX+1,2,3"),
-                MakePair("VarargsOnlyWCtx(1, 2)", "CTX+1,2"),
-                MakePair("VarargsOnlyWCtx(1)", "CTX+1"),
-                MakePair("VarargsOnlyWCtx()", "CTX+"));
+                epService, MakePair("varargsOnlyWCtx(1, 2, 3)", "CTX+1,2,3"),
+                MakePair("varargsOnlyWCtx(1, 2)", "CTX+1,2"),
+                MakePair("varargsOnlyWCtx(1)", "CTX+1"),
+                MakePair("varargsOnlyWCtx()", "CTX+"));
 
             RunVarargAssertion(
-                epService, MakePair("VarargsW1ParamWCtx('a', 1, 2, 3)", "CTX+a,1,2,3"),
-                MakePair("VarargsW1ParamWCtx('a', 1, 2)", "CTX+a,1,2"),
-                MakePair("VarargsW1ParamWCtx('a', 1)", "CTX+a,1"),
-                MakePair("VarargsW1ParamWCtx('a')", "CTX+a,"));
+                epService, MakePair("varargsW1ParamWCtx('a', 1, 2, 3)", "CTX+a,1,2,3"),
+                MakePair("varargsW1ParamWCtx('a', 1, 2)", "CTX+a,1,2"),
+                MakePair("varargsW1ParamWCtx('a', 1)", "CTX+a,1"),
+                MakePair("varargsW1ParamWCtx('a')", "CTX+a,"));
 
             RunVarargAssertion(
-                epService, MakePair("VarargsW2ParamWCtx('a', 'b', 1, 2, 3)", "CTX+a,b,1,2,3"),
-                MakePair("VarargsW2ParamWCtx('a', 'b', 1, 2)", "CTX+a,b,1,2"),
-                MakePair("VarargsW2ParamWCtx('a', 'b', 1)", "CTX+a,b,1"),
-                MakePair("VarargsW2ParamWCtx('a', 'b')", "CTX+a,b,"),
+                epService, MakePair("varargsW2ParamWCtx('a', 'b', 1, 2, 3)", "CTX+a,b,1,2,3"),
+                MakePair("varargsW2ParamWCtx('a', 'b', 1, 2)", "CTX+a,b,1,2"),
+                MakePair("varargsW2ParamWCtx('a', 'b', 1)", "CTX+a,b,1"),
+                MakePair("varargsW2ParamWCtx('a', 'b')", "CTX+a,b,"),
                 MakePair(typeof(MySingleRowFunction).FullName + ".VarargsW2ParamWCtx('a', 'b')", "CTX+a,b,"));
 
             RunVarargAssertion(
-                epService, MakePair("VarargsOnlyObject('a', 1, new BigInteger(2))", "a,1,2"));
+                epService, MakePair("varargsOnlyObject('a', 1, new BigInteger(2))", "a,1,2"));
 
             RunVarargAssertion(
-                epService, MakePair("VarargsOnlyNumber(1f, 2L, 3, new BigInteger(4))", "1.0,2,3,4"));
+                epService, MakePair("varargsOnlyNumber(1f, 2L, 3, new BigInteger(4))", "1.0,2,3,4"));
 
             RunVarargAssertion(
-                epService, MakePair("VarargsOnlyNumber(1f, 2L, 3, new BigInteger(4))", "1.0,2,3,4"));
+                epService, MakePair("varargsOnlyNumber(1f, 2L, 3, new BigInteger(4))", "1.0,2,3,4"));
 
             RunVarargAssertion(
                 epService,
                 MakePair(
-                    "VarargsOnlyISupportBaseAB(new " + typeof(ISupportBImpl).FullName + "('a', 'b'))",
+                    "varargsOnlyISupportBaseAB(new " + typeof(ISupportBImpl).FullName + "('a', 'b'))",
                     "ISupportBImpl{valueB='a', valueBaseAB='b'}"));
 
             // tests for array-passthru
             RunVarargAssertion(
-                epService, MakePair("VarargsOnlyString({'a'})", "a"),
-                MakePair("VarargsOnlyString({'a', 'b'})", "a,b"),
-                MakePair("VarargsOnlyObject({'a', 'b'})", "a,b"),
-                MakePair("VarargsOnlyObject({})", ""),
-                MakePair("VarargsObjectsWCtx({1, 'a'})", "CTX+1,a"),
-                MakePair("VarargsW1ParamObjectsWCtx(1, {'a', 1})", "CTX+,1,a,1")
+                epService, MakePair("varargsOnlyString({'a'})", "a"),
+                MakePair("varargsOnlyString({'a', 'b'})", "a,b"),
+                MakePair("varargsOnlyObject({'a', 'b'})", "a,b"),
+                MakePair("varargsOnlyObject({})", ""),
+                MakePair("varargsObjectsWCtx({1, 'a'})", "CTX+1,a"),
+                MakePair("varargsW1ParamObjectsWCtx(1, {'a', 1})", "CTX+,1,a,1")
             );
 
             // try Arrays.asList

@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
@@ -133,28 +131,28 @@ namespace com.espertech.esper.regression.expr.expr
     
         private void RunLikeRegexStringAndNull(EPServiceProvider epService, SupportUpdateListener listener) {
             SendS0Event(epService, "a", "b", "c", "d");
-            AssertReceived(listener, new object[][]{new object[] {"r1", false}, new object[] {"r2", false}, new object[] {"r3", false}});
+            AssertReceived(listener, new[] {new object[] {"r1", false}, new object[] {"r2", false}, new object[] {"r3", false}});
     
             SendS0Event(epService, null, "b", null, "d");
-            AssertReceived(listener, new object[][]{new object[] {"r1", null}, new object[] {"r2", null}, new object[] {"r3", null}});
+            AssertReceived(listener, new[] {new object[] {"r1", null}, new object[] {"r2", null}, new object[] {"r3", null}});
     
             SendS0Event(epService, "a", null, "c", null);
-            AssertReceived(listener, new object[][]{new object[] {"r1", null}, new object[] {"r2", null}, new object[] {"r3", null}});
+            AssertReceived(listener, new[] {new object[] {"r1", null}, new object[] {"r2", null}, new object[] {"r3", null}});
     
             SendS0Event(epService, null, null, null, null);
-            AssertReceived(listener, new object[][]{new object[] {"r1", null}, new object[] {"r2", null}, new object[] {"r3", null}});
+            AssertReceived(listener, new[] {new object[] {"r1", null}, new object[] {"r2", null}, new object[] {"r3", null}});
     
             SendS0Event(epService, "abcdef", "%de_", "a", "[a-c]");
-            AssertReceived(listener, new object[][]{new object[] {"r1", true}, new object[] {"r2", true}, new object[] {"r3", true}});
+            AssertReceived(listener, new[] {new object[] {"r1", true}, new object[] {"r2", true}, new object[] {"r3", true}});
     
             SendS0Event(epService, "abcdef", "b%de_", "d", "[a-c]");
-            AssertReceived(listener, new object[][]{new object[] {"r1", false}, new object[] {"r2", false}, new object[] {"r3", false}});
+            AssertReceived(listener, new[] {new object[] {"r1", false}, new object[] {"r2", false}, new object[] {"r3", false}});
     
             SendS0Event(epService, "!adex", "!%de_", "", ".");
-            AssertReceived(listener, new object[][]{new object[] {"r1", true}, new object[] {"r2", false}, new object[] {"r3", false}});
+            AssertReceived(listener, new[] {new object[] {"r1", true}, new object[] {"r2", false}, new object[] {"r3", false}});
     
             SendS0Event(epService, "%dex", "!%de_", "a", ".");
-            AssertReceived(listener, new object[][]{new object[] {"r1", false}, new object[] {"r2", true}, new object[] {"r3", true}});
+            AssertReceived(listener, new[] {new object[] {"r1", false}, new object[] {"r2", true}, new object[] {"r3", true}});
         }
     
         private void RunAssertionInvalidLikeRegEx(EPServiceProvider epService) {
@@ -179,13 +177,13 @@ namespace com.espertech.esper.regression.expr.expr
             selectTestCase.Events += testListener.Update;
     
             SendSupportBeanEvent(epService, 101, 1.1);
-            AssertReceived(testListener, new object[][]{new object[] {"r1", true}, new object[] {"r2", false}});
+            AssertReceived(testListener, new[] {new object[] {"r1", true}, new object[] {"r2", false}});
     
             SendSupportBeanEvent(epService, 102, 11d);
-            AssertReceived(testListener, new object[][]{new object[] {"r1", false}, new object[] {"r2", true}});
+            AssertReceived(testListener, new[] {new object[] {"r1", false}, new object[] {"r2", true}});
     
             SendSupportBeanEvent(epService, null, null);
-            AssertReceived(testListener, new object[][]{new object[] {"r1", null}, new object[] {"r2", null}});
+            AssertReceived(testListener, new[] {new object[] {"r1", null}, new object[] {"r2", null}});
         }
     
         private void TryInvalid(EPServiceProvider epService, string expr) {
@@ -193,7 +191,7 @@ namespace com.espertech.esper.regression.expr.expr
                 var statement = "select " + expr + " from " + typeof(SupportBean).FullName;
                 epService.EPAdministrator.CreateEPL(statement);
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 // expected
             }
         }

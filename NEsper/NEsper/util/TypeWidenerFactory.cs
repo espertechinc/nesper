@@ -63,13 +63,18 @@ namespace com.espertech.esper.util
                 }
             }
 
+            if (columnType == writeablePropertyType)
+            {
+                return null;
+            }
+
             if (columnType == null)
             {
                 if (writeablePropertyType.IsPrimitive)
                 {
                     String message = "Invalid assignment of column '" + columnName +
                                      "' of null type to event property '" + writeablePropertyName +
-                                     "' typed as '" + writeablePropertyType.FullName +
+                                     "' typed as '" + writeablePropertyType.GetCleanName() +
                                      "', nullable type mismatch";
                     throw new ExprValidationException(message);
                 }
@@ -128,7 +133,7 @@ namespace com.espertech.esper.util
                     var columnClassElement = columnClassBoxed.GetElementType();
                     var targetClassElement = targetClassBoxed.GetElementType();
 
-                    if ((targetClassBoxed == typeof(object[])) && (columnClassElement.IsByRef)) {
+                    if ((targetClassBoxed == typeof(object[])) && (columnClassElement.IsClass)) {
                         return null;
                     }
 
@@ -148,6 +153,13 @@ namespace com.espertech.esper.util
                             return source => WidenArray(source, targetClassElement, coercer);
                         }
                     }
+                }
+
+                if (writeablePropertyType.IsNumeric() && columnType.IsAssignmentCompatible(writeablePropertyType))
+                {
+                    var instance = new TypeWidenerBoxedNumeric(
+                        CoercerFactory.GetCoercer(columnClassBoxed, targetClassBoxed));
+                    return instance.Widen;
                 }
 
                 if (!columnClassBoxed.IsAssignmentCompatible(targetClassBoxed))
@@ -183,17 +195,8 @@ namespace com.espertech.esper.util
                         }
                     }
 
-                    var writablePropName = writeablePropertyType.FullName;
-                    if (writeablePropertyType.IsArray)
-                    {
-                        writablePropName = writeablePropertyType.GetElementType().FullName + "[]";
-                    }
-
-                    var columnTypeName = columnType.FullName;
-                    if (columnType.IsArray)
-                    {
-                        columnTypeName = columnType.GetElementType().FullName + "[]";
-                    }
+                    var writablePropName = writeablePropertyType.GetCleanName();
+                    var columnTypeName = columnType.GetCleanName();
 
                     String message = "Invalid assignment of column '" + columnName +
                                      "' of type '" + columnTypeName +

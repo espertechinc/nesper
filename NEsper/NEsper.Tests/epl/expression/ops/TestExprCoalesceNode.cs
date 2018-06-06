@@ -82,7 +82,7 @@ namespace com.espertech.esper.epl.expression.ops
                 coalesceNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -94,7 +94,7 @@ namespace com.espertech.esper.epl.expression.ops
                 coalesceNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }

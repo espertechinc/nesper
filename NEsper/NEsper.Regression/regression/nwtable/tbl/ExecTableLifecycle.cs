@@ -102,7 +102,7 @@ namespace com.espertech.esper.regression.nwtable.tbl
             try {
                 epService.EPAdministrator.CreateEPL(create);
                 Assert.Fail();
-            } catch (EPStatementException ex) {
+            } catch (EPStatementException) {
                 // expected
             }
         }

@@ -247,7 +247,9 @@ namespace com.espertech.esper.regression.client
             EventRepresentationChoice eventRepresentationEnum,
             SupportSubscriberRowByRowSpecificBase subscriber)
         {
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " select bytePrimitive, IntPrimitive, LongPrimitive, FloatPrimitive from SupportBean(TheString='E1')");
+            EPStatement stmt = epService.EPAdministrator.CreateEPL(
+                eventRepresentationEnum.GetAnnotationText() +
+                " select bytePrimitive, IntPrimitive, LongPrimitive, FloatPrimitive from SupportBean(TheString='E1')");
             stmt.Subscriber = subscriber;
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
     

@@ -70,7 +70,7 @@ namespace com.espertech.esper.epl.join.table
             {
                 submap = _propertyIndex.Between(keyStart, includeStart, keyEnd, includeEnd);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 if (allowRangeReversal)
                 {
@@ -97,7 +97,7 @@ namespace com.espertech.esper.epl.join.table
             {
                 submap = _propertyIndex.Between(keyStart, includeStart, keyEnd, includeEnd);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 if (allowRangeReversal)
                 {

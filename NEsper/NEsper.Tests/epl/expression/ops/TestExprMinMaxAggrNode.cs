@@ -77,7 +77,7 @@ namespace com.espertech.esper.epl.expression.ops
                 _minNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -92,7 +92,7 @@ namespace com.espertech.esper.epl.expression.ops
                     _container, new SupportStreamTypeSvc3Stream()));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }

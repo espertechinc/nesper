@@ -119,7 +119,7 @@ namespace com.espertech.esper.regression.resultset.outputlimit
             OutputProcessViewBase outputProcessViewBase = (OutputProcessViewBase) resources.EventStreamViewables[0].Views[0].Views[0];
             try {
                 Assert.AreEqual(numExpectedChangeset, outputProcessViewBase.NumChangesetRows);
-            } catch (UnsupportedOperationException ex) {
+            } catch (UnsupportedOperationException) {
                 // allowed
             }
         }

@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net471;</TargetFrameworks>
-    <!-- <TargetFrameworks>net46;net471;netstandard2.0</TargetFrameworks> -->
+    <TargetFrameworks>net46;net471;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -47,7 +46,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="2.0.1" />
     <PackageReference Include="XLR8.CGLib" Version="1.1.0" />
   </ItemGroup>
 

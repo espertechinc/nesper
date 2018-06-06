@@ -96,7 +96,7 @@ namespace com.espertech.esper.filter
             VerifyLongBoxed(index, 10L, 3);
     
             // Put a long primitive in - should work
-            index.Put(9l, _testEvaluator);
+            index.Put(9L, _testEvaluator);
             try
             {
                 index.Put(10, _testEvaluator);

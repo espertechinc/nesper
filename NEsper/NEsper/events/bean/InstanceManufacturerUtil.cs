@@ -101,8 +101,6 @@ namespace com.espertech.esper.events.bean
                         "', column and parameter types mismatch";
                 throw new ExprValidationException(message);
             }
-
-            FastConstructor fctor;
             try
             {
                 var ctor = engineImportService.ResolveCtor(targetClass, ctorTypes);

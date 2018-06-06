@@ -219,7 +219,7 @@ namespace com.espertech.esper.regression.client
             statement.Events += listener.Update;
     
             AggregationValidationContext validContext = SupportPluginAggregationMethodThreeFactory.Contexts[0];
-            EPAssertionUtil.AssertEqualsExactOrder(new Type[]{typeof(int?), typeof(int?), typeof(int), typeof(SupportBean)}, validContext.ParameterTypes);
+            EPAssertionUtil.AssertEqualsExactOrder(new Type[]{typeof(int), typeof(int), typeof(int), typeof(SupportBean)}, validContext.ParameterTypes);
             EPAssertionUtil.AssertEqualsExactOrder(new object[]{1, 10, null, null}, validContext.ConstantValues);
             EPAssertionUtil.AssertEqualsExactOrder(new bool[]{true, true, false, false}, validContext.IsConstantValue);
     

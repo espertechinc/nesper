@@ -69,7 +69,7 @@ namespace com.espertech.esper.filter
                 _testIndex.Add(_testEventType, _handleSetNode);
                 Assert.IsTrue(false);
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // Expected
             }

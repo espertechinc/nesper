@@ -255,7 +255,7 @@ namespace com.espertech.esper.regression.view
             try {
                 epService.EPAdministrator.CreateEPL(viewStmt);
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 // Expected exception
             }
         }

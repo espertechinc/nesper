@@ -6,31 +6,29 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
 using System.Threading;
 
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading;
 
 namespace NEsper.Benchmark.Server
 {
     public class ThreadPoolExecutor : Executor
     {
-        private int eventQueueDepth;
-        private readonly ILockable eventMonitor;
-        private readonly int maxSize;
-        private bool isHandlingEvents;
+        private int _eventQueueDepth;
+        private readonly ILockable _eventMonitor;
+        private readonly int _maxSize;
+        private bool _isHandlingEvents;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ThreadPoolExecutor"/> class.
         /// </summary>
         public ThreadPoolExecutor(int? maxQueueSize)
         {
-            maxSize = maxQueueSize ?? Int32.MaxValue;
-            eventQueueDepth = 0;
-            eventMonitor = new MonitorSpinLock();
-            isHandlingEvents = true;
+            _maxSize = maxQueueSize ?? Int32.MaxValue;
+            _eventQueueDepth = 0;
+            _eventMonitor = new MonitorSpinLock(60000);
+            _isHandlingEvents = true;
         }
 
         /// <summary>
@@ -54,7 +52,7 @@ namespace NEsper.Benchmark.Server
         /// <value>The queue depth.</value>
         public int QueueDepth
         {
-            get { return eventQueueDepth; }
+            get { return _eventQueueDepth; }
         }
 
         /// <summary>
@@ -63,14 +61,14 @@ namespace NEsper.Benchmark.Server
         /// <value>The executor.</value>
         public void Execute( WaitCallback waitCallback ) 
         {
-            using (eventMonitor.Acquire())
+            using (_eventMonitor.Acquire())
             {
-                while (isHandlingEvents && (eventQueueDepth > maxSize))
+                while (_isHandlingEvents && (_eventQueueDepth > _maxSize))
                 {
                     Thread.Sleep(1);
                 }
 
-                if (!isHandlingEvents)
+                if (!_isHandlingEvents)
                 {
                     return;
                 }
@@ -91,9 +89,9 @@ namespace NEsper.Benchmark.Server
                     }
                     finally
                     {
-                        using(eventMonitor.Acquire())
+                        using(_eventMonitor.Acquire())
                         {
-                            eventQueueDepth++;
+                            _eventQueueDepth++;
                         }
                     }
                 });
@@ -104,7 +102,7 @@ namespace NEsper.Benchmark.Server
         /// </summary>
         public void Stop()
         {
-            isHandlingEvents = false;
+            _isHandlingEvents = false;
         }
 
         /// <summary>
@@ -112,7 +110,7 @@ namespace NEsper.Benchmark.Server
         /// </summary>
         public void Start()
         {
-            isHandlingEvents = true;
+            _isHandlingEvents = true;
         }
     }
 }

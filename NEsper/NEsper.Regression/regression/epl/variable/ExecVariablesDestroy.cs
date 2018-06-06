@@ -152,7 +152,7 @@ namespace com.espertech.esper.regression.epl.variable
             try {
                 epService.EPRuntime.GetVariableValue(var);
                 Assert.Fail();
-            } catch (VariableNotFoundException ex) {
+            } catch (VariableNotFoundException) {
                 // expected
             }
             AssertStmtsRef(epService, var, null);

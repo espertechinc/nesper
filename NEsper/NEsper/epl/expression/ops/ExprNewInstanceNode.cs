@@ -43,7 +43,7 @@ namespace com.espertech.esper.epl.expression.ops
             {
                 _targetClass = validationContext.EngineImportService.ResolveType(_classIdent, false);
             }
-            catch (EngineImportException e)
+            catch (EngineImportException)
             {
                 throw new ExprValidationException("Failed to resolve new-operator class name '" + _classIdent + "'");
             }

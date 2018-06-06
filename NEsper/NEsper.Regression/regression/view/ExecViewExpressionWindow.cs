@@ -242,8 +242,8 @@ namespace com.espertech.esper.regression.view
         {
             TryInvalid(
                 epService, "select * from SupportBean#expr(1)",
-                "Error starting statement: Error attaching view to event stream: Invalid return value for expiry expression, expected a bool return value but received " +
-                typeof(int?).GetCleanName() + " [select * from SupportBean#expr(1)]");
+                string.Format("Error starting statement: Error attaching view to event stream: Invalid return value for expiry expression, expected a bool return value but received {0} [select * from SupportBean#expr(1)]",
+                    typeof(int).GetCleanName()));
 
             TryInvalid(
                 epService, "select * from SupportBean#expr((select * from SupportBean#lastevent))",

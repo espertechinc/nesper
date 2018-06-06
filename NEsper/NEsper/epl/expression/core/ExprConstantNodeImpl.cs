@@ -38,7 +38,7 @@ namespace com.espertech.esper.epl.expression.core
             }
             else
             {
-                _clazz = constantValue.GetType().GetBoxedType();
+                _clazz = constantValue.GetType();
             }
         }
 
@@ -54,7 +54,7 @@ namespace com.espertech.esper.epl.expression.core
             }
             else
             {
-                _clazz = constantValue.GetType().GetBoxedType();
+                _clazz = constantValue.GetType();
             }
         }
     

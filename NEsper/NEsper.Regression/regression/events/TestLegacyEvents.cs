@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.events
             var mappedProperty = new Dictionary<String, String>();
             mappedProperty["key1"] = "value1";
             mappedProperty["key2"] = "value2";
-            _legacyBean = new SupportLegacyBean("leg", new string[] { "a", "b" }, mappedProperty, "nest");
+            _legacyBean = new SupportLegacyBean("leg", new[] { "a", "b" }, mappedProperty, "nest");
         }
 
         [Test]
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regression.events
             // test remove type with statement used (no force)
             configOps.AddEventType("MyBeanEvent", typeof(SupportBean_A));
             var stmt = _epService.EPAdministrator.CreateEPL("select id from MyBeanEvent", "stmtOne");
-            EPAssertionUtil.AssertEqualsExactOrder(configOps.GetEventTypeNameUsedBy("MyBeanEvent").ToArray(), new string[] { "stmtOne" });
+            EPAssertionUtil.AssertEqualsExactOrder(configOps.GetEventTypeNameUsedBy("MyBeanEvent").ToArray(), new[] { "stmtOne" });
 
             try
             {
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regression.events
                 _epService.EPAdministrator.CreateEPL("select id from MyBeanEvent");
                 Assert.Fail();
             }
-            catch (EPException ex)
+            catch (EPException)
             {
                 // expected
             }
@@ -130,13 +130,13 @@ namespace com.espertech.esper.regression.events
 
             // compile
             _epService.EPAdministrator.CreateEPL("select BoolPrimitive from MyBeanEvent", "stmtTwo");
-            EPAssertionUtil.AssertEqualsExactOrder(configOps.GetEventTypeNameUsedBy("MyBeanEvent").ToArray(), new string[] { "stmtTwo" });
+            EPAssertionUtil.AssertEqualsExactOrder(configOps.GetEventTypeNameUsedBy("MyBeanEvent").ToArray(), new[] { "stmtTwo" });
             try
             {
                 _epService.EPAdministrator.CreateEPL("select id from MyBeanEvent");
                 Assert.Fail();
             }
-            catch (EPException ex)
+            catch (EPException)
             {
                 // expected
             }
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regression.events
                 _epService.EPAdministrator.CreateEPL("select BoolPrimitive from MyBeanEvent");
                 Assert.Fail();
             }
-            catch (EPException ex)
+            catch (EPException)
             {
                 // expected
             }
@@ -397,7 +397,7 @@ namespace com.espertech.esper.regression.events
                 statementText = "select IntPrimitive from MySupportBean#length(5)";
                 _epService.EPAdministrator.CreateEPL(statementText);
             }
-            catch (EPStatementException ex)
+            catch (EPStatementException)
             {
                 // expected
             }
@@ -432,7 +432,7 @@ namespace com.espertech.esper.regression.events
             var theEvent = new SupportLegacyBeanInt(10);
             _epService.EPRuntime.SendEvent(theEvent);
 
-            foreach (var name in new string[] { "IntPrimitive", "explicitFInt", "explicitMGetInt", "explicitMReadInt" })
+            foreach (var name in new[] { "IntPrimitive", "explicitFInt", "explicitMGetInt", "explicitMReadInt" })
             {
                 Assert.AreEqual(typeof(int), eventType.GetPropertyType(name));
                 Assert.AreEqual(10, listener.LastNewData[0].Get(name));

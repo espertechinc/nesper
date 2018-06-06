@@ -14,20 +14,21 @@ using com.espertech.esper.epl.lookup;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
-using com.espertech.esper.supportregression.util;
+
 using NUnit.Framework;
+
 using static com.espertech.esper.supportregression.util.IndexBackingTableInfo;
 
 namespace com.espertech.esper.regression.epl.other
 {
     public class ExecEPLPlanInKeywordQuery : RegressionExecution
     {
-        public void Configure(Configuration configuration)
+        public override void Configure(Configuration configuration)
         {
             configuration.EngineDefaults.Logging.IsEnableQueryPlan = true;
         }
 
-        public void Run(EPServiceProvider epService)
+        public override void Run(EPServiceProvider epService)
         {
             epService.EPAdministrator.Configuration.AddEventType("S0", typeof(SupportBean_S0));
             epService.EPAdministrator.Configuration.AddEventType("S1", typeof(SupportBean_S1));

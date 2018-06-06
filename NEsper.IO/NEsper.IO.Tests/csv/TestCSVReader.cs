@@ -298,7 +298,7 @@ namespace com.espertech.esperio.csv
                 reader.GetNextRecord();
                 Assert.Fail();
             }
-            catch (EndOfStreamException ex)
+            catch (EndOfStreamException)
             {
                 // Expected
             }

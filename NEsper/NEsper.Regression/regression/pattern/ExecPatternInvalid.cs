@@ -152,7 +152,7 @@ namespace com.espertech.esper.regression.pattern
             try {
                 epService.EPAdministrator.CreatePattern(eplInvalidPattern);
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 // Expected exception
             }
         }
@@ -179,8 +179,8 @@ namespace com.espertech.esper.regression.pattern
             try {
                 epService.EPAdministrator.CreatePattern(expression);
                 Assert.Fail();
-            } catch (EPStatementSyntaxException es) {
-                throw es;
+            } catch (EPStatementSyntaxException) {
+                throw;
             } catch (EPStatementException ex) {
                 // Expected exception
                 if (isLogException) {

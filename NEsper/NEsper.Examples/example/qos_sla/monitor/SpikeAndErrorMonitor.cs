@@ -7,12 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.example.qos_sla.eventbean;
+using NEsper.Examples.QoS_SLA.eventbean;
 
-namespace com.espertech.esper.example.qos_sla.monitor
+namespace NEsper.Examples.QoS_SLA.monitor
 {
     public class SpikeAndErrorMonitor
     {

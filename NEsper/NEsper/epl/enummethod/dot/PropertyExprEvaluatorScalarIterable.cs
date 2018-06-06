@@ -66,7 +66,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             {
                 return result.Unwrap<T>(true);
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
                 var resultType = result.GetType();
                 Log.Warn(string.Format("Expected iterable-type input from property '{0}' but received {1}", 

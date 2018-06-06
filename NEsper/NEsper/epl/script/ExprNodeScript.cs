@@ -228,7 +228,7 @@ namespace com.espertech.esper.epl.script
             {
                 return validationContext.EngineImportService.ResolveType(returnTypeName, false);
             }
-            catch (EngineImportException e1)
+            catch (EngineImportException)
             {
                 throw new ExprValidationException(
                     "Failed to resolve return type '" + returnTypeName + "' specified for script '" + Script.Name + "'");

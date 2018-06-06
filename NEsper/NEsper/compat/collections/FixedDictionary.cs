@@ -154,10 +154,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </returns>
-        public int Count
-        {
-            get { return _dataCount; }
-        }
+        public int Count => _dataCount;
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
@@ -165,10 +162,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.
         /// </returns>
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         #endregion
 

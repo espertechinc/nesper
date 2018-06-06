@@ -80,7 +80,7 @@ namespace com.espertech.esper.view.stat
                 _factory.Attach(parentType, SupportStatementContextFactory.MakeContext(_container), null, null);
                 Assert.Fail();
             }
-            catch (ViewParameterException ex)
+            catch (ViewParameterException)
             {
                 // expected;
             }
@@ -94,7 +94,7 @@ namespace com.espertech.esper.view.stat
                 _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(_container), null, null);
                 Assert.Fail();
             }
-            catch (ViewParameterException ex)
+            catch (ViewParameterException)
             {
                 // expected
             }

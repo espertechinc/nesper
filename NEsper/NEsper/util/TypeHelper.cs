@@ -511,6 +511,18 @@ namespace com.espertech.esper.util
                 ;
         }
 
+        public static bool IsNotInt32(this Type type)
+        {
+            return (type != typeof(int)) &&
+                   (type != typeof(int?));
+        }
+
+        public static bool IsInt32(this Type type)
+        {
+            return (type == typeof(int)) ||
+                   (type == typeof(int?));
+        }
+
         /// <summary>
         /// Determines whether the specified type is integral.
         /// </summary>

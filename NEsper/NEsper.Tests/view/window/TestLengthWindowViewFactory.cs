@@ -59,7 +59,7 @@ namespace com.espertech.esper.view.window
                 _factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(_container), TestViewSupport.ToExprListBean(new Object[] {param}));
                 Assert.Fail();
             }
-            catch (ViewParameterException ex)
+            catch (ViewParameterException)
             {
                 // expected
             }

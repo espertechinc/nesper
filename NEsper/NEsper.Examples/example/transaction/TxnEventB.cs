@@ -9,7 +9,7 @@
 
 using System;
 
-namespace NEsper.Example.Transaction
+namespace NEsper.Examples.Transaction
 {
     public class TxnEventB : TxnEventBase
     {

@@ -124,7 +124,7 @@ namespace com.espertech.esper.epl.expression.ops
                 exprCaseNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // expected
             }

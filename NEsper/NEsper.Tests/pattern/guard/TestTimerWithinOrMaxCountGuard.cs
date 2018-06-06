@@ -125,7 +125,7 @@ namespace com.espertech.esper.pattern.guard
                 _guard.StartGuard();
                 Assert.Fail();
             }
-            catch (IllegalStateException ex) {
+            catch (IllegalStateException) {
                 // Expected exception
             }
         }

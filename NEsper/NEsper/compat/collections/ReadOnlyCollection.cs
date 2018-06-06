@@ -35,20 +35,16 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <value></value>
         /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
-		public int Count {
-			get { return _parent.Count; }
-		}
+		public int Count => _parent.Count;
 
-        /// <summary>
+	    /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
         /// </summary>
         /// <value></value>
         /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
-		public bool IsReadOnly {
-			get { return true ; }
-		}
+		public bool IsReadOnly => true;
 
-        /// <summary>
+	    /// <summary>
         /// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"></see> at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index at which item should be inserted.</param>

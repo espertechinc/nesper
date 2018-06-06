@@ -22,10 +22,7 @@ namespace com.espertech.esper.compat.collections
         ///The element in the collection at the current position of the enumerator.
         ///</returns>
         ///
-        T IEnumerator<T>.Current
-        {
-            get { throw new InvalidOperationException(); }
-        }
+        T IEnumerator<T>.Current => throw new InvalidOperationException();
 
         ///<summary>
         ///Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -68,9 +65,6 @@ namespace com.espertech.esper.compat.collections
         ///</returns>
         ///
         ///<exception cref="T:System.InvalidOperationException">The enumerator is positioned before the first element of the collection or after the last element. </exception><filterpriority>2</filterpriority>
-        public object Current
-        {
-            get { throw new InvalidOperationException(); }
-        }
+        public object Current => throw new InvalidOperationException();
     }
 }

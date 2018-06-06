@@ -59,7 +59,7 @@ namespace com.espertech.esper.view
                 _service = CreateService(new[] {"a"}, new[] {"v1"}, new[] {"abc"});
                 Assert.Fail();
             }
-            catch (ConfigurationException ex)
+            catch (ConfigurationException)
             {
                 // expected
             }
@@ -72,7 +72,7 @@ namespace com.espertech.esper.view
                 _service.Create(_container, @namespace, name);
                 Assert.Fail();
             }
-            catch (ViewProcessingException ex)
+            catch (ViewProcessingException)
             {
                 // expected
             }

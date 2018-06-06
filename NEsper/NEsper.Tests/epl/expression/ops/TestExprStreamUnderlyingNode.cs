@@ -46,7 +46,7 @@ namespace com.espertech.esper.epl.expression.ops
                 var abyss = _node.StreamId;
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // expected
             }
@@ -56,7 +56,7 @@ namespace com.espertech.esper.epl.expression.ops
                 var abyss = _node.ExprEvaluator.ReturnType;
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // expected
             }
@@ -105,12 +105,10 @@ namespace com.espertech.esper.epl.expression.ops
                 node.Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
                 Assert.Fail();
             }
-            catch(ExprValidationException ex)
+            catch(ExprValidationException)
             {
                 // expected
             }
         }
-    
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

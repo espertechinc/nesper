@@ -122,7 +122,7 @@ namespace com.espertech.esper.events.arr
                 _eventType.GetGetter("myInt").Get(eventBean);
                 Assert.IsTrue(false);
             }
-            catch (InvalidCastException ex)
+            catch (InvalidCastException)
             {
             }
         }

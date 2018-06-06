@@ -73,7 +73,7 @@ namespace com.espertech.esper.view.window
                 _factory.Attach(parentType, SupportStatementContextFactory.MakeContext(_container), null, null);
                 Assert.Fail();
             }
-            catch (ViewParameterException ex)
+            catch (ViewParameterException)
             {
                 // expected
             }
@@ -84,7 +84,7 @@ namespace com.espertech.esper.view.window
                 _factory.Attach(parentType, SupportStatementContextFactory.MakeContext(_container), null, null);
                 Assert.Fail();
             }
-            catch (ViewParameterException ex)
+            catch (ViewParameterException)
             {
                 // expected
             }
@@ -104,7 +104,7 @@ namespace com.espertech.esper.view.window
                 factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)), SupportStatementContextFactory.MakeContext(_container), null, null);
                 Assert.Fail();
             }
-            catch (ViewParameterException ex)
+            catch (ViewParameterException)
             {
                 // expected
             }

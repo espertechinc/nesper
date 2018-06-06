@@ -6,19 +6,18 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
 using System.Collections.Generic;
-using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat.collections;
-using NUnit.Framework;
 
 using com.espertech.esper.client;
+using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
-using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 
+using NUnit.Framework;
 
-namespace com.espertech.esper.example.marketdatafeed
+namespace NEsper.Examples.MarketDataFeed
 {
 	[TestFixture]
 	public class TestTicksPerSecondStatement : IDisposable
@@ -28,11 +27,15 @@ namespace com.espertech.esper.example.marketdatafeed
 	
 	    [SetUp]
 	    public void SetUp() {
-	        Configuration configuration = new Configuration();
+	        var container = ContainerExtensions.CreateDefaultContainer()
+	            .InitializeDefaultServices()
+	            .InitializeDatabaseDrivers();
+
+            var configuration = new Configuration(container);
             configuration.AddEventType("MarketDataEvent", typeof(MarketDataEvent).FullName);
             configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 
-	        epService = EPServiceProviderManager.GetProvider("TestTicksPerSecondStatement", configuration);
+	        epService = EPServiceProviderManager.GetProvider(container, "TestTicksPerSecondStatement", configuration);
 	        epService.Initialize();
 	
 	        listener = new SupportUpdateListener();

@@ -160,7 +160,7 @@ namespace com.espertech.esper.epl.variable
                 _list.GetVersion(version);
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
             }
         }

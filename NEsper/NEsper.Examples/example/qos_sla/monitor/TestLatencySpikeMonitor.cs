@@ -8,36 +8,41 @@
 
 using System;
 
+using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
+using NEsper.Examples.QoS_SLA.eventbean;
+
 using NUnit.Framework;
 
-using com.espertech.esper.client;
-using com.espertech.esper.example.qos_sla.eventbean;
-
-namespace com.espertech.esper.example.qos_sla.monitor
+namespace NEsper.Examples.QoS_SLA.monitor
 {
 	[TestFixture]
 	public class TestLatencySpikeMonitor : IDisposable
 	{
-	    private EPRuntime runtime;
+	    private EPRuntime _runtime;
 
 	    [SetUp]
 	    public void SetUp()
 	    {
-            Configuration configuration = new Configuration();
+	        var container = ContainerExtensions.CreateDefaultContainer()
+	            .InitializeDefaultServices()
+	            .InitializeDatabaseDrivers();
+
+            var configuration = new Configuration(container);
             configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 
             EPServiceProviderManager.PurgeDefaultProvider();
-            EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(configuration);
+            var epService = EPServiceProviderManager.GetDefaultProvider(configuration);
 
 	        LatencySpikeMonitor.Start();
-	        runtime = epService.EPRuntime;
+	        _runtime = epService.EPRuntime;
 	    }
 
 	    [Test]
 	    public void TestLatencyAlert()
 	    {
-	        OperationMeasurement measurement = new OperationMeasurement("svc", "cust", 21000, true);
-	        runtime.SendEvent(measurement);
+	        var measurement = new OperationMeasurement("svc", "cust", 21000, true);
+	        _runtime.SendEvent(measurement);
 	    }
 
 	    public void Dispose()

@@ -30,7 +30,7 @@ namespace com.espertech.esper.regression.pattern
             return false;
         }
 
-        public void Run(EPServiceProvider epService) {
+        public override void Run(EPServiceProvider epService) {
             RunAssertionOp(epService);
             RunAssertionUniformEvents(epService);
             RunAssertionNotTimeInterval(epService);

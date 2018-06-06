@@ -74,7 +74,7 @@ namespace com.espertech.esper.epl.expression.dot
                         currentInputType = sizeExpr.TypeInfo;
                         continue;
                     }
-                    if ((chainElement.Name.ToLower() == "get") && paramTypes.Length == 1 && paramTypes[0].GetBoxedType() == typeof(int?))
+                    if ((chainElement.Name.ToLower() == "get") && paramTypes.Length == 1 && paramTypes[0].IsInt32())
                     {
                         var componentType = type.Component;
                         var get = new ExprDotEvalArrayGet(paramEvals[0], componentType);

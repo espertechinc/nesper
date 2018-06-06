@@ -140,7 +140,7 @@ namespace com.espertech.esper.core.service
                 Log.Error(".createEPL Error validating expression", ex);
                 throw new EPStatementException(ex.Message, ex, eplStatementForErrorMsg);
             }
-            catch (EPStatementSyntaxException ex)
+            catch (EPStatementSyntaxException)
             {
                 throw;
             }
@@ -202,7 +202,7 @@ namespace com.espertech.esper.core.service
                 Log.Debug(".createPattern Error validating expression", ex);
                 throw new EPStatementException(ex.Message, expression);
             }
-            catch (EPStatementSyntaxException ex)
+            catch (EPStatementSyntaxException)
             {
                 throw;
             }

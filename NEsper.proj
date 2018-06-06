@@ -14,7 +14,7 @@
     <Distribution Condition=" '$(Distribution)' == '' ">net45</Distribution>
     <!-- Distribution version -->
     <Version Condition=" '$(CCNetLabel)' != '' ">$(CCNetLabel)</Version>
-    <Version Condition=" '$(Version)' == '' ">6.0.1</Version>
+    <Version Condition=" '$(Version)' == '' ">6.1.0</Version>
     <!-- Build Directories -->
     <BuildPath>$(MSBuildProjectDirectory)\build</BuildPath>
     <BuildRoot>$(BuildPath)\NEsper-$(Version)</BuildRoot>

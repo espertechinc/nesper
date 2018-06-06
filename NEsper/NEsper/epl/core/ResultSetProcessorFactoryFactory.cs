@@ -665,7 +665,7 @@ namespace com.espertech.esper.epl.core
                     hook.Query(new GroupByRollupPlanDesc(validated, rollup));
                 }
             }
-            catch (ExprValidationException e)
+            catch (ExprValidationException)
             {
                 throw new EPException("Failed to obtain hook for " + HookType.INTERNAL_QUERY_PLAN);
             }

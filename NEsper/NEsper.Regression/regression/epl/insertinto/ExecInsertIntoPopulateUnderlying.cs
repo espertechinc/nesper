@@ -78,7 +78,7 @@ namespace com.espertech.esper.regression.epl.insertinto
             var xml = new ConfigurationEventTypeXMLDOM();
             xml.RootElementName = "abc";
             epService.EPAdministrator.Configuration.AddEventType("xmltype", xml);
-    
+
             RunAssertionCtor(epService);
             RunAssertionCtorWithPattern(epService);
             RunAssertionBeanJoin(epService);
@@ -236,21 +236,30 @@ namespace com.espertech.esper.regression.epl.insertinto
                 string.Format(
                     "Error starting statement: Failed to find a suitable constructor for type \'{0}\': " +
                     "Could not find constructor in class \'{1}\' with matching parameter number and expected parameter type(s) \'{2}\' " +
-                    "(nearest matching constructor taking type(s) \'System.String, System.Int32, System.Int32, System.Boolean\') " +
+                    "(nearest matching constructor taking type(s) \'System.String\') " +
                     "[insert into SupportBeanCtorOne select 1 from SupportBean]",
                     typeof(SupportBeanCtorOne).GetCleanName(),
                     typeof(SupportBeanCtorOne).GetCleanName(),
-                    typeof(int?).GetCleanName()
+                    typeof(int).GetCleanName()
                     ));
     
             text = "insert into SupportBean(IntPrimitive) select 1L from SupportBean";
-            TryInvalid(epService, text, "Error starting statement: Invalid assignment of column 'IntPrimitive' of type 'System.Int64' to event property 'IntPrimitive' typed as 'int', column and parameter types mismatch [insert into SupportBean(IntPrimitive) select 1L from SupportBean]");
+            TryInvalid(epService, text, string.Format(
+                "Error starting statement: Invalid assignment of column 'IntPrimitive' of type '{0}' to event property 'IntPrimitive' typed as '{1}', column and parameter types mismatch [insert into SupportBean(IntPrimitive) select 1L from SupportBean]",
+                typeof(long).GetCleanName(),
+                typeof(int).GetCleanName()
+                ));
     
             text = "insert into SupportBean(IntPrimitive) select null from SupportBean";
-            TryInvalid(epService, text, "Error starting statement: Invalid assignment of column 'IntPrimitive' of null type to event property 'IntPrimitive' typed as 'int', nullable type mismatch [insert into SupportBean(IntPrimitive) select null from SupportBean]");
+            TryInvalid(epService, text, string.Format(
+                "Error starting statement: Invalid assignment of column 'IntPrimitive' of null type to event property 'IntPrimitive' typed as '{0}', nullable type mismatch [insert into SupportBean(IntPrimitive) select null from SupportBean]",
+                typeof(int).GetCleanName()));
     
             text = "insert into SupportBeanReadOnly select 'a' as geom from SupportBean";
-            TryInvalid(epService, text, "Error starting statement: Failed to find a suitable constructor for class '" + typeof(SupportBeanReadOnly).GetCleanName() + "': Could not find constructor in class '" + typeof(SupportBeanReadOnly).GetCleanName() + "' with matching parameter number and expected parameter type(s) 'string' (nearest matching constructor taking no parameters) [insert into SupportBeanReadOnly select 'a' as geom from SupportBean]");
+            TryInvalid(epService, text, string.Format(
+                "Error starting statement: Failed to find a suitable constructor for type '{0}': Could not find constructor in class '{0}' with matching parameter number and expected parameter type(s) '{1}' (nearest matching constructor taking no parameters) [insert into SupportBeanReadOnly select 'a' as geom from SupportBean]",
+                typeof(SupportBeanReadOnly).GetCleanName(),
+                typeof(string).GetCleanName()));
     
             text = "insert into SupportBean select 3 as dummyField from SupportBean";
             TryInvalid(epService, text, "Error starting statement: Column 'dummyField' could not be assigned to any of the properties of the underlying type (missing column names, event property, setter method or constructor?) [insert into SupportBean select 3 as dummyField from SupportBean]");
@@ -259,23 +268,36 @@ namespace com.espertech.esper.regression.epl.insertinto
             TryInvalid(epService, text, "Error starting statement: Column '3' could not be assigned to any of the properties of the underlying type (missing column names, event property, setter method or constructor?) [insert into SupportBean select 3 from SupportBean]");
     
             text = "insert into SupportBeanInterfaceProps(isa) select isbImpl from MyMap";
-            TryInvalid(epService, text, "Error starting statement: Invalid assignment of column 'isa' of type '" + typeof(ISupportBImpl).GetCleanName() + "' to event property 'isa' typed as '" + typeof(ISupportA).GetCleanName() + "', column and parameter types mismatch [insert into SupportBeanInterfaceProps(isa) select isbImpl from MyMap]");
+            TryInvalid(epService, text, string.Format(
+                "Error starting statement: Invalid assignment of column 'isa' of type '{0}' to event property 'isa' typed as '{1}', column and parameter types mismatch [insert into SupportBeanInterfaceProps(isa) select isbImpl from MyMap]", 
+                typeof(ISupportBImpl).GetCleanName(),
+                typeof(ISupportA).GetCleanName()));
     
             text = "insert into SupportBeanInterfaceProps(isg) select isabImpl from MyMap";
-            TryInvalid(epService, text, "Error starting statement: Invalid assignment of column 'isg' of type '" + typeof(ISupportBaseABImpl).GetCleanName() + "' to event property 'isg' typed as '" + typeof(ISupportAImplSuperG).GetCleanName() + "', column and parameter types mismatch [insert into SupportBeanInterfaceProps(isg) select isabImpl from MyMap]");
+            TryInvalid(epService, text, string.Format(
+                "Error starting statement: Invalid assignment of column 'isg' of type '{0}' to event property 'isg' typed as '{1}', column and parameter types mismatch [insert into SupportBeanInterfaceProps(isg) select isabImpl from MyMap]", 
+                typeof(ISupportBaseABImpl).GetCleanName(),
+                typeof(ISupportAImplSuperG).GetCleanName()));
     
             text = "insert into SupportBean(dummy) select 3 from SupportBean";
             TryInvalid(epService, text, "Error starting statement: Column 'dummy' could not be assigned to any of the properties of the underlying type (missing column names, event property, setter method or constructor?) [insert into SupportBean(dummy) select 3 from SupportBean]");
     
             text = "insert into SupportBeanReadOnly(side) select 'E1' from MyMap";
-            TryInvalid(epService, text, "Error starting statement: Failed to find a suitable constructor for class '" + typeof(SupportBeanReadOnly).GetCleanName() + "': Could not find constructor in class '" + typeof(SupportBeanReadOnly).GetCleanName() + "' with matching parameter number and expected parameter type(s) 'string' (nearest matching constructor taking no parameters) [insert into SupportBeanReadOnly(side) select 'E1' from MyMap]");
+            TryInvalid(epService, text, string.Format(
+                "Error starting statement: Failed to find a suitable constructor for type '{0}': Could not find constructor in class '{0}' with matching parameter number and expected parameter type(s) '{1}' (nearest matching constructor taking no parameters) [insert into SupportBeanReadOnly(side) select 'E1' from MyMap]",
+                typeof(SupportBeanReadOnly).GetCleanName(),
+                typeof(string).GetCleanName()));
     
             epService.EPAdministrator.CreateEPL("insert into ABCStream select *, 1+1 from SupportBean");
             text = "insert into ABCStream(string) select 'E1' from MyMap";
-            TryInvalid(epService, text, "Error starting statement: Event type named 'ABCStream' has already been declared with differing column name or type information: Type by name 'ABCStream' is not a compatible type (target type underlying is '" + Name.Clean<Pair<object, IDictionary<string, object>>>() + "') [insert into ABCStream(string) select 'E1' from MyMap]");
+            TryInvalid(epService, text, string.Format(
+                "Error starting statement: Event type named 'ABCStream' has already been declared with differing column name or type information: Type by name 'ABCStream' is not a compatible type (target type underlying is '{0}') [insert into ABCStream(string) select 'E1' from MyMap]", 
+                typeof(Pair<object, IDictionary<string, object>>).GetCleanName()));
     
             text = "insert into xmltype select 1 from SupportBean";
-            TryInvalid(epService, text, "Error starting statement: Event type named 'xmltype' has already been declared with differing column name or type information: Type by name 'xmltype' is not a compatible type (target type underlying is '" + Name.Clean<XmlNode>() + "') [insert into xmltype select 1 from SupportBean]");
+            TryInvalid(epService, text, string.Format(
+                "Error starting statement: Event type named 'xmltype' has already been declared with differing column name or type information: Type by name 'xmltype' is not a compatible type (target type underlying is '{0}') [insert into xmltype select 1 from SupportBean]", 
+                typeof(XmlNode).GetCleanName()));
     
             text = "insert into MyMap(dummy) select 1 from SupportBean";
             TryInvalid(epService, text, "Error starting statement: Event type named 'MyMap' has already been declared with differing column name or type information: Type by name 'MyMap' expects 10 properties but receives 1 properties [insert into MyMap(dummy) select 1 from SupportBean]");
@@ -446,7 +468,7 @@ namespace com.espertech.esper.regression.epl.insertinto
     
             // inheritance
             stmtOne.Dispose();
-            stmtTextOne = "insert into SupportBeanInterfaceProps(ISA,ISG) select " +
+            stmtTextOne = "insert into SupportBeanInterfaceProps(isa,isg) select " +
                     "isaImpl,isgImpl" +
                     " from MyMap";
             stmtOne = epService.EPAdministrator.CreateEPL(stmtTextOne);

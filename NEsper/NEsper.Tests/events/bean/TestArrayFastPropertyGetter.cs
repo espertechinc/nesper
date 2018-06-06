@@ -47,7 +47,7 @@ namespace com.espertech.esper.events.bean
                 MakeGetter(-1);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }
@@ -66,7 +66,7 @@ namespace com.espertech.esper.events.bean
                 _getter.Get(SupportEventBeanFactory.CreateObject(""));
                 Assert.Fail();
             }
-            catch (PropertyAccessException ex)
+            catch (PropertyAccessException)
             {
                 // expected
             }

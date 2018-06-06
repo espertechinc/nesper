@@ -262,7 +262,7 @@ namespace com.espertech.esper.events.bean
                 eventBean.Get(propName);
                 Assert.Fail();
             }
-            catch (PropertyAccessException ex)
+            catch (PropertyAccessException)
             {
                 // expected
             }
@@ -278,7 +278,7 @@ namespace com.espertech.esper.events.bean
                 eventBean.GetFragment(propName);
                 Assert.Fail();
             }
-            catch (PropertyAccessException ex)
+            catch (PropertyAccessException)
             {
                 // expected
             }

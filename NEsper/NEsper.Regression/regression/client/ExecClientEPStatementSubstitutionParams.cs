@@ -307,7 +307,7 @@ namespace com.espertech.esper.regression.client
             try {
                 epService.EPAdministrator.Create(prepared);
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 // expected
             }
     
@@ -315,7 +315,7 @@ namespace com.espertech.esper.regression.client
                 prepared.SetObject(1, "");
                 epService.EPAdministrator.Create(prepared);
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 // expected
             }
     

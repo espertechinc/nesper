@@ -34,6 +34,7 @@ using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.util;
 using com.espertech.esper.timer;
 using com.espertech.esper.type;
+using com.espertech.esper.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -676,7 +677,7 @@ namespace com.espertech.esper.epl.parse
             Assert.AreEqual("ab", TryExpression("'a'||'b'"));
             Assert.AreEqual(null, TryExpression("coalesce(null, null)"));
             Assert.AreEqual(1, TryExpression("coalesce(null, 1)"));
-            Assert.AreEqual(1l, TryExpression("coalesce(null, 1l)"));
+            Assert.AreEqual(1L, TryExpression("coalesce(null, 1l)"));
             Assert.AreEqual("a", TryExpression("coalesce(null, 'a', 'b')"));
             Assert.AreEqual(13.5d, TryExpression("coalesce(null, null, 3*4.5)"));
             Assert.AreEqual(true, TryExpression("coalesce(null, true)"));
@@ -1313,7 +1314,7 @@ namespace com.espertech.esper.epl.parse
             TryIntervalInvalid(
                 "1.5 month",
                 "Time period expressions with month or year component require integer values, received a " +
-                Name.Clean<double?>() + " value");
+                typeof(double).GetCleanName() + " value");
         }
     
         [Test]

@@ -38,7 +38,7 @@ namespace com.espertech.esper.view.window
             try {
                 _myView = new LengthBatchView(null, null, 0, null);
                 Assert.Fail();
-            } catch (ArgumentException ex) {
+            } catch (ArgumentException) {
                 // Expected exception
             }
         }

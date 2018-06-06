@@ -36,7 +36,7 @@ namespace com.espertech.esper.epl.join.plan
                 new QueryPlanIndex(null);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // Expected
             }

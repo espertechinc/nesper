@@ -6,62 +6,61 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
-using System;
-using System.IO;
-using System.Net;
 using System.Xml;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat;
-using com.espertech.esper.events;
+using com.espertech.esper.compat.container;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.example.autoid
+namespace NEsper.Examples.AutoId
 {
 	public class TestRFIDTagsPerSensorStmt
 	{
-	    private EPServiceProvider epService;
-	    private SupportUpdateListener listener;
+	    private EPServiceProvider _epService;
+	    private SupportUpdateListener _listener;
 	
 	    [SetUp]
 	    public void SetUp()
 	    {
-	    	Uri url = ResourceManager.ResolveResourceURL("esper.examples.cfg.xml");
-	        Configuration config = new Configuration();
+	        var container = ContainerExtensions.CreateDefaultContainer()
+	            .InitializeDefaultServices()
+	            .InitializeDatabaseDrivers();
+
+            var url = container.ResourceManager().ResolveResourceURL("esper.examples.cfg.xml");
+	        var config = new Configuration(container);
 	        config.Configure(url);
 	
-	        epService = EPServiceProviderManager.GetProvider("AutoIdSim", config);
-	        epService.Initialize();
+	        _epService = EPServiceProviderManager.GetProvider(container, "AutoIdSim", config);
+	        _epService.Initialize();
 	
-	        listener = new SupportUpdateListener();
-	        var rfidStmt = RFIDTagsPerSensorStmt.Create(epService.EPAdministrator);
-	        rfidStmt.Events += listener.Update;
+	        _listener = new SupportUpdateListener();
+	        var rfidStmt = RFIDTagsPerSensorStmt.Create(_epService.EPAdministrator);
+	        rfidStmt.Events += _listener.Update;
 	    }
 	
 	    [Test]
 	    public void TestEvents()
 	    {
-	    	XmlDocument sensorlDoc = new XmlDocument() ;
+	    	var sensorlDoc = new XmlDocument() ;
 	
-	        using( Stream stream = ResourceManager.GetResourceAsStream("data/AutoIdSensor1.xml") ) {
+	        using(var stream = _epService.Container.ResourceManager().GetResourceAsStream("data/AutoIdSensor1.xml")) {
 	        	sensorlDoc.Load( stream ) ;
 	        }
 	    	
-	        epService.EPRuntime.SendEvent(sensorlDoc);
+	        _epService.EPRuntime.SendEvent(sensorlDoc);
 	        AssertReceived("urn:epc:1:4.16.36", 5);
 	    }
 	
 	    private void AssertReceived(string sensorId, double numTags)
 	    {
-	        Assert.IsTrue(listener.IsInvoked);
-	        Assert.AreEqual(1, listener.LastNewData.Length);
-	        EventBean eventBean = listener.LastNewData[0];
+	        Assert.IsTrue(_listener.IsInvoked);
+	        Assert.AreEqual(1, _listener.LastNewData.Length);
+	        var eventBean = _listener.LastNewData[0];
 	        Assert.AreEqual(sensorId, eventBean["SensorId"]);
 	        Assert.AreEqual(numTags, eventBean["NumTagsPerSensor"]);
-	        listener.Reset();
+	        _listener.Reset();
 	    }
 	}
 }

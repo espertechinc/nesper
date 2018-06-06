@@ -97,7 +97,7 @@ namespace com.espertech.esper.regression.epl.variable
             epService.EPAdministrator.CreateEPL("create variable int x = 123");
             try {
                 epService.EPAdministrator.CreateEPL("select MissingScript(x) from SupportBean");
-            } catch (Exception ex) {
+            } catch (Exception) {
                 foreach (string statementName in epService.EPAdministrator.StatementNames) {
                     epService.EPAdministrator.GetStatement(statementName).Dispose();
                 }

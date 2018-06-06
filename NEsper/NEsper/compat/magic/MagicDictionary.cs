@@ -19,8 +19,6 @@ namespace com.espertech.esper.compat.magic
 
         public MagicDictionary(Object opaqueDictionary)
         {
-            if (!(opaqueDictionary is IDictionary<K1, V1>))
-                System.Diagnostics.Debug.WriteLine("stop");
             _realDictionary = (IDictionary<K1, V1>)opaqueDictionary;
             _typeKeyCaster = null;
         }

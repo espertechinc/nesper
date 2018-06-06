@@ -64,7 +64,7 @@ namespace com.espertech.esper.collection
                 Assert.That(e.Current, Is.Null); // should throw exception
                 Assert.Fail();
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidOperationException)
             {
                 // expected
             }

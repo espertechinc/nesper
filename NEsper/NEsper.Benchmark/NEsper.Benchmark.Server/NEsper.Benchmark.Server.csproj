@@ -1,174 +1,82 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{536BB13B-1300-443C-AB20-CEE5E2D38C7D}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NEsper.Benchmark.Server</RootNamespace>
+    <TargetFrameworks>net46;net471;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Language>en-US</Language>
     <AssemblyName>NEsper.Benchmark.Server</AssemblyName>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
+    <AssemblyTitle>NEsper.Benchmark.Server</AssemblyTitle>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <PackageId>NEsper.Benchmark.Server</PackageId>
+    <RootNamespace>NEsper.Benchmark.Server</RootNamespace>
+    <PackageCopyright>Copyright (C) 2014-2017 Espertech. All rights reserved.</PackageCopyright>
+    <PackageProjectUrl>http://www.espertech.com/esper</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.espertech.com/esper/esper-license-and-trademark/</PackageLicenseUrl>
+    <IconUrl>http://static.espertech.com/espertech_logo.png</IconUrl>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Copyright>Espertech, 2014-2017</Copyright>
+    <RepositoryType>Github</RepositoryType>
+    <Company>Espertech</Company>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>6.1.0</Version>
+    <AssemblyVersion>6.1.0.0</AssemblyVersion>
+    <FileVersion>6.1.0.0</FileVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>TRACE;DEBUG;</DefineConstants>
     <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DefineConstants></DefineConstants>
     <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
+    <NetFramework>true</NetFramework>
+    <DefineConstants>$(DefineConstants);NETFRAMEWORK;NET40;</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net46'">
+    <NetFramework>true</NetFramework>
+    <DefineConstants>$(DefineConstants);NETFRAMEWORK;NET46;</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net471'">
+    <NetFramework>true</NetFramework>
+    <DefineConstants>$(DefineConstants);NETFRAMEWORK;NET471;</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <NetCore>true</NetCore>
+    <DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(NetCore)'=='true'">
+    <PackageReference Include="System.Data.Common" Version="4.3.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.2" />
+    <PackageReference Include="System.Configuration.Abstractions">
+      <Version>2.0.2.37</Version>
+    </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="CEPProvider.cs" />
-    <Compile Include="ClientConnection.cs" />
-    <Compile Include="MultiQueueExecutor.cs" />
-    <Compile Include="DummyTextWriter.cs" />
-    <Compile Include="InlineExecutor.cs" />
-    <Compile Include="Stats.cs" />
-    <Compile Include="TcpClientConnection.cs" />
-    <Compile Include="ThreadPoolExecutor.cs" />
-    <Compile Include="Executor.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueueExecutor.cs" />
-    <Compile Include="Server.cs" />
-    <Compile Include="SimulateClientConnection.cs" />
-    <Compile Include="StatsHolder.cs" />
-    <Compile Include="UdpClientConnection.cs" />
+  
+  <ItemGroup Condition="'$(NetFramework)' == 'net471'">
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\..\NEsper.Tests\NEsper.Tests.csproj">
-      <Project>{2cce8dfe-1adb-43df-a473-49330a1e2945}</Project>
-      <Name>NEsper.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\NEsper\NEsper.csproj">
-      <Project>{3d317245-cde5-4e0e-9590-d7cba2257d9c}</Project>
-      <Name>NEsper</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NEsper.Benchmark.Common\NEsper.Benchmark.Common.csproj">
-      <Project>{2F3B9DDE-42E8-4AE3-A6F9-114CCEE291E2}</Project>
-      <Name>NEsper.Benchmark.Common</Name>
-    </ProjectReference>
+    <PackageReference Include="NLog" Version="4.5.6" />
+    <PackageReference Include="NUnit" Version="3.10.1" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="app.config" />
+    <ProjectReference Include="..\..\NEsper.Log.NLog\NEsper.Log.NLog.csproj" />
+    <ProjectReference Include="..\..\NEsper\NEsper.csproj" />
+    <ProjectReference Include="..\NEsper.Benchmark.Common\NEsper.Benchmark.Common.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

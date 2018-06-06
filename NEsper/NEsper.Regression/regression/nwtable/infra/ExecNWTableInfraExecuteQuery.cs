@@ -8,7 +8,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using Avro.Generic;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.context;
 using com.espertech.esper.client.deploy;
@@ -20,9 +22,12 @@ using com.espertech.esper.supportregression.context;
 using com.espertech.esper.supportregression.epl;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
+
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
+
 using NUnit.Framework;
+
 using static com.espertech.esper.supportregression.util.IndexBackingTableInfo;
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
@@ -30,14 +35,14 @@ namespace com.espertech.esper.regression.nwtable.infra
 {
     public class ExecNWTableInfraExecuteQuery : RegressionExecution
     {
-        public void Configure(Configuration configuration)
+        public override void Configure(Configuration configuration)
         {
             configuration.EngineDefaults.Logging.IsEnableQueryPlan = true;
             configuration.AddEventType<SupportBean>();
             configuration.AddEventType(typeof(SupportBean_A));
         }
 
-        public void Run(EPServiceProvider epService)
+        public override void Run(EPServiceProvider epService)
         {
             RunAssertionInsert(epService, true);
             RunAssertionInsert(epService, false);

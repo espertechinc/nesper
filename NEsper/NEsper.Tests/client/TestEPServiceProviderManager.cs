@@ -72,7 +72,7 @@ namespace com.espertech.esper.client
                 EPServiceProviderManager.GetProvider(_container, "someURI", configuration);
                 Assert.Fail();
             }
-            catch (ConfigurationException ex)
+            catch (ConfigurationException)
             {
                 // Expected
             }

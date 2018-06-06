@@ -76,7 +76,7 @@ namespace com.espertech.esper.pattern.observer
                 _observer.StartObserve();
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // Expected exception
             }

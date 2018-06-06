@@ -78,8 +78,13 @@ namespace com.espertech.esper.client
         public static EPServiceProvider GetDefaultProvider(
             Configuration configuration)
         {
+            var container = configuration.Container;
+            if (container == null) {
+                container = ContainerExtensions.CreateDefaultContainer();
+            }
+
             return GetProvider(
-                ContainerExtensions.CreateDefaultContainer(),
+                container,
                 EPServiceProviderConstants.DEFAULT_ENGINE_URI,
                 configuration);
         }
@@ -108,6 +113,21 @@ namespace com.espertech.esper.client
             return GetProvider(
                 ContainerExtensions.CreateDefaultContainer(),
                 providerURI);
+        }
+
+        public static EPServiceProvider GetProvider(
+            string providerURI,
+            Configuration configuration)
+        {
+            var container = configuration.Container;
+            if (container == null) {
+                container = ContainerExtensions.CreateDefaultContainer();
+            }
+
+            return GetProvider(
+                container,
+                providerURI,
+                configuration);
         }
 
         /// <summary>

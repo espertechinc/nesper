@@ -37,7 +37,7 @@ namespace com.espertech.esper.view.window
         public void TestIncorrectUse() {
             try {
                 _myView = new LengthWindowView(null, null, 0, null);
-            } catch (ArgumentException ex) {
+            } catch (ArgumentException) {
                 // Expected exception
             }
         }

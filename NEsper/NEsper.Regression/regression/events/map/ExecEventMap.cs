@@ -149,7 +149,7 @@ namespace com.espertech.esper.regression.events.map
             Assert.AreEqual(true, type.Metadata.IsApplicationPreConfigured);
             Assert.AreEqual(true, type.Metadata.IsApplicationPreConfiguredStatic);
     
-            EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[]{
+            EPAssertionUtil.AssertEqualsAnyOrder(new[]{
                     new EventPropertyDescriptor("myInt", typeof(int), null, false, false, false, false, false),
                     new EventPropertyDescriptor("myString", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("beanA", typeof(SupportBeanComplexProps), null, false, false, false, false, true),
@@ -163,7 +163,7 @@ namespace com.espertech.esper.regression.events.map
             // test remove type with statement used (no force)
             ConfigurationOperations configOps = epService.EPAdministrator.Configuration;
             EPStatement stmt = epService.EPAdministrator.CreateEPL("select myInt from myMapEvent", "stmtOne");
-            EPAssertionUtil.AssertEqualsExactOrder(configOps.GetEventTypeNameUsedBy("myMapEvent").ToArray(), new string[]{"stmtOne"});
+            EPAssertionUtil.AssertEqualsExactOrder(configOps.GetEventTypeNameUsedBy("myMapEvent").ToArray(), new[]{"stmtOne"});
     
             int numTypes = epService.EPAdministrator.Configuration.EventTypes.Count;
             Assert.AreEqual("myMapEvent", epService.EPAdministrator.Configuration.GetEventType("myMapEvent").Name);
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regression.events.map
             try {
                 epService.EPAdministrator.CreateEPL("select myInt from myMapEvent");
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 // expected
             }
     
@@ -201,11 +201,11 @@ namespace com.espertech.esper.regression.events.map
     
             // compile
             epService.EPAdministrator.CreateEPL("select p01 from myMapEvent", "stmtTwo");
-            EPAssertionUtil.AssertEqualsExactOrder(configOps.GetEventTypeNameUsedBy("myMapEvent").ToArray(), new string[]{"stmtTwo"});
+            EPAssertionUtil.AssertEqualsExactOrder(configOps.GetEventTypeNameUsedBy("myMapEvent").ToArray(), new[]{"stmtTwo"});
             try {
                 epService.EPAdministrator.CreateEPL("select myInt from myMapEvent");
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 // expected
             }
     
@@ -230,7 +230,7 @@ namespace com.espertech.esper.regression.events.map
             try {
                 epService.EPAdministrator.CreateEPL("select p01 from myMapEvent");
                 Assert.Fail();
-            } catch (EPException ex) {
+            } catch (EPException) {
                 // expected
             }
     

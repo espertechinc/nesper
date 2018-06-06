@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net471;</TargetFrameworks>
-    <!-- <TargetFrameworks>net46;net471;netstandard2.0</TargetFrameworks> -->
+    <TargetFrameworks>net46;net471;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -63,18 +62,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="regression\db\TestDatabaseTimeout.cs" />
-    <Compile Remove="regression\script\ExecScriptSandboxJSR223.cs" />
-    <Compile Remove="regression\script\ExecScriptSandboxMVEL.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Apache.Avro" Version="1.7.7.2" />
     <PackageReference Include="Common.Logging" Version="3.4.1" />
     <PackageReference Include="Common.Logging.Log4Net208" Version="3.4.1" />
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="2.0.2" />
     <PackageReference Include="NUnit" Version="3.10.1" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.108" />
   </ItemGroup>
 
   <ItemGroup>
@@ -82,6 +73,9 @@
     <ProjectReference Include="..\NEsper\NEsper.csproj" />
     <ProjectReference Include="..\..\NEsper.Avro\NEsper.Avro.csproj" />
     <ProjectReference Include="..\NEsper.Data.MySQL\NEsper.Data.MySQL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'!='netstandard2.0'">
     <ProjectReference Include="..\NEsper.Scripting.ClearScript\NEsper.Scripting.ClearScript.csproj" />
   </ItemGroup>
 

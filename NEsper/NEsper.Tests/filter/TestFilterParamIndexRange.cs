@@ -74,7 +74,7 @@ namespace com.espertech.esper.filter
                 index["a"] = _testEvaluator;
                 Assert.IsTrue(false);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // Expected
             }

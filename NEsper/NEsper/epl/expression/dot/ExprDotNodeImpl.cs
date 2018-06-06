@@ -409,7 +409,7 @@ namespace com.espertech.esper.epl.expression.dot
 
                     if (desc.IsIndexed)
                     {
-                        if (paramEval.ReturnType.GetBoxedType() != typeof(int?))
+                        if (paramEval.ReturnType.IsNotInt32())
                         {
                             throw new ExprValidationException(
                                 "Parameter expression to mapped property '" + propertyName +
@@ -657,7 +657,7 @@ namespace com.espertech.esper.epl.expression.dot
             }
             else
             {
-                if (parameterEval.ReturnType.GetBoxedType() != typeof(int?))
+                if (parameterEval.ReturnType.IsNotInt32())
                 {
                     throw new ExprValidationException(
                         "Parameter expression to indexed property '" + propertyDesc.PropertyName +

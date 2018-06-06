@@ -63,11 +63,11 @@ namespace com.espertech.esper.filter
                 value.GetFilterValue(matchedEvents, null);
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // expected
             }
-            catch (PropertyAccessException ex)
+            catch (PropertyAccessException)
             {
                 // expected
             }

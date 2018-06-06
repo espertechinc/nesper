@@ -67,17 +67,17 @@ namespace com.espertech.esper.client.metric
         {
             Interlocked.Add(ref _numOutputIStream, numIStream);
 #if DEBUG_STATEMENT_METRIC
-            Console.WriteLine("{0}: Reporting num output istream {1}, {2}", _id, outputIStreamCount, numIStream);
+            Debug.WriteLine("{0}: Reporting num output istream {1}, {2}", _id, outputIStreamCount, numIStream);
 #endif
         }
-    
+
         /// <summary>Adds number of output rows in remove stream. </summary>
         /// <param name="numRStream">to add</param>
         public void AddNumOutputRStream(int numRStream)
         {
             Interlocked.Add(ref _numOutputRStream, numRStream);
 #if DEBUG_STATEMENT_METRIC
-            Console.WriteLine("{0}: Reporting num output rstream {1}, {2}", _id, outputRStreamCount, numRStream);
+            Debug.WriteLine("{0}: Reporting num output rstream {1}, {2}", _id, outputRStreamCount, numRStream);
 #endif
         }
 
@@ -86,7 +86,7 @@ namespace com.espertech.esper.client.metric
             Interlocked.Add(ref _cpuTime, pCpuTime);
             Interlocked.Add(ref _wallTime, pWallTime);
 #if DEBUG_STATEMENT_METRIC
-            Console.WriteLine("{0}: Reporting time {1}/{2}, {3}/{4}", _id, pCpuTime, cpuTime, pWallTime, wallTime);
+            Debug.WriteLine("{0}: Reporting time {1}/{2}, {3}/{4}", _id, pCpuTime, cpuTime, pWallTime, wallTime);
 #endif
         }
 

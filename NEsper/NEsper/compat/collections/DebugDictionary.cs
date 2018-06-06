@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
 namespace com.espertech.esper.compat.collections
@@ -48,7 +49,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
         public void Add(KeyValuePair<K, V> item)
         {
-            Console.WriteLine(" ~~> A1: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, item.Key.GetHashCode());
+            Debug.WriteLine(" ~~> A1: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, item.Key.GetHashCode());
             _subDictionary.Add(item);
         }
 
@@ -57,7 +58,7 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         public void Clear()
         {
-            Console.WriteLine(" ~~> C1: {0} | {1}", _id, Thread.CurrentThread.ManagedThreadId);
+            Debug.WriteLine(" ~~> C1: {0} | {1}", _id, Thread.CurrentThread.ManagedThreadId);
             _subDictionary.Clear();
         }
 
@@ -92,25 +93,19 @@ namespace com.espertech.esper.compat.collections
         /// </returns>
         public bool Remove(KeyValuePair<K, V> item)
         {
-            Console.WriteLine(" ~~> R1: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, item.Key.GetHashCode());
+            Debug.WriteLine(" ~~> R1: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, item.Key.GetHashCode());
             return _subDictionary.Remove(item);
         }
 
         /// <summary>
         /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </summary>
-        public int Count
-        {
-            get { return _subDictionary.Count; }
-        }
+        public int Count => _subDictionary.Count;
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
         /// </summary>
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// Determines whether the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key.
@@ -131,7 +126,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="value">The object to use as the value of the element to add.</param>
         public void Add(K key, V value)
         {
-            Console.WriteLine(" ~~> A2: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, key.GetHashCode());
+            Debug.WriteLine(" ~~> A2: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, key.GetHashCode());
             _subDictionary.Add(key, value);
         }
 
@@ -144,7 +139,7 @@ namespace com.espertech.esper.compat.collections
         /// </returns>
         public bool Remove(K key)
         {
-            Console.WriteLine(" ~~> R2: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, key.GetHashCode());
+            Debug.WriteLine(" ~~> R2: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, key.GetHashCode());
             return _subDictionary.Remove(key);
         }
 
@@ -158,7 +153,7 @@ namespace com.espertech.esper.compat.collections
         /// </returns>
         public bool TryGetValue(K key, out V value)
         {
-            Console.WriteLine(" ~~> G1: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, key.GetHashCode());
+            Debug.WriteLine(" ~~> G1: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, key.GetHashCode());
             return _subDictionary.TryGetValue(key, out value);
         }
 
@@ -166,12 +161,12 @@ namespace com.espertech.esper.compat.collections
         {
             get
             {
-                Console.WriteLine(" ~~> G2: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, key.GetHashCode());
+                Debug.WriteLine(" ~~> G2: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, key.GetHashCode());
                 return _subDictionary[key];
             }
             set
             {
-                Console.WriteLine(" ~~> S1: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, key.GetHashCode());
+                Debug.WriteLine(" ~~> S1: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, key.GetHashCode());
                 _subDictionary[key] = value;
             }
         }
@@ -179,17 +174,11 @@ namespace com.espertech.esper.compat.collections
         /// <summary>
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
-        public ICollection<V> Values
-        {
-            get { return _subDictionary.Values; }
-        }
+        public ICollection<V> Values => _subDictionary.Values;
 
         /// <summary>
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
-        public ICollection<K> Keys
-        {
-            get { return _subDictionary.Keys; }
-        }
+        public ICollection<K> Keys => _subDictionary.Keys;
     }
 }

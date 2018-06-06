@@ -1,8 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
-    <!-- <TargetFrameworks>net471;</TargetFrameworks> -->
-    <!-- <TargetFrameworks>net46;net471;netstandard2.0</TargetFrameworks> -->
+    <TargetFrameworks>net46;net471;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -67,9 +65,8 @@
     <PackageReference Include="Castle.Windsor" Version="4.1.0" />
     <PackageReference Include="Common.Logging" Version="3.4.1" />
     <PackageReference Include="Common.Logging.Log4Net208" Version="3.4.1" />
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="2.0.1" />
-    <PackageReference Include="MySql.Data" Version="8.0.10-rc" />
-    <PackageReference Include="NUnit" Version="3.9.0" />
+    <PackageReference Include="MySql.Data" Version="8.0.11" />
+    <PackageReference Include="NUnit" Version="3.10.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -6,15 +6,18 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-namespace com.espertech.esper.example.rsi
+using com.espertech.esper.compat.logger;
+
+namespace NEsper.Examples.RSI
 {
     public class AppMain
     {
         public static void Main()
         {
-            log4net.Config.XmlConfigurator.Configure();
+            LoggerNLog.BasicConfig();
+            LoggerNLog.Register();
 
-            using (TestRSI testRSI = new TestRSI()) {
+            using (var testRSI = new TestRSI()) {
                 testRSI.SetUp();
                 testRSI.TestFlow();
             }

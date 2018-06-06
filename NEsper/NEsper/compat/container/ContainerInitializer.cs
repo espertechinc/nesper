@@ -42,12 +42,9 @@ namespace com.espertech.esper.compat.container
 
         public static IContainer InitializeDatabaseDrivers(this IContainer container)
         {
-            if (container.DoesNotHave<DbProviderFactoryManager>())
-#if NETFRAMEWORK
+            if (container.DoesNotHave<DbProviderFactoryManager>()) {
                 container.Register<DbProviderFactoryManager, DbProviderFactoryManagerDefault>(Lifespan.Singleton);
-#else
-                container.Register<DbProviderFactoryManager, DbProviderFactoryManagerCustom>(Lifespan.Singleton)
-#endif
+            }
 
             var types = AppDomain.CurrentDomain
                 .GetAssemblies()

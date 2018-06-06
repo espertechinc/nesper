@@ -602,10 +602,13 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                     "Incorrect syntax near '.' at line 1 column 34, please check the method invocation join within the from clause [select * from SupportBean, method:.abc where 1=2]");
     
             TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".FetchObjectAndSleep(1)",
-                    "Error starting statement: Method footprint does not match the number or type of expression parameters, expecting a method where parameters are typed '" + GetCleanName<int?>() + "': Could not find static method named 'FetchObjectAndSleep' in class '" + typeof(SupportStaticMethodLib).FullName + "' with matching parameter number and expected parameter type(s) '" + GetCleanName<int?>() + "' (nearest match found was 'FetchObjectAndSleep' taking type(s) 'System.String, System.Int32, System.Int64') [");
+                    string.Format("Error starting statement: Method footprint does not match the number or type of expression parameters, expecting a method where parameters are typed '{0}': Could not find static method named 'FetchObjectAndSleep' in class '{1}' with matching parameter number and expected parameter type(s) '{2}' (nearest match found was 'FetchObjectAndSleep' taking type(s) 'System.String, System.Int32, System.Int64') [", 
+                        GetCleanName<int>(), typeof(SupportStaticMethodLib).FullName, 
+                        GetCleanName<int>()));
     
             TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".Sleep(100) where 1=2",
-                    "Error starting statement: Invalid return type for static method 'Sleep' of class '" + typeof(SupportStaticMethodLib).FullName + "', expecting a class [select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".Sleep(100) where 1=2]");
+                    string.Format("Error starting statement: Invalid return type for static method 'Sleep' of class '{0}', expecting a class [select * from SupportBean, method:{0}.Sleep(100) where 1=2]", 
+                        typeof(SupportStaticMethodLib).FullName));
     
             TryInvalid(epService, "select * from SupportBean, method:AClass. where 1=2",
                     "Incorrect syntax near 'where' (a reserved keyword) expecting an identifier but found 'where' at line 1 column 42, please check the view specifications within the from clause [select * from SupportBean, method:AClass. where 1=2]");
@@ -620,13 +623,16 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                     "Error starting statement: Method data joins do not allow views onto the data, view 'length' is not valid in this context [select * from SupportBean, method:Dummy.Dummy()#length(100) where 1=2]");
     
             TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).GetCleanName() + ".dummy where 1=2",
-                    "Error starting statement: Could not find public static method named 'dummy' in class '" + typeof(SupportStaticMethodLib).GetCleanName() + "' [");
+                    string.Format("Error starting statement: Could not find public static method named 'dummy' in class '{0}' [", 
+                        typeof(SupportStaticMethodLib).GetCleanName()));
     
             TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).GetCleanName() + ".MinusOne(10) where 1=2",
-                    "Error starting statement: Invalid return type for static method 'MinusOne' of class '" + typeof(SupportStaticMethodLib).GetCleanName() + "', expecting a class [");
+                    string.Format("Error starting statement: Invalid return type for static method 'MinusOne' of class '{0}', expecting a class [", 
+                        typeof(SupportStaticMethodLib).GetCleanName()));
     
             TryInvalid(epService, "select * from SupportBean, xyz:" + typeof(SupportStaticMethodLib).GetCleanName() + ".FetchArrayNoArg() where 1=2",
-                    "Expecting keyword 'method', found 'xyz' [select * from SupportBean, xyz:" + typeof(SupportStaticMethodLib).GetCleanName() + ".FetchArrayNoArg() where 1=2]");
+                    string.Format("Expecting keyword 'method', found 'xyz' [select * from SupportBean, xyz:{0}.FetchArrayNoArg() where 1=2]", 
+                        typeof(SupportStaticMethodLib).GetCleanName()));
     
             TryInvalid(epService, "select * from method:" + typeof(SupportStaticMethodLib).GetCleanName() + ".FetchBetween(s1.value, s1.value) as s0, method:" + typeof(SupportStaticMethodLib).GetCleanName() + ".FetchBetween(s0.value, s0.value) as s1",
                     "Error starting statement: Circular dependency detected between historical streams [");
@@ -642,10 +648,12 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
                     "Error starting statement: Could not find getter method for method invocation, expected a method by name 'ReadRowNoMetadataMetadata' accepting no parameters [select * from method:SupportMethodInvocationJoinInvalid.ReadRowNoMetadata()]");
     
             TryInvalid(epService, "select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()",
-                    "Error starting statement: Getter method 'ReadRowWrongMetadataMetadata' does not return " + typeof(IDictionary<string, object>).GetCleanName() + " [select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()]");
+                    string.Format("Error starting statement: Getter method 'ReadRowWrongMetadataMetadata' does not return {0} [select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()]", 
+                        typeof(IDictionary<string, object>).GetCleanName()));
     
             TryInvalid(epService, "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".InvalidOverloadForJoin(null)",
-                    "Error starting statement: Method by name 'InvalidOverloadForJoin' is overloaded in class '" + typeof(SupportStaticMethodLib).GetCleanName() + "' and overloaded methods do not return the same type");
+                    string.Format("Error starting statement: Method by name 'InvalidOverloadForJoin' is overloaded in class '{0}' and overloaded methods do not return the same type", 
+                        typeof(SupportStaticMethodLib).GetCleanName()));
         }
     
         private void TryAssertionUDFAndScriptReturningEvents(EPServiceProvider epService, string methodName) {
@@ -654,7 +662,9 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             stmtSelect.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean());
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "id".Split(','), new object[][]{new object[] {"id1"}, new object[] {"id3"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "id".Split(','), new object[][] {
+                new object[] {"id1"}, new object[] {"id3"}
+            });
     
             stmtSelect.Dispose();
         }
@@ -666,7 +676,9 @@ namespace com.espertech.esper.regression.epl.fromclausemethod
             stmt.Events += listener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("a,b", 0));
-            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "p0".Split(','), new object[][]{new object[] {"a"}, new object[] {"b"}});
+            EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), "p0".Split(','), new object[][] {
+                new object[] {"a"}, new object[] {"b"}
+            });
     
             stmt.Dispose();
         }

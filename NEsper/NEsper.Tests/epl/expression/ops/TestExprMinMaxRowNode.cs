@@ -65,7 +65,7 @@ namespace com.espertech.esper.epl.expression.ops
                 _minMaxNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -78,7 +78,7 @@ namespace com.espertech.esper.epl.expression.ops
                 _minMaxNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }

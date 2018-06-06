@@ -82,7 +82,7 @@ namespace com.espertech.esper.regression.epl.variable
             Assert.IsFalse(listener.IsInvoked);
     
             SendSupportBeans(epService, "E3");
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], new string[]{"cnt"}, new object[]{3L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], new[]{"cnt"}, new object[]{3L});
             listener.Reset();
     
             // set output limit to 5
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regression.epl.variable
             Assert.IsFalse(listener.IsInvoked);
     
             SendSupportBeans(epService, "E8");
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], new string[]{"cnt"}, new object[]{8L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], new[]{"cnt"}, new object[]{8L});
             listener.Reset();
     
             // set output limit to 2
@@ -104,25 +104,25 @@ namespace com.espertech.esper.regression.epl.variable
             Assert.IsFalse(listener.IsInvoked);
     
             SendSupportBeans(epService, "E10");
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], new string[]{"cnt"}, new object[]{10L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], new[]{"cnt"}, new object[]{10L});
             listener.Reset();
     
             // set output limit to 1
             SendSetterBean(epService, 1L);
     
             SendSupportBeans(epService, "E11");
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], new string[]{"cnt"}, new object[]{11L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], new[]{"cnt"}, new object[]{11L});
             listener.Reset();
     
             SendSupportBeans(epService, "E12");
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], new string[]{"cnt"}, new object[]{12L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], new[]{"cnt"}, new object[]{12L});
             listener.Reset();
     
             // set output limit to null -- this continues at the current rate
             SendSetterBean(epService, null);
     
             SendSupportBeans(epService, "E13");
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], new string[]{"cnt"}, new object[]{13L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], new[]{"cnt"}, new object[]{13L});
             listener.Reset();
         }
     
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regression.epl.variable
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimer(epService, 3000);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], new string[]{"cnt"}, new object[]{2L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], new[]{"cnt"}, new object[]{2L});
             listener.Reset();
     
             // set output limit to 5
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regression.epl.variable
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimer(epService, 4000);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], new string[]{"cnt"}, new object[]{4L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], new[]{"cnt"}, new object[]{4L});
             listener.Reset();
     
             // set output limit to 4 seconds (takes effect next time rescheduled, and is related to reference point which is 0)
@@ -166,13 +166,13 @@ namespace com.espertech.esper.regression.epl.variable
             SendTimer(epService, 4999);
             Assert.IsFalse(listener.IsInvoked);
             SendTimer(epService, 5000);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], new string[]{"cnt"}, new object[]{4L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], new[]{"cnt"}, new object[]{4L});
             listener.Reset();
     
             SendTimer(epService, 7999);
             Assert.IsFalse(listener.IsInvoked);
             SendTimer(epService, 8000);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], new string[]{"cnt"}, new object[]{4L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], new[]{"cnt"}, new object[]{4L});
             listener.Reset();
     
             SendSupportBeans(epService, "E5", "E6");   // varargs: sends 2 events
@@ -180,7 +180,7 @@ namespace com.espertech.esper.regression.epl.variable
             SendTimer(epService, 11999);
             Assert.IsFalse(listener.IsInvoked);
             SendTimer(epService, 12000);
-            EPAssertionUtil.AssertProps(listener.LastNewData[0], new string[]{"cnt"}, new object[]{6L});
+            EPAssertionUtil.AssertProps(listener.LastNewData[0], new[]{"cnt"}, new object[]{6L});
             listener.Reset();
     
             SendTimer(epService, 13000);
@@ -196,7 +196,7 @@ namespace com.espertech.esper.regression.epl.variable
             try {
                 SendTimer(epService, 14000);
                 Assert.Fail();
-            } catch (Exception ex) {
+            } catch (Exception) {
                 // expected
             }
             stmtSelect.Dispose();

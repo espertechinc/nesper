@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.util;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 
 namespace NEsper.Examples.VirtualDW
@@ -34,13 +35,15 @@ namespace NEsper.Examples.VirtualDW
         public void Run()
         {
             Log.Info("Setting up engine instance.");
-    
-            Configuration config = new Configuration();
+
+            var container = ContainerExtensions.CreateDefaultContainer();
+
+            Configuration config = new Configuration(container);
             config.EngineDefaults.EventMeta.DefaultEventRepresentation = EventUnderlyingType.MAP; // use Map-type events for testing
             config.AddPlugInVirtualDataWindow("sample", "samplevdw", typeof(SampleVirtualDataWindowFactory).FullName);
             config.AddEventTypeAutoName(typeof(SampleVirtualDataWindowMain).Namespace);    // import all event classes
     
-            EPServiceProvider epService = EPServiceProviderManager.GetProvider("LargeExternalDataExample", config);
+            EPServiceProvider epService = EPServiceProviderManager.GetProvider(container, "LargeExternalDataExample", config);
     
             // First: Create an event type for rows of the external data - here the example use a Map-based event and any of the other types (POJO, XML) can be used as well.
             // Populate event property names and types.

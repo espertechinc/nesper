@@ -339,7 +339,7 @@ namespace com.espertech.esper.epl.core
                         var message = "Invalid assignment of column '" + columnNames[i] +
                                          "' of type '" + columnType +
                                          "' to event property '" + desc.PropertyName +
-                                         "' typed as '" + desc.PropertyType.FullName +
+                                         "' typed as '" + desc.PropertyType.GetCleanName() +
                                          "', column and parameter types mismatch";
                         throw new ExprValidationException(message);
                     }

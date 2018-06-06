@@ -54,7 +54,7 @@ namespace com.espertech.esper.epl.join.exec
                 new IndexedTableLookupStrategy(_eventType, new String[] { "TheString", "xxx" }, _propertyMapEventIndex);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }

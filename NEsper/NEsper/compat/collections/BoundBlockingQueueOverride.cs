@@ -16,10 +16,7 @@ namespace com.espertech.esper.compat.collections
         /// Gets a value indicating whether the override is engaged.
         /// </summary>
         /// <value><c>true</c> if the override is engaged; otherwise, <c>false</c>.</value>
-        internal static bool IsEngaged
-        {
-            get { return ScopedInstance<BoundBlockingQueueOverride>.Current != null; }
-        }
+        internal static bool IsEngaged => ScopedInstance<BoundBlockingQueueOverride>.Current != null;
 
         /// <summary>
         /// Initializes the <see cref="BoundBlockingQueueOverride"/> class.

@@ -282,7 +282,7 @@ namespace com.espertech.esper.epl.expression.time
             {
                 throw new ExprValidationException("Time period expression requires a numeric parameter type");
             }
-            if ((_hasMonth || _hasYear) && (returnType.GetBoxedType() != typeof(int?)))
+            if ((_hasMonth || _hasYear) && returnType.IsNotInt32())
             {
                 throw new ExprValidationException("Time period expressions with month or year component require integer values, received a " + returnType.GetCleanName() + " value");
             }

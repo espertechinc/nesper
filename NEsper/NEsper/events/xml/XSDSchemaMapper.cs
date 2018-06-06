@@ -735,7 +735,6 @@ namespace com.espertech.esper.events.xml
             {
                 foreach (XmlSchemaObject facet in simpleTypeRestriction.Facets)
                 {
-                    //Console.WriteLine(facet);
                 }
             }
 #if false

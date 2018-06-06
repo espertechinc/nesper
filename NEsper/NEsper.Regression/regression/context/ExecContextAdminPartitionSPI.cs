@@ -36,14 +36,14 @@ namespace com.espertech.esper.regression.context
         private static readonly string[] FIELDSCP = "c0,c1,c2".Split(',');
         private static readonly int HASH_MOD_E1_STRING_BY_64 = 5;
 
-        public void Configure(Configuration configuration) {
+        public override void Configure(Configuration configuration) {
             configuration.AddEventType<SupportBean>();
             configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
             configuration.AddEventType("SupportBean_S1", typeof(SupportBean_S1));
             configuration.EngineDefaults.Logging.IsEnableExecutionDebug = true;
         }
     
-        public void Run(EPServiceProvider epService) {
+        public override void Run(EPServiceProvider epService) {
             RunAssertionDestroyCtxPartitions(epService);
             RunAssertionInvalid(epService);
             RunAssertionStopStartNestedCtxPartitions(epService);

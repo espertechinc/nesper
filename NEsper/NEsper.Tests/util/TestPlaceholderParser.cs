@@ -75,7 +75,7 @@ namespace com.espertech.esper.util
                 PlaceholderParser.ParsePlaceholder(parseString);
                 Assert.Fail();
             }
-            catch (PlaceholderParseException ex)
+            catch (PlaceholderParseException)
             {
                 // expected
             }

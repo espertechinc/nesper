@@ -75,7 +75,7 @@ namespace com.espertech.esper.events
                 _eventType = new WrapperEventType(null, "mytype", 1, _underlyingEventTypeOne, _properties, _eventAdapterService);
                 Assert.Fail();
             }
-            catch (EPException ex)
+            catch (EPException)
             {
                 // Expected
             }

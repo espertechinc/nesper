@@ -266,7 +266,8 @@ namespace com.espertech.esper.epl.core
                         if (localDataCache != null) {
                             localDataCache.PutCached(methodParams, _methodStreamSpec.Expressions.Count, indexTable);
                         }
-                    } catch (EPException ex) {
+                    } catch (EPException)
+                    {
                         if (strategyStarted) {
                             _pollExecStrategy.Done();
                         }

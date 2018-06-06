@@ -31,11 +31,11 @@ namespace com.espertech.esper.regression.nwtable.infra {
     public class ExecNWTableInfraOnSelect : RegressionExecution {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public void Configure(Configuration configuration) {
+        public override void Configure(Configuration configuration) {
             configuration.EngineDefaults.Logging.IsEnableQueryPlan = true;
         }
 
-        public void Run(EPServiceProvider epService) {
+        public override void Run(EPServiceProvider epService) {
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.Configuration.AddEventType("S0", typeof(SupportBean_S0));
             epService.EPAdministrator.Configuration.AddEventType("S1", typeof(SupportBean_S1));

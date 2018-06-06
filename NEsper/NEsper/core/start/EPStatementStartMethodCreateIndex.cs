@@ -99,7 +99,8 @@ namespace com.espertech.esper.core.start
                     destroyMethod.Destroy();
 	                throw;
 	            }
-                catch(Exception ex) {
+                catch (Exception)
+                {
                     destroyMethod.Destroy();
                     throw;
                 }

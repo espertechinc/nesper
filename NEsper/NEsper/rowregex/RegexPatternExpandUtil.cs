@@ -297,7 +297,7 @@ namespace com.espertech.esper.rowregex
             {
                 throw new ExprValidationException(GetPatternQuantifierExpressionText(repeat) + " must return a constant value");
             }
-            if (TypeHelper.GetBoxedType(repeat.ExprEvaluator.ReturnType) != typeof(int?)) {
+            if (repeat.ExprEvaluator.ReturnType.IsNotInt32()) {
                 throw new ExprValidationException(GetPatternQuantifierExpressionText(repeat) + " must return an integer-type value");
             }
         }

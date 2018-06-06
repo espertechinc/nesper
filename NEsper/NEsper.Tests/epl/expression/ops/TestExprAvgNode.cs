@@ -22,8 +22,10 @@ namespace com.espertech.esper.epl.expression.ops
         private ExprAvgNode _avgNodeDistinct;
     
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
+            base.SetUp();
+
             ValidatedNodeToTest = MakeNode(5, typeof(int), false);
             _avgNodeDistinct = MakeNode(6, typeof(int), true);
         }

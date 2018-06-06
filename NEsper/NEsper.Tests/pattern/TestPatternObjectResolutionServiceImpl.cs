@@ -73,7 +73,7 @@ namespace com.espertech.esper.pattern
                 _service = new PatternObjectResolutionServiceImpl(_container, desc);
                 Assert.Fail();
             }
-            catch (ConfigurationException ex)
+            catch (ConfigurationException)
             {
                 // expected
             }

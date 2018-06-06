@@ -110,7 +110,7 @@ namespace com.espertech.esper.collection
                 enumerator.Reset();
                 Assert.IsTrue(false);
             }
-            catch (NotSupportedException ex) {
+            catch (NotSupportedException) {
                 // Expected
             }
         }

@@ -79,7 +79,7 @@ namespace com.espertech.esper.regression.multithread
                         time += 1000;
                         try {
                             Thread.Sleep((int) _threadSleepTime);
-                        } catch (ThreadInterruptedException e) {
+                        } catch (ThreadInterruptedException) {
                         }
                     }
                 } catch (Exception) {

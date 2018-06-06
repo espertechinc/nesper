@@ -28,7 +28,7 @@ namespace com.espertech.esper.filter
                 MakeParam("a", FilterOperator.EQUAL, range);
                 Assert.IsTrue(false);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // Expected exception
             }

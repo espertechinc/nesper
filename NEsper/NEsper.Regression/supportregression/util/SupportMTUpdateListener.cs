@@ -10,9 +10,9 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.supportregression.util
@@ -51,21 +51,10 @@ namespace com.espertech.esper.supportregression.util
             var newData = e.NewEvents;
 
             using(_oLock.Acquire()) {
-                //Console.WriteLine("Update-Pre[{0}]:  {1} with {2} events",
-                //                  id,
-                //                  newDataList.Count,
-                //                  newData.Length); 
-                
-                this._oldDataList.Add(oldData);
-                this._newDataList.Add(newData);
-                this._lastNewData = newData;
-                this._lastOldData = oldData;
-
-                //Console.WriteLine("Update-Pst[{0}]:  {1} with {2} events",
-                //  id,
-                //  newDataList.Count,
-                //  newData.Length); 
-
+                _oldDataList.Add(oldData);
+                _newDataList.Add(newData);
+                _lastNewData = newData;
+                _lastOldData = oldData;
                 _isInvoked = true;
             }
         }
@@ -73,10 +62,10 @@ namespace com.espertech.esper.supportregression.util
         public void Reset()
         {
             using(_oLock.Acquire()) {
-                this._oldDataList.Clear();
-                this._newDataList.Clear();
-                this._lastNewData = null;
-                this._lastOldData = null;
+                _oldDataList.Clear();
+                _newDataList.Clear();
+                _lastNewData = null;
+                _lastOldData = null;
                 _isInvoked = false;
             }
         }

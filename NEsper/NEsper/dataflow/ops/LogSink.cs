@@ -83,7 +83,7 @@ namespace com.espertech.esper.dataflow.ops
                         _renderer = new ConsoleOpRendererXmlJSon(formatEnum, context.Engine.EPRuntime);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     throw new ExprValidationException("Format '" + format + "' is not supported, expecting any of " + EnumHelper.GetValues<LogSinkOutputFormat>().Render());
                 }

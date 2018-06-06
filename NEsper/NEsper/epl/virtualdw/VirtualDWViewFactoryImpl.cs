@@ -80,7 +80,7 @@ namespace com.espertech.esper.epl.virtualdw
                     _viewParameterArr[i] = ViewFactorySupport.EvaluateAssertNoProperties(
                         _viewFactoryContext.ViewName, validatedNodes[i], i, evaluatorContextStmt);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // expected
                 }

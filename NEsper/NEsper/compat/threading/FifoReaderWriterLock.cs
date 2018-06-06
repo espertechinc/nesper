@@ -261,7 +261,7 @@ namespace com.espertech.esper.compat.threading
             	#if false
             	if (Iterations > 10)
             	{
-					Console.WriteLine("E:{0}:{1}:{2}:{3}:{4}:{5}",
+					System.Diagnostics.Debug.WriteLine("E:{0}:{1}:{2}:{3}:{4}:{5}",
 						LockId,
 						OrigFlags,
 						Iterations,

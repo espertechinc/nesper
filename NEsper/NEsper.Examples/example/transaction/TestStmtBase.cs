@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using NUnit.Framework;
-using com.espertech.esper.client;
 
-namespace NEsper.Example.Transaction
+using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
+using NUnit.Framework;
+
+namespace NEsper.Examples.Transaction
 {
     [TestFixture]
 	public abstract class TestStmtBase
@@ -19,14 +21,16 @@ namespace NEsper.Example.Transaction
 
         [SetUp]
 	    public virtual void SetUp()
-	    {
-	        Configuration configuration = new Configuration();
+        {
+            var container = ContainerExtensions.CreateDefaultContainer();
+
+	        var configuration = new Configuration(container);
             configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
             configuration.AddEventType("TxnEventA", typeof(TxnEventA).FullName);
             configuration.AddEventType("TxnEventB", typeof(TxnEventB).FullName);
             configuration.AddEventType("TxnEventC", typeof(TxnEventC).FullName);
 
-	        epService = EPServiceProviderManager.GetProvider("TestStmtBase", configuration);
+	        epService = EPServiceProviderManager.GetProvider(container, "TestStmtBase", configuration);
 	        epService.Initialize();
 	    }
 

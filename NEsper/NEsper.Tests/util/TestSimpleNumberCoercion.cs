@@ -26,7 +26,7 @@ namespace com.espertech.esper.util
             Assert.AreEqual((short) 2, CoercerFactory.GetCoercer(typeof(long?), typeof(short?)).Invoke((long) 2));
             Assert.AreEqual(4, CoercerFactory.GetCoercer(typeof(long?), typeof(int?)).Invoke((long) 4));
             Assert.AreEqual((byte) 5, CoercerFactory.GetCoercer(typeof(long?), typeof(sbyte?)).Invoke((long) 5));
-            Assert.AreEqual(8l, CoercerFactory.GetCoercer(typeof(long?), typeof(long?)).Invoke((long) 8));
+            Assert.AreEqual(8L, CoercerFactory.GetCoercer(typeof(long?), typeof(long?)).Invoke((long) 8));
             Assert.AreEqual(9.0m, CoercerFactory.GetCoercer(typeof(int), typeof(decimal)).Invoke(9));
             Assert.AreEqual(9.0m, CoercerFactory.GetCoercer(typeof(double), typeof(decimal)).Invoke(9.0));
             Assert.AreEqual(9.0m, CoercerFactory.GetCoercer(typeof(int), typeof(decimal?)).Invoke(9));

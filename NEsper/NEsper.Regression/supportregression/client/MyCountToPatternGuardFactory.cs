@@ -30,7 +30,7 @@ namespace com.espertech.esper.supportregression.client
                 throw new GuardParameterException(message);
             }
     
-            if (guardParameters[0].ExprEvaluator.ReturnType.GetBoxedType() != typeof(int?))
+            if (guardParameters[0].ExprEvaluator.ReturnType.IsNotInt32())
             {
                 throw new GuardParameterException(message);
             }

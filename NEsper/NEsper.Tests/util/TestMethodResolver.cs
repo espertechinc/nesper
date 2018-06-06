@@ -96,7 +96,7 @@ namespace com.espertech.esper.util
     			MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null);
     			Assert.Fail();
     		}
-    		catch(EngineNoSuchMethodException e)
+    		catch(EngineNoSuchMethodException)
     		{
     			// Expected
     		}
@@ -109,7 +109,7 @@ namespace com.espertech.esper.util
     			MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null);
     			Assert.Fail();
     		}
-    		catch(EngineNoSuchMethodException e)
+    		catch(EngineNoSuchMethodException)
     		{
     			// Expected
     		}
@@ -121,7 +121,7 @@ namespace com.espertech.esper.util
     			MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null);
                 Assert.Fail();
     		}
-    		catch(EngineNoSuchMethodException e)
+    		catch(EngineNoSuchMethodException)
     		{
     			// Expected
     		}
@@ -133,7 +133,7 @@ namespace com.espertech.esper.util
     			MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null);
                 Assert.Fail();
     		}
-    		catch(EngineNoSuchMethodException e)
+    		catch(EngineNoSuchMethodException)
     		{
     			// Expected
     		}

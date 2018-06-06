@@ -56,7 +56,7 @@ namespace com.espertech.esper.view.window
                     SupportExprNodeFactory.MakeIdentNodeBean("TheString"), null, 
                     new ExprTimePeriodEvalDeltaConstGivenDelta(0), null, 
                     SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container));
-            } catch (ArgumentException ex) {
+            } catch (ArgumentException) {
                 // Expected exception
             }
         }

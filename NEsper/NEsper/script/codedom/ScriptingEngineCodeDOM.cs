@@ -174,7 +174,6 @@ namespace com.espertech.esper.script.codedom
             var results = compilerInfo.Provider.CompileAssemblyFromDom(options, compileUnit);
             if (results.Errors.Count > 0)
             {
-                // Console.WriteLine(results.Errors.Cast<CompilerError>().Select(e => e.ErrorText).Aggregate((a, b) => a + "," + b));
                 throw new ScriptCompilationException("failed to compile script", results.Errors.Cast<CompilerError>().ToList());
             }
 
@@ -397,7 +396,7 @@ namespace com.espertech.esper.script.codedom
             {
                 CreateCodeProvider(dialect);
             } 
-            catch(TypeLoadException e)
+            catch(TypeLoadException)
             {
                     throw new ExprValidationException("Failed to obtain script engine for dialect '" + dialect +
                                                       "' for script '" + script.Name + "'");

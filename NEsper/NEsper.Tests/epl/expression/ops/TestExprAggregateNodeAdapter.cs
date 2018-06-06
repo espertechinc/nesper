@@ -28,7 +28,7 @@ namespace com.espertech.esper.epl.expression.ops
         private IContainer _container;
 
         [SetUp]
-        public void SetUp()
+        public virtual void SetUp()
         {
             _container = SupportContainer.Reset();
         }

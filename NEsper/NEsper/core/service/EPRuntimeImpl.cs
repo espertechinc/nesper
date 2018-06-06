@@ -2157,7 +2157,7 @@ namespace com.espertech.esper.core.service
                     {
                         _services.VariableService.CheckAndWrite(variableName, agentInstanceId, entry.Value);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         _services.VariableService.Rollback();
                         throw;

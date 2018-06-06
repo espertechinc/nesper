@@ -181,9 +181,11 @@ namespace com.espertech.esper.epl.expression.accessagg
                     throw new ExprValidationException(GetErrorPrefix(stateType) +
                                                       " does not accept an index expression; Use 'first' or 'last' instead");
                 evaluatorIndex = childNodes[1];
-                if (evaluatorIndex.ExprEvaluator.ReturnType != typeof(int?))
-                    throw new ExprValidationException(GetErrorPrefix(stateType) +
-                                                      " requires an index expression that returns an integer value");
+                if (!evaluatorIndex.ExprEvaluator.ReturnType.IsInt32()) {
+                    throw new ExprValidationException(
+                        GetErrorPrefix(stateType) +
+                        " requires an index expression that returns an integer value");
+                }
             }
 
             // determine accessor
@@ -372,9 +374,12 @@ namespace com.espertech.esper.epl.expression.accessagg
                 if (indexEvalNode.IsConstantResult)
                     constant = indexEvalNode.ExprEvaluator.Evaluate(EvaluateParams.EmptyTrue).AsInt();
                 var evaluatorIndex = indexEvalNode.ExprEvaluator;
-                if (evaluatorIndex.ReturnType != typeof(int?))
-                    throw new ExprValidationException(GetErrorPrefix(stateType) +
-                                                      " requires a constant index expression that returns an integer value");
+                if (evaluatorIndex.ReturnType.IsInt32()) {
+                    throw new ExprValidationException(
+                        GetErrorPrefix(stateType) +
+                        " requires a constant index expression that returns an integer value");
+                }
+
                 var accessor = new AggregationAccessorFirstLastIndexNoEval(evaluatorIndex, constant, isFirst);
                 var factory = new ExprAggMultiFunctionLinearAccessNodeFactoryAccess(this, accessor, resultType,
                     original.ContainedEventType, null, null, null);

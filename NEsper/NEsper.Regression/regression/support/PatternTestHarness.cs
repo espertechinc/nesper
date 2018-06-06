@@ -316,7 +316,6 @@ namespace com.espertech.esper.regression.support
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.StackTrace);
                     Assert.Fail("For statement '" + expressionText + "' failed to assert: " + ex.Message);
                 }
             }

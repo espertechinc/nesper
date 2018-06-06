@@ -10,14 +10,13 @@ using System;
 using System.Threading;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.plugin;
 
-using NEsper.Example.Transaction.sim;
+using NEsper.Examples.Transaction.sim;
 
-namespace NEsper.Example.Transaction
+namespace NEsper.Examples.Transaction
 {
     public class TransactionSamplePlugin : PluginLoader
     {

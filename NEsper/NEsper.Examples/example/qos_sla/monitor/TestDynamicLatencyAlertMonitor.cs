@@ -8,23 +8,24 @@
 
 using System;
 
+using com.espertech.esper.client;
+
+using NEsper.Examples.QoS_SLA.eventbean;
+
 using NUnit.Framework;
 
-using com.espertech.esper.client;
-using com.espertech.esper.example.qos_sla.eventbean;
-
-namespace com.espertech.esper.example.qos_sla.monitor
+namespace NEsper.Examples.QoS_SLA.monitor
 {
     [TestFixture]
     public class TestDynamicLatencyAlertMonitor : IDisposable
     {
-        private EPRuntime runtime;
+        private EPRuntime _runtime;
 
         [SetUp]
         public void SetUp()
         {
             DynaLatencySpikeMonitor.Start();
-            runtime = EPServiceProviderManager.GetDefaultProvider().EPRuntime;
+            _runtime = EPServiceProviderManager.GetDefaultProvider().EPRuntime;
         }
 
         [Test]
@@ -38,26 +39,26 @@ namespace com.espertech.esper.example.qos_sla.monitor
             for (var i = 0; i < services.Length; i++)
             {
                 var limit = new LatencyLimit(services[i], customers[i], limitSpike[i]);
-                runtime.SendEvent(limit);
+                _runtime.SendEvent(limit);
             }
 
             // Send events
-            for (int i = 0; i < 100; i++)
+            for (var i = 0; i < 100; i++)
             {
-                for (int index = 0; index < services.Length; index++)
+                for (var index = 0; index < services.Length; index++)
                 {
                     var measurement = new OperationMeasurement(services[index], customers[index], 9950 + i, true);
-                    runtime.SendEvent(measurement);
+                    _runtime.SendEvent(measurement);
                 }
             }
 
             // Send a new limit
             var nlimit = new LatencyLimit(services[1], customers[1], 8000);
-            runtime.SendEvent(nlimit);
+            _runtime.SendEvent(nlimit);
 
             // Send a new spike
             var nmeasurement = new OperationMeasurement(services[1], customers[1], 8001, true);
-            runtime.SendEvent(nmeasurement);
+            _runtime.SendEvent(nmeasurement);
         }
 
         /// <summary>

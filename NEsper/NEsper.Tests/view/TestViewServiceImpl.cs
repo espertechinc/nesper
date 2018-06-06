@@ -103,7 +103,7 @@ namespace com.espertech.esper.view
                 _viewService.Remove(_streamOne, _viewOne);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // Expected
             }

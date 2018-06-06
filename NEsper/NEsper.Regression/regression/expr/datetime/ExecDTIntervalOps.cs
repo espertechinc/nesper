@@ -15,6 +15,7 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.bean.lambda;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.timer;
+using com.espertech.esper.util;
 
 using static com.espertech.esper.supportregression.util.SupportMessageAssertUtil;
 
@@ -60,24 +61,24 @@ namespace com.espertech.esper.regression.expr.datetime
             };
             AssertExpression(epService, seedTime, 0, "a.withDate(2001, 1, 1).before(b)", expected, null);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2999-01-01T10:00:00.001", 0, false},
                     new object[] {"2999-01-01T08:00:00.001", 0, true},
             };
             AssertExpression(epService, seedTime, 0, "a.withDate(2001, 1, 1).before(b.withDate(2001, 1, 1))", expected, null);
     
             // Test end-timestamp preserved when using calendar ops
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.000", 2000, false},
             };
             AssertExpression(epService, seedTime, 0, "a.before(b)", expected, null);
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.000", 2000, false},
             };
             AssertExpression(epService, seedTime, 0, "a.withTime(8, 59, 59, 0).before(b)", expected, null);
     
             // Test end-timestamp preserved when using calendar ops
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T09:00:01.000", 0, false},
                     new object[] {"2002-05-30T09:00:01.001", 0, true},
             };
@@ -101,7 +102,8 @@ namespace com.espertech.esper.regression.expr.datetime
     
             // wrong 1st parameter - boolean
             TryInvalid(epService, "select a.before(true) from A#lastevent as a, SupportBean#lastevent as b",
-                    "Error starting statement: Failed to validate select-clause expression 'a.before(true)': For date-time method 'before' the first parameter expression returns '" + Name.Clean<bool>() + "', however requires a DateTime or Long-type return value or event (with timestamp) [select a.before(true) from A#lastevent as a, SupportBean#lastevent as b]");
+                    string.Format("Error starting statement: Failed to validate select-clause expression 'a.before(true)': For date-time method 'before' the first parameter expression returns '{0}', however requires a DateTime or Long-type return value or event (with timestamp) [select a.before(true) from A#lastevent as a, SupportBean#lastevent as b]", 
+                        typeof(bool).GetCleanName()));
     
             // wrong zero parameters
             TryInvalid(epService, "select a.before() from A#lastevent as a, SupportBean#lastevent as b",
@@ -199,7 +201,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
             };
     
-            var expressions = new string[]{
+            var expressions = new[]{
                     "a.before(b)",
                     "a.before(b, 1 millisecond)",
                     "a.before(b, 1 millisecond, 1000000000L)",
@@ -228,7 +230,7 @@ namespace com.espertech.esper.regression.expr.datetime
     
             string seedTime = "2002-05-30T09:00:00.000";
             var expectedValidator = new BeforeValidator(1L, Int64.MaxValue);
-            var expected = new object[][]{
+            var expected = new[] {
                     new object[] {"2002-05-30T08:59:59.000", 0, true},
                     new object[] {"2002-05-30T08:59:59.000", 999, true},
                     new object[] {"2002-05-30T08:59:59.000", 1000, false},
@@ -241,7 +243,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 0, "a.before(b)", expected, expectedValidator);
             AssertExpression(epService, seedTime, 100000, "a.before(b)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.000", 0, true},
                     new object[] {"2002-05-30T08:59:59.899", 0, true},
                     new object[] {"2002-05-30T08:59:59.900", 0, true},
@@ -253,7 +255,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 0, "a.before(b, 100 milliseconds)", expected, expectedValidator);
             AssertExpression(epService, seedTime, 100000, "a.before(b, 100 milliseconds)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.000", 0, false},
                     new object[] {"2002-05-30T08:59:59.499", 0, false},
                     new object[] {"2002-05-30T08:59:59.499", 1, true},
@@ -278,7 +280,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 0, "a.before(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
     
             SetVStartEndVariables(epService, 200, 800);
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.000", 0, false},
                     new object[] {"2002-05-30T08:59:59.199", 0, false},
                     new object[] {"2002-05-30T08:59:59.199", 1, true},
@@ -290,7 +292,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 0, "a.before(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
     
             // test negative and reversed max and min
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.500", 0, false},
                     new object[] {"2002-05-30T09:00:00.990", 0, false},
                     new object[] {"2002-05-30T09:00:00.100", 0, true},
@@ -303,14 +305,14 @@ namespace com.espertech.esper.regression.expr.datetime
     
             // test month logic
             seedTime = "2002-03-01T09:00:00.000";
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-02-01T09:00:00.000", 0, true},
                     new object[] {"2002-02-01T09:00:00.001", 0, false}
             };
             expectedValidator = new BeforeValidator(GetMillisecForDays(28), Int64.MaxValue);
             AssertExpression(epService, seedTime, 100, "a.before(b, 1 month)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-01-01T08:59:59.999", 0, false},
                     new object[] {"2002-01-01T09:00:00.000", 0, true},
                     new object[] {"2002-01-11T09:00:00.000", 0, true},
@@ -337,7 +339,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 0, "a.startTS.after(b)", expected, expectedValidator);
             AssertExpression(epService, seedTime, 0, "a.after(b.startTS)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
                     new object[] {"2002-05-30T09:00:00.002", 0, true},
@@ -345,7 +347,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 1, "a.after(b)", expected, expectedValidator);
             AssertExpression(epService, seedTime, 1, "a.after(b, 1 millisecond, 1000000000L)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
                     new object[] {"2002-05-30T09:00:00.099", 0, false},
                     new object[] {"2002-05-30T09:00:00.100", 0, true},
@@ -355,7 +357,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 0, "a.after(b, 100 milliseconds)", expected, expectedValidator);
             AssertExpression(epService, seedTime, 0, "a.after(b, 100 milliseconds, 1000000000L)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
                     new object[] {"2002-05-30T09:00:00.099", 0, false},
                     new object[] {"2002-05-30T09:00:00.100", 0, true},
@@ -371,7 +373,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 0, "a.after(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
     
             SetVStartEndVariables(epService, 200, 800);
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
                     new object[] {"2002-05-30T09:00:00.199", 0, false},
                     new object[] {"2002-05-30T09:00:00.200", 0, true},
@@ -382,7 +384,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 0, "a.after(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
     
             // test negative distances
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.599", 0, false},
                     new object[] {"2002-05-30T08:59:59.600", 0, true},
                     new object[] {"2002-05-30T09:00:00.000", 0, true},
@@ -394,14 +396,14 @@ namespace com.espertech.esper.regression.expr.datetime
     
             // test month logic
             seedTime = "2002-02-01T09:00:00.000";
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-03-01T09:00:00.099", 0, false},
                     new object[] {"2002-03-01T09:00:00.100", 0, true}
             };
             expectedValidator = new AfterValidator(GetMillisecForDays(28), Int64.MaxValue);
             AssertExpression(epService, seedTime, 100, "a.after(b, 1 month)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-03-01T09:00:00.099", 0, false},
                     new object[] {"2002-03-01T09:00:00.100", 0, true},
                     new object[] {"2002-04-01T09:00:00.100", 0, true},
@@ -425,7 +427,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 0, "a.startTS.coincides(b)", expected, expectedValidator);
             AssertExpression(epService, seedTime, 0, "a.coincides(b.startTS)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T09:00:00.000", 1, true},
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
@@ -434,7 +436,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 1, "a.coincides(b)", expected, expectedValidator);
             AssertExpression(epService, seedTime, 1, "a.coincides(b, 0, 0)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.899", 0, false},
                     new object[] {"2002-05-30T08:59:59.900", 0, true},
                     new object[] {"2002-05-30T09:00:00.000", 0, true},
@@ -449,7 +451,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 0, "a.coincides(b, 100 milliseconds)", expected, expectedValidator);
             AssertExpression(epService, seedTime, 0, "a.coincides(b, 100 milliseconds, 0.1 sec)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.799", 0, false},
                     new object[] {"2002-05-30T08:59:59.800", 0, true},
                     new object[] {"2002-05-30T09:00:00.000", 0, true},
@@ -461,7 +463,7 @@ namespace com.espertech.esper.regression.expr.datetime
             expectedValidator = new CoincidesValidator(200L, 500L);
             AssertExpression(epService, seedTime, 0, "a.coincides(b, 200 milliseconds, 500 milliseconds)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.799", 0, false},
                     new object[] {"2002-05-30T08:59:59.799", 200, false},
                     new object[] {"2002-05-30T08:59:59.799", 201, false},
@@ -483,7 +485,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 50, "a.coincides(b, V_START milliseconds, V_END milliseconds)", expected, expectedValidator);
     
             SetVStartEndVariables(epService, 200, 70);
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.800", 0, false},
                     new object[] {"2002-05-30T08:59:59.800", 179, false},
                     new object[] {"2002-05-30T08:59:59.800", 180, true},
@@ -496,7 +498,7 @@ namespace com.espertech.esper.regression.expr.datetime
     
             // test month logic
             seedTime = "2002-02-01T09:00:00.000";    // lasts to "2002-04-01T09:00:00.000" (28+31 days)
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-02-15T09:00:00.099", GetMillisecForDays(28 + 14), true},
                     new object[] {"2002-01-01T08:00:00.000", GetMillisecForDays(28 + 30), false}
             };
@@ -520,7 +522,7 @@ namespace com.espertech.esper.regression.expr.datetime
             };
             AssertExpression(epService, seedTime, 100, "a.during(b)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.000", 0, false},
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
@@ -528,14 +530,14 @@ namespace com.espertech.esper.regression.expr.datetime
             };
             AssertExpression(epService, seedTime, 0, "a.during(b)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T09:00:00.001", 0, true},
                     new object[] {"2002-05-30T09:00:00.001", 2000000, true},
             };
             AssertExpression(epService, seedTime, 100, "a.startTS.during(b)", expected, null);    // want to use null-validator here
     
             // test 1-parameter footprint
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
                     new object[] {"2002-05-30T09:00:00.000", 100, false},
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
@@ -554,7 +556,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 100, "a.during(b, 15 milliseconds)", expected, expectedValidator);
     
             // test 2-parameter footprint
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
                     new object[] {"2002-05-30T09:00:00.000", 100, false},
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
@@ -577,7 +579,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 100, "a.during(b, 5 milliseconds, 20 milliseconds)", expected, expectedValidator);
     
             // test 4-parameter footprint
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
                     new object[] {"2002-05-30T09:00:00.000", 100, false},
                     new object[] {"2002-05-30T09:00:00.004", 85, false},
@@ -616,7 +618,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 100, "a.finishes(b, 0)", expected, expectedValidator);
             AssertExpression(epService, seedTime, 100, "a.finishes(b, 0 milliseconds)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
                     new object[] {"2002-05-30T09:00:00.000", 99, false},
                     new object[] {"2002-05-30T09:00:00.001", 93, false},
@@ -654,7 +656,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 100, "a.finishedBy(b, 0)", expected, expectedValidator);
             AssertExpression(epService, seedTime, 100, "a.finishedBy(b, 0 milliseconds)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.000", 0, false},
                     new object[] {"2002-05-30T08:59:59.000", 1094, false},
                     new object[] {"2002-05-30T08:59:59.000", 1095, true},
@@ -690,7 +692,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 100, "a.includes(b)", expected, expectedValidator);
     
             // test 1-parameter form
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.000", 0, false},
                     new object[] {"2002-05-30T08:59:59.000", 1100, false},
                     new object[] {"2002-05-30T08:59:59.000", 1105, false},
@@ -711,7 +713,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 100, "a.includes(b, 5 milliseconds)", expected, expectedValidator);
     
             // test 2-parameter form
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.000", 0, false},
                     new object[] {"2002-05-30T08:59:59.000", 1100, false},
                     new object[] {"2002-05-30T08:59:59.000", 1105, false},
@@ -730,7 +732,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 100, "a.includes(b, 5 milliseconds, 20 milliseconds)", expected, expectedValidator);
     
             // test 4-parameter form
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.000", 0, false},
                     new object[] {"2002-05-30T08:59:59.000", 1100, false},
                     new object[] {"2002-05-30T08:59:59.000", 1105, false},
@@ -765,7 +767,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 0, "a.meets(b)", expected, expectedValidator);
     
             // test 1-parameter form
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.000", 0, false},
                     new object[] {"2002-05-30T08:59:59.000", 994, false},
                     new object[] {"2002-05-30T08:59:59.000", 995, true},
@@ -800,7 +802,7 @@ namespace com.espertech.esper.regression.expr.datetime
             };
             AssertExpression(epService, seedTime, 100, "a.metBy(b)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.999", 1, false},
                     new object[] {"2002-05-30T09:00:00.000", 0, true},
                     new object[] {"2002-05-30T09:00:00.000", 1, true},
@@ -808,7 +810,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 0, "a.metBy(b)", expected, expectedValidator);
     
             // test 1-parameter form
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.994", 0, false},
                     new object[] {"2002-05-30T08:59:59.994", 5, false},
                     new object[] {"2002-05-30T08:59:59.995", 0, true},
@@ -821,7 +823,7 @@ namespace com.espertech.esper.regression.expr.datetime
             expectedValidator = new MetByValidator(5L);
             AssertExpression(epService, seedTime, 0, "a.metBy(b, 5 milliseconds)", expected, expectedValidator);
     
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.994", 0, false},
                     new object[] {"2002-05-30T08:59:59.994", 5, false},
                     new object[] {"2002-05-30T08:59:59.995", 0, false},
@@ -854,7 +856,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 100, "a.overlaps(b)", expected, expectedValidator);
     
             // test 1-parameter form (overlap by not more then X msec)
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.000", 1000, false},
                     new object[] {"2002-05-30T08:59:59.000", 1001, true},
                     new object[] {"2002-05-30T08:59:59.000", 1005, true},
@@ -871,7 +873,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 100, "a.overlaps(b, 5 milliseconds)", expected, expectedValidator);
     
             // test 2-parameter form (overlap by min X and not more then Y msec)
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.000", 1004, false},
                     new object[] {"2002-05-30T08:59:59.000", 1005, true},
                     new object[] {"2002-05-30T08:59:59.000", 1010, true},
@@ -906,7 +908,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 100, "a.overlappedBy(b)", expected, expectedValidator);
     
             // test 1-parameter form (overlap by not more then X msec)
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.000", 1000, false},
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
                     new object[] {"2002-05-30T09:00:00.000", 1, false},
@@ -925,7 +927,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 100, "a.overlappedBy(b, 5 milliseconds)", expected, expectedValidator);
     
             // test 2-parameter form (overlap by min X and not more then Y msec)
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.000", 1000, false},
                     new object[] {"2002-05-30T09:00:00.000", 0, false},
                     new object[] {"2002-05-30T09:00:00.000", 1, false},
@@ -959,7 +961,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 100, "a.starts(b)", expected, expectedValidator);
     
             // test 1-parameter form (max distance between start times)
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.994", 6, false},
                     new object[] {"2002-05-30T08:59:59.995", 0, true},
                     new object[] {"2002-05-30T08:59:59.995", 104, true},
@@ -992,7 +994,7 @@ namespace com.espertech.esper.regression.expr.datetime
             AssertExpression(epService, seedTime, 100, "a.startedBy(b)", expected, expectedValidator);
     
             // test 1-parameter form (max distance between start times)
-            expected = new object[][]{
+            expected = new[] {
                     new object[] {"2002-05-30T08:59:59.994", 6, false},
                     new object[] {"2002-05-30T08:59:59.995", 0, false},
                     new object[] {"2002-05-30T08:59:59.995", 105, false},
@@ -1043,7 +1045,7 @@ namespace com.espertech.esper.regression.expr.datetime
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
     
-            epService.EPRuntime.SendEvent(new object[]{fieldType.MakeStart(seedTime), fieldType.MakeEnd(seedTime, seedDuration)}, "B_" + fieldType.GetName());
+            epService.EPRuntime.SendEvent(new[]{fieldType.MakeStart(seedTime), fieldType.MakeEnd(seedTime, seedDuration)}, "B_" + fieldType.GetName());
     
             foreach (object[] test in timestampsAndResult) {
                 string testtime = (string) test[0];
@@ -1060,7 +1062,7 @@ namespace com.espertech.esper.regression.expr.datetime
                     Assert.AreEqual(expected, validator.Validate(leftStart, leftEnd, rightStart, rightEnd), "Validation of expected result failed for " + message);
                 }
     
-                epService.EPRuntime.SendEvent(new object[]{fieldType.MakeStart(testtime), fieldType.MakeEnd(testtime, testduration)}, "A_" + fieldType.GetName());
+                epService.EPRuntime.SendEvent(new[]{fieldType.MakeStart(testtime), fieldType.MakeEnd(testtime, testduration)}, "A_" + fieldType.GetName());
     
                 if (!listener.IsInvoked && expected) {
                     Assert.Fail("Expected but not received for " + message);
@@ -1122,298 +1124,297 @@ namespace com.espertech.esper.regression.expr.datetime
         }
 
         public class BeforeValidator : Validator {
-            private long start;
-            private long end;
+            private readonly long _start;
+            private readonly long _end;
 
             public BeforeValidator(long start, long end) {
-                this.start = start;
-                this.end = end;
+                _start = start;
+                _end = end;
             }
     
             public bool Validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
                 long delta = rightStart - leftEnd;
-                return start <= delta && delta <= end;
+                return _start <= delta && delta <= _end;
             }
         }
 
         public class AfterValidator : Validator {
-            private long start;
-            private long end;
+            private readonly long _start;
+            private readonly long _end;
 
             public AfterValidator(long start, long end) {
-                this.start = start;
-                this.end = end;
+                _start = start;
+                _end = end;
             }
     
             public bool Validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
                 long delta = leftStart - rightEnd;
-                return start <= delta && delta <= end;
+                return _start <= delta && delta <= _end;
             }
         }
 
         public class CoincidesValidator : Validator {
-            private readonly long startThreshold;
-            private readonly long endThreshold;
+            private readonly long _startThreshold;
+            private readonly long _endThreshold;
 
             public CoincidesValidator() {
-                startThreshold = 0L;
-                endThreshold = 0L;
+                _startThreshold = 0L;
+                _endThreshold = 0L;
             }
 
             public CoincidesValidator(long startThreshold) {
-                this.startThreshold = startThreshold;
-                this.endThreshold = startThreshold;
+                _startThreshold = startThreshold;
+                _endThreshold = startThreshold;
             }
 
             public CoincidesValidator(long startThreshold, long endThreshold) {
-                this.startThreshold = startThreshold;
-                this.endThreshold = endThreshold;
+                _startThreshold = startThreshold;
+                _endThreshold = endThreshold;
             }
     
             public bool Validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
                 long startDelta = Math.Abs(leftStart - rightStart);
                 long endDelta = Math.Abs(leftEnd - rightEnd);
-                return startDelta <= startThreshold && endDelta <= endThreshold;
+                return startDelta <= _startThreshold && endDelta <= _endThreshold;
             }
         }
 
         public class DuringValidator : Validator {
     
-            private int form;
-            private long threshold;
-            private long minThreshold;
-            private long maxThreshold;
-            private long minStartThreshold;
-            private long maxStartThreshold;
-            private long minEndThreshold;
-            private long maxEndThreshold;
+            private readonly int _form;
+            private readonly long _threshold;
+            private readonly long _minThreshold;
+            private readonly long _maxThreshold;
+            private readonly long _minStartThreshold;
+            private readonly long _maxStartThreshold;
+            private readonly long _minEndThreshold;
+            private readonly long _maxEndThreshold;
 
             public DuringValidator() {
-                form = 1;
+                _form = 1;
             }
 
             public DuringValidator(long threshold) {
-                form = 2;
-                this.threshold = threshold;
+                _form = 2;
+                _threshold = threshold;
             }
 
             public DuringValidator(long minThreshold, long maxThreshold) {
-                form = 3;
-                this.minThreshold = minThreshold;
-                this.maxThreshold = maxThreshold;
+                _form = 3;
+                _minThreshold = minThreshold;
+                _maxThreshold = maxThreshold;
             }
 
             public DuringValidator(long minStartThreshold, long maxStartThreshold, long minEndThreshold, long maxEndThreshold) {
-                form = 4;
-                this.minStartThreshold = minStartThreshold;
-                this.maxStartThreshold = maxStartThreshold;
-                this.minEndThreshold = minEndThreshold;
-                this.maxEndThreshold = maxEndThreshold;
+                _form = 4;
+                _minStartThreshold = minStartThreshold;
+                _maxStartThreshold = maxStartThreshold;
+                _minEndThreshold = minEndThreshold;
+                _maxEndThreshold = maxEndThreshold;
             }
     
             public bool Validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
-                if (form == 1) {
+                if (_form == 1) {
                     return rightStart < leftStart &&
                             leftEnd < rightEnd;
-                } else if (form == 2) {
+                } else if (_form == 2) {
                     long distanceStart = leftStart - rightStart;
-                    if (distanceStart <= 0 || distanceStart > threshold) {
+                    if (distanceStart <= 0 || distanceStart > _threshold) {
                         return false;
                     }
                     long distanceEnd = rightEnd - leftEnd;
-                    return !(distanceEnd <= 0 || distanceEnd > threshold);
-                } else if (form == 3) {
+                    return !(distanceEnd <= 0 || distanceEnd > _threshold);
+                } else if (_form == 3) {
                     long distanceStart = leftStart - rightStart;
-                    if (distanceStart < minThreshold || distanceStart > maxThreshold) {
+                    if (distanceStart < _minThreshold || distanceStart > _maxThreshold) {
                         return false;
                     }
                     long distanceEnd = rightEnd - leftEnd;
-                    return !(distanceEnd < minThreshold || distanceEnd > maxThreshold);
-                } else if (form == 4) {
+                    return !(distanceEnd < _minThreshold || distanceEnd > _maxThreshold);
+                } else if (_form == 4) {
                     long distanceStart = leftStart - rightStart;
-                    if (distanceStart < minStartThreshold || distanceStart > maxStartThreshold) {
+                    if (distanceStart < _minStartThreshold || distanceStart > _maxStartThreshold) {
                         return false;
                     }
                     long distanceEnd = rightEnd - leftEnd;
-                    return !(distanceEnd < minEndThreshold || distanceEnd > maxEndThreshold);
+                    return !(distanceEnd < _minEndThreshold || distanceEnd > _maxEndThreshold);
                 }
-                throw new IllegalStateException("Invalid form: " + form);
+                throw new IllegalStateException("Invalid form: " + _form);
             }
         }
 
         public class FinishesValidator : Validator {
-            private long threshold;
+            private readonly long? _threshold;
 
             public FinishesValidator() {
             }
 
             public FinishesValidator(long threshold) {
-                this.threshold = threshold;
+                _threshold = threshold;
             }
     
             public bool Validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
-                if (threshold == null) {
+                if (_threshold == null) {
                     return rightStart < leftStart && leftEnd == rightEnd;
                 } else {
                     if (rightStart >= leftStart) {
                         return false;
                     }
                     long delta = Math.Abs(leftEnd - rightEnd);
-                    return delta <= threshold;
+                    return delta <= _threshold;
                 }
             }
         }
 
         public class FinishedByValidator : Validator {
-            private long threshold;
+            private readonly long? _threshold;
 
             public FinishedByValidator() {
             }
 
             public FinishedByValidator(long threshold) {
-                this.threshold = threshold;
+                _threshold = threshold;
             }
     
             public bool Validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
     
-                if (threshold == null) {
+                if (_threshold == null) {
                     return leftStart < rightStart && leftEnd == rightEnd;
                 } else {
                     if (leftStart >= rightStart) {
                         return false;
                     }
                     long delta = Math.Abs(leftEnd - rightEnd);
-                    return delta <= threshold;
+                    return delta <= _threshold;
                 }
             }
         }
 
         public class IncludesValidator : Validator {
-    
-            private int form;
-            private long threshold;
-            private long minThreshold;
-            private long maxThreshold;
-            private long minStartThreshold;
-            private long maxStartThreshold;
-            private long minEndThreshold;
-            private long maxEndThreshold;
+            private readonly int _form;
+            private readonly long _threshold;
+            private readonly long _minThreshold;
+            private readonly long _maxThreshold;
+            private readonly long _minStartThreshold;
+            private readonly long _maxStartThreshold;
+            private readonly long _minEndThreshold;
+            private readonly long _maxEndThreshold;
     
             public IncludesValidator() {
-                form = 1;
+                _form = 1;
             }
 
             public IncludesValidator(long threshold) {
-                form = 2;
-                this.threshold = threshold;
+                _form = 2;
+                _threshold = threshold;
             }
 
             public IncludesValidator(long minThreshold, long maxThreshold) {
-                form = 3;
-                this.minThreshold = minThreshold;
-                this.maxThreshold = maxThreshold;
+                _form = 3;
+                _minThreshold = minThreshold;
+                _maxThreshold = maxThreshold;
             }
 
             public IncludesValidator(long minStartThreshold, long maxStartThreshold, long minEndThreshold, long maxEndThreshold) {
-                form = 4;
-                this.minStartThreshold = minStartThreshold;
-                this.maxStartThreshold = maxStartThreshold;
-                this.minEndThreshold = minEndThreshold;
-                this.maxEndThreshold = maxEndThreshold;
+                _form = 4;
+                _minStartThreshold = minStartThreshold;
+                _maxStartThreshold = maxStartThreshold;
+                _minEndThreshold = minEndThreshold;
+                _maxEndThreshold = maxEndThreshold;
             }
     
             public bool Validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
     
-                if (form == 1) {
+                if (_form == 1) {
                     return leftStart < rightStart &&
                             rightEnd < leftEnd;
-                } else if (form == 2) {
+                } else if (_form == 2) {
                     long distanceStart = rightStart - leftStart;
-                    if (distanceStart <= 0 || distanceStart > threshold) {
+                    if (distanceStart <= 0 || distanceStart > _threshold) {
                         return false;
                     }
                     long distanceEnd = leftEnd - rightEnd;
-                    return !(distanceEnd <= 0 || distanceEnd > threshold);
-                } else if (form == 3) {
+                    return !(distanceEnd <= 0 || distanceEnd > _threshold);
+                } else if (_form == 3) {
                     long distanceStart = rightStart - leftStart;
-                    if (distanceStart < minThreshold || distanceStart > maxThreshold) {
+                    if (distanceStart < _minThreshold || distanceStart > _maxThreshold) {
                         return false;
                     }
                     long distanceEnd = leftEnd - rightEnd;
-                    return !(distanceEnd < minThreshold || distanceEnd > maxThreshold);
-                } else if (form == 4) {
+                    return !(distanceEnd < _minThreshold || distanceEnd > _maxThreshold);
+                } else if (_form == 4) {
                     long distanceStart = rightStart - leftStart;
-                    if (distanceStart < minStartThreshold || distanceStart > maxStartThreshold) {
+                    if (distanceStart < _minStartThreshold || distanceStart > _maxStartThreshold) {
                         return false;
                     }
                     long distanceEnd = leftEnd - rightEnd;
-                    return !(distanceEnd < minEndThreshold || distanceEnd > maxEndThreshold);
+                    return !(distanceEnd < _minEndThreshold || distanceEnd > _maxEndThreshold);
                 }
-                throw new IllegalStateException("Invalid form: " + form);
+                throw new IllegalStateException("Invalid form: " + _form);
             }
         }
 
         public class MeetsValidator : Validator {
-            private long threshold;
+            private readonly long? _threshold;
 
             public MeetsValidator() {
             }
 
             public MeetsValidator(long threshold) {
-                this.threshold = threshold;
+                _threshold = threshold;
             }
     
             public bool Validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
     
-                if (threshold == null) {
+                if (_threshold == null) {
                     return rightStart == leftEnd;
                 } else {
                     long delta = Math.Abs(rightStart - leftEnd);
-                    return delta <= threshold;
+                    return delta <= _threshold;
                 }
             }
         }
 
         public class MetByValidator : Validator {
-            private long threshold;
+            private readonly long? _threshold;
 
             public MetByValidator() {
             }
 
             public MetByValidator(long threshold) {
-                this.threshold = threshold;
+                _threshold = threshold;
             }
     
             public bool Validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
     
-                if (threshold == null) {
+                if (_threshold == null) {
                     return leftStart == rightEnd;
                 } else {
                     long delta = Math.Abs(leftStart - rightEnd);
-                    return delta <= threshold;
+                    return delta <= _threshold;
                 }
             }
         }
 
         public class OverlapsValidator : Validator {
-            private int form;
-            private long threshold;
-            private long minThreshold;
-            private long maxThreshold;
+            private readonly int _form;
+            private readonly long _threshold;
+            private readonly long _minThreshold;
+            private readonly long _maxThreshold;
 
             public OverlapsValidator() {
-                form = 1;
+                _form = 1;
             }
 
             public OverlapsValidator(long threshold) {
-                form = 2;
-                this.threshold = threshold;
+                _form = 2;
+                _threshold = threshold;
             }
 
             public OverlapsValidator(long minThreshold, long maxThreshold) {
-                form = 3;
-                this.minThreshold = minThreshold;
-                this.maxThreshold = maxThreshold;
+                _form = 3;
+                _minThreshold = minThreshold;
+                _maxThreshold = maxThreshold;
             }
     
             public bool Validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
@@ -1422,44 +1423,44 @@ namespace com.espertech.esper.regression.expr.datetime
                         (rightStart < leftEnd) &&
                         (leftEnd < rightEnd);
     
-                if (form == 1) {
+                if (_form == 1) {
                     return match;
-                } else if (form == 2) {
+                } else if (_form == 2) {
                     if (!match) {
                         return false;
                     }
                     long delta = leftEnd - rightStart;
-                    return 0 <= delta && delta <= threshold;
-                } else if (form == 3) {
+                    return 0 <= delta && delta <= _threshold;
+                } else if (_form == 3) {
                     if (!match) {
                         return false;
                     }
                     long delta = leftEnd - rightStart;
-                    return minThreshold <= delta && delta <= maxThreshold;
+                    return _minThreshold <= delta && delta <= _maxThreshold;
                 }
-                throw new ArgumentException("Invalid form " + form);
+                throw new ArgumentException("Invalid form " + _form);
             }
         }
 
         public class OverlappedByValidator : Validator {
-            private int form;
-            private long threshold;
-            private long minThreshold;
-            private long maxThreshold;
+            private readonly int _form;
+            private readonly long _threshold;
+            private readonly long _minThreshold;
+            private readonly long _maxThreshold;
 
             public OverlappedByValidator() {
-                form = 1;
+                _form = 1;
             }
 
             public OverlappedByValidator(long threshold) {
-                form = 2;
-                this.threshold = threshold;
+                _form = 2;
+                _threshold = threshold;
             }
 
             public OverlappedByValidator(long minThreshold, long maxThreshold) {
-                form = 3;
-                this.minThreshold = minThreshold;
-                this.maxThreshold = maxThreshold;
+                _form = 3;
+                _minThreshold = minThreshold;
+                _maxThreshold = maxThreshold;
             }
     
             public bool Validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
@@ -1468,61 +1469,61 @@ namespace com.espertech.esper.regression.expr.datetime
                         (leftStart < rightEnd) &&
                         (rightEnd < leftEnd);
     
-                if (form == 1) {
+                if (_form == 1) {
                     return match;
-                } else if (form == 2) {
+                } else if (_form == 2) {
                     if (!match) {
                         return false;
                     }
                     long delta = rightEnd - leftStart;
-                    return 0 <= delta && delta <= threshold;
-                } else if (form == 3) {
+                    return 0 <= delta && delta <= _threshold;
+                } else if (_form == 3) {
                     if (!match) {
                         return false;
                     }
                     long delta = rightEnd - leftStart;
-                    return minThreshold <= delta && delta <= maxThreshold;
+                    return _minThreshold <= delta && delta <= _maxThreshold;
                 }
-                throw new ArgumentException("Invalid form " + form);
+                throw new ArgumentException("Invalid form " + _form);
             }
         }
 
         public class StartsValidator : Validator {
-            private long threshold;
+            private readonly long? _threshold;
 
             public StartsValidator() {
             }
 
             public StartsValidator(long threshold) {
-                this.threshold = threshold;
+                _threshold = threshold;
             }
     
             public bool Validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
-                if (threshold == null) {
+                if (_threshold == null) {
                     return (leftStart == rightStart) && (leftEnd < rightEnd);
                 } else {
                     long delta = Math.Abs(leftStart - rightStart);
-                    return (delta <= threshold) && (leftEnd < rightEnd);
+                    return (delta <= _threshold) && (leftEnd < rightEnd);
                 }
             }
         }
 
         public class StartedByValidator : Validator {
-            private long threshold;
+            private readonly long? _threshold;
 
             public StartedByValidator() {
             }
 
             public StartedByValidator(long threshold) {
-                this.threshold = threshold;
+                _threshold = threshold;
             }
     
             public bool Validate(long leftStart, long leftEnd, long rightStart, long rightEnd) {
-                if (threshold == null) {
+                if (_threshold == null) {
                     return (leftStart == rightStart) && (leftEnd > rightEnd);
                 } else {
                     long delta = Math.Abs(leftStart - rightStart);
-                    return (delta <= threshold) && (leftEnd > rightEnd);
+                    return (delta <= _threshold) && (leftEnd > rightEnd);
                 }
             }
         }

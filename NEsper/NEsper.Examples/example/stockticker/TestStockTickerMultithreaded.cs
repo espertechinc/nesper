@@ -13,10 +13,11 @@ using System.Reflection;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
-
-
+using com.espertech.esper.core.support;
+using com.espertech.esper.events;
 using NEsper.Examples.StockTicker.eventbean;
 using NEsper.Examples.StockTicker.monitor;
 
@@ -34,11 +35,16 @@ namespace NEsper.Examples.StockTicker
         {
             _listener = new StockTickerResultListener();
 
-            var configuration = new Configuration();
+            var container = ContainerExtensions.CreateDefaultContainer(false)
+                .InitializeDefaultServices()
+                .InitializeDatabaseDrivers();
+
+            var configuration = new Configuration(container);
             configuration.AddEventType("PriceLimit", typeof (PriceLimit).FullName);
             configuration.AddEventType("StockTick", typeof (StockTick).FullName);
 
-            _epService = EPServiceProviderManager.GetProvider("TestStockTickerMultithreaded", configuration);
+            _epService = EPServiceProviderManager.GetProvider(
+                container, "TestStockTickerMultithreaded", configuration);
             _epService.Initialize();
             new StockTickerMonitor(_epService, _listener);
         }

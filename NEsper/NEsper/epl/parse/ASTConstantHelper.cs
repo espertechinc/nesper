@@ -107,7 +107,7 @@ namespace com.espertech.esper.epl.parse
             {
                 return IntValue.ParseString(arg)*factor;
             }
-            catch (OverflowException e1)
+            catch (OverflowException)
             {
                 try
                 {

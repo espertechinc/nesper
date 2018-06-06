@@ -11,6 +11,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.regression.expr.enummethod
 {
@@ -101,15 +102,18 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             // invalid incompatible params
             epl = "select Contained.allOf(x => 1) from SupportBean_ST0_Container";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.allOf()': Error validating enumeration method 'allOf', expected a bool-type result for expression parameter 0 but received " + Name.Clean<int>() + " [select Contained.allOf(x => 1) from SupportBean_ST0_Container]");
+            SupportMessageAssertUtil.TryInvalid(epService, epl, string.Format("Error starting statement: Failed to validate select-clause expression 'Contained.allOf()': Error validating enumeration method 'allOf', expected a bool-type result for expression parameter 0 but received {0} [select Contained.allOf(x => 1) from SupportBean_ST0_Container]", 
+                typeof(int).GetCleanName()));
     
             // invalid incompatible params
             epl = "select Contained.allOf(x => 1) from SupportBean_ST0_Container";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.allOf()': Error validating enumeration method 'allOf', expected a bool-type result for expression parameter 0 but received " + Name.Clean<int>() + " [select Contained.allOf(x => 1) from SupportBean_ST0_Container]");
+            SupportMessageAssertUtil.TryInvalid(epService, epl, string.Format("Error starting statement: Failed to validate select-clause expression 'Contained.allOf()': Error validating enumeration method 'allOf', expected a bool-type result for expression parameter 0 but received {0} [select Contained.allOf(x => 1) from SupportBean_ST0_Container]", 
+                typeof(int).GetCleanName()));
     
             // invalid incompatible params
             epl = "select Contained.aggregate(0, (result, item) => result || ',') from SupportBean_ST0_Container";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.aggregate(0,)': Error validating enumeration method 'aggregate' parameter 1: Failed to validate declared expression body expression 'result||\",\"': Implicit conversion from datatype '" + Name.Clean<int>() + "' to string is not allowed [select Contained.aggregate(0, (result, item) => result || ',') from SupportBean_ST0_Container]");
+            SupportMessageAssertUtil.TryInvalid(epService, epl, string.Format("Error starting statement: Failed to validate select-clause expression 'Contained.aggregate(0,)': Error validating enumeration method 'aggregate' parameter 1: Failed to validate declared expression body expression 'result||\",\"': Implicit conversion from datatype '{0}' to string is not allowed [select Contained.aggregate(0, (result, item) => result || ',') from SupportBean_ST0_Container]", 
+                typeof(int?).GetCleanName()));
     
             // invalid incompatible params
             epl = "select Contained.average(x => x.id) from SupportBean_ST0_Container";
@@ -117,7 +121,8 @@ namespace com.espertech.esper.regression.expr.enummethod
     
             // not a property
             epl = "select Contained.firstof().dummy from SupportBean_ST0_Container";
-            SupportMessageAssertUtil.TryInvalid(epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.firstof().dummy()': Failed to resolve method 'dummy': Could not find enumeration method, date-time method or instance method named 'dummy' in class '" + typeof(SupportBean_ST0).FullName + "' taking no parameters [select Contained.firstof().dummy from SupportBean_ST0_Container]");
+            SupportMessageAssertUtil.TryInvalid(epService, epl, string.Format("Error starting statement: Failed to validate select-clause expression 'Contained.firstof().dummy()': Failed to resolve method 'dummy': Could not find enumeration method, date-time method or instance method named 'dummy' in class '{0}' taking no parameters [select Contained.firstof().dummy from SupportBean_ST0_Container]", 
+                typeof(SupportBean_ST0).GetCleanName()));
         }
     }
 } // end of namespace
