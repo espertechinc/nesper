@@ -8,8 +8,9 @@
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportunit.bean;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.linq
@@ -18,16 +19,19 @@ namespace com.espertech.esper.linq
     public class TestLinqStdViews
     {
         private EPServiceProvider _serviceProvider;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
-            Configuration configuration = new Configuration();
+            _container = SupportContainer.Reset();
+
+            Configuration configuration = new Configuration(_container);
             configuration.AddEventType<SupportBean>();
             configuration.AddEventType<SupportPriceEvent>();
             configuration.AddEventType<SupportTradeEvent>();
 
-            _serviceProvider = EPServiceProviderManager.GetDefaultProvider(configuration);
+            _serviceProvider = EPServiceProviderManager.GetDefaultProvider(_container, configuration);
             _serviceProvider.Initialize();
         }
 
@@ -36,7 +40,7 @@ namespace com.espertech.esper.linq
         {
             AssertModelEquality(
                 _serviceProvider.From<SupportBean>().Unique(x => x.TheString),
-                "select * from " + Name.Of<SupportBean>() + "#unique(x.TheString)");
+                "select * from " + Name.Clean<SupportBean>() + "#unique(x.TheString)");
         }
 
         private void AssertModelEquality(EsperQuery<SupportBean> stream, string sample)

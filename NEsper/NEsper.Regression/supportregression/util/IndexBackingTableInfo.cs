@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.client.annotation;
 using com.espertech.esper.epl.join.table;
 using com.espertech.esper.supportregression.epl;
 
@@ -15,7 +15,9 @@ namespace com.espertech.esper.supportregression.util
 {
     public class IndexBackingTableInfo
     {
-        public static String INDEX_CALLBACK_HOOK = string.Format("@Hook(Type=HookType.INTERNAL_QUERY_PLAN, Hook='{0}')\n", SupportQueryPlanIndexHook.ResetGetClassName());
+        public static String INDEX_CALLBACK_HOOK = string.Format("@Hook(Type={0}.INTERNAL_QUERY_PLAN,Hook='{1}')\n",
+            typeof(HookType).FullName,
+            SupportQueryPlanIndexHook.ResetGetClassName());
 
         public static readonly String BACKING_SINGLE_UNIQUE = typeof (PropertyIndexedEventTableSingleUnique).Name;
         public static readonly String BACKING_SINGLE_DUPS = typeof (PropertyIndexedEventTableSingle).Name;

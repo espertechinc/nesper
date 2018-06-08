@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.@join.@base;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.named;
 using com.espertech.esper.filter;
 using com.espertech.esper.view;
@@ -26,7 +27,7 @@ namespace com.espertech.esper.core.context.factory
         private readonly Viewable[] _streamViews;
         private readonly JoinSetComposerDesc _joinSetComposer;
         private readonly NamedWindowTailViewInstance[] _namedWindowTailViews;
-        private readonly FilterSpecCompiled[] _namedWindowPostloadFilters;
+        private readonly QueryGraph[] _namedWindowPostloadFilters;
         private readonly IList<ExprNode>[] _namedWindowFilters;
         private readonly Attribute[] _annotations;
         private readonly ExprEvaluatorContext _exprEvaluatorContext;
@@ -35,7 +36,7 @@ namespace com.espertech.esper.core.context.factory
             Viewable[] streamViews,
             JoinSetComposerDesc joinSetComposer,
             NamedWindowTailViewInstance[] namedWindowTailViews,
-            FilterSpecCompiled[] namedWindowPostloadFilters,
+            QueryGraph[] namedWindowPostloadFilters,
             IList<ExprNode>[] namedWindowFilters,
             Attribute[] annotations,
             ExprEvaluatorContext exprEvaluatorContext)
@@ -97,7 +98,7 @@ namespace com.espertech.esper.core.context.factory
                 }
                 events[stream] = eventsInWindow.ToArray();
             }
-            _joinSetComposer.JoinSetComposer.Init(events);
+            _joinSetComposer.JoinSetComposer.Init(events, _exprEvaluatorContext);
         }
 
         public void AcceptIndexVisitor(StatementAgentInstancePostLoadIndexVisitor visitor)

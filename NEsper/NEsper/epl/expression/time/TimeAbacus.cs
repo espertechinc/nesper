@@ -19,9 +19,9 @@ namespace com.espertech.esper.epl.expression.time
         long CalendarSet(long fromTime, DateTimeEx dt);
 
         long CalendarGet(DateTimeEx dt, long remainder);
-    
-        long GetOneSecond();
-    
+
+        long OneSecond { get; }
+
         DateTimeEx ToDate(long ts);
     }
 } // end of namespace

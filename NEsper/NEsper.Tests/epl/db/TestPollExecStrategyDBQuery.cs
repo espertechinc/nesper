@@ -10,10 +10,12 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
+using com.espertech.esper.events;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.epl.db
@@ -22,10 +24,12 @@ namespace com.espertech.esper.epl.db
     public class TestPollExecStrategyDBQuery 
     {
         private PollExecStrategyDBQuery _dbPollExecStrategy;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             const string sql = "select myvarchar from mytesttable where mynumeric = ? order by mybigint asc";
     
             var databaseConnectionFactory = SupportDatabaseService.MakeService().GetConnectionFactory("mydb");
@@ -33,13 +37,13 @@ namespace com.espertech.esper.epl.db
     
             var resultProperties = new Dictionary<String, Object>();
             resultProperties["myvarchar"] = typeof(string);
-            var resultEventType = SupportEventAdapterService.Service.CreateAnonymousMapType("test", resultProperties, true);
+            var resultEventType = _container.Resolve<EventAdapterService>().CreateAnonymousMapType("test", resultProperties, true);
     
             IDictionary<String, DBOutputTypeDesc> propertiesOut = new Dictionary<String, DBOutputTypeDesc>();
             propertiesOut["myvarchar"] = new DBOutputTypeDesc("TIME", typeof(string), null);
     
             _dbPollExecStrategy = new PollExecStrategyDBQuery(
-                SupportEventAdapterService.Service,
+                _container.Resolve<EventAdapterService>(),
                 resultEventType,
                 connectionCache,
                 sql, 

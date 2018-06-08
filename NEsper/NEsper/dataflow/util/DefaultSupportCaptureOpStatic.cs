@@ -46,9 +46,8 @@ namespace com.espertech.esper.dataflow.util
 
         public static List<DefaultSupportCaptureOpStatic> Instances { get; private set; }
 
-        public IList<Object> GetCurrent()
-        {
-            return _current;
+        public IList<object> Current {
+            get { return _current; }
         }
     }
 }

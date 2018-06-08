@@ -16,6 +16,7 @@ using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.enummethod.dot;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.rettype;
 using com.espertech.esper.events;
 using com.espertech.esper.events.arr;
@@ -45,7 +46,7 @@ namespace com.espertech.esper.epl.expression.dot
             var currentInputType = inputType;
             EnumMethodEnum? lastLambdaFunc = null;
             var lastElement = chainSpec.IsEmpty() ? null : chainSpec[chainSpec.Count - 1];
-            ExprDotNodeFilterAnalyzerDesc filterAnalyzerDesc = null;
+            FilterExprAnalyzerAffector filterAnalyzerDesc = null;
 
             var chainSpecStack = new ArrayDeque<ExprChainedSpec>(chainSpec);
             while (!chainSpecStack.IsEmpty())
@@ -73,7 +74,7 @@ namespace com.espertech.esper.epl.expression.dot
                         currentInputType = sizeExpr.TypeInfo;
                         continue;
                     }
-                    if ((chainElement.Name.ToLower() == "get") && paramTypes.Length == 1 && paramTypes[0].GetBoxedType() == typeof(int?))
+                    if ((chainElement.Name.ToLower() == "get") && paramTypes.Length == 1 && paramTypes[0].IsInt32())
                     {
                         var componentType = type.Component;
                         var get = new ExprDotEvalArrayGet(paramEvals[0], componentType);

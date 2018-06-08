@@ -15,7 +15,7 @@ namespace com.espertech.esper.regression.multithread
 {
     public class EnumerationGenerator
     {
-        public static IEnumerator<Object> Create(int maxNumEvents)
+        public static IEnumerator<object> Create(int maxNumEvents)
         {
             for( int ii = 0 ; ii < maxNumEvents ; ii++ ) {
                 yield return new SupportBean(Convert.ToString(ii), ii);

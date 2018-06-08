@@ -124,14 +124,20 @@ namespace com.espertech.esper.core.start
                     // validate parameters
                     var streamTypes = new StreamTypeServiceImpl(result.FilterSpec.FilterForEventType, null, true, statementContext.EngineURI);
                     var validationContext = new ExprValidationContext(
+                        statementContext.Container,
                         streamTypes,
                         statementContext.EngineImportService,
                         statementContext.StatementExtensionServicesContext, null,
                         statementContext.SchedulingService,
                         statementContext.VariableService, statementContext.TableService,
-                        GetDefaultAgentInstanceContext(statementContext), statementContext.EventAdapterService,
-                        statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,
-                        statementContext.ContextDescriptor, statementContext.ScriptingService, false, false, false, false,
+                        GetDefaultAgentInstanceContext(statementContext),
+                        statementContext.EventAdapterService,
+                        statementContext.StatementName,
+                        statementContext.StatementId,
+                        statementContext.Annotations,
+                        statementContext.ContextDescriptor, 
+                        statementContext.ScriptingService,
+                        false, false, false, false,
                         null, false);
                     ExprNodeUtility.Validate(ExprNodeOrigin.CONTEXT, Collections.SingletonList(hashItem.Function), validationContext);
                 }
@@ -162,18 +168,25 @@ namespace com.espertech.esper.core.start
                     }
                     var types = new StreamTypeServiceImpl(filter.FilterSpecCompiled.FilterForEventType, filter.OptionalFilterAsName, true, servicesContext.EngineURI);
                     var validationContext = new ExprValidationContext(
+                        statementContext.Container,
                         types,
                         statementContext.EngineImportService,
                         statementContext.StatementExtensionServicesContext, null,
                         statementContext.SchedulingService,
-                        statementContext.VariableService, statementContext.TableService,
-                        GetDefaultAgentInstanceContext(statementContext), statementContext.EventAdapterService,
-                        statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,
-                        statementContext.ContextDescriptor, statementContext.ScriptingService, false, false, true, false,
-                        null, false);
+                        statementContext.VariableService,
+                        statementContext.TableService,
+                        GetDefaultAgentInstanceContext(statementContext), 
+                        statementContext.EventAdapterService,
+                        statementContext.StatementName, 
+                        statementContext.StatementId,
+                        statementContext.Annotations,
+                        statementContext.ContextDescriptor,
+                        statementContext.ScriptingService,
+                        false, false, true, false, null, false
+                        );
                     for (var i = 0; i < distinctExpressions.Length; i++)
                     {
-                        ExprNodeUtility.ValidatePlainExpression(ExprNodeOrigin.CONTEXTDISTINCT, ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(distinctExpressions[i]), distinctExpressions[i]);
+                        ExprNodeUtility.ValidatePlainExpression(ExprNodeOrigin.CONTEXTDISTINCT, distinctExpressions[i]);
                         distinctExpressions[i] = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.CONTEXTDISTINCT, distinctExpressions[i], validationContext);
                     }
                 }
@@ -222,14 +235,20 @@ namespace com.espertech.esper.core.start
                 var timePeriod = (ContextDetailConditionTimePeriod)endpoint;
                 var validationContext =
                     new ExprValidationContext(
+                        statementContext.Container,
                         new StreamTypeServiceImpl(servicesContext.EngineURI, false),
                         statementContext.EngineImportService,
                         statementContext.StatementExtensionServicesContext, null,
                         statementContext.SchedulingService,
-                        statementContext.VariableService, statementContext.TableService,
-                        GetDefaultAgentInstanceContext(statementContext), statementContext.EventAdapterService,
-                        statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,
-                        statementContext.ContextDescriptor, statementContext.ScriptingService, false, false, false, false,
+                        statementContext.VariableService,
+                        statementContext.TableService,
+                        GetDefaultAgentInstanceContext(statementContext),
+                        statementContext.EventAdapterService,
+                        statementContext.StatementName, statementContext.StatementId,
+                        statementContext.Annotations,
+                        statementContext.ContextDescriptor,
+                        statementContext.ScriptingService,
+                        false, false, false, false,
                         null, false);
                 ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.CONTEXTCONDITION, timePeriod.TimePeriod, validationContext);
                 if (timePeriod.TimePeriod.IsConstantResult)

@@ -22,7 +22,7 @@ namespace com.espertech.esper.events.vaevent
         /// <param name="propertyType">type or null if not exists</param>
         /// <param name="getter">the getter or null if not exists</param>
         /// <param name="property">the bool indicating whether it exists or not</param>
-        public VariantPropertyDesc(Type propertyType, EventPropertyGetter getter, bool property)
+        public VariantPropertyDesc(Type propertyType, EventPropertyGetterSPI getter, bool property)
         {
             PropertyType = propertyType.GetBoxedType();
             Getter = getter;
@@ -39,6 +39,6 @@ namespace com.espertech.esper.events.vaevent
 
         /// <summary>Returns the getter for the property. </summary>
         /// <returns>property getter</returns>
-        public EventPropertyGetter Getter { get; private set; }
+        public EventPropertyGetterSPI Getter { get; private set; }
     }
 }

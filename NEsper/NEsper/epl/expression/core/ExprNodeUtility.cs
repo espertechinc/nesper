@@ -35,6 +35,8 @@ using com.espertech.esper.epl.expression.subquery;
 using com.espertech.esper.epl.expression.table;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.epl.expression.visitor;
+using com.espertech.esper.epl.join.hint;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.events;
@@ -57,7 +59,7 @@ namespace com.espertech.esper.epl.expression.core
             foreach (var subsetNode in subset) {
                 var found = false;
                 foreach (var supersetNode in superset) {
-                    if (DeepEquals(subsetNode, supersetNode)) {
+                    if (DeepEquals(subsetNode, supersetNode, false)) {
                         found = true;
                         break;
                     }
@@ -81,7 +83,7 @@ namespace com.espertech.esper.epl.expression.core
                 var found = false;
                 for (var i = 0; i < setTwo.Count; i++)
                 {
-                    if (DeepEquals(one, setTwo[i])) {
+                    if (DeepEquals(one, setTwo[i], false)) {
                         found = true;
                         foundTwo[i] = true;
                     }
@@ -97,7 +99,7 @@ namespace com.espertech.esper.epl.expression.core
                     continue;
                 }
                 foreach (var one in setOne) {
-                    if (DeepEquals(one, setTwo[i])) {
+                    if (DeepEquals(one, setTwo[i], false)) {
                         break;
                     }
                 }
@@ -137,32 +139,48 @@ namespace com.espertech.esper.epl.expression.core
             return calledToCallerMap;
         }
 
-        public static string ToExpressionStringMinPrecedenceSafe(this ExprNode node)
+        public static TextWriter ToExpressionStringMinPrecedence(this ExprNode node, TextWriter writer)
+        {
+            node.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            return writer;
+        }
+
+        public static String ToExpressionStringMinPrecedenceSafe(this ExprNode node)
         {
             try
             {
-                var writer = new StringWriter();
-                node.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
-                return writer.ToString();
+                return ToExpressionStringMinPrecedence(node, new StringWriter()).ToString(); ;
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 Log.Debug("Failed to render expression text: " + ex.Message, ex);
-                return "";
+                return string.Empty;
             }
         }
 
-        public static string ToExpressionStringMinPrecedence(IList<ExprNode> nodes)
+        public static String[] ToExpressionStringMinPrecedenceAsArray(IList<ExprNode> nodes)
         {
-            var writer = new StringWriter();
-            var delimiter = "";
-            foreach (var node in nodes)
+            return nodes
+                .Select(node => ToExpressionStringMinPrecedence(node, new StringWriter()).ToString())
+                .ToArray();
+        }
+
+        public static String ToExpressionStringMinPrecedenceAsList(IList<ExprNode> nodes)
+        {
+            return ToExpressionStringMinPrecedenceAsList(nodes, new StringWriter()).ToString();
+        }
+
+        public static TextWriter ToExpressionStringMinPrecedenceAsList(IList<ExprNode> nodes, TextWriter writer)
+        {
+            String delimiter = "";
+            foreach (ExprNode node in nodes)
             {
                 writer.Write(delimiter);
                 node.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
                 delimiter = ",";
             }
-            return writer.ToString();
+
+            return writer;
         }
 
         public static Pair<string, ExprNode> CheckGetAssignmentToProp(ExprNode node)
@@ -290,6 +308,19 @@ namespace com.espertech.esper.epl.expression.core
                 andNode.AddChildNode(node);
             }
             return andNode;
+        }
+
+        public static ExprNode ConnectExpressionsByLogicalAndWhenNeeded(ICollection<ExprNode> nodes)
+        {
+            if (nodes.IsEmpty())
+            {
+                return null;
+            }
+            if (nodes.Count == 1)
+            {
+                return nodes.First();
+            }
+            return ConnectExpressionsByLogicalAnd(nodes);
         }
 
         /// <summary>
@@ -929,16 +960,28 @@ namespace com.espertech.esper.epl.expression.core
             return new ExprNodeUtilMethodDesc(allConstants, paramTypes, childEvals, method, staticMethod, null);
         }
 
-        public static void ValidatePlainExpression(
-            ExprNodeOrigin origin,
-            string expressionTextualName,
-            ExprNode expression)
+        public static void ValidatePlainExpression(ExprNodeOrigin origin, ExprNode expression)
         {
-            var summaryVisitor = new ExprNodeSummaryVisitor();
+            ExprNodeSummaryVisitor summaryVisitor = new ExprNodeSummaryVisitor();
+            ValidatePlainExpression(origin, expression, summaryVisitor);
+        }
+
+        public static void ValidatePlainExpression(ExprNodeOrigin origin, IEnumerable<ExprNode> expressions)
+        {
+            ExprNodeSummaryVisitor summaryVisitor = new ExprNodeSummaryVisitor();
+            foreach (ExprNode expression in expressions) {
+                ValidatePlainExpression(origin, expression, summaryVisitor);
+            }
+        }
+
+        private static void ValidatePlainExpression(ExprNodeOrigin origin, ExprNode expression, ExprNodeSummaryVisitor summaryVisitor)
+        {
             expression.Accept(summaryVisitor);
-            if (summaryVisitor.HasAggregation || summaryVisitor.HasSubselect ||
-                summaryVisitor.HasStreamSelect || summaryVisitor.HasPreviousPrior)
-            {
+            if (summaryVisitor.HasAggregation 
+                || summaryVisitor.HasSubselect 
+                || summaryVisitor.HasStreamSelect 
+                || summaryVisitor.HasPreviousPrior) {
+                String expressionTextualName = ToExpressionStringMinPrecedenceSafe(expression);
                 throw new ExprValidationException(
                     string.Format(
                         "Invalid {0} expression '{1}': Aggregation, sub-select, previous or prior functions are not supported in this context",
@@ -953,7 +996,7 @@ namespace com.espertech.esper.epl.expression.core
             EventType optionalEventType,
             bool allowBindingConsumption)
         {
-            ValidatePlainExpression(origin, ToExpressionStringMinPrecedenceSafe(expression), expression);
+            ExprNodeUtility.ValidatePlainExpression(origin, expression);
 
             StreamTypeServiceImpl streamTypes;
             if (optionalEventType != null)
@@ -966,6 +1009,7 @@ namespace com.espertech.esper.epl.expression.core
             }
 
             var validationContext = new ExprValidationContext(
+                statementContext.Container,
                 streamTypes, statementContext.EngineImportService, statementContext.StatementExtensionServicesContext,
                 null, statementContext.SchedulingService, statementContext.VariableService,
                 statementContext.TableService, new ExprEvaluatorContextStatement(statementContext, false),
@@ -979,12 +1023,14 @@ namespace com.espertech.esper.epl.expression.core
         public static ExprValidationContext GetExprValidationContextStatementOnly(StatementContext statementContext)
         {
             return new ExprValidationContext(
+                statementContext.Container, 
                 new StreamTypeServiceImpl(statementContext.EngineURI, false), statementContext.EngineImportService,
                 statementContext.StatementExtensionServicesContext, null, statementContext.SchedulingService,
                 statementContext.VariableService, statementContext.TableService,
                 new ExprEvaluatorContextStatement(statementContext, false), statementContext.EventAdapterService,
                 statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,
-                statementContext.ContextDescriptor, statementContext.ScriptingService, false, false, false, false, null, false);
+                statementContext.ContextDescriptor, statementContext.ScriptingService,
+                false, false, false, false, null, false);
         }
 
         public static ISet<string> GetPropertyNamesIfAllProps(ExprNode[] expressions)
@@ -1005,10 +1051,10 @@ namespace com.espertech.esper.epl.expression.core
             return uniquePropertyNames;
         }
 
-        public static string[] ToExpressionStringsMinPrecedence(ExprNode[] expressions)
+        public static string[] ToExpressionStringsMinPrecedence(IList<ExprNode> expressions)
         {
-            var texts = new string[expressions.Length];
-            for (var i = 0; i < expressions.Length; i++)
+            var texts = new string[expressions.Count];
+            for (var i = 0; i < expressions.Count; i++)
             {
                 texts[i] = ToExpressionStringMinPrecedenceSafe(expressions[i]);
             }
@@ -1017,7 +1063,7 @@ namespace com.espertech.esper.epl.expression.core
 
         public static IList<Pair<ExprNode, ExprNode>> FindExpression(ExprNode selectExpression, ExprNode searchExpression) {
             var pairs = new List<Pair<ExprNode, ExprNode>>();
-            if (DeepEquals(selectExpression, searchExpression)) {
+            if (DeepEquals(selectExpression, searchExpression, false)) {
                 pairs.Add(new Pair<ExprNode, ExprNode>(null, selectExpression));
                 return pairs;
             }
@@ -1027,7 +1073,7 @@ namespace com.espertech.esper.epl.expression.core
     
         private static void FindExpressionChildRecursive(ExprNode parent, ExprNode searchExpression, ICollection<Pair<ExprNode, ExprNode>> pairs) {
             foreach (var child in parent.ChildNodes) {
-                if (DeepEquals(child, searchExpression)) {
+                if (DeepEquals(child, searchExpression, false)) {
                     pairs.Add(new Pair<ExprNode, ExprNode>(parent, child));
                     continue;
                 }
@@ -1052,13 +1098,14 @@ namespace com.espertech.esper.epl.expression.core
             writer.Write(')');
         }
     
-        public static string[] GetIdentResolvedPropertyNames(ExprNode[] nodes) {
-            var propertyNames = new string[nodes.Length];
-            for (var i = 0; i < propertyNames.Length; i++) {
-                if (!(nodes[i] is ExprIdentNode)) {
+        public static string[] GetIdentResolvedPropertyNames(IList<ExprNode> nodes) {
+            var propertyNames = new string[nodes.Count];
+            for (var i = 0; i < propertyNames.Length; i++)
+            {
+                if (nodes[i] is ExprIdentNode node)
+                    propertyNames[i] = node.ResolvedPropertyName;
+                else
                     throw new ArgumentException("Expressions are not ident nodes");
-                }
-                propertyNames[i] = ((ExprIdentNode) nodes[i]).ResolvedPropertyName;
             }
             return propertyNames;
         }
@@ -1200,6 +1247,57 @@ namespace com.espertech.esper.epl.expression.core
             }
             var message = "Failed to validate named parameter '" + parameterName + "', expected a single expression returning " + expectedType;
             return new ExprValidationException(message);
+        }
+
+        public static ExprNode[] AddExpression(IList<ExprNode> expressions, ExprNode expression)
+        {
+            return expressions.Append(expression).ToArray();
+        }
+
+        public static QueryGraph ValidateFilterGetQueryGraphSafe(ExprNode filterExpression, StatementContext statementContext, StreamTypeServiceImpl typeService)
+        {
+            ExcludePlanHint excludePlanHint = null;
+            try
+            {
+                excludePlanHint = ExcludePlanHint.GetHint(typeService.StreamNames, statementContext);
+            }
+            catch (ExprValidationException ex)
+            {
+                Log.Warn("Failed to consider exclude-plan hint: " + ex.Message, ex);
+            }
+
+            var queryGraph = new QueryGraph(1, excludePlanHint, false);
+            ValidateFilterWQueryGraphSafe(queryGraph, filterExpression, statementContext, typeService);
+            return queryGraph;
+        }
+
+        public static void ValidateFilterWQueryGraphSafe(QueryGraph queryGraph, ExprNode filterExpression, StatementContext statementContext, StreamTypeServiceImpl typeService)
+        {
+            try
+            {
+                ExprEvaluatorContextStatement evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
+                ExprValidationContext validationContext = new ExprValidationContext(
+                    statementContext.Container,
+                    typeService, 
+                    statementContext.EngineImportService, 
+                    statementContext.StatementExtensionServicesContext, null, 
+                    statementContext.TimeProvider, 
+                    statementContext.VariableService, 
+                    statementContext.TableService, evaluatorContextStmt, 
+                    statementContext.EventAdapterService, 
+                    statementContext.StatementName,
+                    statementContext.StatementId, 
+                    statementContext.Annotations, 
+                    statementContext.ContextDescriptor,
+                    statementContext.ScriptingService,
+                    false, false, true, false, null, true);
+                ExprNode validated = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.FILTER, filterExpression, validationContext);
+                FilterExprAnalyzer.Analyze(validated, queryGraph, false);
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("Unexpected exception analyzing filterable expression '" + ToExpressionStringMinPrecedenceSafe(filterExpression) + "': " + ex.Message, ex);
+            }
         }
 
         public static void AcceptChain(ExprNodeVisitor visitor, IList<ExprChainedSpec> chainSpec)
@@ -1475,12 +1573,13 @@ namespace com.espertech.esper.epl.expression.core
         /// <returns>
         /// false if this or all child nodes are not equal, true if equal
         /// </returns>
-        public static bool DeepEquals(ExprNode nodeOne, ExprNode nodeTwo) {
+        public static bool DeepEquals(ExprNode nodeOne, ExprNode nodeTwo, bool ignoreStreamPrefix)
+        {
             if (nodeOne.ChildNodes.Count != nodeTwo.ChildNodes.Count)
             {
                 return false;
             }
-            if (!nodeOne.EqualsNode(nodeTwo)) {
+            if (!nodeOne.EqualsNode(nodeTwo, ignoreStreamPrefix)) {
                 return false;
             }
             for (var i = 0; i < nodeOne.ChildNodes.Count; i++)
@@ -1488,7 +1587,7 @@ namespace com.espertech.esper.epl.expression.core
                 var childNodeOne = nodeOne.ChildNodes[i];
                 var childNodeTwo = nodeTwo.ChildNodes[i];
     
-                if (!DeepEquals(childNodeOne, childNodeTwo)) {
+                if (!DeepEquals(childNodeOne, childNodeTwo, ignoreStreamPrefix)) {
                     return false;
                 }
             }
@@ -1502,25 +1601,25 @@ namespace com.espertech.esper.epl.expression.core
         /// <param name="one">array of expressions</param>
         /// <param name="two">array of expressions</param>
         /// <returns>true if the expressions are equal, false if not</returns>
-        public static bool DeepEquals(ExprNode[] one, ExprNode[] two) {
+        public static bool DeepEquals(ExprNode[] one, ExprNode[] two, bool ignoreStreamPrefix) {
             if (one.Length != two.Length) {
                 return false;
             }
             for (var i = 0; i < one.Length; i++) {
-                if (!DeepEquals(one[i], two[i])) {
+                if (!DeepEquals(one[i], two[i], ignoreStreamPrefix)) {
                     return false;
                 }
             }
             return true;
         }
 
-        public static bool DeepEquals(IList<ExprNode> one, IList<ExprNode> two)
+        public static bool DeepEquals(IList<ExprNode> one, IList<ExprNode> two, bool ignoreStreamPrefix)
         {
             if (one.Count != two.Count) {
                 return false;
             }
             for (var i = 0; i < one.Count; i++) {
-                if (!DeepEquals(one[i], two[i])) {
+                if (!DeepEquals(one[i], two[i], ignoreStreamPrefix)) {
                     return false;
                 }
             }
@@ -1586,7 +1685,12 @@ namespace com.espertech.esper.epl.expression.core
                 buffer.Write(ToExpressionStringMinPrecedenceSafe(param));
             }
         }
-    
+
+        public static void ToExpressionString(ExprNode node, TextWriter buffer)
+        {
+            node.ToEPL(buffer, ExprPrecedenceEnum.MINIMUM);
+        }
+
         public static void ToExpressionStringIncludeParen(IList<ExprNode> parameters, TextWriter buffer) {
             buffer.Write("(");
             ToExpressionStringParameterList(parameters, buffer);
@@ -1595,7 +1699,6 @@ namespace com.espertech.esper.epl.expression.core
 
         public static void Validate(ExprNodeOrigin origin, IList<ExprChainedSpec> chainSpec, ExprValidationContext validationContext)
         {
-    
             // validate all parameters
             foreach (var chainElement in chainSpec) {
                 var validated = new List<ExprNode>();
@@ -1654,10 +1757,19 @@ namespace com.espertech.esper.epl.expression.core
             foreach (var parameters in scheduleSpecExpressionList)
             {
                 var validationContext = new ExprValidationContext(
+                    context.Container,
                     new StreamTypeServiceImpl(context.EngineURI, false), context.EngineImportService,
-                    context.StatementExtensionServicesContext, null, context.SchedulingService, context.VariableService,
-                    context.TableService, evaluatorContextStmt, context.EventAdapterService, context.StatementName,
-                    context.StatementId, context.Annotations, context.ContextDescriptor, context.ScriptingService,
+                    context.StatementExtensionServicesContext, null, 
+                    context.SchedulingService,
+                    context.VariableService,
+                    context.TableService,
+                    evaluatorContextStmt,
+                    context.EventAdapterService,
+                    context.StatementName,
+                    context.StatementId, 
+                    context.Annotations,
+                    context.ContextDescriptor, 
+                    context.ScriptingService,
                     false, false, allowBindingConsumption, false, null, false);
                 var node = GetValidatedSubtree(origin, parameters, validationContext);
                 expressions[count++] = node.ExprEvaluator;

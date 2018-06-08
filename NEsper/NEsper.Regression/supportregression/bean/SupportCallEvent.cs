@@ -14,52 +14,52 @@ namespace com.espertech.esper.supportregression.bean
     [Serializable]
 	public class SupportCallEvent
 	{
-		virtual public long CallId
+		public virtual long CallId
 		{
             get { return _callId; }
 		}
 		
-		virtual public String Source
+		public virtual String Source
 		{
             get { return _source; }
 		}
 		
-		virtual public String Dest
+		public virtual String Dest
 		{
             get { return _dest; }
 		}
 		
-		virtual public long StartTime
+		public virtual long StartTime
 		{
             get { return _startTime; }
 		}
 
-		virtual public long EndTime
+		public virtual long EndTime
 		{
 			get { return _endTime; }
 		}
 
-        virtual public long callId
+        public virtual long callId
         {
             get { return _callId; }
         }
 
-        virtual public String source
+        public virtual String source
         {
             get { return _source; }
         }
 
-        virtual public String dest
+        public virtual String dest
         {
             get { return _dest; }
         }
 
-        virtual public long startTime
+        public virtual long startTime
         {
             get { return _startTime; }
         }
 
-        virtual public long endTime
+        public virtual long endTime
         {
             get { return _endTime; }
         }

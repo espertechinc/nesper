@@ -7,10 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.funcs;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -21,10 +22,13 @@ namespace com.espertech.esper.epl.expression.ops
     public class TestExprCoalesceNode 
     {
         private ExprCoalesceNode[] _coalesceNodes;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             _coalesceNodes = new ExprCoalesceNode[5];
     
             _coalesceNodes[0] = new ExprCoalesceNode();
@@ -56,7 +60,7 @@ namespace com.espertech.esper.epl.expression.ops
         {
             for (int i = 0; i < _coalesceNodes.Length; i++)
             {
-                _coalesceNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _coalesceNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             }
 
             Assert.AreEqual(typeof(long?), _coalesceNodes[0].ReturnType);
@@ -75,10 +79,10 @@ namespace com.espertech.esper.epl.expression.ops
             // Test too few nodes under this node
             try
             {
-                coalesceNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                coalesceNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -87,10 +91,10 @@ namespace com.espertech.esper.epl.expression.ops
             coalesceNode.AddChildNode(new SupportExprNode("s"));
             try
             {
-                coalesceNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                coalesceNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -101,7 +105,7 @@ namespace com.espertech.esper.epl.expression.ops
         {
             for (int i = 0; i < _coalesceNodes.Length; i++)
             {
-                _coalesceNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _coalesceNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             }
     
             Assert.AreEqual(4L, _coalesceNodes[0].Evaluate(new EvaluateParams(null, false, null)));
@@ -114,14 +118,14 @@ namespace com.espertech.esper.epl.expression.ops
         [Test]
         public void TestEquals()
         {
-            Assert.IsFalse(_coalesceNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false)));
-            Assert.IsTrue(_coalesceNodes[0].EqualsNode(_coalesceNodes[1]));
+            Assert.IsFalse(_coalesceNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
+            Assert.IsTrue(_coalesceNodes[0].EqualsNode(_coalesceNodes[1], false));
         }
     
         [Test]
         public void TestToExpressionString()
         {
-            _coalesceNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _coalesceNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             Assert.AreEqual("coalesce(null,null,4)", _coalesceNodes[0].ToExpressionStringMinPrecedenceSafe());
         }
     }

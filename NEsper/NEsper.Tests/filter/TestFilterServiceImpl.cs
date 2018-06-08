@@ -11,12 +11,13 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.filter;
 
 using com.espertech.esper.compat.logging;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.filter
@@ -31,11 +32,15 @@ namespace com.espertech.esper.filter
         private List<SupportFilterHandle> _filterCallbacks;
         private List<EventBean> _events;
         private List<int[]> _matchesExpected;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            _filterService = new FilterServiceLockCoarse(false);
+            _container = SupportContainer.Reset();
+
+            _filterService = new FilterServiceLockCoarse(
+                _container.LockManager(), _container.RWLockManager(), false);
     
             _eventTypeOne = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             _eventTypeTwo = SupportEventTypeFactory.CreateBeanType(typeof(SupportBeanSimple));

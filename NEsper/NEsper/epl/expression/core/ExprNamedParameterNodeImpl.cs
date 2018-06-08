@@ -58,7 +58,7 @@ namespace com.espertech.esper.epl.expression.core
 	        get { return false; }
 	    }
 
-	    public override bool EqualsNode(ExprNode other)
+	    public override bool EqualsNode(ExprNode other, bool ignoreStreamPrefix)
         {
 	        if (!(other is ExprNamedParameterNode)) {
 	            return false;

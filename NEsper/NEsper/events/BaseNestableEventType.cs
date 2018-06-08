@@ -39,12 +39,13 @@ namespace com.espertech.esper.events
 
         private readonly IDictionary<String, PropertySetDescriptorItem> _propertyItems;
 
-        private IDictionary<String, EventPropertyGetter> _propertyGetterCache;
+        private IDictionary<String, EventPropertyGetterSPI> _propertyGetterCache;
         // Mapping of all property names and getters
 
         // Nestable definition of Map contents is here
         internal IDictionary<String, Object> NestableTypes;
-        // Deep definition of the map-type, containing nested maps and objects
+
+        private IDictionary<String, EventPropertyGetter> _propertyGetterCodegeneratedCache;
 
         private readonly String _startTimestampPropertyName;
         private readonly String _endTimestampPropertyName;
@@ -59,15 +60,9 @@ namespace com.espertech.esper.events
         public abstract EventBeanCopyMethod GetCopyMethod(string[] properties);
         public abstract EventBeanReader Reader { get; }
 
-        public EventAdapterService EventAdapterService
-        {
-            get { return _eventAdapterService; }
-        }
+        public EventAdapterService EventAdapterService => _eventAdapterService;
 
-        public IDictionary<string, PropertySetDescriptorItem> PropertyItems
-        {
-            get { return _propertyItems; }
-        }
+        public IDictionary<string, PropertySetDescriptorItem> PropertyItems => _propertyItems;
 
         /// <summary>
         /// Constructor takes a type name, map of property names and types, for use with nestable Map events.
@@ -117,25 +112,13 @@ namespace com.espertech.esper.events
             _endTimestampPropertyName = desc.End;
         }
 
-        public string Name
-        {
-            get { return _typeName; }
-        }
+        public string Name => _typeName;
 
-        public int EventTypeId
-        {
-            get { return _eventTypeId; }
-        }
+        public int EventTypeId => _eventTypeId;
 
-        public string StartTimestampPropertyName
-        {
-            get { return _startTimestampPropertyName; }
-        }
+        public string StartTimestampPropertyName => _startTimestampPropertyName;
 
-        public string EndTimestampPropertyName
-        {
-            get { return _endTimestampPropertyName; }
-        }
+        public string EndTimestampPropertyName => _endTimestampPropertyName;
 
         public Type GetPropertyType(String propertyName)
         {
@@ -143,15 +126,43 @@ namespace com.espertech.esper.events
                 propertyName, _propertyItems, NestableTypes, _eventAdapterService);
         }
 
-        public EventPropertyGetter GetGetter(String propertyName)
+        public EventPropertyGetterSPI GetGetterSPI(String propertyName)
         {
             if (_propertyGetterCache == null)
             {
-                _propertyGetterCache = new Dictionary<String, EventPropertyGetter>();
+                _propertyGetterCache = new Dictionary<String, EventPropertyGetterSPI>();
             }
             return EventTypeUtility.GetNestableGetter(
                 propertyName, _propertyItems, _propertyGetterCache, NestableTypes, _eventAdapterService, GetterFactory,
                 _metadata.OptionalApplicationType == ApplicationType.OBJECTARR);
+        }
+
+        public EventPropertyGetter GetGetter(String propertyName)
+        {
+            if (!_eventAdapterService.EngineImportService.IsCodegenEventPropertyGetters)
+            {
+                return GetGetterSPI(propertyName);
+            }
+            if (_propertyGetterCodegeneratedCache == null)
+            {
+                _propertyGetterCodegeneratedCache = new Dictionary<string, EventPropertyGetter>();
+            }
+
+            var getter = _propertyGetterCodegeneratedCache.Get(propertyName);
+            if (getter != null)
+            {
+                return getter;
+            }
+
+            var getterSPI = GetGetterSPI(propertyName);
+            if (getterSPI == null)
+            {
+                return null;
+            }
+
+            var getterCode = _eventAdapterService.EngineImportService.CodegenGetter(getterSPI, propertyName);
+            _propertyGetterCodegeneratedCache.Put(propertyName, getterCode);
+            return getterCode;
         }
 
         public EventPropertyGetterMapped GetGetterMapped(String mappedPropertyName)
@@ -544,7 +555,7 @@ namespace com.espertech.esper.events
         {
             if (!(otherType is BaseNestableEventType))
             {
-                return string.Format("Type by name '{0}' is not a compatible type (target type underlying is '{1}')", otherType.Name, compat.Name.Of(otherType.UnderlyingType));
+                return string.Format("Type by name '{0}' is not a compatible type (target type underlying is '{1}')", otherType.Name, compat.Name.Clean(otherType.UnderlyingType));
             }
 
             var other = (BaseNestableEventType)otherType;

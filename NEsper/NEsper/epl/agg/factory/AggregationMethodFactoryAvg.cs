@@ -21,99 +21,90 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.agg.factory
 {
-	public class AggregationMethodFactoryAvg : AggregationMethodFactory
-	{
-        protected internal readonly ExprAvgNode Parent;
-        protected internal readonly Type ChildType;
-        protected internal readonly MathContext OptionalMathContext;
+    public class AggregationMethodFactoryAvg : AggregationMethodFactory
+    {
+        private readonly Type _resultType;
 
-	    public AggregationMethodFactoryAvg(ExprAvgNode parent, Type childType, MathContext optionalMathContext)
-	    {
-	        Parent = parent;
-	        ChildType = childType;
-	        ResultType = GetAvgAggregatorType(childType);
-	        OptionalMathContext = optionalMathContext;
-	    }
-
-	    public bool IsAccessAggregation
-	    {
-	        get { return false; }
-	    }
-
-	    public Type ResultType { get; private set; }
-
-	    public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AggregationMethodFactoryAvg"/> class.
+        /// </summary>
+        /// <param name="parent">The parent.</param>
+        /// <param name="childType">Type of the child.</param>
+        /// <param name="optionalMathContext">The optional math context.</param>
+        public AggregationMethodFactoryAvg(ExprAvgNode parent, Type childType, MathContext optionalMathContext)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            Parent = parent;
+            ChildType = childType;
+            _resultType = GetAvgAggregatorType(childType);
+            OptionalMathContext = optionalMathContext;
+        }
 
-	    public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
+        public Type ChildType { get; }
+
+        public MathContext OptionalMathContext { get; }
+
+        public ExprAvgNode Parent { get; }
+
+        public bool IsAccessAggregation => false;
+
+        public Type ResultType => _resultType;
+
+        public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            throw new IllegalStateException("Not an access aggregation function");
+        }
 
-	    public AggregationAccessor Accessor
-	    {
-	        get { throw new IllegalStateException("Not an access aggregation function"); }
-	    }
-
-	    public AggregationMethod Make()
+        public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
         {
-	        AggregationMethod method = MakeAvgAggregator(ChildType, Parent.HasFilter, OptionalMathContext);
-	        if (!Parent.IsDistinct)
-            {
-	            return method;
-	        }
-	        return AggregationMethodFactoryUtil.MakeDistinctAggregator(method, Parent.HasFilter);
-	    }
+            throw new IllegalStateException("Not an access aggregation function");
+        }
 
-	    public ExprAggregateNodeBase AggregationExpression
-	    {
-	        get { return Parent; }
-	    }
+        public AggregationAccessor Accessor => throw new IllegalStateException("Not an access aggregation function");
 
-	    public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
+        public AggregationMethod Make()
         {
-	        service.AggregationMethodFactoryUtil.ValidateAggregationType(this, intoTableAgg);
-	        AggregationMethodFactoryAvg that = (AggregationMethodFactoryAvg) intoTableAgg;
-	        service.AggregationMethodFactoryUtil.ValidateAggregationInputType(ChildType, that.ChildType);
-	        service.AggregationMethodFactoryUtil.ValidateAggregationFilter(Parent.HasFilter, that.Parent.HasFilter);
-	    }
+            var method = MakeAvgAggregator(ChildType, Parent.HasFilter, OptionalMathContext);
+            if (!Parent.IsDistinct) return method;
+            return AggregationMethodFactoryUtil.MakeDistinctAggregator(method, Parent.HasFilter);
+        }
 
-	    public AggregationAgent AggregationStateAgent
-	    {
-	        get { return null; }
-	    }
+        public ExprAggregateNodeBase AggregationExpression => Parent;
 
-	    public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
+        public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
         {
-	        return ExprMethodAggUtil.GetDefaultEvaluator(Parent.PositionalParams, join, typesPerStream);
-	    }
+            AggregationValidationUtil.ValidateAggregationType(this, intoTableAgg);
+            var that = (AggregationMethodFactoryAvg) intoTableAgg;
+            AggregationValidationUtil.ValidateAggregationInputType(ChildType, that.ChildType);
+            AggregationValidationUtil.ValidateAggregationFilter(Parent.HasFilter, that.Parent.HasFilter);
+        }
 
-	    private Type GetAvgAggregatorType(Type type)
-	    {
+        public AggregationAgent AggregationStateAgent => null;
+
+        public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
+        {
+            return ExprMethodAggUtil.GetDefaultEvaluator(Parent.PositionalParams, join, typesPerStream);
+        }
+
+        private Type GetAvgAggregatorType(Type type)
+        {
             if (type.IsDecimal() || type.IsBigInteger())
-            {
-	            return typeof(decimal?);
-	        }
-	        return typeof(double?);
-	    }
+                return typeof(decimal);
+            return typeof(double);
+        }
 
-	    private AggregationMethod MakeAvgAggregator(Type type, bool hasFilter, MathContext optionalMathContext)
-	    {
-	        if (hasFilter)
+        private AggregationMethod MakeAvgAggregator(Type type, bool hasFilter, MathContext optionalMathContext)
+        {
+            if (hasFilter)
             {
                 if (type.IsDecimal() || type.IsBigInteger())
-	            {
-	                return new AggregatorAvgDecimalFilter(optionalMathContext);
-	            }
-	            return new AggregatorAvgFilter();
-	        }
+                    return new AggregatorAvgDecimalFilter(optionalMathContext);
+                return new AggregatorAvgFilter();
+            }
+
             if (type.IsDecimal() || type.IsBigInteger())
-            {
-	            return new AggregatorAvgDecimal(optionalMathContext);
-	        }
-	        return new AggregatorAvg();
-	    }
-	}
+                return new AggregatorAvgDecimal(optionalMathContext);
+
+            return new AggregatorAvg();
+        }
+    }
 } // end of namespace

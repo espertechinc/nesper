@@ -14,7 +14,7 @@
 
 using System.Collections.Generic;
 
-namespace NEsper.Example.Transaction.sim
+namespace NEsper.Examples.Transaction.sim
 {
     /// <summary>
     /// An iterable source of events

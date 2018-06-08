@@ -11,8 +11,8 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logger;
 using com.espertech.esper.compat.logging;
 
 namespace NEsper.Examples.NamedWindowQuery
@@ -23,6 +23,9 @@ namespace NEsper.Examples.NamedWindowQuery
 
         public static void Main(String[] args)
         {
+            LoggerNLog.BasicConfig();
+            LoggerNLog.Register();
+
             var main = new NamedWindowQueryMain();
 
             try {

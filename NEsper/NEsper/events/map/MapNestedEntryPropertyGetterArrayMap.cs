@@ -6,35 +6,49 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
 
 namespace com.espertech.esper.events.map
 {
     /// <summary>
-    /// A getter that works on EventBean events residing within a Map as an event property.
+    ///     A getter that works on EventBean events residing within a Map as an event property.
     /// </summary>
     public class MapNestedEntryPropertyGetterArrayMap : MapNestedEntryPropertyGetterBase
     {
-        private readonly int _index;
         private readonly MapEventPropertyGetter _getter;
+        private readonly int _index;
 
-        public MapNestedEntryPropertyGetterArrayMap(String propertyMap, EventType fragmentType, EventAdapterService eventAdapterService, int index, MapEventPropertyGetter getter)
+        public MapNestedEntryPropertyGetterArrayMap(string propertyMap, EventType fragmentType,
+            EventAdapterService eventAdapterService, int index, MapEventPropertyGetter getter)
             : base(propertyMap, fragmentType, eventAdapterService)
         {
             _index = index;
             _getter = getter;
         }
 
-        public override Object HandleNestedValue(Object value)
+        public override object HandleNestedValue(object value)
         {
             return BaseNestableEventUtil.HandleNestedValueArrayWithMap(value, _index, _getter);
         }
 
-        public override Object HandleNestedValueFragment(Object value)
+        public override object HandleNestedValueFragment(object value)
         {
-            return BaseNestableEventUtil.HandleNestedValueArrayWithMapFragment(value, _index, _getter, EventAdapterService, FragmentType);
+            return BaseNestableEventUtil.HandleBNNestedValueArrayWithMapFragment(value, _index, _getter,
+                EventAdapterService, FragmentType);
+        }
+
+        public override ICodegenExpression HandleNestedValueCodegen(ICodegenExpression name, ICodegenContext context)
+        {
+            return BaseNestableEventUtil.HandleNestedValueArrayWithMapCode(_index, _getter, name, context, GetType());
+        }
+
+        public override ICodegenExpression HandleNestedValueFragmentCodegen(ICodegenExpression name,
+            ICodegenContext context)
+        {
+            return BaseNestableEventUtil.HandleBNNestedValueArrayWithMapFragmentCode(_index, _getter, name, context,
+                EventAdapterService, FragmentType, GetType());
         }
     }
-}
+} // end of namespace

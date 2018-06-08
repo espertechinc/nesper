@@ -16,9 +16,14 @@ namespace com.espertech.esper.client.hook
     /// </summary>
     public interface ExceptionHandlerFactory
     {
-        /// <summary>Returns an exception handler instances, or null if the factory decided not to contribute an exception handler. </summary>
+        /// <summary>
+        /// Returns an exception handler instance or null if the factory
+        /// decided not to contribute an exception handler.
+        /// </summary>
         /// <param name="context">contains the engine URI</param>
-        /// <returns>exception handler</returns>
+        /// <returns>
+        /// exception handler
+        /// </returns>
         ExceptionHandler GetHandler(ExceptionHandlerFactoryContext context);
     }
 }

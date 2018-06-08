@@ -56,24 +56,12 @@ namespace com.espertech.esper.epl.lookup
             return GetType().FullName + " evaluators " + ExprNodeUtility.PrintEvaluators(_evaluators);
         }
 
-        protected bool IsNWOnTrigger
-        {
-            get { return _isNWOnTrigger; }
-        }
+        protected bool IsNWOnTrigger => _isNWOnTrigger;
 
-        protected int NumStreamsOuter
-        {
-            get { return _numStreamsOuter; }
-        }
+        protected int NumStreamsOuter => _numStreamsOuter;
 
-        protected LookupStrategyDesc StrategyDesc
-        {
-            get { return _strategyDesc; }
-        }
+        protected LookupStrategyDesc StrategyDesc => _strategyDesc;
 
-        protected ExprEvaluator[] Evaluators
-        {
-            get { return _evaluators; }
-        }
+        protected ExprEvaluator[] Evaluators => _evaluators;
     }
 }

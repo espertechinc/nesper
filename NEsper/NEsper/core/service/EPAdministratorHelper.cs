@@ -8,12 +8,11 @@
 
 using System;
 
-using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.epl.core;
@@ -74,13 +73,25 @@ namespace com.espertech.esper.core.service
             SelectClauseStreamSelectorEnum defaultStreamSelector)
         {
             return CompileEPL(
-                eplStatement, eplStatementForErrorMsg, addPleaseCheck, statementName, defaultStreamSelector,
-                services.EngineImportService, services.VariableService, services.SchedulingService, services.EngineURI,
-                services.ConfigSnapshot, services.PatternNodeFactory, services.ContextManagementService,
-                services.ExprDeclaredService, services.TableService);
+                services.Container,
+                eplStatement,
+                eplStatementForErrorMsg,
+                addPleaseCheck,
+                statementName,
+                defaultStreamSelector,
+                services.EngineImportService,
+                services.VariableService,
+                services.SchedulingService,
+                services.EngineURI,
+                services.ConfigSnapshot,
+                services.PatternNodeFactory,
+                services.ContextManagementService,
+                services.ExprDeclaredService,
+                services.TableService);
         }
 
         public static StatementSpecRaw CompileEPL(
+            IContainer container,
             string eplStatement,
             string eplStatementForErrorMsg,
             bool addPleaseCheck,
@@ -106,9 +117,19 @@ namespace com.espertech.esper.core.service
             ITree ast = parseResult.Tree;
 
             var walker = new EPLTreeWalkerListener(
-                parseResult.TokenStream, engineImportService, variableService, schedulingService, defaultStreamSelector,
-                engineURI, configSnapshot, patternNodeFactory, contextManagementService, parseResult.Scripts,
-                exprDeclaredService, tableService);
+                container,
+                parseResult.TokenStream,
+                engineImportService,
+                variableService,
+                schedulingService,
+                defaultStreamSelector,
+                engineURI,
+                configSnapshot,
+                patternNodeFactory,
+                contextManagementService,
+                parseResult.Scripts,
+                exprDeclaredService,
+                tableService);
 
             try
             {
@@ -119,7 +140,7 @@ namespace com.espertech.esper.core.service
                 Log.Error(".createEPL Error validating expression", ex);
                 throw new EPStatementException(ex.Message, ex, eplStatementForErrorMsg);
             }
-            catch (EPStatementSyntaxException ex)
+            catch (EPStatementSyntaxException)
             {
                 throw;
             }
@@ -158,10 +179,20 @@ namespace com.espertech.esper.core.service
 
             // Walk
             var walker = new EPLTreeWalkerListener(
-                parseResult.TokenStream, services.EngineImportService, services.VariableService,
-                services.SchedulingService, defaultStreamSelector, services.EngineURI, services.ConfigSnapshot,
-                services.PatternNodeFactory, services.ContextManagementService, parseResult.Scripts,
-                services.ExprDeclaredService, services.TableService);
+                services.Container,
+                parseResult.TokenStream,
+                services.EngineImportService,
+                services.VariableService,
+                services.SchedulingService,
+                defaultStreamSelector,
+                services.EngineURI,
+                services.ConfigSnapshot,
+                services.PatternNodeFactory,
+                services.ContextManagementService,
+                parseResult.Scripts,
+                services.ExprDeclaredService,
+                services.TableService);
+
             try
             {
                 ParseHelper.Walk(ast, walker, expression, expressionForErrorMessage);
@@ -171,7 +202,7 @@ namespace com.espertech.esper.core.service
                 Log.Debug(".createPattern Error validating expression", ex);
                 throw new EPStatementException(ex.Message, expression);
             }
-            catch (EPStatementSyntaxException ex)
+            catch (EPStatementSyntaxException)
             {
                 throw;
             }

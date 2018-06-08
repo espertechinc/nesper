@@ -27,10 +27,7 @@ namespace com.espertech.esper.compat.collections
         /// Gets the id.
         /// </summary>
         /// <value>The id.</value>
-        public Guid Id
-        {
-            get { return m_id; }
-        }
+        public Guid Id => m_id;
 
         ///<summary>
         ///Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"></see>.
@@ -86,7 +83,7 @@ namespace com.espertech.esper.compat.collections
         ///<exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:System.Collections.Generic.IList`1"></see> is read-only.</exception>
         public T this[int index]
         {
-            get { return m_subList[index]; }
+            get => m_subList[index];
             set { m_subList[index] = value; }
         }
 
@@ -165,10 +162,7 @@ namespace com.espertech.esper.compat.collections
         ///The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
         ///</returns>
         ///
-        public int Count
-        {
-            get { return m_subList.Count; }
-        }
+        public int Count => m_subList.Count;
 
         ///<summary>
         ///Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
@@ -178,10 +172,7 @@ namespace com.espertech.esper.compat.collections
         ///true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.
         ///</returns>
         ///
-        public bool IsReadOnly
-        {
-            get { return m_subList.IsReadOnly; }
-        }
+        public bool IsReadOnly => m_subList.IsReadOnly;
 
         ///<summary>
         ///Returns an enumerator that iterates through the collection.

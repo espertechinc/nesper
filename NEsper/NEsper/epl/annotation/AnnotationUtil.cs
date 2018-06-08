@@ -74,8 +74,7 @@ namespace com.espertech.esper.epl.annotation
         {
             try
             {
-                var attributes = CompileAnnotations(annotationSpec, engineImportService);
-                return attributes;
+                return CompileAnnotations(annotationSpec, engineImportService);
             }
             catch (AttributeException ex)
             {
@@ -136,8 +135,6 @@ namespace com.espertech.esper.epl.annotation
             {
                 throw new AttributeException("Failed to resolve @-annotation class: " + e.Message);
             }
-
-            return null;
         }
 
         /// <summary>
@@ -331,9 +328,9 @@ namespace com.espertech.esper.epl.annotation
                 {
                     throw new AttributeException(
                         "Annotation '" + attributeTypeName + "' requires a " +
-                        propertyInfo.PropertyType.FullName + "-typed value for attribute '" +
+                        propertyInfo.PropertyType.GetCleanName() + "-typed value for attribute '" +
                         propertyName + "' but received a " +
-                        propertyValue.GetType().FullName + "-typed value");
+                        propertyValue.GetType().GetCleanName() + "-typed value");
                 }
 
                 var array = (Array)propertyValue;
@@ -360,9 +357,9 @@ namespace com.espertech.esper.epl.annotation
                         {
                             throw new AttributeException(
                                 "Annotation '" + attributeTypeName + "' requires a " +
-                                expectElementType.FullName + "-typed value for array elements for attribute '" +
+                                expectElementType.GetCleanName() + "-typed value for array elements for attribute '" +
                                 propertyName + "' but received a " +
-                                oldValue.GetType().FullName + "-typed value");
+                                oldValue.GetType().GetCleanName() + "-typed value");
                         }
 
                         expectedArray.SetValue(newValue, ii);
@@ -412,14 +409,14 @@ namespace com.espertech.esper.epl.annotation
                 anno.GetType().IsSubclassOf(annotationClass));
         }
 
-        public static List<Attribute> FindAttributes(Attribute[] annotations, Type annotationClass)
+        public static List<Attribute> FindAnnotations(IEnumerable<Attribute> annotations, Type annotationClass)
         {
             if (!TypeHelper.IsSubclassOrImplementsInterface(annotationClass, typeof(Attribute)))
             {
                 throw new ArgumentException("Class " + annotationClass.FullName + " is not an attribute class");
             }
 
-            if (annotations == null || annotations.Length == 0)
+            if (annotations == null || annotations.HasFirst() == false)
             {
                 return null;
             }

@@ -33,7 +33,7 @@ namespace com.espertech.esper.events
                           " event type";
             if (existingType != null)
             {
-                message += ", the name '" + eventTypeName + "' refers to a " + existingType.UnderlyingType.GetTypeNameFullyQualPretty() + " event type";
+                message += ", the name '" + eventTypeName + "' refers to a " + existingType.UnderlyingType.GetCleanName() + " event type";
             }
             else
             {

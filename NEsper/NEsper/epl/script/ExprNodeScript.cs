@@ -74,7 +74,7 @@ namespace com.espertech.esper.epl.script
             get { return false; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             if (this == node) return true;
             if (node == null || GetType() != node.GetType()) return false;
@@ -82,7 +82,7 @@ namespace com.espertech.esper.epl.script
             var that = (ExprNodeScript) node;
     
             if (Script != null ? !Script.Equals(that.Script) : that.Script != null) return false;
-            return ExprNodeUtility.DeepEquals(Parameters, that.Parameters);
+            return ExprNodeUtility.DeepEquals(Parameters, that.Parameters, false);
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
@@ -228,7 +228,7 @@ namespace com.espertech.esper.epl.script
             {
                 return validationContext.EngineImportService.ResolveType(returnTypeName, false);
             }
-            catch (EngineImportException e1)
+            catch (EngineImportException)
             {
                 throw new ExprValidationException(
                     "Failed to resolve return type '" + returnTypeName + "' specified for script '" + Script.Name + "'");

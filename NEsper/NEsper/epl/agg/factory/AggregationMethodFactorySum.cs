@@ -8,7 +8,6 @@
 
 using System;
 using System.Numerics;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.agg.access;
@@ -21,160 +20,145 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.agg.factory
 {
-	public class AggregationMethodFactorySum : AggregationMethodFactory
-	{
-	    protected internal readonly ExprSumNode Parent;
-        protected internal readonly Type InputValueType;
+    public class AggregationMethodFactorySum : AggregationMethodFactory
+    {
+        private readonly Type _inputValueType;
+        private readonly ExprSumNode _parent;
 
-	    public AggregationMethodFactorySum(ExprSumNode parent, Type inputValueType)
-	    {
-	        Parent = parent;
-	        InputValueType = inputValueType;
-	        ResultType = GetSumAggregatorType(inputValueType);
-	    }
-
-	    public bool IsAccessAggregation
-	    {
-	        get { return false; }
-	    }
-
-	    public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
+        public AggregationMethodFactorySum(ExprSumNode parent, Type inputValueType)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            _parent = parent;
+            _inputValueType = inputValueType;
+            ResultType = GetSumAggregatorType(inputValueType);
+        }
 
-	    public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
+        public bool IsAccessAggregation => false;
+
+        public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            throw new IllegalStateException("Not an access aggregation function");
+        }
 
-	    public AggregationAccessor Accessor
-	    {
-	        get { throw new IllegalStateException("Not an access aggregation function"); }
-	    }
-
-	    public Type ResultType { get; private set; }
-
-	    public AggregationMethod Make()
+        public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
         {
-	        AggregationMethod method = MakeSumAggregator(InputValueType, Parent.HasFilter);
-	        if (!Parent.IsDistinct)
-            {
-	            return method;
-	        }
-	        return AggregationMethodFactoryUtil.MakeDistinctAggregator(method, Parent.HasFilter);
-	    }
+            throw new IllegalStateException("Not an access aggregation function");
+        }
 
-	    public ExprAggregateNodeBase AggregationExpression
-	    {
-	        get { return Parent; }
-	    }
+        public AggregationAccessor Accessor => throw new IllegalStateException("Not an access aggregation function");
 
-	    public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
+        public Type ResultType { get; }
+
+        public AggregationMethod Make()
         {
-            service.AggregationMethodFactoryUtil.ValidateAggregationType(this, intoTableAgg);
-	        AggregationMethodFactorySum that = (AggregationMethodFactorySum) intoTableAgg;
-            service.AggregationMethodFactoryUtil.ValidateAggregationInputType(InputValueType, that.InputValueType);
-            service.AggregationMethodFactoryUtil.ValidateAggregationFilter(Parent.HasFilter, that.Parent.HasFilter);
-	    }
+            var method = MakeSumAggregator(_inputValueType, _parent.HasFilter);
+            if (!_parent.IsDistinct) {
+                return method;
+            }
 
-	    public AggregationAgent AggregationStateAgent
-	    {
-	        get { return null; }
-	    }
+            return AggregationMethodFactoryUtil.MakeDistinctAggregator(method, _parent.HasFilter);
+        }
 
-	    public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
+        public ExprAggregateNodeBase AggregationExpression => _parent;
+
+        public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
         {
-	        return ExprMethodAggUtil.GetDefaultEvaluator(Parent.PositionalParams, join, typesPerStream);
-	    }
+            AggregationValidationUtil.ValidateAggregationType(this, intoTableAgg);
+            var that = (AggregationMethodFactorySum) intoTableAgg;
+            AggregationValidationUtil.ValidateAggregationInputType(_inputValueType, that._inputValueType);
+            AggregationValidationUtil.ValidateAggregationFilter(_parent.HasFilter, that._parent.HasFilter);
+        }
 
-	    private Type GetSumAggregatorType(Type type)
-	    {
-	        if (type.IsBigInteger())
-	        {
-	            return typeof(BigInteger);
-	        }
-	        if (type.IsDecimal())
-	        {
-	            return typeof(decimal?);
-	        }
-	        if ((type == typeof(long?)) || (type == typeof(long)))
-	        {
-	            return typeof(long?);
-	        }
-	        if ((type == typeof(int?)) || (type == typeof(int)))
-	        {
-	            return typeof(int?);
-	        }
-	        if ((type == typeof(double?)) || (type == typeof(double)))
-	        {
-	            return typeof(double?);
-	        }
-	        if ((type == typeof(float?)) || (type == typeof(float)))
-	        {
-	            return typeof(float?);
-	        }
-	        return typeof(int?);
-	    }
+        public AggregationAgent AggregationStateAgent => null;
 
-	    private AggregationMethod MakeSumAggregator(Type type, bool hasFilter)
-	    {
-	        if (!hasFilter)
-            {
-                if (type.IsBigInteger())
-                {
-	                return new AggregatorSumBigInteger();
-	            }
-    	        if (type.IsDecimal())
-	            {
-	                return new AggregatorSumDecimal();
-	            }
-    	        if ((type == typeof(long?)) || (type == typeof(long)))
-	            {
-	                return new AggregatorSumLong();
-	            }
-    	        if ((type == typeof(int?)) || (type == typeof(int)))
-	            {
-	                return new AggregatorSumInteger();
-	            }
-	            if ((type == typeof(double?)) || (type == typeof(double)))
-	            {
-	                return new AggregatorSumDouble();
-	            }
-	            if ((type == typeof(float?)) || (type == typeof(float)))
-	            {
-	                return new AggregatorSumFloat();
-	            }
-	            return new AggregatorSumNumInteger();
-	        }
-	        else
-            {
-                if (type.IsBigInteger())
-	            {
-	                return new AggregatorSumBigIntegerFilter();
-	            }
-	            if (type.IsDecimal())
-	            {
-	                return new AggregatorSumDecimalFilter();
-	            }
-    	        if ((type == typeof(long?)) || (type == typeof(long)))
-	            {
-	                return new AggregatorSumLongFilter();
-	            }
-                if ((type == typeof(int?)) || (type == typeof(int)))
-                {
-	                return new AggregatorSumIntegerFilter();
-	            }
-	            if ((type == typeof(double?)) || (type == typeof(double)))
-	            {
-	                return new AggregatorSumDoubleFilter();
-	            }
-	            if ((type == typeof(float?)) || (type == typeof(float)))
-	            {
-	                return new AggregatorSumFloatFilter();
-	            }
-	            return new AggregatorSumNumIntegerFilter();
-	        }
-	    }
-	}
+        public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
+        {
+            return ExprMethodAggUtil.GetDefaultEvaluator(_parent.PositionalParams, join, typesPerStream);
+        }
+
+        private Type GetSumAggregatorType(Type type)
+        {
+            if (type == typeof(BigInteger)) {
+                return typeof(BigInteger);
+            }
+
+            if (type.IsDecimal()) {
+                return typeof(decimal);
+            }
+
+            if (type == typeof(long?) || type == typeof(long)) {
+                return typeof(long);
+            }
+
+            if (type == typeof(int?) || type == typeof(int)) {
+                return typeof(int);
+            }
+
+            if (type == typeof(double?) || type == typeof(double)) {
+                return typeof(double);
+            }
+
+            if (type == typeof(float?) || type == typeof(float)) {
+                return typeof(float);
+            }
+
+            return typeof(int);
+        }
+
+        private AggregationMethod MakeSumAggregator(Type type, bool hasFilter)
+        {
+            if (!hasFilter) {
+                if (type.IsBigInteger()) {
+                    return new AggregatorSumBigInteger();
+                }
+
+                if (type.IsDecimal()) {
+                    return new AggregatorSumDecimal();
+                }
+
+                if (type == typeof(long?) || type == typeof(long)) {
+                    return new AggregatorSumLong();
+                }
+
+                if (type == typeof(int?) || type == typeof(int)) {
+                    return new AggregatorSumInteger();
+                }
+
+                if (type == typeof(double?) || type == typeof(double)) {
+                    return new AggregatorSumDouble();
+                }
+
+                if (type == typeof(float?) || type == typeof(float)) {
+                    return new AggregatorSumFloat();
+                }
+
+                return new AggregatorSumNumInteger();
+            }
+
+            if (type.IsBigInteger()) {
+                return new AggregatorSumBigIntegerFilter();
+            }
+
+            if (type.IsDecimal()) {
+                return new AggregatorSumDecimalFilter();
+            }
+
+            if (type == typeof(long) || type == typeof(long)) {
+                return new AggregatorSumLongFilter();
+            }
+
+            if (type == typeof(int?) || type == typeof(int)) {
+                return new AggregatorSumIntegerFilter();
+            }
+
+            if (type == typeof(double?) || type == typeof(double)) {
+                return new AggregatorSumDoubleFilter();
+            }
+
+            if (type == typeof(float?) || type == typeof(float)) {
+                return new AggregatorSumFloatFilter();
+            }
+
+            return new AggregatorSumNumIntegerFilter();
+        }
+    }
 } // end of namespace

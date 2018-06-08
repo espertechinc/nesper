@@ -10,6 +10,7 @@ using System;
 using System.Reflection;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 
@@ -27,12 +28,13 @@ namespace com.espertech.esper.epl.expression.time
         private readonly ILockable _iLock;
 
         public ExprTimePeriodEvalDeltaConstGivenDtxAdd(
+            ILockManager lockManager,
             ExprTimePeriodImpl.TimePeriodAdder[] adders,
             int[] added,
             TimeZoneInfo timeZone,
             TimeAbacus timeAbacus)
         {
-            _iLock = LockManager.CreateLock(MethodBase.GetCurrentMethod().DeclaringType);
+            _iLock = lockManager.CreateLock(MethodBase.GetCurrentMethod().DeclaringType);
             _adders = adders;
             _added = added;
             _dateTime = new DateTimeEx(DateTimeOffset.Now, timeZone);

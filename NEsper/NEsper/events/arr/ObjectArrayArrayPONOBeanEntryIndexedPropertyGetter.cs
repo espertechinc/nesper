@@ -9,17 +9,20 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
 using com.espertech.esper.events.bean;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.arr
 {
     /// <summary>
     /// A getter that works on PONO events residing within a Map as an event property.
     /// </summary>
-    public class ObjectArrayArrayPONOBeanEntryIndexedPropertyGetter
+    public class ObjectArrayArrayPonoBeanEntryIndexedPropertyGetter
         : BaseNativePropertyGetter
-          ,
-          ObjectArrayEventPropertyGetter
+        , ObjectArrayEventPropertyGetter
     {
         private readonly int _index;
         private readonly BeanEventPropertyGetter _nestedGetter;
@@ -31,11 +34,12 @@ namespace com.espertech.esper.events.arr
         /// <param name="eventAdapterService">for producing wrappers to objects</param>
         /// <param name="index">the index to fetch the array element for</param>
         /// <param name="returnType">type of the entry returned</param>
-        public ObjectArrayArrayPONOBeanEntryIndexedPropertyGetter(int propertyIndex,
-                                                                  int index,
-                                                                  BeanEventPropertyGetter nestedGetter,
-                                                                  EventAdapterService eventAdapterService,
-                                                                  Type returnType)
+        public ObjectArrayArrayPonoBeanEntryIndexedPropertyGetter(
+                int propertyIndex,
+                int index,
+                BeanEventPropertyGetter nestedGetter,
+                EventAdapterService eventAdapterService,
+                Type returnType)
             : base(eventAdapterService, returnType, null)
         {
             _propertyIndex = propertyIndex;
@@ -59,7 +63,7 @@ namespace com.espertech.esper.events.arr
 
         public override Object Get(EventBean eventBean)
         {
-            Object[] array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
+            var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
             return GetObjectArray(array);
         }
 
@@ -68,6 +72,35 @@ namespace com.espertech.esper.events.arr
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        #endregion
+        public override ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingGet(CastUnderlying(typeof(object[]), beanExpression), context);
+        }
+
+        public override ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingExists(CastUnderlying(typeof(object[]), beanExpression), context);
+        }
+
+        public override ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return StaticMethod(
+                GetType(), "GetArrayValue", underlyingExpression, 
+                Constant(_propertyIndex), 
+                Constant(_index));
+        }
+
+        public override ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return Relational(
+                ArrayLength(underlyingExpression), CodegenRelational.GT, 
+                Constant(_index));
+        }
+
+        public override Type TargetType => typeof(object[]);
+        public override Type BeanPropType => typeof(object);
+        public BeanEventPropertyGetter NestedGetter => _nestedGetter;
+
+        #endregion ObjectArrayEventPropertyGetter Members
     }
 }

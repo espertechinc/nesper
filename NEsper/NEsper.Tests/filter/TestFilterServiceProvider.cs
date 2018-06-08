@@ -7,7 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
-
+using com.espertech.esper.compat.container;
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.filter
@@ -18,8 +19,11 @@ namespace com.espertech.esper.filter
         [Test]
         public void TestGetService()
         {
-            FilterService serviceOne = FilterServiceProvider.NewService(ConfigurationEngineDefaults.FilterServiceProfile.READMOSTLY, false);
-            FilterService serviceTwo = FilterServiceProvider.NewService(ConfigurationEngineDefaults.FilterServiceProfile.READMOSTLY, false);
+            var container = SupportContainer.Instance;
+            FilterService serviceOne = FilterServiceProvider.NewService(
+                container, ConfigurationEngineDefaults.FilterServiceProfile.READMOSTLY, false);
+            FilterService serviceTwo = FilterServiceProvider.NewService(
+                container, ConfigurationEngineDefaults.FilterServiceProfile.READMOSTLY, false);
     
             Assert.IsTrue(serviceOne != null);
             Assert.IsTrue(serviceOne != serviceTwo);

@@ -6,14 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using com.espertech.esper.client;
 
 namespace com.espertech.esper.supportregression.util
 {
     public class NoActionUpdateListener
     {
-        public void Update(EventBean[] newEvents, EventBean[] oldEvents)
+        public void Update(object sender, UpdateEventArgs args)
         {
         }
     }

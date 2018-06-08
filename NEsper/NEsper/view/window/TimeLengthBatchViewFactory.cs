@@ -87,10 +87,7 @@ namespace com.espertech.esper.view.window
                 viewUpdatedCollection);
         }
 
-        public EventType EventType
-        {
-            get { return eventType; }
-        }
+        public EventType EventType => eventType;
 
         public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
@@ -127,9 +124,6 @@ namespace com.espertech.esper.view.window
             return myView.IsEmpty();
         }
 
-        public string ViewName
-        {
-            get { return "TimeInMillis-Length-Batch"; }
-        }
+        public string ViewName => "TimeInMillis-Length-Batch";
     }
 } // end of namespace

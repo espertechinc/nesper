@@ -22,7 +22,11 @@ namespace com.espertech.esper.events
         /// <param name="getter">getter for values</param>
         /// <param name="fragmentArray">true if array fragment</param>
         /// <param name="optionalFragmentTypeName">null if not a fragment, else fragment type name</param>
-        public ExplicitPropertyDescriptor(EventPropertyDescriptor descriptor, EventPropertyGetter getter, bool fragmentArray, String optionalFragmentTypeName)
+        public ExplicitPropertyDescriptor(
+            EventPropertyDescriptor descriptor, 
+            EventPropertyGetterSPI getter, 
+            bool fragmentArray, 
+            String optionalFragmentTypeName)
         {
             Descriptor = descriptor;
             Getter = getter;
@@ -36,7 +40,7 @@ namespace com.espertech.esper.events
 
         /// <summary>Returns the getter. </summary>
         /// <value>getter</value>
-        public EventPropertyGetter Getter { get; private set; }
+        public EventPropertyGetterSPI Getter { get; private set; }
 
         /// <summary>Returns the fragment event type name, or null if none defined. </summary>
         /// <value>fragment type name</value>

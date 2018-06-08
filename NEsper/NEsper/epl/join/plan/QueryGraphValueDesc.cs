@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
 
@@ -13,13 +14,13 @@ namespace com.espertech.esper.epl.join.plan
 {
     public class QueryGraphValueDesc
     {
-        public QueryGraphValueDesc(ExprNode[] indexExprs, QueryGraphValueEntry entry)
+        public QueryGraphValueDesc(IList<ExprNode> indexExprs, QueryGraphValueEntry entry)
         {
             IndexExprs = indexExprs;
             Entry = entry;
         }
 
-        public ExprNode[] IndexExprs { get; private set; }
+        public IList<ExprNode> IndexExprs { get; private set; }
 
         public QueryGraphValueEntry Entry { get; private set; }
     }

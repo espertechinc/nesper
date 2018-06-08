@@ -9,7 +9,9 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.filter;
 
@@ -23,8 +25,13 @@ namespace com.espertech.esper.core.service.multimatch
         {
         }
 
-        internal static readonly IThreadLocal<LinkedHashSet<FilterHandleCallback>> Dedups = ThreadLocalManager.Create(
-                () => new LinkedHashSet<FilterHandleCallback>());
+        internal static readonly IThreadLocal<LinkedHashSet<FilterHandleCallback>> Dedups;
+
+        static MultiMatchHandlerNoSubqueryWDedup()
+        {
+            Dedups = (new FastThreadLocalFactory())
+                .CreateThreadLocal(() => new LinkedHashSet<FilterHandleCallback>());
+        }
 
         public void Handle(ICollection<FilterHandleCallback> callbacks, EventBean theEvent)
         {

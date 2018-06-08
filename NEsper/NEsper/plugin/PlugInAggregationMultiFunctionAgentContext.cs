@@ -14,11 +14,14 @@ namespace com.espertech.esper.plugin
 {
     public class PlugInAggregationMultiFunctionAgentContext
     {
-        public PlugInAggregationMultiFunctionAgentContext(IList<ExprNode> childNodes)
+        public PlugInAggregationMultiFunctionAgentContext(IList<ExprNode> childNodes, ExprNode optionalFilterExpression)
         {
             ChildNodes = childNodes;
+            OptionalFilterExpression = optionalFilterExpression;
         }
 
-        public IList<ExprNode> ChildNodes { get; private set; }
+        public IList<ExprNode> ChildNodes { get; }
+
+        public ExprNode OptionalFilterExpression { get; }
     }
-}
+} // end of namespace

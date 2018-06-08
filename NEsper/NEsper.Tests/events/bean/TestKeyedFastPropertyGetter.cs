@@ -13,9 +13,10 @@ using com.espertech.esper.core.support;
 
 using XLR8.CGLib;
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.bean
@@ -26,15 +27,17 @@ namespace com.espertech.esper.events.bean
         private KeyedFastPropertyGetter _getter;
         private EventBean _theEvent;
         private SupportBeanComplexProps _bean;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _bean = SupportBeanComplexProps.MakeDefaultBean();
             _theEvent = SupportEventBeanFactory.CreateObject(_bean);
             FastClass fastClass = FastClass.Create(typeof(SupportBeanComplexProps));
             FastMethod method = fastClass.GetMethod("GetIndexed", new Type[] {typeof(int)});
-            _getter = new KeyedFastPropertyGetter(method, 1, SupportEventAdapterService.Service);
+            _getter = new KeyedFastPropertyGetter(method, 1, _container.Resolve<EventAdapterService>());
         }
     
         [Test]
@@ -47,7 +50,7 @@ namespace com.espertech.esper.events.bean
                 _getter.Get(SupportEventBeanFactory.CreateObject(""));
                 Assert.Fail();
             }
-            catch (PropertyAccessException ex)
+            catch (PropertyAccessException)
             {
                 // expected
             }

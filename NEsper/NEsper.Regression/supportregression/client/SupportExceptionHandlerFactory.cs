@@ -30,29 +30,30 @@ namespace com.espertech.esper.supportregression.client
             return handler.Handle;
         }
 
-        public static IList<ExceptionHandlerFactoryContext> FactoryContexts
-        {
-            get { return factoryContexts; }
-        }
+        public static IList<ExceptionHandlerFactoryContext> FactoryContexts => factoryContexts;
 
-        public static IList<SupportExceptionHandler> Handlers
-        {
-            get { return handlers; }
-        }
+        public static IList<SupportExceptionHandler> Handlers => handlers;
 
         public class SupportExceptionHandler
         {
             private readonly List<ExceptionHandlerContext> _contexts = 
                 new List<ExceptionHandlerContext>();
+            private readonly List<ExceptionHandlerContextUnassociated> _inboundPoolContexts =
+                new List<ExceptionHandlerContextUnassociated>();
 
-            public void Handle(ExceptionHandlerContext context) {
-                _contexts.Add(context);
-            }
-
-            public IList<ExceptionHandlerContext> Contexts
+            public void Handle(object sender, ExceptionHandlerEventArgs eventArgs)
             {
-                get { return _contexts; }
+                if (eventArgs.IsInboundPoolException) {
+                    _inboundPoolContexts.Add(eventArgs.InboundPoolContext);
+                }
+                else {
+                    _contexts.Add(eventArgs.Context);
+                }
             }
+
+            public IList<ExceptionHandlerContext> Contexts => _contexts;
+
+            public IList<ExceptionHandlerContextUnassociated> InboundPoolContexts => _inboundPoolContexts;
         }
     }
 }

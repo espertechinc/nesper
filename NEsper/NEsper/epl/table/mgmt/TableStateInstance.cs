@@ -9,11 +9,14 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.join.table;
 using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.spec;
@@ -27,16 +30,17 @@ namespace com.espertech.esper.epl.table.mgmt
 	    protected readonly TableMetadata _tableMetadata;
 	    private readonly AgentInstanceContext _agentInstanceContext;
 
-	    private readonly IReaderWriterLock _tableLevelRWLock = ReaderWriterLockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-	    protected readonly EventTableIndexRepository _indexRepository = new EventTableIndexRepository();
+        private readonly IReaderWriterLock _tableLevelRWLock;
+	    protected readonly EventTableIndexRepository _indexRepository;
 
 	    public abstract IEnumerable<EventBean> IterableTableScan { get; }
 	    public abstract void AddEvent(EventBean theEvent);
 	    public abstract void DeleteEvent(EventBean matchingEvent);
 	    public abstract void ClearInstance();
 	    public abstract void DestroyInstance();
-	    public abstract void AddExplicitIndex(CreateIndexDesc spec, bool isRecoveringResilient, bool allowIndexExists) ;
-	    public abstract string[] SecondaryIndexes { get; }
+        public abstract void AddExplicitIndex(string explicitIndexName, QueryPlanIndexItem explicitIndexDesc, bool isRecoveringResilient, bool allowIndexExists);
+
+        public abstract string[] SecondaryIndexes { get; }
 	    public abstract EventTable GetIndex(string indexName);
 	    public abstract ObjectArrayBackedEventBean GetCreateRowIntoTable(object groupByKey, ExprEvaluatorContext exprEvaluatorContext);
 	    public abstract ICollection<EventBean> EventCollection { get; }
@@ -58,13 +62,18 @@ namespace com.espertech.esper.epl.table.mgmt
 	        AddEvent(oa);
 	    }
 
-	    protected TableStateInstance(TableMetadata tableMetadata, AgentInstanceContext agentInstanceContext)
+	    protected TableStateInstance(
+	        TableMetadata tableMetadata, 
+	        AgentInstanceContext agentInstanceContext,
+	        IReaderWriterLockManager rwLockManager)
         {
-	        this._tableMetadata = tableMetadata;
+            this._tableLevelRWLock = rwLockManager.CreateLock(GetType());
+            this._tableMetadata = tableMetadata;
 	        this._agentInstanceContext = agentInstanceContext;
-	    }
+            this._indexRepository = new EventTableIndexRepository(tableMetadata.EventTableIndexMetadataRepo);
+        }
 
-	    public virtual TableMetadata TableMetadata
+        public virtual TableMetadata TableMetadata
 	    {
 	        get { return _tableMetadata; }
 	    }

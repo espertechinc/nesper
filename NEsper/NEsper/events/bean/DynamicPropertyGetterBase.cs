@@ -9,121 +9,181 @@
 using System;
 using System.Reflection;
 
+using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
+using com.espertech.esper.compat.collections;
+
 using XLR8.CGLib;
 
-using com.espertech.esper.client;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.threading;
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.bean
 {
     /// <summary>
-    /// Base class for getters for a dynamic property (syntax field.inner?), caches
-    /// methods to use for classes.
+    /// Base class for getters for a dynamic property (syntax field.inner?), caches methods to use for classes.
     /// </summary>
     public abstract class DynamicPropertyGetterBase : BeanEventPropertyGetter
     {
         private readonly EventAdapterService _eventAdapterService;
         private readonly CopyOnWriteList<DynamicPropertyDescriptor> _cache;
-        private readonly ILockable _iLock;
+        private ICodegenMember _codegenCache;
+        private ICodegenMember _codegenThis;
+        private ICodegenMember _codegenEventAdapterService;
 
         /// <summary>
-        /// To be implemented to return the method required, or null to indicate an
-        /// appropriate method could not be found.
+        /// To be implemented to return the method required, or null to indicate an appropriate method could not be found.
         /// </summary>
-        /// <param name="type">to search for a matching method</param>
-        /// <returns>
-        /// method if found, or null if no matching method exists
-        /// </returns>
-        protected abstract MethodInfo DetermineMethod(Type type);
+        /// <param name="clazz">to search for a matching method</param>
+        /// <returns>method if found, or null if no matching method exists</returns>
+        protected abstract MethodInfo DetermineMethod(Type clazz);
 
         /// <summary>
-        /// Call the getter to obtains the return result object, or null if no such method
-        /// exists.
+        /// Call the getter to obtains the return result object, or null if no such method exists.
         /// </summary>
         /// <param name="descriptor">provides method information for the class</param>
         /// <param name="underlying">is the underlying object to ask for the property value</param>
-        /// <returns>
-        /// underlying
-        /// </returns>
+        /// <returns>underlying</returns>
         protected abstract Object Call(DynamicPropertyDescriptor descriptor, Object underlying);
 
         /// <summary>
-        /// Ctor.
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
-        /// <param name="eventAdapterService">factory for event beans and event types</param>
-        protected DynamicPropertyGetterBase(EventAdapterService eventAdapterService)
+        /// <param name="cache">cache</param>
+        /// <param name="getter">getter</param>
+        /// <param name="object">object</param>
+        /// <param name="eventAdapterService">event server</param>
+        /// <returns>property</returns>
+        public static Object CacheAndCall(CopyOnWriteList<DynamicPropertyDescriptor> cache, DynamicPropertyGetterBase getter, Object @object, EventAdapterService eventAdapterService)
         {
-            this._iLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-            this._cache = new CopyOnWriteList<DynamicPropertyDescriptor>();
-            this._eventAdapterService = eventAdapterService;
+            var desc = GetPopulateCache(cache, getter, @object, eventAdapterService);
+            if (desc.Method == null)
+            {
+                return null;
+            }
+            return getter.Call(desc, @object);
+        }
+
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="cache">cache</param>
+        /// <param name="getter">getter</param>
+        /// <param name="object">object</param>
+        /// <param name="eventAdapterService">event server</param>
+        /// <returns>exists-flag</returns>
+        public static bool CacheAndExists(CopyOnWriteList<DynamicPropertyDescriptor> cache, DynamicPropertyGetterBase getter, Object @object, EventAdapterService eventAdapterService)
+        {
+            var desc = GetPopulateCache(cache, getter, @object, eventAdapterService);
+            if (desc.Method == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public DynamicPropertyGetterBase(EventAdapterService eventAdapterService)
+        {
+            _cache = new CopyOnWriteList<DynamicPropertyDescriptor>();
+            _eventAdapterService = eventAdapterService;
         }
 
         public Object GetBeanProp(Object @object)
         {
-            DynamicPropertyDescriptor desc = GetPopulateCache(@object);
-            if (desc.GetMethod() == null)
-            {
-                return null;
-            }
-            return Call(desc, @object);
+            return CacheAndCall(_cache, this, @object, _eventAdapterService);
         }
+
+        public Type TargetType => typeof(Object);
 
         public bool IsBeanExistsProperty(Object @object)
         {
-            DynamicPropertyDescriptor desc = GetPopulateCache(@object);
-            if (desc.GetMethod() == null)
-            {
-                return false;
-            }
-            return true;
+            return CacheAndExists(_cache, this, @object, _eventAdapterService);
         }
 
-        public Object Get(EventBean eventBean)
+        public Object Get(EventBean @event)
         {
-            DynamicPropertyDescriptor desc = GetPopulateCache(eventBean.Underlying);
-            if (desc.GetMethod() == null)
-            {
-                return null;
-            }
-            return Call(desc, eventBean.Underlying);
+            return CacheAndCall(_cache, this, @event.Underlying, _eventAdapterService);
         }
 
         public bool IsExistsProperty(EventBean eventBean)
         {
-            DynamicPropertyDescriptor desc = GetPopulateCache(eventBean.Underlying);
-            if (desc.GetMethod() == null)
-            {
-                return false;
-            }
-            return true;
+            return CacheAndExists(_cache, this, eventBean.Underlying, _eventAdapterService);
         }
 
-        private DynamicPropertyDescriptor GetPopulateCache(Object obj)
+        public Type BeanPropType => typeof(Object);
+
+        public ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingGet(ExprDotUnderlying(beanExpression), context);
+        }
+
+        public ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingExists(ExprDotUnderlying(beanExpression), context);
+        }
+
+        public ICodegenExpression CodegenEventBeanFragment(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingFragment(ExprDotUnderlying(beanExpression), context);
+        }
+
+        public ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            CodegenMembers(context);
+            return StaticMethod(this.GetType(), "CacheAndCall",
+                Ref(_codegenCache.MemberName),
+                Ref(_codegenThis.MemberName), underlyingExpression,
+                Ref(_codegenEventAdapterService.MemberName));
+        }
+
+        public ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            CodegenMembers(context);
+            return StaticMethod(this.GetType(), "CacheAndExists",
+                Ref(_codegenCache.MemberName),
+                Ref(_codegenThis.MemberName), underlyingExpression,
+                Ref(_codegenEventAdapterService.MemberName));
+        }
+
+        public ICodegenExpression CodegenUnderlyingFragment(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            CodegenMembers(context);
+            return StaticMethod(typeof(BaseNativePropertyGetter), "GetFragmentDynamic", 
+                CodegenUnderlyingGet(underlyingExpression, context),
+                Ref(_codegenEventAdapterService.MemberName));
+        }
+
+        public Object GetFragment(EventBean eventBean)
+        {
+            Object result = Get(eventBean);
+            return BaseNativePropertyGetter.GetFragmentDynamic(result, _eventAdapterService);
+        }
+
+        private static DynamicPropertyDescriptor GetPopulateCache(CopyOnWriteList<DynamicPropertyDescriptor> cache, DynamicPropertyGetterBase dynamicPropertyGetterBase, Object obj, EventAdapterService eventAdapterService)
         {
             // Check if the method is already there
-            Type target = obj.GetType();
-            foreach (DynamicPropertyDescriptor desc in _cache)
+            var target = obj.GetType();
+            foreach (DynamicPropertyDescriptor desc in cache)
             {
-                if (desc.GetClazz() == target)
+                if (desc.Clazz == target)
                 {
                     return desc;
                 }
             }
 
             // need to add it
-            using (_iLock.Acquire())
+            lock (dynamicPropertyGetterBase)
             {
-                foreach (DynamicPropertyDescriptor desc in _cache)
+                foreach (DynamicPropertyDescriptor desc in cache)
                 {
-                    if (desc.GetClazz() == target)
+                    if (desc.Clazz == target)
                     {
                         return desc;
                     }
                 }
 
                 // Lookup method to use
-                MethodInfo method = DetermineMethod(target);
+                var method = dynamicPropertyGetterBase.DetermineMethod(target);
 
                 // Cache descriptor and create fast method
                 DynamicPropertyDescriptor propertyDescriptor;
@@ -133,19 +193,26 @@ namespace com.espertech.esper.events.bean
                 }
                 else
                 {
-                    FastClass fastClass = FastClass.Create(target);
-                    FastMethod fastMethod = fastClass.GetMethod(method);
+                    var fastClass = FastClass.Create(target);
+                    var fastMethod = fastClass.GetMethod(method);
                     propertyDescriptor = new DynamicPropertyDescriptor(target, fastMethod, fastMethod.ParameterCount > 0);
                 }
-                _cache.Add(propertyDescriptor);
+                cache.Add(propertyDescriptor);
                 return propertyDescriptor;
             }
         }
 
-        public Object GetFragment(EventBean eventBean)
+        private void CodegenMembers(ICodegenContext context)
         {
-            Object result = Get(eventBean);
-            return BaseNativePropertyGetter.GetFragmentDynamic(result, _eventAdapterService);
+            if (_codegenCache == null)
+            {
+                _codegenCache = context.MakeMember(typeof(CopyOnWriteList<DynamicPropertyDescriptor>), typeof(DynamicPropertyDescriptor), _cache);
+                _codegenThis = context.MakeMember(typeof(DynamicPropertyGetterBase), this);
+                _codegenEventAdapterService = context.MakeMember(typeof(EventAdapterService), _eventAdapterService);
+            }
+            context.AddMember(_codegenCache);
+            context.AddMember(_codegenThis);
+            context.AddMember(_codegenEventAdapterService);
         }
     }
-}
+} // end of namespace

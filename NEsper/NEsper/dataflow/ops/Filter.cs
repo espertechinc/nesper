@@ -66,7 +66,7 @@ namespace com.espertech.esper.dataflow.ops
     
         public void OnInput(Object row) {
             if (Log.IsDebugEnabled) {
-                Log.Debug("Received row for filtering: " + CompatExtensions.Render((Object[]) row));
+                Log.Debug("Received row for filtering: " + row.RenderAny());
             }
     
             if (!(row is EventBeanSPI)) {
@@ -78,7 +78,7 @@ namespace com.espertech.esper.dataflow.ops
             var pass = _evaluator.Evaluate(new EvaluateParams(_eventsPerStream, true, null));
             if (pass != null && true.Equals(pass)) {
                 if (Log.IsDebugEnabled) {
-                    Log.Debug("Submitting row " + CompatExtensions.Render((Object[])row));
+                    Log.Debug("Submitting row " + row.RenderAny());
                 }
     
                 if (_singleOutputPort) {

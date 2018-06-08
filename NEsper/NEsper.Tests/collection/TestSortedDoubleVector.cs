@@ -284,7 +284,7 @@ namespace com.espertech.esper.collection
                 _vector.Remove(99);
                 Assert.Fail();
             }
-            catch (IllegalStateException ex) {
+            catch (IllegalStateException) {
                 // expected
             }
 

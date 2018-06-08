@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.agg.access;
@@ -23,18 +22,14 @@ namespace com.espertech.esper.epl.agg.factory
 {
     public class AggregationMethodFactoryRate : AggregationMethodFactory
     {
-        private readonly ExprRateAggNode _parent;
-        private readonly bool _isEver;
         private readonly long _intervalTime;
-        private readonly TimeProvider _timeProvider;
+        private readonly bool _isEver;
+        private readonly ExprRateAggNode _parent;
         private readonly TimeAbacus _timeAbacus;
+        private readonly TimeProvider _timeProvider;
 
-        public AggregationMethodFactoryRate(
-            ExprRateAggNode parent,
-            bool isEver,
-            long intervalTime,
-            TimeProvider timeProvider,
-            TimeAbacus timeAbacus)
+        public AggregationMethodFactoryRate(ExprRateAggNode parent, bool isEver, long intervalTime,
+            TimeProvider timeProvider, TimeAbacus timeAbacus)
         {
             _parent = parent;
             _isEver = isEver;
@@ -43,15 +38,9 @@ namespace com.espertech.esper.epl.agg.factory
             _timeAbacus = timeAbacus;
         }
 
-        public bool IsAccessAggregation
-        {
-            get { return false; }
-        }
+        public bool IsAccessAggregation => false;
 
-        public Type ResultType
-        {
-            get { return typeof (double?); }
-        }
+        public Type ResultType => typeof(double);
 
         public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
         {
@@ -63,47 +52,39 @@ namespace com.espertech.esper.epl.agg.factory
             throw new IllegalStateException("Not an access aggregation function");
         }
 
-        public AggregationAccessor Accessor
-        {
-            get { throw new IllegalStateException("Not an access aggregation function"); }
-        }
+        public AggregationAccessor Accessor => throw new IllegalStateException("Not an access aggregation function");
 
         public AggregationMethod Make()
         {
             if (_isEver)
             {
-                return new AggregatorRateEver(_intervalTime, _timeAbacus.GetOneSecond(), _timeProvider);
+                if (_parent.PositionalParams.Length == 0) {
+                    return new AggregatorRateEver(_intervalTime, _timeAbacus.OneSecond, _timeProvider);
+                }
+                else {
+                    return new AggregatorRateEverFilter(_intervalTime, _timeAbacus.OneSecond, _timeProvider);
+                }
             }
-            else
-            {
-                return new AggregatorRate(_timeAbacus.GetOneSecond());
+
+            if (_parent.OptionalFilter != null) {
+                return new AggregatorRateFilter(_timeAbacus.OneSecond);
             }
+
+            return new AggregatorRate(_timeAbacus.OneSecond);
         }
 
-        public ExprAggregateNodeBase AggregationExpression
-        {
-            get { return _parent; }
-        }
+        public ExprAggregateNodeBase AggregationExpression => _parent;
 
         public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
         {
-            service.AggregationMethodFactoryUtil.ValidateAggregationType(this, intoTableAgg);
+            AggregationValidationUtil.ValidateAggregationType(this, intoTableAgg);
             var that = (AggregationMethodFactoryRate) intoTableAgg;
             if (_intervalTime != that._intervalTime)
-            {
-                throw new ExprValidationException(
-                    "The size is " +
-                    _intervalTime +
-                    " and provided is " +
-                    that._intervalTime);
-            }
-            service.AggregationMethodFactoryUtil.ValidateAggregationUnbound(!_isEver, !that._isEver);
+                throw new ExprValidationException("The size is " + _intervalTime + " and provided is " + that._intervalTime);
+            AggregationValidationUtil.ValidateAggregationUnbound(!_isEver, !that._isEver);
         }
 
-        public AggregationAgent AggregationStateAgent
-        {
-            get { return null; }
-        }
+        public AggregationAgent AggregationStateAgent => null;
 
         public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
         {

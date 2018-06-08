@@ -43,7 +43,7 @@ namespace com.espertech.esper.epl.expression.ops
             {
                 _targetClass = validationContext.EngineImportService.ResolveType(_classIdent, false);
             }
-            catch (EngineImportException e)
+            catch (EngineImportException)
             {
                 throw new ExprValidationException("Failed to resolve new-operator class name '" + _classIdent + "'");
             }
@@ -72,7 +72,7 @@ namespace com.espertech.esper.epl.expression.ops
             get { return _classIdent; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             var other = node as ExprNewInstanceNode;
             return other != null && other._classIdent.Equals(this._classIdent);

@@ -139,7 +139,7 @@ namespace com.espertech.esper.view.std
             }
 
             GroupByView myView = (GroupByView)view;
-            if (!ExprNodeUtility.DeepEquals(myView.CriteriaExpressions, _criteriaExpressions))
+            if (!ExprNodeUtility.DeepEquals(myView.CriteriaExpressions, _criteriaExpressions, false))
             {
                 return false;
             }

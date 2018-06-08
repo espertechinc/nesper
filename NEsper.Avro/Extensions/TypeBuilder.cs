@@ -116,42 +116,42 @@ namespace NEsper.Avro.Extensions
             return typeInstance;
         }
 
-        public static JToken Null()
+        public static JToken NullType()
         {
             return new JValue("null");
         }
 
-        public static JToken Bytes(params JProperty[] properties)
+        public static JToken BytesType(params JProperty[] properties)
         {
             return Primitive("bytes", properties);
         }
 
-        public static JToken Int(params JProperty[] properties)
+        public static JToken IntType(params JProperty[] properties)
         {
             return Primitive("int", properties);
         }
 
-        public static JToken Long(params JProperty[] properties)
+        public static JToken LongType(params JProperty[] properties)
         {
             return Primitive("long", properties);
         }
 
-        public static JToken Float(params JProperty[] properties)
+        public static JToken FloatType(params JProperty[] properties)
         {
             return Primitive("float", properties);
         }
 
-        public static JToken Double(params JProperty[] properties)
+        public static JToken DoubleType(params JProperty[] properties)
         {
             return Primitive("double", properties);
         }
 
-        public static JToken String(params JProperty[] properties)
+        public static JToken StringType(params JProperty[] properties)
         {
             return Primitive("string", properties);
         }
 
-        public static JToken Boolean(params JProperty[] properties)
+        public static JToken BooleanType(params JProperty[] properties)
         {
             return Primitive("boolean", properties);
         }

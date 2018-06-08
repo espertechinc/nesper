@@ -39,8 +39,8 @@ namespace com.espertech.esper.pattern.observer
 	        AssertTimeParse("1997-07-16T19:20:30.123Z", 1997, 7, 16, 19, 20, 30, 123, "GMT+00:00");
 
 	        // local timezone, with and without msec
-	        AssertTimeParse("1997-07-16T19:20:30.123", 1997, 7, 16, 19, 20, 30, 123, TimeZone.CurrentTimeZone.StandardName);
-            AssertTimeParse("1997-07-16T19:20:30", 1997, 7, 16, 19, 20, 30, 0, TimeZone.CurrentTimeZone.StandardName);
+	        AssertTimeParse("1997-07-16T19:20:30.123", 1997, 7, 16, 19, 20, 30, 123, TimeZoneInfo.Local.StandardName);
+            AssertTimeParse("1997-07-16T19:20:30", 1997, 7, 16, 19, 20, 30, 0, TimeZoneInfo.Local.StandardName);
 	    }
 
         [Test]

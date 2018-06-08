@@ -12,9 +12,11 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.join.table;
 using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.spec;
@@ -31,8 +33,11 @@ namespace com.espertech.esper.epl.table.mgmt
 	        new Dictionary<object, ObjectArrayBackedEventBean>().WithNullSupport();
 	    private readonly IndexMultiKey _primaryIndexKey;
 
-	    public TableStateInstanceGroupedImpl(TableMetadata tableMetadata, AgentInstanceContext agentInstanceContext)
-            : base(tableMetadata, agentInstanceContext)
+	    public TableStateInstanceGroupedImpl(
+	        TableMetadata tableMetadata, 
+	        AgentInstanceContext agentInstanceContext,
+	        IReaderWriterLockManager rwLockManager)
+            : base(tableMetadata, agentInstanceContext, rwLockManager)
         {
 	        IList<EventPropertyGetter> indexGetters = new List<EventPropertyGetter>();
 	        IList<string> keyNames = new List<string>();
@@ -84,16 +89,16 @@ namespace com.espertech.esper.epl.table.mgmt
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QTableAddEvent(theEvent); }
 	        try
             {
-                foreach (var table in _indexRepository.GetTables())
+                foreach (var table in _indexRepository.Tables)
                 {
-	                table.Add(theEvent);
+	                table.Add(theEvent, AgentInstanceContext);
 	            }
 	        }
 	        catch (EPException)
             {
-	            foreach (var table in _indexRepository.GetTables())
+	            foreach (var table in _indexRepository.Tables)
                 {
-	                table.Remove(theEvent);
+	                table.Remove(theEvent, AgentInstanceContext);
 	            }
 	            throw;
 	        }
@@ -106,8 +111,8 @@ namespace com.espertech.esper.epl.table.mgmt
 	    public override void DeleteEvent(EventBean matchingEvent)
         {
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QTableDeleteEvent(matchingEvent); }
-	        foreach (var table in _indexRepository.GetTables()) {
-	            table.Remove(matchingEvent);
+	        foreach (var table in _indexRepository.Tables) {
+	            table.Remove(matchingEvent, AgentInstanceContext);
 	        }
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ATableDeleteEvent(); }
 	    }
@@ -117,14 +122,20 @@ namespace com.espertech.esper.epl.table.mgmt
 	        get { return new PrimaryIndexIterable(_rows); }
 	    }
 
-	    public override void AddExplicitIndex(CreateIndexDesc spec, bool isRecoveringResilient, bool allowIndexExists)
+        public override void AddExplicitIndex(string explicitIndexName, QueryPlanIndexItem explicitIndexDesc, bool isRecoveringResilient, bool allowIndexExists)
         {
-	        _indexRepository.ValidateAddExplicitIndex(spec.IsUnique, spec.IndexName, spec.Columns, _tableMetadata.InternalEventType, new PrimaryIndexIterable(_rows), AgentInstanceContext, isRecoveringResilient || allowIndexExists, null);
-	    }
+            _indexRepository.ValidateAddExplicitIndex(
+                explicitIndexName, 
+                explicitIndexDesc, 
+                _tableMetadata.InternalEventType, 
+                new PrimaryIndexIterable(_rows), 
+                AgentInstanceContext, 
+                isRecoveringResilient || allowIndexExists, null);
+        }
 
-	    public override string[] SecondaryIndexes
+        public override string[] SecondaryIndexes
 	    {
-	        get { return _indexRepository.GetExplicitIndexNames(); }
+	        get { return _indexRepository.ExplicitIndexNames; }
 	    }
 
 	    public override EventTableIndexRepository IndexRepository
@@ -155,7 +166,7 @@ namespace com.espertech.esper.epl.table.mgmt
 	    public override void ClearInstance()
         {
 	        _rows.Clear();
-	        foreach (EventTable table in _indexRepository.GetTables()) {
+	        foreach (EventTable table in _indexRepository.Tables) {
 	            table.Destroy();
 	        }
 	    }

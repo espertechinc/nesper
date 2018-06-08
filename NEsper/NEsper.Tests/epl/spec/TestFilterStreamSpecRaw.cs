@@ -8,8 +8,9 @@
 
 using System;
 using System.Collections.Generic;
-
+using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
@@ -18,6 +19,7 @@ using com.espertech.esper.epl.parse;
 using com.espertech.esper.filter;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl.parse;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
@@ -27,6 +29,14 @@ namespace com.espertech.esper.epl.spec
     [TestFixture]
     public class TestFilterStreamSpecRaw 
     {
+        private IContainer _container;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _container = SupportContainer.Reset();
+        }
+
         [Test]
         public void TestNoExpr()
         {
@@ -248,14 +258,15 @@ namespace com.espertech.esper.epl.spec
             Assert.AreEqual(1.0, GetConstant(rangeParam.Max));
         }
     
-        private double GetConstant(FilterSpecParamRangeValue param)
+        private double GetConstant(FilterSpecParamFilterForEval param)
         {
-            return ((RangeValueDouble) param).DoubleValue;
+            var constant = (FilterForEvalConstantDouble) param;
+            return constant.DoubleValue;
         }
     
         private Object GetConstant(FilterSpecParamInValue param)
         {
-            var constant = (InSetOfValuesConstant) param;
+            var constant = (FilterForEvalConstantAnyType)param;
             return constant.Constant;
         }
     
@@ -267,7 +278,7 @@ namespace com.espertech.esper.epl.spec
     
         private FilterSpecCompiled Compile(FilterStreamSpecRaw raw)
         {
-            var compiled = (FilterStreamSpecCompiled) raw.Compile(SupportStatementContextFactory.MakeContext(), new HashSet<String>(), false, Collections.GetEmptyList<int>(), false, false, false, null);
+            var compiled = (FilterStreamSpecCompiled) raw.Compile(SupportStatementContextFactory.MakeContext(_container), new HashSet<String>(), false, Collections.GetEmptyList<int>(), false, false, false, null);
             return compiled.FilterSpec;
         }
     

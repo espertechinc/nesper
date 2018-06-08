@@ -7,26 +7,30 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprInNode 
     {
         private ExprInNode _inNodeNormal;
         private ExprInNode _inNodeNotIn;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _inNodeNormal = SupportExprNodeFactory.MakeInSetNode(false);
             _inNodeNotIn = SupportExprNodeFactory.MakeInSetNode(true);
         }
@@ -42,7 +46,7 @@ namespace com.espertech.esper.epl.expression
         public void TestValidate()
         {
             _inNodeNormal = SupportExprNodeFactory.MakeInSetNode(true);
-            _inNodeNormal.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _inNodeNormal.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
     
             // No subnodes: Exception is thrown.
             TryInvalidValidate(new ExprInNodeImpl(true));
@@ -79,13 +83,13 @@ namespace com.espertech.esper.epl.expression
             ExprInNode otherInNodeNormal = SupportExprNodeFactory.MakeInSetNode(false);
             ExprInNode otherInNodeNotIn = SupportExprNodeFactory.MakeInSetNode(true);
     
-            Assert.IsTrue(_inNodeNormal.EqualsNode(otherInNodeNormal));
-            Assert.IsTrue(_inNodeNotIn.EqualsNode(otherInNodeNotIn));
+            Assert.IsTrue(_inNodeNormal.EqualsNode(otherInNodeNormal, false));
+            Assert.IsTrue(_inNodeNotIn.EqualsNode(otherInNodeNotIn, false));
     
-            Assert.IsFalse(_inNodeNormal.EqualsNode(otherInNodeNotIn));
-            Assert.IsFalse(_inNodeNotIn.EqualsNode(otherInNodeNormal));
-            Assert.IsFalse(_inNodeNotIn.EqualsNode(SupportExprNodeFactory.MakeCaseSyntax1Node()));
-            Assert.IsFalse(_inNodeNormal.EqualsNode(SupportExprNodeFactory.MakeCaseSyntax1Node()));
+            Assert.IsFalse(_inNodeNormal.EqualsNode(otherInNodeNotIn, false));
+            Assert.IsFalse(_inNodeNotIn.EqualsNode(otherInNodeNormal, false));
+            Assert.IsFalse(_inNodeNotIn.EqualsNode(SupportExprNodeFactory.MakeCaseSyntax1Node(), false));
+            Assert.IsFalse(_inNodeNormal.EqualsNode(SupportExprNodeFactory.MakeCaseSyntax1Node(), false));
         }
     
         [Test]
@@ -105,10 +109,10 @@ namespace com.espertech.esper.epl.expression
         private void TryInvalidValidate(ExprInNode exprInNode)
         {
             try {
-                exprInNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                exprInNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // expected
             }

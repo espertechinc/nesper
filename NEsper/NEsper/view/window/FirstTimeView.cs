@@ -66,15 +66,9 @@ namespace com.espertech.esper.view.window
             return _timeFirstViewFactory.MakeView(AgentInstanceContext);
         }
 
-        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation
-        {
-            get { return _timeDeltaComputation; }
-        }
+        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation => _timeDeltaComputation;
 
-        public override EventType EventType
-        {
-            get { return Parent.EventType; }
-        }
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
@@ -205,19 +199,13 @@ namespace com.espertech.esper.view.window
             _isClosed = closed;
         }
 
-        public LinkedHashSet<EventBean> Events
-        {
-            get { return _events; }
-        }
+        public LinkedHashSet<EventBean> Events => _events;
 
         public void VisitView(ViewDataVisitor viewDataVisitor)
         {
             viewDataVisitor.VisitPrimary(_events, true, _timeFirstViewFactory.ViewName, null);
         }
 
-        public ViewFactory ViewFactory
-        {
-            get { return _timeFirstViewFactory; }
-        }
+        public ViewFactory ViewFactory => _timeFirstViewFactory;
     }
 }

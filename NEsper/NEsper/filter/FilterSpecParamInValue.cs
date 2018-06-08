@@ -8,27 +8,14 @@
 
 using System;
 
-using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.pattern;
-using com.espertech.esper.util;
-
 namespace com.espertech.esper.filter
 {
     /// <summary>
     /// Denotes a value for use by the in-keyword within a list of values
     /// </summary>
-    public interface FilterSpecParamInValue : MetaDefItem
+    public interface FilterSpecParamInValue : FilterSpecParamFilterForEval
     {
-        /// <summary>
-        /// Returns the actual value to filter for from prior matching events
-        /// </summary>
-        /// <param name="matchedEvents">is a map of matching events</param>
-        /// <param name="evaluatorContext">eval context</param>
-        /// <returns>filter-for value</returns>
-        Object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext);
-
         Type ReturnType { get; }
-
         bool IsConstant { get; }
     }
 } // end of namespace

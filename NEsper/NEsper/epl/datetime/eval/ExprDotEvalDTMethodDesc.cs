@@ -6,15 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.dot;
+using com.espertech.esper.epl.@join.plan;
 using com.espertech.esper.epl.rettype;
 
 namespace com.espertech.esper.epl.datetime.eval
 {
     public class ExprDotEvalDTMethodDesc
     {
-        public ExprDotEvalDTMethodDesc(ExprDotEval eval, EPType returnType, ExprDotNodeFilterAnalyzerDesc intervalFilterDesc)
+        public ExprDotEvalDTMethodDesc(ExprDotEval eval, EPType returnType, FilterExprAnalyzerAffector intervalFilterDesc)
         {
             Eval = eval;
             ReturnType = returnType;
@@ -25,6 +25,6 @@ namespace com.espertech.esper.epl.datetime.eval
 
         public EPType ReturnType { get; private set; }
 
-        public ExprDotNodeFilterAnalyzerDesc IntervalFilterDesc { get; private set; }
+        public FilterExprAnalyzerAffector IntervalFilterDesc { get; private set; }
     }
 }

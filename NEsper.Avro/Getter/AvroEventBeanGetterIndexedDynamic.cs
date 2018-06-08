@@ -11,15 +11,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-using Avro;
 using Avro.Generic;
 
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.magic;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace NEsper.Avro.Getter
 {
@@ -27,6 +28,41 @@ namespace NEsper.Avro.Getter
     {
         private readonly string _propertyName;
         private readonly int _index;
+
+        public static Object GetAvroFieldValue(GenericRecord record, String propertyName, int index)
+        {
+            var value = record.Get(propertyName);
+            if (value is Array valueArray)
+            {
+                return AvroEventBeanGetterIndexed.GetIndexedValue(valueArray, index);
+            }
+
+            if (value is IEnumerable<object> valueGenericEnum)
+            {
+                return AvroEventBeanGetterIndexed.GetIndexedValue(valueGenericEnum, index);
+            }
+
+            if (value is IEnumerable valueEnum)
+            {
+                return AvroEventBeanGetterIndexed.GetIndexedValue(valueEnum.Cast<object>(), index);
+            }
+
+            return null;
+        }
+
+        public static bool IsAvroFieldExists(GenericRecord record, string propertyName)
+        {
+            var field = record.Schema.GetField(propertyName);
+            if (field == null)
+            {
+                return false;
+            }
+            var value = record.Get(propertyName);
+            return (value == null)
+                   || (value is Array)
+                   || (value is IEnumerable<object>)
+                   || (value is IEnumerable);
+        }
 
         public AvroEventBeanGetterIndexedDynamic(string propertyName, int index)
         {
@@ -36,28 +72,7 @@ namespace NEsper.Avro.Getter
 
         public Object GetAvroFieldValue(GenericRecord record)
         {
-            var value = record.Get(_propertyName);
-            if (value == null)
-            {
-                return null;
-            }
-
-            if (value is Array)
-            {
-                return AvroEventBeanGetterIndexed.GetIndexedValue((Array) value, _index);
-            }
-
-            if (value is IEnumerable<object>)
-            {
-                return AvroEventBeanGetterIndexed.GetIndexedValue((IEnumerable<object>) value, _index);
-            }
-
-            if (value is IEnumerable)
-            {
-                return AvroEventBeanGetterIndexed.GetIndexedValue(((IEnumerable) value).Cast<object>(), _index);
-            }
-
-            return null;
+            return GetAvroFieldValue(record, _propertyName, _index);
         }
 
         public Object Get(EventBean eventBean)
@@ -73,16 +88,7 @@ namespace NEsper.Avro.Getter
 
         public bool IsExistsPropertyAvro(GenericRecord record)
         {
-            Field field = record.Schema.GetField(_propertyName);
-            if (field == null)
-            {
-                return false;
-            }
-            var value = record.Get(_propertyName);
-            return ((value == null)
-                 || (value is Array)
-                 || (value is IEnumerable<object>)
-                 || (value is IEnumerable));
+            return IsAvroFieldExists(record, _propertyName);
         }
 
         public Object GetFragment(EventBean eventBean)
@@ -94,5 +100,36 @@ namespace NEsper.Avro.Getter
         {
             return null;
         }
+
+        public ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingGet(CastUnderlying(typeof(GenericRecord), beanExpression), context);
+        }
+
+        public ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingExists(CastUnderlying(typeof(GenericRecord), beanExpression), context);
+        }
+
+        public ICodegenExpression CodegenEventBeanFragment(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return ConstantNull();
+        }
+
+        public ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return StaticMethodTakingExprAndConst(GetType(), "GetAvroFieldValue", underlyingExpression, _propertyName, _index);
+        }
+
+        public ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return StaticMethodTakingExprAndConst(GetType(), "IsAvroFieldExists", underlyingExpression, _propertyName);
+        }
+
+        public ICodegenExpression CodegenUnderlyingFragment(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return ConstantNull();
+        }
+
     }
 } // end of namespace

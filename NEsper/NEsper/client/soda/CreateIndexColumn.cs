@@ -7,7 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.client.soda
 {
@@ -15,57 +19,106 @@ namespace com.espertech.esper.client.soda
     [Serializable]
     public class CreateIndexColumn
     {
-        /// <summary>Ctor.</summary>
-        public CreateIndexColumn()
+        private IList<Expression> columns;
+        private String indexType;
+        private IList<Expression> parameters;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CreateIndexColumn"/> class.
+        /// </summary>
+        /// <param name="columnName">Name of the column.</param>
+        public CreateIndexColumn(String columnName) : this(columnName, CreateIndexColumnType.HASH)
         {
-            IndexColumnType = CreateIndexColumnType.HASH;
         }
 
         /// <summary>
-        /// Ctor.
+        /// Initializes a new instance of the <see cref="CreateIndexColumn"/> class.
         /// </summary>
-        /// <param name="columnName">column name</param>
-        public CreateIndexColumn(string columnName)
+        /// <param name="columnName">Name of the column.</param>
+        /// <param name="type">The index type.</param>
+        public CreateIndexColumn(String columnName, CreateIndexColumnType type)
         {
-            IndexColumnType = CreateIndexColumnType.HASH;
-            ColumnName = columnName;
+            this.columns = Collections.SingletonList<Expression>(Expressions.Property(columnName));
+            this.indexType = type.GetName();
         }
 
         /// <summary>
-        /// Ctor.
+        /// Initializes a new instance of the <see cref="CreateIndexColumn" /> class.
         /// </summary>
-        /// <param name="columnName">colum name</param>
-        /// <param name="type">index type</param>
-        public CreateIndexColumn(string columnName, CreateIndexColumnType type)
+        /// <param name="columns">The columns.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="parameters">The parameters.</param>
+
+        public CreateIndexColumn(IList<Expression> columns, String type, IList<Expression> parameters)
         {
-            ColumnName = columnName;
-            IndexColumnType = type;
+            this.columns = columns;
+            this.indexType = type;
+            this.parameters = parameters;
         }
 
         /// <summary>
         /// Renders the clause in textual representation.
         /// </summary>
-        /// <param name="writer">to output to</param>
-        public void ToEPL(TextWriter writer)
+        /// <param name="writer">The writer.</param>
+
+        public virtual void ToEPL(TextWriter writer)
         {
-            writer.Write(ColumnName);
-            if (IndexColumnType != CreateIndexColumnType.HASH)
+            if (columns.Count > 1)
+            {
+                writer.Write("(");
+            }
+
+            ExpressionBase.ToPrecedenceFreeEPL(columns, writer);
+            if (columns.Count > 1)
+            {
+                writer.Write(")");
+            }
+
+            if ((indexType != null) && !String.Equals(indexType, CreateIndexColumnType.HASH.GetName(), StringComparison.InvariantCultureIgnoreCase))
             {
                 writer.Write(' ');
-                writer.Write(IndexColumnType.ToString().ToLowerInvariant());
+                writer.Write(indexType.ToLowerInvariant());
+            }
+
+            if (!parameters.IsEmpty())
+            {
+                writer.Write("(");
+                ExpressionBase.ToPrecedenceFreeEPL(parameters, writer);
+                writer.Write(")");
             }
         }
 
         /// <summary>
-        /// Returns the column name.
+        /// Returns index column expressions
         /// </summary>
-        /// <value>column name</value>
-        public string ColumnName { get; set; }
+        public IList<Expression> Columns
+        {
+            get => columns;
+            set => columns = value;
+        }
 
         /// <summary>
-        /// Returns the index type.
+        /// Gets or sets the type of the index.
         /// </summary>
-        /// <value>index type</value>
-        public CreateIndexColumnType IndexColumnType { get; set; }
+        /// <value>
+        /// The type of the index.
+        /// </value>
+        public String IndexType
+        {
+            get => indexType;
+            set => indexType = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the parameters.
+        /// </summary>
+        /// <value>
+        /// The parameters.
+        /// </value>
+        public IList<Expression> Parameters
+        {
+            get => parameters;
+            set => parameters = value;
+        }
     }
 } // end of namespace

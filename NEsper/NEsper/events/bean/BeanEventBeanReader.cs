@@ -14,11 +14,11 @@ using com.espertech.esper.client;
 namespace com.espertech.esper.events.bean
 {
     /// <summary>
-    /// Reader for fast access to all event properties for an event backed by an object.
+    /// Reader for fast access to all event properties for an event backed by a Java object.
     /// </summary>
     public class BeanEventBeanReader : EventBeanReader
     {
-        private readonly BeanEventPropertyGetter[] _getterArray;
+        private BeanEventPropertyGetter[] _getterArray;
 
         /// <summary>
         /// Ctor.
@@ -28,9 +28,9 @@ namespace com.espertech.esper.events.bean
         {
             var properties = type.PropertyNames;
             var getters = new List<BeanEventPropertyGetter>();
-            foreach (String property in properties)
+            foreach (string property in properties)
             {
-                var getter = (BeanEventPropertyGetter)type.GetGetter(property);
+                var getter = (BeanEventPropertyGetter)type.GetGetterSPI(property);
                 if (getter != null)
                 {
                     getters.Add(getter);
@@ -50,4 +50,4 @@ namespace com.espertech.esper.events.bean
             return values;
         }
     }
-}
+} // end of namespace

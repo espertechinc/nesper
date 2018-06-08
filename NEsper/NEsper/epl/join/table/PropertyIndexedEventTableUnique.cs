@@ -12,11 +12,12 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 
 namespace com.espertech.esper.epl.join.table
 {
-	public class PropertyIndexedEventTableUnique : PropertyIndexedEventTable , EventTableAsSet
+	public class PropertyIndexedEventTableUnique : PropertyIndexedEventTable, EventTableAsSet
 	{
 	    internal readonly IDictionary<MultiKeyUntyped, EventBean> _propertyIndex;
 	    private readonly bool _canClear;
@@ -40,17 +41,17 @@ namespace com.espertech.esper.epl.join.table
 	    /// </summary>
 	    /// <param name="newData">to add</param>
 	    /// <param name="oldData">to remove</param>
-	    public override void AddRemove(EventBean[] newData, EventBean[] oldData)
+	    public override void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext)
         {
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QIndexAddRemove(this, newData, oldData);}
 	        if (oldData != null) {
 	            foreach (var theEvent in oldData) {
-	                Remove(theEvent);
+	                Remove(theEvent, exprEvaluatorContext);
 	            }
 	        }
 	        if (newData != null) {
 	            foreach (var theEvent in newData) {
-	                Add(theEvent);
+	                Add(theEvent, exprEvaluatorContext);
 	            }
 	        }
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AIndexAddRemove();}
@@ -66,7 +67,7 @@ namespace com.espertech.esper.epl.join.table
 	        return null;
 	    }
 
-	    public override void Add(EventBean theEvent)
+	    public override void Add(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
 	    {
 	        var key = GetMultiKey(theEvent);
 	        var existing = _propertyIndex.Push(key, theEvent);
@@ -81,7 +82,7 @@ namespace com.espertech.esper.epl.join.table
 	        throw new EPException("Unique index violation, index" + indexNameDisplay + " is a unique index and key '" + key + "' already exists");
 	    }
 
-	    public override void Remove(EventBean theEvent)
+	    public override void Remove(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
 	    {
 	        var key = GetMultiKey(theEvent);
 	        _propertyIndex.Remove(key);

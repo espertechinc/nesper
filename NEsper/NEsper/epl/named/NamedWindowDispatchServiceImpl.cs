@@ -16,6 +16,7 @@ using com.espertech.esper.client.hook;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
@@ -26,7 +27,6 @@ using com.espertech.esper.events.vaevent;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.schedule;
 using com.espertech.esper.timer;
-using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.named
 {
@@ -46,8 +46,7 @@ namespace com.espertech.esper.epl.named
         private readonly IReaderWriterLock _eventProcessingRwLock;
         private readonly MetricReportingService _metricReportingService;
 
-        private readonly IThreadLocal<DispatchesTL> _threadLocal = ThreadLocalManager.Create<DispatchesTL>(
-            () => new DispatchesTL());
+        private readonly IThreadLocal<DispatchesTL> _threadLocal;
 
         /// <summary>
         /// Ctor.
@@ -66,8 +65,10 @@ namespace com.espertech.esper.epl.named
             bool isPrioritized,
             IReaderWriterLock eventProcessingRWLock,
             ExceptionHandlingService exceptionHandlingService,
-            MetricReportingService metricReportingService)
+            MetricReportingService metricReportingService,
+            IThreadLocalManager threadLocalManager)
         {
+            _threadLocal = threadLocalManager.Create<DispatchesTL>(() => new DispatchesTL());
             _schedulingService = schedulingService;
             _variableService = variableService;
             _tableService = tableService;
@@ -95,13 +96,28 @@ namespace com.espertech.esper.epl.named
             bool isVirtualDataWindow,
             ICollection<string> optionalUniqueKeyProps,
             string eventTypeAsName,
-            StatementContext statementContextCreateWindow)
+            StatementContext statementContextCreateWindow,
+            ILockManager lockManager)
         {
             return new NamedWindowProcessor(
-                name, namedWindowMgmtService, namedWindowDispatchService, contextName, eventType, statementResultService,
-                revisionProcessor, eplExpression, statementName, isPrioritized, isEnableSubqueryIndexShare,
-                enableQueryPlanLog, metricReportingService, isBatchingDataWindow, isVirtualDataWindow,
-                optionalUniqueKeyProps, eventTypeAsName, statementContextCreateWindow);
+                name,
+                namedWindowMgmtService, 
+                namedWindowDispatchService, 
+                contextName, 
+                eventType, 
+                statementResultService,
+                revisionProcessor,
+                eplExpression, 
+                statementName,
+                isPrioritized, 
+                isEnableSubqueryIndexShare,
+                enableQueryPlanLog,
+                metricReportingService,
+                isBatchingDataWindow,
+                isVirtualDataWindow,
+                optionalUniqueKeyProps,
+                eventTypeAsName,
+                statementContextCreateWindow, lockManager);
         }
 
         public NamedWindowTailView CreateTailView(

@@ -10,6 +10,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.upd;
 using com.espertech.esper.epl.updatehelper;
@@ -26,7 +27,7 @@ namespace com.espertech.esper.core.start
         {
         }
     
-        public override EPPreparedExecuteIUDSingleStreamExec GetExecutor(FilterSpecCompiled filter, string aliasName)
+        public override EPPreparedExecuteIUDSingleStreamExec GetExecutor(QueryGraph queryGraph, string aliasName)
         {
             var services = base.Services;
             var processor = base.Processor;
@@ -41,11 +42,20 @@ namespace com.espertech.esper.core.start
             assignmentTypeService.IsStreamZeroUnambigous = true;
             var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, true);
             var validationContext = new ExprValidationContext(
-                assignmentTypeService, statementContext.EngineImportService,
-                statementContext.StatementExtensionServicesContext, null, statementContext.SchedulingService,
-                statementContext.VariableService, statementContext.TableService, evaluatorContextStmt,
-                statementContext.EventAdapterService, statementContext.StatementName, statementContext.StatementId,
-                statementContext.Annotations, statementContext.ContextDescriptor, statementContext.ScriptingService,
+                statementContext.Container,
+                assignmentTypeService,
+                statementContext.EngineImportService,
+                statementContext.StatementExtensionServicesContext, null,
+                statementContext.SchedulingService,
+                statementContext.VariableService,
+                statementContext.TableService,
+                evaluatorContextStmt,
+                statementContext.EventAdapterService,
+                statementContext.StatementName,
+                statementContext.StatementId,
+                statementContext.Annotations, 
+                statementContext.ContextDescriptor,
+                statementContext.ScriptingService,
                 false, false, true, false, null, false);
     
             // validate update expressions
@@ -71,13 +81,12 @@ namespace com.espertech.esper.core.start
                 if (processor is FireAndForgetProcessorTable) {
                     FireAndForgetProcessorTable tableProcessor = (FireAndForgetProcessorTable) processor;
                     tableUpdateStrategy = services.TableService.GetTableUpdateStrategy(tableProcessor.TableMetadata, updateHelper, false);
-                    copyOnWrite = false;
                 }
             } catch (ExprValidationException e) {
                 throw new EPException(e.Message, e);
             }
     
-            return new EPPreparedExecuteIUDSingleStreamExecUpdate(filter, statementSpec.FilterRootNode, statementSpec.Annotations, updateHelper, tableUpdateStrategy, statementSpec.TableNodes, services);
+            return new EPPreparedExecuteIUDSingleStreamExecUpdate(queryGraph, statementSpec.FilterRootNode, statementSpec.Annotations, updateHelper, tableUpdateStrategy, statementSpec.TableNodes, services);
         }
     }
 } // end of namespace

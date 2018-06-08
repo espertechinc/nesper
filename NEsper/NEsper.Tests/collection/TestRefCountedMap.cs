@@ -34,7 +34,7 @@ namespace com.espertech.esper.collection
                 _refMap["a"] = 10;
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // Expected exception
             }
@@ -44,7 +44,7 @@ namespace com.espertech.esper.collection
                 _refMap[null] = 10;
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // Expected exception
             }
@@ -70,7 +70,7 @@ namespace com.espertech.esper.collection
                 _refMap.Reference("b");
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // Expected exception
             }
@@ -92,7 +92,7 @@ namespace com.espertech.esper.collection
                 _refMap.Dereference("b");
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // Expected exception
             }

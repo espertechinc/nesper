@@ -85,12 +85,12 @@ namespace com.espertech.esper.epl.expression.ops
                     if (!typeOne.IsNumeric())
                     {
                         throw new ExprValidationException(
-                            string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", typeOne.FullName));
+                            string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", Name.Clean(typeOne)));
                     }
                     else if (!typeTwo.IsNumeric())
                     {
                         throw new ExprValidationException(
-                            string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", typeTwo.FullName));
+                            string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", Name.Clean(typeTwo)));
                     }
                     else
                     {
@@ -146,7 +146,7 @@ namespace com.espertech.esper.epl.expression.ops
             get { return ExprPrecedenceEnum.RELATIONAL_BETWEEN_IN; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             var other = node as ExprRelationalOpNodeImpl;
             if (other == null)

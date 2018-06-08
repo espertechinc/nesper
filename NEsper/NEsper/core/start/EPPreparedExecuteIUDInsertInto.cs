@@ -12,6 +12,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.filter;
@@ -46,7 +47,7 @@ namespace com.espertech.esper.core.start
             return statementSpec;
         }
     
-        public override EPPreparedExecuteIUDSingleStreamExec GetExecutor(FilterSpecCompiled filter, string aliasName)
+        public override EPPreparedExecuteIUDSingleStreamExec GetExecutor(QueryGraph queryGraph, string aliasName)
         {
             var statementSpec = base.StatementSpec;
             var statementContext = base.StatementContext;
@@ -56,6 +57,7 @@ namespace com.espertech.esper.core.start
     
             // assign names
             var validationContext = new ExprValidationContext(
+                statementContext.Container,
                 streamTypeService, 
                 statementContext.EngineImportService,
                 statementContext.StatementExtensionServicesContext, null, 
@@ -107,6 +109,7 @@ namespace com.espertech.esper.core.start
             var optionalInsertIntoEventType = processor.EventTypeResultSetProcessor;
             var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(statementContext.StatementName, statementContext.StatementEventTypeRef);
             var insertHelper = SelectExprProcessorFactory.GetProcessor(
+                statementContext.Container,
                 Collections.SingletonList(0),
                 selectNoWildcard.ToArray(), false, 
                 statementSpec.InsertIntoDesc, optionalInsertIntoEventType, null, streamTypeService,
@@ -126,7 +129,8 @@ namespace com.espertech.esper.core.start
                 statementContext.Annotations,
                 statementContext.ContextDescriptor,
                 statementContext.ConfigSnapshot, null,
-                statementContext.NamedWindowMgmtService, null, null,
+                statementContext.NamedWindowMgmtService,
+                null, null,
                 statementContext.StatementExtensionServicesContext);
     
             return new EPPreparedExecuteIUDSingleStreamExecInsert(exprEvaluatorContextStatement, insertHelper, statementSpec.TableNodes, base.Services);

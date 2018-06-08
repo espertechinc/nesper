@@ -66,14 +66,6 @@ namespace com.espertech.esper.compat.threading
         /// <summary>
         /// Initializes a new instance of the <see cref="MonitorSlimLock"/> class.
         /// </summary>
-        public MonitorSlimLock()
-            : this( BaseLock.MLockTimeout )
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MonitorSlimLock"/> class.
-        /// </summary>
         public MonitorSlimLock(int lockTimeout)
         {
             _uLockId = Guid.NewGuid();

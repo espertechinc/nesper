@@ -66,7 +66,7 @@ namespace com.espertech.esper.epl.expression.prior
             }
 
             var constantNode = ChildNodes[0];
-            if (constantNode.ExprEvaluator.ReturnType.GetBoxedType() != typeof(int?))
+            if (constantNode.ExprEvaluator.ReturnType.IsNotInt32())
             {
                 throw new ExprValidationException("Prior function requires an integer index parameter");
             }
@@ -147,7 +147,7 @@ namespace com.espertech.esper.epl.expression.prior
             get { return ExprPrecedenceEnum.UNARY; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             return node is ExprPriorNode;
         }

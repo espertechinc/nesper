@@ -51,10 +51,11 @@ namespace com.espertech.esper.epl.join.pollindex
             }
             
             var factory = new PropertyIndexedEventTableCoerceAllFactory(_streamNum, _eventType, _propertyNames, _coercionTypes);
-            var tables = factory.MakeEventTables(new EventTableFactoryTableIdentStmt(statementContext));
+            var evaluatorContextStatement = new ExprEvaluatorContextStatement(statementContext, false);
+            var tables = factory.MakeEventTables(new EventTableFactoryTableIdentStmt(statementContext), evaluatorContextStatement);
             foreach (var table in tables)
             {
-                table.Add(pollResult.ToArray());
+                table.Add(pollResult.ToArray(), evaluatorContextStatement);
             }
             return tables;
         }

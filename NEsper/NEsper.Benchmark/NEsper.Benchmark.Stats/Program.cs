@@ -8,14 +8,13 @@
 
 using System;
 
-
 namespace NEsper.Benchmark.Stats
 {
     public class Program
     {
         public static void Main(String[] args)
         {
-            NEsper.Benchmark.Server.Stats stats = new NEsper.Benchmark.Server.Stats("a", "any", 10, 20);
+            var stats = new Server.Stats("a", "any", 10, 20);
             stats.Update(1);
             stats.Update(2);
             stats.Update(10);
@@ -23,7 +22,7 @@ namespace NEsper.Benchmark.Stats
             stats.Update(25);
             //stats.Dump();
 
-            NEsper.Benchmark.Server.Stats stats2 = new NEsper.Benchmark.Server.Stats("b", "any", 10, 20);
+            var stats2 = new Server.Stats("b", "any", 10, 20);
             stats2.Update(1);
             stats.Merge(stats2);
             stats.Dump();

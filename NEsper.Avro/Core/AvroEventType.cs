@@ -35,7 +35,6 @@ namespace NEsper.Avro.Core
         private readonly ICollection<EventType> _deepSupertypes;
         private readonly string _endTimestampPropertyName;
         private readonly EventAdapterService _eventAdapterService;
-        private readonly string _eventTypeName;
         private readonly EventTypeMetadata _metadata;
         private readonly EventType[] _optionalSuperTypes;
         private readonly IDictionary<string, PropertySetDescriptorItem> _propertyItems;
@@ -43,7 +42,8 @@ namespace NEsper.Avro.Core
         private readonly int _typeId;
 
         private EventPropertyDescriptor[] _propertyDescriptors;
-        private Dictionary<string, EventPropertyGetter> _propertyGetterCache;
+        private Dictionary<string, EventPropertyGetterSPI> _propertyGetterCache;
+        private Dictionary<String, EventPropertyGetter> _propertyGetterCodegeneratedCache;
         private string[] _propertyNames;
 
         public AvroEventType(
@@ -58,7 +58,6 @@ namespace NEsper.Avro.Core
             ICollection<EventType> deepSupertypes)
         {
             _metadata = metadata;
-            _eventTypeName = eventTypeName;
             _typeId = typeId;
             _eventAdapterService = eventAdapterService;
             _avroSchema = avroSchema;
@@ -105,7 +104,7 @@ namespace NEsper.Avro.Core
             }
             if (_propertyGetterCache == null)
             {
-                _propertyGetterCache = new Dictionary<string, EventPropertyGetter>();
+                _propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
             }
             return
                 AvroPropertyUtil.GetGetter(
@@ -113,14 +112,42 @@ namespace NEsper.Avro.Core
                 null;
         }
 
-        public EventPropertyGetter GetGetter(string propertyExpression)
+        public EventPropertyGetterSPI GetGetterSPI(string propertyExpression)
         {
             if (_propertyGetterCache == null)
             {
-                _propertyGetterCache = new Dictionary<string, EventPropertyGetter>();
+                _propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
             }
             return AvroPropertyUtil.GetGetter(
                 _avroSchema, _propertyGetterCache, _propertyItems, propertyExpression, true, _eventAdapterService);
+        }
+
+        public EventPropertyGetter GetGetter(String propertyName)
+        {
+            if (!_eventAdapterService.EngineImportService.IsCodegenEventPropertyGetters)
+            {
+                return GetGetterSPI(propertyName);
+            }
+            if (_propertyGetterCodegeneratedCache == null)
+            {
+                _propertyGetterCodegeneratedCache = new Dictionary<string, EventPropertyGetter>();
+            }
+
+            var getter = _propertyGetterCodegeneratedCache.Get(propertyName);
+            if (getter != null)
+            {
+                return getter;
+            }
+
+            var getterSPI = GetGetterSPI(propertyName);
+            if (getterSPI == null)
+            {
+                return null;
+            }
+
+            var getterCode = _eventAdapterService.EngineImportService.CodegenGetter(getterSPI, propertyName);
+            _propertyGetterCodegeneratedCache.Put(propertyName, getterCode);
+            return getterCode;
         }
 
         public FragmentEventType GetFragmentType(string propertyExpression)

@@ -52,10 +52,7 @@ namespace com.espertech.esper.view.window
             return new FirstTimeView(this, agentInstanceViewFactoryContext, timeDeltaComputation);
         }
 
-        public EventType EventType
-        {
-            get { return _eventType; }
-        }
+        public EventType EventType => _eventType;
 
         public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
@@ -74,14 +71,8 @@ namespace com.espertech.esper.view.window
             return myView.IsEmpty();
         }
 
-        public string ViewName
-        {
-            get { return "First-TimeInMillis"; }
-        }
+        public string ViewName => "First-TimeInMillis";
 
-        private string ViewParamMessage
-        {
-            get { return ViewName + " view requires a single numeric or time period parameter"; }
-        }
+        private string ViewParamMessage => ViewName + " view requires a single numeric or time period parameter";
     }
 } // end of namespace

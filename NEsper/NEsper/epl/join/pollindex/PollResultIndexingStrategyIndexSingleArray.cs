@@ -44,10 +44,11 @@ namespace com.espertech.esper.epl.join.pollindex
                 return new EventTable[] {new UnindexedEventTableList(pollResult, _streamNum)};
             }
             var tables = new EventTable[_propertyNames.Length];
+            var evaluatorContextStatement = new ExprEvaluatorContextStatement(statementContext, false);
             for (var i = 0; i < _propertyNames.Length; i++) {
                 var factory = new PropertyIndexedEventTableSingleFactory(_streamNum, _eventType, _propertyNames[i], false, null);
-                tables[i] = factory.MakeEventTables(new EventTableFactoryTableIdentStmt(statementContext))[0];
-                tables[i].Add(pollResult.ToArray());
+                tables[i] = factory.MakeEventTables(new EventTableFactoryTableIdentStmt(statementContext), evaluatorContextStatement)[0];
+                tables[i].Add(pollResult.ToArray(), evaluatorContextStatement);
             }
             return tables;
         }

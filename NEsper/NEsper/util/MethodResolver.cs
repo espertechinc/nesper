@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -52,6 +51,173 @@ namespace com.espertech.esper.util
         {
             WIDENING_CONVERSIONS = new Dictionary<Type, ICollection<Type>>();
 
+            AddWideningConversion<Byte>(
+                typeof(Byte),
+                typeof(Nullable<Byte>)
+            );
+            AddWideningConversion<SByte>(
+                typeof(Nullable<SByte>),
+                typeof(SByte)
+            );
+            AddWideningConversion<Int16>(
+                typeof(Byte),
+                typeof(Int16),
+                typeof(Nullable<Byte>),
+                typeof(Nullable<Int16>),
+                typeof(Nullable<SByte>),
+                typeof(SByte)
+            );
+            AddWideningConversion<Int32>(
+                typeof(Byte),
+                typeof(Int16),
+                typeof(Int32),
+                typeof(Nullable<Byte>),
+                typeof(Nullable<Int16>),
+                typeof(Nullable<Int32>),
+                typeof(Nullable<SByte>),
+                typeof(Nullable<UInt16>),
+                typeof(SByte),
+                typeof(UInt16)
+            );
+            AddWideningConversion<Int64>(
+                typeof(Byte),
+                typeof(Int16),
+                typeof(Int32),
+                typeof(Int64),
+                typeof(Nullable<Byte>),
+                typeof(Nullable<Int16>),
+                typeof(Nullable<Int32>),
+                typeof(Nullable<Int64>),
+                typeof(Nullable<SByte>),
+                typeof(Nullable<UInt16>),
+                typeof(Nullable<UInt32>),
+                typeof(SByte),
+                typeof(UInt16),
+                typeof(UInt32)
+            );
+            AddWideningConversion<UInt16>(
+                typeof(Byte),
+                typeof(Nullable<Byte>),
+                typeof(Nullable<UInt16>),
+                typeof(UInt16)
+            );
+            AddWideningConversion<UInt32>(
+                typeof(Byte),
+                typeof(Nullable<Byte>),
+                typeof(Nullable<UInt16>),
+                typeof(Nullable<UInt32>),
+                typeof(UInt16),
+                typeof(UInt32)
+            );
+            AddWideningConversion<UInt64>(
+                typeof(Byte),
+                typeof(Nullable<Byte>),
+                typeof(Nullable<UInt16>),
+                typeof(Nullable<UInt32>),
+                typeof(Nullable<UInt64>),
+                typeof(UInt16),
+                typeof(UInt32),
+                typeof(UInt64)
+            );
+            AddWideningConversion<Single>(
+                typeof(Byte),
+                typeof(Int16),
+                typeof(Int32),
+                typeof(Int64),
+                typeof(Nullable<Byte>),
+                typeof(Nullable<Int16>),
+                typeof(Nullable<Int32>),
+                typeof(Nullable<Int64>),
+                typeof(Nullable<SByte>),
+                typeof(Nullable<Single>),
+                typeof(Nullable<UInt16>),
+                typeof(Nullable<UInt32>),
+                typeof(Nullable<UInt64>),
+                typeof(SByte),
+                typeof(Single),
+                typeof(UInt16),
+                typeof(UInt32),
+                typeof(UInt64)
+            );
+            AddWideningConversion<Double>(
+                typeof(Byte),
+                typeof(Double),
+                typeof(Int16),
+                typeof(Int32),
+                typeof(Int64),
+                typeof(Nullable<Byte>),
+                typeof(Nullable<Double>),
+                typeof(Nullable<Int16>),
+                typeof(Nullable<Int32>),
+                typeof(Nullable<Int64>),
+                typeof(Nullable<SByte>),
+                typeof(Nullable<Single>),
+                typeof(Nullable<UInt16>),
+                typeof(Nullable<UInt32>),
+                typeof(Nullable<UInt64>),
+                typeof(SByte),
+                typeof(Single),
+                typeof(UInt16),
+                typeof(UInt32),
+                typeof(UInt64)
+            );
+            AddWideningConversion<Decimal>(
+                typeof(Decimal),
+                typeof(Nullable<Decimal>)
+            );
+            AddWideningConversion<Char>(
+                typeof(Byte),
+                typeof(Nullable<Byte>),
+                typeof(Nullable<UInt16>),
+                typeof(UInt16)
+            );
+            AddWideningConversion<Nullable<Byte>>(
+                typeof(Byte),
+                typeof(Nullable<Byte>)
+            );
+            AddWideningConversion<Nullable<SByte>>(
+                typeof(Nullable<SByte>),
+                typeof(SByte)
+            );
+            AddWideningConversion<Nullable<Int16>>(
+                typeof(Int16),
+                typeof(Nullable<Int16>)
+            );
+            AddWideningConversion<Nullable<Int64>>(
+                typeof(Int32),
+                typeof(Int64),
+                typeof(Nullable<Int64>)
+            );
+            AddWideningConversion<Nullable<Int32>>(
+                typeof(Int32),
+                typeof(Nullable<Int32>)
+            );
+            AddWideningConversion<Nullable<UInt16>>(
+                typeof(Nullable<UInt16>),
+                typeof(UInt16)
+            );
+            AddWideningConversion<Nullable<UInt32>>(
+                typeof(Nullable<UInt32>),
+                typeof(UInt32)
+            );
+            AddWideningConversion<Nullable<UInt64>>(
+                typeof(Nullable<UInt64>),
+                typeof(UInt64)
+            );
+            AddWideningConversion<Nullable<Single>>(
+                typeof(Nullable<Single>),
+                typeof(Single)
+            );
+            AddWideningConversion<Nullable<Double>>(
+                typeof(Double),
+                typeof(Nullable<Double>)
+            );
+            AddWideningConversion<Nullable<Decimal>>(
+                typeof(Decimal),
+                typeof(Nullable<Decimal>)
+            );
+
+
             // Initialize the map of wrapper conversions
             var boolWrappers = InitWrappingConversions<bool, bool?>();
             var charWrappers = InitWrappingConversions<char, char?>();
@@ -68,6 +234,7 @@ namespace com.espertech.esper.util
             var decimalWrappers = InitWrappingConversions<decimal, decimal?>();
             var bigIntWrappers = InitWrappingConversions<BigInteger, BigInteger?>();
 
+#if false
             // Initialize the map of widening conversions
             var wideningConversions = new HashSet<Type>(byteWrappers);
             WIDENING_CONVERSIONS.Put(typeof(short), new HashSet<Type>(wideningConversions));
@@ -93,6 +260,12 @@ namespace com.espertech.esper.util
             wideningConversions.AddAll(doubleWrappers);
             WIDENING_CONVERSIONS.Put(typeof(decimal), new HashSet<Type>(wideningConversions));
             WIDENING_CONVERSIONS.Put(typeof(decimal?), new HashSet<Type>(wideningConversions));
+#endif
+        }
+
+        private static void AddWideningConversion<T>(params Type[] sourceTypes)
+        {
+            WIDENING_CONVERSIONS.Put(typeof(T), new HashSet<Type>(sourceTypes));
         }
 
         /// <summary>

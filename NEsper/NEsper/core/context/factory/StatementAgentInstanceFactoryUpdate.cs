@@ -63,7 +63,7 @@ namespace com.espertech.esper.core.context.factory
                 // start subselects
                 subselectStrategies = EPStatementStartMethodHelperSubselect.StartSubselects(_services, _subSelectStrategyCollection, agentInstanceContext, stopCallbacks, isRecoveringResilient);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 stopCallback = StatementAgentInstanceUtil.GetStopCallback(stopCallbacks, agentInstanceContext);
                 StatementAgentInstanceUtil.StopSafe(stopCallback, _statementContext);

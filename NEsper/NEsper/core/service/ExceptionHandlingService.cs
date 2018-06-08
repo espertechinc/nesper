@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using System.Reflection;
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
 using com.espertech.esper.compat.logging;
@@ -19,34 +19,42 @@ namespace com.espertech.esper.core.service
 {
     public class ExceptionHandlingService
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        private readonly String _engineURI;
-
-        public event ExceptionHandler UnhandledException;
-        public event ConditionHandler UnhandledCondition;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public ExceptionHandlingService(
             string engineURI,
             IEnumerable<ExceptionHandler> exceptionHandlers,
             IEnumerable<ConditionHandler> conditionHandlers)
         {
-            _engineURI = engineURI;
-            foreach (var handler in exceptionHandlers) UnhandledException += handler;
-            foreach (var handler in conditionHandlers) UnhandledCondition += handler;
+            EngineURI = engineURI;
+
+            foreach (var handler in exceptionHandlers) {
+                UnhandledException += handler;
+            }
+
+            foreach (var handler in conditionHandlers) {
+                UnhandledCondition += handler;
+            }
         }
+
+        public string EngineURI { get; }
+
+        public event ExceptionHandler UnhandledException;
+        public event ConditionHandler UnhandledCondition;
+        //public event ExceptionHandlerInboundPool InboundPoolHandler;
 
         public void HandleCondition(BaseCondition condition, EPStatementHandle handle)
         {
-            if (UnhandledCondition == null)
-            {
-                Log.Info("Condition encountered processing statement '{0}' statement text '{1}' : {2}", handle.StatementName, handle.EPL, condition);
+            if (UnhandledCondition == null) {
+                Log.Info(
+                    "Condition encountered processing statement '{0}' statement text '{1}' : {2}", handle.StatementName,
+                    handle.EPL, condition);
                 return;
             }
 
             UnhandledCondition(
                 new ConditionHandlerContext(
-                    _engineURI, handle.StatementName, handle.EPL, condition));
+                    EngineURI, handle.StatementName, handle.EPL, condition));
         }
 
         public void HandleException(
@@ -55,27 +63,26 @@ namespace com.espertech.esper.core.service
             ExceptionHandlerExceptionType type,
             EventBean optionalCurrentEvent)
         {
-            HandleException(ex, handle.StatementHandle.StatementName, handle.StatementHandle.EPL, type, optionalCurrentEvent);
+            HandleException(
+                ex, handle.StatementHandle.StatementName, handle.StatementHandle.EPL, type, optionalCurrentEvent);
         }
 
         public void HandleException(
             Exception ex,
-            String statementName,
-            String epl,
+            string statementName,
+            string epl,
             ExceptionHandlerExceptionType type,
             EventBean optionalCurrentEvent)
         {
-            if (UnhandledException == null)
-            {
+            if (UnhandledException == null) {
                 var writer = new StringWriter();
-                if (type == ExceptionHandlerExceptionType.PROCESS)
-                {
+                if (type == ExceptionHandlerExceptionType.PROCESS) {
                     writer.Write("Exception encountered processing ");
                 }
-                else
-                {
+                else {
                     writer.Write("Exception encountered performing instance stop for ");
                 }
+
                 writer.Write("statement '");
                 writer.Write(statementName);
                 writer.Write("' expression '");
@@ -85,25 +92,32 @@ namespace com.espertech.esper.core.service
 
                 var message = writer.ToString();
 
-                if (type == ExceptionHandlerExceptionType.PROCESS)
-                {
+                if (type == ExceptionHandlerExceptionType.PROCESS) {
                     Log.Error(message, ex);
                 }
-                else
-                {
+                else {
                     Log.Warn(message, ex);
                 }
 
                 return;
             }
 
-            UnhandledException(
-                new ExceptionHandlerContext(_engineURI, ex, statementName, epl, type, optionalCurrentEvent));
+            if (UnhandledException != null) {
+                UnhandledException(
+                    this, new ExceptionHandlerEventArgs {
+                        Context = new ExceptionHandlerContext(EngineURI, ex, statementName, epl, type, optionalCurrentEvent)
+                    });
+            }
         }
 
-        public string EngineURI
+        public void HandleInboundPoolException(string engineURI, Exception exception, object @event)
         {
-            get { return _engineURI; }
+            if (UnhandledException != null) {
+                UnhandledException(
+                    this, new ExceptionHandlerEventArgs {
+                        InboundPoolContext = new ExceptionHandlerContextUnassociated(engineURI, exception, @event)
+                    });
+            }
         }
     }
 }

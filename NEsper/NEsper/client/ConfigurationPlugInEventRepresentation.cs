@@ -11,38 +11,36 @@ using System;
 namespace com.espertech.esper.client
 {
     /// <summary>
-    /// Configuration object for plug-in event representations.
-    ///  </summary>
+    ///     Configuration object for plug-in event representations.
+    /// </summary>
     [Serializable]
-    public class ConfigurationPlugInEventRepresentation 
+    public class ConfigurationPlugInEventRepresentation
     {
-        private String eventRepresentationTypeName;
-        private Object initializer;
+        private string _eventRepresentationTypeName;
+        private object _initializer;
 
         /// <summary>
-        /// Gets or sets the class name of the class providing the pluggable event representation.
+        ///     Gets or sets the class name of the class providing the pluggable event representation.
         /// </summary>
         /// <value>The name of the event representation type.</value>
-        /// <returns>class name of class implementing <see cref="com.espertech.esper.plugin.PlugInEventRepresentation"/></returns>
-        public string EventRepresentationTypeName
-        {
-            get { return eventRepresentationTypeName; }
-            set { eventRepresentationTypeName = value; }
+        /// <returns>class name of class implementing <see cref="com.espertech.esper.plugin.PlugInEventRepresentation" /></returns>
+        public string EventRepresentationTypeName {
+            get => _eventRepresentationTypeName;
+            set => _eventRepresentationTypeName = value;
         }
 
         /// <summary>
-        /// Gets or sets the optional initialization or configuration information for the plug-in event
-        /// representation.
+        ///     Gets or sets the optional initialization or configuration information for the plug-in event
+        ///     representation.
         /// </summary>
         /// <value>The initializer.</value>
         /// <returns>
-        /// any configuration object specific to the event representation, or a XML string
-        /// if supplied via configuration XML file, or null if none supplied
+        ///     any configuration object specific to the event representation, or a XML string
+        ///     if supplied via configuration XML file, or null if none supplied
         /// </returns>
-        public Object Initializer
-        {
-            get { return initializer; }
-            set { initializer = value; }
+        public object Initializer {
+            get => _initializer;
+            set => _initializer = value;
         }
     }
 }

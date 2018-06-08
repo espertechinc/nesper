@@ -12,14 +12,16 @@ namespace com.espertech.esper.compat
 {
     public class ClassLoaderDefault : ClassLoader
     {
-        public static ClassLoader GetInstance()
+        private IResourceManager _resourceManager;
+
+        public ClassLoaderDefault(IResourceManager resourceManager)
         {
-            return new ClassLoaderDefault();
+            _resourceManager = resourceManager;
         }
 
         public Stream GetResourceAsStream(string resourceName)
         {
-            return ResourceManager.GetResourceAsStream(resourceName);
+            return _resourceManager.GetResourceAsStream(resourceName);
         }
     }
 }

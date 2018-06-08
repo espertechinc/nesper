@@ -85,8 +85,8 @@ namespace com.espertech.esper.view.stat
             }
 
             var myView = (WeightedAverageView)view;
-            if ((!ExprNodeUtility.DeepEquals(_fieldNameWeight, myView.FieldNameWeight)) ||
-                (!ExprNodeUtility.DeepEquals(_fieldNameX, myView.FieldNameX)))
+            if ((!ExprNodeUtility.DeepEquals(_fieldNameWeight, myView.FieldNameWeight, false)) ||
+                (!ExprNodeUtility.DeepEquals(_fieldNameX, myView.FieldNameX, false)))
             {
                 return false;
             }

@@ -55,13 +55,13 @@ namespace com.espertech.esper.epl.expression.core
             get { return _inner.IsConstantResult; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             if (node is ExprNodeValidated)
             {
-                return _inner.EqualsNode(((ExprNodeValidated) node)._inner);
+                return _inner.EqualsNode(((ExprNodeValidated) node)._inner, false);
             }
-            return _inner.EqualsNode(node);
+            return _inner.EqualsNode(node, false);
         }
     
         public override ExprNode Validate(ExprValidationContext validationContext)

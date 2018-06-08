@@ -70,7 +70,7 @@ namespace com.espertech.esper.epl.named
 
         public IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> ConsumersNonContext
         {
-            get { return _consumersNonContext; }
+            get => _consumersNonContext;
             protected internal set { _consumersNonContext = value; }
         }
 

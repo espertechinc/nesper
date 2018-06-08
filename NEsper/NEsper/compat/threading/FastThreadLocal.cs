@@ -37,7 +37,6 @@ namespace com.espertech.esper.compat.threading
     /// <typeparam name="T"></typeparam>
 
     public sealed class FastThreadLocal<T> : IThreadLocal<T>
-        where T : class
     {
         // Technique    Config      Cycles      time-ms     avg time-us
         // IThreadLocal	Release	    1183734	    6200.5	    5.238085583
@@ -59,10 +58,7 @@ namespace com.espertech.esper.compat.threading
         /// Gets the instance id ... if you really must know.
         /// </summary>
         /// <value>The instance id.</value>
-        public int InstanceId
-        {
-            get { return _instanceId; }
-        }
+        public int InstanceId => _instanceId;
 
         internal class StaticData
         {
@@ -100,7 +96,7 @@ namespace com.espertech.esper.compat.threading
         static FastThreadLocal()
         {
             ThreadDataList = new LinkedList<WeakReference<StaticData>>();
-            ThreadDataListLock = ReaderWriterLockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            ThreadDataListLock = new SlimReaderWriterLock(60000);
         }
 
         [ThreadStatic]
@@ -110,11 +106,11 @@ namespace com.espertech.esper.compat.threading
         /// Factory delegate for construction of data on miss.
         /// </summary>
 
-        private readonly FactoryDelegate<T> _dataFactory;
+        private readonly Func<T> _dataFactory;
 
         private static StaticData GetThreadData()
         {
-            StaticData lThreadData = _threadData;
+            var lThreadData = _threadData;
             if (lThreadData != null)
             {
                 return lThreadData;
@@ -256,7 +252,7 @@ namespace com.espertech.esper.compat.threading
                         {
                             if (threadData.Count > lInstance)
                             {
-                                threadData.Table[lInstance] = null;
+                                threadData.Table[lInstance] = default(T);
                             }
 
                             continue;
@@ -283,12 +279,12 @@ namespace com.espertech.esper.compat.threading
                 IndexReclaim.Enqueue(_instanceId);
             }
         }
-        
+
         #region ISerializable Members
 #if false
         public void GetObjectData(SerializationInfo INFO, StreamingContext context)
         {
-            INFO.AddValue("m_dataFactory", m_dataFactory, typeof(FactoryDelegate<T>));
+            INFO.AddValue("m_dataFactory", m_dataFactory, typeof(Func<T>));
         }
 #endif
         #endregion
@@ -326,6 +322,8 @@ namespace com.espertech.esper.compat.threading
             // table space, so it not necessary to worry about them... however,
             // down here we may be seeing table growth.
 
+            GetThreadData();
+
             var index = (int) Interlocked.Increment(ref _typeInstanceId);
             if (index >= _threadData.Table.Length)
             {
@@ -341,7 +339,7 @@ namespace com.espertech.esper.compat.threading
         /// Initializes a new instance of the <see cref="FastThreadLocal&lt;T&gt;"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
-        public FastThreadLocal( FactoryDelegate<T> factory )
+        public FastThreadLocal( Func<T> factory )
         {
             _instanceId = AllocateIndex();
             _dataFactory = factory;
@@ -351,7 +349,7 @@ namespace com.espertech.esper.compat.threading
         public FastThreadLocal(SerializationInfo information, StreamingContext context)
         {
             m_instanceId = AllocateIndex();
-            m_dataFactory = (FactoryDelegate<T>) information.GetValue("m_dataFactory", typeof (FactoryDelegate<T>));
+            m_dataFactory = (Func<T>) information.GetValue("m_dataFactory", typeof (Func<T>));
         }
 #endif
     }
@@ -359,7 +357,7 @@ namespace com.espertech.esper.compat.threading
     /// <summary>
     /// Creates fast thread local objects.
     /// </summary>
-    public class FastThreadLocalFactory : ThreadLocalFactory
+    public class FastThreadLocalFactory : IThreadLocalFactory
     {
         #region ThreadLocalFactory Members
 
@@ -369,7 +367,7 @@ namespace com.espertech.esper.compat.threading
         /// <typeparam name="T"></typeparam>
         /// <param name="factory"></param>
         /// <returns></returns>
-        public IThreadLocal<T> CreateThreadLocal<T>(FactoryDelegate<T> factory) where T : class
+        public IThreadLocal<T> CreateThreadLocal<T>(Func<T> factory) where T : class
         {
             return new FastThreadLocal<T>(factory);
         }

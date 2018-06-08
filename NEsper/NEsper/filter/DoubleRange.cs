@@ -47,15 +47,9 @@ namespace com.espertech.esper.filter
         /// <value>low endpoint</value>
         public double? Min { get; private set; }
 
-        public object HighEndpoint
-        {
-            get { return Max; }
-        }
+        public object HighEndpoint => Max;
 
-        public object LowEndpoint
-        {
-            get { return Min; }
-        }
+        public object LowEndpoint => Min;
 
         /// <summary>Returns high endpoint. </summary>
         /// <value>high endpoint</value>

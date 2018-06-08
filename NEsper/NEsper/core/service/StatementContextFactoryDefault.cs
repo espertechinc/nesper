@@ -66,33 +66,34 @@ namespace com.espertech.esper.core.service
         public static StatementContextEngineServices GetStmtCtxEngineServices(EPServicesContext services)
         {
             return new StatementContextEngineServices(
-                    services.EngineURI,
-                    services.EventAdapterService,
-                    services.NamedWindowMgmtService,
-                    services.VariableService,
-                    services.TableService,
-                    services.EngineSettingsService,
-                    services.ValueAddEventService,
-                    services.ConfigSnapshot,
-                    services.MetricsReportingService,
-                    services.ViewService,
-                    services.ExceptionHandlingService,
-                    services.ExpressionResultCacheSharable,
-                    services.StatementEventTypeRefService,
-                    services.TableService.TableExprEvaluatorContext,
-                    services.EngineLevelExtensionServicesContext,
-                    services.RegexHandlerFactory,
-                    services.StatementLockFactory,
-                    services.ContextManagementService,
-                    services.ViewServicePreviousFactory,
-                    services.EventTableIndexService,
-                    services.PatternNodeFactory,
-                    services.FilterBooleanExpressionFactory,
-                    services.TimeSource,
-                    services.EngineImportService,
-                    services.AggregationFactoryFactory,
-                    services.SchedulingService,
-                    services.ExprDeclaredService
+                services.Container,
+                services.EngineURI,
+                services.EventAdapterService,
+                services.NamedWindowMgmtService,
+                services.VariableService,
+                services.TableService,
+                services.EngineSettingsService,
+                services.ValueAddEventService,
+                services.ConfigSnapshot,
+                services.MetricsReportingService,
+                services.ViewService,
+                services.ExceptionHandlingService,
+                services.ExpressionResultCacheSharable,
+                services.StatementEventTypeRefService,
+                services.TableService.TableExprEvaluatorContext,
+                services.EngineLevelExtensionServicesContext,
+                services.RegexHandlerFactory,
+                services.StatementLockFactory,
+                services.ContextManagementService,
+                services.ViewServicePreviousFactory,
+                services.EventTableIndexService,
+                services.PatternNodeFactory,
+                services.FilterBooleanExpressionFactory,
+                services.TimeSource,
+                services.EngineImportService,
+                services.AggregationFactoryFactory,
+                services.SchedulingService,
+                services.ExprDeclaredService
             );
         }
 
@@ -166,10 +167,11 @@ namespace com.espertech.esper.core.service
                 engineServices.MultiMatchHandlerFactory.GetDefaultHandler());
     
             var patternContextFactory = new PatternContextFactoryDefault();
-    
+
+            var container = engineServices.Container;
             var optionalCreateNamedWindowName = statementSpecRaw.CreateWindowDesc != null ? statementSpecRaw.CreateWindowDesc.WindowName : null;
             var viewResolutionService = new ViewResolutionServiceImpl(_viewRegistry, optionalCreateNamedWindowName, _systemVirtualDwViewFactory);
-            var patternResolutionService = new PatternObjectResolutionServiceImpl(_patternObjectClasses);
+            var patternResolutionService = new PatternObjectResolutionServiceImpl(container, _patternObjectClasses);
     
             var schedulingService = engineServices.SchedulingService;
             var filterService = engineServices.FilterService;
@@ -231,6 +233,7 @@ namespace com.espertech.esper.core.service
     
             // Create statement context
             return new StatementContext(
+                engineServices.Container,
                 _stmtEngineServices,
                 schedulingService,
                 scheduleBucket,
@@ -242,8 +245,11 @@ namespace com.espertech.esper.core.service
                 patternContextFactory,
                 filterService,
                 new StatementResultServiceImpl(
-                    statementName, engineServices.StatementLifecycleSvc, engineServices.MetricsReportingService,
-                    engineServices.ThreadingService),
+                    statementName, 
+                    engineServices.StatementLifecycleSvc, 
+                    engineServices.MetricsReportingService,
+                    engineServices.ThreadingService,
+                    engineServices.ThreadLocalManager),
                 engineServices.InternalEventEngineRouteDest,
                 annotations,
                 statementAgentInstanceRegistry,
@@ -275,7 +281,7 @@ namespace com.espertech.esper.core.service
                     return new ContextControllerFactoryServiceImpl(replacementCache);
                 }
             }
-            catch (ExprValidationException e)
+            catch (ExprValidationException)
             {
                 throw new EPException("Failed to obtain hook for " + HookType.CONTEXT_STATE_CACHE);
             }

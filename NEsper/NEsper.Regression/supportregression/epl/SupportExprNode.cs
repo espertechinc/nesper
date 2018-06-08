@@ -9,8 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.util;
 
@@ -48,10 +46,7 @@ namespace com.espertech.esper.supportregression.epl
             _type = type;
         }
 
-        public override ExprEvaluator ExprEvaluator
-        {
-            get { return this; }
-        }
+        public override ExprEvaluator ExprEvaluator => this;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
@@ -61,20 +56,11 @@ namespace com.espertech.esper.supportregression.epl
             return null;
         }
 
-        public override bool IsConstantResult
-        {
-            get { return false; }
-        }
+        public override bool IsConstantResult => false;
 
-        public Type ReturnType
-        {
-            get { return _type; }
-        }
+        public Type ReturnType => _type;
 
-        public int ValidateCountSnapshot
-        {
-            get { return _validateCountSnapshot; }
-        }
+        public int ValidateCountSnapshot => _validateCountSnapshot;
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
@@ -83,7 +69,8 @@ namespace com.espertech.esper.supportregression.epl
 
         public object Value
         {
-            set { _value = value; }
+            get => _value;
+            set => _value = value;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
@@ -104,15 +91,11 @@ namespace com.espertech.esper.supportregression.epl
             }
         }
 
-        public override ExprPrecedenceEnum Precedence
-        {
-            get { return ExprPrecedenceEnum.UNARY; }
-        }
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
-            var other = node as SupportExprNode;
-            return other != null && Equals(_value, other._value);
+            return node is SupportExprNode other && Equals(_value, other._value);
         }
     }
 }

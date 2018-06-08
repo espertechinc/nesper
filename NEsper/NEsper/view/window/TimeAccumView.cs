@@ -100,15 +100,9 @@ namespace com.espertech.esper.view.window
             return _factory.MakeView(_agentInstanceContext);
         }
 
-        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation
-        {
-            get { return _timeDeltaComputation; }
-        }
+        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation => _timeDeltaComputation;
 
-        public override EventType EventType
-        {
-            get { return Parent.EventType; }
-        }
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
@@ -234,10 +228,7 @@ namespace com.espertech.esper.view.window
         /// Returns true if the window is empty, or false if not empty.
         /// </summary>
         /// <value>true if empty</value>
-        public bool IsEmpty
-        {
-            get { return _currentBatch.IsEmpty(); }
-        }
+        public bool IsEmpty => _currentBatch.IsEmpty();
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
@@ -273,9 +264,6 @@ namespace com.espertech.esper.view.window
             viewDataVisitor.VisitPrimary(_currentBatch, true, _factory.ViewName, null);
         }
 
-        public ViewFactory ViewFactory
-        {
-            get { return _factory; }
-        }
+        public ViewFactory ViewFactory => _factory;
     }
 } // end of namespace

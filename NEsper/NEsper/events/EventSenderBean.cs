@@ -14,6 +14,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.time;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
@@ -48,13 +49,15 @@ namespace com.espertech.esper.events
         /// <param name="beanEventType">the event type</param>
         /// <param name="eventAdapterService">factory for event beans and event types</param>
         /// <param name="threadingService">for inbound threading</param>
+        /// <param name="lockManager">The lock manager.</param>
         public EventSenderBean(
             EPRuntimeEventSender runtime,
             BeanEventType beanEventType,
             EventAdapterService eventAdapterService,
-            ThreadingService threadingService)
+            ThreadingService threadingService,
+            ILockManager lockManager)
         {
-            _iLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            _iLock = lockManager.CreateLock(GetType());
             _runtime = runtime;
             _beanEventType = beanEventType;
             _eventAdapterService = eventAdapterService;

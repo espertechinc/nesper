@@ -9,34 +9,34 @@
 
 using System;
 
-namespace com.espertech.esper.example.qos_sla.eventbean
+namespace NEsper.Examples.QoS_SLA.eventbean
 {
     public class LatencyLimit
     {
-        private String operationName;
-        private String customerId;
-        private long latencyThreshold;
+        private String _operationName;
+        private String _customerId;
+        private long _latencyThreshold;
 
         public LatencyLimit(String operationName, String customerId, long latencyThreshold)
         {
-            this.operationName = operationName;
-            this.customerId = customerId;
-            this.latencyThreshold = latencyThreshold;
+            this._operationName = operationName;
+            this._customerId = customerId;
+            this._latencyThreshold = latencyThreshold;
         }
 
         public String OperationName
         {
-            get { return operationName; }
+            get { return _operationName; }
         }
 
         public String CustomerId
         {
-            get { return customerId; }
+            get { return _customerId; }
         }
 
         public long LatencyThreshold
         {
-            get { return latencyThreshold; }
+            get { return _latencyThreshold; }
         }
     }
 }

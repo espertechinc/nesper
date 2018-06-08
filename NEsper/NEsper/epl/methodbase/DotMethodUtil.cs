@@ -19,6 +19,7 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.util;
+using com.espertech.esper.epl.util;
 
 namespace com.espertech.esper.epl.methodbase
 {
@@ -170,59 +171,13 @@ namespace com.espertech.esper.epl.methodbase
                 {
                     continue;
                 }
-                ValidateSpecificType(methodUsedName, type, found.ParamType, found.SpecificType, provided.ReturnType, i, provided.Expression);
-            }
-        }
-
-        public static void ValidateSpecificType(String methodUsedName, DotMethodTypeEnum type, DotMethodFPParamTypeEnum expectedTypeEnum, Type expectedTypeClass, Type providedType, int parameterNum, ExprNode parameterExpression)
-        {
-            string message = string.Format("Error validating {0} method '{1}', ", type.GetTypeName(), methodUsedName);
-            if (expectedTypeEnum == DotMethodFPParamTypeEnum.BOOLEAN && (!providedType.IsBoolean()))
-            {
-                throw new ExprValidationException(
-                    string.Format("{0}expected a boolean-type result for expression parameter {1} but received {2}",
-                                  message, parameterNum, providedType.FullName));
-            }
-            if (expectedTypeEnum == DotMethodFPParamTypeEnum.NUMERIC && (!providedType.IsNumeric()))
-            {
-                throw new ExprValidationException(
-                    string.Format("{0}expected a number-type result for expression parameter {1} but received {2}",
-                                  message, parameterNum, providedType.FullName));
-            }
-            if (expectedTypeEnum == DotMethodFPParamTypeEnum.SPECIFIC)
-            {
-                var boxedExpectedType = expectedTypeClass.GetBoxedType();
-                var boxedProvidedType = providedType.GetBoxedType();
-                if (!TypeHelper.IsSubclassOrImplementsInterface(boxedProvidedType, boxedExpectedType))
-                {
-                    throw new ExprValidationException(
-                        string.Format("{0}expected a {1}-type result for expression parameter {2} but received {3}",
-                                      message, boxedExpectedType.Name, parameterNum, providedType.FullName));
-                }
-            }
-            else if (expectedTypeEnum == DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC)
-            {
-                if (parameterExpression is ExprTimePeriod || parameterExpression is ExprStreamUnderlyingNode)
-                {
-                    return;
-                }
-                if (!providedType.IsNumeric())
-                {
-                    throw new ExprValidationException(message +
-                                                      "expected a time-period expression or a numeric-type result for expression parameter " +
-                                                      parameterNum + " but received " +
-                                                      TypeHelper.GetTypeNameFullyQualPretty(providedType));
-                }
-            }
-            else if (expectedTypeEnum == DotMethodFPParamTypeEnum.DATETIME)
-            {
-                if (!providedType.IsDateTime())
-                {
-                    throw new ExprValidationException(message +
-                                                      "expected a long-typed or DateTime-typed result for expression parameter " +
-                                                      parameterNum + " but received " +
-                                                      TypeHelper.GetTypeNameFullyQualPretty(providedType));
-                }
+                EPLValidationUtil.ValidateParameterType(
+                    methodUsedName,
+                    type.GetTypeName(), false, 
+                    found.ParamType, 
+                    found.SpecificType, 
+                    provided.ReturnType, i, 
+                    provided.Expression);
             }
         }
     }

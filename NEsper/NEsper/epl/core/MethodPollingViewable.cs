@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.db;
@@ -53,7 +54,7 @@ namespace com.espertech.esper.epl.core
         private readonly MethodStreamSpec _methodStreamSpec;
         private readonly DataCache _dataCache;
         private readonly EventType _eventType;
-        private readonly IThreadLocal<DataCache> _dataCacheThreadLocal = ThreadLocalManager.Create<DataCache>(() => null);
+        private readonly IThreadLocal<DataCache> _dataCacheThreadLocal;
         private readonly ExprEvaluatorContext _exprEvaluatorContext;
         private readonly MethodPollingViewableMeta _metadata;
         private PollExecStrategy _pollExecStrategy;
@@ -66,9 +67,11 @@ namespace com.espertech.esper.epl.core
                 DataCache dataCache,
                 EventType eventType,
                 ExprEvaluatorContext exprEvaluatorContext,
-                MethodPollingViewableMeta metadata)
+                MethodPollingViewableMeta metadata,
+                IThreadLocalManager threadLocalManager)
         {
             _methodStreamSpec = methodStreamSpec;
+            _dataCacheThreadLocal = threadLocalManager.Create<DataCache>(() => null);
             _dataCache = dataCache;
             _eventType = eventType;
             _exprEvaluatorContext = exprEvaluatorContext;
@@ -108,7 +111,21 @@ namespace com.espertech.esper.epl.core
             _statementContext = statementContext;
     
             // validate and visit
-            var validationContext = new ExprValidationContext(streamTypeService, engineImportService, statementContext.StatementExtensionServicesContext, null, timeProvider, variableService, tableService, exprEvaluatorContext, eventAdapterService, statementContext.StatementName, statementContext.StatementId, statementContext.Annotations, null, statementContext.ScriptingService, false, false, true, false, null, false);
+            var validationContext = new ExprValidationContext(
+                statementContext.Container,
+                streamTypeService,
+                engineImportService, 
+                statementContext.StatementExtensionServicesContext, null, 
+                timeProvider,
+                variableService, 
+                tableService, 
+                exprEvaluatorContext, 
+                eventAdapterService,
+                statementContext.StatementName, 
+                statementContext.StatementId, 
+                statementContext.Annotations, null, 
+                statementContext.ScriptingService, 
+                false, false, true, false, null, false);
             var visitor = new ExprNodeIdentifierVisitor(true);
             var validatedInputParameters = new List<ExprNode>();
             foreach (var exprNode in _methodStreamSpec.Expressions) {
@@ -249,7 +266,8 @@ namespace com.espertech.esper.epl.core
                         if (localDataCache != null) {
                             localDataCache.PutCached(methodParams, _methodStreamSpec.Expressions.Count, indexTable);
                         }
-                    } catch (EPException ex) {
+                    } catch (EPException)
+                    {
                         if (strategyStarted) {
                             _pollExecStrategy.Done();
                         }

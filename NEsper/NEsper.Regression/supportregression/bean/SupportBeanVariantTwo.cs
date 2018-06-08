@@ -30,7 +30,7 @@ namespace com.espertech.esper.supportregression.bean
 
         public ISupportAImplSuperGImplPlus P1 { get; private set; }
 
-        public LinkedList<Object> P2 { get; private set; }
+        public LinkedList<object> P2 { get; private set; }
 
         public IList<object> P3 { get; private set; }
 

@@ -40,9 +40,9 @@ namespace com.espertech.esper.client
         /// is any old events. This will be null or empty if the Update is for new events only.
         /// </param>
         /// <param name="statement">is the statement producing the result</param>
-        /// <param name="epServiceProvider">
+        /// <param name="svcProvider">
         /// is the engine instance that provided the administrative API that created the statement which produces the result
         /// </param>
-        void Update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement statement, EPServiceProvider epServiceProvider);
+        void Update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement statement, EPServiceProvider svcProvider);
     }
 }

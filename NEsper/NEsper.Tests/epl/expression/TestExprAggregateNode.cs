@@ -7,14 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.baseagg;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.supportunit.epl;
 
 using NUnit.Framework;
-
-
 
 namespace com.espertech.esper.epl.expression
 {
@@ -24,14 +23,6 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestGetAggregatesBottomUp()
         {
-            /*
-                                        top (ag)
-                      c1                            c2
-               c1_1 (ag)   c1_2 (ag)            c2_1     c2_2
-                                        c2_1_1 (ag)    c2_1_2 (ag)
-    
-            */
-    
             ExprNode top = new SupportAggregateExprNode(null);
             ExprNode c1 = new SupportExprNode(null);
             ExprNode c2 = new SupportExprNode(null);

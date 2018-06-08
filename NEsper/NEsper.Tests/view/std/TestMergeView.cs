@@ -9,10 +9,12 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
@@ -24,14 +26,18 @@ namespace com.espertech.esper.view.std
     {
         private MergeView _myView;
         private SupportBeanClassView _childView;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             // Set up length window view and a test child view
-            _myView = new MergeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(),
-                    SupportExprNodeFactory.MakeIdentNodesMD("Symbol"),
-                    SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)), false);
+            _myView = new MergeView(
+                SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container),
+                SupportExprNodeFactory.MakeIdentNodesMD("Symbol"),
+                SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)), false);
     
             _childView = new SupportBeanClassView(typeof(SupportMarketDataBean));
             _myView.AddView(_childView);

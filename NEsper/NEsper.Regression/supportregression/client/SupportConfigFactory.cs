@@ -9,6 +9,8 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.dataflow.util;
+using com.espertech.esper.supportregression.util;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.supportregression.client
@@ -38,14 +40,20 @@ namespace com.espertech.esper.supportregression.client
             }
             else
             {
-                config = new Configuration();
+                config = new Configuration(SupportContainer.Instance);
                 config.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
                 config.EngineDefaults.EventMeta.DefaultAccessorStyle = AccessorStyleEnum.NATIVE;
                 config.EngineDefaults.Threading.IsInternalTimerEnabled = false;
                 config.EngineDefaults.ExceptionHandling.AddClass<SupportExceptionHandlerFactoryRethrow>();
                 config.EngineDefaults.ExceptionHandling.UndeployRethrowPolicy = ConfigurationEngineDefaults.UndeployRethrowPolicy.RETHROW_FIRST;
+                config.AddImport<DefaultSupportCaptureOp>();
             }
             return config;
+        }
+
+        public static bool SkipTest(Type type)
+        {
+            return false;
         }
     }
 }

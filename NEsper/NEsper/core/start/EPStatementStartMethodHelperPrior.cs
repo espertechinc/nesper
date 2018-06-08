@@ -61,7 +61,7 @@ namespace com.espertech.esper.core.start
             {
                 var @namespace = ViewEnum.PRIOR_EVENT_VIEW.GetNamespace();
                 var name = ViewEnum.PRIOR_EVENT_VIEW.GetName();
-                var factory = statementContext.ViewResolutionService.Create(@namespace, name);
+                var factory = statementContext.ViewResolutionService.Create(statementContext.Container, @namespace, name);
 
                 var context = new ViewFactoryContext(statementContext, streamNum, @namespace, name, isSubquery, subqueryNumber, false);
                 factory.SetViewParameters(context, ((ExprNode)new ExprConstantNodeImpl(unboundStream)).AsSingleton());

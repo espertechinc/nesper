@@ -22,9 +22,9 @@ namespace com.espertech.esper.epl.join.plan
         [SetUp]
         public void SetUp()
         {
-            QueryPlanIndexItem itemOne = new QueryPlanIndexItem(new String[] { "p01", "p02" }, null, null, null, false);
-            QueryPlanIndexItem itemTwo = new QueryPlanIndexItem(new String[] { "p21" }, new Type[0], null, null, false);
-            QueryPlanIndexItem itemThree = new QueryPlanIndexItem(new String[0], new Type[0], null, null, false);
+            QueryPlanIndexItem itemOne = new QueryPlanIndexItem(new String[] { "p01", "p02" }, null, null, null, false, null);
+            QueryPlanIndexItem itemTwo = new QueryPlanIndexItem(new String[] { "p21" }, new Type[0], null, null, false, null);
+            QueryPlanIndexItem itemThree = new QueryPlanIndexItem(new String[0], new Type[0], null, null, false, null);
             indexSpec = QueryPlanIndex.MakeIndex(itemOne, itemTwo, itemThree);
         }
     
@@ -36,7 +36,7 @@ namespace com.espertech.esper.epl.join.plan
                 new QueryPlanIndex(null);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // Expected
             }

@@ -8,13 +8,15 @@
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.table.mgmt;
+using com.espertech.esper.events;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.epl.core
@@ -23,15 +25,26 @@ namespace com.espertech.esper.epl.core
     public class TestSelectExprJoinWildcardProcessor 
     {
         private SelectExprProcessor _processor;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry("abc", new StatementEventTypeRefImpl());
+            _container = SupportContainer.Reset();
+
+            var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(
+                "abc", new StatementEventTypeRefImpl(_container.RWLockManager()));
             var supportTypes = new SupportStreamTypeSvc3Stream();
 
-            _processor = SelectExprJoinWildcardProcessorFactory.Create(Collections.GetEmptyList<int>(), 1, "stmtname", supportTypes.StreamNames, supportTypes.EventTypes,
-                SupportEventAdapterService.Service, null, selectExprEventTypeRegistry, null, null, new Configuration(), new TableServiceImpl(), "default");
+            _processor = SelectExprJoinWildcardProcessorFactory.Create(
+                Collections.GetEmptyList<int>(), 1, "stmtname", 
+                supportTypes.StreamNames, 
+                supportTypes.EventTypes,
+                _container.Resolve<EventAdapterService>(), null, 
+                selectExprEventTypeRegistry, null, null, 
+                new Configuration(_container), 
+                new TableServiceImpl(_container),
+                "default");
         }
     
         [Test]

@@ -32,8 +32,6 @@ namespace com.espertech.esper.epl.enummethod.dot
             {
                 return null;
             }
-
-            ICollection<EventBean> baseCollection;
             if (target is ICollection<EventBean>)
                 return ((ICollection<EventBean>)target).Select(e => e.Underlying).ToList();
             else if (target is ICollection<Object>)

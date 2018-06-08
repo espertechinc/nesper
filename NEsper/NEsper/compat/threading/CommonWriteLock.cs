@@ -8,11 +8,12 @@ namespace com.espertech.esper.compat.threading
 	/// </summary>
 	internal class CommonWriteLock : ILockable
 	{
+	    private readonly int _lockTimeout;
         private readonly IReaderWriterLockCommon _lockObj;
 
         public IDisposable Acquire()
         {
-            _lockObj.AcquireWriterLock(BaseLock.WLockTimeout);
+            _lockObj.AcquireWriterLock(_lockTimeout);
             return new TrackedDisposable(() => _lockObj.ReleaseWriterLock());
         }
 
@@ -24,7 +25,7 @@ namespace com.espertech.esper.compat.threading
 
 	    public IDisposable Acquire(bool releaseLock, long? msec = null)
 	    {
-            _lockObj.AcquireWriterLock(msec ?? BaseLock.WLockTimeout);
+            _lockObj.AcquireWriterLock(msec ?? _lockTimeout);
             if (releaseLock)
                 return new TrackedDisposable(() => _lockObj.ReleaseWriterLock());
             return new VoidDisposable();
@@ -33,7 +34,7 @@ namespace com.espertech.esper.compat.threading
 	    public IDisposable ReleaseAcquire()
         {
             _lockObj.ReleaseWriterLock();
-            return new TrackedDisposable(() => _lockObj.AcquireWriterLock(BaseLock.RLockTimeout));
+            return new TrackedDisposable(() => _lockObj.AcquireWriterLock(_lockTimeout));
         }
 
         public void Release()
@@ -41,9 +42,10 @@ namespace com.espertech.esper.compat.threading
             _lockObj.ReleaseWriterLock();
         }
 
-        internal CommonWriteLock(IReaderWriterLockCommon lockObj)
+        internal CommonWriteLock(IReaderWriterLockCommon lockObj, int lockTimeout)
         {
             _lockObj = lockObj;
+            _lockTimeout = lockTimeout;
         }
 	}
 	
@@ -52,12 +54,13 @@ namespace com.espertech.esper.compat.threading
 	/// </summary>
 	internal class CommonWriteLock<T> : ILockable
 	{
+	    private readonly int _lockTimeout;
         private readonly IReaderWriterLockCommon<T> _lockObj;
         private T _lockValue;
 
         public IDisposable Acquire()
         {
-            _lockValue = _lockObj.AcquireWriterLock(BaseLock.WLockTimeout);
+            _lockValue = _lockObj.AcquireWriterLock(_lockTimeout);
             return new TrackedDisposable(() => _lockObj.ReleaseWriterLock(_lockValue));
         }
 
@@ -69,7 +72,7 @@ namespace com.espertech.esper.compat.threading
 
         public IDisposable Acquire(bool releaseLock, long? msec = null)
         {
-            _lockValue = _lockObj.AcquireWriterLock(msec ?? BaseLock.WLockTimeout);
+            _lockValue = _lockObj.AcquireWriterLock(msec ?? _lockTimeout);
             if (releaseLock)
                 return new TrackedDisposable(() => _lockObj.ReleaseWriterLock(_lockValue));
             return new VoidDisposable();
@@ -79,7 +82,7 @@ namespace com.espertech.esper.compat.threading
         {
             _lockObj.ReleaseWriterLock(_lockValue);
             _lockValue = default(T);
-            return new TrackedDisposable(() => _lockValue = _lockObj.AcquireWriterLock(BaseLock.RLockTimeout));
+            return new TrackedDisposable(() => _lockValue = _lockObj.AcquireWriterLock(_lockTimeout));
         }
 
         public void Release()
@@ -88,9 +91,10 @@ namespace com.espertech.esper.compat.threading
             _lockValue = default(T);
         }
 
-        internal CommonWriteLock(IReaderWriterLockCommon<T> lockObj)
+        internal CommonWriteLock(IReaderWriterLockCommon<T> lockObj, int lockTimeout)
         {
             _lockObj = lockObj;
+            _lockTimeout = lockTimeout;
         }
 	}
 }

@@ -14,13 +14,17 @@ using XLR8.CGLib;
 using com.espertech.esper.client;
 using com.espertech.esper.events.vaevent;
 using com.espertech.esper.util;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.bean
 {
     /// <summary>
     /// Property getter using XLR8.CGLib's FastMethod instance.
     /// </summary>
-    public sealed class CGLibPropertyGetter 
+    public sealed class CGLibPropertyGetter
         : BaseNativePropertyGetter
         , BeanEventPropertyGetter
     {
@@ -64,7 +68,7 @@ namespace com.espertech.esper.events.bean
             catch (Exception e)
             {
                 if (e is InvalidCastException)
-                    throw PropertyUtility.GetMismatchException(_propInfo.GetGetMethod(), obj, (InvalidCastException) e);
+                    throw PropertyUtility.GetMismatchException(_propInfo.GetGetMethod(), obj, (InvalidCastException)e);
                 if (e is PropertyAccessException)
                     throw;
 
@@ -77,7 +81,7 @@ namespace com.espertech.esper.events.bean
         {
             return true; // Property exists as the property is not dynamic (unchecked)
         }
-    
+
         public override Object Get(EventBean obj)
         {
             try
@@ -97,16 +101,40 @@ namespace com.espertech.esper.events.bean
                 throw new PropertyAccessException(e);
             }
         }
-    
+
         public override String ToString()
         {
             return "CGLibPropertyGetter " +
                     "fastProp =" + _fastGetter;
         }
-    
+
         public override bool IsExistsProperty(EventBean eventBean)
         {
             return true; // Property exists as the property is not dynamic (unchecked)
+        }
+
+        public override Type BeanPropType => _propInfo.PropertyType;
+        public override Type TargetType => _propInfo.DeclaringType;
+
+        public override ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingGet(
+                CastUnderlying(TargetType, beanExpression), context);
+        }
+
+        public override ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
+        }
+
+        public override ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return ExprDotMethod(underlyingExpression, _propInfo.GetGetMethod().Name);
+        }
+
+        public override ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
         }
     }
 }

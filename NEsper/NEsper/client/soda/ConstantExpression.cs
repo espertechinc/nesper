@@ -15,7 +15,7 @@ using com.espertech.esper.core.service;
 
 namespace com.espertech.esper.client.soda
 {
-    /// <summary>Constant value returns a fixed value for use in expressions. </summary>
+    /// <summary>IsConstant value returns a fixed value for use in expressions. </summary>
     [Serializable]
     public class ConstantExpression : ExpressionBase
     {

@@ -9,12 +9,13 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-
+using System.IO;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.db;
+using com.espertech.esper.supportunit.util;
 
 namespace com.espertech.esper.supportunit.epl
 {
@@ -22,9 +23,11 @@ namespace com.espertech.esper.supportunit.epl
     
     public class SupportDatabaseService
 	{
-        protected internal const String ESPER_TEST_CONFIG = "regression/esper.test.readconfig.cfg.xml";
+	    private const string ESPER_LOCAL_CONFIG_FILE = "NEsperConfig.xml";
 
-	    public static readonly ConfigurationDBRef DbConfigReferenceNative;
+	    protected internal const String ESPER_TEST_CONFIG = "regression/esper.test.readconfig.cfg.xml";
+
+        public static readonly ConfigurationDBRef DbConfigReferenceNative;
         public static readonly ConfigurationDBRef DbConfigReferenceODBC;
 
 	    public static readonly DbDriverFactoryConnection DbDriverFactoryNative;
@@ -32,7 +35,9 @@ namespace com.espertech.esper.supportunit.epl
 
         static SupportDatabaseService()
         {
-            var configuration = ConfigurationManager.GetSection("esper-configuration") as Configuration;
+            var configurationFile = new FileInfo(ESPER_LOCAL_CONFIG_FILE);
+            var configuration = new Configuration(SupportContainer.Instance);
+            configuration.Configure(configurationFile);
 
             var dbTable = configuration.DatabaseReferences;
 
@@ -71,7 +76,9 @@ namespace com.espertech.esper.supportunit.epl
             configs.Put(DBNAME_FULL, DbConfigReferenceNative);
             configs.Put(DBNAME_PART, DbConfigReferenceODBC);
 
-            return new DatabaseConfigServiceImpl(configs, new SupportSchedulingServiceImpl(), null, SupportEngineImportServiceFactory.Make() );
+            return new DatabaseConfigServiceImpl(configs, 
+                new SupportSchedulingServiceImpl(), null, 
+                SupportEngineImportServiceFactory.Make(SupportContainer.Instance));
 		}
 
         public static Properties DefaultProperties
@@ -83,7 +90,7 @@ namespace com.espertech.esper.supportunit.epl
                 var serverPass = Environment.GetEnvironmentVariable("ESPER_MYSQL_PASSWORD");
 
                 if (serverHost == null)
-                    serverHost = "mysql-server";
+                    serverHost = "nesper-mysql-integ.local";
                 if (serverUser == null)
                     serverUser = "esper";
                 if (serverPass == null)

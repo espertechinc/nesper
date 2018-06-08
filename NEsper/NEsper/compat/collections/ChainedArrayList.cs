@@ -149,15 +149,9 @@ namespace com.espertech.esper.compat.collections
             throw new NotSupportedException();
         }
 
-        public int Count
-        {
-            get { return _count; }
-        }
+        public int Count => _count;
 
-        public bool IsReadOnly
-        {
-            get { return true; }
-        }
+        public bool IsReadOnly => true;
 
         internal sealed class Entry
         {
@@ -217,15 +211,9 @@ namespace com.espertech.esper.compat.collections
                 throw new NotSupportedException();
             }
 
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
+            object IEnumerator.Current => Current;
 
-            public T Current
-            {
-                get { return _value; }
-            }
+            public T Current => _value;
         }
     }
 }

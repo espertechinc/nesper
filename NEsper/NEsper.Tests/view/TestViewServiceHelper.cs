@@ -11,11 +11,13 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.supportunit.view;
 using com.espertech.esper.view.stat;
 using com.espertech.esper.view.std;
@@ -39,9 +41,12 @@ namespace com.espertech.esper.view
 	    private SupportSchemaNeutralView child_2_2_1;
 	    private SupportSchemaNeutralView child_2_2_2;
 
-        [SetUp]
+	    private IContainer _container;
+
+	    [SetUp]
 	    public void SetUp()
 	    {
+	        _container = SupportContainer.Reset();
 	        top = new SupportSchemaNeutralView("top");
 
 	        child_1 = new SupportSchemaNeutralView("1");
@@ -67,7 +72,7 @@ namespace com.espertech.esper.view
 	    {
 	        SupportBeanClassView topView = new SupportBeanClassView(TEST_CLASS);
 	        IList<ViewFactory> viewFactories = SupportViewSpecFactory.MakeFactoryListOne(topView.EventType);
-	        AgentInstanceViewFactoryChainContext context = SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext();
+	        AgentInstanceViewFactoryChainContext context = SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container);
 
 	        // Check correct views created
 	        IList<View> views = ViewServiceHelper.InstantiateChain(topView, viewFactories, context);
@@ -88,7 +93,7 @@ namespace com.espertech.esper.view
 	    {
 	        SupportStreamImpl stream = new SupportStreamImpl(TEST_CLASS, 10);
 	        IList<ViewFactory> viewFactories = SupportViewSpecFactory.MakeFactoryListOne(stream.EventType);
-            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
+            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext(_container);
 
 	        // No views under stream, no matches
             Pair<Viewable, IList<View>> result = ViewServiceHelper.MatchExistingViews(stream, viewFactories, agentInstanceContext);
@@ -107,7 +112,7 @@ namespace com.espertech.esper.view
 
 	        // Another top view under the stream that doesn't matche again
 	        testView = new SupportBeanClassView(TEST_CLASS);
-	        stream.AddView(new LengthWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), null, 999, null));
+	        stream.AddView(new LengthWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container), null, 999, null));
             result = ViewServiceHelper.MatchExistingViews(stream, viewFactories, agentInstanceContext);
 
 	        Assert.AreEqual(stream, result.First);
@@ -115,7 +120,7 @@ namespace com.espertech.esper.view
 	        Assert.AreEqual(0, result.Second.Count);
 
 	        // One top view under the stream that does actually match
-	        LengthWindowView myLengthWindowView = new LengthWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), null, 1000, null);
+	        LengthWindowView myLengthWindowView = new LengthWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container), null, 1000, null);
 	        stream.AddView(myLengthWindowView);
             result = ViewServiceHelper.MatchExistingViews(stream, viewFactories, agentInstanceContext);
 
@@ -127,11 +132,11 @@ namespace com.espertech.esper.view
 	        // One child view under the top view that does not match
 	        testView = new SupportBeanClassView(TEST_CLASS);
 	        viewFactories = SupportViewSpecFactory.MakeFactoryListOne(stream.EventType);
-	        EventType type = UnivariateStatisticsView.CreateEventType(SupportStatementContextFactory.MakeContext(), null, 1);
+	        EventType type = UnivariateStatisticsView.CreateEventType(SupportStatementContextFactory.MakeContext(_container), null, 1);
 	        UnivariateStatisticsViewFactory factory = new UnivariateStatisticsViewFactory();
 	        factory.EventType = type;
 	        factory.FieldExpression = SupportExprNodeFactory.MakeIdentNodeBean("LongBoxed");
-	        myLengthWindowView.AddView(new UnivariateStatisticsView(factory, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext()));
+	        myLengthWindowView.AddView(new UnivariateStatisticsView(factory, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container)));
             result = ViewServiceHelper.MatchExistingViews(stream, viewFactories, agentInstanceContext);
 	        Assert.AreEqual(1, result.Second.Count);
 	        Assert.AreEqual(myLengthWindowView, result.Second[0]);
@@ -143,7 +148,7 @@ namespace com.espertech.esper.view
 	        UnivariateStatisticsViewFactory factoryTwo = new UnivariateStatisticsViewFactory();
 	        factoryTwo.EventType = type;
 	        factoryTwo.FieldExpression = SupportExprNodeFactory.MakeIdentNodeBean("IntPrimitive");
-	        UnivariateStatisticsView myUnivarView = new UnivariateStatisticsView(factoryTwo, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
+	        UnivariateStatisticsView myUnivarView = new UnivariateStatisticsView(factoryTwo, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container));
 	        myLengthWindowView.AddView(myUnivarView);
             result = ViewServiceHelper.MatchExistingViews(stream, viewFactories, agentInstanceContext);
 

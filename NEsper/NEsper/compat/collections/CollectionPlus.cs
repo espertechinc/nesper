@@ -39,11 +39,7 @@ namespace com.espertech.esper.compat.collections
 	    ///The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
 	    ///</returns>
 	    ///
-	    public int Count {
-			get {
-				return m_baseCollection.Count + 1 ;
-			}
-		}
+	    public int Count => m_baseCollection.Count + 1;
 
 	    ///<summary>
 	    ///Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
@@ -53,11 +49,7 @@ namespace com.espertech.esper.compat.collections
 	    ///true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.
 	    ///</returns>
 	    ///
-	    public bool IsReadOnly {
-			get {
-				return true;
-			}
-		}
+	    public bool IsReadOnly => true;
 
 	    ///<summary>
 	    ///Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.

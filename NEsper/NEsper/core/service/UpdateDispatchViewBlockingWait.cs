@@ -8,6 +8,7 @@
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.dispatch;
 
 namespace com.espertech.esper.core.service
@@ -25,8 +26,8 @@ namespace com.espertech.esper.core.service
         /// <param name="dispatchService">for performing the dispatch</param>
         /// <param name="msecTimeout">timeout for preserving dispatch order through blocking</param>
         /// <param name="statementResultServiceImpl">handles result delivery</param>
-        public UpdateDispatchViewBlockingWait(StatementResultService statementResultServiceImpl, DispatchService dispatchService, long msecTimeout)
-            : base(statementResultServiceImpl, dispatchService)
+        public UpdateDispatchViewBlockingWait(StatementResultService statementResultServiceImpl, DispatchService dispatchService, long msecTimeout, IThreadLocalManager threadLocalManager)
+            : base(statementResultServiceImpl, dispatchService, threadLocalManager)
         {
             _currentFutureWait = new UpdateDispatchFutureWait(); // use a completed future as a start
             _msecTimeout = msecTimeout;

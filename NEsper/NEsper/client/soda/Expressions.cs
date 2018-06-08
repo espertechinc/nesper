@@ -382,7 +382,7 @@ namespace com.espertech.esper.client.soda
         }
 
         /// <summary>
-        /// Constant.
+        /// IsConstant.
         /// </summary>
         /// <param name="value">is the constant value</param>
         /// <returns>expression</returns>
@@ -392,7 +392,7 @@ namespace com.espertech.esper.client.soda
         }
 
         /// <summary>
-        /// Constant, use when the value is null.
+        /// IsConstant, use when the value is null.
         /// </summary>
         /// <param name="value">is the constant value</param>
         /// <param name="constantType">is the type of the constant</param>

@@ -9,8 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.util;
 
@@ -61,20 +59,11 @@ namespace com.espertech.esper.supportunit.epl
             return null;
         }
 
-        public override bool IsConstantResult
-        {
-            get { return false; }
-        }
+        public override bool IsConstantResult => false;
 
-        public Type ReturnType
-        {
-            get { return _type; }
-        }
+        public Type ReturnType => _type;
 
-        public int ValidateCountSnapshot
-        {
-            get { return _validateCountSnapshot; }
-        }
+        public int ValidateCountSnapshot => _validateCountSnapshot;
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
@@ -83,7 +72,8 @@ namespace com.espertech.esper.supportunit.epl
 
         public object Value
         {
-            set { _value = value; }
+            get => _value;
+            set => _value = value;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
@@ -104,15 +94,16 @@ namespace com.espertech.esper.supportunit.epl
             }
         }
 
-        public override ExprPrecedenceEnum Precedence
-        {
-            get { return ExprPrecedenceEnum.UNARY; }
-        }
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
-            var other = node as SupportExprNode;
-            return other != null && Equals(_value, other._value);
+            if (node is SupportExprNode other)
+            {
+                return _value.Equals(other._value);
+            }
+
+            return false;
         }
     }
 }

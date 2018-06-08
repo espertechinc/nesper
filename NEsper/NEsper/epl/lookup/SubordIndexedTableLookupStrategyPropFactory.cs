@@ -66,10 +66,7 @@ namespace com.espertech.esper.epl.lookup
         /// Returns properties to use from lookup event to look up in index.
         /// </summary>
         /// <value>properties to use from lookup event</value>
-        public string[] Properties
-        {
-            get { return _properties; }
-        }
+        public string[] Properties => _properties;
 
         public string ToQueryPlan() {
             return GetType().Name +

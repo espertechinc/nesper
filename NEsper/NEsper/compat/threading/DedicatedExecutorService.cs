@@ -83,7 +83,7 @@ namespace com.espertech.esper.compat.threading
         {
             bool isDebugEnabled = Log.IsDebugEnabled;
 
-            Log.Debug("HandleTasksInQueue: thread {0} starting with {1}", Thread.CurrentThread.Name, _taskQueue.GetType().Name);
+            Log.Debug("HandleTasksInQueue: Instance {0} thread {1} starting with {2}", _id, Thread.CurrentThread.Name, _taskQueue.GetType().Name);
 
             using (ScopedInstance<IBlockingQueue<Runnable>>.Set(_taskQueue)) // introduces the queue into scope
             {
@@ -102,12 +102,9 @@ namespace com.espertech.esper.compat.threading
                             }
                             catch (Exception e)
                             {
-                                Log.Warn("HandleTasksInQueue: finished with abnormal termination", e);
+                                Log.Warn("HandleTasksInQueue: Instance {0} finished with abnormal termination", _id, e);
 
-                                if (TaskError != null)
-                                {
-                                    TaskError(this, new ThreadExceptionEventArgs(e));
-                                }
+                                TaskError?.Invoke(this, new ThreadExceptionEventArgs(e));
                             }
                             finally
                             {
@@ -118,13 +115,13 @@ namespace com.espertech.esper.compat.threading
                         {
                             if (isDebugEnabled)
                             {
-                                Log.Debug("HandleTasksInQueue: no items detected in queue, terminating");
+                                Log.Debug("HandleTasksInQueue: Instance {0} no items detected in queue, terminating", _id);
                             }
                             break;
                         }
                         else if (isDebugEnabled)
                         {
-                            Log.Debug("HandleTasksInQueue: no items detected in queue, start loop again");
+                            Log.Debug("HandleTasksInQueue: Instance {0} no items detected in queue, start loop again", _id);
                         }
                     }
                     finally
@@ -134,7 +131,7 @@ namespace com.espertech.esper.compat.threading
                 }
             }
 
-            Log.Debug("HandleTasksInQueue: thread ending");
+            Log.Debug("HandleTasksInQueue: Instance {0} thread ending", _id);
         }
 
         #region Implementation of IExecutorService
@@ -147,6 +144,7 @@ namespace com.espertech.esper.compat.threading
         public Future<Object> Submit(Action runnable)
         {
             var future = new SimpleFutureImpl<Object>();
+            Log.Debug("Submit: Instance {0} - enqueuing action", _id);
             _taskQueue.Push(runnable.Invoke);
             return future;
         }
@@ -159,6 +157,7 @@ namespace com.espertech.esper.compat.threading
         public Future<T> Submit<T>(ICallable<T> callable)
         {
             var future = new SimpleFutureImpl<T>();
+            Log.Debug("Submit: Instance {0} - enqueuing callable", _id);
             _taskQueue.Push(
                 () => future.Value = callable.Call());
             return future;
@@ -172,6 +171,7 @@ namespace com.espertech.esper.compat.threading
         public Future<T> Submit<T>(Func<T> callable)
         {
             var future = new SimpleFutureImpl<T>();
+            Log.Debug("Submit: Instance {0} - enqueuing function", _id);
             _taskQueue.Push(
                 delegate
                 {
@@ -297,6 +297,17 @@ namespace com.espertech.esper.compat.threading
                 }
 
                 return Value;
+            }
+
+            /// <summary>
+            /// Gets the result value from the execution.
+            /// </summary>
+            /// <param name="units">The units.</param>
+            /// <param name="timeUnit">The time unit.</param>
+            /// <returns></returns>
+            public T GetValue(int units, TimeUnit timeUnit)
+            {
+                return GetValue(TimeUnitHelper.ToTimeSpan(units, timeUnit));
             }
         }
 

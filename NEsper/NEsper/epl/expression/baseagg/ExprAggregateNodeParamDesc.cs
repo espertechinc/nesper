@@ -12,14 +12,20 @@ namespace com.espertech.esper.epl.expression.baseagg
 {
 	public class ExprAggregateNodeParamDesc
     {
-	    public ExprAggregateNodeParamDesc(ExprNode[] positionalParams, ExprAggregateLocalGroupByDesc optLocalGroupBy)
+	    public ExprAggregateNodeParamDesc(
+	        ExprNode[] positionalParams, 
+	        ExprAggregateLocalGroupByDesc optLocalGroupBy,
+	        ExprNode optionalFilter)
         {
 	        PositionalParams = positionalParams;
 	        OptLocalGroupBy = optLocalGroupBy;
-	    }
+            OptionalFilter = optionalFilter;
+        }
 
 	    public ExprNode[] PositionalParams { get; private set; }
 
 	    public ExprAggregateLocalGroupByDesc OptLocalGroupBy { get; private set; }
+
+        public ExprNode OptionalFilter { get; private set; }
     }
 } // end of namespace

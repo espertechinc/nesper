@@ -140,7 +140,7 @@ namespace com.espertech.esper.type
                 MathArithTypeEnum.ADD.GetComputer(clazz, clazz, clazz, false, false, null);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // Expected
             }

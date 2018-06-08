@@ -231,6 +231,7 @@ namespace com.espertech.esper.epl.spec
                 {
                     var optionalPropertyEvaluator =
                         PropertyEvaluatorFactory.MakeEvaluator(
+                            context.Container,
                             filterNode.RawFilterSpec.OptionalPropertyEvalSpec,
                             resolvedEventType,
                             filterNode.EventAsName,
@@ -368,6 +369,7 @@ namespace com.espertech.esper.epl.spec
                         context.EngineURI, context.StatementId, context.EventAdapterService, tags.TaggedEventTypes,
                         tags.ArrayEventTypes, subexpressionIdStack, "observer", context);
                     var validationContext = new ExprValidationContext(
+                        context.Container,
                         streamTypeService,
                         context.EngineImportService,
                         context.StatementExtensionServicesContext, null,
@@ -415,6 +417,7 @@ namespace com.espertech.esper.epl.spec
                         context.EngineURI, context.StatementId, context.EventAdapterService, tags.TaggedEventTypes,
                         tags.ArrayEventTypes, subexpressionIdStack, "guard", context);
                     var validationContext = new ExprValidationContext(
+                        context.Container,
                         streamTypeService,
                         context.EngineImportService,
                         context.StatementExtensionServicesContext, null,
@@ -457,6 +460,7 @@ namespace com.espertech.esper.epl.spec
                     matchEventFromChildNodes.TaggedEventTypes, matchEventFromChildNodes.ArrayEventTypes,
                     subexpressionIdStack, "every-distinct", context);
                 var validationContext = new ExprValidationContext(
+                    context.Container,
                     streamTypeService,
                     context.EngineImportService,
                     context.StatementExtensionServicesContext, null,
@@ -571,6 +575,7 @@ namespace com.espertech.esper.epl.spec
                     untilMatchEventSpec.TaggedEventTypes, untilMatchEventSpec.ArrayEventTypes, subexpressionIdStack,
                     "until", context);
                 var validationContext = new ExprValidationContext(
+                    context.Container,
                     streamTypeService,
                     context.EngineImportService,
                     context.StatementExtensionServicesContext, null,
@@ -582,7 +587,8 @@ namespace com.espertech.esper.epl.spec
                     context.StatementId,
                     context.Annotations,
                     context.ContextDescriptor,
-                    context.ScriptingService, false, false, false, false, null, false);
+                    context.ScriptingService,
+                    false, false, false, false, null, false);
 
                 var lower = ValidateBounds(matchUntilNode.LowerBounds, validationContext);
                 matchUntilNode.LowerBounds = lower;
@@ -632,6 +638,7 @@ namespace com.espertech.esper.epl.spec
                 var followedByNode = (EvalFollowedByFactoryNode) evalNode;
                 StreamTypeService streamTypeService = new StreamTypeServiceImpl(context.EngineURI, false);
                 var validationContext = new ExprValidationContext(
+                    context.Container,
                     streamTypeService,
                     context.EngineImportService,
                     context.StatementExtensionServicesContext, null,
@@ -644,7 +651,8 @@ namespace com.espertech.esper.epl.spec
                     context.StatementId,
                     context.Annotations,
                     context.ContextDescriptor,
-                    context.ScriptingService, false, false, false, false, null, false);
+                    context.ScriptingService,
+                    false, false, false, false, null, false);
 
                 if (followedByNode.OptionalMaxExpressions != null)
                 {
@@ -719,7 +727,6 @@ namespace com.espertech.esper.epl.spec
             var count = 0;
             foreach (var arrayTag in arrayTags)
             {
-                var index = 0;
                 var found = FindTagNumber(arrayTag, allTagNamesOrdered);
                 indexes[count] = found;
                 count++;

@@ -82,10 +82,7 @@ namespace com.espertech.esper.view.window
             return new ExternallyTimedBatchView(this, _timestampExpression, _timestampExpressionEval, timeDeltaComputation, _optionalReferencePoint, viewUpdatedCollection, agentInstanceViewFactoryContext);
         }
 
-        public EventType EventType
-        {
-            get { return _eventType; }
-        }
+        public EventType EventType => _eventType;
 
         public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
@@ -97,35 +94,20 @@ namespace com.espertech.esper.view.window
             var myView = (ExternallyTimedBatchView) view;
             var delta = _timeDeltaComputationFactory.Make(ViewName, "view", agentInstanceContext);
             if ((!delta.EqualsTimePeriod(myView.GetTimeDeltaComputation())) ||
-                (!ExprNodeUtility.DeepEquals(myView.TimestampExpression, _timestampExpression)))
+                (!ExprNodeUtility.DeepEquals(myView.TimestampExpression, _timestampExpression, false)))
             {
                 return false;
             }
             return myView.IsEmpty();
         }
 
-        public string ViewName
-        {
-            get { return "Externally-timed-batch"; }
-        }
+        public string ViewName => "Externally-timed-batch";
 
-        public ExprEvaluator TimestampExpressionEval
-        {
-            get { return _timestampExpressionEval; }
-        }
+        public ExprEvaluator TimestampExpressionEval => _timestampExpressionEval;
 
-        public long? OptionalReferencePoint
-        {
-            get { return _optionalReferencePoint; }
-        }
+        public long? OptionalReferencePoint => _optionalReferencePoint;
 
-        private string ViewParamMessage
-        {
-            get
-            {
-                return ViewName +
-                       " view requires a timestamp expression and a numeric or time period parameter for window size and an optional long-typed reference point in msec, and an optional list of control keywords as a string parameter (please see the documentation)";
-            }
-        }
+        private string ViewParamMessage => ViewName +
+                                           " view requires a timestamp expression and a numeric or time period parameter for window size and an optional long-typed reference point in msec, and an optional list of control keywords as a string parameter (please see the documentation)";
     }
 } // end of namespace

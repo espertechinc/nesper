@@ -82,10 +82,7 @@ namespace com.espertech.esper.view.window
                 agentInstanceViewFactoryContext);
         }
 
-        public EventType EventType
-        {
-            get { return _eventType; }
-        }
+        public EventType EventType => _eventType;
 
         public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
@@ -97,30 +94,18 @@ namespace com.espertech.esper.view.window
             var myView = (ExternallyTimedWindowView) view;
             var delta = _timeDeltaComputationFactory.Make(ViewName, "view", agentInstanceContext);
             if ((!delta.EqualsTimePeriod(myView.TimeDeltaComputation)) ||
-                (!ExprNodeUtility.DeepEquals(myView.TimestampExpression, _timestampExpression)))
+                (!ExprNodeUtility.DeepEquals(myView.TimestampExpression, _timestampExpression, false)))
             {
                 return false;
             }
             return myView.IsEmpty();
         }
 
-        public string ViewName
-        {
-            get { return "Externally-timed"; }
-        }
+        public string ViewName => "Externally-timed";
 
-        public ExprEvaluator TimestampExpressionEval
-        {
-            get { return _timestampExpressionEval; }
-        }
+        public ExprEvaluator TimestampExpressionEval => _timestampExpressionEval;
 
-        private string ViewParamMessage
-        {
-            get
-            {
-                return ViewName +
-                       " view requires a timestamp expression and a numeric or time period parameter for window size";
-            }
-        }
+        private string ViewParamMessage => ViewName +
+                                           " view requires a timestamp expression and a numeric or time period parameter for window size";
     }
 } // end of namespace

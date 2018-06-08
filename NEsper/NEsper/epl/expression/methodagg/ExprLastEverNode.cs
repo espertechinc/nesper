@@ -31,7 +31,7 @@ namespace com.espertech.esper.epl.expression.methodagg
 	    {
 	    }
 
-	    public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+	    protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
 	    {
             if (PositionalParams.Length == 0 || PositionalParams.Length > 2)
 	        {
@@ -44,19 +44,15 @@ namespace com.espertech.esper.epl.expression.methodagg
             return validationContext.EngineImportService.AggregationFactoryFactory.MakeLastEver(validationContext.StatementExtensionSvcContext, this, PositionalParams[0].ExprEvaluator.ReturnType);
 	    }
 
-	    public bool HasFilter
-	    {
-            get { return PositionalParams.Length == 2; }
-	    }
+	    public bool HasFilter => PositionalParams.Length == 2;
 
-	    public override string AggregationFunctionName
-	    {
-	        get { return "lastever"; }
-	    }
+	    public override string AggregationFunctionName => "lastever";
 
 	    protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
 	    {
 	        return node is ExprLastEverNode;
 	    }
+
+	    protected override bool IsFilterExpressionAsLastParameter => true;
 	}
 } // end of namespace

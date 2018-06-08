@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.dispatch;
@@ -35,8 +36,8 @@ namespace com.espertech.esper.core.service
         /// <summary>For iteration with patterns. </summary>
         protected EventBean LastIterableEvent;
 
-        private readonly IThreadLocal<Mutable<bool>> _isDispatchWaiting =
-                ThreadLocalManager.Create(() => new Mutable<bool>());
+        private readonly IThreadLocal<Mutable<bool>> _isDispatchWaiting;
+            
 
         /// <summary>Flag to indicate we have registered a dispatch.</summary>
         protected Mutable<bool> IsDispatchWaiting
@@ -47,8 +48,12 @@ namespace com.espertech.esper.core.service
         /// <summary>Ctor. </summary>
         /// <param name="dispatchService">for performing the dispatch</param>
         /// <param name="statementResultService">handles result delivery</param>
-        protected UpdateDispatchViewBase(StatementResultService statementResultService, DispatchService dispatchService)
+        protected UpdateDispatchViewBase(
+            StatementResultService statementResultService, 
+            DispatchService dispatchService,
+            IThreadLocalManager threadLocalManager)
         {
+            _isDispatchWaiting = threadLocalManager.Create(() => new Mutable<bool>());
             DispatchService = dispatchService;
             StatementResultService = statementResultService;
         }

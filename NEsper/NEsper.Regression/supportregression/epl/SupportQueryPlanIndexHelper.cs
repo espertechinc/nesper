@@ -132,18 +132,18 @@ namespace com.espertech.esper.supportregression.epl
 	        else if (expectedPlan is InKeywordTableLookupPlanMultiIdx && actualPlan is InKeywordTableLookupPlanMultiIdx) {
 	            var inExpected = (InKeywordTableLookupPlanMultiIdx) expectedPlan;
 	            var inActual = (InKeywordTableLookupPlanMultiIdx) actualPlan;
-	            Assert.IsTrue(ExprNodeUtility.DeepEquals(inExpected.KeyExpr, inActual.KeyExpr));
+	            Assert.IsTrue(ExprNodeUtility.DeepEquals(inExpected.KeyExpr, inActual.KeyExpr, false));
 	        }
 	        else if (expectedPlan is InKeywordTableLookupPlanSingleIdx && actualPlan is InKeywordTableLookupPlanSingleIdx) {
 	            var inExpected = (InKeywordTableLookupPlanSingleIdx) expectedPlan;
 	            var inActual = (InKeywordTableLookupPlanSingleIdx) actualPlan;
-	            Assert.IsTrue(ExprNodeUtility.DeepEquals(inExpected.Expressions, inActual.Expressions));
+	            Assert.IsTrue(ExprNodeUtility.DeepEquals(inExpected.Expressions, inActual.Expressions, false));
 	        }
 	        else if (expectedPlan is SortedTableLookupPlan && actualPlan is SortedTableLookupPlan) {
 	            var inExpected = (SortedTableLookupPlan) expectedPlan;
 	            var inActual = (SortedTableLookupPlan) actualPlan;
 	            Assert.AreEqual(inExpected.LookupStream, inActual.LookupStream);
-	            Assert.IsTrue(ExprNodeUtility.DeepEquals(inExpected.RangeKeyPair.Expressions, inActual.RangeKeyPair.Expressions));
+	            Assert.IsTrue(ExprNodeUtility.DeepEquals(inExpected.RangeKeyPair.Expressions, inActual.RangeKeyPair.Expressions, false));
 	        }
 	        else {
 	            Assert.Fail("Failed to compare plan for stream " + streamNum + ", found type " + actualPlan.GetType());

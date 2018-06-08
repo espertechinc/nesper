@@ -10,6 +10,9 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.epl.agg.factory;
 using com.espertech.esper.epl.core;
@@ -33,6 +36,7 @@ namespace com.espertech.esper.core.service
     public sealed class StatementContextEngineServices
     {
         public StatementContextEngineServices(
+            IContainer container,
             String engineURI,
             EventAdapterService eventAdapterService,
             NamedWindowMgmtService namedWindowMgmtService,
@@ -61,6 +65,7 @@ namespace com.espertech.esper.core.service
             SchedulingService schedulingService,
             ExprDeclaredService exprDeclaredService)
         {
+            Container = container;
             EngineURI = engineURI;
             EventAdapterService = eventAdapterService;
             NamedWindowMgmtService = namedWindowMgmtService;
@@ -98,8 +103,7 @@ namespace com.espertech.esper.core.service
 
         public VariableService VariableService { get; private set; }
 
-        public IList<Uri> PlugInTypeResolutionURIs
-        {
+        public IList<Uri> PlugInTypeResolutionURIs {
             get { return EngineSettingsService.PlugInEventTypeResolutionURIs; }
         }
 
@@ -148,5 +152,19 @@ namespace com.espertech.esper.core.service
         public SchedulingService SchedulingService { get; private set; }
 
         public ExprDeclaredService ExprDeclaredService { get; private set; }
+
+        public IContainer Container { get; set; }
+
+        public IThreadLocalManager ThreadLocalManager =>
+            Container.Resolve<IThreadLocalManager>();
+
+        public ILockManager LockManager =>
+            Container.Resolve<ILockManager>();
+
+        public IReaderWriterLockManager RWLockManager =>
+            Container.Resolve<IReaderWriterLockManager>();
+
+        public IResourceManager ResourceManager =>
+            Container.Resolve<IResourceManager>();
     }
 }

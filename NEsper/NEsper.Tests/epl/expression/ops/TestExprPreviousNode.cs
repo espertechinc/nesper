@@ -6,23 +6,27 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.prev;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprPreviousNode
     {
         private ExprPreviousNode _prevNode;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _prevNode = SupportExprNodeFactory.MakePreviousNode();
         }
     
@@ -49,7 +53,7 @@ namespace com.espertech.esper.epl.expression
         public void TestEquals() 
         {
             ExprPreviousNode node1 = new ExprPreviousNode(ExprPreviousNodePreviousType.PREV);
-            Assert.IsTrue(node1.EqualsNode(_prevNode));
+            Assert.IsTrue(node1.EqualsNode(_prevNode, false));
         }
     
         [Test]
@@ -61,7 +65,7 @@ namespace com.espertech.esper.epl.expression
         private void TryInvalidValidate(ExprPreviousNode exprPrevNode)
         {
             try {
-                exprPrevNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                exprPrevNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException)

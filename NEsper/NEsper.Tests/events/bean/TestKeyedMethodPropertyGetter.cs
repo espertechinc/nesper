@@ -9,10 +9,11 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.bean
@@ -23,14 +24,16 @@ namespace com.espertech.esper.events.bean
         private KeyedMethodPropertyGetter _getter;
         private EventBean _theEvent;
         private SupportBeanComplexProps _bean;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _bean = SupportBeanComplexProps.MakeDefaultBean();
             _theEvent = SupportEventBeanFactory.CreateObject(_bean);
             var method = typeof(SupportBeanComplexProps).GetMethod("GetIndexed", new Type[] {typeof(int)});
-            _getter = new KeyedMethodPropertyGetter(method, 1, SupportEventAdapterService.Service);
+            _getter = new KeyedMethodPropertyGetter(method, 1, _container.Resolve<EventAdapterService>());
         }
     
         [Test]
@@ -44,7 +47,7 @@ namespace com.espertech.esper.events.bean
                 _getter.Get(SupportEventBeanFactory.CreateObject(""));
                 Assert.Fail();
             }
-            catch (PropertyAccessException ex)
+            catch (PropertyAccessException)
             {
                 // expected
             }

@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.fafquery;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.epl.table.strategy;
 using com.espertech.esper.epl.virtualdw;
@@ -52,7 +53,7 @@ namespace com.espertech.esper.core.start
                 return CollectionUtil.EVENTBEANARRAY_EMPTY;
             }
     
-            var found = SnapshotAndApplyFilter(delete.Filter, delete.Annotations, delete.OptionalWhereClause, _instance.AgentInstanceContext);
+            var found = SnapshotAndApplyFilter(delete.QueryGraph, delete.Annotations, delete.OptionalWhereClause, _instance.AgentInstanceContext);
             foreach (var @event in found) {
                 _instance.DeleteEvent(@event);
             }
@@ -62,7 +63,7 @@ namespace com.espertech.esper.core.start
         public override EventBean[] ProcessUpdate(EPPreparedExecuteIUDSingleStreamExecUpdate update)
         {
             ExprTableEvalLockUtil.ObtainLockUnless(_instance.TableLevelRWLock.WriteLock, update.Services.TableService.TableExprEvaluatorContext);
-            var events = SnapshotAndApplyFilter(update.Filter, update.Annotations, update.OptionalWhereClause, _instance.AgentInstanceContext);
+            var events = SnapshotAndApplyFilter(update.QueryGraph, update.Annotations, update.OptionalWhereClause, _instance.AgentInstanceContext);
     
             if (events != null && events.IsEmpty()) {
                 return CollectionUtil.EVENTBEANARRAY_EMPTY;
@@ -78,19 +79,19 @@ namespace com.espertech.esper.core.start
             return CollectionUtil.EVENTBEANARRAY_EMPTY;
         }
     
-        public override ICollection<EventBean> SnapshotBestEffort(EPPreparedExecuteMethodQuery query, FilterSpecCompiled filter, Attribute[] annotations)
+        public override ICollection<EventBean> SnapshotBestEffort(EPPreparedExecuteMethodQuery query, QueryGraph queryGraph, Attribute[] annotations)
         {
             ExprTableEvalLockUtil.ObtainLockUnless(_instance.TableLevelRWLock.ReadLock, query.AgentInstanceContext);
-            var events = SnapshotNullWhenNoIndex(filter, annotations, null, null);
+            var events = SnapshotNullWhenNoIndex(queryGraph, annotations, null, null);
             if (events != null) {
                 return events;
             }
             return _instance.EventCollection;
         }
     
-        private ICollection<EventBean> SnapshotAndApplyFilter(FilterSpecCompiled filter, Attribute[] annotations, ExprNode filterExpr, AgentInstanceContext agentInstanceContext)
+        private ICollection<EventBean> SnapshotAndApplyFilter(QueryGraph queryGraph, Attribute[] annotations, ExprNode filterExpr, AgentInstanceContext agentInstanceContext)
         {
-            var indexedResult = SnapshotNullWhenNoIndex(filter, annotations, null, null);
+            var indexedResult = SnapshotNullWhenNoIndex(queryGraph, annotations, null, null);
             if (indexedResult != null) {
                 if (indexedResult.IsEmpty() || filterExpr == null) {
                     return indexedResult;
@@ -124,10 +125,10 @@ namespace com.espertech.esper.core.start
         /// Returns null when a filter cannot be applied, and a collection iterator must be used instead.
         /// Returns best-effort matching events otherwise which should still be run through any filter expressions.
         /// </summary>
-        private ICollection<EventBean> SnapshotNullWhenNoIndex(FilterSpecCompiled filter, Attribute[] annotations, ExprNode optionalWhereClause, AgentInstanceContext agentInstanceContext)
+        private ICollection<EventBean> SnapshotNullWhenNoIndex(QueryGraph queryGraph, Attribute[] annotations, ExprNode optionalWhereClause, AgentInstanceContext agentInstanceContext)
         {
             // return null when filter cannot be applies
-            return FireAndForgetQueryExec.Snapshot(filter, annotations, null,
+            return FireAndForgetQueryExec.Snapshot(queryGraph, annotations, null,
                     _instance.IndexRepository, _instance.TableMetadata.IsQueryPlanLogging,
                     TableServiceImpl.QueryPlanLog, _instance.TableMetadata.TableName,
                     _instance.AgentInstanceContext);

@@ -31,7 +31,7 @@ namespace com.espertech.esper.supportregression.epl
 
         public void Enter(Object value)
         {
-            var paramList = (Object[]) value;
+            var paramList = (object[]) value;
             LastEnterParameters = paramList;
             var lower = (int) paramList[0];
             var upper = (int)paramList[1];
@@ -44,7 +44,7 @@ namespace com.espertech.esper.supportregression.epl
 
         public void Leave(Object value)
         {
-            var paramList = (Object[]) value;
+            var paramList = (object[]) value;
             var lower = (int)paramList[0];
             var upper = (int)paramList[1];
             var val = (int)paramList[2];

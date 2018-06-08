@@ -12,7 +12,6 @@ using System.Reflection;
 
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 
@@ -20,13 +19,13 @@ namespace com.espertech.esper.epl.declexpr
 {
     public class ExprDeclaredServiceImpl : ExprDeclaredService
     {
-        private readonly ILockable _iLock = LockManager.CreateLock(MethodBase.GetCurrentMethod().DeclaringType);
-
+        private readonly ILockable _iLock;
         private readonly IDictionary<String, ExpressionDeclItem> _globalExpressions;
         private readonly IDictionary<String, List<ExpressionScriptProvided>> _globalScripts;
 
-        public ExprDeclaredServiceImpl()
+        public ExprDeclaredServiceImpl(ILockManager lockManager)
         {
+            _iLock = lockManager.CreateLock(MethodBase.GetCurrentMethod().DeclaringType);
             _globalExpressions = new Dictionary<String, ExpressionDeclItem>();
             _globalScripts = new Dictionary<String, List<ExpressionScriptProvided>>();
         }

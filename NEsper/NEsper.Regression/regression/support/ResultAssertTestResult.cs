@@ -30,17 +30,17 @@ namespace com.espertech.esper.regression.support
             assertions = new SortedDictionary<long, IDictionary<int, StepDesc>>();
         }
     
-        public void AddResultInsert(long time, int step, Object[][] newDataPerRow)
+        public void AddResultInsert(long time, int step, object[][] newDataPerRow)
         {        
             AddResultInsRem(time, step, newDataPerRow, null);
         }
     
-        public void AddResultRemove(long time, int step, Object[][] oldDataPerRow)
+        public void AddResultRemove(long time, int step, object[][] oldDataPerRow)
         {
             AddResultInsRem(time, step, null, oldDataPerRow);
         }
     
-        public void AddResultInsRem(long time, int step, Object[][] newDataPerRow, Object[][] oldDataPerRow)
+        public void AddResultInsRem(long time, int step, object[][] newDataPerRow, object[][] oldDataPerRow)
         {
             if (step >= 10)
             {

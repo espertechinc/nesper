@@ -17,12 +17,9 @@ namespace com.espertech.esper.view.window
 
 	    /// <summary>Returns the index for access.</summary>
 	    /// <returns>index</returns>
-	    public RandomAccessByIndex Accessor
-	    {
-	        get { return _randomAccessByIndex; }
-	    }
+	    public RandomAccessByIndex Accessor => _randomAccessByIndex;
 
-        /// <summary>
+	    /// <summary>
         /// Callback to indicate an Update
         /// </summary>
         /// <param name="randomAccessByIndex">is the collection</param>

@@ -10,7 +10,9 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.supportregression.util
@@ -28,7 +30,8 @@ namespace com.espertech.esper.supportregression.util
         public SupportMTUpdateListener(string name)
         {
             _id = name;
-            _oLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            _oLock = SupportContainer.Instance.LockManager()
+                .CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             _newDataList = new List<EventBean[]>();
             _oldDataList = new List<EventBean[]>();
         }
@@ -36,7 +39,8 @@ namespace com.espertech.esper.supportregression.util
         public SupportMTUpdateListener()
         {
             _id = string.Empty;
-            _oLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            _oLock = SupportContainer.Instance.LockManager()
+                .CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             _newDataList = new List<EventBean[]>();
             _oldDataList = new List<EventBean[]>();
         }
@@ -47,21 +51,10 @@ namespace com.espertech.esper.supportregression.util
             var newData = e.NewEvents;
 
             using(_oLock.Acquire()) {
-                //Console.WriteLine("Update-Pre[{0}]:  {1} with {2} events",
-                //                  id,
-                //                  newDataList.Count,
-                //                  newData.Length); 
-                
-                this._oldDataList.Add(oldData);
-                this._newDataList.Add(newData);
-                this._lastNewData = newData;
-                this._lastOldData = oldData;
-
-                //Console.WriteLine("Update-Pst[{0}]:  {1} with {2} events",
-                //  id,
-                //  newDataList.Count,
-                //  newData.Length); 
-
+                _oldDataList.Add(oldData);
+                _newDataList.Add(newData);
+                _lastNewData = newData;
+                _lastOldData = oldData;
                 _isInvoked = true;
             }
         }
@@ -69,10 +62,10 @@ namespace com.espertech.esper.supportregression.util
         public void Reset()
         {
             using(_oLock.Acquire()) {
-                this._oldDataList.Clear();
-                this._newDataList.Clear();
-                this._lastNewData = null;
-                this._lastOldData = null;
+                _oldDataList.Clear();
+                _newDataList.Clear();
+                _lastNewData = null;
+                _lastOldData = null;
                 _isInvoked = false;
             }
         }
@@ -124,35 +117,31 @@ namespace com.espertech.esper.supportregression.util
                 return lastNew;
             }
         }
-    
-        public EventBean[] GetLastOldData()
-        {
-            return _lastOldData;
+
+        public EventBean[] LastOldData {
+            get { return _lastOldData; }
         }
-    
-        public IList<EventBean[]> GetNewDataList()
-        {
-            return _newDataList;
+
+        public IList<EventBean[]> NewDataList {
+            get { return _newDataList; }
         }
-    
-        public IList<EventBean[]> GetNewDataListCopy()
-        {
-            using (_oLock.Acquire())
-            {
-                return new List<EventBean[]>(_newDataList);
+
+        public IList<EventBean[]> NewDataListCopy {
+            get {
+                using (_oLock.Acquire()) {
+                    return new List<EventBean[]>(_newDataList);
+                }
             }
         }
 
-        public IList<EventBean[]> GetOldDataList()
-        {
-            return _oldDataList;
+        public IList<EventBean[]> OldDataList {
+            get { return _oldDataList; }
         }
-    
-        public bool IsInvoked()
-        {
-            return _isInvoked;
+
+        public bool IsInvoked {
+            get { return _isInvoked; }
         }
-    
+
         public bool GetAndClearIsInvoked()
         {
             using(_oLock.Acquire()) {

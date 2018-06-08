@@ -53,7 +53,7 @@ namespace com.espertech.esper.view.internals
                 buffer.GetNewData(6);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }

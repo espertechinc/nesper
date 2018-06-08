@@ -128,9 +128,9 @@ namespace com.espertech.esper.core.context.mgr
                             throw new ExprValidationException(
                                 "For context '" + contextName + "' for context '" + contextName +
                                 "' found mismatch of property types, property '" + names[i] +
-                                "' of type '" + types[i].GetTypeNameFullyQualPretty() +
+                                "' of type '" + types[i].GetCleanName() +
                                 "' compared to property '" + property +
-                                "' of type '" + typeBoxed.GetTypeNameFullyQualPretty() + "'");
+                                "' of type '" + typeBoxed.GetCleanName() + "'");
                         }
                     }
                 }

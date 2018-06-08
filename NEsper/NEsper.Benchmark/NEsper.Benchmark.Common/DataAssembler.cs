@@ -265,7 +265,6 @@ namespace NEsper.Benchmark.Common
 
         private static void TestHashMD5(byte[] dataHash, byte[] data)
         {
-            const int hashLength = 16;
             byte[] realHash = ByteUtil.ComputeMD5Hash(data, 0, data.Length);
 
             var _realHash = ByteUtil.ToHexString(realHash);

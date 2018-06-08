@@ -49,22 +49,26 @@ namespace com.espertech.esper.core.service
         private readonly MatchRecognizeStatePoolEngineSvc _matchRecognizeStatePoolEngineSvc;
         private readonly TableService _tableService;
         private readonly IDictionary<string, Object> _transientConfiguration;
-    
-        public ConfigurationOperationsImpl(EventAdapterService eventAdapterService,
-                                           EventTypeIdGenerator eventTypeIdGenerator,
-                                           EngineImportService engineImportService,
-                                           VariableService variableService,
-                                           EngineSettingsService engineSettingsService,
-                                           ValueAddEventService valueAddEventService,
-                                           MetricReportingService metricReportingService,
-                                           StatementEventTypeRef statementEventTypeRef,
-                                           StatementVariableRef statementVariableRef,
-                                           PluggableObjectCollection plugInViews,
-                                           FilterService filterService,
-                                           PatternSubexpressionPoolEngineSvc patternSubexpressionPoolSvc,
-                                           MatchRecognizeStatePoolEngineSvc matchRecognizeStatePoolEngineSvc,
-                                           TableService tableService,
-                                           IDictionary<string, Object> transientConfiguration) {
+        private readonly IResourceManager _resourceManager;
+
+        public ConfigurationOperationsImpl(
+            EventAdapterService eventAdapterService,
+            EventTypeIdGenerator eventTypeIdGenerator,
+            EngineImportService engineImportService,
+            VariableService variableService,
+            EngineSettingsService engineSettingsService,
+            ValueAddEventService valueAddEventService,
+            MetricReportingService metricReportingService,
+            StatementEventTypeRef statementEventTypeRef,
+            StatementVariableRef statementVariableRef,
+            PluggableObjectCollection plugInViews,
+            FilterService filterService,
+            PatternSubexpressionPoolEngineSvc patternSubexpressionPoolSvc,
+            MatchRecognizeStatePoolEngineSvc matchRecognizeStatePoolEngineSvc,
+            TableService tableService,
+            IResourceManager resourceManager,
+            IDictionary<string, object> transientConfiguration)
+        {
             _eventAdapterService = eventAdapterService;
             _eventTypeIdGenerator = eventTypeIdGenerator;
             _engineImportService = engineImportService;
@@ -80,10 +84,11 @@ namespace com.espertech.esper.core.service
             _matchRecognizeStatePoolEngineSvc = matchRecognizeStatePoolEngineSvc;
             _tableService = tableService;
             _transientConfiguration = transientConfiguration;
+            _resourceManager = resourceManager;
         }
     
-        public void AddEventTypeAutoName(string javaPackageName) {
-            _eventAdapterService.AddAutoNamePackage(javaPackageName);
+        public void AddEventTypeAutoName(string @namespace) {
+            _eventAdapterService.AddAutoNamePackage(@namespace);
         }
     
         public void AddPlugInView(string @namespace, string name, string viewFactoryClass) {
@@ -96,7 +101,12 @@ namespace com.espertech.esper.core.service
                 Collections.GetEmptyList<ConfigurationPlugInVirtualDataWindow>(), 
                 _engineImportService);
         }
-    
+
+        public void AddPlugInView(string @namespace, string name, Type viewFactoryClass)
+        {
+            AddPlugInView(@namespace, name, viewFactoryClass.AssemblyQualifiedName);
+        }
+
         public void AddPlugInAggregationMultiFunction(ConfigurationPlugInAggregationMultiFunction config) {
             try {
                 _engineImportService.AddAggregationMultiFunction(config);
@@ -104,7 +114,12 @@ namespace com.espertech.esper.core.service
                 throw new ConfigurationException(e.Message, e);
             }
         }
-    
+
+        public void AddPlugInAggregationFunctionFactory(string functionName, Type aggregationFactoryClass)
+        {
+            AddPlugInAggregationFunctionFactory(functionName, aggregationFactoryClass.AssemblyQualifiedName);
+        }
+
         public void AddPlugInAggregationFunctionFactory(string functionName, string aggregationFactoryClassName) {
             try {
                 var desc = new ConfigurationPlugInAggregationFunction(functionName, aggregationFactoryClassName);
@@ -113,19 +128,31 @@ namespace com.espertech.esper.core.service
                 throw new ConfigurationException(e.Message, e);
             }
         }
-    
+
+        public void AddPlugInSingleRowFunction(string functionName, Type clazz, string methodName) {
+            AddPlugInSingleRowFunction(functionName, clazz.AssemblyQualifiedName, methodName);
+        }
         public void AddPlugInSingleRowFunction(string functionName, string className, string methodName) {
             InternalAddPlugInSingleRowFunction(functionName, className, methodName, ValueCacheEnum.DISABLED, FilterOptimizableEnum.ENABLED, false, null);
         }
-    
+
+        public void AddPlugInSingleRowFunction(string functionName, Type clazz, string methodName, ValueCacheEnum valueCache) {
+            AddPlugInSingleRowFunction(functionName, clazz.AssemblyQualifiedName, methodName, valueCache);
+        }
         public void AddPlugInSingleRowFunction(string functionName, string className, string methodName, ValueCacheEnum valueCache) {
             InternalAddPlugInSingleRowFunction(functionName, className, methodName, valueCache, FilterOptimizableEnum.ENABLED, false, null);
         }
-    
+
+        public void AddPlugInSingleRowFunction(string functionName, Type clazz, string methodName, FilterOptimizableEnum filterOptimizable) {
+            AddPlugInSingleRowFunction(functionName, clazz.AssemblyQualifiedName, methodName, filterOptimizable);
+        }
         public void AddPlugInSingleRowFunction(string functionName, string className, string methodName, FilterOptimizableEnum filterOptimizable) {
             InternalAddPlugInSingleRowFunction(functionName, className, methodName, ValueCacheEnum.DISABLED, filterOptimizable, false, null);
         }
-    
+
+        public void AddPlugInSingleRowFunction(string functionName, Type clazz, string methodName, ValueCacheEnum valueCache, FilterOptimizableEnum filterOptimizable, bool rethrowExceptions) {
+            AddPlugInSingleRowFunction(functionName, clazz.AssemblyQualifiedName, methodName, valueCache, filterOptimizable, rethrowExceptions);
+        }
         public void AddPlugInSingleRowFunction(string functionName, string className, string methodName, ValueCacheEnum valueCache, FilterOptimizableEnum filterOptimizable, bool rethrowExceptions) {
             InternalAddPlugInSingleRowFunction(functionName, className, methodName, valueCache, filterOptimizable, rethrowExceptions, null);
         }
@@ -169,7 +196,7 @@ namespace com.espertech.esper.core.service
 
         public void AddAnnotationImport(Type autoImport)
         {
-            AddAnnotationImport(autoImport.FullName, autoImport.AssemblyQualifiedName);
+            AddAnnotationImport(autoImport.FullName, autoImport.Assembly.FullName);
         }
 
         public void AddAnnotationImport<T>(bool importNamespace)
@@ -341,7 +368,11 @@ namespace com.espertech.esper.core.service
     
             if ((xmlDOMEventTypeDesc.SchemaResource != null) || (xmlDOMEventTypeDesc.SchemaText != null)) {
                 try {
-                    schemaModel = XSDSchemaMapper.LoadAndMap(xmlDOMEventTypeDesc.SchemaResource, xmlDOMEventTypeDesc.SchemaText, _engineImportService);
+                    schemaModel = XSDSchemaMapper.LoadAndMap(
+                        xmlDOMEventTypeDesc.SchemaResource, 
+                        xmlDOMEventTypeDesc.SchemaText, 
+                        _engineImportService,
+                        _resourceManager);
                 } catch (Exception ex) {
                     throw new ConfigurationException(ex.Message, ex);
                 }
@@ -435,7 +466,11 @@ namespace com.espertech.esper.core.service
             SchemaModel schemaModel = null;
             if (config.SchemaResource != null || config.SchemaText != null) {
                 try {
-                    schemaModel = XSDSchemaMapper.LoadAndMap(config.SchemaResource, config.SchemaText, _engineImportService);
+                    schemaModel = XSDSchemaMapper.LoadAndMap(
+                        config.SchemaResource, 
+                        config.SchemaText, 
+                        _engineImportService,
+                        _resourceManager);
                 } catch (Exception ex) {
                     throw new ConfigurationException(ex.Message, ex);
                 }
@@ -573,6 +608,14 @@ namespace com.espertech.esper.core.service
         public void AddEventType<T>(string eventTypeName, ConfigurationEventTypeLegacy legacyEventTypeDesc)
         {
             AddEventType(eventTypeName, typeof(T).AssemblyQualifiedName, legacyEventTypeDesc);
+        }
+
+        public void AddEventType(
+            string eventTypeName,
+            Type eventClass,
+            ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        {
+            AddEventType(eventTypeName, eventClass.AssemblyQualifiedName, legacyEventTypeDesc);
         }
 
         public void AddEventType(string eventTypeName, string eventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc)

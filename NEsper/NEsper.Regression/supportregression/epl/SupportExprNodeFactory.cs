@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.start;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core;
@@ -21,9 +22,11 @@ using com.espertech.esper.epl.expression.prev;
 using com.espertech.esper.epl.expression.prior;
 using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.variable;
+using com.espertech.esper.events;
 using com.espertech.esper.schedule;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.events;
+using com.espertech.esper.supportregression.util;
 using com.espertech.esper.timer;
 using com.espertech.esper.type;
 using com.espertech.esper.util.support;
@@ -33,7 +36,7 @@ using com.espertech.esper.view.window;
 namespace com.espertech.esper.supportregression.epl
 {
     public class SupportExprNodeFactory
-	{
+    {
 	    public static QueryGraphValueEntryHashKeyed MakeKeyed(string property) {
 	        return new QueryGraphValueEntryHashKeyedExpr(new ExprIdentNodeImpl(property), false);
 	    }
@@ -235,7 +238,7 @@ namespace com.espertech.esper.supportregression.epl
 	        return mathNode;
 	    }
 
-	    public static ExprNode MakeSumAndFactorNode()
+	    public static ExprNode MakeSumAndFactorNode(IContainer container)
 	    {
 	        // sum node
 	        var sum = new ExprSumNode(false);
@@ -273,7 +276,8 @@ namespace com.espertech.esper.supportregression.epl
 	        return countNode;
 	    }
 
-	    public static ExprNode MakeRelationalOpNode(RelationalOpEnum @operator, object valueLeft, Type typeLeft, object valueRight, Type typeRight)
+	    public static ExprNode MakeRelationalOpNode(
+	        RelationalOpEnum @operator, object valueLeft, Type typeLeft, object valueRight, Type typeRight)
 	    {
 	        ExprRelationalOpNode opNode = new ExprRelationalOpNodeImpl(@operator);
 	        opNode.AddChildNode(new SupportExprNode(valueLeft, typeLeft));
@@ -282,7 +286,8 @@ namespace com.espertech.esper.supportregression.epl
 	        return opNode;
 	    }
 
-	    public static ExprNode MakeRelationalOpNode(RelationalOpEnum @operator, Type typeLeft, Type typeRight)
+	    public static ExprNode MakeRelationalOpNode( 
+	        RelationalOpEnum @operator, Type typeLeft, Type typeRight)
 	    {
 	        ExprRelationalOpNode opNode = new ExprRelationalOpNodeImpl(@operator);
 	        opNode.AddChildNode(new SupportExprNode(typeLeft));
@@ -291,7 +296,8 @@ namespace com.espertech.esper.supportregression.epl
 	        return opNode;
 	    }
 
-	    public static ExprNode MakeRelationalOpNode(RelationalOpEnum @operator, ExprNode nodeLeft, ExprNode nodeRight)
+	    public static ExprNode MakeRelationalOpNode( 
+	        RelationalOpEnum @operator, ExprNode nodeLeft, ExprNode nodeRight)
 	    {
 	        ExprRelationalOpNode opNode = new ExprRelationalOpNodeImpl(@operator);
 	        opNode.AddChildNode(nodeLeft);
@@ -338,8 +344,8 @@ namespace com.espertech.esper.supportregression.epl
 	    public static ExprCaseNode MakeCaseSyntax1Node()
 	    {
 	        // Build (case 1 expression):
-	        // case when s0.intPrimitive = 1 then "a"
-	        //      when s0.intPrimitive = 2 then "b"
+	        // case when s0.IntPrimitive = 1 then "a"
+	        //      when s0.IntPrimitive = 2 then "b"
 	        //      else "c"
 	        // end
 	        var caseNode = new ExprCaseNode(false);
@@ -391,8 +397,9 @@ namespace com.espertech.esper.supportregression.epl
 	        return topNode;
 	    }
 
-	    public static void Validate3Stream(ExprNode topNode)
+	    public static void Validate3Stream( ExprNode topNode)
 	    {
+	        var supportContainer = SupportContainer.Instance;
 	        var streamTypeService = new SupportStreamTypeSvc3Stream();
 
 	        var factoriesPerStream = new ViewFactoryChain[3];
@@ -404,9 +411,13 @@ namespace com.espertech.esper.supportregression.epl
 	        }
 	        var viewResources = new ViewResourceDelegateUnverified();
 
-            EngineImportService engineImportService = SupportEngineImportServiceFactory.Make();
+            EngineImportService engineImportService = SupportEngineImportServiceFactory.Make(supportContainer);
 
-	        VariableService variableService = new VariableServiceImpl(0, new SchedulingServiceImpl(new TimeSourceServiceImpl()), SupportEventAdapterService.Service, null);
+	        VariableService variableService = new VariableServiceImpl(
+	            supportContainer, 0,
+	            new SchedulingServiceImpl(new TimeSourceServiceImpl(), supportContainer),
+	            SupportContainer.Resolve<EventAdapterService>(),
+	            null);
 	        variableService.CreateNewVariable(null, "IntPrimitive", typeof(int?).FullName, false, false, false, 10, engineImportService);
 	        variableService.AllocateVariableState("IntPrimitive", EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, false);
 	        variableService.CreateNewVariable(null, "var1", typeof(string).FullName, false, false, false, "my_variable_value", engineImportService);
@@ -414,26 +425,30 @@ namespace com.espertech.esper.supportregression.epl
 
 	        ExprNodeUtility.GetValidatedSubtree(
 	            ExprNodeOrigin.SELECT, topNode, new ExprValidationContext(
-	                streamTypeService, SupportEngineImportServiceFactory.Make(), 
+	                supportContainer,
+                    streamTypeService, 
+	                SupportEngineImportServiceFactory.Make(supportContainer), 
                     null, viewResources,
                     null, variableService, null,
-	                new SupportExprEvaluatorContext(null),
+	                new SupportExprEvaluatorContext(supportContainer, null),
 	                null, null, 1, null, null, null,
                     false, false, false, false, null, false));
 	    }
 
-	    public static void Validate1StreamBean(ExprNode topNode)
+	    public static void Validate1StreamBean( ExprNode topNode)
 	    {
+	        var supportContainer = SupportContainer.Instance;
 	        var eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 	        StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, "s0", false, "uri");
-            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, topNode, SupportExprValidationContextFactory.Make(streamTypeService));
+            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, topNode, SupportExprValidationContextFactory.Make(supportContainer, streamTypeService));
 	    }
 
-	    public static void Validate1StreamMD(ExprNode topNode)
+	    public static void Validate1StreamMD( ExprNode topNode)
 	    {
+	        var supportContainer = SupportContainer.Instance;
 	        var eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean));
 	        StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, "s0", false, "uri");
-            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, topNode, SupportExprValidationContextFactory.Make(streamTypeService));
+            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, topNode, SupportExprValidationContextFactory.Make(supportContainer, streamTypeService));
 	    }
 	}
 } // end of namespace

@@ -45,10 +45,7 @@ namespace com.espertech.esper.view.window
             return new FirstLengthWindowView(agentInstanceViewFactoryContext, this, size);
         }
 
-        public EventType EventType
-        {
-            get { return _eventType; }
-        }
+        public EventType EventType => _eventType;
 
         public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
@@ -62,9 +59,6 @@ namespace com.espertech.esper.view.window
             return myView.Size == size && myView.IsEmpty();
         }
 
-        public string ViewName
-        {
-            get { return "First-Length"; }
-        }
+        public string ViewName => "First-Length";
     }
 } // end of namespace

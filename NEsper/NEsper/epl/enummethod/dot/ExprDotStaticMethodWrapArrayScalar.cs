@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.rettype;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.enummethod.dot
 {
@@ -43,7 +44,8 @@ namespace com.espertech.esper.epl.enummethod.dot
             var asArray = result as Array;
             if (asArray == null)
             {
-                Log.Warn(string.Format("Expected array-type input from method '{0}' but received {1}", _methodName, result.GetType().FullName));
+                Log.Warn(string.Format("Expected array-type input from method '{0}' but received {1}", 
+                    _methodName, result.GetType().GetCleanName()));
                 return null;
             }
             return asArray.Cast<object>().ToList();

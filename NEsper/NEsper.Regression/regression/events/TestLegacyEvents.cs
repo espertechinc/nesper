@@ -16,7 +16,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.events;
 using com.espertech.esper.metrics.instrumentation;
-using com.espertech.esper.supportregession.bean;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 
@@ -38,7 +37,7 @@ namespace com.espertech.esper.regression.events
             var mappedProperty = new Dictionary<String, String>();
             mappedProperty["key1"] = "value1";
             mappedProperty["key2"] = "value2";
-            _legacyBean = new SupportLegacyBean("leg", new String[] { "a", "b" }, mappedProperty, "nest");
+            _legacyBean = new SupportLegacyBean("leg", new[] { "a", "b" }, mappedProperty, "nest");
         }
 
         [Test]
@@ -72,7 +71,7 @@ namespace com.espertech.esper.regression.events
             var config = SupportConfigFactory.GetConfiguration();
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
-            _epService.EPAdministrator.Configuration.AddEventType("MyLegacyEvent", typeof(SupportLegacyBean).FullName, legacyDef);
+            _epService.EPAdministrator.Configuration.AddEventType("MyLegacyEvent", typeof(SupportLegacyBean), legacyDef);
 
             Assert.IsTrue(_epService.EPAdministrator.Configuration.IsEventTypeExists("MyLegacyEvent"));
             Assert.That(_epService.EPAdministrator.Configuration.GetEventType("MyLegacyEvent"), Is.Not.Null);
@@ -96,7 +95,7 @@ namespace com.espertech.esper.regression.events
             // test remove type with statement used (no force)
             configOps.AddEventType("MyBeanEvent", typeof(SupportBean_A));
             var stmt = _epService.EPAdministrator.CreateEPL("select id from MyBeanEvent", "stmtOne");
-            EPAssertionUtil.AssertEqualsExactOrder(configOps.GetEventTypeNameUsedBy("MyBeanEvent").ToArray(), new String[] { "stmtOne" });
+            EPAssertionUtil.AssertEqualsExactOrder(configOps.GetEventTypeNameUsedBy("MyBeanEvent").ToArray(), new[] { "stmtOne" });
 
             try
             {
@@ -119,7 +118,7 @@ namespace com.espertech.esper.regression.events
                 _epService.EPAdministrator.CreateEPL("select id from MyBeanEvent");
                 Assert.Fail();
             }
-            catch (EPException ex)
+            catch (EPException)
             {
                 // expected
             }
@@ -131,13 +130,13 @@ namespace com.espertech.esper.regression.events
 
             // compile
             _epService.EPAdministrator.CreateEPL("select BoolPrimitive from MyBeanEvent", "stmtTwo");
-            EPAssertionUtil.AssertEqualsExactOrder(configOps.GetEventTypeNameUsedBy("MyBeanEvent").ToArray(), new String[] { "stmtTwo" });
+            EPAssertionUtil.AssertEqualsExactOrder(configOps.GetEventTypeNameUsedBy("MyBeanEvent").ToArray(), new[] { "stmtTwo" });
             try
             {
                 _epService.EPAdministrator.CreateEPL("select id from MyBeanEvent");
                 Assert.Fail();
             }
-            catch (EPException ex)
+            catch (EPException)
             {
                 // expected
             }
@@ -166,7 +165,7 @@ namespace com.espertech.esper.regression.events
                 _epService.EPAdministrator.CreateEPL("select BoolPrimitive from MyBeanEvent");
                 Assert.Fail();
             }
-            catch (EPException ex)
+            catch (EPException)
             {
                 // expected
             }
@@ -239,12 +238,12 @@ namespace com.espertech.esper.regression.events
             legacyDef.AddMethodProperty("explicitMArray", "ReadStringArray");
             legacyDef.AddMethodProperty("explicitMIndexed", "ReadStringIndexed");
             legacyDef.AddMethodProperty("explicitMMapped", "ReadMapByKey");
-            _epService.EPAdministrator.Configuration.AddEventType("MyLegacyEvent", typeof(SupportLegacyBean).FullName, legacyDef);
+            _epService.EPAdministrator.Configuration.AddEventType("MyLegacyEvent", typeof(SupportLegacyBean), legacyDef);
 
             legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.AccessorStyle = AccessorStyleEnum.PUBLIC;
             legacyDef.CodeGeneration = CodeGenerationEnum.DISABLED;
-            _epService.EPAdministrator.Configuration.AddEventType("MyLegacyNestedEvent", typeof(SupportLegacyBean.LegacyNested).FullName, legacyDef);
+            _epService.EPAdministrator.Configuration.AddEventType("MyLegacyNestedEvent", typeof(SupportLegacyBean.LegacyNested), legacyDef);
 
             // assert type metadata
             var type = (EventTypeSPI)((EPServiceProviderSPI)_epService).EventAdapterService.GetEventTypeByName("MyLegacyEvent");
@@ -356,19 +355,19 @@ namespace com.espertech.esper.regression.events
             legacyDef.CodeGeneration = codeGeneration;
             legacyDef.AddFieldProperty("explicitFNested", "fieldNested");
             legacyDef.AddMethodProperty("explicitMNested", "ReadLegacyNested");
-            config.AddEventType("MyLegacyEvent", typeof(SupportLegacyBean).FullName, legacyDef);
+            config.AddEventType("MyLegacyEvent", typeof(SupportLegacyBean), legacyDef);
 
             legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.AccessorStyle = AccessorStyleEnum.EXPLICIT;
             legacyDef.CodeGeneration = codeGeneration;
             legacyDef.AddFieldProperty("fieldNestedClassValue", "fieldNestedValue");
             legacyDef.AddMethodProperty("ReadNestedClassValue", "ReadNestedValue");
-            config.AddEventType("MyLegacyNestedEvent", typeof(SupportLegacyBean.LegacyNested).FullName, legacyDef);
+            config.AddEventType("MyLegacyNestedEvent", typeof(SupportLegacyBean.LegacyNested), legacyDef);
 
             legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.AccessorStyle = AccessorStyleEnum.EXPLICIT;
             legacyDef.CodeGeneration = codeGeneration;
-            config.AddEventType("MySupportBean", typeof(SupportBean).FullName, legacyDef);
+            config.AddEventType("MySupportBean", typeof(SupportBean), legacyDef);
 
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
@@ -398,7 +397,7 @@ namespace com.espertech.esper.regression.events
                 statementText = "select IntPrimitive from MySupportBean#length(5)";
                 _epService.EPAdministrator.CreateEPL(statementText);
             }
-            catch (EPStatementException ex)
+            catch (EPStatementException)
             {
                 // expected
             }
@@ -416,7 +415,7 @@ namespace com.espertech.esper.regression.events
             legacyDef.AddFieldProperty("explicitFInt", "fieldIntPrimitive");
             legacyDef.AddMethodProperty("explicitMGetInt", "GetIntPrimitive");
             legacyDef.AddMethodProperty("explicitMReadInt", "ReadIntPrimitive");
-            config.AddEventType("MyLegacyEvent", typeof(SupportLegacyBeanInt).FullName, legacyDef);
+            config.AddEventType("MyLegacyEvent", typeof(SupportLegacyBeanInt), legacyDef);
 
             _epService = EPServiceProviderManager.GetDefaultProvider(config); 
             _epService.Initialize();
@@ -433,7 +432,7 @@ namespace com.espertech.esper.regression.events
             var theEvent = new SupportLegacyBeanInt(10);
             _epService.EPRuntime.SendEvent(theEvent);
 
-            foreach (var name in new String[] { "IntPrimitive", "explicitFInt", "explicitMGetInt", "explicitMReadInt" })
+            foreach (var name in new[] { "IntPrimitive", "explicitFInt", "explicitMGetInt", "explicitMReadInt" })
             {
                 Assert.AreEqual(typeof(int), eventType.GetPropertyType(name));
                 Assert.AreEqual(10, listener.LastNewData[0].Get(name));
@@ -449,7 +448,7 @@ namespace com.espertech.esper.regression.events
             var legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.AccessorStyle = AccessorStyleEnum.NATIVE;
             legacyDef.CodeGeneration = codeGeneration;
-            config.AddEventType("MyFinalEvent", typeof(SupportBeanFinal).FullName, legacyDef);
+            config.AddEventType("MyFinalEvent", typeof(SupportBeanFinal), legacyDef);
 
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();

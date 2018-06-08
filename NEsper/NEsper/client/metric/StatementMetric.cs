@@ -30,9 +30,10 @@ namespace com.espertech.esper.client.metric
 
         private long _cpuTime;
         private long _wallTime;
-        private long _outputRStreamCount;
-        private long _outputIStreamCount;
+        private long _numOutputRStream;
+        private long _numOutputIStream;
         private long _numInput;
+
 
         /// <summary>Ctor. </summary>
         /// <param name="engineURI">engine URI</param>
@@ -43,52 +44,40 @@ namespace com.espertech.esper.client.metric
             StatementName = statementName;
             _wallTime = 0L;
             _cpuTime = 0L;
-            _outputIStreamCount = 0L;
-            _outputRStreamCount = 0L;
+            _numOutputIStream = 0L;
+            _numOutputRStream = 0L;
             _numInput = 0L;
         }
 
-        public double CpuTime
-        {
-            get { return Interlocked.Read(ref _cpuTime); }
-        }
+        public double CpuTime => Interlocked.Read(ref _cpuTime);
 
-        public double WallTime
-        {
-            get { return Interlocked.Read(ref _wallTime); }
-        }
+        public double WallTime => Interlocked.Read(ref _wallTime);
 
         /// <summary>Returns number of output rows in remove stream. </summary>
         /// <returns>number of output rows in remove stream</returns>
-        public long OutputRStreamCount
-        {
-            get { return Interlocked.Read(ref _outputRStreamCount); }
-        }
+        public long NumOutputRStream => Interlocked.Read(ref _numOutputRStream);
 
         /// <summary>Returns number of output rows in insert stream. </summary>
         /// <returns>number of output rows in insert stream</returns>
-        public long OutputIStreamCount
-        {
-            get { return Interlocked.Read(ref _outputIStreamCount); }
-        }
+        public long NumOutputIStream => Interlocked.Read(ref _numOutputIStream);
 
         /// <summary>Adds number of output rows in insert stream. </summary>
         /// <param name="numIStream">to add</param>
         public void AddNumOutputIStream(int numIStream)
         {
-            Interlocked.Add(ref _outputIStreamCount, numIStream);
+            Interlocked.Add(ref _numOutputIStream, numIStream);
 #if DEBUG_STATEMENT_METRIC
-            Console.WriteLine("{0}: Reporting num output istream {1}, {2}", _id, outputIStreamCount, numIStream);
+            Debug.WriteLine("{0}: Reporting num output istream {1}, {2}", _id, outputIStreamCount, numIStream);
 #endif
         }
-    
+
         /// <summary>Adds number of output rows in remove stream. </summary>
         /// <param name="numRStream">to add</param>
         public void AddNumOutputRStream(int numRStream)
         {
-            Interlocked.Add(ref _outputRStreamCount, numRStream);
+            Interlocked.Add(ref _numOutputRStream, numRStream);
 #if DEBUG_STATEMENT_METRIC
-            Console.WriteLine("{0}: Reporting num output rstream {1}, {2}", _id, outputRStreamCount, numRStream);
+            Debug.WriteLine("{0}: Reporting num output rstream {1}, {2}", _id, outputRStreamCount, numRStream);
 #endif
         }
 
@@ -97,14 +86,11 @@ namespace com.espertech.esper.client.metric
             Interlocked.Add(ref _cpuTime, pCpuTime);
             Interlocked.Add(ref _wallTime, pWallTime);
 #if DEBUG_STATEMENT_METRIC
-            Console.WriteLine("{0}: Reporting time {1}/{2}, {3}/{4}", _id, pCpuTime, cpuTime, pWallTime, wallTime);
+            Debug.WriteLine("{0}: Reporting time {1}/{2}, {3}/{4}", _id, pCpuTime, cpuTime, pWallTime, wallTime);
 #endif
         }
 
-        public long NumInput
-        {
-            get { return Interlocked.Read(ref _numInput); }
-        }
+        public long NumInput => Interlocked.Read(ref _numInput);
 
         public void AddNumInput(long numInputAdd)
         {

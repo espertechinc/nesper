@@ -13,13 +13,12 @@ using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 
 using NEsper.Avro.Extensions;
 
 namespace NEsper.Avro.Getter
 {
-    using Map = IDictionary<string, object>;
-
     public class AvroEventBeanGetterMappedRuntimeKeyed : EventPropertyGetterMapped
     {
         private readonly Field _pos;
@@ -32,8 +31,8 @@ namespace NEsper.Avro.Getter
         public Object Get(EventBean eventBean, string mapKey)
         {
             var record = (GenericRecord) eventBean.Underlying;
-            var values = record.Get(_pos);
-            return AvroEventBeanGetterMapped.GetMappedValue(values, mapKey);
+            var values = record.Get(_pos).AsStringDictionary();
+            return AvroEventBeanGetterMapped.GetAvroMappedValueWNullCheck(values, mapKey);
         }
     }
 } // end of namespace

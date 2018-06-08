@@ -9,6 +9,7 @@
 using Antlr4.Runtime;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.declexpr;
@@ -16,7 +17,9 @@ using com.espertech.esper.epl.parse;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.epl.variable;
+using com.espertech.esper.events;
 using com.espertech.esper.pattern;
+using com.espertech.esper.supportunit.util;
 
 namespace com.espertech.esper.supportunit.epl.parse
 {
@@ -24,20 +27,27 @@ namespace com.espertech.esper.supportunit.epl.parse
     {
         public static EPLTreeWalkerListener MakeWalker(CommonTokenStream tokenStream, EngineImportService engineImportService, VariableService variableService)
         {
+            var container = SupportContainer.Instance;
             return new EPLTreeWalkerListener(
-                tokenStream, engineImportService, variableService, new SupportSchedulingServiceImpl(),
-                SelectClauseStreamSelectorEnum.ISTREAM_ONLY, "uri", new Configuration(), new PatternNodeFactoryImpl(),
+                container,
+                tokenStream, engineImportService, variableService, 
+                new SupportSchedulingServiceImpl(),
+                SelectClauseStreamSelectorEnum.ISTREAM_ONLY, "uri", 
+                new Configuration(container),
+                new PatternNodeFactoryImpl(),
                 null, null,
-                new ExprDeclaredServiceImpl(),
-                new TableServiceImpl());
+                new ExprDeclaredServiceImpl(container.LockManager()),
+                new TableServiceImpl(container));
         }
 
         public static EPLTreeWalkerListener MakeWalker(CommonTokenStream tokenStream)
         {
+            var container = SupportContainer.Instance;
             return MakeWalker(
                 tokenStream,
-                SupportEngineImportServiceFactory.Make(),
-                new VariableServiceImpl(0, null, SupportEventAdapterService.Service, null));
+                SupportEngineImportServiceFactory.Make(container),
+                new VariableServiceImpl(
+                    container, 0, null, container.Resolve<EventAdapterService>(), null));
         }
     }
 }

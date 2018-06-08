@@ -77,10 +77,10 @@ namespace com.espertech.esper.events.bean
             {
                 if (descriptor.HasParameters)
                 {
-                    return descriptor.GetMethod().Invoke(underlying, _paramList);
+                    return descriptor.Method.Invoke(underlying, _paramList);
                 }
 
-                var result = descriptor.GetMethod().Invoke(underlying, null);
+                var result = descriptor.Method.Invoke(underlying, null);
                 if ( result == null ) {
                     return null;
                 }
@@ -109,7 +109,7 @@ namespace com.espertech.esper.events.bean
             }
             catch (InvalidCastException e)
             {
-                throw PropertyUtility.GetMismatchException(descriptor.GetMethod().Target, underlying, e);
+                throw PropertyUtility.GetMismatchException(descriptor.Method.Target, underlying, e);
             }
             catch (PropertyAccessException)
             {

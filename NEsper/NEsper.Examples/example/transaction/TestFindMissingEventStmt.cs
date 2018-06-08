@@ -12,7 +12,7 @@ using com.espertech.esper.client.time;
 
 using NUnit.Framework;
 
-namespace NEsper.Example.Transaction
+namespace NEsper.Examples.Transaction
 {
     [TestFixture]
     public class TestFindMissingEventStmt : TestStmtBase

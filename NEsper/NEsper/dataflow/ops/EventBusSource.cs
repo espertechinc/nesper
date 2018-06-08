@@ -11,7 +11,9 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.dataflow;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
@@ -44,13 +46,18 @@ namespace com.espertech.esper.dataflow.ops
         protected readonly IBlockingQueue<Object> emittables = new LinkedBlockingQueue<Object>();
         protected bool submitEventBean;
 
-        private readonly ILockable _iLock =
-            LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly ILockable _iLock;
+        private readonly IThreadLocal<EPDataFlowEventBeanCollectorContext> _collectorDataTL;
 
-        private readonly IThreadLocal<EPDataFlowEventBeanCollectorContext> _collectorDataTL =
-            ThreadLocalManager.Create<EPDataFlowEventBeanCollectorContext>(() => null);
+        public EventBusSource(
+            ILockManager lockManager,
+            IThreadLocalManager threadLocalManager)
+        {
+            _iLock = lockManager.CreateLock(GetType());
+            _collectorDataTL = threadLocalManager.Create<EPDataFlowEventBeanCollectorContext>(() => null);
+        }
 
-        public DataFlowOpInitializeResult Initialize(DataFlowOpInitializateContext context)
+    public DataFlowOpInitializeResult Initialize(DataFlowOpInitializateContext context)
         {
             if (context.OutputPorts.Count != 1)
             {

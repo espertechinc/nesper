@@ -108,15 +108,15 @@ namespace com.espertech.esper.epl.expression.ops
                 {
                     if (!typeOne.IsNumeric())
                     {
-                        throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", typeOne.FullName));
+                        throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", Name.Clean(typeOne)));
                     }
                     if (!typeTwo.IsNumeric())
                     {
-                        throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", typeTwo.FullName));
+                        throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", Name.Clean(typeTwo)));
                     }
                     if (!typeThree.IsNumeric())
                     {
-                        throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", typeThree.FullName));
+                        throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", Name.Clean(typeThree)));
                     }
                 }
 
@@ -157,7 +157,7 @@ namespace com.espertech.esper.epl.expression.ops
             return false;
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             var other = node as ExprBetweenNodeImpl;
             if (other == null)
@@ -196,7 +196,6 @@ namespace com.espertech.esper.epl.expression.ops
 
         private IExprBetweenComp MakeComputer(Type compareType, Type valueType, Type lowType, Type highType)
         {
-            IExprBetweenComp computer;
 
             if (compareType == typeof(String))
             {

@@ -11,10 +11,11 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.bean
@@ -23,11 +24,17 @@ namespace com.espertech.esper.events.bean
     public class TestBeanEventAdapter
     {
         private BeanEventTypeFactory _beanEventTypeFactory;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
-            _beanEventTypeFactory = new BeanEventAdapter(new ConcurrentDictionary<Type, BeanEventType>(), SupportEventAdapterService.Service, new EventTypeIdGeneratorImpl());
+            _container = SupportContainer.Reset();
+            _beanEventTypeFactory = new BeanEventAdapter(
+                _container,
+                new ConcurrentDictionary<Type, BeanEventType>(),
+                _container.Resolve<EventAdapterService>(),
+                new EventTypeIdGeneratorImpl());
         }
 
         [Test]

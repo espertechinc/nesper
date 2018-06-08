@@ -270,7 +270,7 @@ namespace com.espertech.esper.epl.expression.funcs
             return null;    // always single-row
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             var otherExprCaseNode = node as ExprCaseNode;
             if (otherExprCaseNode == null)

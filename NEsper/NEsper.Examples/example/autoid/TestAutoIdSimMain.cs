@@ -8,7 +8,7 @@
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.example.autoid
+namespace NEsper.Examples.AutoId
 {
 	[TestFixture]
 	public class TestAutoIdSimMain
@@ -16,7 +16,7 @@ namespace com.espertech.esper.example.autoid
 		[Test]
 	    public void TestRun() 
 	    {
-            AutoIdSimMain main = new AutoIdSimMain(10, "AutoIdSample");
+            var main = new AutoIdSimMain(10, "AutoIdSample");
 	        main.Run();
 	    }
 	}

@@ -8,8 +8,9 @@
 
 using System;
 using System.Collections.Generic;
-
+using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.parse;
@@ -17,8 +18,7 @@ using com.espertech.esper.filter;
 using com.espertech.esper.pattern;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl.parse;
-using com.espertech.esper.supportunit.view;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.epl.spec
@@ -26,6 +26,14 @@ namespace com.espertech.esper.epl.spec
     [TestFixture]
     public class TestPatternStreamSpecRaw 
     {
+        private IContainer _container;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _container = SupportContainer.Reset();
+        }
+
         [Test]
         public void TestPatternEquals()
         {
@@ -125,14 +133,14 @@ namespace com.espertech.esper.epl.spec
             var inlist = (FilterSpecParamIn)filterNode.FilterSpec.Parameters[0][0];
             Assert.AreEqual(FilterOperator.IN_LIST_OF_VALUES, inlist.FilterOperator);
             Assert.AreEqual(2, inlist.ListOfValues.Count);
-    
+
             // in-value 1
-            var prop = (InSetOfValuesEventProp) inlist.ListOfValues[0];
+            var prop = (FilterForEvalEventPropMayCoerce) inlist.ListOfValues[0];
             Assert.AreEqual("s", prop.ResultEventAsName);
             Assert.AreEqual("IntBoxed", prop.ResultEventProperty);
-    
+
             // in-value 1
-            var constant = (InSetOfValuesConstant) inlist.ListOfValues[1];
+            var constant = (FilterForEvalConstantAnyType) inlist.ListOfValues[1];
             Assert.AreEqual(0, constant.Constant);
         }
     
@@ -165,14 +173,14 @@ namespace com.espertech.esper.epl.spec
 
             var range = (FilterSpecParamRange)filterNode.FilterSpec.Parameters[0][0];
             Assert.AreEqual(FilterOperator.RANGE_CLOSED, range.FilterOperator);
-    
+
             // min-value
-            var prop = (RangeValueEventProp) range.Min;
+            var prop = (FilterForEvalEventPropDouble) range.Min;
             Assert.AreEqual("s", prop.ResultEventAsName);
             Assert.AreEqual("IntBoxed", prop.ResultEventProperty);
-    
+
             // max-value
-            var constant = (RangeValueDouble) range.Max;
+            var constant = (FilterForEvalConstantDouble) range.Max;
             Assert.AreEqual(100d, constant.DoubleValue);
         }
     
@@ -212,7 +220,7 @@ namespace com.espertech.esper.epl.spec
     
         private PatternStreamSpecCompiled Compile(PatternStreamSpecRaw raw)
         {
-            return raw.Compile(SupportStatementContextFactory.MakeContext(), new HashSet<String>(), false, Collections.GetEmptyList<int>(), false, false, false, null)
+            return raw.Compile(SupportStatementContextFactory.MakeContext(_container), new HashSet<String>(), false, Collections.GetEmptyList<int>(), false, false, false, null)
                     as PatternStreamSpecCompiled;
         }
     

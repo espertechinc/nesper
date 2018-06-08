@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 
@@ -23,20 +24,19 @@ namespace com.espertech.esper.supportunit.util
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static readonly ObjectReservationSingleton ourInstance = new ObjectReservationSingleton();
+        private static readonly ObjectReservationSingleton OurInstance = new ObjectReservationSingleton();
 
-        private readonly HashSet<Object> _reservedObjects = new HashSet<Object>();
-        private readonly ILockable _reservedIdsLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
-        public static ObjectReservationSingleton Instance
-        {
-            get { return ourInstance; }
-        }
+        private readonly HashSet<Object> _reservedObjects;
+        private readonly ILockable _reservedIdsLock;
+
+        public static ObjectReservationSingleton Instance { get; } = new ObjectReservationSingleton();
 
         private ObjectReservationSingleton()
         {
+            _reservedObjects = new HashSet<Object>();
+            _reservedIdsLock = SupportContainer.Instance.LockManager().CreateLock(GetType());
         }
-    
+
         /// <summary>
         /// Reserve an object, returning true when successfully reserved or false when the
         /// object is already reserved.

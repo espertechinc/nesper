@@ -10,11 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.filter;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.filter
@@ -24,12 +26,14 @@ namespace com.espertech.esper.filter
     {
         private SupportEventEvaluator _testEvaluator;
         private FilterHandleSetNode _testNode;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _testEvaluator = new SupportEventEvaluator();
-            _testNode = new FilterHandleSetNode(ReaderWriterLockManager.CreateDefaultLock());
+            _testNode = new FilterHandleSetNode(_container.RWLockManager().CreateDefaultLock());
         }
     
         [Test]
@@ -88,7 +92,7 @@ namespace com.espertech.esper.filter
     
             // Create, add and populate an index node
             FilterParamIndexBase index = new FilterParamIndexEquals(
-                MakeLookupable("MyString", eventBean.EventType), ReaderWriterLockManager.CreateDefaultLock());
+                MakeLookupable("MyString", eventBean.EventType), _container.RWLockManager().CreateDefaultLock());
             _testNode.Add(index);
             index["DepositEvent_1"] = _testEvaluator;
     

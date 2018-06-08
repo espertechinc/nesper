@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.epl.core;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.view.internals;
 
 namespace com.espertech.esper.epl.join.@base
@@ -21,7 +22,7 @@ namespace com.espertech.esper.epl.join.@base
         {
         }
     
-        public void PreloadFromBuffer(int stream)
+        public void PreloadFromBuffer(int stream, ExprEvaluatorContext exprEvaluatorContext)
         {
         }
     

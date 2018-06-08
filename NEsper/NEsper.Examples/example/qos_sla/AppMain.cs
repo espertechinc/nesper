@@ -6,21 +6,18 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat.logger;
 
-using System;
-using System.Collections.Generic;
-using System.Text;
+using NEsper.Examples.QoS_SLA.monitor;
 
-using com.espertech.esper.example.qos_sla.monitor;
-
-
-namespace com.espertech.esper.example.qos_sla
+namespace NEsper.Examples.QoS_SLA
 {
     public class AppMain
     {
         public static void Main()
         {
-            log4net.Config.XmlConfigurator.Configure();
+            LoggerNLog.BasicConfig();
+            LoggerNLog.Register();
 
             using (TestAverageLatencyAlertMonitor testAverageLatencyAlertMonitor = new TestAverageLatencyAlertMonitor()) {
                 testAverageLatencyAlertMonitor.SetUp();

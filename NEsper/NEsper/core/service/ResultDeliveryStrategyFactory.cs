@@ -157,13 +157,14 @@ namespace com.espertech.esper.core.service
                     if (normalized.Length == selectClauseTypes.Length)
                     {
                         var fits = true;
-                        for (var i = 0; i < normalized.Length; i++)
-                        {
-                            var boxedExpressionType = selectClauseTypes[i].GetBoxedType();
-                            var boxedParameterType = normalized[i].GetBoxedType();
-                            if ((boxedExpressionType != null) &&
-                                (!boxedExpressionType.IsAssignmentCompatible(boxedParameterType)))
-                            {
+                        for (var i = 0; i < normalized.Length; i++) {
+                            var parameterType = normalized[i];
+                            var selectClauseType = selectClauseTypes[i];
+                            var boxedExpressionType = selectClauseType.GetBoxedType();
+                            var boxedParameterType = parameterType.GetBoxedType();
+
+                            if (((selectClauseType == null) || (!selectClauseType.IsAssignmentCompatible(parameterType))) &&
+                                ((boxedExpressionType == null) || (!boxedExpressionType.IsAssignmentCompatible(boxedParameterType)))) {
                                 fits = false;
                                 break;
                             }
@@ -444,7 +445,7 @@ namespace com.espertech.esper.core.service
             if (m != null)
             {
                 throw new EPSubscriberException(
-                    "Subscriber 'updateRStream' method footprint must match 'update' method footprint");
+                    "Subscriber 'UpdateRStream' method footprint must match 'Update' method footprint");
             }
         }
 

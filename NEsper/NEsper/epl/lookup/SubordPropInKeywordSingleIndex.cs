@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.epl.expression.core;
 
@@ -18,7 +19,7 @@ namespace com.espertech.esper.epl.lookup
     [Serializable]
     public class SubordPropInKeywordSingleIndex
     {
-        public SubordPropInKeywordSingleIndex(String indexedProp, Type coercionType, ExprNode[] expressions)
+        public SubordPropInKeywordSingleIndex(String indexedProp, Type coercionType, IList<ExprNode> expressions)
         {
             IndexedProp = indexedProp;
             CoercionType = coercionType;
@@ -29,6 +30,6 @@ namespace com.espertech.esper.epl.lookup
 
         public Type CoercionType { get; private set; }
 
-        public ExprNode[] Expressions { get; private set; }
+        public IList<ExprNode> Expressions { get; private set; }
     }
 }

@@ -20,11 +20,11 @@ namespace com.espertech.esper.compat.threading
         /// <summary>
         /// Initializes a new instance of the <see cref="StandardReaderWriterLock"/> class.
         /// </summary>
-        public StandardReaderWriterLock()
+        public StandardReaderWriterLock(int lockTimeout)
         {
             _rwLock = new ReaderWriterLock();
-            ReadLock = new CommonReadLock(this);
-            WriteLock = new CommonWriteLock(this);
+            ReadLock = new CommonReadLock(this, lockTimeout);
+            WriteLock = new CommonWriteLock(this, lockTimeout);
         }
 
         /// <summary>

@@ -8,6 +8,7 @@
 
 
 using com.espertech.esper.epl.core;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.view.internals;
 
 namespace com.espertech.esper.epl.join.@base
@@ -22,7 +23,8 @@ namespace com.espertech.esper.epl.join.@base
         /// Initialize a stream from the stream buffers data.
         /// </summary>
         /// <param name="stream">to initialize and load indexes</param>
-        void PreloadFromBuffer(int stream);
+        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
+        void PreloadFromBuffer(int stream, ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         /// Initialize the result set process for the purpose of grouping and aggregation from the join result set.

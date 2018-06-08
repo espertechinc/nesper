@@ -26,15 +26,9 @@ namespace com.espertech.esper.view.window
         private EventType _eventType;
         private ExprTimePeriodEvalDeltaConstFactory _timeDeltaComputationFactory;
 
-        public ExprTimePeriodEvalDeltaConstFactory TimeDeltaComputationFactory
-        {
-            get { return _timeDeltaComputationFactory; }
-        }
+        public ExprTimePeriodEvalDeltaConstFactory TimeDeltaComputationFactory => _timeDeltaComputationFactory;
 
-        private string ViewParamMessage
-        {
-            get { return ViewName + " view requires a single numeric or time period parameter"; }
-        }
+        private string ViewParamMessage => ViewName + " view requires a single numeric or time period parameter";
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
@@ -46,10 +40,7 @@ namespace com.espertech.esper.view.window
             return new TimeWindowView(agentInstanceViewFactoryContext, this, timeDeltaComputation, randomAccess);
         }
 
-        public EventType EventType
-        {
-            get { return _eventType; }
-        }
+        public EventType EventType => _eventType;
 
         public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
@@ -70,10 +61,7 @@ namespace com.espertech.esper.view.window
             return myView.IsEmpty();
         }
 
-        public string ViewName
-        {
-            get { return "TimeInMillis"; }
-        }
+        public string ViewName => "Time";
 
         public Object MakePreviousGetter()
         {

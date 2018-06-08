@@ -7,25 +7,30 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.methodagg;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.type;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     public class TestExprSumNode : TestExprAggregateNodeAdapter
     {
         private ExprSumNode _sumNode;
-    
+        private IContainer _container;
+
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
+            base.SetUp();
+
+            _container = SupportContainer.Reset();
             _sumNode = new ExprSumNode(false);
     
             ValidatedNodeToTest= MakeNode(5, typeof(int));
@@ -36,17 +41,17 @@ namespace com.espertech.esper.epl.expression
         {
             _sumNode.AddChildNode(new SupportExprNode(typeof(int)));
             SupportExprNodeFactory.Validate3Stream(_sumNode);
-            Assert.AreEqual(typeof(int?), _sumNode.ReturnType);
+            Assert.AreEqual(typeof(int), _sumNode.ReturnType);
     
             _sumNode = new ExprSumNode(false);
             _sumNode.AddChildNode(new SupportExprNode(typeof(float?)));
             SupportExprNodeFactory.Validate3Stream(_sumNode);
-            Assert.AreEqual(typeof(float?), _sumNode.ReturnType);
+            Assert.AreEqual(typeof(float), _sumNode.ReturnType);
     
             _sumNode = new ExprSumNode(false);
             _sumNode.AddChildNode(new SupportExprNode(typeof(short)));
             SupportExprNodeFactory.Validate3Stream(_sumNode);
-            Assert.AreEqual(typeof(int?), _sumNode.ReturnType);
+            Assert.AreEqual(typeof(int), _sumNode.ReturnType);
         }
     
         [Test]
@@ -69,7 +74,7 @@ namespace com.espertech.esper.epl.expression
             // Must have exactly 1 subnodes
             try
             {
-                _sumNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _sumNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException)
@@ -82,7 +87,7 @@ namespace com.espertech.esper.epl.expression
             _sumNode.AddChildNode(new SupportExprNode(typeof(int)));
             try
             {
-                _sumNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _sumNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException)
@@ -94,8 +99,8 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_sumNode.EqualsNode(_sumNode));
-            Assert.IsFalse(_sumNode.EqualsNode(new ExprOrNode()));
+            Assert.IsTrue(_sumNode.EqualsNode(_sumNode, false));
+            Assert.IsFalse(_sumNode.EqualsNode(new ExprOrNode(), false));
         }
 
         [Test]

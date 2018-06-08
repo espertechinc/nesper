@@ -17,15 +17,15 @@ namespace com.espertech.esper.core.thread
     public class InboundUnitSendEvent
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly Object _event;
+        private readonly Object _theEvent;
         private readonly EPRuntimeImpl _runtime;
 
         /// <summary>Ctor. </summary>
-        /// <param name="theEvent">to process</param>
+        /// <param name="theTheEvent">to process</param>
         /// <param name="runtime">to process event</param>
-        public InboundUnitSendEvent(Object theEvent, EPRuntimeImpl runtime)
+        public InboundUnitSendEvent(Object theTheEvent, EPRuntimeImpl runtime)
         {
-            _event = theEvent;
+            _theEvent = theTheEvent;
             _runtime = runtime;
         }
 
@@ -33,10 +33,11 @@ namespace com.espertech.esper.core.thread
         {
             try
             {
-                _runtime.ProcessEvent(_event);
+                _runtime.ProcessEvent(_theEvent);
             }
             catch (Exception e)
             {
+                _runtime.ExceptionHandlingService.HandleInboundPoolException(_runtime.EngineURI, e, _theEvent);
                 Log.Error("Unexpected error processing unwrapped event: " + e.Message, e);
             }
         }

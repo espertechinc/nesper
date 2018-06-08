@@ -35,7 +35,7 @@ namespace com.espertech.esper.core.context.util
                 expected.Add(choice[i].Name);
             }
             String expectedList = CollectionUtil.ToString(expected);
-            String receivedClass = selector.GetType().FullName;
+            String receivedClass = selector.GetType().GetCleanName();
             String message = "Invalid context partition selector, expected an implementation class of any of [" + expectedList + "] interfaces but received " + receivedClass;
             return new InvalidContextPartitionSelector(message);
         }

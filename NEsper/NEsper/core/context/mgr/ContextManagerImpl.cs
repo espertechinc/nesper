@@ -12,7 +12,9 @@ using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.context;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
@@ -39,9 +41,10 @@ namespace com.espertech.esper.core.context.mgr
         private readonly ContextController _rootContext;
         private readonly ContextPartitionIdManager _contextPartitionIdManager;
 
-        public ContextManagerImpl(ContextControllerFactoryServiceContext factoryServiceContext)
+        public ContextManagerImpl(
+            ContextControllerFactoryServiceContext factoryServiceContext)
         {
-            _uLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            _uLock = factoryServiceContext.ServicesContext.LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             _contextName = factoryServiceContext.ContextName;
             _servicesContext = factoryServiceContext.ServicesContext;
             _factory = factoryServiceContext.AgentInstanceContextCreate.StatementContext.ContextControllerFactoryService.GetFactory(factoryServiceContext)[0];
@@ -56,25 +59,13 @@ namespace com.espertech.esper.core.context.mgr
             _contextDescriptor = new ContextDescriptor(_contextName, _factory.IsSingleInstanceContext, registry, resourceRegistryFactory, this, _factory.ContextDetail);
         }
 
-        public int NumNestingLevels
-        {
-            get { return 1; }
-        }
+        public int NumNestingLevels => 1;
 
-        public IDictionary<int, ContextControllerStatementDesc> Statements
-        {
-            get { return _statements; }
-        }
+        public IDictionary<int, ContextControllerStatementDesc> Statements => _statements;
 
-        public ContextDescriptor ContextDescriptor
-        {
-            get { return _contextDescriptor; }
-        }
+        public ContextDescriptor ContextDescriptor => _contextDescriptor;
 
-        public ContextStateCache ContextStateCache
-        {
-            get { return _factory.StateCache; }
-        }
+        public ContextStateCache ContextStateCache => _factory.StateCache;
 
         public void AddStatement(ContextControllerStatementBase statement, bool isRecoveringResilient)
         {

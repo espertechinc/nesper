@@ -7,22 +7,21 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.example.qos_sla.eventbean;
+using NEsper.Examples.QoS_SLA.eventbean;
 
-namespace com.espertech.esper.example.qos_sla.monitor
+namespace NEsper.Examples.QoS_SLA.monitor
 {
     public class ServiceHealthMonitor
     {
         public ServiceHealthMonitor()
         {
-            EPAdministrator admin = EPServiceProviderManager.GetDefaultProvider().EPAdministrator;
+            var admin = EPServiceProviderManager.GetDefaultProvider().EPAdministrator;
 
-            String eventBean = typeof(OperationMeasurement).FullName;
+            var eventBean = typeof(OperationMeasurement).FullName;
 
-            EPStatement statView = admin.CreatePattern("every (" +
+            var statView = admin.CreatePattern("every (" +
                     eventBean + "(success=false)->" +
                     eventBean + "(success=false)->" +
                     eventBean + "(success=false))");

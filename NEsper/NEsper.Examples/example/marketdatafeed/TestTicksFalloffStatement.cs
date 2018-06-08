@@ -7,14 +7,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
+using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.client.time;
+using com.espertech.esper.compat.container;
 
 using NUnit.Framework;
 
-using com.espertech.esper.client;
-using com.espertech.esper.client.time;
-
-namespace com.espertech.esper.example.marketdatafeed
+namespace NEsper.Examples.MarketDataFeed
 {
 	[TestFixture]
 	public class TestTicksFalloffStatement : IDisposable
@@ -23,13 +24,18 @@ namespace com.espertech.esper.example.marketdatafeed
 	    private SupportUpdateListener _listener;
 	
 	    [SetUp]
-	    public void SetUp() {
-	        Configuration configuration = new Configuration();
+	    public void SetUp()
+	    {
+	        var container = ContainerExtensions.CreateDefaultContainer()
+	            .InitializeDefaultServices()
+	            .InitializeDatabaseDrivers();
+
+	        var configuration = new Configuration(container);
             configuration.EngineDefaults.Threading.IsInternalTimerEnabled = false;
 	        configuration.AddEventType("MarketDataEvent", typeof(MarketDataEvent).FullName);
             configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 
-	        _epService = EPServiceProviderManager.GetProvider("TestTicksPerSecondStatement", configuration);
+	        _epService = EPServiceProviderManager.GetProvider(container, "TestTicksPerSecondStatement", configuration);
 	        _epService.Initialize();
 	        _epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
 	
@@ -80,7 +86,7 @@ namespace com.espertech.esper.example.marketdatafeed
 	    {
             Assert.IsTrue(_listener.IsInvoked);
 	        Assert.AreEqual(1, _listener.LastNewData.Length);
-	        EventBean eventBean = _listener.LastNewData[0];
+	        var eventBean = _listener.LastNewData[0];
 	        Assert.AreEqual(feedEnum, eventBean["feed"]);
 	        Assert.AreEqual(average, eventBean["avgCnt"]);
 	        Assert.AreEqual(count, eventBean["feedCnt"]);
@@ -95,7 +101,7 @@ namespace com.espertech.esper.example.marketdatafeed
 	
 	    private void send(FeedEnum feedEnum, int numEvents)
 	    {
-	        for (int i = 0; i < numEvents; i++)
+	        for (var i = 0; i < numEvents; i++)
 	        {
 	            _epService.EPRuntime.SendEvent(new MarketDataEvent("CSC", feedEnum));
 	        }

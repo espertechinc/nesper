@@ -10,10 +10,7 @@ using System;
 
 using NUnit.Framework;
 
-using com.espertech.esper.client;
-using com.espertech.esper.client.time;
-
-namespace com.espertech.esper.example.marketdatafeed
+namespace NEsper.Examples.MarketDataFeed
 {
 	[TestFixture]
 	public class TestFeedSimMain : IDisposable
@@ -21,7 +18,7 @@ namespace com.espertech.esper.example.marketdatafeed
 		[Test]
 		public void TestRun()
 	    {
-            FeedSimMain main = new FeedSimMain(100, 50, 5, false, "FeedSimMain");
+            var main = new FeedSimMain(100, 50, 5, false, "FeedSimMain");
 	        main.Run();
 	    }
 

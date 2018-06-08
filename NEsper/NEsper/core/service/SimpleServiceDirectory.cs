@@ -10,7 +10,9 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.core
@@ -21,16 +23,16 @@ namespace com.espertech.esper.core
 
 	public class SimpleServiceDirectory : Directory
 	{
-		private IDictionary<string,object> m_dataTable ;
-        private ILockable m_dataLock;
+		private IDictionary<string,object> _dataTable ;
+        private readonly ILockable _dataLock;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleServiceDirectory"/> class.
         /// </summary>
-		public SimpleServiceDirectory()
+		public SimpleServiceDirectory(ILockManager lockManager)
 		{
-			m_dataTable = new Dictionary<string,object>() ;
-            m_dataLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+			_dataTable = new Dictionary<string,object>() ;
+            _dataLock = lockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		}
 
         /// <summary>
@@ -40,9 +42,9 @@ namespace com.espertech.esper.core
         /// <returns></returns>
 		public object Lookup(string name)
 		{
-			using(m_dataLock.Acquire())
+			using(_dataLock.Acquire())
 			{
-				return m_dataTable.Get( name ) ;
+				return _dataTable.Get( name ) ;
 			}
 		}
 
@@ -54,17 +56,17 @@ namespace com.espertech.esper.core
         /// <param name="obj"></param>
 		public void Bind(string name, object obj)
 		{
-			using(m_dataLock.Acquire())
+			using(_dataLock.Acquire())
 			{
 #if true
-			    m_dataTable[name] = obj;
+			    _dataTable[name] = obj;
 #else
-                if ( m_dataTable.ContainsKey( name ) )
+                if ( _dataTable.ContainsKey( name ) )
 				{
 					throw new DirectoryException( "Value '" + name + "' was already bound" ) ;
 				}
 				
-				m_dataTable[name] = obj ;
+				_dataTable[name] = obj ;
 #endif
 			}
 		}
@@ -77,9 +79,9 @@ namespace com.espertech.esper.core
         /// <param name="obj"></param>
 		public void Rebind(string name, object obj)
 		{
-			using(m_dataLock.Acquire())
+			using(_dataLock.Acquire())
 			{
-				m_dataTable[name] = obj;
+				_dataTable[name] = obj;
 			}
 		}
 
@@ -89,9 +91,9 @@ namespace com.espertech.esper.core
         /// <param name="name"></param>
 		public void Unbind(string name)
 		{
-			using(m_dataLock.Acquire())
+			using(_dataLock.Acquire())
 			{
-				m_dataTable.Remove( name ) ;
+				_dataTable.Remove( name ) ;
 			}
 		}
 
@@ -102,21 +104,21 @@ namespace com.espertech.esper.core
         /// <param name="newName"></param>
 		public void Rename(string oldName, string newName)
 		{
-			using(m_dataLock.Acquire())
+			using(_dataLock.Acquire())
 			{
-				object tempObj = m_dataTable.Get( oldName );
+				object tempObj = _dataTable.Get( oldName );
 				if ( tempObj == null )
 				{
 					throw new DirectoryException( "Value '" + oldName + "' was not found" ) ;
 				}
 				
-				if ( m_dataTable.ContainsKey( newName ) )
+				if ( _dataTable.ContainsKey( newName ) )
 				{
 					throw new DirectoryException( "Value '" + newName + "' was already bound" ) ;
 				}
 				
-				m_dataTable.Remove(oldName) ;
-				m_dataTable[newName] = tempObj;				
+				_dataTable.Remove(oldName) ;
+				_dataTable[newName] = tempObj;				
 			}
 		}
 
@@ -127,7 +129,7 @@ namespace com.espertech.esper.core
         /// <returns></returns>
 		public IEnumerator<string> List(string name)
 		{
-		    return m_dataTable.Keys.GetEnumerator();
+		    return _dataTable.Keys.GetEnumerator();
 		}
 
         /// <summary>
@@ -135,7 +137,7 @@ namespace com.espertech.esper.core
         /// </summary>
 		public void Dispose()
 		{
-			m_dataTable = null ;
+			_dataTable = null ;
 		}
 	}
 }

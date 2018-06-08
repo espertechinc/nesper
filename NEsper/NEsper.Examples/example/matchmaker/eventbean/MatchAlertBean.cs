@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-namespace NEsper.Example.MatchMaker.eventbean
+namespace NEsper.Examples.MatchMaker.eventbean
 {
     public class MatchAlertBean
     {

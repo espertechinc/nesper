@@ -75,7 +75,7 @@ namespace com.espertech.esper.epl.expression.baseagg
             get { return false; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             return false;
         }

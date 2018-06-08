@@ -285,9 +285,9 @@ namespace com.espertech.esper.compat.timers
                         long currTickCount = DateTime.Now.Ticks;
                         long currDelta = lTickAlign - currTickCount;
 
-                        //Console.WriteLine("Curr: {0} {1} {2}", currDelta, currTickCount, Environment.TickCount);
+                        //Log.Info("Curr: {0} {1} {2}", currDelta, currTickCount, Environment.TickCount);
 
-                        while(currDelta > INTERNAL_CLOCK_SLIP)
+                        while (currDelta > INTERNAL_CLOCK_SLIP)
                         {
                             if (currDelta >= 600000)
                                 Thread.Sleep(1); // force-yield quanta
@@ -297,7 +297,7 @@ namespace com.espertech.esper.compat.timers
                             currTickCount = DateTime.Now.Ticks;
                             currDelta = lTickAlign - currTickCount;
 
-                            //Console.WriteLine("Curr: {0} {1} {2}", currDelta, currTickCount, Environment.TickCount);
+                            //Log.Info("Curr: {0} {1} {2}", currDelta, currTickCount, Environment.TickCount);
                         }
 
                         lTickAlign += lTickPeriod;

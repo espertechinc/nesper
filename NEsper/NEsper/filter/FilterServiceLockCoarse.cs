@@ -10,18 +10,23 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.filter
 {
     public sealed class FilterServiceLockCoarse : FilterServiceBase
     {
-        private readonly IReaderWriterLock _iLock =
-            ReaderWriterLockManager.CreateDefaultLock();
+        private readonly IReaderWriterLock _iLock;
 
-        public FilterServiceLockCoarse(bool allowIsolation)
-            : base(FilterServiceGranularLockFactoryNone.Instance, allowIsolation)
+        public FilterServiceLockCoarse(
+            ILockManager lockManager, 
+            IReaderWriterLockManager rwLockManager,
+            bool allowIsolation)
+            : base(lockManager, FilterServiceGranularLockFactoryNone.Instance, allowIsolation)
         {
+            _iLock = rwLockManager.CreateLock(GetType());
         }
 
         public override ILockable WriteLock

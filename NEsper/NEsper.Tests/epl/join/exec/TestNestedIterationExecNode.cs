@@ -46,10 +46,10 @@ namespace com.espertech.esper.epl.join.exec
             _streamEvents[3] = SupportEventBeanFactory.MakeEvents_D(new String[] {"d1", "d2"});
     
             // Fill with data
-            indexes[0].Add(_streamEvents[0]);
-            indexes[1].Add(_streamEvents[1]);
-            indexes[2].Add(_streamEvents[2]);
-            indexes[3].Add(_streamEvents[3]);
+            indexes[0].Add(_streamEvents[0], null);
+            indexes[1].Add(_streamEvents[1], null);
+            indexes[2].Add(_streamEvents[2], null);
+            indexes[3].Add(_streamEvents[3], null);
         }
     
         [Test]

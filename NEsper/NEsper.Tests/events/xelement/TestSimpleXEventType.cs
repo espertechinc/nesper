@@ -9,10 +9,11 @@
 using System.Xml.Linq;
 using System.Xml.XPath;
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.events.xml;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.xelement
@@ -47,17 +48,20 @@ namespace com.espertech.esper.events.xelement
                                    "</simpleEvent>";
 
         private EventBean _event;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             var simpleDoc = XDocument.Parse(Xml);
 
             var config = new ConfigurationEventTypeXMLDOM();
             config.RootElementName = "simpleEvent";
             config.AddXPathProperty("customProp", "count(/simpleEvent/nested3/nested4)", XPathResultType.Number);
 
-            var eventType = new SimpleXElementType(null, 1, config, SupportEventAdapterService.Service);
+            var eventType = new SimpleXElementType(null, 1, config, _container.Resolve<EventAdapterService>(), _container.LockManager());
             _event = new XEventBean(simpleDoc.Root, eventType);
         }
 

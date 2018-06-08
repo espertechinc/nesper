@@ -7,6 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.filter
 {
@@ -15,18 +17,34 @@ namespace com.espertech.esper.filter
 	/// </summary>
 	public sealed class FilterServiceProvider
 	{
-		/// <summary> Creates an implementation of the FilterEvaluationService interface.</summary>
-		/// <returns> implementation
-		/// </returns>
-        public static FilterServiceSPI NewService(ConfigurationEngineDefaults.FilterServiceProfile filterServiceProfile, bool allowIsolation)
+	    public static FilterServiceSPI NewService(
+            IContainer container,
+	        ConfigurationEngineDefaults.FilterServiceProfile filterServiceProfile,
+	        bool allowIsolation)
+	    {
+	        return NewService(
+	            container.LockManager(),
+	            container.RWLockManager(),
+	            filterServiceProfile,
+	            allowIsolation);
+	    }
+
+        /// <summary> Creates an implementation of the FilterEvaluationService interface.</summary>
+        /// <returns> implementation
+        /// </returns>
+        public static FilterServiceSPI NewService(
+            ILockManager lockManager,
+            IReaderWriterLockManager rwLockManager,
+		    ConfigurationEngineDefaults.FilterServiceProfile filterServiceProfile, 
+		    bool allowIsolation)
         {
             if (filterServiceProfile == ConfigurationEngineDefaults.FilterServiceProfile.READMOSTLY)
             {
-                return new FilterServiceLockCoarse(allowIsolation);
+                return new FilterServiceLockCoarse(lockManager, rwLockManager, allowIsolation);
             }
             else
             {
-                return new FilterServiceLockFine(allowIsolation);
+                return new FilterServiceLockFine(lockManager, rwLockManager, allowIsolation);
             }
         }
 	}

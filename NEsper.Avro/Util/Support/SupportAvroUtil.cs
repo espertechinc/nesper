@@ -16,6 +16,7 @@ using Avro.Generic;
 using Avro.IO;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.events;
 using com.espertech.esper.events.avro;
@@ -122,12 +123,15 @@ namespace NEsper.Avro.Util.Support
             return GetAvroSchema(epService.EPAdministrator.Configuration.GetEventType(eventTypeName));
         }
 
-        public static AvroEventType MakeAvroSupportEventType(Schema schema)
+        public static AvroEventType MakeAvroSupportEventType(EventAdapterService eventAdapterService, Schema schema)
         {
             var metadata = EventTypeMetadata.CreateNonPonoApplicationType(
                     ApplicationType.AVRO, "typename", true, true, true, false, false);
             return new AvroEventType(
-                metadata, "typename", 1, SupportEventAdapterService.Service, schema.AsRecordSchema(), null, null, null, null);
+                metadata, "typename", 1, 
+                eventAdapterService,
+                schema.AsRecordSchema(),
+                null, null, null, null);
         }
 
         private static void AddSchemaFieldNames(ISet<string> names, Schema schema)

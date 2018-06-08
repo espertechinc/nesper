@@ -13,6 +13,7 @@ using System.IO;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.visitor;
@@ -24,6 +25,7 @@ namespace com.espertech.esper.epl.agg.rollup
     public class GroupByExpressionHelper
     {
         public static GroupByClauseExpressions GetGroupByRollupExpressions(
+            IContainer container,
             IList<GroupByClauseElement> groupByElements,
             SelectClauseSpecRaw selectClauseSpec,
             ExprNode optionalHavingNode,
@@ -45,7 +47,7 @@ namespace com.espertech.esper.epl.agg.rollup
                 for (var i = 0; i < distinctGroupByExpressions.Count; i++) {
                     ExprNode other = distinctGroupByExpressions[i];
                     // find same expression
-                    if (ExprNodeUtility.DeepEquals(exprNode, other)) {
+                    if (ExprNodeUtility.DeepEquals(exprNode, other, false)) {
                         expressionToIndex.Put(exprNode, i);
                         found = true;
                         break;
@@ -147,7 +149,7 @@ namespace com.espertech.esper.epl.agg.rollup
                         throw new ExprValidationException("Group-by with rollup requires that the select-clause does not use wildcard");
                     }
                     var compiled = (SelectClauseExprRawSpec) selectRaw;
-                    selects[i][j] = CopyVisitExpression(compiled.SelectExpression, visitor);
+                    selects[i][j] = CopyVisitExpression(container, compiled.SelectExpression, visitor);
                 }
             }
     
@@ -156,7 +158,7 @@ namespace com.espertech.esper.epl.agg.rollup
             if (optionalHavingNode != null) {
                 optHavingNodeCopy = new ExprNode[numberOfLevels];
                 for (var i = 0; i < numberOfLevels; i++) {
-                    optHavingNodeCopy[i] = CopyVisitExpression(optionalHavingNode, visitor);
+                    optHavingNodeCopy[i] = CopyVisitExpression(container, optionalHavingNode, visitor);
                 }
             }
     
@@ -169,7 +171,7 @@ namespace com.espertech.esper.epl.agg.rollup
                     for (var j = 0; j < orderByList.Count; j++)
                     {
                         OrderByItem element = orderByList[j];
-                        optOrderByCopy[i][j] = CopyVisitExpression(element.ExprNode, visitor);
+                        optOrderByCopy[i][j] = CopyVisitExpression(container, element.ExprNode, visitor);
                     }
                 }
             }
@@ -240,9 +242,9 @@ namespace com.espertech.esper.epl.agg.rollup
             }
         }
     
-        private static ExprNode CopyVisitExpression(ExprNode expression, ExprNodeSubselectDeclaredDotVisitor visitor) {
+        private static ExprNode CopyVisitExpression(IContainer container, ExprNode expression, ExprNodeSubselectDeclaredDotVisitor visitor) {
             try {
-                var node = (ExprNode) SerializableObjectCopier.Copy(expression);
+                var node = (ExprNode) SerializableObjectCopier.Copy(container, expression);
                 node.Accept(visitor);
                 return node;
             } catch (Exception e) {

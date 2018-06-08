@@ -6,37 +6,23 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using com.espertech.esper.compat;
 
-namespace com.espertech.esper.example.atm
+namespace NEsper.Examples.ATM
 {
 	public class Withdrawal
 	{
-	    private long accountNumber;
-	    private int amount;
-	    private long timestamp;
-	
 	    public Withdrawal(long accountNumber, int amount)
 	    {
-	        this.accountNumber = accountNumber;
-	        this.amount = amount;
-	        timestamp = DateTimeHelper.CurrentTimeMillis;;
+	        AccountNumber = accountNumber;
+	        Amount = amount;
+	        Timestamp = DateTimeHelper.CurrentTimeMillis;
 	    }
 	
-	    public long AccountNumber
-	    {
-	    	get { return accountNumber; }
-	    }
-	
-	    public int Amount
-	    {
-	    	get { return amount; }
-	    }
-	
-	    public long Timestamp
-	    {
-	    	get { return timestamp; }
-	    }
+	    public long AccountNumber { get; }
+
+	    public int Amount { get; }
+
+	    public long Timestamp { get; }
 	}
 }

@@ -49,7 +49,7 @@ namespace com.espertech.esper.epl.table.upd
             foreach (string affectedIndexName in _affectedIndexNames)
             {
                 EventTable index = instance.GetIndex(affectedIndexName);
-                index.Remove(events);
+                index.Remove(events, exprEvaluatorContext);
             }
 
             // copy event data, since we are updating unique keys and must guarantee rollback (no half update)
@@ -84,17 +84,17 @@ namespace com.espertech.esper.epl.table.upd
                 foreach (string affectedIndexName in _affectedIndexNames)
                 {
                     EventTable index = instance.GetIndex(affectedIndexName);
-                    index.Add(events);
+                    index.Add(events, exprEvaluatorContext);
                 }
             }
-            catch (EPException ex)
+            catch (EPException)
             {
                 // rollback
                 // remove updated events
                 foreach (string affectedIndexName in _affectedIndexNames)
                 {
                     EventTable index = instance.GetIndex(affectedIndexName);
-                    index.Remove(events);
+                    index.Remove(events, exprEvaluatorContext);
                 }
                 // rollback change to events
                 for (int i = 0; i < events.Length; i++)
@@ -106,9 +106,9 @@ namespace com.espertech.esper.epl.table.upd
                 foreach (string affectedIndexName in _affectedIndexNames)
                 {
                     EventTable index = instance.GetIndex(affectedIndexName);
-                    index.Add(events);
+                    index.Add(events, exprEvaluatorContext);
                 }
-                throw ex;
+                throw;
             }
         }
     }

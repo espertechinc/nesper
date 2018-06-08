@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.type;
@@ -118,15 +119,37 @@ namespace com.espertech.esper.epl.spec
     
         private void TopValidate(ExprNode exprNode, ExprEvaluatorContext exprEvaluatorContext)
         {
-            try
-            {
-                var validationContext = new ExprValidationContext(null, null, null, null, null, null, null, exprEvaluatorContext, null, null, -1, null, null, null, false, false, false, false, null, false);
+            try {
+                var container = exprEvaluatorContext != null
+                    ? FallbackContainer.GetInstance(exprEvaluatorContext.Container)
+                    : FallbackContainer.GetInstance();
+                                
+                var validationContext = new ExprValidationContext(
+                    container,
+                    null, null, null,
+                    null, null, null, 
+                    null, exprEvaluatorContext, null,
+                    null, -1, null,
+                    null, null, 
+                    false, false, false, false, null, false);
                 exprNode.Validate(validationContext);
             }
-            catch (ExprValidationException e)
+            catch (ExprValidationException)
             {
                 throw new IllegalStateException("Failed to make representative node for outer join criteria");
             }
+        }
+
+        public static bool HasOnClauses(OuterJoinDesc[] outerJoinDescList)
+        {
+            foreach (OuterJoinDesc desc in outerJoinDescList)
+            {
+                if (desc.OptLeftNode != null)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

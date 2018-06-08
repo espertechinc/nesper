@@ -36,8 +36,8 @@ namespace com.espertech.esper.compat.collections
 		
 		protected IDictionary<K,V> SubDictionary
 		{
-			get { return _subDictionary ; }
-			set { _subDictionary = value ; }
+			get => _subDictionary;
+		    set { _subDictionary = value ; }
 		}
 		
 		/// <summary>
@@ -233,53 +233,36 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <value></value>
         /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the keys of the object that : <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</returns>
-		public ICollection<K> Keys {
-			get {
-        		return 
-        			_nullEntry == null
-        			? _subDictionary.Keys
-        			: new CollectionPlus<K>( _subDictionary.Keys, _nullEntry.Value.Key );
-        	}
-		}
+		public ICollection<K> Keys => _nullEntry == null
+            ? _subDictionary.Keys
+            : new CollectionPlus<K>( _subDictionary.Keys, _nullEntry.Value.Key );
 
-        /// <summary>
+	    /// <summary>
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.
         /// </summary>
         /// <value></value>
         /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the values in the object that : <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</returns>
-		public ICollection<V> Values {
-			get {
-        		return
-        			_nullEntry == null
-        			? _subDictionary.Values
-        			: new CollectionPlus<V>( _subDictionary.Values, _nullEntry.Value.Value ) ;
-        	}
-		}
+		public ICollection<V> Values => _nullEntry == null
+	        ? _subDictionary.Values
+	        : new CollectionPlus<V>( _subDictionary.Values, _nullEntry.Value.Value );
 
-        /// <summary>
+	    /// <summary>
         /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
         /// </summary>
         /// <value></value>
         /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
-		public int Count {
-			get {
-        		return
-        			_nullEntry == null 
-        			? _subDictionary.Count 
-        			: _subDictionary.Count + 1 ;
-        	}
-		}
+		public int Count => _nullEntry == null 
+	        ? _subDictionary.Count 
+	        : _subDictionary.Count + 1;
 
-        /// <summary>
+	    /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
         /// </summary>
         /// <value></value>
         /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
-		public bool IsReadOnly {
-			get { return _subDictionary.IsReadOnly ; }
-		}
+		public bool IsReadOnly => _subDictionary.IsReadOnly;
 
-        /// <summary>
+	    /// <summary>
         /// Determines whether the <see cref="T:System.Collections.Generic.IDictionary`2"></see> contains an element with the specified key.
         /// </summary>
         /// <param name="key">The key to locate in the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</param>

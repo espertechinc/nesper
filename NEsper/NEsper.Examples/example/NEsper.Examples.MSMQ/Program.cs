@@ -12,6 +12,7 @@ using System.Xml.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 
 namespace NEsper.Examples.MSMQ
 {
@@ -56,8 +57,10 @@ namespace NEsper.Examples.MSMQ
         {
             _random = new Random();
 
+            var container = ContainerExtensions.CreateDefaultContainer();
+
             // Creates a statement that looks for market data events.
-            var configuration = new Configuration();
+            var configuration = new Configuration(container);
             configuration.AddEventType<MarketDataTrade>();
             configuration.AddEventType<EndOfTest>();
             // set to true to decouple event processing from msmq latency

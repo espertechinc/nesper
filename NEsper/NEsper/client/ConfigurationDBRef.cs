@@ -13,6 +13,7 @@ using System.Data;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.client
@@ -26,51 +27,51 @@ namespace com.espertech.esper.client
     [Serializable]
     public class ConfigurationDBRef
     {
-        private ConnectionFactoryDesc connectionFactoryDesc;
-        private readonly ConnectionSettings connectionSettings;
-        private ConnectionLifecycleEnum connectionLifecycleEnum;
-        private ConfigurationDataCache dataCacheDesc;
-        private MetadataOriginEnum metadataOrigin;
-        private ColumnChangeCaseEnum columnChangeCase;
-        private readonly IDictionary<Type, Type> dataTypeMapping;
+        private ConnectionFactoryDesc _connectionFactoryDesc;
+        private readonly ConnectionSettings _connectionSettings;
+        private ConnectionLifecycleEnum _connectionLifecycleEnum;
+        private ConfigurationDataCache _dataCacheDesc;
+        private MetadataOriginEnum _metadataOrigin;
+        private ColumnChangeCaseEnum _columnChangeCase;
+        private readonly IDictionary<Type, Type> _dataTypeMapping;
 
         /// <summary>
         /// Gets or sets the auto-commit connection settings for new connections to this database.
         /// </summary>
 
-        virtual public bool? ConnectionAutoCommit
+        public virtual bool? ConnectionAutoCommit
         {
-            get { return connectionSettings.AutoCommit ; }
-            set { connectionSettings.AutoCommit = value; }
+            get => _connectionSettings.AutoCommit;
+            set => _connectionSettings.AutoCommit = value;
         }
 
         /// <summary>
         /// Gets or sets the transaction isolation level on new connections created for this database.
         /// </summary>
 
-        virtual public IsolationLevel ConnectionTransactionIsolation
+        public virtual IsolationLevel ConnectionTransactionIsolation
         {
-            get { return connectionSettings.TransactionIsolation.GetValueOrDefault(); }
-            set { connectionSettings.TransactionIsolation = value; }
+            get => _connectionSettings.TransactionIsolation.GetValueOrDefault();
+            set => _connectionSettings.TransactionIsolation = value;
         }
 
         /// <summary>
         /// Gets or sets the catalog name for new connections created for this database.
         /// </summary>
 
-        virtual public String ConnectionCatalog
+        public virtual String ConnectionCatalog
         {
-            get { return connectionSettings.Catalog; }
-            set { connectionSettings.Catalog = value; }
+            get => _connectionSettings.Catalog;
+            set => _connectionSettings.Catalog = value;
         }
 
         /// <summary>
         /// Gets or sets the LRU cache to a given size for the database.
         /// </summary>
 
-        virtual public int LRUCache
+        public virtual int LRUCache
         {
-            set { dataCacheDesc = new ConfigurationLRUCache(value); }
+            set => _dataCacheDesc = new ConfigurationLRUCache(value);
         }
 
         /// <summary>
@@ -79,31 +80,36 @@ namespace com.espertech.esper.client
 
         public ConfigurationDBRef()
         {
-            connectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;
-            connectionSettings = new ConnectionSettings();
-            metadataOrigin = MetadataOriginEnum.DEFAULT;
-            columnChangeCase = ColumnChangeCaseEnum.NONE;
-            dataTypeMapping = new Dictionary<Type, Type>();
+            _connectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;
+            _connectionSettings = new ConnectionSettings();
+            _metadataOrigin = MetadataOriginEnum.DEFAULT;
+            _columnChangeCase = ColumnChangeCaseEnum.NONE;
+            _dataTypeMapping = new Dictionary<Type, Type>();
         }
 
         /// <summary>
         /// Sets the database provider connection.
         /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="driverName">Name of the driver.</param>
         /// <param name="properties">The properties.</param>
 
-        public void SetDatabaseDriver(String driverName, Properties properties)
+        public void SetDatabaseDriver(IContainer container, String driverName, Properties properties)
         {
-            connectionFactoryDesc = new DbDriverFactoryConnection(driverName, properties);
+            var driver = DbDriverFactoryConnection.ResolveDriverFromName(
+                container, driverName);
+            driver.Properties = properties;
+
+            _connectionFactoryDesc = new DbDriverFactoryConnection(driver);
         }
 
         /// <summary>
         /// Sets the database driver.
         /// </summary>
         /// <param name="dbDriverFactoryConnection">The db driver factory connection.</param>
-        public void SetDatabaseDriver( DbDriverFactoryConnection dbDriverFactoryConnection )
+        public void SetDatabaseDriver(DbDriverFactoryConnection dbDriverFactoryConnection)
         {
-            connectionFactoryDesc = dbDriverFactoryConnection;    
+            _connectionFactoryDesc = dbDriverFactoryConnection;    
         }
 
         /// <summary>
@@ -113,28 +119,28 @@ namespace com.espertech.esper.client
         /// <param name="properties">The properties.</param>
         public void SetDatabaseDriver(DbDriverFactoryConnection dbDriverFactoryConnection, Properties properties)
         {
-            connectionFactoryDesc = new DbDriverFactoryConnection(
-                dbDriverFactoryConnection.Driver.GetType(),
-                properties);
+            _connectionFactoryDesc = new DbDriverFactoryConnection(
+                dbDriverFactoryConnection.Driver);
         }
 
         /// <summary>
         /// Sets the database driver.
         /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="dbSpecification">The db specification.</param>
-        public void SetDatabaseDriver(DbDriverConfiguration dbSpecification)
+        public void SetDatabaseDriver(IContainer container, DbDriverConfiguration dbSpecification)
         {
-            connectionFactoryDesc = new DbDriverFactoryConnection(dbSpecification);
+            var driver = DbDriverFactoryConnection.ResolveDriverFromName(container, dbSpecification.DriverName);
+            driver.Properties = dbSpecification.Properties;
+
+            _connectionFactoryDesc = new DbDriverFactoryConnection(driver);
         }
 
         /// <summary> Returns the connection settings for this database.</summary>
         /// <returns> connection settings
         /// </returns>
 
-        public virtual ConnectionSettings ConnectionSettings
-        {
-            get { return connectionSettings; }
-        }
+        public virtual ConnectionSettings ConnectionSettings => _connectionSettings;
 
         /// <summary>
         /// Gets or sets the setting to control whether a new connection is obtained
@@ -145,8 +151,8 @@ namespace com.espertech.esper.client
 
         public virtual ConnectionLifecycleEnum ConnectionLifecycle
         {
-            get { return connectionLifecycleEnum; }
-            set { connectionLifecycleEnum = value; }
+            get => _connectionLifecycleEnum;
+            set => _connectionLifecycleEnum = value;
         }
 
         /// <summary>
@@ -155,8 +161,8 @@ namespace com.espertech.esper.client
 
         public virtual ConnectionFactoryDesc ConnectionFactoryDesc
         {
-            get { return connectionFactoryDesc; }
-            set { connectionFactoryDesc = value; }
+            get => _connectionFactoryDesc;
+            set => _connectionFactoryDesc = value;
         }
 
         /// <summary>
@@ -173,7 +179,7 @@ namespace com.espertech.esper.client
 
         public virtual void SetExpiryTimeCache(double maxAgeSeconds, double purgeIntervalSeconds)
         {
-            dataCacheDesc = new ConfigurationExpiryTimeCache(maxAgeSeconds, purgeIntervalSeconds, ConfigurationCacheReferenceTypeHelper.GetDefault());
+            _dataCacheDesc = new ConfigurationExpiryTimeCache(maxAgeSeconds, purgeIntervalSeconds, ConfigurationCacheReferenceTypeHelper.GetDefault());
         }
 
         /// <summary>
@@ -185,16 +191,13 @@ namespace com.espertech.esper.client
         /// <param name="cacheReferenceType">specifies the reference type to use</param>
         public virtual void SetExpiryTimeCache(double maxAgeSeconds, double purgeIntervalSeconds, ConfigurationCacheReferenceType cacheReferenceType)
         {
-            dataCacheDesc = new ConfigurationExpiryTimeCache(maxAgeSeconds, purgeIntervalSeconds, cacheReferenceType);
+            _dataCacheDesc = new ConfigurationExpiryTimeCache(maxAgeSeconds, purgeIntervalSeconds, cacheReferenceType);
         }
 
         /// <summary>
         /// Gets a query result data cache descriptor.
         /// </summary>
-        public virtual ConfigurationDataCache DataCacheDesc
-        {
-            get { return dataCacheDesc; }
-        }
+        public virtual ConfigurationDataCache DataCacheDesc => _dataCacheDesc;
 
         /// <summary>
         /// Adds the SQL types binding.
@@ -209,17 +212,14 @@ namespace com.espertech.esper.client
                 String supported = DatabaseTypeEnum.Values.Render();
                 throw new ConfigurationException("Unsupported type '" + desiredType.FullName + "' when expecting any of: " + supported);
             }
-            this.dataTypeMapping[sqlType] = desiredType;
+            this._dataTypeMapping[sqlType] = desiredType;
         }
 
         /// <summary>
         /// Returns the mapping of types that the engine must perform
         /// when receiving output columns of that sql types.
         /// </summary>
-        public IDictionary<Type, Type> DataTypeMapping
-        {
-            get { return dataTypeMapping; }
-        }
+        public IDictionary<Type, Type> DataTypeMapping => _dataTypeMapping;
 
         /// <summary>
         /// Returns an enumeration indicating how the engine retrieves metadata about the columns
@@ -229,10 +229,7 @@ namespace com.espertech.esper.client
         /// event type and perform expression type checking.
         /// </summary>
         /// <returns>indication how to retrieve metadata</returns>
-        public MetadataOriginEnum MetadataRetrievalEnum
-        {
-            get { return metadataOrigin; }
-        }
+        public MetadataOriginEnum MetadataRetrievalEnum => _metadataOrigin;
 
         /// <summary>
         /// Gets and sets an indicator that indicates how the engine should retrieve
@@ -244,8 +241,8 @@ namespace com.espertech.esper.client
         /// </summary>
         public MetadataOriginEnum MetadataOrigin
         {
-            get { return metadataOrigin; }
-            set { metadataOrigin = value; }
+            get => _metadataOrigin;
+            set => _metadataOrigin = value;
         }
 
         /// <summary>
@@ -256,8 +253,8 @@ namespace com.espertech.esper.client
         /// <returns>change case enums</returns>
         public ColumnChangeCaseEnum ColumnChangeCase
         {
-            get { return columnChangeCase; }
-            set { columnChangeCase = value; }
+            get => _columnChangeCase;
+            set => _columnChangeCase = value;
         }
 
         /// <summary>

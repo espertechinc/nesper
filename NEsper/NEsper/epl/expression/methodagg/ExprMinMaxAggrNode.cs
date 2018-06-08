@@ -23,18 +23,19 @@ namespace com.espertech.esper.epl.expression.methodagg
     public class ExprMinMaxAggrNode : ExprAggregateNodeBase
     {
         private readonly MinMaxTypeEnum _minMaxTypeEnum;
-        private readonly bool _hasFilter;
+        private readonly bool _isFFunc;
         private readonly bool _isEver;
-    
-        public ExprMinMaxAggrNode(bool distinct, MinMaxTypeEnum minMaxTypeEnum, bool hasFilter, bool isEver)
+        private bool _hasFilter;
+
+        public ExprMinMaxAggrNode(bool distinct, MinMaxTypeEnum minMaxTypeEnum, bool isFFunc, bool isEver)
             : base(distinct)
         {
             _minMaxTypeEnum = minMaxTypeEnum;
-            _hasFilter = hasFilter;
+            _isFFunc = isFFunc;
             _isEver = isEver;
         }
     
-        public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             var positionalParams = PositionalParams;
             if (positionalParams.Length == 0 || positionalParams.Length > 2) {
@@ -53,46 +54,40 @@ namespace com.espertech.esper.epl.expression.methodagg
                 }
             }
     
-            if (_hasFilter) {
+            if (_isFFunc) {
                 if (positionalParams.Length < 2) {
                     throw new ExprValidationException(_minMaxTypeEnum.ToString() + "-filtered aggregation function must have a filter expression as a second parameter");
                 }
                 base.ValidateFilter(positionalParams[1].ExprEvaluator);
             }
-            return validationContext.EngineImportService.AggregationFactoryFactory.MakeMinMax(validationContext.StatementExtensionSvcContext, this, child.ExprEvaluator.ReturnType, hasDataWindows);
+
+            _hasFilter = positionalParams.Length == 2;
+
+            return validationContext.EngineImportService.AggregationFactoryFactory.MakeMinMax(
+                validationContext.StatementExtensionSvcContext, this, child.ExprEvaluator.ReturnType, hasDataWindows);
         }
 
         protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node) {
-            var other = node as ExprMinMaxAggrNode;
-            if (other == null)
-            {
-                return false;
+            if (node is ExprMinMaxAggrNode other) {
+                return other._minMaxTypeEnum == _minMaxTypeEnum && 
+                       other._isEver == _isEver;
             }
-            return other._minMaxTypeEnum == this._minMaxTypeEnum && other._isEver == this._isEver;
+
+            return false;
         }
 
         /// <summary>
         /// Returns the indicator for minimum or maximum.
         /// </summary>
         /// <value>min/max indicator</value>
-        public MinMaxTypeEnum MinMaxTypeEnum
-        {
-            get { return _minMaxTypeEnum; }
-        }
+        public MinMaxTypeEnum MinMaxTypeEnum => _minMaxTypeEnum;
 
-        public bool HasFilter
-        {
-            get { return _hasFilter; }
-        }
+        public bool HasFilter => _hasFilter;
 
-        public override string AggregationFunctionName
-        {
-            get { return _minMaxTypeEnum.GetExpressionText(); }
-        }
+        public override string AggregationFunctionName => _minMaxTypeEnum.GetExpressionText();
 
-        public bool IsEver
-        {
-            get { return _isEver; }
-        }
+        public bool IsEver => _isEver;
+
+        protected override bool IsFilterExpressionAsLastParameter => true;
     }
 } // end of namespace

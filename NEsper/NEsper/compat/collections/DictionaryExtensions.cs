@@ -103,6 +103,54 @@ namespace com.espertech.esper.compat.collections
         /// Transforms the specified dictionary.
         /// </summary>
         /// <param name="dictionary">The dictionary.</param>
+        /// <returns></returns>
+        public static IDictionary<TKExt, TV> TransformUp<TKInt, TKExt, TV>(
+            this IDictionary<TKInt, TV> dictionary)
+            where TKExt : TKInt
+        {
+            return new TransformDictionary<TKExt, TV, TKInt, TV>(
+                dictionary,
+                ki => (TKExt) ki,
+                ke => (TKInt) ke,
+                vi => vi,
+                ve => ve);
+        }
+
+        public static IDictionary<TKExt, TV> TransformDown<TKInt, TKExt, TV>(
+            this IDictionary<TKInt, TV> dictionary)
+            where TKInt : TKExt
+        {
+            return new TransformDictionary<TKExt, TV, TKInt, TV>(
+                dictionary,
+                ki => (TKExt)ki,
+                ke => (TKInt)ke,
+                vi => vi,
+                ve => ve);
+        }
+
+        /// <summary>
+        /// Transforms the specified dictionary.
+        /// </summary>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <param name="keyIntToExt">The key out.</param>
+        /// <param name="keyExtToInt">The key in.</param>
+        /// <returns></returns>
+        public static IDictionary<TKExt, TV> Transform<TKExt, TKInt, TV>(
+            this IDictionary<TKInt, TV> dictionary,
+            Func<TKInt, TKExt> keyIntToExt,
+            Func<TKExt, TKInt> keyExtToInt) {
+            return new TransformDictionary<TKExt, TV, TKInt, TV>(
+                dictionary,
+                keyIntToExt,
+                keyExtToInt,
+                vi => vi,
+                ve => ve);
+        }
+
+        /// <summary>
+        /// Transforms the specified dictionary.
+        /// </summary>
+        /// <param name="dictionary">The dictionary.</param>
         /// <param name="keyIntToExt">The key out.</param>
         /// <param name="valueIntToExt">The value out.</param>
         /// <param name="keyExtToInt">The key in.</param>

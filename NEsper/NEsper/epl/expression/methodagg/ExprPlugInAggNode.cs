@@ -7,8 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Collections.Generic;
 using com.espertech.esper.client.hook;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.accessagg;
 using com.espertech.esper.epl.expression.baseagg;
@@ -37,12 +38,12 @@ namespace com.espertech.esper.epl.expression.methodagg
 	    public ExprPlugInAggNode(bool distinct, AggregationFunctionFactory aggregationFunctionFactory, string functionName)
 	        : base(distinct)
 	    {
-	        _aggregationFunctionFactory = aggregationFunctionFactory;
 	        _functionName = functionName;
-	        aggregationFunctionFactory.FunctionName = functionName;
+	        _aggregationFunctionFactory = aggregationFunctionFactory;
+	        _aggregationFunctionFactory.FunctionName = functionName;
 	    }
 
-	    public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+	    protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
 	    {
 	        var positionalParams = PositionalParams;
 	        var parameterTypes = new Type[positionalParams.Length];
@@ -78,7 +79,15 @@ namespace com.espertech.esper.epl.expression.methodagg
 	            count++;
 	        }
 
-	        var context = new AggregationValidationContext(parameterTypes, isConstant, constant, base.IsDistinct, hasDataWindows, expressions);
+	        IDictionary<string, IList<ExprNode>> namedParameters = null;
+	        if (OptionalFilter != null)
+	        {
+	            namedParameters = new Dictionary<string, IList<ExprNode>>();
+	            namedParameters.Put("filter", Collections.SingletonList(OptionalFilter));
+	            positionalParams = ExprNodeUtility.AddExpression(positionalParams, OptionalFilter);
+	        }
+
+            var context = new AggregationValidationContext(parameterTypes, isConstant, constant, base.IsDistinct, hasDataWindows, expressions, namedParameters);
 	        try
 	        {
 	            // the aggregation function factory is transient, obtain if not provided
@@ -102,20 +111,17 @@ namespace com.espertech.esper.epl.expression.methodagg
 	        return validationContext.EngineImportService.AggregationFactoryFactory.MakePlugInMethod(validationContext.StatementExtensionSvcContext, this, _aggregationFunctionFactory, childType);
 	    }
 
-	    public override string AggregationFunctionName
-	    {
-	        get { return _functionName; }
-	    }
+	    public override string AggregationFunctionName => _functionName;
 
 	    protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
 	    {
-	        var other = node as ExprPlugInAggNode;
-	        if (other == null)
-	        {
-	            return false;
+	        if (node is ExprPlugInAggNode other) {
+	            return other.AggregationFunctionName == AggregationFunctionName;
 	        }
 
-	        return ((ExprAggregateNodeBase) other).AggregationFunctionName.Equals(AggregationFunctionName);
+	        return false;
 	    }
+
+	    protected override bool IsFilterExpressionAsLastParameter => true;
 	}
 } // end of namespace

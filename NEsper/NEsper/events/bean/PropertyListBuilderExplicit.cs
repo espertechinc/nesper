@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.client;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.events.bean
 {
@@ -88,7 +89,7 @@ namespace com.espertech.esper.events.bean
                 }
 
                 var parameterType = _mi.GetParameters()[0].ParameterType;
-                if ((parameterType != typeof(int)) && ((parameterType != typeof(int?))) && (parameterType != typeof(string)))
+                if (parameterType.IsNotInt32() && (parameterType != typeof(string)))
                 {
                     continue;
                 }

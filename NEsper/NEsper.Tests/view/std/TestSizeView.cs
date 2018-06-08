@@ -11,9 +11,11 @@ using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
@@ -25,13 +27,16 @@ namespace com.espertech.esper.view.std
     {
         private SizeView _myView;
         private SupportBeanClassView _childView;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             // Set up length window view and a test child view
-            EventType type = SizeView.CreateEventType(SupportStatementContextFactory.MakeContext(), null, 1);
-            _myView = new SizeView(SupportStatementContextFactory.MakeAgentInstanceContext(), type, null);
+            EventType type = SizeView.CreateEventType(SupportStatementContextFactory.MakeContext(_container), null, 1);
+            _myView = new SizeView(SupportStatementContextFactory.MakeAgentInstanceContext(_container), type, null);
     
             _childView = new SupportBeanClassView(typeof(SupportMarketDataBean));
             _myView.AddView(_childView);
@@ -100,8 +105,8 @@ namespace com.espertech.esper.view.std
         [Test]
         public void TestSchema()
         {
-            EventType type = SizeView.CreateEventType(SupportStatementContextFactory.MakeContext(), null, 1);
-            SizeView view = new SizeView(SupportStatementContextFactory.MakeAgentInstanceContext(), type, null);
+            EventType type = SizeView.CreateEventType(SupportStatementContextFactory.MakeContext(_container), null, 1);
+            SizeView view = new SizeView(SupportStatementContextFactory.MakeAgentInstanceContext(_container), type, null);
     
             EventType eventType = view.EventType;
             Assert.AreEqual(typeof(long?), eventType.GetPropertyType(ViewFieldEnum.SIZE_VIEW__SIZE.GetName()));

@@ -111,7 +111,7 @@ namespace com.espertech.esper.epl.view
                 return result.GetEnumerator();
             }
 
-            return EnumerationHelper<EventBean>.Empty();
+            return EnumerationHelper.Empty<EventBean>();
         }
     }
 }

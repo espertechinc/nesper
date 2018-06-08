@@ -126,7 +126,7 @@ namespace com.espertech.esper.epl.expression.ops
             return _bitWiseOpEnumComputer.Invoke(valueChildOne, valueChildTwo);
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             if (!(node is ExprBitWiseNode))
             {

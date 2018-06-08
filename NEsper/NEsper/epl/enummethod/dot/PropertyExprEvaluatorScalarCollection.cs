@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.enummethod.dot
 {
@@ -62,7 +63,8 @@ namespace com.espertech.esper.epl.enummethod.dot
 
             if (!result.GetType().IsGenericCollection())
             {
-                Log.Warn("Expected collection-type input from property '" + _propertyName + "' but received " + result.GetType());
+                Log.Warn(string.Format("Expected collection-type input from property '{0}' but received {1}",
+                    _propertyName, result.GetType().GetCleanName()));
                 return null;
             }
 

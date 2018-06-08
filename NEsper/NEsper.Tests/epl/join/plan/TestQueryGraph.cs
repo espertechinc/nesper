@@ -89,7 +89,7 @@ namespace com.espertech.esper.epl.join.plan
                 _queryGraph.AddStrictEquals(1, null, null, 2, null, null);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }
@@ -100,7 +100,7 @@ namespace com.espertech.esper.epl.join.plan
                 _queryGraph.AddStrictEquals(1, "a", null, 1, "b", null);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }
@@ -112,7 +112,7 @@ namespace com.espertech.esper.epl.join.plan
                 _queryGraph.AddStrictEquals(2, "p22", null, 3, "p31", null);
                 Assert.Fail();
             }
-            catch (ArgumentException ex) {
+            catch (ArgumentException) {
                 // success
             }
     
@@ -120,7 +120,7 @@ namespace com.espertech.esper.epl.join.plan
                 _queryGraph.AddStrictEquals(2, "p22", null, 3, "p31", null);
                 Assert.Fail();
             }
-            catch (ArgumentException ex) {
+            catch (ArgumentException) {
                 // success
             }
     

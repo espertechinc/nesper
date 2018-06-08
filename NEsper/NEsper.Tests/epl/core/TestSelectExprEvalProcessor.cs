@@ -9,15 +9,17 @@
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core.eval;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
+using com.espertech.esper.events;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.epl.core
@@ -27,21 +29,25 @@ namespace com.espertech.esper.epl.core
 	{
 	    private SelectExprProcessorHelper _methodOne;
 	    private SelectExprProcessorHelper _methodTwo;
+	    private IContainer _container;
 
-        [SetUp]
+	    [SetUp]
 	    public void SetUp()
 	    {
-	        var selectList = SupportSelectExprFactory.MakeNoAggregateSelectList();
-	        var eventAdapterService = SupportEventAdapterService.Service;
+	        _container = SupportContainer.Reset();
+            var selectList = SupportSelectExprFactory.MakeNoAggregateSelectList();
+	        var eventAdapterService = _container.Resolve<EventAdapterService>();
 	        var vaeService = new SupportValueAddEventService();
-	        var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry("abc", new StatementEventTypeRefImpl());
-            var engineImportService = SupportEngineImportServiceFactory.Make();
+	        var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(
+	            "abc", new StatementEventTypeRefImpl(_container.RWLockManager()));
+            var engineImportService = SupportEngineImportServiceFactory.Make(_container);
 
             _methodOne = new SelectExprProcessorHelper(
                 Collections.GetEmptyList<int>(), selectList, Collections.GetEmptyList<SelectExprStreamDesc>(),
                 null, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, 
-                selectExprEventTypeRegistry, engineImportService, 1, "stmtname", null, new Configuration(), null, 
-                new TableServiceImpl(), null);
+                selectExprEventTypeRegistry, engineImportService, 1, "stmtname", null, 
+                new Configuration(_container), null, 
+                new TableServiceImpl(_container), null);
 
 	        var insertIntoDesc = new InsertIntoDesc(SelectClauseStreamSelectorEnum.ISTREAM_ONLY, "Hello");
 	        insertIntoDesc.Add("a");
@@ -50,8 +56,9 @@ namespace com.espertech.esper.epl.core
             _methodTwo = new SelectExprProcessorHelper(
                 Collections.GetEmptyList<int>(), selectList, Collections.GetEmptyList<SelectExprStreamDesc>(),
                 insertIntoDesc, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService,
-                selectExprEventTypeRegistry, engineImportService, 1, "stmtname", null, new Configuration(), null, 
-                new TableServiceImpl(), null);
+                selectExprEventTypeRegistry, engineImportService, 1, "stmtname", null, 
+                new Configuration(_container), null, 
+                new TableServiceImpl(_container), null);
 	    }
 
         [Test]

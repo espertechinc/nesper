@@ -10,7 +10,14 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.blocks;
+using com.espertech.esper.codegen.model.expression;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.events.map;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.arr
 {
@@ -21,25 +28,30 @@ namespace com.espertech.esper.events.arr
     /// </summary>
     public class ObjectArrayNestedEntryPropertyGetterMap : ObjectArrayNestedEntryPropertyGetterBase
     {
-        private readonly MapEventPropertyGetter mapGetter;
+        private readonly MapEventPropertyGetter _mapGetter;
 
         public ObjectArrayNestedEntryPropertyGetterMap(int propertyIndex, EventType fragmentType, EventAdapterService eventAdapterService, MapEventPropertyGetter mapGetter)
             : base(propertyIndex, fragmentType, eventAdapterService)
         {
-            this.mapGetter = mapGetter;
+            _mapGetter = mapGetter;
         }
 
         public override Object HandleNestedValue(Object value)
         {
-            if (!(value is Map))
-            {
-                if (value is EventBean)
-                {
-                    return mapGetter.Get((EventBean)value);
-                }
+            if (value == null) {
                 return null;
             }
-            return mapGetter.GetMap((Map)value);
+            else if (value is Map) {
+                return _mapGetter.GetMap((Map) value);
+            }
+            else if (value is EventBean) {
+                return _mapGetter.Get((EventBean) value);
+            }
+            else if (value.GetType().IsGenericStringDictionary()) {
+                return _mapGetter.GetMap(value.AsStringDictionary());
+            }
+
+            return null;
         }
 
         public override Object HandleNestedValueFragment(Object value)
@@ -48,27 +60,39 @@ namespace com.espertech.esper.events.arr
             {
                 if (value is EventBean)
                 {
-                    return mapGetter.GetFragment((EventBean)value);
+                    return _mapGetter.GetFragment((EventBean)value);
                 }
                 return null;
             }
 
             // If the map does not contain the key, this is allowed and represented as null
-            EventBean eventBean = EventAdapterService.AdapterForTypedMap((Map)value, FragmentType);
-            return mapGetter.GetFragment(eventBean);
+            EventBean eventBean = EventAdapterService.AdapterForTypedMap((Map) value, FragmentType);
+            return _mapGetter.GetFragment(eventBean);
         }
 
         public override bool HandleNestedValueExists(Object value)
         {
-            if (!(value is Map))
-            {
-                if (value is EventBean)
-                {
-                    return mapGetter.IsExistsProperty((EventBean) value);
-                }
-                return false;
-            }
-            return mapGetter.IsMapExistsProperty((Map) value);
+            if (value is Map valueAsMap)
+                return _mapGetter.IsMapExistsProperty(valueAsMap);
+            if (value is EventBean valueAsEventBean)
+                return _mapGetter.IsExistsProperty(valueAsEventBean);
+
+            return false;
+        }
+
+        public override ICodegenExpression HandleNestedValueCodegen(ICodegenExpression refName, ICodegenContext context)
+        {
+            return LocalMethod(CodegenBlockPropertyBeanOrUnd.From(context, typeof(Map), _mapGetter, CodegenBlockPropertyBeanOrUnd.AccessType.GET, this.GetType()), refName);
+        }
+
+        public override ICodegenExpression HandleNestedValueExistsCodegen(ICodegenExpression refName, ICodegenContext context)
+        {
+            return LocalMethod(CodegenBlockPropertyBeanOrUnd.From(context, typeof(Map), _mapGetter, CodegenBlockPropertyBeanOrUnd.AccessType.EXISTS, this.GetType()), refName);
+        }
+
+        public override ICodegenExpression HandleNestedValueFragmentCodegen(ICodegenExpression refName, ICodegenContext context)
+        {
+            return LocalMethod(CodegenBlockPropertyBeanOrUnd.From(context, typeof(Map), _mapGetter, CodegenBlockPropertyBeanOrUnd.AccessType.FRAGMENT, this.GetType()), refName);
         }
     }
-}
+} // end of namespace

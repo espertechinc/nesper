@@ -9,10 +9,11 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.thread;
 using com.espertech.esper.events.map;
-
+using com.espertech.esper.util;
 using DataMap = System.Collections.Generic.IDictionary<string, object>;
 
 namespace com.espertech.esper.events
@@ -48,10 +49,12 @@ namespace com.espertech.esper.events
 
         public void SendEvent(Object theEvent)
         {
-            if (!(theEvent is DataMap))
-            {
-                throw new EPException("Unexpected event object of type " + theEvent.GetType().FullName + ", expected " +
-                                      typeof(DataMap).FullName);
+            if (!(theEvent is DataMap)) {
+                throw new EPException(
+                    string.Format(
+                        "Unexpected event object of type {0}, expected {1}",
+                        theEvent.GetType().GetCleanName(),
+                        typeof(DataMap).GetCleanName()));
             }
 
             var map = (DataMap)theEvent;
@@ -71,8 +74,10 @@ namespace com.espertech.esper.events
         {
             if (!(theEvent is DataMap))
             {
-                throw new EPException("Unexpected event object of type " + theEvent.GetType().FullName + ", expected " +
-                                      typeof(DataMap).FullName);
+                throw new EPException(
+                    "Unexpected event object of type "
+                    + Name.Clean(theEvent.GetType()) + ", expected "
+                    + Name.Clean<DataMap>());
             }
             var map = (DataMap)theEvent;
             EventBean mapEvent = _eventAdapterService.AdapterForTypedMap(map, _mapEventType);

@@ -99,11 +99,25 @@ namespace com.espertech.esper.compat.collections
             return (dictType != null);
         }
 
+        private static readonly IDictionary<Type, bool> StringDictionaryResultCache = 
+            new Dictionary<Type, bool>();
+
         public static bool IsGenericStringDictionary(this Type t)
         {
+            if (t.IsValueType || (t == typeof(object)))
+                return false;
+
+            if (StringDictionaryResultCache.TryGetValue(t, out var result))
+                return result;
+
             var dictType = FindGenericInterface(t, typeof (IDictionary<,>));
-            if (dictType != null)
-                return dictType.GetGenericArguments()[0] == typeof (string);
+            if (dictType != null) {
+                result = dictType.GetGenericArguments()[0] == typeof(string);
+                StringDictionaryResultCache[t] = result;
+                return result;
+            }
+
+            StringDictionaryResultCache[t] = false;
             return false;
         }
 

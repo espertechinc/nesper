@@ -12,10 +12,12 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
@@ -30,15 +32,21 @@ namespace com.espertech.esper.view.window
         private TimeBatchView _myView;
         private SupportBeanClassView _childView;
         private SupportSchedulingServiceImpl _schedulingServiceStub;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             // Set the scheduling service to use
             _schedulingServiceStub = new SupportSchedulingServiceImpl();
 
             // Set up length window view and a test child view
-            _myView = new TimeBatchView(new TimeBatchViewFactory(), SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_schedulingServiceStub), new ExprTimePeriodEvalDeltaConstGivenDelta(TEST_INTERVAL_MSEC), null, false, false, null);
+            _myView = new TimeBatchView(
+                new TimeBatchViewFactory(),
+                SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container, _schedulingServiceStub),
+                new ExprTimePeriodEvalDeltaConstGivenDelta(TEST_INTERVAL_MSEC), null, false, false, null);
             _childView = new SupportBeanClassView(typeof(SupportMarketDataBean));
             _myView.AddView(_childView);
         }
@@ -160,7 +168,10 @@ namespace com.espertech.esper.view.window
             long startTime = 50000;
             _schedulingServiceStub.Time = startTime;
 
-            _myView = new TimeBatchView(new TimeBatchViewFactory(), SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_schedulingServiceStub), new ExprTimePeriodEvalDeltaConstGivenDelta(TEST_INTERVAL_MSEC), 1505L, false, false, null);
+            _myView = new TimeBatchView(
+                new TimeBatchViewFactory(),
+                SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container, _schedulingServiceStub),
+                new ExprTimePeriodEvalDeltaConstGivenDelta(TEST_INTERVAL_MSEC), 1505L, false, false, null);
             _childView = new SupportBeanClassView(typeof(SupportMarketDataBean));
             _myView.AddView(_childView);
 

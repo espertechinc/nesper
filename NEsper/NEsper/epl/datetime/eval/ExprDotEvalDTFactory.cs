@@ -20,6 +20,7 @@ using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.dot;
 using com.espertech.esper.epl.expression.time;
+using com.espertech.esper.epl.@join.plan;
 using com.espertech.esper.epl.methodbase;
 using com.espertech.esper.epl.rettype;
 using com.espertech.esper.util;
@@ -53,7 +54,7 @@ namespace com.espertech.esper.epl.datetime.eval
             {
                 if (!(inputType is ClassEPType || inputType is NullEPType))
                 {
-                    throw new ExprValidationException(message + " but received " + EPTypeHelper.ToTypeDescriptive(inputType));
+                    throw new ExprValidationException(message + " but received " + inputType.ToTypeDescriptive());
                 }
                 if (inputType is ClassEPType)
                 {
@@ -61,7 +62,7 @@ namespace com.espertech.esper.epl.datetime.eval
                     if (!TypeHelper.IsDateTime(classEPType.Clazz))
                     {
                         throw new ExprValidationException(
-                            message + " but received " + classEPType.Clazz.GetTypeNameFullyQualPretty());
+                            message + " but received " + classEPType.Clazz.GetCleanName());
                     }
                 }
             }
@@ -74,7 +75,7 @@ namespace com.espertech.esper.epl.datetime.eval
             String currentMethodName = dtMethodName;
 
             // drain all calendar ops
-            ExprDotNodeFilterAnalyzerDesc filterAnalyzerDesc = null;
+            FilterExprAnalyzerAffector filterAnalyzerDesc = null;
             while (true)
             {
 

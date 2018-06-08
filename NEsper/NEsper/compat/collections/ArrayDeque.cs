@@ -127,7 +127,7 @@ namespace com.espertech.esper.compat.collections
 
         public void AddFirst(T item)
         {
-            if (--_head == -1)
+            if (--_head < 0)
                 _head = _array.Length - 1;
             if (_head == _tail)
                 DoubleCapacity();
@@ -191,10 +191,13 @@ namespace com.espertech.esper.compat.collections
                 {
                     for (int ii = tindex + 1; ii < _tail; ii++)
                         _array[ii - 1] = _array[ii];
-                    _array[--_tail] = default(T);
+
+                    if (--_tail < 0)
+                        _tail = _array.Length - 1;
+                    _array[_tail] = default(T);
                 }
             }
-            else if (index > (_tail + _array.Length - _head))
+            else if (index > _array.Length)
             {
                 throw new ArgumentOutOfRangeException();
             }
@@ -214,17 +217,21 @@ namespace com.espertech.esper.compat.collections
                     _array[_array.Length - 1] = _array[0];
                     for (int ii = 1 ; ii < _tail ; ii++)
                         _array[ii - 1] = _array[ii];
-                    _array[--_tail] = default(T);
+
+                    if (--_tail < 0)
+                        _tail = _array.Length - 1;
+
+                    _array[_tail] = default(T);
                 }
                 else
                 {
                     for (int ii = 1 ; ii < _tail ; ii++)
                         _array[ii - 1] = _array[ii];
-                    _array[--_tail] = default(T);
-                }
 
-                if (_tail == -1)
-                    _tail = _array.Length - 1;
+                    if (--_tail < 0)
+                        _tail = _array.Length - 1;
+                    _array[_tail] = default(T);
+                }
             }
 
             return returnValue;
@@ -250,8 +257,8 @@ namespace com.espertech.esper.compat.collections
                 {
                     if (handler.Invoke(value = _array[ii], continuation))
                     {
-                        if (RemoveInternal(ref ii, true) && (onRemoveItem != null))
-                            onRemoveItem(value);
+                        if (RemoveInternal(ref ii, true))
+                            onRemoveItem?.Invoke(value);
                         --ii;
                     }
                 }
@@ -262,8 +269,8 @@ namespace com.espertech.esper.compat.collections
                 {
                     if (handler.Invoke(value = _array[ii], continuation))
                     {
-                        if (RemoveInternal(ref ii, true) && (onRemoveItem != null))
-                            onRemoveItem(value);
+                        if (RemoveInternal(ref ii, true))
+                            onRemoveItem?.Invoke(value);
                         --ii;
                     }
                 }
@@ -271,8 +278,8 @@ namespace com.espertech.esper.compat.collections
                 {
                     if (handler.Invoke(value = _array[ii], continuation))
                     {
-                        if (RemoveInternal(ref ii, true) && (onRemoveItem != null))
-                            onRemoveItem(value);
+                        if (RemoveInternal(ref ii, true))
+                            onRemoveItem?.Invoke(value);
                         --ii;
                     }
                 }
@@ -291,8 +298,8 @@ namespace com.espertech.esper.compat.collections
                 {
                     if (predicate.Invoke(value = _array[ii]))
                     {
-                        if (RemoveInternal(ref ii, true) && (onRemoveItem != null))
-                            onRemoveItem(value);
+                        if (RemoveInternal(ref ii, true))
+                            onRemoveItem?.Invoke(value);
                         --ii;
                     }
                 }
@@ -303,8 +310,8 @@ namespace com.espertech.esper.compat.collections
                 {
                     if (predicate.Invoke(value = _array[ii]))
                     {
-                        if (RemoveInternal(ref ii, true) && (onRemoveItem != null))
-                            onRemoveItem(value);
+                        if (RemoveInternal(ref ii, true))
+                            onRemoveItem?.Invoke(value);
                         --ii;
                     }
                 }
@@ -312,8 +319,8 @@ namespace com.espertech.esper.compat.collections
                 {
                     if (predicate.Invoke(value = _array[ii]))
                     {
-                        if (RemoveInternal(ref ii, true) && (onRemoveItem != null))
-                            onRemoveItem(value);
+                        if (RemoveInternal(ref ii, true))
+                            onRemoveItem?.Invoke(value);
                         --ii;
                     }
                 }
@@ -513,9 +520,6 @@ namespace com.espertech.esper.compat.collections
             }
         }
 
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
     }
 }

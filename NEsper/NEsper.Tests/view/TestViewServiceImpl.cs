@@ -7,10 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
@@ -30,16 +31,18 @@ namespace com.espertech.esper.view
     
         private EventStream _streamOne;
         private EventStream _streamTwo;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _streamOne = new SupportStreamImpl(typeof(SupportBean), 1);
             _streamTwo = new SupportStreamImpl(typeof(SupportBean_A), 1);
     
             _viewService = new ViewServiceImpl();
     
-            AgentInstanceViewFactoryChainContext context = SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext();
+            AgentInstanceViewFactoryChainContext context = SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container);
     
             _viewOne = _viewService.CreateViews(_streamOne, SupportViewSpecFactory.MakeFactoryListOne(_streamOne.EventType), context, false).FinalViewable;
             _viewTwo = _viewService.CreateViews(_streamOne, SupportViewSpecFactory.MakeFactoryListTwo(_streamOne.EventType), context, false).FinalViewable;
@@ -100,7 +103,7 @@ namespace com.espertech.esper.view
                 _viewService.Remove(_streamOne, _viewOne);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // Expected
             }

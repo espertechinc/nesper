@@ -9,6 +9,8 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
 
 namespace com.espertech.esper.events.arr
 {
@@ -20,8 +22,8 @@ namespace com.espertech.esper.events.arr
         public ObjectArrayNestedEntryPropertyGetterArrayObjectArray(int propertyIndex, EventType fragmentType, EventAdapterService eventAdapterService, int index, ObjectArrayEventPropertyGetter getter)
             : base(propertyIndex, fragmentType, eventAdapterService)
         {
-            _index = index;
-            _getter = getter;
+            this._index = index;
+            this._getter = getter;
         }
 
         public override Object HandleNestedValue(Object value)
@@ -31,12 +33,27 @@ namespace com.espertech.esper.events.arr
 
         public override Object HandleNestedValueFragment(Object value)
         {
-            return BaseNestableEventUtil.HandleNestedValueArrayWithObjectArrayFragment(value, _index, _getter, base.FragmentType, base.EventAdapterService);
+            return BaseNestableEventUtil.HandleNestedValueArrayWithObjectArrayFragment(value, _index, _getter, FragmentType, EventAdapterService);
         }
-        
+
         public override bool HandleNestedValueExists(Object value)
         {
             return BaseNestableEventUtil.HandleNestedValueArrayWithObjectArrayExists(value, _index, _getter);
         }
+
+        public override ICodegenExpression HandleNestedValueCodegen(ICodegenExpression refName, ICodegenContext context)
+        {
+            return BaseNestableEventUtil.HandleNestedValueArrayWithObjectArrayCodegen(_index, _getter, refName, context, this.GetType());
+        }
+
+        public override ICodegenExpression HandleNestedValueExistsCodegen(ICodegenExpression refName, ICodegenContext context)
+        {
+            return BaseNestableEventUtil.HandleNestedValueArrayWithObjectArrayExistsCodegen(_index, _getter, refName, context, this.GetType());
+        }
+
+        public override ICodegenExpression HandleNestedValueFragmentCodegen(ICodegenExpression refName, ICodegenContext context)
+        {
+            return BaseNestableEventUtil.HandleNestedValueArrayWithObjectArrayFragmentCodegen(_index, _getter, refName, context, this.GetType());
+        }
     }
-}
+} // end of namespace

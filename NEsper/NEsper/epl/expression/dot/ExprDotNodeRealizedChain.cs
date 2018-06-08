@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.epl.datetime.eval;
+using com.espertech.esper.epl.join.plan;
 
 namespace com.espertech.esper.epl.expression.dot
 {
@@ -14,7 +15,7 @@ namespace com.espertech.esper.epl.expression.dot
     {
         public ExprDotEval[] Chain { get; set; }
         public ExprDotEval[] ChainWithUnpack { get; set; }
-        public ExprDotNodeFilterAnalyzerDesc FilterAnalyzerDesc { get; set; }
+        public FilterExprAnalyzerAffector FilterAnalyzerDesc { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExprDotNodeRealizedChain"/> class.
@@ -22,7 +23,7 @@ namespace com.espertech.esper.epl.expression.dot
         /// <param name="chain">The chain.</param>
         /// <param name="chainWithUnpack">The chain with unpack.</param>
         /// <param name="filterAnalyzerDesc">The filter analyzer desc.</param>
-        public ExprDotNodeRealizedChain(ExprDotEval[] chain, ExprDotEval[] chainWithUnpack, ExprDotNodeFilterAnalyzerDesc filterAnalyzerDesc)
+        public ExprDotNodeRealizedChain(ExprDotEval[] chain, ExprDotEval[] chainWithUnpack, FilterExprAnalyzerAffector filterAnalyzerDesc)
         {
             Chain = chain;
             ChainWithUnpack = chainWithUnpack;

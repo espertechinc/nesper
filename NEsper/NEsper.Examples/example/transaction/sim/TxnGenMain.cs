@@ -19,10 +19,11 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.time;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.logger;
 using com.espertech.esper.compat.logging;
-using log4net.Config;
 
-namespace NEsper.Example.Transaction.sim
+namespace NEsper.Examples.Transaction.sim
 {
     /// <summary>Runs the generator.</summary>
     /// <author>Hans Gilde</author>
@@ -49,7 +50,8 @@ namespace NEsper.Example.Transaction.sim
 
         public static void Main(String[] args)
         {
-            XmlConfigurator.Configure();
+            LoggerNLog.BasicConfig();
+            LoggerNLog.Register();
 
             if (args.Length < 2)
             {
@@ -117,15 +119,17 @@ namespace NEsper.Example.Transaction.sim
         /// </summary>
         public void Run()
         {
+            var container = ContainerExtensions.CreateDefaultContainer();
+
             // Configure engine with event names to make the statements more readable.
             // This could also be done in a configuration file.
-            var configuration = new Configuration();
+            var configuration = new Configuration(container);
             configuration.AddEventType("TxnEventA", typeof(TxnEventA).FullName);
             configuration.AddEventType("TxnEventB", typeof(TxnEventB).FullName);
             configuration.AddEventType("TxnEventC", typeof(TxnEventC).FullName);
 
             // Get engine instance
-            EPServiceProvider epService = EPServiceProviderManager.GetProvider(_engineURI, configuration);
+            EPServiceProvider epService = EPServiceProviderManager.GetProvider(container, _engineURI, configuration);
 
             // We will be supplying timer events externally.
             // We will assume that each bucket arrives within a defined period of time.

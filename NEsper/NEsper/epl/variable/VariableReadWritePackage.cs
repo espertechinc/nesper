@@ -138,8 +138,8 @@ namespace com.espertech.esper.epl.variable
                         if ((expressionType != null) && (!TypeHelper.IsSubclassOrImplementsInterface(expressionType, variableMetadata.EventType.UnderlyingType)))
                         {
                             throw new VariableValueException("Variable '" + variableName
-                                + "' of declared event type '" + variableMetadata.EventType.Name + "' underlying type '" + variableMetadata.EventType.UnderlyingType.FullName +
-                                    "' cannot be assigned a value of type '" + expressionType.FullName + "'");
+                                + "' of declared event type '" + variableMetadata.EventType.Name + "' underlying type '" + variableMetadata.EventType.UnderlyingType.GetCleanName() +
+                                    "' cannot be assigned a value of type '" + expressionType.GetCleanName() + "'");
                         }
                         _variableTypes.Put(variableName, variableMetadata.EventType.UnderlyingType);
                     }
@@ -192,7 +192,7 @@ namespace com.espertech.esper.epl.variable
                 if (copyMethod == null)
                 {
                     throw new ExprValidationException("Variable '" + entry.Value.VariableName
-                        + "' of declared type " + entry.Key.UnderlyingType.GetTypeNameFullyQualPretty() +
+                        + "' of declared type " + entry.Key.UnderlyingType.GetCleanName() +
                             "' cannot be assigned to");
                 }
                 _copyMethods.Put(entry.Key, copyMethod);

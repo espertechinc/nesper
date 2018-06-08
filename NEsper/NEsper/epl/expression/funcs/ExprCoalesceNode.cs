@@ -65,7 +65,7 @@ namespace com.espertech.esper.epl.expression.funcs
                 {
                     if (!_resultType.IsNumeric())
                     {
-                        throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to {1} is not allowed", Name.Of(_resultType), Name.Of(_evaluators[i].ReturnType)));
+                        throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to {1} is not allowed", Name.Clean(_resultType), Name.Clean(_evaluators[i].ReturnType)));
                     }
                     _isNumericCoercion[i] = true;
                 }
@@ -120,7 +120,7 @@ namespace com.espertech.esper.epl.expression.funcs
             get { return ExprPrecedenceEnum.UNARY; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             return node is ExprCoalesceNode;
         }

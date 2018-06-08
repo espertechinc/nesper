@@ -6,10 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using NEsper.Example.Transaction.sim;
+using NEsper.Examples.Transaction.sim;
+
 using NUnit.Framework;
 
-namespace NEsper.Example.Transaction
+namespace NEsper.Examples.Transaction
 {
 	[TestFixture]
 	public class TestTxnSimMain

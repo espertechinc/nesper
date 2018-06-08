@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.client;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.join.table
@@ -49,7 +50,7 @@ namespace com.espertech.esper.epl.join.table
             }
         }
 
-        public override EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
+        public override EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent, ExprEvaluatorContext exprEvaluatorContext)
         {
             EventTableOrganization organization = Organization;
             return new EventTable[] { new PropertyIndexedEventTableCoerceAdd(propertyGetters, organization, Coercers, CoercionType) };

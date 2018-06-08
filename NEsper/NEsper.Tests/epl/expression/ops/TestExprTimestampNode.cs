@@ -6,27 +6,31 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.schedule;
 using com.espertech.esper.supportunit.core;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprTimestampNode 
     {
         private ExprTimestampNode _node;
         private ExprEvaluatorContext _context;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _node = new ExprTimestampNode();
         }
     
@@ -43,7 +47,7 @@ namespace com.espertech.esper.epl.expression
             _node.AddChildNode(new SupportExprNode(1));
             try
             {
-                _node.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _node.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException)
@@ -60,8 +64,8 @@ namespace com.espertech.esper.epl.expression
                 Get = () => 99
             };
 
-            _context = new SupportExprEvaluatorContext(provider);
-            _node.Validate(new ExprValidationContext(null, null, null, null, provider, null, null, null, null, null, 1, null, null, null, false, false, false, false, null, false));
+            _context = new SupportExprEvaluatorContext(_container, provider);
+            _node.Validate(new ExprValidationContext(_container, null, null, null, null, provider, null, null, null, null, null, 1, null, null, null, false, false, false, false, null, false));
 
             Assert.AreEqual(99L, _node.Evaluate(new EvaluateParams(null, false, _context)));
         }
@@ -69,8 +73,8 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEquals()
         {
-            Assert.IsFalse(_node.EqualsNode(new ExprEqualsNodeImpl(true, false)));
-            Assert.IsTrue(_node.EqualsNode(new ExprTimestampNode()));
+            Assert.IsFalse(_node.EqualsNode(new ExprEqualsNodeImpl(true, false), false));
+            Assert.IsTrue(_node.EqualsNode(new ExprTimestampNode(), false));
         }
     
         [Test]

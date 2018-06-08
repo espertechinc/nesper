@@ -8,11 +8,12 @@
 
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.events.bean;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.property
@@ -26,10 +27,12 @@ namespace com.espertech.esper.events.property
         private SimpleProperty _invalidDummy;
         private EventBean _theEvent;
         private BeanEventType _eventType;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _prop = new SimpleProperty("SimpleProperty");
             _invalidPropMap = new SimpleProperty("Mapped");
             _invalidPropIndexed = new SimpleProperty("Indexed");
@@ -41,22 +44,22 @@ namespace com.espertech.esper.events.property
         [Test]
         public void TestGetGetter()
         {
-            EventPropertyGetter getter = _prop.GetGetter(_eventType, SupportEventAdapterService.Service);
+            EventPropertyGetter getter = _prop.GetGetter(_eventType, _container.Resolve<EventAdapterService>());
             Assert.AreEqual("Simple", getter.Get(_theEvent));
     
-            Assert.IsNull(_invalidDummy.GetGetter(_eventType, SupportEventAdapterService.Service));
-            Assert.IsNull(_invalidPropMap.GetGetter(_eventType, SupportEventAdapterService.Service));
-            Assert.IsNull(_invalidPropIndexed.GetGetter(_eventType, SupportEventAdapterService.Service));
+            Assert.IsNull(_invalidDummy.GetGetter(_eventType, _container.Resolve<EventAdapterService>()));
+            Assert.IsNull(_invalidPropMap.GetGetter(_eventType, _container.Resolve<EventAdapterService>()));
+            Assert.IsNull(_invalidPropIndexed.GetGetter(_eventType, _container.Resolve<EventAdapterService>()));
         }
     
         [Test]
         public void TestGetPropertyType()
         {
-            Assert.AreEqual(typeof(string), _prop.GetPropertyType(_eventType, SupportEventAdapterService.Service));
+            Assert.AreEqual(typeof(string), _prop.GetPropertyType(_eventType, _container.Resolve<EventAdapterService>()));
     
-            Assert.IsNull(_invalidDummy.GetGetter(_eventType, SupportEventAdapterService.Service));
-            Assert.IsNull(_invalidPropMap.GetGetter(_eventType, SupportEventAdapterService.Service));
-            Assert.IsNull(_invalidPropIndexed.GetGetter(_eventType, SupportEventAdapterService.Service));
+            Assert.IsNull(_invalidDummy.GetGetter(_eventType, _container.Resolve<EventAdapterService>()));
+            Assert.IsNull(_invalidPropMap.GetGetter(_eventType, _container.Resolve<EventAdapterService>()));
+            Assert.IsNull(_invalidPropIndexed.GetGetter(_eventType, _container.Resolve<EventAdapterService>()));
         }
     }
 }

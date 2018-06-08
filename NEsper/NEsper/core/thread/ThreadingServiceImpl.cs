@@ -8,6 +8,7 @@
 
 using System;
 using System.Threading;
+
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -40,11 +41,15 @@ namespace com.espertech.esper.core.thread
         private IExecutorService _routeThreadPool;
         private IExecutorService _outboundThreadPool;
 
+        private int _lockTimeout;
+
         /// <summary>Ctor. </summary>
         /// <param name="threadingConfig">configuration</param>
         public ThreadingServiceImpl(ConfigurationEngineDefaults.ThreadingConfig threadingConfig)
         {
             _config = threadingConfig;
+            _lockTimeout = 60000;
+
             if (ThreadingOption.IsThreadingEnabled)
             {
                 _isTimerThreading = threadingConfig.IsThreadPoolTimerExec;
@@ -61,24 +66,17 @@ namespace com.espertech.esper.core.thread
             }
         }
 
-        public bool IsRouteThreading
-        {
-            get { return _isRouteThreading; }
-        }
+        public bool IsRouteThreading => _isRouteThreading;
 
-        public bool IsInboundThreading
-        {
-            get { return _isInboundThreading; }
-        }
+        public bool IsInboundThreading => _isInboundThreading;
 
-        public bool IsTimerThreading
-        {
-            get { return _isTimerThreading; }
-        }
+        public bool IsTimerThreading => _isTimerThreading;
 
-        public bool IsOutboundThreading
-        {
-            get { return _isOutboundThreading; }
+        public bool IsOutboundThreading => _isOutboundThreading;
+
+        public int LockTimeout {
+            get => _lockTimeout;
+            set => _lockTimeout = value;
         }
 
         public void InitThreading(EPServicesContext services, EPRuntimeImpl runtime)
@@ -108,7 +106,7 @@ namespace com.espertech.esper.core.thread
             }
         }
 
-        private static IBlockingQueue<Runnable> MakeQueue(int? threadPoolTimerExecCapacity, ConfigurationEngineDefaults.ThreadingConfig.Locking blocking)
+        private IBlockingQueue<Runnable> MakeQueue(int? threadPoolTimerExecCapacity, ConfigurationEngineDefaults.ThreadingConfig.Locking blocking)
         {
             if ((threadPoolTimerExecCapacity == null) ||
                 (threadPoolTimerExecCapacity <= 0) ||
@@ -120,8 +118,8 @@ namespace com.espertech.esper.core.thread
             }
 
             return blocking == ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN
-                       ? (IBlockingQueue<Runnable>)new ImperfectBlockingQueue<Runnable>(threadPoolTimerExecCapacity.Value)
-                       : (IBlockingQueue<Runnable>)new BoundBlockingQueue<Runnable>(threadPoolTimerExecCapacity.Value);
+                    ? (IBlockingQueue<Runnable>)new ImperfectBlockingQueue<Runnable>(threadPoolTimerExecCapacity.Value)
+                    : (IBlockingQueue<Runnable>)new BoundBlockingQueue<Runnable>(threadPoolTimerExecCapacity.Value, _lockTimeout);
         }
 
         /// <summary>Submit route work unit. </summary>
@@ -148,45 +146,21 @@ namespace com.espertech.esper.core.thread
             _timerQueue.Push(unit);
         }
 
-        public IBlockingQueue<Runnable> OutboundQueue
-        {
-            get { return _outboundQueue; }
-        }
+        public IBlockingQueue<Runnable> OutboundQueue => _outboundQueue;
 
-        public IExecutorService OutboundThreadPool
-        {
-            get { return _outboundThreadPool; }
-        }
+        public IExecutorService OutboundThreadPool => _outboundThreadPool;
 
-        public IBlockingQueue<Runnable> RouteQueue
-        {
-            get { return _routeQueue; }
-        }
+        public IBlockingQueue<Runnable> RouteQueue => _routeQueue;
 
-        public IExecutorService RouteThreadPool
-        {
-            get { return _routeThreadPool; }
-        }
+        public IExecutorService RouteThreadPool => _routeThreadPool;
 
-        public IBlockingQueue<Runnable> TimerQueue
-        {
-            get { return _timerQueue; }
-        }
+        public IBlockingQueue<Runnable> TimerQueue => _timerQueue;
 
-        public IExecutorService TimerThreadPool
-        {
-            get { return _timerThreadPool; }
-        }
+        public IExecutorService TimerThreadPool => _timerThreadPool;
 
-        public IBlockingQueue<Runnable> InboundQueue
-        {
-            get { return _inboundQueue; }
-        }
+        public IBlockingQueue<Runnable> InboundQueue => _inboundQueue;
 
-        public IExecutorService InboundThreadPool
-        {
-            get { return _inboundThreadPool; }
-        }
+        public IExecutorService InboundThreadPool => _inboundThreadPool;
 
         public void Dispose()
         {

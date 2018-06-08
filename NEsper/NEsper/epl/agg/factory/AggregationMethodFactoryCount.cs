@@ -19,117 +19,86 @@ using com.espertech.esper.epl.expression.methodagg;
 
 namespace com.espertech.esper.epl.agg.factory
 {
-	public class AggregationMethodFactoryCount : AggregationMethodFactory
-	{
-        protected internal readonly ExprCountNode Parent;
-        protected internal readonly bool IgnoreNulls;
-        protected internal readonly Type CountedValueType;
+    public class AggregationMethodFactoryCount : AggregationMethodFactory
+    {
+        private readonly Type _countedValueType;
+        private readonly bool _ignoreNulls;
+        private readonly ExprCountNode _parent;
 
-	    public AggregationMethodFactoryCount(ExprCountNode parent, bool ignoreNulls, Type countedValueType)
-	    {
-	        Parent = parent;
-	        IgnoreNulls = ignoreNulls;
-	        CountedValueType = countedValueType;
-	    }
-
-	    public bool IsAccessAggregation
-	    {
-	        get { return false; }
-	    }
-
-	    public Type ResultType
-	    {
-	        get { return typeof (long?); }
-	    }
-
-	    public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
+        public AggregationMethodFactoryCount(ExprCountNode parent, bool ignoreNulls, Type countedValueType)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            _parent = parent;
+            _ignoreNulls = ignoreNulls;
+            _countedValueType = countedValueType;
+        }
 
-	    public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
+        public bool IsAccessAggregation => false;
+
+        public Type ResultType => typeof(long);
+
+        public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            throw new IllegalStateException("Not an access aggregation function");
+        }
 
-	    public AggregationAccessor Accessor
-	    {
-	        get { throw new IllegalStateException("Not an access aggregation function"); }
-	    }
-
-	    public AggregationMethod Make()
+        public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
         {
-	        AggregationMethod method = MakeCountAggregator(IgnoreNulls, Parent.HasFilter);
-	        if (!Parent.IsDistinct)
-            {
-	            return method;
-	        }
-	        return AggregationMethodFactoryUtil.MakeDistinctAggregator(method, Parent.HasFilter);
-	    }
+            throw new IllegalStateException("Not an access aggregation function");
+        }
 
-	    public ExprAggregateNodeBase AggregationExpression
-	    {
-	        get { return Parent; }
-	    }
+        public AggregationAccessor Accessor => throw new IllegalStateException("Not an access aggregation function");
 
-	    public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
+        public AggregationMethod Make()
         {
-	        service.AggregationMethodFactoryUtil.ValidateAggregationType(this, intoTableAgg);
-	        AggregationMethodFactoryCount that = (AggregationMethodFactoryCount) intoTableAgg;
-	        service.AggregationMethodFactoryUtil.ValidateAggregationFilter(Parent.HasFilter, that.Parent.HasFilter);
-	        if (Parent.IsDistinct) {
-	            service.AggregationMethodFactoryUtil.ValidateAggregationInputType(CountedValueType, that.CountedValueType);
-	        }
-	        if (IgnoreNulls != that.IgnoreNulls) {
-	            throw new ExprValidationException("The aggregation declares" +
-	                    (IgnoreNulls ? "" : " no") +
-	                    " ignore nulls and provided is" +
-	                    (that.IgnoreNulls ? "" : " no") +
-	                    " ignore nulls");
-	        }
-	    }
+            var method = MakeCountAggregator(_ignoreNulls, _parent.HasFilter);
+            if (!_parent.IsDistinct) return method;
+            return AggregationMethodFactoryUtil.MakeDistinctAggregator(method, _parent.HasFilter);
+        }
 
-	    public AggregationAgent AggregationStateAgent
-	    {
-	        get { return null; }
-	    }
+        public ExprAggregateNodeBase AggregationExpression => _parent;
 
-	    public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
+        public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
         {
-	        return GetMethodAggregationEvaluatorCountBy(Parent.PositionalParams, join, typesPerStream);
-	    }
+            AggregationValidationUtil.ValidateAggregationType(this, intoTableAgg);
+            var that = (AggregationMethodFactoryCount) intoTableAgg;
+            AggregationValidationUtil.ValidateAggregationFilter(_parent.HasFilter, that._parent.HasFilter);
+            if (_parent.IsDistinct)
+                AggregationValidationUtil.ValidateAggregationInputType(_countedValueType, that._countedValueType);
+            if (_ignoreNulls != that._ignoreNulls)
+                throw new ExprValidationException("The aggregation declares" +
+                                                  (_ignoreNulls ? "" : " no") +
+                                                  " ignore nulls and provided is" +
+                                                  (that._ignoreNulls ? "" : " no") +
+                                                  " ignore nulls");
+        }
 
-	    public static ExprEvaluator GetMethodAggregationEvaluatorCountBy(ExprNode[] childNodes, bool join, EventType[] typesPerStream)
-	    {
-	        if (childNodes[0] is ExprWildcard && childNodes.Length == 2)
-            {
-	            return ExprMethodAggUtil.GetDefaultEvaluator(new ExprNode[] {childNodes[1]}, join, typesPerStream);
-	        }
-	        if (childNodes[0] is ExprWildcard && childNodes.Length == 1)
-            {
-	            return ExprMethodAggUtil.GetDefaultEvaluator(new ExprNode[0], join, typesPerStream);
-	        }
-	        return ExprMethodAggUtil.GetDefaultEvaluator(childNodes, join, typesPerStream);
-	    }
+        public AggregationAgent AggregationStateAgent => null;
 
-	    private AggregationMethod MakeCountAggregator(bool isIgnoreNull, bool hasFilter)
-	    {
-	        if (!hasFilter)
+        public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
+        {
+            return GetMethodAggregationEvaluatorCountBy(_parent.PositionalParams, join, typesPerStream);
+        }
+
+        public static ExprEvaluator GetMethodAggregationEvaluatorCountBy(ExprNode[] childNodes, bool join,
+            EventType[] typesPerStream)
+        {
+            if (childNodes[0] is ExprWildcard && childNodes.Length == 2)
+                return ExprMethodAggUtil.GetDefaultEvaluator(new[] {childNodes[1]}, join, typesPerStream);
+            if (childNodes[0] is ExprWildcard && childNodes.Length == 1)
+                return ExprMethodAggUtil.GetDefaultEvaluator(new ExprNode[0], join, typesPerStream);
+            return ExprMethodAggUtil.GetDefaultEvaluator(childNodes, join, typesPerStream);
+        }
+
+        private AggregationMethod MakeCountAggregator(bool isIgnoreNull, bool hasFilter)
+        {
+            if (!hasFilter)
             {
-	            if (isIgnoreNull)
-                {
-	                return new AggregatorCountNonNull();
-	            }
-	            return new AggregatorCount();
-	        }
-	        else
-            {
-	            if (isIgnoreNull)
-                {
-	                return new AggregatorCountNonNullFilter();
-	            }
-	            return new AggregatorCountFilter();
-	        }
-	    }
-	}
+                if (isIgnoreNull) return new AggregatorCountNonNull();
+                return new AggregatorCount();
+            }
+
+            if (isIgnoreNull) return new AggregatorCountNonNullFilter();
+            return new AggregatorCountFilter();
+        }
+    }
 } // end of namespace

@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.enummethod.dot
 {
@@ -96,7 +97,8 @@ namespace com.espertech.esper.epl.enummethod.dot
             }
             if (!(value.GetType().IsArray))
             {
-                Log.Warn("Expected array-type input from property '" + _propertyName + "' but received " + value.GetType());
+                Log.Warn(string.Format("Expected array-type input from property '{0}' but received {1}",
+                    _propertyName, value.GetType().GetCleanName()));
                 return null;
             }
 

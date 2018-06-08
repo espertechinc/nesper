@@ -7,6 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
+using Castle.MicroKernel.Registration;
 
 namespace com.espertech.esper.client.util
 {
@@ -17,15 +19,24 @@ namespace com.espertech.esper.client.util
     {
         public const string NAME = "ClassLoaderProvider";
 
-        public static readonly ClassLoaderProviderDefault INSTANCE = new ClassLoaderProviderDefault();
+        private readonly ClassLoader _classLoader;
 
-        private ClassLoaderProviderDefault()
+        public ClassLoaderProviderDefault(ClassLoader classLoader)
         {
+            _classLoader = classLoader;
         }
 
-        public ClassLoader Classloader()
+#if FALSE
+        public ClassLoaderProviderDefault(IContainer container)
         {
-            return ClassLoaderDefault.GetInstance();
+            container.Register<ClassLoader, ClassLoaderDefault>(Lifespan.Singleton);
+            _classLoader = container.Resolve<ClassLoader>();
+        }
+#endif
+
+        public ClassLoader GetClassLoader()
+        {
+            return _classLoader;
         }
     }
 } // end of namespace

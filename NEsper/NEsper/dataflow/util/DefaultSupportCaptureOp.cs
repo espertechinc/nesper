@@ -24,10 +24,17 @@ namespace com.espertech.esper.dataflow.util
     public class DefaultSupportCaptureOp : DefaultSupportCaptureOp<object>
     {
         public DefaultSupportCaptureOp()
+            : base(0, new MonitorLock(60000))
         {
         }
 
-        public DefaultSupportCaptureOp(int latchedNumRows) : base(latchedNumRows)
+        public DefaultSupportCaptureOp(ILockManager lockManager)
+            : base(lockManager)
+        {
+        }
+
+        public DefaultSupportCaptureOp(int latchedNumRows, ILockManager lockManager)
+            : base(latchedNumRows, lockManager)
         {
         }
     }
@@ -42,17 +49,22 @@ namespace com.espertech.esper.dataflow.util
 
         private readonly CountDownLatch _numRowLatch;
 
-        private readonly ILockable _iLock =
-            LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly ILockable _iLock;
 
-        public DefaultSupportCaptureOp()
-            : this(0)
+        public DefaultSupportCaptureOp(ILockManager lockManager)
+            : this(0, lockManager)
         {
         }
 
-        public DefaultSupportCaptureOp(int latchedNumRows)
+        public DefaultSupportCaptureOp(int latchedNumRows, ILockManager lockManager)
+            : this(latchedNumRows, lockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType))
+        {
+        }
+
+        public DefaultSupportCaptureOp(int latchedNumRows, ILockable iLock)
         {
             _numRowLatch = new CountDownLatch(latchedNumRows);
+            _iLock = iLock;
         }
 
         public void OnInput(T theEvent)
@@ -84,11 +96,11 @@ namespace com.espertech.esper.dataflow.util
             }
         }
 
-        public Object[] GetCurrent()
-        {
-            using (_iLock.Acquire())
-            {
-                return _current.UnwrapIntoArray<object>();
+        public object[] Current {
+            get {
+                using (_iLock.Acquire()) {
+                    return _current.UnwrapIntoArray<object>();
+                }
             }
         }
 
@@ -114,7 +126,7 @@ namespace com.espertech.esper.dataflow.util
 
         public object[] GetValueOrDefault()
         {
-            return !IsDone() ? null : GetCurrent();
+            return !IsDone() ? null : Current;
         }
 
         public Object[] GetValue(TimeSpan timeOut)
@@ -124,7 +136,12 @@ namespace com.espertech.esper.dataflow.util
             {
                 throw new TimeoutException("latch timed out");
             }
-            return GetCurrent();
+            return Current;
+        }
+
+        public object[] GetValue(int units, TimeUnit timeUnit)
+        {
+            return GetValue(TimeUnitHelper.ToTimeSpan(units, timeUnit));
         }
 
         public Object[] GetPunctuated()
@@ -162,7 +179,7 @@ namespace com.espertech.esper.dataflow.util
                 {
                     Thread.Sleep(50);
                 }
-                catch (ThreadInterruptedException e)
+                catch (ThreadInterruptedException)
                 {
                     return;
                 }

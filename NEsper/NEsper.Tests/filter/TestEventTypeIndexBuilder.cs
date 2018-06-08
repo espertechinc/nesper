@@ -10,10 +10,11 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.filter;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.filter
@@ -33,14 +34,19 @@ namespace com.espertech.esper.filter
         private FilterHandle _callbackOne;
         private FilterHandle _callbackTwo;
 
-        private readonly FilterServiceGranularLockFactoryReentrant _lockFactory =
-            new FilterServiceGranularLockFactoryReentrant();
-    
+        private FilterServiceGranularLockFactoryReentrant _lockFactory;
+
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
+            _lockFactory = new FilterServiceGranularLockFactoryReentrant(_container.RWLockManager());
+
             _eventTypeIndex = new EventTypeIndex(_lockFactory);
-            _indexBuilder = new EventTypeIndexBuilder(_eventTypeIndex, true);
+            _indexBuilder = new EventTypeIndexBuilder(_container.LockManager(), _eventTypeIndex, true);
     
             _typeOne = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             _typeTwo = SupportEventTypeFactory.CreateBeanType(typeof(SupportBeanSimple));

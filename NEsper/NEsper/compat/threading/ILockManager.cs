@@ -17,14 +17,14 @@ namespace com.espertech.esper.compat.threading
         /// </summary>
         /// <param name="typeCategory">The type category.</param>
         /// <param name="lockFactory">The lock factory.</param>
-        void RegisterCategoryLock(Type typeCategory, Func<ILockable> lockFactory);
+        void RegisterCategoryLock(Type typeCategory, Func<int, ILockable> lockFactory);
 
         /// <summary>
         /// Registers the category lock.
         /// </summary>
         /// <param name="category">The category.</param>
         /// <param name="lockFactory">The lock factory.</param>
-        void RegisterCategoryLock(string category, Func<ILockable> lockFactory);
+        void RegisterCategoryLock(string category, Func<int, ILockable> lockFactory);
 
         /// <summary>
         /// Creates a lock for the category defined by the type.
@@ -39,7 +39,14 @@ namespace com.espertech.esper.compat.threading
         /// <param name="category">The category.</param>
         /// <returns></returns>
         ILockable CreateLock(string category);
-        
+
+        /// <summary>
+        /// Creates a specific type of lock.
+        /// </summary>
+        /// <param name="lockFactory">The lock factory.</param>
+        /// <returns></returns>
+        ILockable CreateLock(Func<int, ILockable> lockFactory);
+
         /// <summary>
         /// Creates the default lock.
         /// </summary>

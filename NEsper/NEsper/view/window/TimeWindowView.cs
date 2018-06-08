@@ -101,10 +101,7 @@ namespace com.espertech.esper.view.window
             return _viewUpdatedCollection;
         }
 
-        public override EventType EventType
-        {
-            get { return Parent.EventType; }
-        }
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
@@ -204,10 +201,7 @@ namespace com.espertech.esper.view.window
             ScheduleCallback(scheduleTime.Value);
         }
 
-        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation
-        {
-            get { return _timeDeltaComputation; }
-        }
+        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation => _timeDeltaComputation;
 
         private void ScheduleCallback(long timeAfterCurrentTime)
         {
@@ -259,9 +253,6 @@ namespace com.espertech.esper.view.window
             _timeWindow.VisitView(viewDataVisitor, _timeWindowViewFactory);
         }
 
-        public ViewFactory ViewFactory
-        {
-            get { return _timeWindowViewFactory; }
-        }
+        public ViewFactory ViewFactory => _timeWindowViewFactory;
     }
 }

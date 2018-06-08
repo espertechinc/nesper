@@ -6,11 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.expression.core;
 
@@ -18,21 +14,20 @@ namespace com.espertech.esper.epl.approx
 {
     public class CountMinSketchAggAgentAdd : AggregationAgent
     {
-        private readonly ExprEvaluator _stringEvaluator;
+        protected readonly ExprEvaluator StringEvaluator;
     
         public CountMinSketchAggAgentAdd(ExprEvaluator stringEvaluator) {
-            _stringEvaluator = stringEvaluator;
+            StringEvaluator = stringEvaluator;
         }
     
-        public void ApplyEnter(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationState aggregationState)
+        public virtual void ApplyEnter(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationState aggregationState)
         {
-            var value = _stringEvaluator.Evaluate(new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
+            var value = StringEvaluator.Evaluate(new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
             var state = (CountMinSketchAggState) aggregationState;
             state.Add(value);
         }
     
-        public void ApplyLeave(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationState aggregationState) {
-    
+        public virtual void ApplyLeave(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationState aggregationState) {
         }
     }
 }

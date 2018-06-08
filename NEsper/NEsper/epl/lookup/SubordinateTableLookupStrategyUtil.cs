@@ -23,7 +23,7 @@ namespace com.espertech.esper.epl.lookup
             CoercionDesc hashKeyCoercionTypes,
             IList<SubordPropRangeKey> rangeKeys,
             CoercionDesc rangeKeyCoercionTypes,
-            ExprNode[] inKeywordSingleIdxKeys,
+            IList<ExprNode> inKeywordSingleIdxKeys,
             ExprNode inKeywordMultiIdxKey,
             bool isNWOnTrigger)
         {
@@ -40,11 +40,13 @@ namespace com.espertech.esper.epl.lookup
             SubordTableLookupStrategyFactory lookupStrategy;
             if (inKeywordSingleIdxKeys != null)
             {
-                lookupStrategy = new SubordInKeywordSingleTableLookupStrategyFactory(isNWOnTrigger, numStreamsTotal, inKeywordSingleIdxKeys);
+                lookupStrategy = new SubordInKeywordSingleTableLookupStrategyFactory(
+                    isNWOnTrigger, numStreamsTotal, inKeywordSingleIdxKeys);
             }
             else if (inKeywordMultiIdxKey != null)
             {
-                lookupStrategy = new SubordInKeywordMultiTableLookupStrategyFactory(isNWOnTrigger, numStreamsTotal, inKeywordMultiIdxKey);
+                lookupStrategy = new SubordInKeywordMultiTableLookupStrategyFactory(
+                    isNWOnTrigger, numStreamsTotal, inKeywordMultiIdxKey);
             }
             else if (hashKeys.IsEmpty() && rangeKeys.IsEmpty())
             {

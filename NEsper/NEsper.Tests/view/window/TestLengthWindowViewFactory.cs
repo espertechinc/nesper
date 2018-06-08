@@ -7,9 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.view.std;
 
 using NUnit.Framework;
@@ -20,10 +21,12 @@ namespace com.espertech.esper.view.window
     public class TestLengthWindowViewFactory 
     {
         private LengthWindowViewFactory _factory;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _factory = new LengthWindowViewFactory();
         }
     
@@ -41,11 +44,11 @@ namespace com.espertech.esper.view.window
         [Test]
         public void TestCanReuse()
         {
-            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
-            _factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(new Object[] { 1000 }));
+            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext(_container);
+            _factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(_container), TestViewSupport.ToExprListBean(new Object[] { 1000 }));
             Assert.IsFalse(_factory.CanReuse(new FirstElementView(null), agentInstanceContext));
-            Assert.IsFalse(_factory.CanReuse(new LengthWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), _factory, 1, null), agentInstanceContext));
-            Assert.IsTrue(_factory.CanReuse(new LengthWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), _factory, 1000, null), agentInstanceContext));
+            Assert.IsFalse(_factory.CanReuse(new LengthWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container), _factory, 1, null), agentInstanceContext));
+            Assert.IsTrue(_factory.CanReuse(new LengthWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container), _factory, 1000, null), agentInstanceContext));
         }
     
         private void TryInvalidParameter(Object param)
@@ -53,10 +56,10 @@ namespace com.espertech.esper.view.window
             try
             {
     
-                _factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(new Object[] {param}));
+                _factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(_container), TestViewSupport.ToExprListBean(new Object[] {param}));
                 Assert.Fail();
             }
-            catch (ViewParameterException ex)
+            catch (ViewParameterException)
             {
                 // expected
             }
@@ -65,8 +68,8 @@ namespace com.espertech.esper.view.window
         private void TryParameter(Object[] param, int size)
         {
             var factory = new LengthWindowViewFactory();
-            factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(param));
-            var view = (LengthWindowView) factory.MakeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
+            factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(_container), TestViewSupport.ToExprListBean(param));
+            var view = (LengthWindowView) factory.MakeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container));
             Assert.AreEqual(size, view.Size);
         }
     }

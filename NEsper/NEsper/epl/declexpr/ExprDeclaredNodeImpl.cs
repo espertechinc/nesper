@@ -15,6 +15,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.enummethod.dot;
@@ -44,14 +45,18 @@ namespace com.espertech.esper.epl.declexpr
         private ExprEvaluator _exprEvaluator;
         private ExprNode _expressionBodyCopy;
 
-        public ExprDeclaredNodeImpl(ExpressionDeclItem prototype, IList<ExprNode> chainParameters, ContextDescriptor contextDescriptor)
+        public ExprDeclaredNodeImpl(
+            IContainer container,
+            ExpressionDeclItem prototype, 
+            IList<ExprNode> chainParameters, 
+            ContextDescriptor contextDescriptor)
         {
             _prototype = prototype;
             _chainParameters = chainParameters;
     
             // copy expression - we do it at this time and not later
             try {
-                 _expressionBodyCopy = (ExprNode) SerializableObjectCopier.Copy(prototype.Inner);
+                 _expressionBodyCopy = (ExprNode) SerializableObjectCopier.Copy(container, prototype.Inner);
             } catch (Exception e) {
                 throw new Exception("Internal error providing expression tree: " + e.Message, e);
             }
@@ -267,13 +272,13 @@ namespace com.espertech.esper.epl.declexpr
             get { return false; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             var otherExprCaseNode = node as ExprDeclaredNodeImpl;
             if (otherExprCaseNode == null)
                 return false;
 
-            return ExprNodeUtility.DeepEquals(_expressionBodyCopy, otherExprCaseNode._expressionBodyCopy);
+            return ExprNodeUtility.DeepEquals(_expressionBodyCopy, otherExprCaseNode._expressionBodyCopy, false);
         }
     
         public override void Accept(ExprNodeVisitor visitor)
@@ -322,8 +327,9 @@ namespace com.espertech.esper.epl.declexpr
 
         private void CheckParameterCount() {
             if (_chainParameters.Count != _prototype.ParametersNames.Count) {
-                throw new ExprValidationException("Parameter count mismatches for declared expression '" + _prototype.Name + "', expected " +
-                    _prototype.ParametersNames.Count + " parameters but received " + _chainParameters.Count + " parameters");
+                throw new ExprValidationException(
+                    string.Format("Parameter count mismatches for declared expression '{0}', expected {1} parameters but received {2} parameters",
+                        _prototype.Name, _prototype.ParametersNames.Count, _chainParameters.Count));
             }
         }
 

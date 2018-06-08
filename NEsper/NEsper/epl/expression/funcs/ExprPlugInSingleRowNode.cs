@@ -132,7 +132,7 @@ namespace com.espertech.esper.epl.expression.funcs
             get { return ExprPrecedenceEnum.UNARY; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             if (!(node is ExprPlugInSingleRowNode))
             {

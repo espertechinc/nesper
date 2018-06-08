@@ -13,10 +13,10 @@ namespace com.espertech.esper.regression.support
     public class StepDesc
     {
         private readonly int step;
-        private readonly Object[][] newDataPerRow;
-        private readonly Object[][] oldDataPerRow;
+        private readonly object[][] newDataPerRow;
+        private readonly object[][] oldDataPerRow;
     
-        public StepDesc(int step, Object[][] newDataPerRow, Object[][] oldDataPerRow) {
+        public StepDesc(int step, object[][] newDataPerRow, object[][] oldDataPerRow) {
             this.step = step;
             this.newDataPerRow = newDataPerRow;
             this.oldDataPerRow = oldDataPerRow;

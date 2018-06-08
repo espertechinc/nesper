@@ -8,24 +8,26 @@
 
 using System;
 
+using com.espertech.esper.epl.expression.core;
+
 namespace com.espertech.esper.core.context.factory
 {
     public interface StatementAgentInstancePreload
     {
-        void ExecutePreload();
+        void ExecutePreload(ExprEvaluatorContext exprEvaluatorContext);
     }
 
     public class ProxyStatementAgentInstancePreload : StatementAgentInstancePreload
     {
-        public Action ProcExecutePreload { get; set; }
+        public Action<ExprEvaluatorContext> ProcExecutePreload { get; set; }
 
         /// <summary>
         /// Executes the preload.
         /// </summary>
-        public void ExecutePreload()
+        public void ExecutePreload(ExprEvaluatorContext exprEvaluatorContext)
         {
             if (ProcExecutePreload != null)
-                ProcExecutePreload();
+                ProcExecutePreload(exprEvaluatorContext);
         }
     }
 }

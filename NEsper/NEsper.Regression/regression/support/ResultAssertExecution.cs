@@ -70,8 +70,9 @@ namespace com.espertech.esper.regression.support
                 String epl = _stmt.Text;
                 String irStreamEPL = epl.Replace("select ", "select irstream ");
                 _stmt = _engine.EPAdministrator.CreateEPL(irStreamEPL);
-                _stmt.AddListener(_listener);
+                _stmt.Events += _listener.Update;
                 Execute(isAssert, false, allowAnyOrder);
+                _stmt.Stop();
             }
         }
 
@@ -250,7 +251,7 @@ namespace com.espertech.esper.regression.support
             String[] result = new String[newDataListFlattened.Length];
             for (int i = 0; i < newDataListFlattened.Length; i++)
             {
-                Object[] values = new Object[fields.Length];
+                object[] values = new Object[fields.Length];
                 EventBean theEvent = newDataListFlattened[i];
                 for (int j = 0; j < fields.Length; j++)
                 {

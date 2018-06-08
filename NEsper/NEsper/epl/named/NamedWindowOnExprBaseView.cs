@@ -70,9 +70,6 @@ namespace com.espertech.esper.epl.named
 	    /// returns expr context.
 	    /// </summary>
 	    /// <value>context</value>
-	    public ExprEvaluatorContext ExprEvaluatorContext
-	    {
-	        get { return _exprEvaluatorContext; }
-	    }
+	    public ExprEvaluatorContext ExprEvaluatorContext => _exprEvaluatorContext;
 	}
 } // end of namespace

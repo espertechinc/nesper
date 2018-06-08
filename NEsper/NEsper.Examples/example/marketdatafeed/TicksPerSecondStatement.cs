@@ -6,18 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
-using System;
-
 using com.espertech.esper.client;
 
-namespace com.espertech.esper.example.marketdatafeed
+namespace NEsper.Examples.MarketDataFeed
 {
     public class TicksPerSecondStatement
     {
         public static EPStatement Create(EPAdministrator admin)
         {
-            String stmt = "insert into TicksPerSecond " +
+            var stmt = "insert into TicksPerSecond " +
                           "select Feed as feed, count(*) as cnt from MarketDataEvent.win:time_batch(1 sec) group by Feed";
 
             return admin.CreateEPL(stmt);

@@ -11,15 +11,19 @@ using System;
 using XLR8.CGLib;
 
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
 using com.espertech.esper.events.vaevent;
+using com.espertech.esper.util;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.bean
 {
     /// <summary>
     /// Getter for a string property identified by a given index, using the CGLIB fast method.
     /// </summary>
-    public class StringFastPropertyGetter 
-        : BaseNativePropertyGetter
+    public class StringFastPropertyGetter : BaseNativePropertyGetter
         , BeanEventPropertyGetter
         , EventPropertyGetterAndIndexed
     {
@@ -98,6 +102,30 @@ namespace com.espertech.esper.events.bean
         public override bool IsExistsProperty(EventBean eventBean)
         {
             return true; // Property exists as the property is not dynamic (unchecked)
+        }
+
+        public override Type BeanPropType => _fastMethod.ReturnType;
+        public override Type TargetType => _fastMethod.DeclaringType.TargetType;
+
+        public override ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingGet(
+                CastUnderlying(TargetType, beanExpression), context);
+        }
+
+        public override ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
+        }
+
+        public override ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return ExprDotMethod(underlyingExpression, _fastMethod.Name);
+        }
+
+        public override ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
         }
     }
 }

@@ -10,27 +10,37 @@ using System;
 using System.Reflection;
 
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
 using com.espertech.esper.events.vaevent;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.bean
 {
     /// <summary>
     /// Getter for a key property identified by a given key value, using vanilla reflection.
     /// </summary>
-    public class KeyedMethodPropertyGetter : BaseNativePropertyGetter, BeanEventPropertyGetter, EventPropertyGetterAndMapped, EventPropertyGetterAndIndexed
+    public class KeyedMethodPropertyGetter
+        : BaseNativePropertyGetter
+        , BeanEventPropertyGetter
+        , EventPropertyGetterAndMapped
+        , EventPropertyGetterAndIndexed
     {
         private readonly MethodInfo _method;
         private readonly Object _key;
 
-        /// <summary>Constructor. </summary>
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         /// <param name="method">is the method to use to retrieve a value from the object.</param>
         /// <param name="key">is the key to supply as parameter to the mapped property getter</param>
         /// <param name="eventAdapterService">factory for event beans and event types</param>
         public KeyedMethodPropertyGetter(MethodInfo method, Object key, EventAdapterService eventAdapterService)
             : base(eventAdapterService, method.ReturnType, null)
         {
-            _key = key;
-            _method = method;
+            this._key = key;
+            this._method = method;
         }
 
         public Object Get(EventBean eventBean, int index)
@@ -38,55 +48,53 @@ namespace com.espertech.esper.events.bean
             return GetBeanPropInternal(eventBean.Underlying, index);
         }
 
-        public Object Get(EventBean eventBean, String mapKey)
+        public Object Get(EventBean eventBean, string mapKey)
         {
             return GetBeanPropInternal(eventBean.Underlying, mapKey);
         }
 
-        public Object GetBeanProp(Object o)
+        public Object GetBeanProp(Object @object)
         {
-            return GetBeanPropInternal(o, _key);
+            return GetBeanPropInternal(@object, _key);
         }
 
-        private Object GetBeanPropInternal(Object o, Object key)
+        private Object GetBeanPropInternal(Object @object, Object key)
         {
-            try
-            {
-                return _method.Invoke(o, new[] {key});
+            try {
+                return _method.Invoke(@object, new object[] {key});
             }
-            catch (InvalidCastException e)
-            {
-                throw PropertyUtility.GetMismatchException(_method, o, e);
+            catch (PropertyAccessException) {
+                throw;
             }
-            catch(TargetException e)
-            {
-                throw PropertyUtility.GetTargetException(_method, e);
+            catch (InvalidCastException e) {
+                throw PropertyUtility.GetMismatchException(_method, @object, e);
             }
-            catch (TargetInvocationException e)
-            {
+            catch (TargetInvocationException e) {
                 throw PropertyUtility.GetInvocationTargetException(_method, e);
             }
-            catch (ArgumentException e)
-            {
+            catch (ArgumentException e) {
                 throw PropertyUtility.GetIllegalArgumentException(_method, e);
+            }
+            catch (Exception e) {
+                throw PropertyUtility.GetAccessExceptionMethod(_method, e);
             }
         }
 
-        public bool IsBeanExistsProperty(Object o)
+        public bool IsBeanExistsProperty(Object @object)
         {
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Object Get(EventBean eventBean)
+        public override Object Get(EventBean obj)
         {
-            Object underlying = eventBean.Underlying;
+            Object underlying = obj.Underlying;
             return GetBeanProp(underlying);
         }
 
         public override String ToString()
         {
             return "KeyedMethodPropertyGetter " +
-                    " method=" + _method +
+                    " method=" + _method.ToString() +
                     " key=" + _key;
         }
 
@@ -94,5 +102,30 @@ namespace com.espertech.esper.events.bean
         {
             return true; // Property exists as the property is not dynamic (unchecked)
         }
+
+        public override Type BeanPropType => _method.ReturnType;
+
+        public override Type TargetType => _method.DeclaringType;
+
+        public override ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingGet(CastUnderlying(TargetType, beanExpression), context);
+        }
+
+        public override ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
+        }
+
+        public override ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return LocalMethod(KeyedFastPropertyGetter.GetBeanPropInternalCodegen(
+                context, TargetType, _method, _key), underlyingExpression);
+        }
+
+        public override ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
+        }
     }
-}
+} // end of namespace

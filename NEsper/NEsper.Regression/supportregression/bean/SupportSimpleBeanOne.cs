@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using com.espertech.esper.client.annotation;
 
 namespace com.espertech.esper.supportregression.bean
 {
@@ -21,12 +22,9 @@ namespace com.espertech.esper.supportregression.bean
             L1 = l1;
         }
 
-        public string S1 { get; private set; }
-
-        public int I1 { get; private set; }
-
-        public double D1 { get; private set; }
-
-        public long L1 { get; private set; }
+        [PropertyName("s1")] public string S1 { get; }
+        [PropertyName("i1")] public int I1 { get; }
+        [PropertyName("d1")] public double D1 { get; }
+        [PropertyName("l1")] public long L1 { get; }
     }
 }

@@ -106,26 +106,14 @@ namespace com.espertech.esper.compat.collections
         /// <summary>
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
-        public ICollection<TK1> Keys
-        {
-            get
-            {
-                return new TransformCollection<TK2, TK1>(
-                    SubDictionary.Keys, KeyIn, KeyOut);
-            }
-        }
+        public ICollection<TK1> Keys => new TransformCollection<TK2, TK1>(
+            SubDictionary.Keys, KeyIn, KeyOut);
 
         /// <summary>
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
-        public ICollection<TV1> Values
-        {
-            get
-            {
-                return new TransformCollection<TV2, TV1>(
-                    SubDictionary.Values, ValueIn, ValueOut);
-            }
-        }
+        public ICollection<TV1> Values => new TransformCollection<TV2, TV1>(
+            SubDictionary.Values, ValueIn, ValueOut);
 
         /// <summary>
         /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
@@ -149,18 +137,12 @@ namespace com.espertech.esper.compat.collections
         /// <summary>
         /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </summary>
-        public int Count
-        {
-            get { return SubDictionary.Count; }
-        }
+        public int Count => SubDictionary.Count;
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
         /// </summary>
-        public bool IsReadOnly
-        { 
-            get { return SubDictionary.IsReadOnly; }
-        }
+        public bool IsReadOnly => SubDictionary.IsReadOnly;
 
         /// <summary>
         /// Adds an element with the provided key and value to the <see cref="T:System.Collections.Generic.IDictionary`2" />.
@@ -232,7 +214,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns></returns>
         public TV1 this[TK1 key]
         {
-            get { return ExtCast(SubDictionary[IntCast(key)]); }
+            get => ExtCast(SubDictionary[IntCast(key)]);
             set { SubDictionary[IntCast(key)] = IntCast(value); }
         }
 

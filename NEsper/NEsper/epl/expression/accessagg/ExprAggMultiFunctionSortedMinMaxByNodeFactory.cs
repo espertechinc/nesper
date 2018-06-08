@@ -7,105 +7,78 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.agg.aggregator;
 using com.espertech.esper.epl.agg.service;
-using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.baseagg;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.expression.accessagg
 {
-	public class ExprAggMultiFunctionSortedMinMaxByNodeFactory : AggregationMethodFactory
-	{
-	    private readonly ExprAggMultiFunctionSortedMinMaxByNode _parent;
-	    private readonly AggregationAccessor _accessor;
-	    private readonly Type _accessorResultType;
-	    private readonly EventType _containedEventType;
-
-	    private readonly AggregationStateKey _optionalStateKey;
-	    private readonly SortedAggregationStateFactoryFactory _optionalStateFactory;
-	    private readonly AggregationAgent _optionalAgent;
-
-	    public ExprAggMultiFunctionSortedMinMaxByNodeFactory(ExprAggMultiFunctionSortedMinMaxByNode parent, AggregationAccessor accessor, Type accessorResultType, EventType containedEventType, AggregationStateKey optionalStateKey, SortedAggregationStateFactoryFactory optionalStateFactory, AggregationAgent optionalAgent)
+    public class ExprAggMultiFunctionSortedMinMaxByNodeFactory : AggregationMethodFactory
+    {
+        public ExprAggMultiFunctionSortedMinMaxByNodeFactory(ExprAggMultiFunctionSortedMinMaxByNode parent,
+            AggregationAccessor accessor, Type accessorResultType, EventType containedEventType,
+            AggregationStateKey optionalStateKey, SortedAggregationStateFactoryFactory optionalStateFactory,
+            AggregationAgent optionalAgent)
         {
-	        _parent = parent;
-	        _accessor = accessor;
-	        _accessorResultType = accessorResultType;
-	        _containedEventType = containedEventType;
-	        _optionalStateKey = optionalStateKey;
-	        _optionalStateFactory = optionalStateFactory;
-	        _optionalAgent = optionalAgent;
-	    }
+            Parent = parent;
+            Accessor = accessor;
+            ResultType = accessorResultType;
+            ContainedEventType = containedEventType;
+            OptionalStateKey = optionalStateKey;
+            OptionalStateFactory = optionalStateFactory;
+            AggregationStateAgent = optionalAgent;
+        }
 
-	    public bool IsAccessAggregation
-	    {
-	        get { return true; }
-	    }
+        public EventType ContainedEventType { get; }
 
-	    public AggregationMethod Make()
+        public ExprAggMultiFunctionSortedMinMaxByNode Parent { get; }
+
+        public SortedAggregationStateFactoryFactory OptionalStateFactory { get; }
+
+        public AggregationStateKey OptionalStateKey { get; }
+
+        public bool IsAccessAggregation => true;
+
+        public AggregationMethod Make()
         {
-	        throw new UnsupportedOperationException();
-	    }
+            throw new UnsupportedOperationException();
+        }
 
-	    public Type ResultType
-	    {
-	        get { return _accessorResultType; }
-	    }
+        public Type ResultType { get; }
 
-	    public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
+        public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
         {
-	        return _optionalStateKey;
-	    }
+            return OptionalStateKey;
+        }
 
-	    public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
+        public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
         {
-	        if (isMatchRecognize || _optionalStateFactory == null)
-            {
-	            return null;
-	        }
-	        return _optionalStateFactory.MakeFactory();
-	    }
+            if (isMatchRecognize || OptionalStateFactory == null) return null;
+            return OptionalStateFactory.MakeFactory();
+        }
 
-	    public AggregationAccessor Accessor
-	    {
-	        get { return _accessor; }
-	    }
+        public AggregationAccessor Accessor { get; }
 
-	    public ExprAggregateNodeBase AggregationExpression
-	    {
-	        get { return _parent; }
-	    }
+        public ExprAggregateNodeBase AggregationExpression => Parent;
 
-	    public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
+        public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
         {
-	        AggregationMethodFactoryUtil.ValidateAggregationType(this, intoTableAgg);
-	        var other = (ExprAggMultiFunctionSortedMinMaxByNodeFactory) intoTableAgg;
-	        AggregationMethodFactoryUtil.ValidateEventType(_containedEventType, other.ContainedEventType);
-	        AggregationMethodFactoryUtil.ValidateAggFuncName(_parent.AggregationFunctionName, other.Parent.AggregationFunctionName);
-	    }
+            AggregationValidationUtil.ValidateAggregationType(this, intoTableAgg);
+            var other = (ExprAggMultiFunctionSortedMinMaxByNodeFactory) intoTableAgg;
+            AggregationValidationUtil.ValidateEventType(ContainedEventType, other.ContainedEventType);
+            AggregationValidationUtil.ValidateAggFuncName(Parent.AggregationFunctionName,
+                other.Parent.AggregationFunctionName);
+        }
 
-	    public AggregationAgent AggregationStateAgent
-	    {
-	        get { return _optionalAgent; }
-	    }
+        public AggregationAgent AggregationStateAgent { get; }
 
-	    public EventType ContainedEventType
-	    {
-	        get { return _containedEventType; }
-	    }
-
-	    public ExprAggMultiFunctionSortedMinMaxByNode Parent
-	    {
-	        get { return _parent; }
-	    }
-
-        public ExprEvaluator GetMethodAggregationEvaluator(Boolean join, EventType[] typesPerStream)
+        public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
         {
             return null;
         }
-	}
+    }
 } // end of namespace

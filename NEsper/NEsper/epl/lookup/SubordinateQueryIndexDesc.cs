@@ -13,18 +13,18 @@ namespace com.espertech.esper.epl.lookup
     public class SubordinateQueryIndexDesc
     {
         public SubordinateQueryIndexDesc(
-            IndexKeyInfo indexKeyInfo,
+            IndexKeyInfo optionalIndexKeyInfo,
             string indexName,
             IndexMultiKey indexMultiKey,
             QueryPlanIndexItem queryPlanIndexItem)
         {
-            IndexKeyInfo = indexKeyInfo;
+            OptionalIndexKeyInfo = optionalIndexKeyInfo;
             IndexName = indexName;
             IndexMultiKey = indexMultiKey;
             QueryPlanIndexItem = queryPlanIndexItem;
         }
 
-        public IndexKeyInfo IndexKeyInfo { get; private set; }
+        public IndexKeyInfo OptionalIndexKeyInfo { get; private set; }
 
         public string IndexName { get; private set; }
 

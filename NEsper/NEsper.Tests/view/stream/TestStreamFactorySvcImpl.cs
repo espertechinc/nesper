@@ -9,7 +9,7 @@
 using System;
 
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.service.multimatch;
@@ -17,7 +17,7 @@ using com.espertech.esper.filter;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.filter;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.view.stream
@@ -30,18 +30,17 @@ namespace com.espertech.esper.view.stream
     
         private FilterSpecCompiled[] _filterSpecs;
         private EventStream[] _streams;
-        private readonly EPStatementHandle _handle;
-        private readonly EPStatementAgentInstanceHandle _agentHandle;
-
-        public TestStreamFactorySvcImpl()
-        {
-            _handle = new EPStatementHandle(1, "name", "text", StatementType.SELECT, "text", false, null, 1, false, false, new MultiMatchHandlerFactoryImpl().GetDefaultHandler());
-            _agentHandle = new EPStatementAgentInstanceHandle(_handle, ReaderWriterLockManager.CreateDefaultLock(), -1, null, null);
-        }
+        private EPStatementHandle _handle;
+        private EPStatementAgentInstanceHandle _agentHandle;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+            _handle = new EPStatementHandle(1, "name", "text", StatementType.SELECT, "text", false, null, 1, false, false, new MultiMatchHandlerFactoryImpl().GetDefaultHandler());
+            _agentHandle = new EPStatementAgentInstanceHandle(_handle, _container.RWLockManager().CreateDefaultLock(), -1, null, null);
+
             _supportFilterService = new SupportFilterServiceImpl();
             _streamFactoryService = new StreamFactorySvcImpl("default", true);
             var eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
@@ -122,7 +121,7 @@ namespace com.espertech.esper.view.stream
         public void TestCreateNoJoin()
         {
             var stmtHande = new EPStatementHandle(1, "id", null, StatementType.SELECT, "text", false, null, 1, false, false, new MultiMatchHandlerFactoryImpl().GetDefaultHandler());
-            var stmtAgentHandle = new EPStatementAgentInstanceHandle(stmtHande, ReaderWriterLockManager.CreateDefaultLock(), -1, null, null);
+            var stmtAgentHandle = new EPStatementAgentInstanceHandle(stmtHande, _container.RWLockManager().CreateDefaultLock(), -1, null, null);
     
             _streams = new EventStream[4];
             _streams[0] = _streamFactoryService.CreateStream(1, _filterSpecs[0], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
@@ -146,7 +145,7 @@ namespace com.espertech.esper.view.stream
         public void TestDropNoJoin()
         {
             var stmtHande = new EPStatementHandle(1, "id", null, StatementType.SELECT, "text", false, null, 1, false, false, new MultiMatchHandlerFactoryImpl().GetDefaultHandler());
-            var stmtAgentHandle = new EPStatementAgentInstanceHandle(stmtHande, ReaderWriterLockManager.CreateDefaultLock(), -1, null, null);
+            var stmtAgentHandle = new EPStatementAgentInstanceHandle(stmtHande, _container.RWLockManager().CreateDefaultLock(), -1, null, null);
             _streams = new EventStream[4];
             _streams[0] = _streamFactoryService.CreateStream(1, _filterSpecs[0], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
             _streams[1] = _streamFactoryService.CreateStream(2, _filterSpecs[0], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;

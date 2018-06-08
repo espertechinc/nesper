@@ -56,6 +56,7 @@ namespace com.espertech.esper.core.start
                     new EventType[0], new string[0], new bool[0], services.EngineURI, false);
                 var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
                 var validationContext = new ExprValidationContext(
+                    statementContext.Container,
                     typeService,
                     statementContext.EngineImportService,
                     statementContext.StatementExtensionServicesContext,

@@ -19,6 +19,7 @@ using com.espertech.esper.client.util;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service.multimatch;
@@ -80,7 +81,7 @@ namespace com.espertech.esper.core.service
 
         private int _lastStatementId;
 
-        private readonly ILockable _lock = LockManager.CreateLock(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly ILockable _lock;
 
         /// <summary>
         /// Ctor.
@@ -90,6 +91,7 @@ namespace com.espertech.esper.core.service
         public StatementLifecycleSvcImpl(EPServiceProvider epServiceProvider, EPServicesContext services)
         {
             Services = services;
+            _lock = services.LockManager.CreateLock(MethodBase.GetCurrentMethod().DeclaringType);
             _epServiceProvider = (EPServiceProviderSPI)epServiceProvider;
 
             // lock for starting and stopping statements
@@ -1212,8 +1214,13 @@ namespace com.espertech.esper.core.service
             {
                 StatementLifecycleSvcUtil.WalkStatement(spec, visitor);
 
-                groupByRollupExpressions = GroupByExpressionHelper.GetGroupByRollupExpressions(spec.GroupByExpressions,
-                        spec.SelectClauseSpec, spec.HavingExprRootNode, spec.OrderByList, visitor);
+                groupByRollupExpressions = GroupByExpressionHelper.GetGroupByRollupExpressions(
+                    servicesContext.Container,
+                    spec.GroupByExpressions,
+                    spec.SelectClauseSpec, 
+                    spec.HavingExprRootNode, 
+                    spec.OrderByList,
+                    visitor);
 
                 var subselects = visitor.Subselects;
                 if (!visitor.ChainedExpressionsDot.IsEmpty())
@@ -1325,6 +1332,7 @@ namespace com.espertech.esper.core.service
                             StreamTypeService streamTypeService = new StreamTypeServiceImpl(selectFromType, selectFromTypeName, true, statementContext.EngineURI);
                             var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
                             var validationContext = new ExprValidationContext(
+                                statementContext.Container,
                                 streamTypeService,
                                 statementContext.EngineImportService,
                                 statementContext.StatementExtensionServicesContext, null,
@@ -1566,16 +1574,18 @@ namespace com.espertech.esper.core.service
             // Validate the select expressions which consists of properties only
             var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
             var select = CompileLimitedSelect(
-                spec.SelectClauseSpec, eplStatement,
+                statementContext.Container,
+                spec.SelectClauseSpec, 
+                eplStatement,
                 selectFromType,
                 selectFromTypeName,
                 statementContext.EngineURI,
-                evaluatorContextStmt,
-                statementContext.EngineImportService,
-                statementContext.EventAdapterService,
-                statementContext.StatementName,
-                statementContext.StatementId,
-                statementContext.Annotations,
+                evaluatorContextStmt, 
+                statementContext.EngineImportService, 
+                statementContext.EventAdapterService, 
+                statementContext.StatementName, 
+                statementContext.StatementId, 
+                statementContext.Annotations, 
                 statementContext.StatementExtensionServicesContext);
 
             // Create Map or Wrapper event type from the select clause of the window.
@@ -1700,6 +1710,7 @@ namespace com.espertech.esper.core.service
         }
 
         private static IList<NamedWindowSelectedProps> CompileLimitedSelect(
+            IContainer container,
             SelectClauseSpecRaw spec,
             string eplStatement,
             EventType singleType,
@@ -1715,27 +1726,25 @@ namespace com.espertech.esper.core.service
         {
             var selectProps = new List<NamedWindowSelectedProps>();
             var streams = new StreamTypeServiceImpl(
-                new EventType[] { singleType },
-                new string[] { "stream_0" },
-                new bool[] { false },
+                new[] { singleType },
+                new[] { "stream_0" },
+                new[] { false },
                 engineURI, false);
 
             var validationContext = new ExprValidationContext(
+                container,
                 streams, engineImportService,
                 statementExtensionSvcContext,
                 null, null, null, null,
                 exprEvaluatorContext,
                 eventAdapterService,
                 statementName, statementId, annotations,
-                null, null, false, false, false, false, null, false);
+                null, 
+                null, 
+                false, false, false, false, null, false);
 
-            foreach (var raw in spec.SelectExprList)
+            foreach (var exprSpec in spec.SelectExprList.OfType<SelectClauseExprRawSpec>())
             {
-                if (!(raw is SelectClauseExprRawSpec))
-                {
-                    continue;
-                }
-                var exprSpec = (SelectClauseExprRawSpec)raw;
                 ExprNode validatedExpression;
                 try
                 {

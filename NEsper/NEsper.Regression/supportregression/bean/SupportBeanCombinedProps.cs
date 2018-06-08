@@ -26,7 +26,7 @@ namespace com.espertech.esper.supportregression.bean
             get { return _indexed; }
         }
 
-        public static String[] PROPERTIES = new String[]
+        public static String[] PROPERTIES = new string[]
         {
         	"Indexed",
         	"Array"
@@ -35,17 +35,17 @@ namespace com.espertech.esper.supportregression.bean
         public static SupportBeanCombinedProps MakeDefaultBean()
         {
             NestedLevOne[] nested = new NestedLevOne[4]; // [3] left empty on purpose
-            nested[0] = new NestedLevOne(new String[][] {
-                new String[] { "0ma", "0ma0" },
-                new String[] { "0mb", "0ma1" }
+            nested[0] = new NestedLevOne(new string[][] {
+                new string[] { "0ma", "0ma0" },
+                new string[] { "0mb", "0ma1" }
             });
-            nested[1] = new NestedLevOne(new String[][] {
-                new String[] { "1ma", "1ma0" },
-                new String[] { "1mb", "1ma1" }
+            nested[1] = new NestedLevOne(new string[][] {
+                new string[] { "1ma", "1ma0" },
+                new string[] { "1mb", "1ma1" }
             });
-            nested[2] = new NestedLevOne(new String[][] {
-                new String[] { "2ma", "valueOne" }, 
-                new String[] { "2mb", "2ma1" }
+            nested[2] = new NestedLevOne(new string[][] {
+                new string[] { "2ma", "valueOne" }, 
+                new string[] { "2mb", "2ma1" }
             });
 
             return new SupportBeanCombinedProps(nested);

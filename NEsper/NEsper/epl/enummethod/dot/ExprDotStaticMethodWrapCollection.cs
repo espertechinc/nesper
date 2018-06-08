@@ -16,6 +16,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.epl.rettype;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.enummethod.dot
 {
@@ -51,8 +52,8 @@ namespace com.espertech.esper.epl.enummethod.dot
             if (result is ICollection)
                 return ((ICollection)result).Cast<object>().ToList();
 
-            Log.Warn("Expected collection-type input from method '{0}' but received {1}", _methodName,
-                        result.GetType().FullName);
+            Log.Warn("Expected collection-type input from method '{0}' but received {1}",
+                _methodName, result.GetType().GetCleanName());
             return null;
         }
     }

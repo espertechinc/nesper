@@ -17,10 +17,11 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.start;
 using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.enummethod.dot;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.visitor;
+using com.espertech.esper.epl.index.quadtree;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.rettype;
 using com.espertech.esper.epl.variable;
 using com.espertech.esper.events;
@@ -34,9 +35,9 @@ namespace com.espertech.esper.epl.expression.dot
     [Serializable]
     public class ExprDotNodeImpl
         : ExprNodeBase
-        , ExprDotNode
-        , ExprNodeInnerNodeProvider
-        , ExprStreamRefNode
+            , ExprDotNode
+            , ExprNodeInnerNodeProvider
+            , ExprStreamRefNode
     {
         private readonly IList<ExprChainedSpec> _chainSpec;
         private readonly bool _isDuckTyping;
@@ -45,7 +46,7 @@ namespace com.espertech.esper.epl.expression.dot
         [NonSerialized] private ExprEvaluator _exprEvaluator;
         private bool _isReturnsConstantResult;
 
-        [NonSerialized] private ExprDotNodeFilterAnalyzerDesc _exprDotNodeFilterAnalyzerDesc;
+        [NonSerialized] private FilterExprAnalyzerAffector _filterExprAnalyzerAffector;
         private int? _streamNumReferenced;
         private string _rootPropertyName;
 
@@ -64,6 +65,7 @@ namespace com.espertech.esper.epl.expression.dot
                 {
                     throw new IllegalStateException("Identifier expression has not been validated");
                 }
+
                 return _streamNumReferenced;
             }
         }
@@ -76,12 +78,20 @@ namespace com.espertech.esper.epl.expression.dot
                 {
                     throw new IllegalStateException("Identifier expression has not been validated");
                 }
+
                 return _rootPropertyName;
             }
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
+            // check for plannable methods: these are validated according to different rules
+            var appDotMethod = GetAppDotMethod(validationContext.IsFilterExpression);
+            if (appDotMethod != null)
+            {
+                return appDotMethod;
+            }
+
             // validate all parameters
             ExprNodeUtility.Validate(ExprNodeOrigin.DOTNODEPARAMETER, _chainSpec, validationContext);
 
@@ -104,6 +114,7 @@ namespace com.espertech.esper.epl.expression.dot
                     {
                         return node;
                     }
+
                     _chainSpec.Clear();
                     _chainSpec.AddAll(tableNode.Second);
                     AddChildNode(node);
@@ -131,7 +142,7 @@ namespace com.espertech.esper.epl.expression.dot
                 if (enumSrc.ReturnType == null)
                 {
                     typeInfoX = EPTypeHelper.SingleValue(rootNodeEvaluator.ReturnType);
-                        // not a collection type, treat as scalar
+                    // not a collection type, treat as scalar
                 }
                 else
                 {
@@ -184,6 +195,7 @@ namespace com.espertech.esper.epl.expression.dot
                             "The " + EngineImportServiceConstants.EXT_SINGLEROW_FUNCTION_TRANSPOSE +
                             " function requires a single parameter expression");
                     }
+
                     _exprEvaluator = new ExprDotEvalTransposeAsStream(_chainSpec[0].Parameters[0].ExprEvaluator);
                 }
                 else if (spec.Parameters.Count != 1)
@@ -198,10 +210,12 @@ namespace com.espertech.esper.epl.expression.dot
                             "Unknown single-row function, aggregation function or mapped or indexed property named '" +
                             spec.Name + "' could not be resolved");
                     }
+
                     _exprEvaluator = GetPropertyPairEvaluator(
                         spec.Parameters[0].ExprEvaluator, propertyInfoPair, validationContext);
                     _streamNumReferenced = propertyInfoPair.First.StreamNum;
                 }
+
                 return null;
             }
 
@@ -226,12 +240,14 @@ namespace com.espertech.esper.epl.expression.dot
                 {
                     // fine
                 }
+
                 if (propertyInfoPair != null)
                 {
                     if (specAfterStreamName.Parameters.Count != 1)
                     {
                         throw HandleNotFound(specAfterStreamName.Name);
                     }
+
                     _exprEvaluator = GetPropertyPairEvaluator(
                         specAfterStreamName.Parameters[0].ExprEvaluator, propertyInfoPair, validationContext);
                     _streamNumReferenced = propertyInfoPair.First.StreamNum;
@@ -270,7 +286,7 @@ namespace com.espertech.esper.epl.expression.dot
                         prefixedStreamNumber, typeInfo, remainderChain, validationContext, false,
                         new ExprDotNodeFilterAnalyzerInputStream(prefixedStreamNumber));
                     eventTypeMethodChain = chain.ChainWithUnpack;
-                    _exprDotNodeFilterAnalyzerDesc = chain.FilterAnalyzerDesc;
+                    _filterExprAnalyzerAffector = chain.FilterAnalyzerDesc;
                 }
                 catch (ExprValidationException ex)
                 {
@@ -344,10 +360,9 @@ namespace com.espertech.esper.epl.expression.dot
                 {
                     getter = streamType.GetGetter(propertyInfoPair.First.PropertyName);
 
-                    var propertyEval =
-                        ExprDotNodeUtility.GetPropertyEnumerationSource(
-                            propertyInfoPair.First.PropertyName, streamId, streamType, hasEnumerationMethod,
-                            validationContext.IsDisablePropertyExpressionEventCollCache);
+                    var propertyEval = ExprDotNodeUtility.GetPropertyEnumerationSource(
+                        propertyInfoPair.First.PropertyName, streamId, streamType, hasEnumerationMethod,
+                        validationContext.IsDisablePropertyExpressionEventCollCache);
                     typeInfo = propertyEval.ReturnType;
                     enumerationEval = propertyEval.Enumeration;
                     inputType = propertyEval.ReturnType;
@@ -365,19 +380,21 @@ namespace com.espertech.esper.epl.expression.dot
                         throw new ExprValidationException(
                             "Property '" + firstItem.Name + "' may not be accessed passing 2 or more parameters");
                     }
+
                     var paramEval = firstItem.Parameters[0].ExprEvaluator;
                     typeInfo = EPTypeHelper.SingleValue(desc.PropertyComponentType);
                     inputType = typeInfo;
                     getter = null;
                     if (desc.IsMapped)
                     {
-                        if (paramEval.ReturnType != typeof (string))
+                        if (paramEval.ReturnType != typeof(string))
                         {
                             throw new ExprValidationException(
                                 "Parameter expression to mapped property '" + propertyName +
                                 "' is expected to return a string-type value but returns " +
-                                paramEval.ReturnType.GetTypeNameFullyQualPretty());
+                                paramEval.ReturnType.GetCleanName());
                         }
+
                         var mappedGetter =
                             propertyInfoPair.First.StreamEventType.GetGetterMapped(propertyInfoPair.First.PropertyName);
                         if (mappedGetter == null)
@@ -385,29 +402,35 @@ namespace com.espertech.esper.epl.expression.dot
                             throw new ExprValidationException(
                                 "Mapped property named '" + propertyName + "' failed to obtain getter-object");
                         }
+
                         rootNodeEvaluator = new PropertyExprEvaluatorNonLambdaMapped(
                             streamId, mappedGetter, paramEval, desc.PropertyComponentType);
                     }
+
                     if (desc.IsIndexed)
                     {
-                        if (paramEval.ReturnType.GetBoxedType() != typeof (int?))
+                        if (paramEval.ReturnType.IsNotInt32())
                         {
                             throw new ExprValidationException(
                                 "Parameter expression to mapped property '" + propertyName +
                                 "' is expected to return a int?-type value but returns " +
-                                paramEval.ReturnType.GetTypeNameFullyQualPretty());
+                                paramEval.ReturnType.GetCleanName());
                         }
+
                         var indexedGetter =
-                            propertyInfoPair.First.StreamEventType.GetGetterIndexed(propertyInfoPair.First.PropertyName);
+                            propertyInfoPair.First.StreamEventType.GetGetterIndexed(propertyInfoPair.First
+                                .PropertyName);
                         if (indexedGetter == null)
                         {
                             throw new ExprValidationException(
                                 "Mapped property named '" + propertyName + "' failed to obtain getter-object");
                         }
+
                         rootNodeEvaluator = new PropertyExprEvaluatorNonLambdaIndexed(
                             streamId, indexedGetter, paramEval, desc.PropertyComponentType);
                     }
                 }
+
                 if (typeInfo == null)
                 {
                     throw new ExprValidationException(
@@ -454,7 +477,7 @@ namespace com.espertech.esper.epl.expression.dot
                 _exprEvaluator = new ExprDotEvalRootChild(
                     hasEnumerationMethod, this, rootNodeEvaluator, enumerationEval, inputType, evals.Chain,
                     evals.ChainWithUnpack, !rootIsEventBean);
-                _exprDotNodeFilterAnalyzerDesc = evals.FilterAnalyzerDesc;
+                _filterExprAnalyzerAffector = evals.FilterAnalyzerDesc;
                 _streamNumReferenced = propertyInfoPair.First.StreamNum;
                 _rootPropertyName = propertyInfoPair.First.PropertyName;
                 return null;
@@ -466,6 +489,7 @@ namespace com.espertech.esper.epl.expression.dot
             {
                 throw new ExprValidationException("Method invocation on context-specific variable is not supported");
             }
+
             var variableReader = validationContext.VariableService.GetReader(
                 firstItem.Name, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID);
             if (variableReader != null)
@@ -475,7 +499,8 @@ namespace com.espertech.esper.epl.expression.dot
                 if (variableReader.VariableMetaData.VariableType.IsArray)
                 {
                     typeInfoX =
-                        EPTypeHelper.CollectionOfSingleValue(variableReader.VariableMetaData.VariableType.GetElementType());
+                        EPTypeHelper.CollectionOfSingleValue(
+                            variableReader.VariableMetaData.VariableType.GetElementType());
                     wrap = new ExprDotStaticMethodWrapArrayScalar(
                         variableReader.VariableMetaData.VariableName,
                         variableReader.VariableMetaData.VariableType.GetElementType());
@@ -492,7 +517,8 @@ namespace com.espertech.esper.epl.expression.dot
                 }
 
                 var evalsX = ExprDotNodeUtility.GetChainEvaluators(
-                    null, typeInfoX, modifiedChain, validationContext, false, new ExprDotNodeFilterAnalyzerInputStatic());
+                    null, typeInfoX, modifiedChain, validationContext, false,
+                    new ExprDotNodeFilterAnalyzerInputStatic());
                 _exprEvaluator = new ExprDotEvalVariable(this, variableReader, wrap, evalsX.ChainWithUnpack);
                 return null;
             }
@@ -517,9 +543,9 @@ namespace com.espertech.esper.epl.expression.dot
                     : validationContext.StreamTypeService.EventTypes[0];
                 var methodDesc =
                     ExprNodeUtility.ResolveMethodAllowWildcardAndStream(
-                        enumconstant.GetType().FullName, 
-                        enumconstant.GetType(), 
-                        methodSpec.Name, 
+                        enumconstant.GetType().FullName,
+                        enumconstant.GetType(),
+                        methodSpec.Name,
                         methodSpec.Parameters,
                         validationContext.EngineImportService, validationContext.EventAdapterService,
                         validationContext.StatementId, wildcardType != null, wildcardType, handler, methodSpec.Name,
@@ -535,11 +561,12 @@ namespace com.espertech.esper.epl.expression.dot
                     : EPTypeHelper.SingleValue(methodDesc.FastMethod.ReturnType);
 
                 var evalsX = ExprDotNodeUtility.GetChainEvaluators(
-                    null, typeInfoX, modifiedChain, validationContext, false, new ExprDotNodeFilterAnalyzerInputStatic());
+                    null, typeInfoX, modifiedChain, validationContext, false,
+                    new ExprDotNodeFilterAnalyzerInputStatic());
                 _exprEvaluator = new ExprDotEvalStaticMethod(
                     validationContext.StatementName, firstItem.Name,
                     methodDesc.FastMethod,
-                    methodDesc.ChildEvals, 
+                    methodDesc.ChildEvals,
                     false, optionalLambdaWrapX, evalsX.ChainWithUnpack,
                     false, enumconstant);
                 return null;
@@ -585,9 +612,9 @@ namespace com.espertech.esper.epl.expression.dot
             return null;
         }
 
-        public ExprDotNodeFilterAnalyzerDesc ExprDotNodeFilterAnalyzerDesc
+        public FilterExprAnalyzerAffector GetAffector(bool isOuterJoin)
         {
-            get { return _exprDotNodeFilterAnalyzerDesc; }
+            return isOuterJoin ? null : _filterExprAnalyzerAffector;
         }
 
         private ExprEvaluator GetPropertyPairEvaluator(
@@ -608,13 +635,14 @@ namespace com.espertech.esper.epl.expression.dot
             var streamNum = propertyInfoPair.First.StreamNum;
             if (propertyDesc.IsMapped)
             {
-                if (parameterEval.ReturnType != typeof (string))
+                if (parameterEval.ReturnType != typeof(string))
                 {
                     throw new ExprValidationException(
                         "Parameter expression to mapped property '" + propertyDesc.PropertyName +
                         "' is expected to return a string-type value but returns " +
-                        parameterEval.ReturnType.GetTypeNameFullyQualPretty());
+                        parameterEval.ReturnType.GetCleanName());
                 }
+
                 var mappedGetter =
                     propertyInfoPair.First.StreamEventType.GetGetterMapped(propertyInfoPair.First.PropertyName);
                 if (mappedGetter == null)
@@ -622,19 +650,21 @@ namespace com.espertech.esper.epl.expression.dot
                     throw new ExprValidationException(
                         "Mapped property named '" + propertyName + "' failed to obtain getter-object");
                 }
+
                 return new ExprDotEvalPropertyExprMapped(
                     validationContext.StatementName, propertyDesc.PropertyName, streamNum, parameterEval,
                     propertyDesc.PropertyComponentType, mappedGetter);
             }
             else
             {
-                if (parameterEval.ReturnType.GetBoxedType() != typeof(int?))
+                if (parameterEval.ReturnType.IsNotInt32())
                 {
                     throw new ExprValidationException(
                         "Parameter expression to indexed property '" + propertyDesc.PropertyName +
                         "' is expected to return a int-type value but returns " +
-                        parameterEval.ReturnType.GetTypeNameFullyQualPretty());
+                        parameterEval.ReturnType.GetCleanName());
                 }
+
                 var indexedGetter =
                     propertyInfoPair.First.StreamEventType.GetGetterIndexed(propertyInfoPair.First.PropertyName);
                 if (indexedGetter == null)
@@ -642,6 +672,7 @@ namespace com.espertech.esper.epl.expression.dot
                     throw new ExprValidationException(
                         "Indexed property named '" + propertyName + "' failed to obtain getter-object");
                 }
+
                 return new ExprDotEvalPropertyExprIndexed(
                     validationContext.StatementName, propertyDesc.PropertyName, streamNum, parameterEval,
                     propertyDesc.PropertyComponentType, indexedGetter);
@@ -654,11 +685,13 @@ namespace com.espertech.esper.epl.expression.dot
             {
                 return -1;
             }
+
             var spec = chainSpec[0];
             if (spec.Parameters.Count > 0 && !spec.IsProperty)
             {
                 return -1;
             }
+
             return streamTypeService.GetStreamNumForStreamName(spec.Name);
         }
 
@@ -685,20 +718,11 @@ namespace com.espertech.esper.epl.expression.dot
             ExprNodeUtility.ReplaceChainChildNode(nodeToReplace, newNode, _chainSpec);
         }
 
-        public IList<ExprChainedSpec> ChainSpec
-        {
-            get { return _chainSpec; }
-        }
+        public IList<ExprChainedSpec> ChainSpec => _chainSpec;
 
-        public override ExprEvaluator ExprEvaluator
-        {
-            get { return _exprEvaluator; }
-        }
+        public override ExprEvaluator ExprEvaluator => _exprEvaluator;
 
-        public override bool IsConstantResult
-        {
-            get { return _isReturnsConstantResult; }
-        }
+        public override bool IsConstantResult => _isReturnsConstantResult;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
@@ -706,20 +730,15 @@ namespace com.espertech.esper.epl.expression.dot
             {
                 writer.Write(ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(ChildNodes[0]));
             }
+
             ExprNodeUtility.ToExpressionString(_chainSpec, writer, ChildNodes.Count != 0, null);
         }
 
-        public override ExprPrecedenceEnum Precedence
-        {
-            get { return ExprPrecedenceEnum.MINIMUM; }
-        }
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.MINIMUM;
 
-        public IDictionary<string, object> EventType
-        {
-            get { return null; }
-        }
+        public IDictionary<string, object> EventType => null;
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             var other = node as ExprDotNodeImpl;
             if (other == null)
@@ -731,6 +750,7 @@ namespace com.espertech.esper.epl.expression.dot
             {
                 return false;
             }
+
             for (var i = 0; i < _chainSpec.Count; i++)
             {
                 if (!Equals(_chainSpec[i], other._chainSpec[i]))
@@ -738,13 +758,11 @@ namespace com.espertech.esper.epl.expression.dot
                     return false;
                 }
             }
+
             return true;
         }
 
-        public IList<ExprNode> AdditionalNodes
-        {
-            get { return ExprNodeUtility.CollectChainParameters(_chainSpec); }
-        }
+        public IList<ExprNode> AdditionalNodes => ExprNodeUtility.CollectChainParameters(_chainSpec);
 
         public string IsVariableOpGetName(VariableService variableService)
         {
@@ -753,16 +771,133 @@ namespace com.espertech.esper.epl.expression.dot
             {
                 metaData = variableService.GetVariableMetaData(_chainSpec[0].Name);
             }
+
             return metaData == null ? null : metaData.VariableName;
         }
 
         private ExprValidationException HandleNotFound(string name)
         {
-            return
-                new ExprValidationException(
-                    "Unknown single-row function, expression declaration, script or aggregation function named '" + name +
-                    "' could not be resolved");
+            var appDotMethodDidYouMean = GetAppDotMethodDidYouMean();
+            var message =
+                "Unknown single-row function, expression declaration, script or aggregation function named '" + name +
+                "' could not be resolved";
+            if (appDotMethodDidYouMean != null)
+            {
+                message += " (did you mean '" + appDotMethodDidYouMean + "')";
+            }
+
+            return new ExprValidationException(message);
+        }
+
+        private String GetAppDotMethodDidYouMean()
+        {
+            switch (_chainSpec[0].Name.ToLowerInvariant())
+            {
+                case "rectangle":
+                    return "rectangle.intersects";
+                case "point":
+                    return "point.inside";
+            }
+
+            return null;
+        }
+
+        private ExprAppDotMethodImpl GetAppDotMethod(bool filterExpression)
+        {
+            if (_chainSpec.Count < 2)
+            {
+                return null;
+            }
+
+            var lhsName = _chainSpec[0].Name.ToLowerInvariant();
+            var operationName = _chainSpec[1].Name.ToLowerInvariant();
+            var pointInside = lhsName.Equals("point") && operationName.Equals("inside");
+            var rectangleIntersects = lhsName.Equals("rectangle") && operationName.Equals("intersects");
+            if (!pointInside && !rectangleIntersects)
+            {
+                return null;
+            }
+
+            if (_chainSpec[1].Parameters.Count != 1)
+            {
+                throw GetAppDocMethodException(lhsName, operationName);
+            }
+
+            var param = _chainSpec[1].Parameters[0];
+            if (!(param is ExprDotNode))
+            {
+                throw GetAppDocMethodException(lhsName, operationName);
+            }
+
+            var compared = (ExprDotNode) _chainSpec[1].Parameters[0];
+            if (compared.ChainSpec.Count != 1)
+            {
+                throw GetAppDocMethodException(lhsName, operationName);
+            }
+
+            var rhsName = compared.ChainSpec[0].Name.ToLowerInvariant();
+            var pointInsideRectangle = pointInside && rhsName.Equals("rectangle");
+            var rectangleIntersectsRectangle = rectangleIntersects && rhsName.Equals("rectangle");
+            if (!pointInsideRectangle && !rectangleIntersectsRectangle)
+            {
+                throw GetAppDocMethodException(lhsName, operationName);
+            }
+
+            var lhsExpressions = _chainSpec[0].Parameters;
+            IList<ExprNode> indexNamedParameter = null;
+            IList<ExprNode> lhsExpressionsValues = new List<ExprNode>();
+            foreach (var lhsExpression in lhsExpressions)
+            {
+                if (lhsExpression is ExprNamedParameterNode)
+                {
+                    var named = (ExprNamedParameterNode) lhsExpression;
+                    if (String.Equals(named.ParameterName, ExprDotNodeConstants.FILTERINDEX_NAMED_PARAMETER,
+                        StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        if (!filterExpression)
+                        {
+                            throw new ExprValidationException(
+                                "The '" + named.ParameterName +
+                                "' named parameter can only be used in in filter expressions");
+                        }
+
+                        indexNamedParameter = named.ChildNodes;
+                    }
+                    else
+                    {
+                        throw new ExprValidationException(lhsName + " does not accept '" + named.ParameterName +
+                                                          "' as a named parameter");
+                    }
+                }
+                else
+                {
+                    lhsExpressionsValues.Add(lhsExpression);
+                }
+            }
+
+            var lhs = ExprNodeUtility.ToArray(lhsExpressionsValues);
+            var rhs = ExprNodeUtility.ToArray(compared.ChainSpec[0].Parameters);
+
+            EngineImportApplicationDotMethod predefined;
+            if (pointInsideRectangle)
+            {
+                predefined = new EngineImportApplicationDotMethodPointInsideRectangle(
+                    lhsName, lhs, operationName, rhsName, rhs, indexNamedParameter);
+            }
+            else
+            {
+                predefined = new EngineImportApplicationDotMethodRectangeIntersectsRectangle(
+                    lhsName, lhs, operationName, 
+                    rhsName, rhs, indexNamedParameter);
+            }
+
+            return new ExprAppDotMethodImpl(predefined);
+        }
+
+        private ExprValidationException GetAppDocMethodException(String lhsName, String operationName)
+        {
+            return new ExprValidationException(lhsName + "." + operationName +
+                                               " requires a single rectangle as parameter");
         }
     }
-
 } // end of namespace

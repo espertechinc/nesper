@@ -24,7 +24,6 @@ namespace com.espertech.esper.compat.threading
     /// <typeparam name="T"></typeparam>
 
     public interface IThreadLocal<T> : IDisposable
-        where T : class
     {
         /// <summary>
         /// Gets or sets the value.

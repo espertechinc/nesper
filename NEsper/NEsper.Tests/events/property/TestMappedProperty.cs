@@ -10,11 +10,12 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.events.bean;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.property
@@ -25,10 +26,12 @@ namespace com.espertech.esper.events.property
         private MappedProperty[] _mapped;
         private EventBean _theEvent;
         private BeanEventType _eventType;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _mapped = new MappedProperty[2];
             _mapped[0] = new MappedProperty("Mapped", "keyOne");
             _mapped[1] = new MappedProperty("Mapped", "keyTwo");
@@ -43,13 +46,13 @@ namespace com.espertech.esper.events.property
             Object[] expected = new String[] {"valueOne", "valueTwo"};
             for (int i = 0; i < _mapped.Length; i++)
             {
-                EventPropertyGetter getter = _mapped[i].GetGetter(_eventType, SupportEventAdapterService.Service);
+                EventPropertyGetter getter = _mapped[i].GetGetter(_eventType, _container.Resolve<EventAdapterService>());
                 Assert.AreEqual(expected[i], getter.Get(_theEvent));
             }
     
             // try invalid case
             MappedProperty mpd = new MappedProperty("Dummy", "dummy");
-            Assert.IsNull(mpd.GetGetter(_eventType, SupportEventAdapterService.Service));
+            Assert.IsNull(mpd.GetGetter(_eventType, _container.Resolve<EventAdapterService>()));
         }
     
         [Test]
@@ -58,14 +61,14 @@ namespace com.espertech.esper.events.property
             var expected = new Type[] {typeof(string), typeof(string)};
             for (int i = 0; i < _mapped.Length; i++)
             {
-                Assert.AreEqual(expected[i], _mapped[i].GetPropertyType(_eventType, SupportEventAdapterService.Service));
+                Assert.AreEqual(expected[i], _mapped[i].GetPropertyType(_eventType, _container.Resolve<EventAdapterService>()));
             }
     
             // try invalid case
             var mpd = new MappedProperty("Dummy", "dummy");
-            Assert.IsNull(mpd.GetPropertyType(_eventType, SupportEventAdapterService.Service));
+            Assert.IsNull(mpd.GetPropertyType(_eventType, _container.Resolve<EventAdapterService>()));
             mpd = new MappedProperty("MapProperty", "dummy");
-            Assert.AreEqual(typeof(string), mpd.GetPropertyType(_eventType, SupportEventAdapterService.Service));
+            Assert.AreEqual(typeof(string), mpd.GetPropertyType(_eventType, _container.Resolve<EventAdapterService>()));
         }
     }
 }

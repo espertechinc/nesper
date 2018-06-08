@@ -13,30 +13,17 @@ namespace com.espertech.esper.supportregression.bean
     [Serializable]
     public class SupportDeltaFive : ISupportDeltaFive
     {
-        private readonly String k0;
-        private readonly String p1;
-        private readonly String p5;
-    
         public SupportDeltaFive(String k0, String p1, String p5)
         {
-            this.k0 = k0;
-            this.p1 = p1;
-            this.p5 = p5;
+            K0 = k0;
+            P1 = p1;
+            P5 = p5;
         }
 
-        public string K0
-        {
-            get { return k0; }
-        }
+        public string K0 { get; }
 
-        public string P1
-        {
-            get { return p1; }
-        }
+        public string P1 { get; }
 
-        public string P5
-        {
-            get { return p5; }
-        }
+        public string P5 { get; }
     }
 }

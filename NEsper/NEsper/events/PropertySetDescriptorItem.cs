@@ -20,7 +20,7 @@ namespace com.espertech.esper.events
         public PropertySetDescriptorItem(
             EventPropertyDescriptor propertyDescriptor,
             Type simplePropertyType,
-            EventPropertyGetter propertyGetter,
+            EventPropertyGetterSPI propertyGetter,
             FragmentEventType fragmentEventType)
         {
             PropertyDescriptor = propertyDescriptor;
@@ -33,7 +33,7 @@ namespace com.espertech.esper.events
 
         public Type SimplePropertyType { get; private set; }
 
-        public EventPropertyGetter PropertyGetter { get; private set; }
+        public EventPropertyGetterSPI PropertyGetter { get; private set; }
 
         public FragmentEventType FragmentEventType { get; private set; }
     }

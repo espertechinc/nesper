@@ -6,13 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using Avro.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
 
 using NEsper.Avro.Core;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace NEsper.Avro.Getter
 {
@@ -22,15 +24,15 @@ namespace NEsper.Avro.Getter
 
         public AvroEventBeanGetterDynamicPoly(AvroEventPropertyGetter[] getters)
         {
-            this._getters = getters;
+            _getters = getters;
         }
 
-        public Object GetAvroFieldValue(GenericRecord record)
+        public object GetAvroFieldValue(GenericRecord record)
         {
             return GetAvroFieldValuePoly(record, _getters);
         }
 
-        public Object Get(EventBean eventBean)
+        public object Get(EventBean eventBean)
         {
             var record = (GenericRecord) eventBean.Underlying;
             return GetAvroFieldValue(record);
@@ -41,12 +43,12 @@ namespace NEsper.Avro.Getter
             return true;
         }
 
-        public Object GetFragment(EventBean eventBean)
+        public object GetFragment(EventBean eventBean)
         {
             return null;
         }
 
-        public Object GetAvroFragment(GenericRecord record)
+        public object GetAvroFragment(GenericRecord record)
         {
             return null;
         }
@@ -66,7 +68,7 @@ namespace NEsper.Avro.Getter
             return record != null && getters[getters.Length - 1].IsExistsPropertyAvro(record);
         }
 
-        internal static Object GetAvroFieldValuePoly(GenericRecord record, AvroEventPropertyGetter[] getters)
+        internal static object GetAvroFieldValuePoly(GenericRecord record, AvroEventPropertyGetter[] getters)
         {
             if (record == null)
             {
@@ -80,7 +82,7 @@ namespace NEsper.Avro.Getter
             return getters[getters.Length - 1].GetAvroFieldValue(record);
         }
 
-        internal static Object GetAvroFieldFragmentPoly(GenericRecord record, AvroEventPropertyGetter[] getters)
+        internal static object GetAvroFieldFragmentPoly(GenericRecord record, AvroEventPropertyGetter[] getters)
         {
             if (record == null)
             {
@@ -107,5 +109,75 @@ namespace NEsper.Avro.Getter
             }
             return record;
         }
-    }
+
+        internal static string GetAvroFieldValuePolyExistsCodegen(ICodegenContext context, AvroEventPropertyGetter[] getters)
+        {
+            return context.AddMethod(typeof(bool), typeof(GenericRecord), "record", typeof(AvroEventBeanGetterDynamicPoly))
+                .IfRefNullReturnFalse("record")
+                .AssignRef("record", LocalMethod(NavigatePolyCodegen(context, getters), Ref("record")))
+                .IfRefNullReturnFalse("record")
+                .MethodReturn(getters[getters.Length - 1].CodegenUnderlyingExists(Ref("record"), context));
+        }
+
+        internal static string GetAvroFieldValuePolyCodegen(ICodegenContext context, AvroEventPropertyGetter[] getters)
+        {
+            return context.AddMethod(typeof(object), typeof(GenericRecord), "record", typeof(AvroEventBeanGetterDynamicPoly))
+                .IfRefNullReturnNull("record")
+                .AssignRef("record", LocalMethod(NavigatePolyCodegen(context, getters), Ref("record")))
+                .IfRefNullReturnNull("record")
+                .MethodReturn(getters[getters.Length - 1].CodegenUnderlyingGet(Ref("record"), context));
+        }
+
+        internal static string GetAvroFieldFragmentPolyCodegen(ICodegenContext context, AvroEventPropertyGetter[] getters)
+        {
+            return context.AddMethod(typeof(object), typeof(GenericRecord), "record", typeof(AvroEventBeanGetterDynamicPoly))
+                .IfRefNullReturnNull("record")
+                .AssignRef("record", LocalMethod(NavigatePolyCodegen(context, getters), Ref("record")))
+                .IfRefNullReturnNull("record")
+                .MethodReturn(getters[getters.Length - 1].CodegenUnderlyingFragment(Ref("record"), context));
+        }
+
+        private static string NavigatePolyCodegen(ICodegenContext context, AvroEventPropertyGetter[] getters)
+        {
+            var block = context.AddMethod(typeof(GenericRecord), typeof(GenericRecord), "record", typeof(AvroEventBeanGetterDynamicPoly));
+            block.DeclareVar(typeof(object), "value", ConstantNull());
+            for (int i = 0; i<getters.Length - 1; i++) {
+                block.AssignRef("value", getters[i].CodegenUnderlyingGet(Ref("record"), context))
+                    .IfRefNotTypeReturnConst("value", typeof(GenericRecord), null)
+                    .AssignRef("record", Cast(typeof(GenericRecord), Ref("value")));
+            }
+            return block.MethodReturn(Ref("record"));
+        }
+
+        public ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingGet(
+                CastUnderlying(typeof(GenericRecord), beanExpression), context);
+        }
+
+        public ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
+        }
+
+        public ICodegenExpression CodegenEventBeanFragment(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return ConstantNull();
+        }
+
+        public ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return LocalMethod(GetAvroFieldValuePolyCodegen(context, _getters), underlyingExpression);
+        }
+
+        public ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
+        }
+
+        public ICodegenExpression CodegenUnderlyingFragment(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return ConstantNull();
+        }
+}
 } // end of namespace

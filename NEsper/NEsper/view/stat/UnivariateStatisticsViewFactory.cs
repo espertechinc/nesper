@@ -80,7 +80,7 @@ namespace com.espertech.esper.view.stat
             }
 
             var other = (UnivariateStatisticsView)view;
-            if (!ExprNodeUtility.DeepEquals(other.FieldExpression, _fieldExpression))
+            if (!ExprNodeUtility.DeepEquals(other.FieldExpression, _fieldExpression, false))
             {
                 return false;
             }

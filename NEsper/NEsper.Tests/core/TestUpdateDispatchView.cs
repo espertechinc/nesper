@@ -11,14 +11,15 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.collection;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.thread;
 using com.espertech.esper.dispatch;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.metric;
 using com.espertech.esper.supportunit.core;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -33,10 +34,12 @@ namespace com.espertech.esper.core
         private SupportUpdateListener _listenerTwo;
         private DispatchService _dispatchService;
         private StatementResultServiceImpl _statementResultService;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             MetricReportingPath.IsMetricsEnabled = false;
 
             _listenerOne = new SupportUpdateListener();
@@ -46,15 +49,21 @@ namespace com.espertech.esper.core
             listenerSet.Events.Add(_listenerOne.Update);
             listenerSet.Events.Add(_listenerTwo.Update);
     
-            _dispatchService = new DispatchServiceImpl();
+            _dispatchService = new DispatchServiceImpl(
+                _container.ThreadLocalManager());
 
             _statementResultService = new StatementResultServiceImpl(
-                "name", null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.ThreadingConfig()));
+                "name", null, null,
+                new ThreadingServiceImpl(new ConfigurationEngineDefaults.ThreadingConfig()),
+                _container.ThreadLocalManager());
             _statementResultService.SetUpdateListeners(listenerSet, false);
-            _statementResultService.SetSelectClause(new Type[1], new String[1], false, new ExprEvaluator[1], new SupportExprEvaluatorContext(null));
+            _statementResultService.SetSelectClause(
+                new Type[1], new String[1], false, 
+                new ExprEvaluator[1], new SupportExprEvaluatorContext(_container, null));
             _statementResultService.SetContext(new SupportEPStatementSPI(), null, false, false, false, false, null);
 
-            _updateDispatchView = new UpdateDispatchViewBlockingWait(_statementResultService, _dispatchService, 1000);
+            _updateDispatchView = new UpdateDispatchViewBlockingWait(
+                _statementResultService, _dispatchService, 1000, _container.ThreadLocalManager());
         }
     
         [Test]

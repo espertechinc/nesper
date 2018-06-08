@@ -8,6 +8,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.compat.collections
@@ -22,10 +23,10 @@ namespace com.espertech.esper.compat.collections
         /// <summary>
         /// Initializes a new instance of the <see cref="ObsoleteConcurrentDictionary&lt;K, V&gt;"/> class.
         /// </summary>
-        public ObsoleteConcurrentDictionary()
+        public ObsoleteConcurrentDictionary(IReaderWriterLockManager rwLockManager)
         {
             _subDictionary = new Dictionary<K, V>();
-            _rwLock = ReaderWriterLockManager.CreateLock(GetType());
+            _rwLock = rwLockManager.CreateLock(GetType());
             _rLock = _rwLock.ReadLock;
             _wLock = _rwLock.WriteLock;
         }
@@ -34,10 +35,10 @@ namespace com.espertech.esper.compat.collections
         /// Initializes a new instance of the <see cref="ObsoleteConcurrentDictionary&lt;K, V&gt;"/> class.
         /// </summary>
         /// <param name="subDictionary">The sub dictionary.</param>
-        public ObsoleteConcurrentDictionary(IDictionary<K, V> subDictionary)
+        public ObsoleteConcurrentDictionary(IDictionary<K, V> subDictionary, IReaderWriterLockManager rwLockManager)
         {
             _subDictionary = subDictionary;
-            _rwLock = ReaderWriterLockManager.CreateLock(GetType());
+            _rwLock = rwLockManager.CreateLock(GetType());
             _rLock = _rwLock.ReadLock;
             _wLock = _rwLock.WriteLock;
         }
@@ -176,10 +177,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.
         /// </returns>
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// Determines whether the <see cref="T:System.Collections.Generic.IDictionary`2"/> contains an element with the specified key.

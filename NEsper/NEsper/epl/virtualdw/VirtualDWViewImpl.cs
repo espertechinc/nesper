@@ -67,7 +67,7 @@ namespace com.espertech.esper.epl.virtualdw
                 .ToList();
             var eventTable = new VirtualDWEventTable(
                 unique, hashFields, btreeFields, TABLE_ORGANIZATION);
-            var imk = new IndexMultiKey(unique, hashedProps, btreeProps);
+            var imk = new IndexMultiKey(unique, hashedProps, btreeProps, null);
             return new Pair<IndexMultiKey, EventTable>(imk, eventTable);
         }
 
@@ -194,7 +194,7 @@ namespace com.espertech.esper.epl.virtualdw
             foreach (var hashprop in keysAvailable)
             {
                 hashFields.Add(new VirtualDataWindowLookupFieldDesc(hashprop, VirtualDataWindowLookupOp.EQUALS, null));
-                hashIndexedFields.Add(new IndexedPropDesc(hashprop, null));
+                hashIndexedFields.Add(new IndexedPropDesc(hashprop, _eventType.GetPropertyType(hashprop)));
             }
 
             IList<VirtualDataWindowLookupFieldDesc> btreeFields = new List<VirtualDataWindowLookupFieldDesc>();
@@ -202,11 +202,11 @@ namespace com.espertech.esper.epl.virtualdw
             foreach (var btreeprop in rangesAvailable)
             {
                 btreeFields.Add(new VirtualDataWindowLookupFieldDesc(btreeprop, null, null));
-                btreeIndexedFields.Add(new IndexedPropDesc(btreeprop, null));
+                btreeIndexedFields.Add(new IndexedPropDesc(btreeprop, _eventType.GetPropertyType(btreeprop)));
             }
 
             var noopTable = new VirtualDWEventTable(false, hashFields, btreeFields, TABLE_ORGANIZATION);
-            var imk = new IndexMultiKey(false, hashIndexedFields, btreeIndexedFields);
+            var imk = new IndexMultiKey(false, hashIndexedFields, btreeIndexedFields, null);
 
             return new Pair<IndexMultiKey, EventTable>(imk, noopTable);
         }
@@ -308,7 +308,7 @@ namespace com.espertech.esper.epl.virtualdw
             try
             {
                 var fields = spec.Columns
-                    .Select(col => new VirtualDataWindowEventStartIndex.VDWCreateIndexField(col.Name, col.Type == CreateIndexType.HASH))
+                    .Select(col => new VirtualDataWindowEventStartIndex.VDWCreateIndexField(col.Expressions, col.IndexType, col.Parameters))
                     .ToList();
                 var create = new VirtualDataWindowEventStartIndex(
                     spec.WindowName, spec.IndexName, fields, spec.IsUnique);

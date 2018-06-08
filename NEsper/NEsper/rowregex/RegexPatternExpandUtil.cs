@@ -13,6 +13,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.util;
 
@@ -21,9 +22,10 @@ namespace com.espertech.esper.rowregex
     public class RegexPatternExpandUtil
     {
         private static readonly RowRegexExprNodeCopierAtom ATOM_HANDLER = new RowRegexExprNodeCopierAtom();
-        private static readonly RowRegexExprNodeCopierNested NESTED_HANDLER = new RowRegexExprNodeCopierNested();
+        //private static readonly RowRegexExprNodeCopierNested NESTED_HANDLER = new RowRegexExprNodeCopierNested();
 
-        public static RowRegexExprNode Expand(RowRegexExprNode pattern)
+        public static RowRegexExprNode Expand(
+            IContainer container, RowRegexExprNode pattern)
         {
             var visitor = new RowRegexExprNodeVisitorRepeat();
             pattern.Accept(visitor);
@@ -42,7 +44,7 @@ namespace com.espertech.esper.rowregex
 
             foreach (var permute in permutes)
             {
-                var alteration = ExpandPermute(permute.Permute);
+                var alteration = ExpandPermute(container, permute.Permute);
                 RowRegexExprNode optionalNewParent = Replace(permute.OptionalParent, permute.Permute, Collections.SingletonList<RowRegexExprNode>(alteration));
                 if (optionalNewParent != null)
                 {
@@ -74,10 +76,11 @@ namespace com.espertech.esper.rowregex
                 return o1.Level == o2.Level ? 0 : 1;
             });
 
+            var nestedHandler = new RowRegexExprNodeCopierNested(container);
             foreach (var pair in nestedPairs)
             {
                 var nested = pair.Nested;
-                var expandedRepeat = ExpandRepeat(nested, nested.OptionalRepeat, nested.NFAType, NESTED_HANDLER);
+                var expandedRepeat = ExpandRepeat(nested, nested.OptionalRepeat, nested.NFAType, nestedHandler);
                 var optionalNewParent = Replace(pair.OptionalParent, pair.Nested, expandedRepeat);
                 if (optionalNewParent != null)
                 {
@@ -88,7 +91,8 @@ namespace com.espertech.esper.rowregex
             return newParentNode;
         }
 
-        private static RowRegexExprNodeAlteration ExpandPermute(RowRegexExprNodePermute permute)
+        private static RowRegexExprNodeAlteration ExpandPermute(
+            IContainer container, RowRegexExprNodePermute permute)
         {
             var e = PermutationEnumerator.Create(permute.ChildNodes.Count);
             var parent = new RowRegexExprNodeAlteration();
@@ -99,7 +103,7 @@ namespace com.espertech.esper.rowregex
                 for (var i = 0; i < indexes.Length; i++)
                 {
                     RowRegexExprNode toCopy = permute.ChildNodes[indexes[i]];
-                    var copy = CheckedCopy(toCopy);
+                    var copy = CheckedCopy(container, toCopy);
                     concat.AddChildNode(copy);
                 }
             }
@@ -132,10 +136,11 @@ namespace com.espertech.esper.rowregex
             return null;
         }
 
-        private static IList<RowRegexExprNode> ExpandRepeat(RowRegexExprNode node,
-                                                           RowRegexExprRepeatDesc repeat,
-                                                           RegexNFATypeEnum type,
-                                                           RowRegexExprNodeCopier copier)
+        private static IList<RowRegexExprNode> ExpandRepeat(
+            RowRegexExprNode node,
+            RowRegexExprRepeatDesc repeat,
+            RegexNFATypeEnum type,
+            RowRegexExprNodeCopier copier)
         {
             var evaluateParams = new EvaluateParams(null, true, null);
             // handle single-bounds (no ranges)
@@ -260,11 +265,11 @@ namespace com.espertech.esper.rowregex
             return repeated;
         }
 
-        private static RowRegexExprNode CheckedCopy(RowRegexExprNode inner)
+        private static RowRegexExprNode CheckedCopy(IContainer container, RowRegexExprNode inner)
         {
             try
             {
-                return (RowRegexExprNode)SerializableObjectCopier.Copy(inner);
+                return (RowRegexExprNode)SerializableObjectCopier.Copy(container, inner);
             }
             catch (Exception e)
             {
@@ -287,15 +292,13 @@ namespace com.espertech.esper.rowregex
 
         private static void ValidateExpression(ExprNode repeat)
         {
-            var expression = "pattern quantifier '" + repeat.ToExpressionStringMinPrecedenceSafe() + "'";
-            ExprNodeUtility.ValidatePlainExpression(ExprNodeOrigin.MATCHRECOGPATTERN, expression, repeat);
+            ExprNodeUtility.ValidatePlainExpression(ExprNodeOrigin.MATCHRECOGPATTERN, repeat);
             if (!repeat.IsConstantResult)
             {
-                throw new ExprValidationException(expression + " must return a constant value");
+                throw new ExprValidationException(GetPatternQuantifierExpressionText(repeat) + " must return a constant value");
             }
-            if (repeat.ExprEvaluator.ReturnType.GetBoxedType() != typeof(int?))
-            {
-                throw new ExprValidationException(expression + " must return an integer-type value");
+            if (repeat.ExprEvaluator.ReturnType.IsNotInt32()) {
+                throw new ExprValidationException(GetPatternQuantifierExpressionText(repeat) + " must return an integer-type value");
             }
         }
 
@@ -306,7 +309,9 @@ namespace com.espertech.esper.rowregex
 
         private class RowRegexExprNodeCopierAtom : RowRegexExprNodeCopier
         {
-            public RowRegexExprNode Copy(RowRegexExprNode nodeToCopy, RegexNFATypeEnum newType)
+            public RowRegexExprNode Copy(
+                RowRegexExprNode nodeToCopy, 
+                RegexNFATypeEnum newType)
             {
                 var atom = (RowRegexExprNodeAtom)nodeToCopy;
                 return new RowRegexExprNodeAtom(atom.Tag, newType, null);
@@ -315,17 +320,31 @@ namespace com.espertech.esper.rowregex
 
         private class RowRegexExprNodeCopierNested : RowRegexExprNodeCopier
         {
-            public RowRegexExprNode Copy(RowRegexExprNode nodeToCopy, RegexNFATypeEnum newType)
+            private readonly IContainer _container;
+
+            public RowRegexExprNodeCopierNested(IContainer container)
+            {
+                _container = container;
+            }
+
+            public RowRegexExprNode Copy(
+                RowRegexExprNode nodeToCopy, 
+                RegexNFATypeEnum newType)
             {
                 var nested = (RowRegexExprNodeNested)nodeToCopy;
                 var nestedCopy = new RowRegexExprNodeNested(newType, null);
                 foreach (var inner in nested.ChildNodes)
                 {
-                    var innerCopy = CheckedCopy(inner);
+                    var innerCopy = CheckedCopy(_container, inner);
                     nestedCopy.AddChildNode(innerCopy);
                 }
                 return nestedCopy;
             }
+        }
+
+        private static String GetPatternQuantifierExpressionText(ExprNode exprNode)
+        {
+            return "pattern quantifier '" + ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(exprNode) + "'";
         }
     }
 } // end of namespace

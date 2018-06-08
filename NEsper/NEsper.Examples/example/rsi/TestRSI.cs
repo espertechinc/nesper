@@ -8,13 +8,12 @@
 
 using System;
 
+using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using NEsper.Examples.StockTicker.eventbean;
-
 using NUnit.Framework;
 
-using com.espertech.esper.client;
-
-namespace com.espertech.esper.example.rsi
+namespace NEsper.Examples.RSI
 {
 	[TestFixture]
 	public class TestRSI // : StockTickerRegressionConstants
@@ -32,10 +31,14 @@ namespace com.espertech.esper.example.rsi
 	    [SetUp]
 	    public void SetUp()
 	    {
-	        Configuration configuration = new Configuration();
+	        var container = ContainerExtensions.CreateDefaultContainer()
+                .InitializeDefaultServices()
+	            .InitializeDatabaseDrivers();
+
+	        var configuration = new Configuration(container);
             configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 	        configuration.AddEventType("StockTick", typeof(StockTick).FullName);
-	        _epService = EPServiceProviderManager.GetProvider("TestStockTickerRSI", configuration);
+	        _epService = EPServiceProviderManager.GetProvider(container, "TestStockTickerRSI", configuration);
 	        _epService.Initialize();
 	
 	        _stockListener = new RSIStockTickerListener(_epService, PERIOD);
@@ -44,8 +47,8 @@ namespace com.espertech.esper.example.rsi
 	        _factory = _epService.EPAdministrator.CreatePattern(_expressionText);
 	        _factory.Events += _stockListener.Update;
 	
-	        String rsiEvent = typeof(RSIEvent).FullName;
-	        String viewExpr = "select * from " + rsiEvent + ".win:length(1)";
+	        var rsiEvent = typeof(RSIEvent).FullName;
+	        var viewExpr = "select * from " + rsiEvent + ".win:length(1)";
 	        _rsiListener = new RSIListener();
 	        _factory = _epService.EPAdministrator.CreateEPL(viewExpr);
 	        _factory.Events += _rsiListener.Update;
@@ -83,7 +86,7 @@ namespace com.espertech.esper.example.rsi
 
 	    private void SendEvent(String symbol, double price)
 	    {
-	        StockTick eventBean = new StockTick(symbol, price);
+	        var eventBean = new StockTick(symbol, price);
 	        _epService.EPRuntime.SendEvent(eventBean);
 	    }
 	    

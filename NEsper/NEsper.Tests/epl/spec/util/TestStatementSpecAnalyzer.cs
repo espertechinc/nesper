@@ -9,8 +9,9 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.service;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.epl.spec.util
@@ -19,13 +20,16 @@ namespace com.espertech.esper.epl.spec.util
     public class TestStatementSpecAnalyzer
     {
         private EPServiceProvider _engine;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            var config = new Configuration();
+            _container = SupportContainer.Reset();
+
+            var config = new Configuration(_container);
             config.EngineDefaults.Threading.IsInternalTimerEnabled = false;
-            _engine = EPServiceProviderManager.GetDefaultProvider(config);
+            _engine = EPServiceProviderManager.GetDefaultProvider(_container, config);
         }
     
         [Test]

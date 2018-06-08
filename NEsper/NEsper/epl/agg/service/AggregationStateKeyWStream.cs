@@ -21,16 +21,18 @@ namespace com.espertech.esper.epl.agg.service
         private readonly int _streamNum;
         private readonly EventType _eventType;
         private readonly AggregationStateTypeWStream _stateType;
-        private readonly ExprNode[] _exprNodes;
-    
-        public AggregationStateKeyWStream(int streamNum, EventType eventType, AggregationStateTypeWStream stateType, ExprNode[] exprNodes)
+        private readonly ExprNode[] _criteriaExprNodes;
+        private readonly ExprNode _filterExprNode;
+
+        public AggregationStateKeyWStream(int streamNum, EventType eventType, AggregationStateTypeWStream stateType, ExprNode[] criteriaExprNodes, ExprNode filterExprNode)
         {
             _streamNum = streamNum;
             _eventType = eventType;
             _stateType = stateType;
-            _exprNodes = exprNodes;
+            _criteriaExprNodes = criteriaExprNodes;
+            _filterExprNode = filterExprNode;
         }
-    
+
         public override bool Equals(Object o)
         {
             if (this == o) return true;
@@ -40,7 +42,7 @@ namespace com.espertech.esper.epl.agg.service
     
             if (_streamNum != that._streamNum) return false;
             if (_stateType != that._stateType) return false;
-            if (!ExprNodeUtility.DeepEquals(_exprNodes, that._exprNodes)) return false;
+            if (!ExprNodeUtility.DeepEquals(_criteriaExprNodes, that._criteriaExprNodes, false)) return false;
             if (_eventType != null)
             {
                 if (that._eventType == null)
@@ -49,8 +51,12 @@ namespace com.espertech.esper.epl.agg.service
                 if (!EventTypeUtility.IsTypeOrSubTypeOf(that._eventType, _eventType)) 
                     return false;
             }
-    
-            return true;
+
+            if (_filterExprNode == null)
+            {
+                return that._filterExprNode == null;
+            }
+            return that._filterExprNode != null && ExprNodeUtility.DeepEquals(_filterExprNode, that._filterExprNode, false);
         }
     
         public override int GetHashCode()

@@ -14,7 +14,7 @@ namespace com.espertech.esper.supportregression.bean
 	[Serializable]
 	public class ISupportCImpl : ISupportC
 	{
-		virtual public String C
+		public virtual String C
 		{
             get { return valueC; }
 		}

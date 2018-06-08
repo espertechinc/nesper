@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events;
 
 namespace com.espertech.esper.epl.join.table
@@ -51,7 +52,7 @@ namespace com.espertech.esper.epl.join.table
             }
         }
 
-        public EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
+        public EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent, ExprEvaluatorContext exprEvaluatorContext)
         {
             var tables = new EventTable[PropertyGetters.Length];
             if (Unique)

@@ -37,7 +37,7 @@ namespace com.espertech.esper.epl.expression.ops
             for (var i = 0; i < evaluators.Length; i++)
             {
                 var childType = evaluators[i].ReturnType;
-                var childTypeName = childType == null ? "null" : Name.Of(childType);
+                var childTypeName = childType == null ? "null" : Name.Clean(childType);
                 if (childType != typeof(String))
                 {
                     throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to string is not allowed", childTypeName));
@@ -51,7 +51,7 @@ namespace com.espertech.esper.epl.expression.ops
             }
             else
             {
-                _evaluator = new ExprConcatNodeEvalThreadLocal(this, evaluators);
+                _evaluator = new ExprConcatNodeEvalThreadLocal(this, evaluators, validationContext.ThreadLocalManager);
             }
 
             return null;
@@ -83,7 +83,7 @@ namespace com.espertech.esper.epl.expression.ops
             get { return ExprPrecedenceEnum.CONCAT; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             return node is ExprConcatNode;
         }

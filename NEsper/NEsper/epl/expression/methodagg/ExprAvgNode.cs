@@ -31,26 +31,22 @@ namespace com.espertech.esper.epl.expression.methodagg
         {
         }
     
-        public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             _hasFilter = PositionalParams.Length > 1;
             var childType = base.ValidateNumericChildAllowFilter(_hasFilter);
             return validationContext.EngineImportService.AggregationFactoryFactory.MakeAvg(validationContext.StatementExtensionSvcContext, this, childType, validationContext.EngineImportService.DefaultMathContext);
         }
 
-        public override string AggregationFunctionName
-        {
-            get { return "avg"; }
-        }
+        public override string AggregationFunctionName => "avg";
 
         protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             return node is ExprAvgNode;
         }
 
-        public bool HasFilter
-        {
-            get { return _hasFilter; }
-        }
+        public bool HasFilter => _hasFilter;
+
+        protected override bool IsFilterExpressionAsLastParameter => true;
     }
 }

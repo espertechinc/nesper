@@ -24,6 +24,8 @@ namespace com.espertech.esper.epl.lookup
 {
     public class SubordinateQueryPlannerUtil
     {
+        private EventBean[] events;
+
         public static void QueryPlanLogOnExpr(
             bool queryPlanLogging,
             ILog queryPlanLog,
@@ -225,7 +227,7 @@ namespace com.espertech.esper.epl.lookup
                 var table = indexRepository.GetIndexByDesc(desc.IndexMultiKey);
                 if (table == null)
                 {
-                    table = EventTableUtil.BuildIndex(agentInstanceContext, 0, desc.QueryPlanIndexItem, eventType, true, desc.IndexMultiKey.IsUnique, null, null, false);
+                    table = EventTableUtil.BuildIndex(agentInstanceContext, 0, desc.QueryPlanIndexItem, eventType, true, desc.IndexMultiKey.IsUnique, desc.IndexName, null, false);
 
                     // fill table since its new
                     if (!isRecoveringResilient)
@@ -234,7 +236,7 @@ namespace com.espertech.esper.epl.lookup
                         foreach (var prefilledEvent in contents)
                         {
                             events[0] = prefilledEvent;
-                            table.Add(events);
+                            table.Add(events, agentInstanceContext);
                         }
                     }
 
@@ -255,7 +257,7 @@ namespace com.espertech.esper.epl.lookup
                 }
                 else
                 {
-                    repo.AddIndex(false, desc.IndexMultiKey, null, statementName, false, desc.QueryPlanIndexItem);
+                    repo.AddIndexNonExplicit(desc.IndexMultiKey, statementName, desc.QueryPlanIndexItem);
                     repo.AddIndexReference(desc.IndexMultiKey, statementName);
                 }
             }

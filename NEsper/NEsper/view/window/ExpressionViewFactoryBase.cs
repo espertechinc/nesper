@@ -98,24 +98,18 @@ namespace com.espertech.esper.view.window
             }
         }
 
-        public EventType EventType
-        {
-            get { return _eventType; }
-        }
+        public EventType EventType => _eventType;
 
         public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
             return false;
         }
 
-        public EventType BuiltinMapType
-        {
-            get { return _builtinMapType; }
-        }
+        public EventType BuiltinMapType => _builtinMapType;
 
         public ExprNode ExpiryExpression
         {
-            get { return _expiryExpression; }
+            get => _expiryExpression;
             set
             {
                 _expiryExpression = value;
@@ -125,20 +119,11 @@ namespace com.espertech.esper.view.window
             }
         }
 
-        public ISet<string> VariableNames
-        {
-            get { return _variableNames; }
-        }
+        public ISet<string> VariableNames => _variableNames;
 
-        public AggregationServiceFactoryDesc AggregationServiceFactoryDesc
-        {
-            get { return _aggregationServiceFactoryDesc; }
-        }
+        public AggregationServiceFactoryDesc AggregationServiceFactoryDesc => _aggregationServiceFactoryDesc;
 
-        public ExprEvaluator ExpiryExpressionEvaluator
-        {
-            get { return _expiryExpressionEvaluator; }
-        }
+        public ExprEvaluator ExpiryExpressionEvaluator => _expiryExpressionEvaluator;
 
         public abstract void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> viewParameters);
         public abstract View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext);

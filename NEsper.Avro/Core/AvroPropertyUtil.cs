@@ -55,9 +55,9 @@ namespace NEsper.Avro.Core
             return AvroTypeUtil.PropertyType(typeSchema);
         }
 
-        public static EventPropertyGetter GetGetter(
+        public static EventPropertyGetterSPI GetGetter(
             Schema avroSchema,
-            Dictionary<string, EventPropertyGetter> propertyGetterCache,
+            Dictionary<string, EventPropertyGetterSPI> propertyGetterCache,
             IDictionary<string, PropertySetDescriptorItem> propertyDescriptors,
             string propertyName,
             bool addToCache,
@@ -194,7 +194,7 @@ namespace NEsper.Avro.Core
             return getter;
         }
 
-        private static EventPropertyGetter PropertyGetterNested(
+        private static EventPropertyGetterSPI PropertyGetterNested(
             GetterNestedFactory factory,
             Schema fieldSchema,
             Property property,
@@ -389,8 +389,8 @@ namespace NEsper.Avro.Core
 
         private static void MayAddToGetterCache(
             string propertyName,
-            IDictionary<string, EventPropertyGetter> propertyGetterCache,
-            EventPropertyGetter getter,
+            IDictionary<string, EventPropertyGetterSPI> propertyGetterCache,
+            EventPropertyGetterSPI getter,
             bool add)
         {
             if (!add)
@@ -402,17 +402,17 @@ namespace NEsper.Avro.Core
 
         private interface GetterNestedFactory
         {
-            EventPropertyGetter MakeSimple(Field posNested, EventType fragmentEventType);
+            EventPropertyGetterSPI MakeSimple(Field posNested, EventType fragmentEventType);
 
-            EventPropertyGetter MakeIndexed(Field posNested, int index, EventType fragmentEventType);
+            EventPropertyGetterSPI MakeIndexed(Field posNested, int index, EventType fragmentEventType);
 
-            EventPropertyGetter MakeMapped(Field posNested, string key);
+            EventPropertyGetterSPI MakeMapped(Field posNested, string key);
 
-            EventPropertyGetter MakeDynamicSimple(string propertyName);
+            EventPropertyGetterSPI MakeDynamicSimple(string propertyName);
 
-            EventPropertyGetter MakeNestedSimpleMultiLevel(Field[] path, EventType fragmentEventType);
+            EventPropertyGetterSPI MakeNestedSimpleMultiLevel(Field[] path, EventType fragmentEventType);
 
-            EventPropertyGetter MakeNestedPolyMultiLevel(AvroEventPropertyGetter[] getters);
+            EventPropertyGetterSPI MakeNestedPolyMultiLevel(AvroEventPropertyGetter[] getters);
         }
 
         private class GetterNestedFactoryRootedSimple : GetterNestedFactory
@@ -426,33 +426,33 @@ namespace NEsper.Avro.Core
                 _posTop = posTop;
             }
 
-            public EventPropertyGetter MakeSimple(Field posNested, EventType fragmentEventType)
+            public EventPropertyGetterSPI MakeSimple(Field posNested, EventType fragmentEventType)
             {
                 return new AvroEventBeanGetterNestedSimple(_posTop, posNested, fragmentEventType, _eventAdapterService);
             }
 
-            public EventPropertyGetter MakeIndexed(Field posNested, int index, EventType fragmentEventType)
+            public EventPropertyGetterSPI MakeIndexed(Field posNested, int index, EventType fragmentEventType)
             {
                 return new AvroEventBeanGetterNestedIndexed(
                     _posTop, posNested, index, fragmentEventType, _eventAdapterService);
             }
 
-            public EventPropertyGetter MakeMapped(Field posNested, string key)
+            public EventPropertyGetterSPI MakeMapped(Field posNested, string key)
             {
                 return new AvroEventBeanGetterNestedMapped(_posTop, posNested, key);
             }
 
-            public EventPropertyGetter MakeDynamicSimple(string propertyName)
+            public EventPropertyGetterSPI MakeDynamicSimple(string propertyName)
             {
                 return new AvroEventBeanGetterNestedDynamicSimple(_posTop, propertyName);
             }
 
-            public EventPropertyGetter MakeNestedSimpleMultiLevel(Field[] path, EventType fragmentEventType)
+            public EventPropertyGetterSPI MakeNestedSimpleMultiLevel(Field[] path, EventType fragmentEventType)
             {
                 return new AvroEventBeanGetterNestedMultiLevel(_posTop, path, fragmentEventType, _eventAdapterService);
             }
 
-            public EventPropertyGetter MakeNestedPolyMultiLevel(AvroEventPropertyGetter[] getters)
+            public EventPropertyGetterSPI MakeNestedPolyMultiLevel(AvroEventPropertyGetter[] getters)
             {
                 return new AvroEventBeanGetterNestedPoly(_posTop, getters);
             }
@@ -471,32 +471,32 @@ namespace NEsper.Avro.Core
                 _index = index;
             }
 
-            public EventPropertyGetter MakeSimple(Field posNested, EventType fragmentEventType)
+            public EventPropertyGetterSPI MakeSimple(Field posNested, EventType fragmentEventType)
             {
                 return new AvroEventBeanGetterNestedIndexRooted(
                     _pos, _index, new AvroEventBeanGetterSimple(posNested, fragmentEventType, _eventAdapterService));
             }
 
-            public EventPropertyGetter MakeIndexed(Field posNested, int index, EventType fragmentEventType)
+            public EventPropertyGetterSPI MakeIndexed(Field posNested, int index, EventType fragmentEventType)
             {
                 return new AvroEventBeanGetterNestedIndexRooted(
                     _pos, index,
                     new AvroEventBeanGetterIndexed(posNested, index, fragmentEventType, _eventAdapterService));
             }
 
-            public EventPropertyGetter MakeMapped(Field posNested, string key)
+            public EventPropertyGetterSPI MakeMapped(Field posNested, string key)
             {
                 return new AvroEventBeanGetterNestedIndexRooted(
                     _pos, _index, new AvroEventBeanGetterMapped(posNested, key));
             }
 
-            public EventPropertyGetter MakeDynamicSimple(string propertyName)
+            public EventPropertyGetterSPI MakeDynamicSimple(string propertyName)
             {
                 return new AvroEventBeanGetterNestedIndexRooted(
                     _pos, _index, new AvroEventBeanGetterSimpleDynamic(propertyName));
             }
 
-            public EventPropertyGetter MakeNestedSimpleMultiLevel(Field[] path, EventType fragmentEventType)
+            public EventPropertyGetterSPI MakeNestedSimpleMultiLevel(Field[] path, EventType fragmentEventType)
             {
                 var getters = new AvroEventPropertyGetter[path.Length];
                 for (var i = 0; i < path.Length; i++)
@@ -506,7 +506,7 @@ namespace NEsper.Avro.Core
                 return new AvroEventBeanGetterNestedIndexRootedMultilevel(_pos, _index, getters);
             }
 
-            public EventPropertyGetter MakeNestedPolyMultiLevel(AvroEventPropertyGetter[] getters)
+            public EventPropertyGetterSPI MakeNestedPolyMultiLevel(AvroEventPropertyGetter[] getters)
             {
                 return new AvroEventBeanGetterNestedIndexRootedMultilevel(_pos, _index, getters);
             }

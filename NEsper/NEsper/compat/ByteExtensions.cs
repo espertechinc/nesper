@@ -7,17 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using Nito.KitchenSink.CRC;
+
+using Force.Crc32;
 
 namespace com.espertech.esper.compat
 {
     public static class ByteExtensions
     {
-        public static int GetCrc32(this byte[] input)
+        public static long GetCrc32(this byte[] input)
         {
-            var algo = new CRC32();
-            var hash = algo.ComputeHash(input);
-            return BitConverter.ToInt32(hash, 0);
+            return Crc32Algorithm.Compute(input);
         }
     }
 }

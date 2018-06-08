@@ -10,10 +10,11 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 using XLR8.CGLib;
@@ -28,11 +29,14 @@ namespace com.espertech.esper.events.bean
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 	    private EventBean _unitTestBean;
+        private IContainer _container;
 
         [SetUp]
-	    public void SetUp()
+        public void SetUp()
         {
-	        var testEvent = new SupportBean();
+            _container = SupportContainer.Reset();
+
+            var testEvent = new SupportBean();
 	        testEvent.IntPrimitive = 10;
 	        testEvent.TheString = "a";
 	        testEvent.DoubleBoxed = null;
@@ -85,7 +89,7 @@ namespace com.espertech.esper.events.bean
 	        var fastClass = FastClass.Create(clazz);
 	        var baseProperty = clazz.GetProperty(propertyName);
 	        var fastProperty = fastClass.GetProperty(baseProperty);
-	        var getter = new CGLibPropertyGetter(baseProperty, fastProperty, SupportEventAdapterService.Service);
+	        var getter = new CGLibPropertyGetter(baseProperty, fastProperty, _container.Resolve<EventAdapterService>());
 
 	        return getter;
 	    }

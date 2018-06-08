@@ -66,26 +66,13 @@ namespace com.espertech.esper.view.window
 
         /// <summary>Returns the size of the length window. </summary>
         /// <value>size of length window</value>
-        public int Size
-        {
-            get { return _size; }
-        }
+        public int Size => _size;
 
         /// <summary>Returns the (optional) collection handling random access to window contents for prior or previous events. </summary>
         /// <value>buffer for events</value>
-        public ViewUpdatedCollection ViewUpdatedCollection
-        {
-            get { return _viewUpdatedCollection; }
-        }
+        public ViewUpdatedCollection ViewUpdatedCollection => _viewUpdatedCollection;
 
-        public override EventType EventType
-        {
-            get
-            {
-                // The event type is the parent view's event type
-                return Parent.EventType;
-            }
-        }
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
@@ -145,10 +132,6 @@ namespace com.espertech.esper.view.window
             viewDataVisitor.VisitPrimary(_events, true, _lengthWindowViewFactory.ViewName, null);
         }
 
-        public ViewFactory ViewFactory
-        {
-            get { return _lengthWindowViewFactory; }
-        }
-
+        public ViewFactory ViewFactory => _lengthWindowViewFactory;
     }
 }

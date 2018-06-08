@@ -83,6 +83,10 @@ namespace com.espertech.esper.client
                 else
                 {
                     msg = new StringBuilder("Unexpected exception");
+                    if (InnerException != null) {
+                        msg.Append(" : ");
+                        msg.Append(InnerException.Message);
+                    }
                 }
                 if (_expression != null)
                 {

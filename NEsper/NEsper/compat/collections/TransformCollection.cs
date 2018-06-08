@@ -118,10 +118,7 @@ namespace com.espertech.esper.compat.collections
         /// Gets the count.
         /// </summary>
         /// <value>The count.</value>
-        public int Count
-        {
-            get { return _trueCollection.Count; }
-        }
+        public int Count => _trueCollection.Count;
 
         /// <summary>
         /// Gets a value indicating whether this instance is read only.
@@ -129,9 +126,6 @@ namespace com.espertech.esper.compat.collections
         /// <value>
         /// 	<c>true</c> if this instance is read only; otherwise, <c>false</c>.
         /// </value>
-        public bool IsReadOnly
-        {
-            get { return _trueCollection.IsReadOnly; }
-        }
+        public bool IsReadOnly => _trueCollection.IsReadOnly;
     }
 }

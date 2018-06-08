@@ -13,6 +13,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading;
 
@@ -33,7 +35,7 @@ namespace com.espertech.esper.epl.db.drivers
     /// developers to integrate their own database models.
     /// </summary>
     [Serializable]
-    abstract public class BaseDbDriver : DbDriver
+    abstract public class BaseDbDriver : DbDriver, ISerializable
     {
         private const String SAMPLE_WHERECLAUSE_PLACEHOLDER = "$ESPER-SAMPLE-WHERE";
 
@@ -62,10 +64,7 @@ namespace com.espertech.esper.epl.db.drivers
         /// Gets the default meta origin policy.
         /// </summary>
         /// <value>The default meta origin policy.</value>
-        public virtual ConfigurationDBRef.MetadataOriginEnum DefaultMetaOriginPolicy
-        {
-            get { return ConfigurationDBRef.MetadataOriginEnum.DEFAULT; }
-        }
+        public virtual ConfigurationDBRef.MetadataOriginEnum DefaultMetaOriginPolicy => ConfigurationDBRef.MetadataOriginEnum.DEFAULT;
 
         /// <summary>
         /// Gets the parameter prefix.
@@ -79,8 +78,16 @@ namespace com.espertech.esper.epl.db.drivers
         /// <value>The connection string.</value>
         public virtual String ConnectionString
         {
-            get { return _connectionString; }
-            protected set { _connectionString = value;  }
+            get => _connectionString;
+            set => _connectionString = value;
+        }
+
+        protected BaseDbDriver() { }
+        protected BaseDbDriver(SerializationInfo info, StreamingContext context)
+        {
+            this._name = info.GetString("_name");
+            this._connectionProperties = (Properties) info.GetValue("_connectionProperties", typeof(Properties));
+            this._connectionString = info.GetString("_connectionString");
         }
 
         /// <summary>
@@ -89,10 +96,7 @@ namespace com.espertech.esper.epl.db.drivers
         /// <value>
         /// 	<c>true</c> if [use position parameters]; otherwise, <c>false</c>.
         /// </value>
-        protected virtual bool UsePositionalParameters
-        {
-            get { return false;  }
-        }
+        protected virtual bool UsePositionalParameters => false;
 
         #region "PositionalToTextConversion"
 
@@ -174,6 +178,14 @@ namespace com.espertech.esper.epl.db.drivers
 
         [NonSerialized]
         private static Timer releaseTimer = null;
+
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("_name", this._name);
+            info.AddValue("_connectionProperties", this._connectionProperties);
+            info.AddValue("_connectionString", _connectionString);
+        }
 
         /// <summary>
         /// Releases the connections.
@@ -422,7 +434,7 @@ namespace com.espertech.esper.epl.db.drivers
         /// <value>The properties.</value>
         public virtual Properties Properties
         {
-            get { return _connectionProperties; }
+            get => _connectionProperties;
             set
             {
                 _connectionProperties = value;
@@ -461,10 +473,7 @@ namespace com.espertech.esper.epl.db.drivers
         /// <summary>
         /// Connection name
         /// </summary>
-        public virtual string Name
-        {
-            get { return _name; }
-        }
+        public virtual string Name => _name;
 
         #endregion
     }

@@ -81,7 +81,7 @@ namespace com.espertech.esper.regression.view
                 _epService.EPRuntime.SendEvent(Collections.SingletonDataMap("criteria", 15), "MapEvent");
                 Assert.Fail(); // ensure exception handler rethrows
             }
-            catch (EPException ex) {
+            catch (EPException) {
                 // fine
             }
             stmt.Dispose();

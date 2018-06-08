@@ -13,6 +13,7 @@ using System.Linq;
 
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.rettype;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.enummethod.dot
 {
@@ -42,7 +43,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             }
             if (!(result is IEnumerable))
             {
-                Log.Warn("Expected iterable-type input from method '" + _methodName + "' but received " + result.GetType());
+                Log.Warn(string.Format("Expected iterable-type input from method '{0}' but received {1}", _methodName, result.GetType().GetCleanName()));
                 return null;
             }
 

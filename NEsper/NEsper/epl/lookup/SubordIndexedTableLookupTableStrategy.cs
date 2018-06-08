@@ -42,10 +42,7 @@ namespace com.espertech.esper.epl.lookup
             return result;
         }
 
-        public LookupStrategyDesc StrategyDesc
-        {
-            get { return _inner.StrategyDesc; }
-        }
+        public LookupStrategyDesc StrategyDesc => _inner.StrategyDesc;
 
         public string ToQueryPlan()
         {

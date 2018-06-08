@@ -14,6 +14,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.table;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.table.upd;
 using com.espertech.esper.epl.updatehelper;
 using com.espertech.esper.filter;
@@ -22,9 +23,9 @@ namespace com.espertech.esper.core.start
 {
     public class EPPreparedExecuteIUDSingleStreamExecUpdate : EPPreparedExecuteIUDSingleStreamExec
     {
-        public EPPreparedExecuteIUDSingleStreamExecUpdate(FilterSpecCompiled filter, ExprNode optionalWhereClause, Attribute[] annotations, EventBeanUpdateHelper updateHelper, TableUpdateStrategy tableUpdateStrategy, ExprTableAccessNode[] optionalTableNodes, EPServicesContext services)
+        public EPPreparedExecuteIUDSingleStreamExecUpdate(QueryGraph queryGraph, ExprNode optionalWhereClause, Attribute[] annotations, EventBeanUpdateHelper updateHelper, TableUpdateStrategy tableUpdateStrategy, ExprTableAccessNode[] optionalTableNodes, EPServicesContext services)
         {
-            Filter = filter;
+            QueryGraph = queryGraph;
             OptionalWhereClause = optionalWhereClause;
             Annotations = annotations;
             UpdateHelper = updateHelper;
@@ -38,7 +39,7 @@ namespace com.espertech.esper.core.start
             return fireAndForgetProcessorInstance.ProcessUpdate(this);
         }
 
-        public FilterSpecCompiled Filter { get; private set; }
+        public QueryGraph QueryGraph { get; private set; }
 
         public ExprNode OptionalWhereClause { get; private set; }
 

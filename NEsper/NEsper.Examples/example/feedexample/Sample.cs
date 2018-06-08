@@ -8,11 +8,11 @@
 
 using System;
 
+using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using NUnit.Framework;
 
-using com.espertech.esper.client;
-
-namespace com.espertech.esper.example.feedexample
+namespace NEsper.Examples.FeedExample
 {
 	[TestFixture]
 	public class Sample
@@ -20,18 +20,22 @@ namespace com.espertech.esper.example.feedexample
         [Test]
 	    public void TestIt()
 	    {
-	        String stmtText =
+	        var stmtText =
 	                "insert into ThroughputPerFeed " +
 	                " select feed, count(*) as cnt " +
 	                "from " + typeof(FeedEvent).FullName + ".win:time_batch(1 sec) " +
 	                "group by feed";
 
-            Configuration configuration = new Configuration();
+	        var container = ContainerExtensions.CreateDefaultContainer()
+	            .InitializeDefaultServices()
+	            .InitializeDatabaseDrivers();
+
+            var configuration = new Configuration(container);
             configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 
             EPServiceProviderManager.PurgeDefaultProvider();
-	        EPServiceProvider engine = EPServiceProviderManager.GetDefaultProvider(configuration);
-	        EPStatement stmt = engine.EPAdministrator.CreateEPL(stmtText);
+	        var engine = EPServiceProviderManager.GetDefaultProvider(configuration);
+	        var stmt = engine.EPAdministrator.CreateEPL(stmtText);
             stmt.Events += DisplayEvents;
 
 	        /*
@@ -48,7 +52,7 @@ namespace com.espertech.esper.example.feedexample
 
         public void DisplayEvents(Object sender, UpdateEventArgs e)
         {
-            foreach (EventBean @event in e.NewEvents)
+            foreach (var @event in e.NewEvents)
             {
                 Console.WriteLine("feed {0} is count {1}",
                                   @event.Get("feed"),

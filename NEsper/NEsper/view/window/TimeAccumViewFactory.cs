@@ -71,10 +71,7 @@ namespace com.espertech.esper.view.window
             }
         }
 
-        public EventType EventType
-        {
-            get { return _eventType; }
-        }
+        public EventType EventType => _eventType;
 
         public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
@@ -94,14 +91,8 @@ namespace com.espertech.esper.view.window
             return myView.IsEmpty;
         }
 
-        public string ViewName
-        {
-            get { return "TimeInMillis-Accumulative-Batch"; }
-        }
+        public string ViewName => "TimeInMillis-Accumulative-Batch";
 
-        private string ViewParamMessage
-        {
-            get { return ViewName + " view requires a single numeric parameter or time period parameter"; }
-        }
+        private string ViewParamMessage => ViewName + " view requires a single numeric parameter or time period parameter";
     }
 } // end of namespace

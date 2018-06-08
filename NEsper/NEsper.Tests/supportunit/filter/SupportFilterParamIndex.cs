@@ -22,29 +22,24 @@ namespace com.espertech.esper.supportunit.filter
         {
         }
 
-        public override EventEvaluator Get(Object expressionValue)
+        public override EventEvaluator Get(object expressionValue)
         {
             return null;
         }
 
-        public override void Put(Object expressionValue, EventEvaluator evaluator)
+        public override void Put(object expressionValue, EventEvaluator evaluator)
         {
         }
 
-        public override bool Remove(Object expressionValue)
+        public override void Remove(object expressionValue)
         {
-            return true;
         }
 
-        public override int Count
-        {
-            get { return 0; }
-        }
+        public override int Count => 0;
 
-        public override IReaderWriterLock ReadWriteLock
-        {
-            get { return null; }
-        }
+        public override bool IsEmpty => true;
+
+        public override IReaderWriterLock ReadWriteLock => null;
 
         public override void MatchEvent(EventBean theEvent, ICollection<FilterHandle> matches)
         {

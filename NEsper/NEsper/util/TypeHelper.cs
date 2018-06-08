@@ -32,7 +32,6 @@ using com.espertech.esper.type;
 
 namespace com.espertech.esper.util
 {
-    using DataMap = IDictionary<string, object>;
     using TypeParser = Func<string, object>;
 
     /// <summary>
@@ -42,7 +41,7 @@ namespace com.espertech.esper.util
     /// </summary>
     public static class TypeHelper
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private static readonly IDictionary<Type, Type> BoxedTable;
         private static readonly IDictionary<Type, TypeParser> ParserTable;
@@ -181,11 +180,21 @@ namespace com.espertech.esper.util
             return GetCleanName(param, useFullName);
         }
 
+        public static string GetCleanName<T>()
+        {
+            return GetCleanName(typeof(T), true);
+        }
+
         public static string GetCleanName(this Type type, bool useFullName = true)
         {
             if (type == null)
             {
                 return "null (any type)";
+            }
+
+            if (type.IsArray)
+            {
+                return GetCleanName(type.GetElementType()) + "[]";
             }
 
             if (type.IsGenericType)
@@ -502,6 +511,18 @@ namespace com.espertech.esper.util
                 ;
         }
 
+        public static bool IsNotInt32(this Type type)
+        {
+            return (type != typeof(int)) &&
+                   (type != typeof(int?));
+        }
+
+        public static bool IsInt32(this Type type)
+        {
+            return (type == typeof(int)) ||
+                   (type == typeof(int?));
+        }
+
         /// <summary>
         /// Determines whether the specified type is integral.
         /// </summary>
@@ -654,7 +675,7 @@ namespace com.espertech.esper.util
 
             if (!IsNumeric(boxedOne) || !IsNumeric(boxedTwo))
             {
-                throw new CoercionException("Cannot coerce types " + typeOne.FullName + " and " + typeTwo.FullName);
+                throw new CoercionException("Cannot coerce types " + GetCleanName(typeOne) + " and " + GetCleanName(typeTwo));
             }
 
             if ((boxedOne == typeof(decimal?)) ||
@@ -952,10 +973,14 @@ namespace com.espertech.esper.util
 
             if (invocationType.IsValueType)
             {
-                Type parameterWrapperType = GetBoxedType(invocationType);
+                if (declarationType == typeof(object)) {
+                    return true;
+                }
+
+                var parameterWrapperType = GetBoxedType(invocationType);
                 if (parameterWrapperType != null)
                 {
-                    if (parameterWrapperType.Equals(declarationType))
+                    if (parameterWrapperType == declarationType)
                     {
                         return true;
                     }
@@ -1047,7 +1072,7 @@ namespace com.espertech.esper.util
                 {
                     if (types[i] != typeof(String))
                     {
-                        throw new CoercionException("Cannot coerce to String type " + types[i].FullName);
+                        throw new CoercionException("Cannot coerce to String type " + types[i].GetCleanName());
                     }
                 }
 
@@ -1067,7 +1092,7 @@ namespace com.espertech.esper.util
                 {
                     if (types[i] != typeof(bool?))
                     {
-                        throw new CoercionException("Cannot coerce to bool type " + types[i].FullName);
+                        throw new CoercionException("Cannot coerce to bool type " + types[i].GetCleanName());
                     }
                 }
 
@@ -1081,7 +1106,7 @@ namespace com.espertech.esper.util
                 {
                     if (types[i] != typeof(char?))
                     {
-                        throw new CoercionException("Cannot coerce to bool type " + types[i].FullName);
+                        throw new CoercionException("Cannot coerce to bool type " + types[i].GetCleanName());
                     }
                 }
 
@@ -1106,7 +1131,7 @@ namespace com.espertech.esper.util
                 {
                     if (IsBuiltinDataType(type))
                     {
-                        throw new CoercionException("Cannot coerce to " + types[0].FullName + " type " + type.FullName);
+                        throw new CoercionException("Cannot coerce to " + GetCleanName(types[0]) + " type " + GetCleanName(type));
                     }
                     if (type != types[0])
                     {
@@ -1119,7 +1144,7 @@ namespace com.espertech.esper.util
             // test for numeric
             if (!isAllNumeric)
             {
-                throw new CoercionException("Cannot coerce to numeric type " + types[0].FullName);
+                throw new CoercionException("Cannot coerce to numeric type " + GetCleanName(types[0]));
             }
 
             // Use arithmatic coercion type as the final authority, considering all types
@@ -1305,6 +1330,8 @@ namespace com.espertech.esper.util
                     return boxed
                         ? typeof (BigInteger?)
                         : typeof (BigInteger);
+                case "map":
+                    return typeof(IDictionary<string, object>);
             }
 
             var type = ResolveType(typeName.Trim(), throwOnError);
@@ -1732,7 +1759,7 @@ namespace com.espertech.esper.util
         /// </returns>
         public static bool IsOpenDictionary(Type t)
         {
-            if (typeof(System.Collections.IDictionary).IsAssignableFrom(t))
+            if (typeof(IDictionary).IsAssignableFrom(t))
             {
                 return true;
             }
@@ -1790,22 +1817,22 @@ namespace com.espertech.esper.util
             catch (TypeInstantiationException ex)
             {
                 throw new TypeInstantiationException(
-                    "Unable to instantiate from class '" + type.FullName + "' via default constructor", ex);
+                    "Unable to instantiate from class '" + GetCleanName(type) + "' via default constructor", ex);
             }
             catch (TargetInvocationException ex)
             {
                 throw new TypeInstantiationException(
-                    "Invocation exception when instantiating class '" + type.FullName + "' via default constructor", ex);
+                    "Invocation exception when instantiating class '" + GetCleanName(type) + "' via default constructor", ex);
             }
             catch (MethodAccessException ex)
             {
                 throw new TypeInstantiationException(
-                    "Method access when instantiating class '" + type.FullName + "' via default constructor", ex);
+                    "Method access when instantiating class '" + GetCleanName(type) + "' via default constructor", ex);
             }
             catch (MemberAccessException ex)
             {
                 throw new TypeInstantiationException(
-                    "Member access when instantiating class '" + type.FullName + "' via default constructor", ex);
+                    "Member access when instantiating class '" + GetCleanName(type) + "' via default constructor", ex);
             }
         }
 
@@ -1819,16 +1846,17 @@ namespace com.espertech.esper.util
         {
             var implementedOrExtendedType = typeof(T);
             var typeName = type.FullName;
+            var typeNameClean = GetCleanName(type);
 
             if (!IsSubclassOrImplementsInterface(type, implementedOrExtendedType))
             {
                 if (implementedOrExtendedType.IsInterface)
                 {
-                    throw new TypeInstantiationException("Class '" + typeName + "' does not implement interface '" +
-                                                         implementedOrExtendedType.FullName + "'");
+                    throw new TypeInstantiationException("Type '" + typeNameClean + "' does not implement interface '" +
+                                                         GetCleanName(implementedOrExtendedType) + "'");
                 }
-                throw new TypeInstantiationException("Class '" + typeName + "' does not extend '" +
-                                                     implementedOrExtendedType.FullName + "'");
+                throw new TypeInstantiationException("Type '" + typeNameClean + "' does not extend '" +
+                                                     GetCleanName(implementedOrExtendedType) + "'");
             }
 
             try
@@ -1882,10 +1910,10 @@ namespace com.espertech.esper.util
                 if (implementedOrExtendedType.IsInterface)
                 {
                     throw new TypeInstantiationException("Class '" + typeName + "' does not implement interface '" +
-                                                         implementedOrExtendedType.FullName + "'");
+                                                         GetCleanName(implementedOrExtendedType) + "'");
                 }
                 throw new TypeInstantiationException("Class '" + typeName + "' does not extend '" +
-                                                     implementedOrExtendedType.FullName + "'");
+                                                     GetCleanName(implementedOrExtendedType) + "'");
             }
 
             try
@@ -1941,11 +1969,11 @@ namespace com.espertech.esper.util
             {
                 if (implementedOrExtendedType.IsInterface)
                 {
-                    throw new TypeInstantiationException("Class '" + typeName + "' does not implement interface '" +
-                                                         implementedOrExtendedType.FullName + "'");
+                    throw new TypeInstantiationException("Type '" + typeName + "' does not implement interface '" +
+                                                         GetCleanName(implementedOrExtendedType) + "'");
                 }
-                throw new TypeInstantiationException("Class '" + typeName + "' does not extend '" +
-                                                     implementedOrExtendedType.FullName + "'");
+                throw new TypeInstantiationException("Type '" + typeName + "' does not extend '" +
+                                                     GetCleanName(implementedOrExtendedType) + "'");
             }
 
             try
@@ -2076,24 +2104,6 @@ namespace com.espertech.esper.util
                 return true;
             }
             return false;
-        }
-
-        public static String GetTypeNameFullyQualPretty(this Type clazz)
-        {
-            if (clazz == null)
-            {
-                return "null";
-            }
-            if (clazz.IsArray)
-            {
-                return clazz.GetElementType().FullName + "(Array)";
-            }
-            return clazz.FullName;
-        }
-
-        public static string GetTypeNameFullyQualPretty<T>()
-        {
-            return GetTypeNameFullyQualPretty(typeof (T));
         }
 
         /// <summary>
@@ -2549,7 +2559,7 @@ namespace com.espertech.esper.util
             }
             else
             {
-                writer.Write("{0:X}", System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(instance));
+                writer.Write("{0:X}", RuntimeHelpers.GetHashCode(instance));
             }
         }
 
@@ -2608,7 +2618,7 @@ namespace com.espertech.esper.util
             if (!IsImplementsInterface(clazz, interfaceExpected))
             {
                 throw new ExprValidationException("Hook provider for hook type '" + hookType + "' " +
-                        "class '" + clazz.FullName + "' does not implement the required '" + interfaceExpected.Name +
+                        "class '" + GetCleanName(clazz) + "' does not implement the required '" + GetCleanName(interfaceExpected) +
                         "' interface");
             }
 
@@ -2619,11 +2629,16 @@ namespace com.espertech.esper.util
             catch (Exception e)
             {
                 throw new ExprValidationException("Failed to instantiate hook provider of hook type '" + hookType + "' " +
-                        "class '" + clazz.FullName + "' :" + e.Message);
+                        "class '" + GetCleanName(clazz) + "' :" + e.Message);
             }
         }
 
-        public static string GetInvocationMessage(String statementName, MethodInfo method, String classOrPropertyName, Object[] args, Exception e)
+        public static string GetInvocationMessage(
+            String statementName, 
+            MethodInfo method, 
+            String classOrPropertyName, 
+            Object[] args, 
+            Exception e)
         {
             string parameters =
                 args == null ? "null" :
@@ -2651,7 +2666,7 @@ namespace com.espertech.esper.util
             return "Invocation exception when invoking method '" + method.Name +
                    "' of class '" + classOrPropertyName +
                    "' passing parameters " + parameters +
-                   " for statement '" + statementName + "': " + e.GetType().FullName + " : " +
+                   " for statement '" + statementName + "': " + GetCleanName(e.GetType()) + " : " +
                    e.Message;
         }
 
@@ -2687,7 +2702,7 @@ namespace com.espertech.esper.util
             return "Invocation exception when invoking method '" + method.Name +
                    "' of class '" + classOrPropertyName +
                    "' passing parameters " + parameters +
-                   " for statement '" + statementName + "': " + e.GetType().FullName + " : " +
+                   " for statement '" + statementName + "': " + GetCleanName(e.GetType()) + " : " +
                    e.Message;
         }
 
@@ -2934,7 +2949,7 @@ namespace com.espertech.esper.util
 
         public static Pair<String, Boolean> IsGetArrayType(String type)
         {
-            var index = type.IndexOf("[]", System.StringComparison.Ordinal);
+            var index = type.IndexOf("[]", StringComparison.Ordinal);
             if (index == -1)
             {
                 return new Pair<String, Boolean>(type, false);
@@ -3015,6 +3030,27 @@ namespace com.espertech.esper.util
                 return name.Substring(1, name.Length - 2);
             }
             return name;
+        }
+
+        public static Type GetComponentTypeOutermost(this Type clazz)
+        {
+            if (!clazz.IsArray)
+            {
+                return clazz;
+            }
+            return GetComponentTypeOutermost(clazz.GetElementType());
+        }
+
+        public static int GetNumberOfDimensions(this Type clazz)
+        {
+            if (clazz.GetElementType()  == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return GetNumberOfDimensions(clazz.GetElementType()) + 1;
+            }
         }
 
         /// <summary>

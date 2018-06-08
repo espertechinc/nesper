@@ -7,12 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Linq.Expressions;
 using System.Reflection;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.magic;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.util
@@ -65,13 +63,18 @@ namespace com.espertech.esper.util
                 }
             }
 
+            if (columnType == writeablePropertyType)
+            {
+                return null;
+            }
+
             if (columnType == null)
             {
                 if (writeablePropertyType.IsPrimitive)
                 {
                     String message = "Invalid assignment of column '" + columnName +
                                      "' of null type to event property '" + writeablePropertyName +
-                                     "' typed as '" + writeablePropertyType.FullName +
+                                     "' typed as '" + writeablePropertyType.GetCleanName() +
                                      "', nullable type mismatch";
                     throw new ExprValidationException(message);
                 }
@@ -126,32 +129,74 @@ namespace com.espertech.esper.util
                     };
                 }
 
-                if (columnClassBoxed.IsArray && targetClassBoxed.IsArray)
-                {
+                if (columnClassBoxed.IsArray && targetClassBoxed.IsArray) {
                     var columnClassElement = columnClassBoxed.GetElementType();
                     var targetClassElement = targetClassBoxed.GetElementType();
-                    if (columnClassElement.IsAssignmentCompatible(targetClassElement))
-                    {
+
+                    if ((targetClassBoxed == typeof(object[])) && (columnClassElement.IsClass)) {
+                        return null;
+                    }
+
+                    if (columnClassElement.GetBoxedType() == targetClassElement) {
+                        return source => WidenArray(
+                            source, targetClassElement,
+                            CoercerFactory.GetCoercer(columnClassElement, targetClassElement));
+                    } else if (columnClassElement == targetClassElement.GetBoxedType()) {
+                        return source => WidenArray(
+                            source, targetClassElement,
+                            CoercerFactory.GetCoercer(columnClassElement, targetClassElement));
+                    } else if (columnClassElement.IsAssignmentCompatible(targetClassElement)) {
                         // By definition, columnClassElement and targetClassElement should be
                         // incompatible.  Question is, can we find a coercer between them?
                         var coercer = CoercerFactory.GetCoercer(columnClassElement, targetClassElement);
-                        return source => WidenArray(source, targetClassElement, coercer);
+                        if (coercer != null) {
+                            return source => WidenArray(source, targetClassElement, coercer);
+                        }
                     }
+                }
+
+                if (writeablePropertyType.IsNumeric() && columnType.IsAssignmentCompatible(writeablePropertyType))
+                {
+                    var instance = new TypeWidenerBoxedNumeric(
+                        CoercerFactory.GetCoercer(columnClassBoxed, targetClassBoxed));
+                    return instance.Widen;
                 }
 
                 if (!columnClassBoxed.IsAssignmentCompatible(targetClassBoxed))
                 {
-                    var writablePropName = writeablePropertyType.FullName;
-                    if (writeablePropertyType.IsArray)
-                    {
-                        writablePropName = writeablePropertyType.GetElementType().FullName + "[]";
+                    if (columnType.IsNullable() && writeablePropertyType.IsNullable()) {
+                        // are the underlying nullable types compatible with one another?
+                        var columnGenType = columnType.GetGenericArguments()[0];
+                        var writeablePropertyGenType = writeablePropertyType.GetGenericArguments()[0];
+                        if (writeablePropertyGenType.IsNumeric() &&
+                            columnGenType.IsAssignmentCompatible(writeablePropertyGenType)) {
+                            var instance = new TypeWidenerBoxedNumeric(
+                                CoercerFactory.GetCoercer(columnClassBoxed, targetClassBoxed));
+                            return instance.Widen;
+                        }
+                    } else if (!columnType.IsNullable() && writeablePropertyType.IsNullable()) {
+                        // is the column type compatible with the nullable type?
+                        var writeablePropertyGenType = writeablePropertyType.GetGenericArguments()[0];
+                        if (writeablePropertyGenType.IsNumeric() &&
+                            columnType.IsAssignmentCompatible(writeablePropertyGenType)) {
+                            var instance = new TypeWidenerBoxedNumeric(
+                                CoercerFactory.GetCoercer(columnClassBoxed, targetClassBoxed));
+                            return instance.Widen;
+                        }
+                    } else if (columnType.IsNullable() && !writeablePropertyType.IsNullable()) {
+                        // the target is not nullable, we can live with an exception if the
+                        // value is null after widening.
+                        var columnGenType = columnType.GetGenericArguments()[0];
+                        if (writeablePropertyType.IsNumeric() &&
+                            columnGenType.IsAssignmentCompatible(writeablePropertyType)) {
+                            var instance = new TypeWidenerBoxedNumeric(
+                                CoercerFactory.GetCoercer(columnClassBoxed, targetClassBoxed));
+                            return instance.Widen;
+                        }
                     }
 
-                    var columnTypeName = columnType.FullName;
-                    if (columnType.IsArray)
-                    {
-                        columnTypeName = columnType.GetElementType().FullName + "[]";
-                    }
+                    var writablePropName = writeablePropertyType.GetCleanName();
+                    var columnTypeName = columnType.GetCleanName();
 
                     String message = "Invalid assignment of column '" + columnName +
                                      "' of type '" + columnTypeName +

@@ -28,7 +28,7 @@ namespace com.espertech.esper.util
                 Indent.CreateIndent(-1);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }

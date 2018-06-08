@@ -13,6 +13,7 @@ using System.IO;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.join.table
 {
@@ -47,27 +48,27 @@ namespace com.espertech.esper.epl.join.table
             get { return _tables; }
         }
 
-        public void AddRemove(EventBean[] newData, EventBean[] oldData)
+        public void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext)
         {
             throw new UnsupportedOperationException();
         }
     
-        public void Add(EventBean[] events)
+        public void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
         {
             throw new UnsupportedOperationException();
         }
     
-        public void Remove(EventBean[] events)
+        public void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
         {
             throw new UnsupportedOperationException();
         }
     
-        public void Add(EventBean @event)
+        public void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext)
         {
             throw new UnsupportedOperationException();
         }
 
-        public void Remove(EventBean @event)
+        public void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext)
         {
             throw new UnsupportedOperationException();
         }

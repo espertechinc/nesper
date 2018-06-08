@@ -13,6 +13,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
 using com.espertech.esper.collection;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core;
@@ -20,6 +21,7 @@ using com.espertech.esper.epl.parse;
 using com.espertech.esper.epl.variable;
 using com.espertech.esper.events;
 using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.util;
 
 namespace com.espertech.esper.supportunit.epl.parse
 {
@@ -27,17 +29,22 @@ namespace com.espertech.esper.supportunit.epl.parse
     {
         public static EPLTreeWalkerListener ParseAndWalkEPL(String expression)
         {
-            return ParseAndWalkEPL(expression, SupportEngineImportServiceFactory.Make(), new VariableServiceImpl(0, null, SupportEventAdapterService.Service, null));
+            var container = SupportContainer.Instance;
+            return ParseAndWalkEPL(expression, 
+                SupportEngineImportServiceFactory.Make(container),
+                new VariableServiceImpl(container, 0, null, container.Resolve<EventAdapterService>(), null));
         }
 
         public static EPLTreeWalkerListener ParseAndWalkEPL(String expression, EngineImportService engineImportService, VariableService variableService)
         {
+            var container = SupportContainer.Instance;
+
             Log.Debug(".parseAndWalk Trying text=" + expression);
             Pair<ITree, CommonTokenStream> ast = SupportParserHelper.ParseEPL(expression);
             Log.Debug(".parseAndWalk success, tree walking...");
             SupportParserHelper.DisplayAST(ast.First);
 
-            EventAdapterService eventAdapterService = SupportEventAdapterService.Service;
+            EventAdapterService eventAdapterService = container.Resolve<EventAdapterService>();
             eventAdapterService.AddBeanType("SupportBean_N", typeof(SupportBean_N), true, true, true);
 
             EPLTreeWalkerListener listener = SupportEPLTreeWalkerFactory.MakeWalker(ast.Second, engineImportService, variableService);

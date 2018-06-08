@@ -29,7 +29,7 @@ namespace com.espertech.esper.regression.client
         [SetUp]
         public void SetUp() {
             Configuration configuration = SupportConfigFactory.GetConfiguration();
-            configuration.AddEventType("Bean", typeof(SupportBean).FullName);
+            configuration.AddEventType("Bean", typeof(SupportBean));
             epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             epService.Initialize();
     
@@ -149,11 +149,11 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual("A", awareListener.AssertOneGetNewAndReset().Get("TheString"));
     
             epService.EPRuntime.SendEvent(new SupportBean("C", 1));
-            Assert.AreEqual(2, awareListener.GetNewDataList().Count);
-            Assert.AreEqual("C", awareListener.GetNewDataList()[0][0].Get("TheString"));
-            Assert.AreEqual("C", awareListener.GetNewDataList()[1][0].Get("TheString"));
+            Assert.AreEqual(2, awareListener.NewDataList.Count);
+            Assert.AreEqual("C", awareListener.NewDataList[0][0].Get("TheString"));
+            Assert.AreEqual("C", awareListener.NewDataList[1][0].Get("TheString"));
             EPStatement[] stmts = awareListener.StatementList.ToArray();
-            EPAssertionUtil.AssertEqualsAnyOrder(stmts, new Object[]{statementOne, statementTwo});
+            EPAssertionUtil.AssertEqualsAnyOrder(stmts, new object[]{statementOne, statementTwo});
         }
     
         [Test]
@@ -185,9 +185,9 @@ namespace com.espertech.esper.regression.client
     
         public class MyUpdateListener
         {
-            private readonly List<Object> _invoked;
+            private readonly List<object> _invoked;
     
-            public MyUpdateListener(List<Object> invoked) {
+            public MyUpdateListener(List<object> invoked) {
                 _invoked = invoked;
             }
     
@@ -204,9 +204,9 @@ namespace com.espertech.esper.regression.client
     
         public class MyStmtAwareUpdateListener
         {
-            private readonly List<Object> _invoked;
+            private readonly List<object> _invoked;
     
-            public MyStmtAwareUpdateListener(List<Object> invoked) {
+            public MyStmtAwareUpdateListener(List<object> invoked) {
                 _invoked = invoked;
             }
     

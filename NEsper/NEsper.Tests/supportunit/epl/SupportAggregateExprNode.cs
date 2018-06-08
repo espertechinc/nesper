@@ -25,7 +25,7 @@ namespace com.espertech.esper.supportunit.epl
         private static int _validateCount;
     
         private readonly Type _type;
-        private Object _value;
+        private object _value;
         private int _validateCountSnapshot;
     
         public static void SetValidateCount(int validateCount)
@@ -40,21 +40,21 @@ namespace com.espertech.esper.supportunit.epl
             _value = null;
         }
     
-        public SupportAggregateExprNode(Object value)
+        public SupportAggregateExprNode(object value)
             : base(false)
         {
             _type = value.GetType().GetBoxedType();
             _value = value;
         }
 
-        public SupportAggregateExprNode(Object value, Type type)
+        public SupportAggregateExprNode(object value, Type type)
             : base(false)
         {
             _value = value;
             _type = type;
         }
 
-        public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             // Keep a count for if and when this was validated
             _validateCount++;
@@ -62,25 +62,13 @@ namespace com.espertech.esper.supportunit.epl
             return null;
         }
 
-        public override Type ReturnType
-        {
-            get { return _type; }
-        }
+        public override Type ReturnType => _type;
 
-        public int ValidateCountSnapshot
-        {
-            get { return _validateCountSnapshot; }
-        }
+        public int ValidateCountSnapshot => _validateCountSnapshot;
 
-        public AggregationMethod AggregationFunction
-        {
-            get { return null; }
-        }
+        public AggregationMethod AggregationFunction => null;
 
-        public override string AggregationFunctionName
-        {
-            get { return "support"; }
-        }
+        public override string AggregationFunctionName => "support";
 
         protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
@@ -95,9 +83,11 @@ namespace com.espertech.esper.supportunit.epl
         {
         }
     
-        public void SetValue(Object value)
+        public void SetValue(object value)
         {
             _value = value;
         }
+
+        protected override bool IsFilterExpressionAsLastParameter => true;
     }
 }

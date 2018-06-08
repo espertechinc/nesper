@@ -11,7 +11,9 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.core.support;
+using com.espertech.esper.events;
 using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.util;
 
 namespace com.espertech.esper.supportunit.events
 {
@@ -19,12 +21,12 @@ namespace com.espertech.esper.supportunit.events
     {
         public static EventBean CreateObject(Object theEvent)
         {
-            return SupportEventAdapterService.Service.AdapterForObject(theEvent);
+            return SupportContainer.Instance.Resolve<EventAdapterService>().AdapterForObject(theEvent);
         }
     
         public static EventBean CreateMapFromValues(IDictionary<String, Object> testValuesMap, EventType eventType)
         {
-            return SupportEventAdapterService.Service.AdapterForTypedMap(testValuesMap, eventType);
+            return SupportContainer.Instance.Resolve<EventAdapterService>().AdapterForTypedMap(testValuesMap, eventType);
         }   
     
         public static EventBean[] MakeEvents(String[] ids)

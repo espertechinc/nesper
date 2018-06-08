@@ -46,7 +46,7 @@ namespace com.espertech.esper.events.property
         /// type and generic descriptor
         /// </returns>
         GenericPropertyDesc GetPropertyTypeGeneric(BeanEventType eventType, EventAdapterService eventAdapterService);
-    
+
         /// <summary>
         /// Returns value getter for the property of an event of the given event type.
         /// </summary>
@@ -55,8 +55,7 @@ namespace com.espertech.esper.events.property
         /// <returns>
         /// fast property value getter for property
         /// </returns>
-        EventPropertyGetter GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService);
-
+        EventPropertyGetterSPI GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService);
 
         ObjectArrayEventPropertyGetter GetGetterObjectArray(IDictionary<string, int> indexPerProperty, IDictionary<string, object> nestableTypes, EventAdapterService eventAdapterService);
 
@@ -89,7 +88,7 @@ namespace com.espertech.esper.events.property
         /// property type
         /// </returns>
         SchemaItem GetPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService);
-    
+
         /// <summary>
         /// Returns the getter-method for use with XML DOM event representations.
         /// </summary>
@@ -100,7 +99,7 @@ namespace com.espertech.esper.events.property
         /// <returns>
         /// getter
         /// </returns>
-        EventPropertyGetter GetGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType, String propertyExpression);
+        EventPropertyGetterSPI GetGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType, String propertyExpression);
 
         /// <summary>
         /// Returns the getter-method for use with XML DOM event representations.
@@ -108,7 +107,7 @@ namespace com.espertech.esper.events.property
         /// <returns>
         /// getter
         /// </returns>
-        EventPropertyGetter GetGetterDOM();
+        EventPropertyGetterSPI GetGetterDOM();
 
         /// <summary>
         /// Write the EPL-representation of the property.

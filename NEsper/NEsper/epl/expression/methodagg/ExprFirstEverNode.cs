@@ -27,7 +27,7 @@ namespace com.espertech.esper.epl.expression.methodagg
         {
         }
     
-        public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             if (PositionalParams.Length > 2)
             {
@@ -41,19 +41,15 @@ namespace com.espertech.esper.epl.expression.methodagg
             return validationContext.EngineImportService.AggregationFactoryFactory.MakeFirstEver(validationContext.StatementExtensionSvcContext, this, PositionalParams[0].ExprEvaluator.ReturnType);
         }
 
-        public bool HasFilter
-        {
-            get { return PositionalParams.Length == 2; }
-        }
+        public bool HasFilter => PositionalParams.Length == 2;
 
-        public override string AggregationFunctionName
-        {
-            get { return "firstever"; }
-        }
+        public override string AggregationFunctionName => "firstever";
 
         protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             return node is ExprFirstEverNode;
         }
+
+        protected override bool IsFilterExpressionAsLastParameter => true;
     }
 }

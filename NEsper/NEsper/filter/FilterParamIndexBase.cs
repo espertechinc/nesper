@@ -62,19 +62,25 @@ namespace com.espertech.esper.filter
 	    /// for multi-threaded writes, the ReadWriteLock property must supply a lock for this purpose.
 	    /// </summary>
 	    /// <param name="filterConstant">is the value supplied in the filter paremeter</param>
-	    /// <returns>true if found and removed, false if not found</returns>
-	    public abstract bool Remove(Object filterConstant);
+	    public abstract void Remove(Object filterConstant);
 
-	    /// <summary>
-	    /// Return the number of distinct filter parameter constants stored.
-	    /// The calling class must make sure that access to the underlying resource is protected
-	    /// for multi-threaded writes, the ReadWriteLock property must supply a lock for this purpose.
-	    /// </summary>
-	    /// <returns>Number of entries in index</returns>
-	    public abstract int Count { get ; }
+        /// <summary>
+        /// Return the number of distinct filter parameter constants stored, which can be an expensive call.
+        /// The calling class must make sure that access to the underlying resource is protected
+        /// for multi-threaded writes, the ReadWriteLock property must supply a lock for this purpose.
+        /// </summary>
+        /// <returns>Number of entries in index</returns>
+        public abstract int Count { get ; }
 
-	    /// <summary>Supplies the lock for protected access.</summary>
-	    /// <returns>lock</returns>
+        /// <summary>
+        /// Return empty indicator.
+        /// The calling class must make sure that access to the underlying resource is protected
+        /// for multi-threaded writes, the ReadWriteLock method must supply a lock for this purpose.
+        /// </summary>
+        public abstract bool IsEmpty { get; }
+
+        /// <summary>Supplies the lock for protected access.</summary>
+        /// <returns>lock</returns>
         public abstract IReaderWriterLock ReadWriteLock { get; }
 
 	    /// <summary>Returns the filter operator that the index matches for.</summary>

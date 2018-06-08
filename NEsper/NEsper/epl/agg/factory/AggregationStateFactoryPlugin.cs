@@ -31,9 +31,6 @@ namespace com.espertech.esper.epl.agg.factory
 	        return StateFactory.MakeAggregationState(context);
 	    }
 
-	    public ExprNode AggregationExpression
-	    {
-	        get { return Parent.AggregationExpression; }
-	    }
+	    public ExprNode AggregationExpression => Parent.AggregationExpression;
     }
 } // end of namespace

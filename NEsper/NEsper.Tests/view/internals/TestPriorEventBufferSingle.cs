@@ -91,7 +91,7 @@ namespace com.espertech.esper.view.internals
                 _buffer.GetRelativeToEvent(theEvent, index);
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // expected
             }
@@ -105,7 +105,7 @@ namespace com.espertech.esper.view.internals
                 _buffer.GetRelativeToEvent(_events[1], 2);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }

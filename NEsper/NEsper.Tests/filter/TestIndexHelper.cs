@@ -11,9 +11,10 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.filter
@@ -26,12 +27,15 @@ namespace com.espertech.esper.filter
         private FilterValueSetParam _parameterOne;
         private FilterValueSetParam _parameterTwo;
         private FilterValueSetParam _parameterThree;
-        private readonly FilterServiceGranularLockFactory _lockFactory = 
-            new FilterServiceGranularLockFactoryReentrant();
+        private FilterServiceGranularLockFactory _lockFactory;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
+            _lockFactory = new FilterServiceGranularLockFactoryReentrant(_container.RWLockManager());
             _eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             _parameters = new LinkedList<FilterValueSetParam>();
     

@@ -47,9 +47,12 @@ namespace com.espertech.esper.epl.join.pollindex
                 };
             }
             var factory = new PropertyIndexedEventTableFactory(_streamNum, _eventType, _propertyNames, false, null);
-            var tables = factory.MakeEventTables(new EventTableFactoryTableIdentStmt(statementContext));
-            foreach(var table in tables)
-                table.Add(pollResult.ToArray());
+            var evaluatorContextStatement = new ExprEvaluatorContextStatement(statementContext, false);
+            var tables = factory.MakeEventTables(new EventTableFactoryTableIdentStmt(statementContext), evaluatorContextStatement);
+            foreach (var table in tables)
+            {
+                table.Add(pollResult.ToArray(), evaluatorContextStatement);
+            }
             return tables;
         }
     

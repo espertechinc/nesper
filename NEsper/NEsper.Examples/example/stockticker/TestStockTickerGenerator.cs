@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+
 using NEsper.Examples.StockTicker.eventbean;
+
 using NUnit.Framework;
 
 namespace NEsper.Examples.StockTicker

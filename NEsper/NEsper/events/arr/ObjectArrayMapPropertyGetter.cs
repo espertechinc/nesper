@@ -10,7 +10,11 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
 using com.espertech.esper.events.map;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.arr
 {
@@ -24,26 +28,31 @@ namespace com.espertech.esper.events.arr
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="index">The index.</param>
         /// <param name="getter">is the getter to use to interrogate the property in the map</param>
+        /// <param name="index">index</param>
         public ObjectArrayMapPropertyGetter(int index, MapEventPropertyGetter getter)
         {
-            if (getter == null)
-            {
-                throw new ArgumentException("Getter is a required parameter");
-            }
             _index = index;
-            _getter = getter;
+            _getter = getter ?? throw new ArgumentException("getter is a required parameter");
         }
 
         public Object GetObjectArray(Object[] array)
         {
-            Object valueTopObj = array[_index];
-            if (!(valueTopObj is Map))
+            var valueTopObj = array[_index] as Map;
+            if (valueTopObj != null)
             {
-                return null;
+                return _getter.GetMap(valueTopObj);
             }
-            return _getter.GetMap((Map)valueTopObj);
+
+            return null;
+        }
+
+        private string GetObjectArrayCodegen(ICodegenContext context)
+        {
+            return context.AddMethod(typeof(Object), typeof(Object[]), "array", this.GetType())
+                .DeclareVar(typeof(Object), "valueTopObj", ArrayAtIndex(Ref("array"), Constant(_index)))
+                .IfRefNotTypeReturnConst("valueTopObj", typeof(Map), null)
+                .MethodReturn(_getter.CodegenUnderlyingGet(Cast(typeof(Map), Ref("valueTopObj")), context));
         }
 
         public bool IsObjectArrayExistsProperty(Object[] array)
@@ -53,8 +62,15 @@ namespace com.espertech.esper.events.arr
             {
                 return false;
             }
-
             return _getter.IsMapExistsProperty((Map)valueTopObj);
+        }
+
+        private string IsObjectArrayExistsPropertyCodegen(ICodegenContext context)
+        {
+            return context.AddMethod(typeof(bool), typeof(Object[]), "array", this.GetType())
+                .DeclareVar(typeof(Object), "valueTopObj", ArrayAtIndex(Ref("array"), Constant(_index)))
+                .IfRefNotTypeReturnConst("valueTopObj", typeof(Map), false)
+                .MethodReturn(_getter.CodegenUnderlyingExists(Cast(typeof(Map), Ref("valueTopObj")), context));
         }
 
         public Object Get(EventBean eventBean)
@@ -73,5 +89,35 @@ namespace com.espertech.esper.events.arr
         {
             return null;
         }
+
+        public ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingGet(CastUnderlying(typeof(Object[]), beanExpression), context);
+        }
+
+        public ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingExists(CastUnderlying(typeof(Object[]), beanExpression), context);
+        }
+
+        public ICodegenExpression CodegenEventBeanFragment(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return ConstantNull();
+        }
+
+        public ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return LocalMethod(GetObjectArrayCodegen(context), underlyingExpression);
+        }
+
+        public ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return LocalMethod(IsObjectArrayExistsPropertyCodegen(context), underlyingExpression);
+        }
+
+        public ICodegenExpression CodegenUnderlyingFragment(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return ConstantNull();
+        }
     }
-}
+} // end of namespace

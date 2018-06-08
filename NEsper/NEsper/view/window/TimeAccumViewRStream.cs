@@ -86,15 +86,9 @@ namespace com.espertech.esper.view.window
             return _factory.MakeView(_agentInstanceContext);
         }
 
-        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation
-        {
-            get { return _timeDeltaComputation; }
-        }
+        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation => _timeDeltaComputation;
 
-        public override EventType EventType
-        {
-            get { return Parent.EventType; }
-        }
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
@@ -300,9 +294,6 @@ namespace com.espertech.esper.view.window
             // no action required
         }
 
-        public ViewFactory ViewFactory
-        {
-            get { return _factory; }
-        }
+        public ViewFactory ViewFactory => _factory;
     }
 } // end of namespace

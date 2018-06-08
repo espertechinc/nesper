@@ -49,10 +49,7 @@ namespace com.espertech.esper.epl.lookup
             return InKeywordTableLookupUtil.MultiIndexLookup(_evaluator, _events, context, _indexes);
         }
 
-        public LookupStrategyDesc StrategyDesc
-        {
-            get { return strategyDesc; }
-        }
+        public LookupStrategyDesc StrategyDesc => strategyDesc;
 
         public string ToQueryPlan()
         {

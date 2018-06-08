@@ -18,21 +18,18 @@ namespace com.espertech.esper.epl.expression.accessagg
     public class SortedAggregationStateFactoryFactory
     {
         private readonly EngineImportService _engineImportService;
-        private readonly StatementExtensionSvcContext _statementExtensionSvcContext;
         private readonly ExprEvaluator[] _evaluators;
-        private readonly bool[] _sortDescending;
         private readonly bool _ever;
-        private readonly int _streamNum;
+        private readonly ExprEvaluator _optionalFilter;
         private readonly ExprAggMultiFunctionSortedMinMaxByNode _parent;
+        private readonly bool[] _sortDescending;
+        private readonly StatementExtensionSvcContext _statementExtensionSvcContext;
+        private readonly int _streamNum;
 
-        public SortedAggregationStateFactoryFactory(
-            EngineImportService engineImportService,
-            StatementExtensionSvcContext statementExtensionSvcContext,
-            ExprEvaluator[] evaluators,
-            bool[] sortDescending,
-            bool ever,
-            int streamNum,
-            ExprAggMultiFunctionSortedMinMaxByNode parent)
+        public SortedAggregationStateFactoryFactory(EngineImportService engineImportService,
+            StatementExtensionSvcContext statementExtensionSvcContext, ExprEvaluator[] evaluators,
+            bool[] sortDescending, bool ever, int streamNum, ExprAggMultiFunctionSortedMinMaxByNode parent,
+            ExprEvaluator optionalFilter)
         {
             _engineImportService = engineImportService;
             _statementExtensionSvcContext = statementExtensionSvcContext;
@@ -41,6 +38,7 @@ namespace com.espertech.esper.epl.expression.accessagg
             _ever = ever;
             _streamNum = streamNum;
             _parent = parent;
+            _optionalFilter = optionalFilter;
         }
 
         public AggregationStateFactory MakeFactory()
@@ -51,12 +49,14 @@ namespace com.espertech.esper.epl.expression.accessagg
             if (_ever)
             {
                 var specX = new AggregationStateMinMaxByEverSpec(
-                    _streamNum, _evaluators, _parent.IsMax, comparator, null);
-                return _engineImportService.AggregationFactoryFactory.MakeMinMaxEver(_statementExtensionSvcContext, _parent, specX);
+                    _streamNum, _evaluators, _parent.IsMax, comparator, null, _optionalFilter);
+                return _engineImportService.AggregationFactoryFactory.MakeMinMaxEver(_statementExtensionSvcContext,
+                    _parent, specX);
             }
 
-            var spec = new AggregationStateSortedSpec(_streamNum, _evaluators, comparator, null);
-            return _engineImportService.AggregationFactoryFactory.MakeSorted(_statementExtensionSvcContext, _parent, spec);
+            var spec = new AggregationStateSortedSpec(_streamNum, _evaluators, comparator, null, _optionalFilter);
+            return _engineImportService.AggregationFactoryFactory.MakeSorted(_statementExtensionSvcContext, _parent,
+                spec);
         }
     }
-}
+} // end of namespace

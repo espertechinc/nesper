@@ -8,11 +8,12 @@
 
 using System;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.filter;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.filter
@@ -21,11 +22,21 @@ namespace com.espertech.esper.filter
     [TestFixture]
     public class TestFilterServiceMT 
     {
+        private IContainer _container;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _container = SupportContainer.Reset();
+        }
+
         [Test]
         public void TestFilterService() 
         {
-            RunAssertionAddRemoveFilter(new FilterServiceLockCoarse(false));
-            RunAssertionAddRemoveFilter(new FilterServiceLockFine(false));
+            RunAssertionAddRemoveFilter(new FilterServiceLockCoarse(
+                _container.LockManager(), _container.RWLockManager(), false));
+            RunAssertionAddRemoveFilter(new FilterServiceLockFine(
+                _container.LockManager(), _container.RWLockManager(), false));
         }
 
         private void RunAssertionAddRemoveFilter(FilterService service)

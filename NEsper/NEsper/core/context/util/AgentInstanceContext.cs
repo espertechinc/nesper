@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.service;
@@ -46,6 +47,10 @@ namespace com.espertech.esper.core.context.util
             _agentInstanceProperties = agentInstanceProperties;
             AllocateAgentInstanceScriptContext = agentInstanceScriptContext;
             _terminationCallbacks = null;
+        }
+
+        public IContainer Container {
+            get => StatementContext?.Container;
         }
 
         public AgentInstanceFilterProxy AgentInstanceFilterProxy { get; private set; }

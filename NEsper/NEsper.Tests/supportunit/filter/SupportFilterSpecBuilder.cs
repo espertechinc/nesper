@@ -24,26 +24,26 @@ namespace com.espertech.esper.supportunit.filter
     
         public static List<FilterSpecParam> BuildList(EventType eventType, Object[] objects)
         {
-            List<FilterSpecParam> filterParams = new List<FilterSpecParam>();
+            var filterParams = new List<FilterSpecParam>();
     
-            int index = 0;
+            var index = 0;
             while (objects.Length > index)
             {
-                String propertyName = (String) objects[index++];
-                FilterOperator filterOperator = (FilterOperator) objects[index++];
+                var propertyName = (String) objects[index++];
+                var filterOperator = (FilterOperator) objects[index++];
     
                 if (!(filterOperator.IsRangeOperator()))
                 {
-                    Object filterForConstant = objects[index++];
+                    var filterForConstant = objects[index++];
                     filterParams.Add(new FilterSpecParamConstant(MakeLookupable(eventType, propertyName), filterOperator, filterForConstant));
                 }
                 else
                 {
-                    double min = objects[index++].AsDouble();
-                    double max = objects[index++].AsDouble();
+                    var min = objects[index++].AsDouble();
+                    var max = objects[index++].AsDouble();
                     filterParams.Add(new FilterSpecParamRange(MakeLookupable(eventType, propertyName), filterOperator,
-                            new RangeValueDouble(min),
-                            new RangeValueDouble(max)));
+                            new FilterForEvalConstantDouble(min),
+                            new FilterForEvalConstantDouble(max)));
                 }
             }
     

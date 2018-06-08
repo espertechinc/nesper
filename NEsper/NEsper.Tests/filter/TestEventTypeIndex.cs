@@ -10,11 +10,12 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.filter;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.filter
@@ -29,19 +30,22 @@ namespace com.espertech.esper.filter
     
         private FilterHandleSetNode _handleSetNode;
         private FilterHandle _filterCallback;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             SupportBean testBean = new SupportBean();
             _testEventBean = SupportEventBeanFactory.CreateObject(testBean);
             _testEventType = _testEventBean.EventType;
     
-            _handleSetNode = new FilterHandleSetNode(ReaderWriterLockManager.CreateDefaultLock());
+            _handleSetNode = new FilterHandleSetNode(_container.RWLockManager().CreateDefaultLock());
             _filterCallback = new SupportFilterHandle();
             _handleSetNode.Add(_filterCallback);
     
-            _testIndex = new EventTypeIndex(new FilterServiceGranularLockFactoryReentrant());
+            _testIndex = new EventTypeIndex(new FilterServiceGranularLockFactoryReentrant(_container.RWLockManager()));
             _testIndex.Add(_testEventType, _handleSetNode);
         }
     
@@ -65,7 +69,7 @@ namespace com.espertech.esper.filter
                 _testIndex.Add(_testEventType, _handleSetNode);
                 Assert.IsTrue(false);
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // Expected
             }
@@ -83,7 +87,7 @@ namespace com.espertech.esper.filter
             _testEventBean = SupportEventBeanFactory.CreateObject(new ISupportAImplSuperGImplPlus());
             _testEventType = SupportEventTypeFactory.CreateBeanType(typeof(ISupportA));
 
-            _testIndex = new EventTypeIndex(new FilterServiceGranularLockFactoryReentrant());
+            _testIndex = new EventTypeIndex(new FilterServiceGranularLockFactoryReentrant(_container.RWLockManager()));
             _testIndex.Add(_testEventType, _handleSetNode);
     
             List<FilterHandle> matchesList = new List<FilterHandle>();
@@ -99,7 +103,7 @@ namespace com.espertech.esper.filter
             _testEventBean = SupportEventBeanFactory.CreateObject(new ISupportABCImpl("a", "b", "ab", "c"));
             _testEventType = SupportEventTypeFactory.CreateBeanType(typeof(ISupportBaseAB));
 
-            _testIndex = new EventTypeIndex(new FilterServiceGranularLockFactoryReentrant());
+            _testIndex = new EventTypeIndex(new FilterServiceGranularLockFactoryReentrant(_container.RWLockManager()));
             _testIndex.Add(_testEventType, _handleSetNode);
     
             List<FilterHandle> matchesList = new List<FilterHandle>();

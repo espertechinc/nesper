@@ -17,17 +17,14 @@ namespace com.espertech.esper.compat.threading
         /// removed.
         /// </summary>
         /// <value>The count.</value>
-        public long Count
-        {
-            get { return Interlocked.Read(ref _latchCount); }
-        }
+        public long Count => Interlocked.Read(ref _latchCount);
 
+        /// <summary>
+        /// Decrements the latch count.
+        /// </summary>
         public void CountDown()
         {
-            if (Interlocked.Decrement(ref _latchCount) == 0)
-            {
-                
-            }
+            Interlocked.Decrement(ref _latchCount);
         }
 
         /// <summary>
@@ -49,7 +46,6 @@ namespace com.espertech.esper.compat.threading
                     return false;
                 }
             }
-
             return true;
         }
 
@@ -60,6 +56,11 @@ namespace com.espertech.esper.compat.threading
         public bool Await()
         {
             return Await(TimeSpan.MaxValue);
+        }
+
+        public bool Await(int units, TimeUnit timeUnits)
+        {
+            return Await(TimeUnitHelper.ToTimeSpan(units, timeUnits));
         }
     }
 }

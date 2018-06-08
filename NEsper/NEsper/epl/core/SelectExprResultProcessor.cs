@@ -27,9 +27,6 @@ namespace com.espertech.esper.epl.core
         private readonly SelectExprProcessor _syntheticProcessor;
         private readonly BindProcessor _bindProcessor;
 
-        private static int seq = 0;
-        private readonly int id = seq++;
-
         /// <summary>Ctor. </summary>
         /// <param name="statementResultService">for awareness of listeners and subscribers handles output results</param>
         /// <param name="syntheticProcessor">is the processor generating synthetic events according to the select clause</param>

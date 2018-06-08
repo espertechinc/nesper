@@ -45,7 +45,7 @@ namespace com.espertech.esper.epl.expression.dot
                 StatementName,
                 PropertyName,
                 expectedType,
-                received == null ? "null" : TypeHelper.GetTypeNameFullyQualPretty(received.GetType())
+                received == null ? "null" : received.GetType().GetCleanName()
             );
         }
     }

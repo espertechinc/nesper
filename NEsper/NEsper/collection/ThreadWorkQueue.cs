@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
 
 using com.espertech.esper.compat.threading;
@@ -34,9 +33,9 @@ namespace com.espertech.esper.collection
         /// <summary>
         /// Initializes a new instance of the <see cref="ThreadWorkQueue"/> class.
         /// </summary>
-        public ThreadWorkQueue()
+        public ThreadWorkQueue(IThreadLocalManager threadLocalManager)
         {
-            _threadQueue = ThreadLocalManager.Create(
+            _threadQueue = threadLocalManager.Create(
                 () => new DualWorkQueue<object>());
         }
 

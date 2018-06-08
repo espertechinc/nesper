@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
@@ -18,6 +19,7 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
@@ -31,12 +33,15 @@ namespace com.espertech.esper.view.std
         private SupportBeanClassView _ultimateChildView;
         private StatementContext _statementContext;
         private AgentInstanceViewFactoryChainContext _agentInstanceContext;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            _statementContext = SupportStatementContextFactory.MakeContext();
-            _agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext();
+            _container = SupportContainer.Reset();
+
+            _statementContext = SupportStatementContextFactory.MakeContext(_container);
+            _agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container);
     
             var expressions = SupportExprNodeFactory.MakeIdentNodesMD("Symbol");
             _myGroupByView = new GroupByViewImpl(_agentInstanceContext, expressions, ExprNodeUtility.GetEvaluators(expressions));

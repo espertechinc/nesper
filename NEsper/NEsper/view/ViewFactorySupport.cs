@@ -210,6 +210,7 @@ namespace com.espertech.esper.view
             {
                 var exprEvaluatorContext = new ExprEvaluatorContextStatement(statementContext, false);
                 var validationContext = new ExprValidationContext(
+                    statementContext.Container,
                     streamTypeService,
                     statementContext.EngineImportService,
                     statementContext.StatementExtensionServicesContext, null,

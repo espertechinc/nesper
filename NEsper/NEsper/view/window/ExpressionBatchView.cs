@@ -59,10 +59,7 @@ namespace com.espertech.esper.view.window
             this._dataWindowViewFactory = dataWindowViewFactory;
         }
 
-        public override string ViewName
-        {
-            get { return _dataWindowViewFactory.ViewName; }
-        }
+        public override string ViewName => _dataWindowViewFactory.ViewName;
 
         public override View CloneView()
         {
@@ -263,9 +260,6 @@ namespace com.espertech.esper.view.window
             }
         }
 
-        public override ViewFactory ViewFactory
-        {
-            get { return _dataWindowViewFactory; }
-        }
+        public override ViewFactory ViewFactory => _dataWindowViewFactory;
     }
 }

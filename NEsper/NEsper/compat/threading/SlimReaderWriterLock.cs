@@ -17,6 +17,8 @@ namespace com.espertech.esper.compat.threading
     	: IReaderWriterLock
     	, IReaderWriterLockCommon
     {
+        private readonly int _lockTimeout;
+
 #if MONO
         public const string ExceptionText = "ReaderWriterLockSlim is not supported on this platform";
 #else
@@ -26,14 +28,15 @@ namespace com.espertech.esper.compat.threading
         /// <summary>
         /// Initializes a new instance of the <see cref="SlimReaderWriterLock"/> class.
         /// </summary>
-        public SlimReaderWriterLock()
+        public SlimReaderWriterLock(int lockTimeout)
         {
+            _lockTimeout = lockTimeout;
 #if MONO
             throw new NotSupportedException(ExceptionText);
 #else
             _rwLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-            ReadLock = new CommonReadLock(this);
-            WriteLock = new CommonWriteLock(this);
+            ReadLock = new CommonReadLock(this, _lockTimeout);
+            WriteLock = new CommonWriteLock(this, _lockTimeout);
 
             _rDisposable = new TrackedDisposable(ReleaseReaderLock);
             _wDisposable = new TrackedDisposable(ReleaseWriterLock);
@@ -60,7 +63,7 @@ namespace com.espertech.esper.compat.threading
 #if MONO
             throw new NotSupportedException(ExceptionText);
 #else
-            if (_rwLock.TryEnterReadLock(BaseLock.RLockTimeout))
+            if (_rwLock.TryEnterReadLock(_lockTimeout))
                 return _rDisposable;
 
             throw new TimeoutException("ReaderWriterLock timeout expired");
@@ -72,7 +75,7 @@ namespace com.espertech.esper.compat.threading
 #if MONO
             throw new NotSupportedException(ExceptionText);
 #else
-            if (_rwLock.TryEnterWriteLock(BaseLock.WLockTimeout))
+            if (_rwLock.TryEnterWriteLock(_lockTimeout))
                 return _wDisposable;
 
             throw new TimeoutException("ReaderWriterLock timeout expired");

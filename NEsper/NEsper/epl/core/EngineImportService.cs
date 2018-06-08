@@ -17,6 +17,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.epl.agg.factory;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.time;
+using com.espertech.esper.epl.index.service;
+using com.espertech.esper.events;
 
 namespace com.espertech.esper.epl.core
 {
@@ -219,6 +221,12 @@ namespace com.espertech.esper.epl.core
         ClassLoader GetFastClassClassLoader(Type clazz);
 
         ClassLoader GetClassLoader();
+
+        AdvancedIndexFactoryProvider ResolveAdvancedIndexProvider(String indexTypeName);
+
+        bool IsCodegenEventPropertyGetters { get; }
+
+        EventPropertyGetter CodegenGetter(EventPropertyGetterSPI getterSPI, string propertyExpression);
     }
 
     public class EngineImportServiceConstants

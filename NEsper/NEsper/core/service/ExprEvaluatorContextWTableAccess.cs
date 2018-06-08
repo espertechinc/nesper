@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.script;
@@ -25,6 +26,8 @@ namespace com.espertech.esper.core.service
             _context = context;
             _tableService = tableService;
         }
+
+        public IContainer Container => _context.Container;
 
         public string StatementName
         {

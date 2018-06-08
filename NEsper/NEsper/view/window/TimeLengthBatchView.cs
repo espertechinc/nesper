@@ -101,36 +101,21 @@ namespace com.espertech.esper.view.window
 
         /// <summary>Returns the interval size in milliseconds. </summary>
         /// <value>batch size</value>
-        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation
-        {
-            get { return _timeDeltaComputation; }
-        }
+        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation => _timeDeltaComputation;
 
         /// <summary>True for force-output. </summary>
         /// <value>indicates force-output</value>
-        public bool IsForceOutput
-        {
-            get { return _isForceOutput; }
-        }
+        public bool IsForceOutput => _isForceOutput;
 
         /// <summary>Returns the length of the batch. </summary>
         /// <value>maximum number of events allowed before window gets flushed</value>
-        public long NumberOfEvents
-        {
-            get { return _numberOfEvents; }
-        }
+        public long NumberOfEvents => _numberOfEvents;
 
         /// <summary>True for start-eager. </summary>
         /// <value>indicates start-eager</value>
-        public bool IsStartEager
-        {
-            get { return _isStartEager; }
-        }
+        public bool IsStartEager => _isStartEager;
 
-        public override EventType EventType
-        {
-            get { return Parent.EventType; }
-        }
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
@@ -321,9 +306,6 @@ namespace com.espertech.esper.view.window
             viewDataVisitor.VisitPrimary(_currentBatch, true, _timeLengthBatchViewFactory.ViewName, null);
         }
 
-        public ViewFactory ViewFactory
-        {
-            get { return _timeLengthBatchViewFactory; }
-        }
+        public ViewFactory ViewFactory => _timeLengthBatchViewFactory;
     }
 }

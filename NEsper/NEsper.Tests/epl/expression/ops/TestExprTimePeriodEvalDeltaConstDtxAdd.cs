@@ -9,9 +9,10 @@
 using System;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.time;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.epl.expression.ops
@@ -19,10 +20,22 @@ namespace com.espertech.esper.epl.expression.ops
     [TestFixture]
 	public class TestExprTimePeriodEvalDeltaConstDtxAdd
     {
+        private IContainer _container;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _container = SupportContainer.Reset();
+        }
+
         [Test]
 	    public void TestComputeDelta()
         {
-	        ExprTimePeriod timePeriod = new ExprTimePeriodImpl(TimeZoneInfo.Local, false, true, false, false, false, false, false, false, false, TimeAbacusMilliseconds.INSTANCE);
+	        ExprTimePeriod timePeriod = new ExprTimePeriodImpl(
+	            TimeZoneInfo.Local, 
+	            false, true, false, false, false, false, false, false, false, 
+	            TimeAbacusMilliseconds.INSTANCE,
+	            _container.LockManager());
 	        timePeriod.AddChildNode(new ExprConstantNodeImpl(1));
 	        timePeriod.Validate(null);
 

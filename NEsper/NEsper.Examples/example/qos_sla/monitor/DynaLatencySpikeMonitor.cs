@@ -7,12 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.example.qos_sla.eventbean;
+using NEsper.Examples.QoS_SLA.eventbean;
 
-namespace com.espertech.esper.example.qos_sla.monitor
+namespace NEsper.Examples.QoS_SLA.monitor
 {
     public class DynaLatencySpikeMonitor
     {
@@ -46,8 +45,8 @@ namespace com.espertech.esper.example.qos_sla.monitor
             _spikeLatencyAlert.Events += LogLatencyEvent;
 
             // Stop pattern when the threshold changes
-            String eventName = typeof(LatencyLimit).FullName;
-            EPStatement stopPattern = _admin.CreatePattern(eventName + "(" + filter + ")");
+            var eventName = typeof(LatencyLimit).FullName;
+            var stopPattern = _admin.CreatePattern(eventName + "(" + filter + ")");
 
             stopPattern.Events += ((newEvents, oldEvents) => _spikeLatencyAlert.Stop());
         }

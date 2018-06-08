@@ -37,7 +37,7 @@ namespace com.espertech.esper.client.soda
         /// <summary>
         /// Add a constant to the expression.
         /// </summary>
-        /// <param name="object">Constant object that is to be added.</param>
+        /// <param name="object">IsConstant object that is to be added.</param>
         /// <returns>expression</returns>
 	    public ArrayExpression Add(Object @object)
 	    {

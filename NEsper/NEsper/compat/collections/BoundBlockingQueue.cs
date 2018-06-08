@@ -23,16 +23,32 @@ namespace com.espertech.esper.compat.collections
         private readonly int _maxCapacity;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BoundBlockingQueue&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="BoundBlockingQueue&lt;T&gt;" /> class.
         /// </summary>
         /// <param name="maxCapacity">The max capacity.</param>
-        public BoundBlockingQueue(int maxCapacity)
+        /// <param name="lockTimeout">The lock timeout.</param>
+        public BoundBlockingQueue(int maxCapacity, int lockTimeout)
         {
             _queue = new LinkedList<T>();
-            _queueLock = new MonitorSpinLock();
+            _queueLock = new MonitorSpinLock(lockTimeout);
             _queuePopWaitHandle = new AutoResetEvent(false);
             _queuePushWaitHandle = new AutoResetEvent(false);
             _maxCapacity = maxCapacity;
+        }
+
+        /// <summary>
+        /// Determines whether this instance is empty.
+        /// </summary>
+        /// <returns>
+        /// <c>true</c> if this instance is empty; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public bool IsEmpty()
+        {
+            using (_queueLock.Acquire())
+            {
+                return _queue.Count == 0;
+            }
         }
 
         /// <summary>

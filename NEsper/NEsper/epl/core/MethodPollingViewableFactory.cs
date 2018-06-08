@@ -335,7 +335,7 @@ namespace com.espertech.esper.epl.core
             var meta = new MethodPollingViewableMeta(
                 methodProviderClass, isStaticMethod, mapType, oaType, invocationTarget, strategy, isCollection,
                 isIterator, variableReader, variableName, eventTypeWhenMethodReturnsEventBeans, scriptExpression);
-            return new MethodPollingViewable(methodStreamSpec, dataCache, eventType, exprEvaluatorContext, meta);
+            return new MethodPollingViewable(methodStreamSpec, dataCache, eventType, exprEvaluatorContext, meta, statementContext.ThreadLocalManager);
         }
 
         private static MethodMetadataDesc GetCheckMetadataVariable(
@@ -430,7 +430,7 @@ namespace com.espertech.esper.epl.core
             {
                 throw new ExprValidationException(
                     "Getter method '" + typeGetterMethod.Name + "' does not return " +
-                    metadataClass.GetTypeNameFullyQualPretty());
+                    metadataClass.GetCleanName());
             }
 
             return typeGetterMethod;

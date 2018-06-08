@@ -27,10 +27,7 @@ namespace com.espertech.esper.epl.agg.factory
 	        return new CountMinSketchAggState(CountMinSketchState.MakeState(Specification), Specification.Agent);
 	    }
 
-	    public ExprNode AggregationExpression
-	    {
-	        get { return Parent; }
-	    }
+	    public ExprNode AggregationExpression => Parent;
 
 	    public CountMinSketchSpec Specification { get; private set; }
 

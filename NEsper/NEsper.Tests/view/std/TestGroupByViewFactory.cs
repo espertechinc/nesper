@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
@@ -25,20 +27,18 @@ namespace com.espertech.esper.view.std
     [TestFixture]
     public class TestGroupByViewFactory
     {
-        #region Setup/Teardown
+        private GroupByViewFactory _factory;
+        private ViewFactoryContext _viewFactoryContext;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _factory = new GroupByViewFactory();
+            _viewFactoryContext = new ViewFactoryContext(
+                SupportStatementContextFactory.MakeContext(_container), 1, null, null, false, -1, false);
         }
-
-        #endregion
-
-        private GroupByViewFactory _factory;
-
-        private readonly ViewFactoryContext _viewFactoryContext = new ViewFactoryContext(
-            SupportStatementContextFactory.MakeContext(), 1, null, null, false, -1, false);
 
         private void TryInvalidParameter(Object[] parameters)
         {
@@ -49,10 +49,10 @@ namespace com.espertech.esper.view.std
                 factory.SetViewParameters(_viewFactoryContext, TestViewSupport.ToExprListBean(parameters));
                 factory.Attach(
                     SupportEventTypeFactory.CreateBeanType(typeof (SupportBean)),
-                    SupportStatementContextFactory.MakeContext(), null, null);
+                    SupportStatementContextFactory.MakeContext(_container), null, null);
                 Assert.Fail();
             }
-            catch (ViewParameterException ex)
+            catch (ViewParameterException)
             {
                 // expected
             }
@@ -64,9 +64,9 @@ namespace com.espertech.esper.view.std
 
             factory.SetViewParameters(_viewFactoryContext, TestViewSupport.ToExprListBean(parameters));
             factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof (SupportBean)),
-                           SupportStatementContextFactory.MakeContext(), null, null);
+                           SupportStatementContextFactory.MakeContext(_container), null, null);
             var view = (GroupByView) factory.MakeView(
-                SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
+                SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container));
 
             Assert.AreEqual(fieldNames[0],
                             view.CriteriaExpressions[0].ToExpressionStringMinPrecedenceSafe());
@@ -80,22 +80,22 @@ namespace com.espertech.esper.view.std
                 typeof (SupportBean));
 
             _factory.SetViewParameters(_viewFactoryContext, TestViewSupport.ToExprListBean(new Object[] { "IntBoxed" }));
-            _factory.Attach(parentType, SupportStatementContextFactory.MakeContext(), null, null);
+            _factory.Attach(parentType, SupportStatementContextFactory.MakeContext(_container), null, null);
         }
 
         [Test]
         public void TestCanReuse()
         {
-            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
+            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext(_container);
             _factory.SetViewParameters(_viewFactoryContext, TestViewSupport.ToExprListBean(new Object[] { "TheString", "LongPrimitive" }));
-            _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)), SupportStatementContextFactory.MakeContext(), null, null);
+            _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)), SupportStatementContextFactory.MakeContext(_container), null, null);
             Assert.IsFalse(_factory.CanReuse(new FirstElementView(null), agentInstanceContext));
-            Assert.IsFalse(_factory.CanReuse(new GroupByViewImpl(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), SupportExprNodeFactory.MakeIdentNodesBean("TheString"), null), agentInstanceContext));
-            Assert.IsTrue(_factory.CanReuse(new GroupByViewImpl(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), SupportExprNodeFactory.MakeIdentNodesBean("TheString", "LongPrimitive"), null), agentInstanceContext));
+            Assert.IsFalse(_factory.CanReuse(new GroupByViewImpl(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container), SupportExprNodeFactory.MakeIdentNodesBean("TheString"), null), agentInstanceContext));
+            Assert.IsTrue(_factory.CanReuse(new GroupByViewImpl(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container), SupportExprNodeFactory.MakeIdentNodesBean("TheString", "LongPrimitive"), null), agentInstanceContext));
 
             _factory.SetViewParameters(_viewFactoryContext, TestViewSupport.ToExprListBean(new Object[] { SupportExprNodeFactory.MakeIdentNodesBean("TheString", "LongPrimitive") }));
-            Assert.IsFalse(_factory.CanReuse(new GroupByViewImpl(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), SupportExprNodeFactory.MakeIdentNodesBean("TheString"), null), agentInstanceContext));
-            Assert.IsTrue(_factory.CanReuse(new GroupByViewImpl(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), SupportExprNodeFactory.MakeIdentNodesBean("TheString", "LongPrimitive"), null), agentInstanceContext));
+            Assert.IsFalse(_factory.CanReuse(new GroupByViewImpl(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container), SupportExprNodeFactory.MakeIdentNodesBean("TheString"), null), agentInstanceContext));
+            Assert.IsTrue(_factory.CanReuse(new GroupByViewImpl(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container), SupportExprNodeFactory.MakeIdentNodesBean("TheString", "LongPrimitive"), null), agentInstanceContext));
         }
 
         [Test]

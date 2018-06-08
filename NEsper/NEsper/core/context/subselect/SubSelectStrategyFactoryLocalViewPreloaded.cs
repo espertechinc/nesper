@@ -174,9 +174,7 @@ namespace com.espertech.esper.core.context.subselect
             }
 
             // create index/holder table
-            EventTable[] index =
-                _pair.First.MakeEventTables(
-                    new EventTableFactoryTableIdentAgentInstanceSubq(agentInstanceContext, _subqueryNumber));
+            EventTable[] index = _pair.First.MakeEventTables(new EventTableFactoryTableIdentAgentInstanceSubq(agentInstanceContext, _subqueryNumber), agentInstanceContext);
             stopCallbackList.Add(new SubqueryStopCallback(index));
 
             // create strategy
@@ -256,7 +254,7 @@ namespace com.espertech.esper.core.context.subselect
             }
 
             var bufferView = new BufferView(_subSelectHolder.StreamNumber);
-            bufferView.Observer = new SubselectBufferObserver(index);
+            bufferView.Observer = new SubselectBufferObserver(index, agentInstanceContext);
             subselectView.AddView(bufferView);
 
             return new SubSelectStrategyRealization(
@@ -292,29 +290,11 @@ namespace com.espertech.esper.core.context.subselect
                 ICollection<EventBean> eventsInWindow;
                 if (namedSpec.FilterExpressions != null && !namedSpec.FilterExpressions.IsEmpty())
                 {
-
-                    try
-                    {
-                        var types = new StreamTypeServiceImpl(
-                            consumerView.EventType, consumerView.EventType.Name, false, services.EngineURI);
-                        var tagged = new LinkedHashMap<string, Pair<EventType, string>>();
-                        var filterSpecCompiled = FilterSpecCompiler.MakeFilterSpec(
-                            types.EventTypes[0], types.StreamNames[0],
-                            namedSpec.FilterExpressions, null, tagged, tagged, types, null,
-                            agentInstanceContext.StatementContext, Collections.SingletonSet(0));
-                        var snapshot = consumerView.SnapshotNoLock(
-                            filterSpecCompiled, agentInstanceContext.StatementContext.Annotations);
-                        eventsInWindow = new List<EventBean>(snapshot.Count);
-                        ExprNodeUtility.ApplyFilterExpressionsIterable(
-                            snapshot, namedSpec.FilterExpressions, agentInstanceContext, eventsInWindow);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Warn("Unexpected exception analyzing filter paths: " + ex.Message, ex);
-                        eventsInWindow = new List<EventBean>();
-                        ExprNodeUtility.ApplyFilterExpressionsIterable(
-                            consumerView, namedSpec.FilterExpressions, agentInstanceContext, eventsInWindow);
-                    }
+                    var types = new StreamTypeServiceImpl(consumerView.EventType, consumerView.EventType.Name, false, services.EngineURI);
+                    var queryGraph = ExprNodeUtility.ValidateFilterGetQueryGraphSafe(ExprNodeUtility.ConnectExpressionsByLogicalAndWhenNeeded(namedSpec.FilterExpressions), agentInstanceContext.StatementContext, types);
+                    var snapshot = consumerView.SnapshotNoLock(queryGraph, agentInstanceContext.StatementContext.Annotations);
+                    eventsInWindow = new List<EventBean>();
+                    ExprNodeUtility.ApplyFilterExpressionsIterable(snapshot, namedSpec.FilterExpressions, agentInstanceContext, eventsInWindow);
                 }
                 else
                 {
@@ -333,7 +313,7 @@ namespace com.espertech.esper.core.context.subselect
                 {
                     foreach (var table in eventIndex)
                     {
-                        table.Add(newEvents); // fill index
+                        table.Add(newEvents, agentInstanceContext); // fill index
                     }
                 }
             }
@@ -353,7 +333,7 @@ namespace com.espertech.esper.core.context.subselect
                     {
                         foreach (var table in eventIndex)
                         {
-                            table.Add(preloadEvents.ToArray());
+                            table.Add(preloadEvents.ToArray(), agentInstanceContext);
                         }
                     }
                 }

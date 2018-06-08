@@ -20,7 +20,7 @@ namespace com.espertech.esper.epl.datetime.interval
     {
         Object Evaluate(long startTs, long endTs, EvaluateParams evaluateParams);
 
-        ExprDotNodeFilterAnalyzerDTIntervalDesc GetFilterDesc(
+        FilterExprAnalyzerDTIntervalAffector GetFilterDesc(
             EventType[] typesPerStream,
             DatetimeMethodEnum currentMethod,
             IList<ExprNode> currentParameters,

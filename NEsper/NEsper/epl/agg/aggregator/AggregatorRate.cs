@@ -7,73 +7,98 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.epl.agg.aggregator
 {
     /// <summary>
-    /// Aggregation computing an event arrival rate for data windowed-events.
+    ///     Aggregation computing an event arrival rate for data windowed-events.
     /// </summary>
     public class AggregatorRate : AggregationMethod
     {
-        private long _oneSecondTime;
-        private double _accumulator;
-        private long _latest;
-        private long _oldest;
-        private bool _isSet = false;
+        private bool _isSet;
 
         public AggregatorRate(long oneSecondTime)
         {
-            _oneSecondTime = oneSecondTime;
+            OneSecondTime = oneSecondTime;
         }
 
-        public virtual void Enter(Object value)
+        public long OneSecondTime { get; }
+
+        public double Accumulator { get; set; }
+
+        public long Latest { get; set; }
+
+        public long Oldest { get; set; }
+
+        public virtual void Enter(object value)
         {
-            if (value.GetType().IsArray)
-            {
-                var parameters = (Object[])value;
-                _accumulator += parameters[1].AsDouble();
-                _latest = parameters[0].AsLong();
-            }
+            if (value is Array array)
+                EnterValueArr(array);
             else
-            {
-                _accumulator += 1;
-                _latest = value.AsLong();
-            }
+                EnterValueSingle(value);
         }
 
-        public virtual void Leave(Object value)
+        public virtual void Leave(object value)
         {
-            if (value.GetType().IsArray)
-            {
-                var parameters = (Object[])value;
-                _accumulator -= parameters[1].AsDouble();
-                _oldest = parameters[0].AsLong();
-            }
+            if (value is Array array)
+                LeaveValueArr(array);
             else
-            {
-                _accumulator -= 1;
-                _oldest = value.AsLong();
-            }
-            if (!_isSet) _isSet = true;
+                LeaveValueSingle(value);
         }
 
-        public virtual object Value
+        public object Value
         {
             get
             {
-                if (!_isSet)
-                    return null;
-                return (_accumulator * _oneSecondTime) / (_latest - _oldest);
+                if (!_isSet) return null;
+                return Accumulator * OneSecondTime / (Latest - Oldest);
             }
         }
 
-        public virtual void Clear()
+        public void Clear()
         {
-            _accumulator = 0;
-            _latest = 0;
-            _oldest = 0;
+            Accumulator = 0;
+            Latest = 0;
+            Oldest = 0;
+        }
+
+        public bool IsSet()
+        {
+            return _isSet;
+        }
+
+        public void SetSet(bool set)
+        {
+            _isSet = set;
+        }
+
+        protected void EnterValueSingle(object value)
+        {
+            Accumulator++;
+            Latest = (long) value;
+        }
+
+        protected void EnterValueArr(Array parameters)
+        {
+            var val = parameters.GetValue(1);
+            Accumulator += val.AsDouble();
+            Latest = parameters.GetValue(0).AsLong();
+        }
+
+        protected void LeaveValueArr(Array parameters)
+        {
+            var val = parameters.GetValue(1);
+            Accumulator -= val.AsDouble();
+            Oldest = parameters.GetValue(0).AsLong();
+            if (!_isSet) _isSet = true;
+        }
+
+        protected void LeaveValueSingle(object value)
+        {
+            Accumulator--;
+            Oldest = (long) value;
+            if (!_isSet) _isSet = true;
         }
     }
-}
+} // end of namespace

@@ -43,7 +43,7 @@ namespace com.espertech.esper.view.ext
         , StopCallback
     {
         private readonly AgentInstanceViewFactoryChainContext _agentInstanceContext;
-        private readonly TimeOrderViewFactory _timeOrderViewFactory;
+        private readonly ViewFactory _viewFactory;
         private readonly ExprNode _timestampExpression;
         private readonly ExprEvaluator _timestampEvaluator;
         private readonly ExprTimePeriodEvalDeltaConst _timeDeltaComputation;
@@ -60,21 +60,21 @@ namespace com.espertech.esper.view.ext
         /// Ctor.
         /// </summary>
         /// <param name="agentInstanceContext">The agent instance context.</param>
-        /// <param name="timeOrderViewFactory">for copying this view in a group-by</param>
+        /// <param name="viewFactory">for copying this view in a group-by</param>
         /// <param name="timestampExpr">the property name of the event supplying timestamp values</param>
         /// <param name="timestampEvaluator">The timestamp evaluator.</param>
         /// <param name="timeDeltaComputation">The time delta computation.</param>
         /// <param name="optionalSortedRandomAccess">is the friend class handling the random access, if required byexpressions</param>
         public TimeOrderView(
             AgentInstanceViewFactoryChainContext agentInstanceContext,
-            TimeOrderViewFactory timeOrderViewFactory,
+            ViewFactory viewFactory,
             ExprNode timestampExpr,
             ExprEvaluator timestampEvaluator,
             ExprTimePeriodEvalDeltaConst timeDeltaComputation,
             IStreamSortRankRandomAccess optionalSortedRandomAccess)
         {
             _agentInstanceContext = agentInstanceContext;
-            _timeOrderViewFactory = timeOrderViewFactory;
+            _viewFactory = viewFactory;
             _timestampExpression = timestampExpr;
             _timestampEvaluator = timestampEvaluator;
             _timeDeltaComputation = timeDeltaComputation;
@@ -86,7 +86,7 @@ namespace com.espertech.esper.view.ext
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback
             {
                 ProcScheduledTrigger = extensionServicesContext => Instrument.With(
-                    i => i.QViewScheduledEval(this, _timeOrderViewFactory.ViewName),
+                    i => i.QViewScheduledEval(this, _viewFactory.ViewName),
                     i => i.AViewScheduledEval(),
                     Expire)
             };
@@ -111,7 +111,7 @@ namespace com.espertech.esper.view.ext
 
         public View CloneView()
         {
-            return _timeOrderViewFactory.MakeView(_agentInstanceContext);
+            return _viewFactory.MakeView(_agentInstanceContext);
         }
 
         public override EventType EventType
@@ -126,7 +126,7 @@ namespace com.espertech.esper.view.ext
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
             using (Instrument.With(
-                i => i.QViewProcessIRStream(this, _timeOrderViewFactory.ViewName, newData, oldData),
+                i => i.QViewProcessIRStream(this, _viewFactory.ViewName, newData, oldData),
                 i => i.AViewProcessIRStream()))
             {
                 EventBean[] postOldEventsArray = null;
@@ -241,7 +241,7 @@ namespace com.espertech.esper.view.ext
                 if (HasViews)
                 {
                     Instrument.With(
-                        i => i.QViewIndicate(this, _timeOrderViewFactory.ViewName, newData, postOldEventsArray),
+                        i => i.QViewIndicate(this, _viewFactory.ViewName, newData, postOldEventsArray),
                         i => i.AViewIndicate(),
                         () => UpdateChildren(newData, postOldEventsArray));
                 }
@@ -295,7 +295,7 @@ namespace com.espertech.esper.view.ext
 
         public void VisitView(ViewDataVisitor viewDataVisitor)
         {
-            viewDataVisitor.VisitPrimary(_sortedEvents, false, _timeOrderViewFactory.ViewName, _eventCount, null);
+            viewDataVisitor.VisitPrimary(_sortedEvents, false, _viewFactory.ViewName, _eventCount, null);
         }
 
         /// <summary>
@@ -367,7 +367,7 @@ namespace com.espertech.esper.view.ext
                 {
                     EventBean[] oldEvents = releaseEvents.ToArray();
                     Instrument.With(
-                        i => i.QViewIndicate(this, _timeOrderViewFactory.ViewName, null, oldEvents),
+                        i => i.QViewIndicate(this, _viewFactory.ViewName, null, oldEvents),
                         i => i.AViewIndicate(),
                         () => UpdateChildren(null, oldEvents));
                 }
@@ -406,7 +406,7 @@ namespace com.espertech.esper.view.ext
 
         public ViewFactory ViewFactory
         {
-            get { return _timeOrderViewFactory; }
+            get { return _viewFactory; }
         }
     }
 }

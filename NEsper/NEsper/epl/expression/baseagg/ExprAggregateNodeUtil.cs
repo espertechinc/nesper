@@ -6,22 +6,25 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.declexpr;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.expression.baseagg
 {
     public class ExprAggregateNodeUtil
     {
-        public static ExprAggregateNodeParamDesc GetValidatePositionalParams(IList<ExprNode> childNodes, bool allowOnlyGroupBy)
+        public static ExprAggregateNodeParamDesc GetValidatePositionalParams(IList<ExprNode> childNodes, bool builtinAggregationFunc)
         {
             ExprAggregateLocalGroupByDesc optionalLocalGroupBy = null;
+            ExprNode optionalFilter = null;
             var count = 0;
-            foreach (var node in childNodes)
+            foreach (ExprNode node in childNodes)
             {
                 if (!IsNonPositionalParameter(node))
                 {
@@ -29,12 +32,24 @@ namespace com.espertech.esper.epl.expression.baseagg
                 }
                 else
                 {
-                    var namedParameterNode = (ExprNamedParameterNodeImpl)node;
-                    if (allowOnlyGroupBy && namedParameterNode.ParameterName.ToLower() != "group_by")
+                    var namedParameterNode = (ExprNamedParameterNode)node;
+                    var paramNameLower = namedParameterNode.ParameterName.ToLowerInvariant();
+                    if (paramNameLower == "group_by")
                     {
-                        throw new ExprValidationException("Invalid named parameter '" + namedParameterNode.ParameterName + "' (did you mean 'group_by'?)");
+                        optionalLocalGroupBy = new ExprAggregateLocalGroupByDesc(namedParameterNode.ChildNodes);
                     }
-                    optionalLocalGroupBy = new ExprAggregateLocalGroupByDesc(namedParameterNode.ChildNodes);
+                    else if (paramNameLower == "filter")
+                    {
+                        if ((namedParameterNode.ChildNodes.Count != 1) || 
+                            (namedParameterNode.ChildNodes[0].ExprEvaluator.ReturnType.GetBoxedType() != typeof(bool?))) {
+                            throw new ExprValidationException("Filter named parameter requires a single expression returning a boolean-typed value");
+                        }
+                        optionalFilter = namedParameterNode.ChildNodes[0];
+                    }
+                    else if (builtinAggregationFunc)
+                    {
+                        throw new ExprValidationException("Invalid named parameter '" + namedParameterNode.ParameterName + "' (did you mean 'group_by' or 'filter'?)");
+                    }
                 }
             }
             var positionals = new ExprNode[count];
@@ -46,7 +61,7 @@ namespace com.espertech.esper.epl.expression.baseagg
                     positionals[count++] = node;
                 }
             }
-            return new ExprAggregateNodeParamDesc(positionals, optionalLocalGroupBy);
+            return new ExprAggregateNodeParamDesc(positionals, optionalLocalGroupBy, optionalFilter);
         }
 
         public static bool IsNonPositionalParameter(ExprNode node)

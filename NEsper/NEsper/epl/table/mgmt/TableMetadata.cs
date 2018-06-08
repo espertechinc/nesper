@@ -15,6 +15,7 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.core.service.resource;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.table.upd;
 using com.espertech.esper.epl.updatehelper;
@@ -74,7 +75,8 @@ namespace com.espertech.esper.epl.table.mgmt
 	        if (keyTypes.Length > 0)
             {
 	            var pair = TableServiceUtil.GetIndexMultikeyForKeys(tableColumns, internalEventType);
-	            _eventTableIndexMetadataRepo.AddIndex(true, pair.Second, tableName, createTableStatementContext.StatementName, true, null);
+                var queryPlanIndexItem = QueryPlanIndexItem.FromIndexMultikeyTablePrimaryKey(pair.Second);
+                _eventTableIndexMetadataRepo.AddIndexExplicit(true, pair.Second, tableName, queryPlanIndexItem, createTableStatementContext.StatementName);
 	            _tableRowKeyFactory = new TableRowKeyFactory(pair.First);
 	        }
 	    }
@@ -161,13 +163,14 @@ namespace com.espertech.esper.epl.table.mgmt
 	        get { return _eventToPublic; }
 	    }
 
-	    public void ValidateAddIndexAssignUpdateStrategies(
-	        string createIndexStatementName,
-	        IndexMultiKey imk,
-	        string indexName)
-	    {
-	        // add index - for now
-	        _eventTableIndexMetadataRepo.AddIndex(false, imk, indexName, createIndexStatementName, true, null);
+        public void ValidateAddIndexAssignUpdateStrategies(
+            string createIndexStatementName, 
+            IndexMultiKey imk, 
+            string explicitIndexName, 
+            QueryPlanIndexItem explicitIndexDesc)
+        {
+            // add index - for now
+            _eventTableIndexMetadataRepo.AddIndexExplicit(false, imk, explicitIndexName, explicitIndexDesc, createIndexStatementName);
 
 	        // validate strategies, rollback if required
 	        foreach (var stmtEntry in _stmtNameToUpdateStrategyReceivers)

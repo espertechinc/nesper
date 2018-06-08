@@ -11,7 +11,9 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.dataflow;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
@@ -40,16 +42,18 @@ namespace com.espertech.esper.dataflow.ops
         private readonly IBlockingQueue<Object> _emittables = new LinkedBlockingQueue<Object>();
         private bool _submitEventBean;
 
-        private readonly ILockable _iLock =
-            LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly ILockable _iLock;
 
-        private readonly IThreadLocal<EPDataFlowIRStreamCollectorContext> _collectorDataTL =
-            ThreadLocalManager.Create<EPDataFlowIRStreamCollectorContext>(() => null);
+        private readonly IThreadLocal<EPDataFlowIRStreamCollectorContext> _collectorDataTL;
 
         private readonly EventHandler<StatementLifecycleEvent> _lifeCycleEventHandler;
 
-        public EPStatementSource()
+        public EPStatementSource(
+            ILockManager lockManager,
+            IThreadLocalManager threadLocalManager)
         {
+            _iLock = lockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            _collectorDataTL = threadLocalManager.Create<EPDataFlowIRStreamCollectorContext>(() => null);
             _lifeCycleEventHandler = Observe;
         }
 
@@ -228,7 +232,7 @@ namespace com.espertech.esper.dataflow.ops
                     e.ServiceProvider);
             }
 
-            public void Update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement statement, EPServiceProvider epServiceProvider)
+            public void Update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement statement, EPServiceProvider svcProvider)
             {
                 if (newEvents != null)
                 {
@@ -272,18 +276,18 @@ namespace com.espertech.esper.dataflow.ops
                     e.ServiceProvider);
             }
 
-            public void Update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement statement, EPServiceProvider epServiceProvider)
+            public void Update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement statement, EPServiceProvider svcProvider)
             {
 
                 EPDataFlowIRStreamCollectorContext holder = _collectorDataTL.GetOrCreate();
                 if (holder == null)
                 {
-                    holder = new EPDataFlowIRStreamCollectorContext(_emitterForCollector, _submitEventBean, newEvents, oldEvents, statement, epServiceProvider);
+                    holder = new EPDataFlowIRStreamCollectorContext(_emitterForCollector, _submitEventBean, newEvents, oldEvents, statement, svcProvider);
                     _collectorDataTL.Value = holder;
                 }
                 else
                 {
-                    holder.ServiceProvider = epServiceProvider;
+                    holder.ServiceProvider = svcProvider;
                     holder.Statement = statement;
                     holder.OldEvents = oldEvents;
                     holder.NewEvents = newEvents;

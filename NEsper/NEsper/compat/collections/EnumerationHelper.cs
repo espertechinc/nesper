@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System.Collections.Generic;
 
 namespace com.espertech.esper.compat.collections
@@ -14,14 +13,13 @@ namespace com.espertech.esper.compat.collections
     /// <summary>
     /// Collection of utilities specifically to help with enumeration.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class EnumerationHelper<T>
+    public static class EnumerationHelper
     {
         /// <summary>
         /// Creates the empty enumerator.
         /// </summary>
         /// <returns></returns>
-        public static IEnumerator<T> Empty()
+        public static IEnumerator<T> Empty<T>()
         {
             return new NullEnumerator<T>();
         }
@@ -31,9 +29,23 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns></returns>
-        public static IEnumerator<T> Singleton(T item)
+        public static IEnumerator<T> Singleton<T>(T item)
         {
             yield return item;
+        }
+
+        /// <summary>
+        /// Prepends the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="enumerator">The enumerator.</param>
+        /// <returns></returns>
+        public static IEnumerator<T> Prepend<T>(this IEnumerator<T> enumerator, T item)
+        {
+            yield return item;
+            while (enumerator.MoveNext()) {
+                yield return enumerator.Current;
+            }
         }
 
         /// <summary>
@@ -43,7 +55,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="subEnumerator">The child enumerator.</param>
         /// <param name="numToAdvance">The num to advance.</param>
         /// <returns></returns>
-        public static IEnumerable<T> AdvanceEnumerable( IEnumerator<T> subEnumerator, int numToAdvance )
+        public static IEnumerable<T> AdvanceEnumerable<T>( IEnumerator<T> subEnumerator, int numToAdvance )
         {
             bool hasMore = true;
 

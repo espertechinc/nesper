@@ -14,7 +14,7 @@
 
 using System;
 
-namespace NEsper.Example.Transaction.sim
+namespace NEsper.Examples.Transaction.sim
 {
     /** Just so we can swap between Random and SecureRandom.
      * 

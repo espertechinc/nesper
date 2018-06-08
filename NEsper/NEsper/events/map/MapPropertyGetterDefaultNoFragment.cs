@@ -6,21 +6,30 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.map
 {
-    /// <summary>Getter for map entry. </summary>
+    /// <summary>Getter for map entry.</summary>
     public class MapPropertyGetterDefaultNoFragment : MapPropertyGetterDefaultBase
     {
-        public MapPropertyGetterDefaultNoFragment(String propertyName, EventAdapterService eventAdapterService)
+        public MapPropertyGetterDefaultNoFragment(string propertyName, EventAdapterService eventAdapterService)
             : base(propertyName, null, eventAdapterService)
         {
         }
 
-        protected override Object HandleCreateFragment(Object value)
+        protected override object HandleCreateFragment(object value)
         {
             return null;
         }
+
+        protected override ICodegenExpression HandleCreateFragmentCodegen(ICodegenExpression value,
+            ICodegenContext context)
+        {
+            return ConstantNull();
+        }
     }
-}
+} // end of namespace

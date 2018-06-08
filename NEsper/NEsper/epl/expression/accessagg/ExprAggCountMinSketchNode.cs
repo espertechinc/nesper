@@ -56,7 +56,7 @@ namespace com.espertech.esper.epl.expression.accessagg
             _aggType = aggType;
         }
 
-        public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             return ValidateAggregationInternal(validationContext, null);
         }
@@ -66,20 +66,14 @@ namespace com.espertech.esper.epl.expression.accessagg
             return ValidateAggregationInternal(context, tableAccessColumn);
         }
 
-        public override string AggregationFunctionName
-        {
-            get { return _aggType.GetFuncName(); }
-        }
+        public override string AggregationFunctionName => _aggType.GetFuncName();
 
         protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             return false;
         }
 
-        public CountMinSketchAggType AggType
-        {
-            get { return _aggType; }
-        }
+        public CountMinSketchAggType AggType => _aggType;
 
         public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
         {
@@ -91,10 +85,7 @@ namespace com.espertech.esper.epl.expression.accessagg
             return null;
         }
 
-        public Type ComponentTypeCollection
-        {
-            get { return null; }
-        }
+        public Type ComponentTypeCollection => null;
 
         public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
@@ -111,10 +102,7 @@ namespace com.espertech.esper.epl.expression.accessagg
             return null;
         }
 
-        protected override bool IsExprTextWildcardWhenNoParams
-        {
-            get { return false; }
-        }
+        protected override bool IsExprTextWildcardWhenNoParams => false;
 
         private AggregationMethodFactory ValidateAggregationInternal(ExprValidationContext context, TableMetadataColumnAggregation tableAccessColumn)
         {
@@ -135,17 +123,19 @@ namespace com.espertech.esper.epl.expression.accessagg
                 return new ExprAggCountMinSketchNodeFactoryState(stateFactory);
             }
 
+            var positionalParams = PositionalParams;
+
             // validate number of parameters
             if (_aggType == CountMinSketchAggType.ADD || _aggType == CountMinSketchAggType.FREQ)
             {
-                if (ChildNodes.Count == 0 || ChildNodes.Count > 1)
+                if (positionalParams.Length == 0 || positionalParams.Length > 1)
                 {
                     throw new ExprValidationException(MessagePrefix + "requires a single parameter expression");
                 }
             }
             else
             {
-                if (ChildNodes.Count != 0)
+                if (positionalParams.Length != 0)
                 {
                     throw new ExprValidationException(MessagePrefix + "requires a no parameter expressions");
                 }
@@ -236,18 +226,11 @@ namespace com.espertech.esper.epl.expression.accessagg
             return spec;
         }
 
-        public ExprValidationException DeclaredWrongParameterExpr
-        {
-            get
-            {
-                return new ExprValidationException(
-                    MessagePrefix + " expects either no parameter or a single json parameter object");
-            }
-        }
+        public ExprValidationException DeclaredWrongParameterExpr => new ExprValidationException(
+            MessagePrefix + " expects either no parameter or a single json parameter object");
 
-        private string MessagePrefix
-        {
-            get { return MSG_NAME + " aggregation function '" + _aggType.GetFuncName() + "' "; }
-        }
+        protected override bool IsFilterExpressionAsLastParameter => false;
+
+        private string MessagePrefix => MSG_NAME + " aggregation function '" + _aggType.GetFuncName() + "' ";
     }
 }

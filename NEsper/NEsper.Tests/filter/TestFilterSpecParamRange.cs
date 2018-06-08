@@ -28,7 +28,7 @@ namespace com.espertech.esper.filter
                 MakeParam("a", FilterOperator.EQUAL, range);
                 Assert.IsTrue(false);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // Expected exception
             }
@@ -52,8 +52,8 @@ namespace com.espertech.esper.filter
         private FilterSpecParamRange MakeParam(String propertyName, FilterOperator filterOp, DoubleRange doubleRange)
         {
             return new FilterSpecParamRange(MakeLookupable(propertyName), filterOp,
-                    new RangeValueDouble(doubleRange.Min.GetValueOrDefault()),
-                    new RangeValueDouble(doubleRange.Max.GetValueOrDefault()));
+                new FilterForEvalConstantDouble(doubleRange.Min.Value),
+                new FilterForEvalConstantDouble(doubleRange.Max.Value));
         }
     
         private FilterSpecLookupable MakeLookupable(String fieldName) {

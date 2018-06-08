@@ -10,11 +10,12 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.filter;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.filter
@@ -26,12 +27,16 @@ namespace com.espertech.esper.filter
         private EventBean _eventBean;
         private EventType _eventType;
         private FilterHandle[] _testFilterCallback;
-        private readonly FilterServiceGranularLockFactory _lockFactory = 
-            new FilterServiceGranularLockFactoryReentrant();
-    
+        private FilterServiceGranularLockFactory _lockFactory; 
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+            _lockFactory = new FilterServiceGranularLockFactoryReentrant(
+                _container.Resolve<IReaderWriterLockManager>());
+
             var testBean = new SupportBean();
             testBean.IntPrimitive = 50;
             testBean.DoublePrimitive = 0.5;
@@ -55,7 +60,7 @@ namespace com.espertech.esper.filter
         [Test]
         public void TestBuildWithMatch()
         {
-            var topNode = new FilterHandleSetNode(ReaderWriterLockManager.CreateDefaultLock());
+            var topNode = new FilterHandleSetNode(_container.RWLockManager().CreateDefaultLock());
     
             // Add some parameter-less expression
             var filterSpec = MakeFilterValues();
@@ -177,7 +182,7 @@ namespace com.espertech.esper.filter
         [Test]
         public void TestBuildMatchRemove()
         {
-            var top = new FilterHandleSetNode(ReaderWriterLockManager.CreateDefaultLock());
+            var top = new FilterHandleSetNode(_container.RWLockManager().CreateDefaultLock());
     
             // Add a parameter-less filter
             var filterSpecNoParams = MakeFilterValues();

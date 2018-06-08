@@ -10,13 +10,16 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
+using com.espertech.esper.util;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.bean
 {
-    /// <summary>
-    /// Getter for one or more levels deep nested properties.
-    /// </summary>
-    public sealed class NestedPropertyGetter
+    /// <summary>Getter for one or more levels deep nested properties.</summary>
+    public class NestedPropertyGetter
         : BaseNativePropertyGetter
         , BeanEventPropertyGetter
     {
@@ -32,14 +35,11 @@ namespace com.espertech.esper.events.bean
         public NestedPropertyGetter(IList<EventPropertyGetter> getterChain, EventAdapterService eventAdapterService, Type finalPropertyType, Type finalGenericType)
             : base(eventAdapterService, finalPropertyType, finalGenericType)
         {
-            _getterChain = new BeanEventPropertyGetter[getterChain.Count];
+            this._getterChain = new BeanEventPropertyGetter[getterChain.Count];
 
-            unchecked
+            for (int i = 0; i < getterChain.Count; i++)
             {
-                for (int ii = 0; ii < getterChain.Count; ii++)
-                {
-                    _getterChain[ii] = (BeanEventPropertyGetter) getterChain[ii];
-                }
+                this._getterChain[i] = (BeanEventPropertyGetter)getterChain[i];
             }
         }
 
@@ -50,17 +50,13 @@ namespace com.espertech.esper.events.bean
                 return value;
             }
 
-            unchecked
+            for (int i = 0; i < _getterChain.Length; i++)
             {
-                var getterChain = _getterChain;
-                for (int ii = 0; ii < getterChain.Length; ii++)
-                {
-                    value = getterChain[ii].GetBeanProp(value);
+                value = _getterChain[i].GetBeanProp(value);
 
-                    if (value == null)
-                    {
-                        return null;
-                    }
+                if (value == null)
+                {
+                    return null;
                 }
             }
             return value;
@@ -99,5 +95,70 @@ namespace com.espertech.esper.events.bean
         {
             return IsBeanExistsProperty(eventBean.Underlying);
         }
+
+        public override Type BeanPropType => _getterChain[_getterChain.Length - 1].BeanPropType;
+
+        public override Type TargetType => _getterChain[0].TargetType;
+
+        public override ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingGet(CastUnderlying(TargetType, beanExpression), context);
+        }
+
+        public override ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingExists(CastUnderlying(TargetType, beanExpression), context);
+        }
+
+        public override ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return LocalMethod(GetBeanPropCodegen(context, false), underlyingExpression);
+        }
+
+        public override ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return LocalMethod(GetBeanPropCodegen(context, true), underlyingExpression);
+        }
+
+        private string GetBeanPropCodegen(ICodegenContext context, bool exists)
+        {
+            var block = context.AddMethod(exists
+                ? typeof(bool)
+                : TypeHelper.GetBoxedType(_getterChain[_getterChain.Length - 1].BeanPropType), _getterChain[0].TargetType, "value", this.GetType());
+            if (!exists)
+            {
+                block.IfRefNullReturnNull("value");
+            }
+            else
+            {
+                block.IfRefNullReturnFalse("value");
+            }
+            string lastName = "value";
+            for (int i = 0; i < _getterChain.Length - 1; i++)
+            {
+                string varName = "l" + i;
+                block.DeclareVar(_getterChain[i].BeanPropType, varName, _getterChain[i].CodegenUnderlyingGet(
+                    Ref(lastName), context));
+                lastName = varName;
+                if (!exists)
+                {
+                    block.IfRefNullReturnNull(lastName);
+                }
+                else
+                {
+                    block.IfRefNullReturnFalse(lastName);
+                }
+            }
+            if (!exists)
+            {
+                return block.MethodReturn(_getterChain[_getterChain.Length - 1].CodegenUnderlyingGet(
+                    Ref(lastName), context));
+            }
+            else
+            {
+                return block.MethodReturn(_getterChain[_getterChain.Length - 1].CodegenUnderlyingExists(
+                    Ref(lastName), context));
+            }
+        }
     }
-}
+} // end of namespace

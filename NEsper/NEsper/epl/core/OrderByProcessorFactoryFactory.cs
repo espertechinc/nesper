@@ -94,7 +94,7 @@ namespace com.espertech.esper.epl.core
             foreach (ExprAggregateNode orderAgg in orderAggNodes) {
                 bool inSelect = false;
                 foreach (ExprAggregateNode selectAgg in selectAggNodes) {
-                    if (ExprNodeUtility.DeepEquals(selectAgg, orderAgg)) {
+                    if (ExprNodeUtility.DeepEquals(selectAgg, orderAgg, false)) {
                         inSelect = true;
                         break;
                     }

@@ -10,8 +10,11 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.supportunit.schedule;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.timer;
 using com.espertech.esper.type;
 
@@ -22,12 +25,21 @@ namespace com.espertech.esper.schedule
     [TestFixture]
     public class TestSchedulingServiceImpl
     {
-        #region Setup/Teardown
+        private SchedulingServiceImpl _service;
+        private SchedulingMgmtServiceImpl _mgmtService;
+
+        private long[][] _slots;
+        private SupportScheduleCallback[] _callbacks;
+
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
-            _service = new SchedulingServiceImpl(new TimeSourceServiceImpl());
+            _container = SupportContainer.Reset();
+
+            _service = new SchedulingServiceImpl(
+                new TimeSourceServiceImpl(), _container.Resolve<ILockManager>());
             _mgmtService = new SchedulingMgmtServiceImpl();
 
             // 2-by-2 table of buckets and slots
@@ -46,14 +58,6 @@ namespace com.espertech.esper.schedule
                 _callbacks[i] = new SupportScheduleCallback();
             }
         }
-
-        #endregion
-
-        private SchedulingServiceImpl _service;
-        private SchedulingMgmtServiceImpl _mgmtService;
-
-        private long[][] _slots;
-        private SupportScheduleCallback[] _callbacks;
 
         private void CheckCallbacks(SupportScheduleCallback[] callbacks, int[] results)
         {
@@ -89,7 +93,7 @@ namespace com.espertech.esper.schedule
         [Test]
         public void TestIncorrectRemove()
         {
-            var evaluator = new SchedulingServiceImpl(new TimeSourceServiceImpl());
+            var evaluator = new SchedulingServiceImpl(new TimeSourceServiceImpl(), _container.Resolve<ILockManager>());
             var callback = new SupportScheduleCallback();
             evaluator.Remove(callback, 0);
         }

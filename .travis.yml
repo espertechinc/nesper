@@ -1,0 +1,23 @@
+language: csharp
+solution: NEsper.sln
+dist: trusty
+sudo: required
+mono:
+	- latest
+	- 3.12.0
+	
+dotnet: 1.0.3
+
+
+install:
+	- nuget restore NEsper.sln
+	- dotnet restore NEsper.sln
+
+script:
+	- msbuild /t:Rebuild NEsper.sln
+
+before-install:
+        - sudo apt-get install nunit-console
+
+before-script:
+        - nuget restore NEsper.sln

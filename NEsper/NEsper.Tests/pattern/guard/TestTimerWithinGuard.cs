@@ -7,13 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.compat;
-using com.espertech.esper.core.service;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.schedule;
 using com.espertech.esper.supportunit.guard;
 using com.espertech.esper.supportunit.pattern;
-using com.espertech.esper.supportunit.schedule;
-using com.espertech.esper.supportunit.view;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.timer;
 
 using NUnit.Framework;
@@ -26,13 +25,16 @@ namespace com.espertech.esper.pattern.guard
         private TimerWithinGuard _guard;
         private SchedulingService _scheduleService;
         private SupportQuitable _quitable;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            StatementContext stmtContext = SupportStatementContextFactory.MakeContext(new SchedulingServiceImpl(new TimeSourceServiceImpl()));
+            _container = SupportContainer.Reset();
+            var stmtContext = SupportStatementContextFactory.MakeContext(
+                _container, new SchedulingServiceImpl(new TimeSourceServiceImpl(), _container));
             _scheduleService = stmtContext.SchedulingService;
-            PatternAgentInstanceContext agentInstanceContext = SupportPatternContextFactory.MakePatternAgentInstanceContext(_scheduleService);
+            var agentInstanceContext = SupportPatternContextFactory.MakePatternAgentInstanceContext(_scheduleService);
     
             _quitable = new SupportQuitable(agentInstanceContext);
     
@@ -85,7 +87,7 @@ namespace com.espertech.esper.pattern.guard
                 _guard.StartGuard();
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // Expected exception
             }

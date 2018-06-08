@@ -15,6 +15,7 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.methodagg;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.epl.spec;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.type;
 using com.espertech.esper.util.support;
 
@@ -99,6 +100,8 @@ namespace com.espertech.esper.supportunit.epl
     
         public static IList<SelectClauseExprRawSpec> MakeAggregateSelectListNoProps()
         {
+            var container = SupportContainer.Instance;
+
             /*
                                         top (*)
                       c1 (sum)                            c2 (10)
@@ -114,7 +117,7 @@ namespace com.espertech.esper.supportunit.epl
             top.AddChildNode(c2);
             c1.AddChildNode(c1_1);
 
-            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, top, SupportExprValidationContextFactory.MakeEmpty());
+            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, top, SupportExprValidationContextFactory.MakeEmpty(container));
     
             IList<SelectClauseExprRawSpec> selectionList = new List<SelectClauseExprRawSpec>();
             selectionList.Add(new SelectClauseExprRawSpec(top, null, false));

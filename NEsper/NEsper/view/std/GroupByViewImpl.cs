@@ -392,7 +392,7 @@ namespace com.espertech.esper.view.std
                 if (subView is MergeViewMarker)
                 {
                     var mergeView = (MergeViewMarker)subView;
-                    if (ExprNodeUtility.DeepEquals(mergeView.GroupFieldNames, criteriaExpressions))
+                    if (ExprNodeUtility.DeepEquals(mergeView.GroupFieldNames, criteriaExpressions, false))
                     {
                         if (mergeView.EventType != copyView.EventType)
                         {

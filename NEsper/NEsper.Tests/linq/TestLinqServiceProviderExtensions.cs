@@ -9,8 +9,9 @@
 using com.espertech.esper.client;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportunit.bean;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.linq
@@ -19,11 +20,14 @@ namespace com.espertech.esper.linq
     public class TestLinqServiceProviderExtensions
     {
         private EPServiceProvider _serviceProvider;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
-            var configuration = new Configuration();
+            _container = SupportContainer.Reset();
+
+            var configuration = new Configuration(_container);
             _serviceProvider = EPServiceProviderManager.GetDefaultProvider(configuration);
             _serviceProvider.Initialize();
         }
@@ -35,13 +39,13 @@ namespace com.espertech.esper.linq
             var selectA = _serviceProvider.From<SupportBean>(typeof(SupportBean));
 
             _serviceProvider.EPAdministrator.CreateEPL(
-                "create window testWindow1#keepall as select * from " + Name.Of<SupportBean>());
+                "create window testWindow1#keepall as select * from " + Name.Clean<SupportBean>());
 
             using (var statement = _serviceProvider.CreateWindow("testWindow2", view, selectA))
             {
                 Assert.AreEqual(
                     statement.Text,
-                    "@IterableUnbound create window testWindow2#keepall as select * from " + Name.Of<SupportBean>() + " as s0");
+                    "@IterableUnbound create window testWindow2#keepall as select * from " + Name.Clean<SupportBean>() + " as s0");
             }
         }
 

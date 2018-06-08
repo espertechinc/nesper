@@ -9,10 +9,11 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.bean
@@ -24,10 +25,13 @@ namespace com.espertech.esper.events.bean
         private ArrayMethodPropertyGetter _getterOutOfBounds;
         private EventBean _event;
         private SupportBeanComplexProps _bean;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             _bean = SupportBeanComplexProps.MakeDefaultBean();
             _event = SupportEventBeanFactory.CreateObject(_bean);
             _getter = MakeGetter(0);
@@ -42,7 +46,7 @@ namespace com.espertech.esper.events.bean
                 MakeGetter(-1);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }
@@ -61,7 +65,7 @@ namespace com.espertech.esper.events.bean
                 _getter.Get(SupportEventBeanFactory.CreateObject(""));
                 Assert.Fail();
             }
-            catch (PropertyAccessException ex)
+            catch (PropertyAccessException)
             {
                 // expected
             }
@@ -70,7 +74,7 @@ namespace com.espertech.esper.events.bean
         private ArrayMethodPropertyGetter MakeGetter(int index)
         {
             var method = typeof(SupportBeanComplexProps).GetMethod("GetArrayProperty", new Type[0]);
-            return new ArrayMethodPropertyGetter(method, index, SupportEventAdapterService.Service);
+            return new ArrayMethodPropertyGetter(method, index, _container.Resolve<EventAdapterService>());
         }
     }
 }

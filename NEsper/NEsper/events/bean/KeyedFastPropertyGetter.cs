@@ -7,16 +7,21 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Reflection;
 
 using XLR8.CGLib;
+
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
 using com.espertech.esper.events.vaevent;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.bean
 {
     /// <summary>
-    /// Getter for a key property identified by a given key value, using the CGLIB fast
-    /// method.
+    /// Getter for a key property identified by a given key value, using the CGLIB fast method.
     /// </summary>
     public class KeyedFastPropertyGetter
         : BaseNativePropertyGetter
@@ -36,55 +41,63 @@ namespace com.espertech.esper.events.bean
         public KeyedFastPropertyGetter(FastMethod fastMethod, Object key, EventAdapterService eventAdapterService)
             : base(eventAdapterService, fastMethod.ReturnType, null)
         {
-            _key = key;
-            _fastMethod = fastMethod;
+            this._key = key;
+            this._fastMethod = fastMethod;
         }
 
-        public bool IsBeanExistsProperty(Object o)
+        public bool IsBeanExistsProperty(Object @object)
         {
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Object Get(EventBean eventBean) {
-            return GetBeanProp(eventBean.Underlying);
+        public override Object Get(EventBean obj)
+        {
+            return GetBeanProp(obj.Underlying);
         }
 
-        public Object GetBeanProp(Object o) {
-            return GetBeanPropInternal(o, _key);
+        public Object GetBeanProp(Object @object)
+        {
+            return GetBeanPropInternal(@object, _key);
         }
 
-        public Object Get(EventBean eventBean, String mapKey) {
+        public Object Get(EventBean eventBean, string mapKey)
+        {
             return GetBeanPropInternal(eventBean.Underlying, mapKey);
         }
 
-        public Object Get(EventBean eventBean, int index) {
+        public Object Get(EventBean eventBean, int index)
+        {
             return GetBeanPropInternal(eventBean.Underlying, index);
         }
 
-        public Object GetBeanPropInternal(Object o, Object key)
+        public Object GetBeanPropInternal(Object @object, Object key)
         {
-            try
-            {
-                return _fastMethod.Invoke(o, key);
+            try {
+                return _fastMethod.Invoke(@object, new Object[] {key});
             }
-            catch (InvalidCastException e)
-            {
-                throw PropertyUtility.GetMismatchException(_fastMethod.Target, o, e);
-            }
-            catch (PropertyAccessException)
-            {
+            catch (PropertyAccessException) {
                 throw;
             }
-            catch (Exception e)
-            {
-                throw new PropertyAccessException(e);
+            catch (InvalidCastException e) {
+                throw PropertyUtility.GetMismatchException(_fastMethod.Target, @object, e);
             }
+            catch (Exception e) {
+                throw PropertyUtility.GetAccessExceptionMethod(_fastMethod.Target, e);
+            }
+        }
+
+        internal static string GetBeanPropInternalCodegen(ICodegenContext context, Type targetType, MethodInfo method, Object key)
+        {
+            return context.AddMethod(method.ReturnType, targetType, "object", typeof(KeyedFastPropertyGetter))
+                    .MethodReturn(ExprDotMethod(
+                        Ref("object"), method.Name,
+                        Constant(key)));
         }
 
         public override String ToString()
         {
             return "KeyedFastPropertyGetter " +
-                    " fastMethod=" + _fastMethod +
+                    " fastMethod=" + _fastMethod.ToString() +
                     " key=" + _key;
         }
 
@@ -92,5 +105,29 @@ namespace com.espertech.esper.events.bean
         {
             return true; // Property exists as the property is not dynamic (unchecked)
         }
+
+        public override Type BeanPropType => _fastMethod.ReturnType;
+
+        public override Type TargetType => _fastMethod.DeclaringType.TargetType;
+
+        public override ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingGet(CastUnderlying(TargetType, beanExpression), context);
+        }
+
+        public override ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
+        }
+
+        public override ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return LocalMethod(GetBeanPropInternalCodegen(context, TargetType, _fastMethod.Target, _key), underlyingExpression);
+        }
+
+        public override ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
+        }
     }
-}
+} // end of namespace

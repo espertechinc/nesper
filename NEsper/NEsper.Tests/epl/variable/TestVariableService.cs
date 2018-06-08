@@ -7,13 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.client;
+using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.start;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core;
+using com.espertech.esper.events;
 using com.espertech.esper.schedule;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.timer;
 using NUnit.Framework;
 
@@ -22,14 +26,22 @@ namespace com.espertech.esper.epl.variable
     [TestFixture]
     public class TestVariableService
     {
+        private IContainer _container;
         private VariableService _service;
         private EngineImportService _engineImportService;
         
         [SetUp]
         public void SetUp()
         {
-            _service = new VariableServiceImpl(10000, new SchedulingServiceImpl(new TimeSourceServiceImpl()), SupportEventAdapterService.Service, null);
-            _engineImportService = SupportEngineImportServiceFactory.Make();
+            _container = SupportContainer.Reset();
+            _service = new VariableServiceImpl(
+                _container, 10000, 
+                new SchedulingServiceImpl(
+                    new TimeSourceServiceImpl(),
+                    _container.Resolve<ILockManager>()),
+                _container.Resolve<EventAdapterService>(), null);
+            _engineImportService = SupportEngineImportServiceFactory.Make(
+                _container.Resolve<ClassLoaderProvider>());
         }
 
         // Start Count threads
@@ -150,11 +162,14 @@ namespace com.espertech.esper.epl.variable
         [Test]
         public void TestRollover()
         {
+            _container = SupportContainer.Reset();
             _service = new VariableServiceImpl(
+                _container,
                 VariableServiceImpl.ROLLOVER_READER_BOUNDARY - 100, 
                 10000,
-                new SchedulingServiceImpl(new TimeSourceServiceImpl()), 
-                SupportEventAdapterService.Service,
+                new SchedulingServiceImpl(
+                    new TimeSourceServiceImpl(), _container.Resolve<ILockManager>()), 
+                _container.Resolve<EventAdapterService>(),
                 null);
 
             String[] variables = "a,b,c,d".Split(',');

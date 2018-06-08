@@ -8,6 +8,7 @@
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.supportunit.bean;
@@ -15,22 +16,24 @@ using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
 
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprStreamUnderlyingNode 
     {
         private ExprStreamUnderlyingNodeImpl _node;
         private StreamTypeService _streamTypeService;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _node = new ExprStreamUnderlyingNodeImpl("s0", false);
             _streamTypeService = new SupportStreamTypeSvc3Stream();
         }
@@ -43,7 +46,7 @@ namespace com.espertech.esper.epl.expression
                 var abyss = _node.StreamId;
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // expected
             }
@@ -53,7 +56,7 @@ namespace com.espertech.esper.epl.expression
                 var abyss = _node.ExprEvaluator.ReturnType;
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // expected
             }
@@ -62,7 +65,7 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestValidate()
         {
-            _node.Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
+            _node.Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
             Assert.AreEqual(0, _node.StreamId);
             Assert.AreEqual(typeof(SupportBean), _node.ReturnType);
     
@@ -76,16 +79,16 @@ namespace com.espertech.esper.epl.expression
             EventBean theEvent = MakeEvent(10);
             EventBean[] events = new EventBean[] {theEvent};
 
-            _node.Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
+            _node.Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
             Assert.AreEqual(theEvent.Underlying, _node.Evaluate(new EvaluateParams(events, false, null)));
         }
     
         [Test]
         public void TestEqualsNode()
         {
-            _node.Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
-            Assert.IsTrue(_node.EqualsNode(new ExprStreamUnderlyingNodeImpl("s0", false)));
-            Assert.IsFalse(_node.EqualsNode(new ExprStreamUnderlyingNodeImpl("xxx", false)));
+            _node.Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
+            Assert.IsTrue(_node.EqualsNode(new ExprStreamUnderlyingNodeImpl("s0", false), false));
+            Assert.IsFalse(_node.EqualsNode(new ExprStreamUnderlyingNodeImpl("xxx", false), false));
         }
     
         protected static EventBean MakeEvent(int intPrimitive)
@@ -99,15 +102,13 @@ namespace com.espertech.esper.epl.expression
         {
             try
             {
-                node.Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
+                node.Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
                 Assert.Fail();
             }
-            catch(ExprValidationException ex)
+            catch(ExprValidationException)
             {
                 // expected
             }
         }
-    
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

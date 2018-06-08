@@ -22,41 +22,41 @@ namespace NEsper.Benchmark.Client
     /// </summary>
     public class MarketClient
     {
-        private readonly Client client;
-        private readonly MarketData[] market;
-        private readonly SendDelegate sendMethod;
+        private readonly Client _client;
+        private readonly MarketData[] _market;
+        private readonly SendDelegate _sendMethod;
 
-        private UdpClient uchannel;
-        private TcpClient tchannel;
+        private UdpClient _uchannel;
+        private TcpClient _tchannel;
 
-        private Socket socket;
-        private readonly IPEndPoint endPoint;
-        private readonly DataAssembler dataAssembler = new DataAssembler();
+        private Socket _socket;
+        private readonly IPEndPoint _endPoint;
+        private readonly DataAssembler _dataAssembler = new DataAssembler();
 
-        private long bytesTransmitted;
+        private long _bytesTransmitted;
 
         public MarketClient(Client client)
         {
-            this.client = client;
+            this._client = client;
             if (client.ipMode == IPMode.TCP) {
-                dataAssembler.MaxMessageDelay = 200;
-                dataAssembler.MaxMessageLength = 65536;
-                dataAssembler.WriteMessage += WriteWithTCP;
+                _dataAssembler.MaxMessageDelay = 200;
+                _dataAssembler.MaxMessageLength = 65536;
+                _dataAssembler.WriteMessage += WriteWithTCP;
             }
             else {
-                dataAssembler.MaxMessageDelay = 200;
-                dataAssembler.MaxMessageLength = client.mtu;
-                dataAssembler.WriteMessage += WriteWithUDP;
+                _dataAssembler.MaxMessageDelay = 200;
+                _dataAssembler.MaxMessageLength = client.mtu;
+                _dataAssembler.WriteMessage += WriteWithUDP;
             }
 
-            sendMethod = dataAssembler.Serialize;
-            endPoint = new IPEndPoint(ResolveHostOrAddress(client.host), client.port);
-            market = new MarketData[Symbols.SYMBOLS.Length];
-            for (int i = 0; i < market.Length; i++)
+            _sendMethod = _dataAssembler.Serialize;
+            _endPoint = new IPEndPoint(ResolveHostOrAddress(client.host), client.port);
+            _market = new MarketData[Symbols.SYMBOLS.Length];
+            for (int i = 0; i < _market.Length; i++)
             {
-                market[i] = new MarketData(Symbols.SYMBOLS[i], Symbols.NextPrice(10), Symbols.NextVolume(10));
+                _market[i] = new MarketData(Symbols.SYMBOLS[i], Symbols.NextPrice(10), Symbols.NextVolume(10));
             }
-            Console.WriteLine("MarketData with {0} symbols", market.Length);
+            Console.WriteLine("MarketData with {0} symbols", _market.Length);
         }
 
         /// <summary>
@@ -79,23 +79,23 @@ namespace NEsper.Benchmark.Client
 
         private void WriteWithTCP(byte[] data, int offset, int length)
         {
-            int bytesOut = socket.Send(data, offset, length, SocketFlags.None);
+            int bytesOut = _socket.Send(data, offset, length, SocketFlags.None);
             if (bytesOut > 0) {
-                Interlocked.Add(ref bytesTransmitted, bytesOut);
+                Interlocked.Add(ref _bytesTransmitted, bytesOut);
             }
         }
 
         private void WriteWithUDP(byte[] data, int offset, int length)
         {
-            int bytesOut = socket.SendTo(data, offset, length, SocketFlags.None, endPoint);
+            int bytesOut = _socket.SendTo(data, offset, length, SocketFlags.None, _endPoint);
             if (bytesOut > 0) {
-                Interlocked.Add(ref bytesTransmitted, bytesOut);
+                Interlocked.Add(ref _bytesTransmitted, bytesOut);
             }
         }
 
-        public const int KBPS = 1024;
-        public const int MBPS = 1024*KBPS;
-        public const int GBPS = 1024*MBPS;
+        public const int Kbps = 1024;
+        public const int Mbps = 1024*Kbps;
+        public const int Gbps = 1024*Mbps;
 
         public static String RenderByteCount(long bytes)
         {
@@ -108,70 +108,70 @@ namespace NEsper.Benchmark.Client
             //    bitCount / 1024 / 1024
             //    );
 
-            if (bitCount < 5 * KBPS)
+            if (bitCount < 5 * Kbps)
             {
                 return String.Format("{0} bps", bitCount);
             }
-            if (bitCount < 5 * MBPS)
+            if (bitCount < 5 * Mbps)
             {
-                return String.Format("{0:F2} Kbps", bitCount / KBPS);
+                return String.Format("{0:F2} Kbps", bitCount / Kbps);
             }
 
-            return String.Format("{0:F2} Mbps", bitCount / MBPS);
+            return String.Format("{0:F2} Mbps", bitCount / Mbps);
         }
 
         public void Run()
         {
-            switch( client.ipMode )
+            switch( _client.ipMode )
             {
                 case IPMode.TCP:
-                    tchannel = new TcpClient(client.host, client.port);
+                    _tchannel = new TcpClient(_client.host, _client.port);
                     Console.WriteLine("Client connected using TCP to {0}:{1}, rate {2} msg/s",
-                                      client.host,
-                                      client.port,
-                                      client.rate);
-                    socket = tchannel.Client;
-                    socket.ReceiveBufferSize = 65536;
-                    socket.SendBufferSize = 65536*8;
-                    socket.DontFragment = false;
-                    socket.NoDelay = true;
+                                      _client.host,
+                                      _client.port,
+                                      _client.rate);
+                    _socket = _tchannel.Client;
+                    _socket.ReceiveBufferSize = 65536;
+                    _socket.SendBufferSize = 65536*8;
+                    _socket.DontFragment = false;
+                    _socket.NoDelay = true;
 
                     Console.WriteLine("SocketStatistics:");
-                    Console.WriteLine("\tDontFragment: {0}", socket.DontFragment);
-                    Console.WriteLine("\tNoDelay: {0}", socket.NoDelay);
-                    Console.WriteLine("\tReceiveBufferSize: {0}", socket.ReceiveBufferSize);
-                    Console.WriteLine("\tReceiveTimeout: {0}", socket.ReceiveTimeout);
-                    Console.WriteLine("\tSendBufferSize: {0}", socket.SendBufferSize);
-                    Console.WriteLine("\tSendTimeout: {0}", socket.SendTimeout);
+                    Console.WriteLine("\tDontFragment: {0}", _socket.DontFragment);
+                    Console.WriteLine("\tNoDelay: {0}", _socket.NoDelay);
+                    Console.WriteLine("\tReceiveBufferSize: {0}", _socket.ReceiveBufferSize);
+                    Console.WriteLine("\tReceiveTimeout: {0}", _socket.ReceiveTimeout);
+                    Console.WriteLine("\tSendBufferSize: {0}", _socket.SendBufferSize);
+                    Console.WriteLine("\tSendTimeout: {0}", _socket.SendTimeout);
                     break;
                 case IPMode.UDP:
                     Console.WriteLine("Client sending using UDP to {0}:{1}, rate {2} msg/s",
-                                      client.host,
-                                      client.port,
-                                      client.rate);
+                                      _client.host,
+                                      _client.port,
+                                      _client.rate);
 
-                    uchannel = new UdpClient(client.host, client.port);
-                    socket = uchannel.Client;
-                    socket.ReceiveBufferSize = 65536*8;
-                    socket.SendBufferSize = 65536*8;
-                    socket.DontFragment = false;
+                    _uchannel = new UdpClient(_client.host, _client.port);
+                    _socket = _uchannel.Client;
+                    _socket.ReceiveBufferSize = 65536*8;
+                    _socket.SendBufferSize = 65536*8;
+                    _socket.DontFragment = false;
 
                     Console.WriteLine("SocketStatistics:");
-                    Console.WriteLine("\tDontFragment: {0}", socket.DontFragment);
-                    Console.WriteLine("\tReceiveBufferSize: {0}", socket.ReceiveBufferSize);
-                    Console.WriteLine("\tReceiveTimeout: {0}", socket.ReceiveTimeout);
-                    Console.WriteLine("\tSendBufferSize: {0}", socket.SendBufferSize);
-                    Console.WriteLine("\tSendTimeout: {0}", socket.SendTimeout);
+                    Console.WriteLine("\tDontFragment: {0}", _socket.DontFragment);
+                    Console.WriteLine("\tReceiveBufferSize: {0}", _socket.ReceiveBufferSize);
+                    Console.WriteLine("\tReceiveTimeout: {0}", _socket.ReceiveTimeout);
+                    Console.WriteLine("\tSendBufferSize: {0}", _socket.SendBufferSize);
+                    Console.WriteLine("\tSendTimeout: {0}", _socket.SendTimeout);
                     break;
             }
 
-            eventPer50ms = client.rate / 20;
-            tickerIndex = 0;
-            countLast5s = 0;
-            sleepLast5s = 0;
-            lastThroughputTick = Environment.TickCount;
-            eventCount = 0;
-            maxEventCount = client.totalEvents;
+            _eventPer50Ms = _client.rate / 20;
+            _tickerIndex = 0;
+            _countLast5S = 0;
+            _sleepLast5S = 0;
+            _lastThroughputTick = Environment.TickCount;
+            _eventCount = 0;
+            _maxEventCount = _client.totalEvents;
 
             try
             {
@@ -194,49 +194,49 @@ namespace NEsper.Benchmark.Client
             }
         }
 
-        private int eventPer50ms;
-        private int tickerIndex;
-        private int countLast5s;
-        private long sleepLast5s;
-        private long lastThroughputTick;
-        private long eventCount;
-        private long maxEventCount;
+        private int _eventPer50Ms;
+        private int _tickerIndex;
+        private int _countLast5S;
+        private long _sleepLast5S;
+        private long _lastThroughputTick;
+        private long _eventCount;
+        private long _maxEventCount;
 
         private void HandleTimerEvents(object userData)
         {
-            for (int i = 0; i < eventPer50ms; i++) {
-                if (eventCount++ >= maxEventCount) {
+            for (int i = 0; i < _eventPer50Ms; i++) {
+                if (_eventCount++ >= _maxEventCount) {
                     break;
                 }
 
-                tickerIndex = tickerIndex%Symbols.SYMBOLS.Length;
-                MarketData md = market[tickerIndex++];
+                _tickerIndex = _tickerIndex%Symbols.SYMBOLS.Length;
+                MarketData md = _market[_tickerIndex++];
                 md.Price = Symbols.NextPrice(md.Price);
                 md.Volume = Symbols.NextVolume(10);
                 md.Time = DateTime.Now.Ticks;
 
-                bytesTransmitted += sendMethod.Invoke(md);
+                _bytesTransmitted += _sendMethod.Invoke(md);
 
-                countLast5s++;
+                _countLast5S++;
             }
 
             // info
             int tickCount = Environment.TickCount;
-            if ((tickCount - lastThroughputTick) > 5000) {
-                long mByteCount = Interlocked.Exchange(ref bytesTransmitted, 0L);
-                long mDelta = tickCount - lastThroughputTick;
+            if ((tickCount - _lastThroughputTick) > 5000) {
+                long mByteCount = Interlocked.Exchange(ref _bytesTransmitted, 0L);
+                long mDelta = tickCount - _lastThroughputTick;
                 Console.WriteLine(
                     "Sent {0} in {1}(ms) avg ns/msg {2}(ns) avg {3}(msg/s) sleep {4}(ms) velocity {5}",
-                    countLast5s,
+                    _countLast5S,
                     mDelta,
-                    (float) 1E6*countLast5s/(tickCount - lastThroughputTick),
-                    countLast5s/5,
-                    sleepLast5s,
+                    (float) 1E6*_countLast5S/(tickCount - _lastThroughputTick),
+                    _countLast5S/5,
+                    _sleepLast5S,
                     RenderByteCount(mByteCount*1000/mDelta));
 
-                countLast5s = 0;
-                sleepLast5s = 0;
-                lastThroughputTick = tickCount;
+                _countLast5S = 0;
+                _sleepLast5S = 0;
+                _lastThroughputTick = tickCount;
             }
         }
 

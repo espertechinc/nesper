@@ -10,11 +10,13 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.filter;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.filter
@@ -27,10 +29,13 @@ namespace com.espertech.esper.filter
         private EventBean _testEventBean;
         private EventType _testEventType;
         private List<FilterHandle> _matchesList;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             _testEvaluator = new SupportEventEvaluator();
             _testBean = new SupportBean();
             _testEventBean = SupportEventBeanFactory.CreateObject(_testBean);
@@ -53,8 +58,8 @@ namespace com.espertech.esper.filter
     
             Assert.AreEqual(_testEvaluator, index.Get((short) 1));
             Assert.IsTrue(index.ReadWriteLock != null);
-            Assert.IsTrue(index.Remove((short) 1));
-            Assert.IsFalse(index.Remove((short) 1));
+            index.Remove((short) 1);
+            index.Remove((short) 1);
             Assert.AreEqual(null, index.Get((short) 1));
         }
     
@@ -124,7 +129,7 @@ namespace com.espertech.esper.filter
         }
     
         private FilterParamIndexEquals MakeOne(String property, EventType testEventType) {
-            return new FilterParamIndexEquals(MakeLookupable(property), ReaderWriterLockManager.CreateDefaultLock());
+            return new FilterParamIndexEquals(MakeLookupable(property), _container.RWLockManager().CreateDefaultLock());
         }
     
         private FilterSpecLookupable MakeLookupable(String fieldName) {

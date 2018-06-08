@@ -13,7 +13,9 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core.eval;
 using com.espertech.esper.epl.expression.core;
@@ -83,6 +85,7 @@ namespace com.espertech.esper.epl.core
         /// Expected any of the  + Arrays.ToString(ForClauseKeyword.Values()).ToLowerCase() +  for-clause keywords after reserved keyword 'for'</exception>
         /// <throws>ExprValidationException to indicate the select expression cannot be validated</throws>
         public static SelectExprProcessor GetProcessor(
+            IContainer container,
             ICollection<int> assignedTypeNumberStack,
             SelectClauseElementCompiled[] selectionList,
             bool isUsingWildcard,
@@ -180,7 +183,23 @@ namespace com.espertech.esper.epl.core
 
                         StreamTypeService type = new StreamTypeServiceImpl(synthetic.ResultEventType, null, false, engineURI);
                         groupedDeliveryExpr = new ExprNode[item.Expressions.Count];
-                        var validationContext = new ExprValidationContext(type, engineImportService, statementExtensionSvcContext, null, timeProvider, variableService, tableService, exprEvaluatorContext, eventAdapterService, statementName, statementId, annotations, null, scriptingService, false, false, true, false, intoTableClause == null ? null : intoTableClause.Name, false);  // no context descriptor available
+                        var validationContext = new ExprValidationContext(
+                            container,
+                            type, 
+                            engineImportService, 
+                            statementExtensionSvcContext, 
+                            null, 
+                            timeProvider, 
+                            variableService, 
+                            tableService, 
+                            exprEvaluatorContext,
+                            eventAdapterService,
+                            statementName, 
+                            statementId, annotations, null,
+                            scriptingService,
+                            false, false, true, false, 
+                            intoTableClause == null ? null : intoTableClause.Name, 
+                            false);  // no context descriptor available
                         for (var i = 0; i < item.Expressions.Count; i++)
                         {
                             groupedDeliveryExpr[i] = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.FORCLAUSE, item.Expressions[i], validationContext);

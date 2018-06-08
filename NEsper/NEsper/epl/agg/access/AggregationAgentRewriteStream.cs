@@ -6,31 +6,31 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.agg.access
 {
-    public class AggregationAgentRewriteStream : AggregationAgent {
-    
-        private readonly int streamNum;
-    
-        public AggregationAgentRewriteStream(int streamNum) {
-            this.streamNum = streamNum;
+    public class AggregationAgentRewriteStream : AggregationAgent
+    {
+        private readonly int _streamNum;
+
+        public AggregationAgentRewriteStream(int streamNum)
+        {
+            _streamNum = streamNum;
         }
-    
-        public void ApplyEnter(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationState aggregationState) {
-            EventBean[] rewrite = new EventBean[] {eventsPerStream[streamNum]};
+
+        public void ApplyEnter(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext,
+            AggregationState aggregationState)
+        {
+            var rewrite = new[] {eventsPerStream[_streamNum]};
             aggregationState.ApplyEnter(rewrite, exprEvaluatorContext);
         }
-    
-        public void ApplyLeave(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, AggregationState aggregationState) {
-            EventBean[] rewrite = new EventBean[] {eventsPerStream[streamNum]};
+
+        public void ApplyLeave(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext,
+            AggregationState aggregationState)
+        {
+            var rewrite = new[] {eventsPerStream[_streamNum]};
             aggregationState.ApplyLeave(rewrite, exprEvaluatorContext);
         }
     }

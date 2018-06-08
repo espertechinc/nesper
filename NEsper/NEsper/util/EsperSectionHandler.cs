@@ -11,6 +11,7 @@ using System.Configuration;
 using System.Xml;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using Configuration = com.espertech.esper.client.Configuration;
 
 namespace com.espertech.esper.util
@@ -21,6 +22,25 @@ namespace com.espertech.esper.util
 
     public class EsperSectionHandler : IConfigurationSectionHandler
     {
+        private readonly IContainer _container;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EsperSectionHandler" /> class.
+        /// </summary>
+        /// <param name="container">The container.</param>
+        public EsperSectionHandler(IContainer container)
+        {
+            _container = container;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EsperSectionHandler" /> class.
+        /// </summary>
+        public EsperSectionHandler()
+        {
+            _container = ContainerExtensions.CreateDefaultContainer(true);
+        }
+
         #region IConfigurationSectionHandler Members
 
         /// <summary>
@@ -32,8 +52,9 @@ namespace com.espertech.esper.util
         /// <returns>The created section handler object.</returns>
         public object Create(object parent, object configContext, XmlNode section)
         {
-            Configuration configuration = new Configuration();
-            ConfigurationParser.DoConfigure(configuration, (XmlElement) section);
+            var configuration = new Configuration(_container);
+            _container.Resolve<IConfigurationParser>()
+                .DoConfigure(configuration, (XmlElement) section);
             return configuration;
         }
 

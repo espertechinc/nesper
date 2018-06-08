@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.client.annotation;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.supportregression.bean
@@ -24,26 +24,32 @@ namespace com.espertech.esper.supportregression.bean
 	            long start = DateTimeParser.ParseDefaultMSec(datestr);
 	            long end = start + duration;
 
-	            LongdateStart = start;
-	            UtildateStart = SupportDateTime.ToDate(start);
-	            CaldateStart = SupportDateTime.ToDateTimeEx(start);
-	            LongdateEnd = end;
-	            UtildateEnd = SupportDateTime.ToDate(end);
-	            CaldateEnd = SupportDateTime.ToDateTimeEx(end);
+	            longdateStart = start;
+	            utildateStart = SupportDateTime.ToDate(start);
+	            caldateStart = SupportDateTime.ToDateTimeEx(start);
+	            longdateEnd = end;
+	            utildateEnd = SupportDateTime.ToDate(end);
+	            caldateEnd = SupportDateTime.ToDateTimeEx(end);
 	        }
 	    }
 
-	    public long? LongdateStart { get; private set; }
+        [PropertyName("longdateStart")]
+	    public long? longdateStart { get; private set; }
 
-	    public DateTime UtildateStart { get; private set; }
+        [PropertyName("utildateStart")]
+	    public DateTime utildateStart { get; private set; }
 
-	    public DateTimeEx CaldateStart { get; private set; }
+        [PropertyName("caldateStart")]
+	    public DateTimeEx caldateStart { get; private set; }
 
-	    public long? LongdateEnd { get; private set; }
+        [PropertyName("longdateEnd")]
+	    public long? longdateEnd { get; private set; }
 
-	    public DateTime UtildateEnd { get; private set; }
+        [PropertyName("utildateEnd")]
+	    public DateTime utildateEnd { get; private set; }
 
-	    public DateTimeEx CaldateEnd { get; private set; }
+        [PropertyName("caldateEnd")]
+	    public DateTimeEx caldateEnd { get; private set; }
 
 	    public string Key { get; set; }
     }

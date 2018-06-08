@@ -13,6 +13,7 @@ using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.join.table
 {
@@ -37,7 +38,7 @@ namespace com.espertech.esper.epl.join.table
 	        return propertyIndex.Get(key);
 	    }
 
-	    public override void Add(EventBean theEvent)
+	    public override void Add(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
 	    {
 	        var key = GetMultiKey(theEvent);
 
@@ -51,7 +52,7 @@ namespace com.espertech.esper.epl.join.table
 	        events.Add(theEvent);
 	    }
 
-	    public override void Remove(EventBean theEvent)
+	    public override void Remove(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
 	    {
 	        var key = GetMultiKey(theEvent);
 

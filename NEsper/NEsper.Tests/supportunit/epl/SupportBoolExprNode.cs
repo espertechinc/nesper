@@ -25,25 +25,16 @@ namespace com.espertech.esper.supportunit.epl
             _evaluateResult = evaluateResult;
         }
 
-        public override ExprEvaluator ExprEvaluator
-        {
-            get { return this; }
-        }
+        public override ExprEvaluator ExprEvaluator => this;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             return null;
         }
 
-        public Type ReturnType
-        {
-            get { return typeof (Boolean); }
-        }
+        public Type ReturnType => typeof (Boolean);
 
-        public override bool IsConstantResult
-        {
-            get { return false; }
-        }
+        public override bool IsConstantResult => false;
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
@@ -54,12 +45,9 @@ namespace com.espertech.esper.supportunit.epl
         {
         }
 
-        public override ExprPrecedenceEnum Precedence
-        {
-            get { return ExprPrecedenceEnum.UNARY; }
-        }
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             throw new UnsupportedOperationException("not implemented");
         }

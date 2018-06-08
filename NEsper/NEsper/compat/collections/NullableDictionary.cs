@@ -30,10 +30,7 @@ namespace com.espertech.esper.compat.collections
         /// Gets the base dictionary.
         /// </summary>
         /// <value>The base dictionary.</value>
-        public IDictionary<K, V> BaseDictionary
-        {
-            get { return _baseDictionary; }
-        }
+        public IDictionary<K, V> BaseDictionary => _baseDictionary;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NullableDictionary{K, V}"/> class.
@@ -186,13 +183,7 @@ namespace com.espertech.esper.compat.collections
         /// Gets the count for the null entry.
         /// </summary>
         /// <value>The null entry count.</value>
-        public int NullEntryCount
-        {
-            get
-            {
-                return _nullEntry != null ? 1 : 0;
-            }
-        }
+        public int NullEntryCount => _nullEntry != null ? 1 : 0;
 
         /// <summary>
         ///                     Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
@@ -200,13 +191,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         ///                     The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </returns>
-        public int Count
-        {
-            get
-            {
-                return _baseDictionary.Count + NullEntryCount;
-            }
-        }
+        public int Count => _baseDictionary.Count + NullEntryCount;
 
         /// <summary>
         ///                     Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
@@ -214,10 +199,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.
         /// </returns>
-        public bool IsReadOnly
-        {
-            get { return _baseDictionary.IsReadOnly; }
-        }
+        public bool IsReadOnly => _baseDictionary.IsReadOnly;
 
         /// <summary>
         ///                     Determines whether the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key.
@@ -450,10 +432,7 @@ namespace com.espertech.esper.compat.collections
         /// Gets the base dictionary.
         /// </summary>
         /// <value>The base dictionary.</value>
-        public IDictionary<K?, V> BaseDictionary
-        {
-            get { return _baseDictionary; }
-        }
+        public IDictionary<K?, V> BaseDictionary => _baseDictionary;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NullableValueTypeDictionary&lt;K, V&gt;"/> class.
@@ -599,13 +578,7 @@ namespace com.espertech.esper.compat.collections
         /// Gets the count for the null entry.
         /// </summary>
         /// <value>The null entry count.</value>
-        public int NullEntryCount
-        {
-            get
-            {
-                return _nullEntry != null ? 1 : 0;
-            }
-        }
+        public int NullEntryCount => _nullEntry != null ? 1 : 0;
 
         /// <summary>
         ///                     Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
@@ -613,13 +586,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         ///                     The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </returns>
-        public int Count
-        {
-            get
-            {
-                return _baseDictionary.Count + NullEntryCount;
-            }
-        }
+        public int Count => _baseDictionary.Count + NullEntryCount;
 
         /// <summary>
         ///                     Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
@@ -627,10 +594,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.
         /// </returns>
-        public bool IsReadOnly
-        {
-            get { return _baseDictionary.IsReadOnly; }
-        }
+        public bool IsReadOnly => _baseDictionary.IsReadOnly;
 
         /// <summary>
         ///                     Determines whether the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key.

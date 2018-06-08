@@ -250,6 +250,7 @@ namespace com.espertech.esper.filter
         {
             ExprAndNode andNode = ExprNodeUtility.ConnectExpressionsByLogicalAnd(remainingExprNodes);
             var validationContext = new ExprValidationContext(
+                args.Container,
                 args.StreamTypeService,
                 args.EngineImportService,
                 args.StatementExtensionSvcContext, null,

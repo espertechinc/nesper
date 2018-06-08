@@ -71,6 +71,17 @@ namespace com.espertech.esper.compat.collections
         }
 
         /// <summary>
+        /// Creates a set from the inputs.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items">The items.</param>
+        /// <returns></returns>
+        public static ISet<T> Set<T>(params T[] items)
+	    {
+	        return new HashSet<T>(items);
+	    }
+
+        /// <summary>
         /// Instas the list.
         /// </summary>
         /// <typeparam name="T"></typeparam>

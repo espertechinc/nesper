@@ -10,17 +10,17 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprLikeNode 
@@ -28,10 +28,12 @@ namespace com.espertech.esper.epl.expression
         private ExprLikeNode _likeNodeNormal;
         private ExprLikeNode _likeNodeNot;
         private ExprLikeNode _likeNodeNormalEscaped;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _likeNodeNormal = SupportExprNodeFactory.MakeLikeNode(false, null);
             _likeNodeNot = SupportExprNodeFactory.MakeLikeNode(true, null);
             _likeNodeNormalEscaped = SupportExprNodeFactory.MakeLikeNode(false, "!");
@@ -90,9 +92,9 @@ namespace com.espertech.esper.epl.expression
             ExprLikeNode otherLikeNodeNot = SupportExprNodeFactory.MakeLikeNode(true, "@");
             ExprLikeNode otherLikeNodeNot2 = SupportExprNodeFactory.MakeLikeNode(true, "!");
     
-            Assert.IsTrue(_likeNodeNot.EqualsNode(otherLikeNodeNot2));
-            Assert.IsTrue(otherLikeNodeNot2.EqualsNode(otherLikeNodeNot)); // Escape char itself is an expression
-            Assert.IsFalse(_likeNodeNormal.EqualsNode(otherLikeNodeNot));
+            Assert.IsTrue(_likeNodeNot.EqualsNode(otherLikeNodeNot2, false));
+            Assert.IsTrue(otherLikeNodeNot2.EqualsNode(otherLikeNodeNot, false)); // Escape char itself is an expression
+            Assert.IsFalse(_likeNodeNormal.EqualsNode(otherLikeNodeNot, false));
         }
     
         [Test]
@@ -113,10 +115,10 @@ namespace com.espertech.esper.epl.expression
         private void TryInvalidValidate(ExprLikeNode exprLikeRegexpNode)
         {
             try {
-                exprLikeRegexpNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                exprLikeRegexpNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // expected
             }

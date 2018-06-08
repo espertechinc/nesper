@@ -10,12 +10,15 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.table.mgmt;
+using com.espertech.esper.events;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.type;
 
 using NUnit.Framework;
@@ -26,14 +29,16 @@ namespace com.espertech.esper.epl.join.plan
     public class TestTwoStreamQueryPlanBuilder 
     {
         private EventType[] _typesPerStream;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _typesPerStream = new EventType[]
             {
-                    SupportEventAdapterService.Service.AddBeanType(typeof(SupportBean_S0).FullName, typeof(SupportBean_S0), true, true, true),
-                    SupportEventAdapterService.Service.AddBeanType(typeof(SupportBean_S1).FullName, typeof(SupportBean_S1), true, true, true)
+                _container.Resolve<EventAdapterService>().AddBeanType(typeof(SupportBean_S0).FullName, typeof(SupportBean_S0), true, true, true),
+                _container.Resolve<EventAdapterService>().AddBeanType(typeof(SupportBean_S1).FullName, typeof(SupportBean_S1), true, true, true)
             };
         }
     

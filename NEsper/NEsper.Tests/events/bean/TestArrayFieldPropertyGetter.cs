@@ -10,10 +10,11 @@ using System;
 using System.Reflection;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.bean
@@ -25,10 +26,13 @@ namespace com.espertech.esper.events.bean
         private ArrayFieldPropertyGetter _getterOutOfBounds;
         private EventBean _event;
         private SupportLegacyBean _bean;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             _bean = new SupportLegacyBean(new[] {"a", "b"});
             _event = SupportEventBeanFactory.CreateObject(_bean);
     
@@ -44,7 +48,7 @@ namespace com.espertech.esper.events.bean
                 MakeGetter(-1);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }
@@ -63,7 +67,7 @@ namespace com.espertech.esper.events.bean
                 _getter.Get(SupportEventBeanFactory.CreateObject(""));
                 Assert.Fail();
             }
-            catch (PropertyAccessException ex)
+            catch (PropertyAccessException)
             {
                 // expected
             }
@@ -72,7 +76,7 @@ namespace com.espertech.esper.events.bean
         private ArrayFieldPropertyGetter MakeGetter(int index)
         {
             FieldInfo field = typeof(SupportLegacyBean).GetField("fieldStringArray");
-            return new ArrayFieldPropertyGetter(field, index, SupportEventAdapterService.Service);
+            return new ArrayFieldPropertyGetter(field, index, _container.Resolve<EventAdapterService>());
         }
     }
 }

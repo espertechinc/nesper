@@ -11,7 +11,8 @@
 
   <xsl:template match="@*">
     <xsl:attribute name="{name()}">
-      <xsl:value-of select="."/>
+      <xsl:copy />
+      <!-- <xsl:node-of select="."/> -->
     </xsl:attribute>
   </xsl:template>
 

@@ -86,6 +86,13 @@ namespace com.espertech.esper.compat
             throw new ArgumentException("type is not an enumeration");
         }
 
+        public static string GetNameInvariant<T>(this T enumValue)
+        {
+            if (typeof(T).IsEnum)
+                return Enum.GetName(typeof(T), enumValue).ToLowerInvariant();
+            throw new ArgumentException("type is not an enumeration");
+        }
+
         public static T GetValue<T>(int ordinal)
         {
             foreach(T value in GetValues<T>())

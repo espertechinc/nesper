@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.epl.variable
@@ -27,15 +29,20 @@ namespace com.espertech.esper.epl.variable
             return new VariableVersionThreadEntry(0, null);
         }
 
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-	    public VariableVersionThreadLocal()
-        {
-            _vThreadLocal = ThreadLocalManager.Create<VariableVersionThreadEntry>(CreateEntry);
+	    /// <summary>
+	    /// Ctor.
+	    /// </summary>
+	    public VariableVersionThreadLocal(IThreadLocalManager threadLocalManager)
+	    {
+	        if (threadLocalManager != null) {
+	            _vThreadLocal = threadLocalManager.Create<VariableVersionThreadEntry>(CreateEntry);
+	        }
+	        else {
+	            _vThreadLocal = null;
+	        }
 	    }
 
-        /// <summary>
+	    /// <summary>
         /// Returns the version and uncommitted values for the current thread.
         /// </summary>
         /// <returns>entry for current thread</returns>

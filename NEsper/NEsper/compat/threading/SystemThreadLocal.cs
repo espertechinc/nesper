@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
 using System.Threading;
 
@@ -23,13 +22,13 @@ namespace com.espertech.esper.compat.threading
         /// <summary>
         /// Local data storage slot
         /// </summary>
-        private readonly LocalDataStoreSlot m_dataStoreSlot;
+        private readonly LocalDataStoreSlot _dataStoreSlot;
 
         /// <summary>
         /// Factory delegate for construction of data on miss.
         /// </summary>
 
-        private readonly FactoryDelegate<T> m_dataFactory;
+        private readonly Func<T> _dataFactory;
 
         /// <summary>
         /// Gets or sets the value.
@@ -37,8 +36,8 @@ namespace com.espertech.esper.compat.threading
         /// <value>The value.</value>
         public T Value
         {
-            get { return (T) Thread.GetData(m_dataStoreSlot); }
-            set { Thread.SetData(m_dataStoreSlot, value); }
+            get { return (T) Thread.GetData(_dataStoreSlot); }
+            set { Thread.SetData(_dataStoreSlot, value); }
         }
 
         /// <summary>
@@ -49,11 +48,11 @@ namespace com.espertech.esper.compat.threading
         {
             T value;
 
-            value = (T)Thread.GetData(m_dataStoreSlot);
+            value = (T)Thread.GetData(_dataStoreSlot);
             if ( value == null )
             {
-                value = m_dataFactory();
-                Thread.SetData( m_dataStoreSlot, value );
+                value = _dataFactory();
+                Thread.SetData( _dataStoreSlot, value );
             }
 
             return value;
@@ -70,17 +69,17 @@ namespace com.espertech.esper.compat.threading
         /// Initializes a new instance of the <see cref="SystemThreadLocal&lt;T&gt;"/> class.
         /// </summary>
         /// <param name="factory">The factory used to create values when not found.</param>
-        public SystemThreadLocal( FactoryDelegate<T> factory )
+        public SystemThreadLocal(Func<T> factory )
         {
-            m_dataStoreSlot = Thread.AllocateDataSlot();
-            m_dataFactory = factory;
+            _dataStoreSlot = Thread.AllocateDataSlot();
+            _dataFactory = factory;
         }
     }
 
     /// <summary>
     /// Creates system thread local objects.
     /// </summary>
-    public class SystemThreadLocalFactory : ThreadLocalFactory
+    public class SystemThreadLocalFactory : IThreadLocalFactory
     {
         #region ThreadLocalFactory Members
 
@@ -90,7 +89,7 @@ namespace com.espertech.esper.compat.threading
         /// <typeparam name="T"></typeparam>
         /// <param name="factory"></param>
         /// <returns></returns>
-        public IThreadLocal<T> CreateThreadLocal<T>(FactoryDelegate<T> factory) where T : class
+        public IThreadLocal<T> CreateThreadLocal<T>(Func<T> factory) where T : class
         {
             return new SystemThreadLocal<T>(factory);
         }

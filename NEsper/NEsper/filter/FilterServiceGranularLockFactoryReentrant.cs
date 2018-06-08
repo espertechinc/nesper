@@ -6,15 +6,24 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.filter
 {
     public class FilterServiceGranularLockFactoryReentrant : FilterServiceGranularLockFactory
     {
+        private IReaderWriterLockManager _rwLockManager;
+
+        public FilterServiceGranularLockFactoryReentrant(IReaderWriterLockManager rwLockManager)
+        {
+            _rwLockManager = rwLockManager;
+        }
+
         public IReaderWriterLock ObtainNew()
         {
-            return ReaderWriterLockManager.CreateDefaultLock();
+            return _rwLockManager.CreateDefaultLock();
             //return new SlimReaderWriterLock();
         }
     }

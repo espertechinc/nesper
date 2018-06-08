@@ -9,11 +9,15 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
 using com.espertech.esper.events.map;
 
 namespace com.espertech.esper.events.arr
 {
-    /// <summary>A getter that works on EventBean events residing within a Map as an event property. </summary>
+    /// <summary>
+    /// A getter that works on EventBean events residing within a Map as an event property.
+    /// </summary>
     public class ObjectArrayNestedEntryPropertyGetterArrayMap : ObjectArrayNestedEntryPropertyGetterBase
     {
         private readonly int _index;
@@ -33,12 +37,27 @@ namespace com.espertech.esper.events.arr
 
         public override Object HandleNestedValueFragment(Object value)
         {
-            return BaseNestableEventUtil.HandleNestedValueArrayWithMapFragment(value, _index, _getter, base.EventAdapterService, base.FragmentType);
+            return BaseNestableEventUtil.HandleBNNestedValueArrayWithMapFragment(value, _index, _getter, EventAdapterService, FragmentType);
         }
 
         public override bool HandleNestedValueExists(Object value)
         {
             return BaseNestableEventUtil.HandleNestedValueArrayWithMapExists(value, _index, _getter);
         }
+
+        public override ICodegenExpression HandleNestedValueCodegen(ICodegenExpression refName, ICodegenContext context)
+        {
+            return BaseNestableEventUtil.HandleNestedValueArrayWithMapCode(_index, _getter, refName, context, GetType());
+        }
+
+        public override ICodegenExpression HandleNestedValueExistsCodegen(ICodegenExpression refName, ICodegenContext context)
+        {
+            return BaseNestableEventUtil.HandleNestedValueArrayWithMapExistsCode(_index, _getter, refName, context, EventAdapterService, FragmentType, this.GetType());
+        }
+
+        public override ICodegenExpression HandleNestedValueFragmentCodegen(ICodegenExpression refName, ICodegenContext context)
+        {
+            return BaseNestableEventUtil.HandleBNNestedValueArrayWithMapFragmentCode(_index, _getter, refName, context, EventAdapterService, FragmentType, this.GetType());
+        }
     }
-}
+} // end of namespace

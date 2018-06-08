@@ -12,7 +12,9 @@ using System.IO;
 using System.Linq;
 
 using com.espertech.esper.collection;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
@@ -36,11 +38,19 @@ namespace com.espertech.esper.epl.expression.funcs
 
         private readonly ILockable _oLock;
 
-        /// <summary>Ctor. </summary>
-        /// <param name="classIdentifiers">is a list of type names to check type for</param>
-        public ExprInstanceofNode(String[] classIdentifiers)
+        public ExprInstanceofNode(string[] classIdentifiers, IContainer container)
+            : this(classIdentifiers, container.Resolve<ILockManager>())
         {
-            _oLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        }
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="classIdentifiers">is a list of type names to check type for</param>
+        /// <param name="lockManager">The lock manager.</param>
+        public ExprInstanceofNode(string[] classIdentifiers, ILockManager lockManager)
+        {
+            _oLock = lockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             _classIdentifiers = classIdentifiers;
         }
 
@@ -163,7 +173,7 @@ namespace com.espertech.esper.epl.expression.funcs
             get { return ExprPrecedenceEnum.UNARY; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             var other = node as ExprInstanceofNode;
             return other != null && Collections.AreEqual(other._classIdentifiers, _classIdentifiers);

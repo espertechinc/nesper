@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using com.espertech.esper.compat.logging;
 
 
@@ -22,10 +23,7 @@ namespace com.espertech.esper.compat.threading
 
     public class BasicExecutorService : IExecutorService
     {
-        private static int _idIncrement;
-
-        private readonly int _id;
-        private readonly ManualResetEvent _futuresMonitor;
+        private readonly Guid _id;
         private readonly List<FutureBase> _futuresPending;
         private bool _isActive;
         private bool _isShutdown;
@@ -37,24 +35,13 @@ namespace com.espertech.esper.compat.threading
         /// Gets the number of items executed.
         /// </summary>
         /// <value>The num executed.</value>
-        public int NumExecuted
-        {
-            get { return (int) Interlocked.Read(ref _numExecuted); }
-        }
+        public int NumExecuted => (int) Interlocked.Read(ref _numExecuted);
 
-        public int NumSubmitted
-        {
-            get { return (int)Interlocked.Read(ref _numSubmitted); }
-        }
+        public int NumSubmitted => (int)Interlocked.Read(ref _numSubmitted);
 
         public BasicExecutorService()
         {
-            _id = Interlocked.Increment(ref _idIncrement);
-
-            int workerThreads;
-            int completionThreads;
-
-            _futuresMonitor = new ManualResetEvent(false);
+            _id = Guid.NewGuid();
             _futuresPending = new List<FutureBase>();
             _isActive = true;
             _isShutdown = false;
@@ -68,23 +55,25 @@ namespace com.espertech.esper.compat.threading
         /// </summary>
         public BasicExecutorService(int maxNumThreads)
         {
-            _id = Interlocked.Increment(ref _idIncrement);
+            _id = Guid.NewGuid();
 
-            int workerThreads;
-            int completionThreads;
+            // As of 6.0.1 we assume nothing about the manner in which a "task" is executed.
+            // Applications should follow TPL best practices for building out their task
+            //    scheduler.
 
-            ThreadPool.GetMaxThreads(out workerThreads, out completionThreads);
+#if DEPRECATED
+            ThreadPool.GetMaxThreads(out var workerThreads, out var completionThreads);
             if (maxNumThreads != -1)
             {
                 ThreadPool.SetMaxThreads(maxNumThreads, completionThreads);
             }
+#endif
 
             if (Log.IsDebugEnabled)
             {
                 Log.Debug(String.Format(".ctor - Creating Executor with maxNumThreads = {0}", maxNumThreads));
             }
 
-            _futuresMonitor = new ManualResetEvent(false);
             _futuresPending = new List<FutureBase>();
             _isActive = true;
             _isShutdown = false;
@@ -119,28 +108,28 @@ namespace com.espertech.esper.compat.threading
                 Log.Error(".DispatchFuture - Instance {0} failed", _id);
                 Log.Error(".DispatchFuture", e);
             }
-            finally
-            {
+            finally {
                 Recycle(future);
             }
         }
 
         private void Recycle(FutureBase future)
         {
-            lock (_futuresPending)
-            {
-                _futuresPending.Remove(future);
+            Log.Info(".Recycle - Instance {0} starting", _id);
+            lock (_futuresPending) {
+                using (new Tracer(Log, "Recycle(lock)")) {
+                    _futuresPending.Remove(future);
 
-                if (Log.IsInfoEnabled) {
-                    Log.Info(
-                        ".DispatchFuture - Instance {0} done dispatching: {1} pending",
-                        _id,
-                        _futuresPending.Count);
-                }
+                    if (Log.IsInfoEnabled) {
+                        Log.Info(
+                            ".Recycle - Instance {0} done dispatching: {1} pending",
+                            _id,
+                            _futuresPending.Count);
+                    }
 
-                if (_futuresPending.Count == 0)
-                {
-                    _futuresMonitor.Set();
+                    if (_futuresPending.Count == 0) {
+                        Monitor.PulseAll(_futuresPending);
+                    }
                 }
             }
 
@@ -176,8 +165,7 @@ namespace com.espertech.esper.compat.threading
         /// <returns></returns>
         public Future<T> Submit<T>(Func<T> callable)
         {
-            if (_isShutdown)
-            {
+            if (_isShutdown) {
                 throw new IllegalStateException("ExecutorService is shutdown");
             }
 
@@ -185,19 +173,21 @@ namespace com.espertech.esper.compat.threading
 
             var future = new FutureImpl<T> {Callable = callable};
 
-            lock (_futuresPending)
-            {
-                _futuresPending.Add(future);
+            lock (_futuresPending) {
+                using (new Tracer(Log, "Submit(lock)")) {
+                    _futuresPending.Add(future);
 
-                if (Log.IsInfoEnabled) {
-                    Log.Info(
-                        ".Submit - Instance {0} queued user work item: {1} pending",
-                        _id,
-                        _futuresPending.Count);
+                    if (Log.IsInfoEnabled) {
+                        Log.Info(
+                            ".Submit - Instance {0} queued user work item: {1} pending",
+                            _id,
+                            _futuresPending.Count);
+                    }
                 }
             }
- 
-            ThreadPool.QueueUserWorkItem(DispatchFuture, future);
+
+            Task.Run(() => DispatchFuture(future));
+            //ThreadPool.QueueUserWorkItem(DispatchFuture, future);
 
             return future;
         }
@@ -225,6 +215,11 @@ namespace com.espertech.esper.compat.threading
             AwaitTermination(new TimeSpan(0, 0, 15));
         }
 
+        public void AwaitTermination(int units, TimeUnit timeUnit)
+        {
+            AwaitTermination(TimeUnitHelper.ToTimeSpan(units, timeUnit));
+        }
+
         /// <summary>
         /// Awaits the termination.
         /// </summary>
@@ -238,25 +233,36 @@ namespace com.espertech.esper.compat.threading
                     _id, _futuresPending.Count);
             }
 
-            if (_futuresPending.Count != 0)
-            {
-                _futuresMonitor.WaitOne(timeout, true);
-                if ( _futuresPending.Count != 0 )
-                {
-                    _futuresPending.ForEach(
-                        delegate(FutureBase futureBase)
-                        {
-                            Log.Warn(".AwaitTermination - Forceably terminating future");
-                            futureBase.Kill();
-                        });
-                }
-            }
+            var head = PerformanceObserver.MilliTime;
+            var tail = head + (long) timeout.TotalMilliseconds;
 
-            if (Log.IsInfoEnabled) {
-                Log.Info(
-                    ".AwaitTermination - Instance {0} marked inactive with {1} tasks to complete",
-                    _id,
-                    _futuresPending.Count);
+            lock (_futuresPending) {
+                using (new Tracer(Log, "AwaitTermination(lock)")) {
+                    long remain = tail - PerformanceObserver.MilliTime;
+
+                    while ((_futuresPending.Count != 0) && (remain > 0))
+                    {
+                        if (Log.IsInfoEnabled)
+                        {
+                            Log.Info(
+                                ".AwaitTermination - Instance {0} entering wait",
+                                _id,
+                                _futuresPending.Count);
+                        }
+
+
+                        Monitor.Wait(_futuresPending, TimeSpan.FromMilliseconds(remain));
+                        remain = tail - PerformanceObserver.MilliTime;
+                    }
+
+                    if (_futuresPending.Count != 0) {
+                        _futuresPending.ForEach(
+                            delegate(FutureBase futureBase) {
+                                Log.Warn(".AwaitTermination - Forceably terminating future");
+                                futureBase.Kill();
+                            });
+                    }
+                }
             }
 
             _isActive = false;
@@ -320,6 +326,8 @@ namespace com.espertech.esper.compat.threading
         /// <returns></returns>
         T GetValue(TimeSpan timeOut);
 
+        T GetValue(int units, TimeUnit timeUnit);
+
         /// <summary>
         /// Gets the result value from the execution.
         /// </summary>
@@ -345,10 +353,7 @@ namespace com.espertech.esper.compat.threading
         /// Gets the exec thread.
         /// </summary>
         /// <value>The exec thread.</value>
-        public Thread ExecThread
-        {
-            get { return _execThread; }
-        }
+        public Thread ExecThread => _execThread;
 
         /// <summary>
         /// Invokes the impl.
@@ -412,10 +417,7 @@ namespace com.espertech.esper.compat.threading
         /// Gets a value indicating whether this instance has value.
         /// </summary>
         /// <value><c>true</c> if this instance has value; otherwise, <c>false</c>.</value>
-        public bool HasValue
-        {
-            get { return _hasValue; }
-        }
+        public bool HasValue => _hasValue;
 
         /// <summary>
         /// Gets or sets the value.
@@ -446,7 +448,24 @@ namespace com.espertech.esper.compat.threading
         /// <returns></returns>
         public T GetValue(TimeSpan timeOut)
         {
-            throw new NotSupportedException("implementation does not provide blocking mechanics");
+            var timeCur = PerformanceObserver.MilliTime;
+            var timeEnd = timeCur + timeOut.TotalMilliseconds;
+
+            for (int ii = 0 ; !_hasValue ; ii++) {
+                timeCur = PerformanceObserver.MilliTime;
+                if (timeCur > timeEnd) {
+                    throw new TimeoutException();
+                }
+
+                SlimLock.SmartWait(ii);
+            }
+
+            return Value;
+        }
+
+        public T GetValue(int units, TimeUnit timeUnit)
+        {
+            return GetValue(TimeUnitHelper.ToTimeSpan(units, timeUnit));
         }
 
         /// <summary>

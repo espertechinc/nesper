@@ -17,6 +17,7 @@ using com.espertech.esper.client.annotation;
 using com.espertech.esper.client.dataflow;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
@@ -47,12 +48,16 @@ namespace com.espertech.esper.dataflow.core
         private readonly EPServiceProvider _epService;
         private readonly DataFlowConfigurationStateService _configurationState;
 
-        private readonly ILockable _iLock = LockManager.CreateLock(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly ILockable _iLock;
 
-        public DataFlowServiceImpl(EPServiceProvider epService, DataFlowConfigurationStateService configurationState)
+        public DataFlowServiceImpl(
+            EPServiceProvider epService, 
+            DataFlowConfigurationStateService configurationState,
+            ILockManager lockManager)
         {
             _epService = epService;
             _configurationState = configurationState;
+            _iLock = lockManager.CreateLock(MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public EPDataFlowDescriptor GetDataFlow(String dataFlowName)
@@ -151,8 +156,7 @@ namespace com.espertech.esper.dataflow.core
                         "Data flow by name '" + dataFlowName + "' is currently in STOPPED statement state");
                 }
                 DataFlowStmtDesc stmtDesc = serviceDesc.DataFlowDesc;
-                try
-                {
+                try {
                     return InstantiateInternal(
                         dataFlowName, options, stmtDesc.GraphDesc, stmtDesc.StatementContext, stmtDesc.ServicesContext,
                         stmtDesc.AgentInstanceContext, stmtDesc.OperatorAnnotations);
@@ -281,13 +285,14 @@ namespace com.espertech.esper.dataflow.core
             }
         }
 
-        private EPDataFlowInstance InstantiateInternal(String dataFlowName,
-                                                       EPDataFlowInstantiationOptions options,
-                                                       CreateDataFlowDesc desc,
-                                                       StatementContext statementContext,
-                                                       EPServicesContext servicesContext,
-                                                       AgentInstanceContext agentInstanceContext,
-                                                       IDictionary<GraphOperatorSpec, Attribute[]> operatorAnnotations)
+        private EPDataFlowInstance InstantiateInternal(
+            String dataFlowName,
+            EPDataFlowInstantiationOptions options,
+            CreateDataFlowDesc desc,
+            StatementContext statementContext,
+            EPServicesContext servicesContext,
+            AgentInstanceContext agentInstanceContext,
+            IDictionary<GraphOperatorSpec, Attribute[]> operatorAnnotations)
         {
             if (options == null)
             {
@@ -422,7 +427,7 @@ namespace com.espertech.esper.dataflow.core
                 // use non-factory class if provided
                 try
                 {
-                    operatorObject = Activator.CreateInstance(clazz);
+                    operatorObject = _epService.Container.CreateInstance<object>(clazz);
                 }
                 catch (Exception e)
                 {
@@ -858,7 +863,7 @@ namespace com.espertech.esper.dataflow.core
                             {
                                 clazz = engineImportService.ResolveType(typeName, false);
                             }
-                            catch (EngineImportException e)
+                            catch (EngineImportException)
                             {
                                 throw new EPException("Failed to resolve type '" + typeName + "'");
                             }
@@ -996,7 +1001,7 @@ namespace com.espertech.esper.dataflow.core
                 {
                     factoryClass = engineImportService.ResolveType(StringExtensions.Capitalize(operatorSpec.OperatorName + "Factory"), false);
                 }
-                catch (EngineImportException e)
+                catch (EngineImportException)
                 {
                 }
 
@@ -1227,7 +1232,7 @@ namespace com.espertech.esper.dataflow.core
                     {
                         return new LogicalChannelBindingMethodDesc(method, LogicalChannelBindingTypePassAlong.INSTANCE);
                     }
-                    if (numParams == 2 && paramTypes[0].GetBoxedType() == typeof(int?) && TypeHelper.IsSubclassOrImplementsInterface(paramTypes[1], expectedUnderlying))
+                    if (numParams == 2 && paramTypes[0].IsInt32() && TypeHelper.IsSubclassOrImplementsInterface(paramTypes[1], expectedUnderlying))
                     {
                         return new LogicalChannelBindingMethodDesc(method, new LogicalChannelBindingTypePassAlongWStream(channelDesc.ConsumingOpStreamNum));
                     }

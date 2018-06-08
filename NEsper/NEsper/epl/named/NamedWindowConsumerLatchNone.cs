@@ -24,10 +24,7 @@ namespace com.espertech.esper.epl.named
         {
         }
 
-        public override NamedWindowConsumerLatch Earlier
-        {
-            get => null;
-        }
+        public override NamedWindowConsumerLatch Earlier => null;
 
         public override void Await()
         {

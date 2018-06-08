@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.dispatch
 {
@@ -15,9 +16,9 @@ namespace com.espertech.esper.dispatch
 		/// <summary> Returns new service.</summary>
 		/// <returns> new dispatch service implementation.
 		/// </returns>
-		public static DispatchService NewService()
+		public static DispatchService NewService(IThreadLocalManager threadLocalManager)
 		{
-			return new DispatchServiceImpl();
+			return new DispatchServiceImpl(threadLocalManager);
 		}
 	}
 }
