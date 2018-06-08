@@ -11,7 +11,9 @@
 
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
-    <Distribution Condition=" '$(Distribution)' == '' ">net45</Distribution>
+    <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
+    <!-- .NET version -->
+    <Framework Condition=" '$(Framework)' == '' ">net46</Framework>
     <!-- Distribution version -->
     <Version Condition=" '$(CCNetLabel)' != '' ">$(CCNetLabel)</Version>
     <Version Condition=" '$(Version)' == '' ">6.1.0</Version>
@@ -31,17 +33,10 @@
   </Target>
 
   <Target Name="ApplyLabel">
-    <ItemGroup>
-      <VersionedAssemblies Include="NEsper\NEsper\Properties\AssemblyInfo.cs" />
-      <VersionedAssemblies Include="NEsper\NEsper.Tests\Properties\AssemblyInfo.cs" />
-      <VersionedAssemblies Include="NEsper\NEsper.Regression\Properties\AssemblyInfo.cs" />
-      <VersionedAssemblies Include="NEsper.IO\NEsper.IO\Properties\AssemblyInfo.cs" />
-      <VersionedAssemblies Include="NEsper.IO\NEsper.IO.Tests\Properties\AssemblyInfo.cs" />
-      <VersionedAssemblies Include="NEsper.Avro\Properties\AssemblyInfo.cs" />
-    </ItemGroup>
-    <FileUpdate Files="@(VersionedAssemblies)" Regex="AssemblyVersion\([ ]*&quot;.*&quot;[ ]*\)" ReplacementText="AssemblyVersion(&quot;$(Version)&quot;)" />
-    <FileUpdate Files="@(VersionedAssemblies)" Regex="AssemblyFileVersion\([ ]*&quot;.*&quot;[ ]*\)" ReplacementText="AssemblyFileVersion(&quot;$(Version)&quot;)" />
-    <FileUpdate Files="$(MSBuildProjectDirectory)\NEsper.Documentation\NEsper.Documentation.shfbproj" Regex="build\\NEsper-[0-9\.]+\\" ReplacementText="build\NEsper-$(Version)" />
+    <FileUpdate
+       Files="$(MSBuildProjectDirectory)\NEsper.Documentation\NEsper.Documentation.shfbproj"
+       Regex="build\\NEsper-[0-9\.]+\\"
+       ReplacementText="build\NEsper-$(Version)" />
   </Target>
 
   <Target Name="BuildInfo">
@@ -68,8 +63,13 @@
     <MSBuild Projects="NEsper.proj" Properties="Configuration=Release;Platform=x64" Targets="Clean"/>
   </Target>
 
+  <!-- SECTION BREAK -->
+
   <Target Name="Release-All" DependsOnTargets="Update-Packages">
-    <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=Any CPU" Targets="Clean;Release-Target;Clean"/>
+    <MSBuild
+      Projects="NEsper.proj"
+      Properties="Configuration=$(Configuration);Platform=Any CPU"
+      Targets="Clean;Release-Target;Clean"/>
   </Target>
 
   <Target Name="Build-AnyCPU">
@@ -98,6 +98,7 @@
       <NEsperTop Include="NEsper.sln"/>
       <NEsperTop Include="NEsperAll.sln"/>
     </ItemGroup>
+
     <ItemGroup>
       <NEsperSource Include="NEsper\**\*.cs"      Exclude="NEsper\**\bin\**\*"/>
       <NEsperSource Include="NEsper\**\*.xml"     Exclude="NEsper\**\bin\**\*"/>
@@ -153,45 +154,64 @@
 
   <Target Name="Copy-Source-All" DependsOnTargets="Copy-Source-Main;Copy-Source-IO;Copy-Source-Avro" />
 
+  <!-- SECTION BREAK -->
+
   <Target Name="Copy-Binaries-Main">
+    <Message Text="Copying NEsper Binaries for $(Configuration), $(Platform), $(Framework)" />
+
     <MakeDir Directories="$(BuildRoot)" />
-    <MakeDir Directories="$(BuildRoot)\lib\net45" />
+    <MakeDir Directories="$(BuildRoot)\lib\$(Framework)" />
 
     <!-- NEsper // bin -->
     <ItemGroup>
-      <Binaries45 Include="NEsper\NEsper\bin\$(Configuration)\NEsper.xml"/>
-      <Binaries45 Include="NEsper\NEsper\bin\$(Configuration)\NEsper.dll"/>
-      <Binaries45 Include="NEsper\NEsper\bin\$(Configuration)\NEsper.dll.config"/>
-      <Binaries45 Include="NEsper\NEsper.Tests\bin\$(Configuration)\NEsper.Tests.dll"/>
-      <Binaries45 Include="NEsper\NEsper.Tests\bin\$(Configuration)\NEsper.Tests.dll.config"/>
+      <Binaries Include="NEsper\NEsper\bin\$(Configuration)\$(Framework)\NEsper.xml"/>
+      <Binaries Include="NEsper\NEsper\bin\$(Configuration)\$(Framework)\NEsper.dll"/>
+      <Binaries Include="NEsper\NEsper\bin\$(Configuration)\$(Framework)\NEsper.dll.config"/>
+
+      <Binaries
+          Include="NEsper\NEsper.Data.MySQL\bin\$(Configuration)\$(Framework)\NEsper.Data.MySQL.dll"
+          Condition="Exists('NEsper\NEsper.Data.MySQL\bin\$(Configuration)\$(Framework)\NEsper.Data.MySQL.dll')"
+          />
+      <Binaries
+          Include="NEsper\NEsper.Data.PgSQL\bin\$(Configuration)\$(Framework)\NEsper.Data.PgSQL.dll"
+          Condition="Exists('NEsper\NEsper.Data.PgSQL\bin\$(Configuration)\$(Framework)\NEsper.Data.PgSQL.dll')"
+          />
+      <Binaries
+          Include="NEsper\NEsper.Data.SQLite\bin\$(Configuration)\$(Framework)\NEsper.Data.SQLite.dll"
+          Condition="Exists('NEsper\NEsper.Data.SQLite\bin\$(Configuration)\$(Framework)\NEsper.Data.SQLite.dll')"
+          />
+      <Binaries
+          Include="NEsper\NEsper.Log.NLog\bin\$(Configuration)\$(Framework)\NEsper.Log.NLog.dll"
+          Condition="Exists('NEsper\NEsper.Log.NLog\bin\$(Configuration)\$(Framework)\NEsper.Log.NLog.dll')"
+          />
+
+      <Binaries Include="NEsper.IO\NEsper.IO\bin\$(Configuration)\$(Framework)\NEsper.IO.xml"/>
+      <Binaries Include="NEsper.IO\NEsper.IO\bin\$(Configuration)\$(Framework)\NEsper.IO.dll"/>
+      
+      <Binaries Include="NEsper.Avro\bin\$(Configuration)\$(Framework)\NEsper.Avro.dll"/>
     </ItemGroup>
-    <Copy SourceFiles="@(Binaries45)" DestinationFolder="$(BuildRoot)\lib\net45" SkipUnchangedFiles="True" />
+
+    <Copy SourceFiles="@(Binaries)"
+          DestinationFolder="$(BuildRoot)\lib\$(Framework)"
+          SkipUnchangedFiles="True" />
   </Target>
 
-  <Target Name="Copy-Binaries-IO">
-    <MakeDir Directories="$(BuildRoot)" />
-    <MakeDir Directories="$(BuildRoot)\lib\net45" />
-
-    <!-- NEsper.IO // bin -->
-    <ItemGroup>
-      <Binaries45 Include="NEsper.IO\NEsper.IO\bin\$(Configuration)\NEsper.IO.xml"/>
-      <Binaries45 Include="NEsper.IO\NEsper.IO\bin\$(Configuration)\NEsper.IO.dll"/>
-    </ItemGroup>
-    <Copy SourceFiles="@(Binaries45)" DestinationFolder="$(BuildRoot)\lib\net45" SkipUnchangedFiles="True" />
+  <Target Name="Copy-Binaries-All">
+    <MSBuild
+      Projects="NEsper.proj"
+      Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net46"
+      Targets="Copy-Binaries-Main"/>
+    <MSBuild
+      Projects="NEsper.proj"
+      Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net471"
+      Targets="Copy-Binaries-Main"/>
+    <MSBuild
+      Projects="NEsper.proj"
+      Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=netstandard2.0"
+      Targets="Copy-Binaries-Main"/>
   </Target>
 
-  <Target Name="Copy-Binaries-Avro">
-    <MakeDir Directories="$(BuildRoot)" />
-    <MakeDir Directories="$(BuildRoot)\lib\net45" />
-
-    <!-- NEsper.Avro // bin -->
-    <ItemGroup>
-      <Binaries45 Include="NEsper.Avro\bin\$(Configuration)\NEsper.Avro.dll"/>
-    </ItemGroup>
-    <Copy SourceFiles="@(Binaries45)" DestinationFolder="$(BuildRoot)\lib\net45" SkipUnchangedFiles="True" />
-  </Target>
-
-  <Target Name="Copy-Binaries-All" DependsOnTargets="Copy-Binaries-Main;Copy-Binaries-IO;Copy-Binaries-Avro" />
+  <!-- SECTION BREAK -->
 
   <Target Name="Copy-Misc">
     <ItemGroup>
@@ -226,61 +246,22 @@
   <Target Name="Release-Target" DependsOnTargets="Build">
     <Message Text="Building NEsper Release for $(Platform)" />
     <MakeDir Directories="$(BuildRoot)" />
-    <MakeDir Directories="$(BuildRoot)\lib\net45" />
 
     <CallTarget Targets="Copy-Artifacts" />
-    <CallTarget Targets="RedirectProjectFiles" />
-  </Target>
-
-  <Target Name="RedirectProjectFiles">
-    <ItemGroup>
-      <Nested2 Include="$(BuildRoot)\src\NEsper\NEsper\NEsper.csproj" />
-      <Nested2 Include="$(BuildRoot)\src\NEsper\NEsper.Tests\NEsper.Tests.csproj" />
-      <Nested2 Include="$(BuildRoot)\src\NEsper\NEsper.Tests.Runner\NEsper.Tests.Runner.csproj" />
-      <Nested2 Include="$(BuildRoot)\src\NEsper.IO\NEsper.IO\NEsper.IO.csproj" />
-      <Nested2 Include="$(BuildRoot)\src\NEsper.IO\NEsper.IO.Tests\NEsper.IO.Tests.csproj" />
-      <Nested2 Include="$(BuildRoot)\src\NEsper\NEsper\NEsper.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <Nested3 Include="$(BuildRoot)\src\NEsper\NEsper.Benchmark\NEsper.Benchmark.Client\NEsper.Benchmark.Client.csproj" />
-      <Nested3 Include="$(BuildRoot)\src\NEsper\NEsper.Benchmark\NEsper.Benchmark.Common\NEsper.Benchmark.Common.csproj" />
-      <Nested3 Include="$(BuildRoot)\src\NEsper\NEsper.Benchmark\NEsper.Benchmark.Server\NEsper.Benchmark.Server.csproj" />
-      <Nested3 Include="$(BuildRoot)\src\NEsper\NEsper.Benchmark\NEsper.Benchmark.Stats\NEsper.Benchmark.Stats.csproj" />
-      <Nested3 Include="$(BuildRoot)\src\NEsper\NEsper.Examples\support\NEsper.Examples.Support.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <Nested4 Include="$(BuildRoot)\src\NEsper\NEsper.Examples\example\atm\NEsper.Examples.ATM.csproj" />
-      <Nested4 Include="$(BuildRoot)\src\NEsper\NEsper.Examples\example\autoid\NEsper.Examples.AutoId.csproj" />
-      <Nested4 Include="$(BuildRoot)\src\NEsper\NEsper.Examples\example\feedexample\NEsper.Examples.FeedExample.csproj" />
-      <Nested4 Include="$(BuildRoot)\src\NEsper\NEsper.Examples\example\marketdatafeed\NEsper.Examples.MarketDataFeed.csproj" />
-      <Nested4 Include="$(BuildRoot)\src\NEsper\NEsper.Examples\example\matchmaker\NEsper.Examples.MatchMaker.csproj" />
-      <Nested4 Include="$(BuildRoot)\src\NEsper\NEsper.Examples\example\NEsper.Examples.NamedWindowQuery\NEsper.Examples.NamedWindowQuery.csproj" />
-      <Nested4 Include="$(BuildRoot)\src\NEsper\NEsper.Examples\example\qos_sla\NEsper.Examples.QoS_SLA.csproj" />
-      <Nested4 Include="$(BuildRoot)\src\NEsper\NEsper.Examples\example\rsi\NEsper.Examples.RSI.csproj" />
-      <Nested4 Include="$(BuildRoot)\src\NEsper\NEsper.Examples\example\stockticker\NEsper.Examples.StockTicker.csproj" />
-      <Nested4 Include="$(BuildRoot)\src\NEsper\NEsper.Examples\example\transaction\NEsper.Examples.Transaction.csproj" />
-    </ItemGroup>
-
-    <!--
-    <File UpdateFiles="@(Nested2)" Regex="&lt;HintPath&gt;\.\.\\\.\.\\lib" ReplacementText="&lt;HintPath&gt;..\..\..\lib\net45" />
-    <File UpdateFiles="@(Nested3)" Regex="&lt;HintPath&gt;\.\.\\\.\.\\\.\.\\lib" ReplacementText="&lt;HintPath&gt;..\..\..\..\lib\net45" />
-    <File UpdateFiles="@(Nested4)" Regex="&lt;HintPath&gt;\.\.\\\.\.\\\.\.\\\.\.\\lib" ReplacementText="&lt;HintPath&gt;..\..\..\..\..\lib\net45" />
-    <File UpdateFiles="$(BuildRoot)\lib\net45\NEsper.Tests.dll.config" Regex="&lt;string&gt;\.\.\\\.\.\\\.\.\\etc&lt;/string&gt;" ReplacementText="&lt;string&gt;..\..\etc\NEsper&lt;/string&gt;" />
-    -->
   </Target>
 
   <Target Name="Package" DependsOnTargets="">
     <Message Text="SolutionDir = $(SolutionDir)" />
-    <PropertyGroup>
-      <NuSpecFile>$(MSBuildProjectDirectory)/NEsper.nuspec</NuSpecFile>
-    </PropertyGroup>
-    <Exec Command="$(NuGetCommand) pack $(NuSpecFile)" />
+    <Message Text="Packages has been deprecated." />
+    <Message Text="Packages are created independently." />
   </Target>
 
   <Target Name="Documentation">
+    <!--
     <Message Text="Building NEsper Documentation - Configuration: $(Configuration)" />
     <MSBuild Projects="NEsper.Documentation.sln" Properties="Configuration=$(Configuration);Platform=Any CPU" Condition="!Exists('$(BuildRoot)\docs\NEsper.chm')"/>
     <Delete Files="$(BuildRoot)\docs\LastBuild.log"/>
+    -->
   </Target>
 
   <Target Name="Reference-Documentation">
@@ -289,10 +270,6 @@
       <DocItems Include="$(MSBuildProjectDirectory)/docs/reference/build/**" />
     </ItemGroup>
     <Copy SourceFiles="@(DocItems)" DestinationFiles="@(DocItems->'$(BuildRoot)\docs\reference\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="True" />
-  </Target>
-
-  <Target Name="Tests">
-    <MSBuild Projects="NEsper\NEsperTest.proj" />
   </Target>
 
   <Target Name="ZipDistribution" DependsOnTargets="ApplyLabel;Documentation">
@@ -306,7 +283,7 @@
   <Target Name="Distribution">
     <Message Text="Building NEsper $(Version)" />
     <CallTarget Targets="Release-All" />
-    <CallTarget Targets="Documentation" />
+    <!-- <CallTarget Targets="Documentation" /> -->
     <!-- <CallTarget Targets="Reference-Documentation" /> -->
     <CallTarget Targets="ZipDistribution" />
   </Target>

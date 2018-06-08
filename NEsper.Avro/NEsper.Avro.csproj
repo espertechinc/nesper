@@ -22,6 +22,7 @@
     <RepositoryType>Github</RepositoryType>
     <Company>Espertech</Company>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Version>6.1.0</Version>
     <AssemblyVersion>6.1.0.0</AssemblyVersion>
     <FileVersion>6.1.0.0</FileVersion>

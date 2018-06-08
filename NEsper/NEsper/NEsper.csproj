@@ -21,7 +21,8 @@
     <Copyright>Espertech, 2014-2017</Copyright>
     <RepositoryType>Github</RepositoryType>
     <Company>Espertech</Company>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Version>6.1.0</Version>
     <AssemblyVersion>6.1.0.0</AssemblyVersion>
     <FileVersion>6.1.0.0</FileVersion>
@@ -85,9 +86,7 @@
   <ItemGroup Condition="'$(NetCore)'=='true'">
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.5.0" />
-    <PackageReference Include="System.Configuration.Abstractions">
-      <Version>2.0.2.45</Version>
-    </PackageReference>
+    <PackageReference Include="System.Configuration.Abstractions" Version="2.0.2.45" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(NetFramework)' == 'net471'">
