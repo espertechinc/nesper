@@ -14,7 +14,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
 
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.regression.expr.expr
@@ -23,7 +22,9 @@ namespace com.espertech.esper.regression.expr.expr
     {
         private static readonly byte FIRST_EVENT = 1;
         private static readonly short SECOND_EVENT = 2;
+#pragma warning disable CS0675
         private static readonly int THIRD_EVENT = FIRST_EVENT | SECOND_EVENT;
+#pragma warning restore CS0675
         private static readonly long FOURTH_EVENT = 4;
         private static readonly bool FITH_EVENT = false;
     

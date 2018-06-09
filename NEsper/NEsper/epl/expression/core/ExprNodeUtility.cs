@@ -1559,7 +1559,7 @@ namespace com.espertech.esper.epl.expression.core
             var result = filter.Evaluate(new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
             return true.Equals(result);
         }
-    
+
         /// <summary>
         /// Compare two expression nodes and their children in exact child-node sequence,
         /// returning true if the 2 expression nodes trees are equals, or false if they are not equals.
@@ -1570,6 +1570,7 @@ namespace com.espertech.esper.epl.expression.core
         /// </summary>
         /// <param name="nodeOne">- first expression top node of the tree to compare</param>
         /// <param name="nodeTwo">- second expression top node of the tree to compare</param>
+        /// <param name="ignoreStreamPrefix">if set to <c>true</c> [ignore stream prefix].</param>
         /// <returns>
         /// false if this or all child nodes are not equal, true if equal
         /// </returns>
@@ -1593,14 +1594,17 @@ namespace com.espertech.esper.epl.expression.core
             }
             return true;
         }
-    
+
         /// <summary>
         /// Compares two expression nodes via deep comparison, considering all
         /// child nodes of either side.
         /// </summary>
         /// <param name="one">array of expressions</param>
         /// <param name="two">array of expressions</param>
-        /// <returns>true if the expressions are equal, false if not</returns>
+        /// <param name="ignoreStreamPrefix">if set to <c>true</c> [ignore stream prefix].</param>
+        /// <returns>
+        /// true if the expressions are equal, false if not
+        /// </returns>
         public static bool DeepEquals(ExprNode[] one, ExprNode[] two, bool ignoreStreamPrefix) {
             if (one.Length != two.Length) {
                 return false;

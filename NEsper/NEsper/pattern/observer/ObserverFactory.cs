@@ -18,9 +18,12 @@ namespace com.espertech.esper.pattern.observer
     /// </summary>
     public interface ObserverFactory
     {
-        /// <summary>Sets the observer object parameters. </summary>
+        /// <summary>
+        /// Sets the observer object parameters.
+        /// </summary>
         /// <param name="observerParameters">is a list of parameters</param>
         /// <param name="convertor">for converting partial pattern matches to event-per-stream for expressions</param>
+        /// <param name="validationContext">The validation context.</param>
         /// <throws>ObserverParameterException thrown to indicate a parameter problem</throws>
         void SetObserverParameters(
             IList<ExprNode> observerParameters,

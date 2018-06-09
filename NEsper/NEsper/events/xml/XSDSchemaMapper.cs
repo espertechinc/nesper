@@ -73,6 +73,7 @@ namespace com.espertech.esper.events.xml
         /// <param name="schemaResource">schema to load and map.</param>
         /// <param name="schemaText">The schema text.</param>
         /// <param name="engineImportService">The engine import service.</param>
+        /// <param name="resourceManager">The resource manager.</param>
         /// <param name="maxRecusiveDepth">depth of maximal recursive element</param>
         /// <returns>
         /// model

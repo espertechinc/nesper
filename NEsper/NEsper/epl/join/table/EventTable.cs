@@ -20,42 +20,47 @@ namespace com.espertech.esper.epl.join.table
 	/// </summary>
 	public interface EventTable : IEnumerable<EventBean>
 	{
-	    /// <summary>
-	    /// Add and remove events from table.
-	    /// <para />It is up to the index to decide whether to add first and then remove,
-	    /// or whether to remove and then add.
-	    /// <para />It is important to note that a given event can be in both the
-	    /// removed and the added events. This means that unique indexes probably need to remove first
-	    /// and then add. Most other non-unique indexes will add first and then remove
-	    /// since the an event can be both in the add and the remove stream.
-	    /// </summary>
-	    /// <param name="newData">to add</param>
-	    /// <param name="oldData">to remove</param>
-	    void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext);
+        /// <summary>
+        /// Add and remove events from table.
+        /// <para />It is up to the index to decide whether to add first and then remove,
+        /// or whether to remove and then add.
+        /// <para />It is important to note that a given event can be in both the
+        /// removed and the added events. This means that unique indexes probably need to remove first
+        /// and then add. Most other non-unique indexes will add first and then remove
+        /// since the an event can be both in the add and the remove stream.
+        /// </summary>
+        /// <param name="newData">to add</param>
+        /// <param name="oldData">to remove</param>
+        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
+        void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         /// Add events to table.
         /// </summary>
         /// <param name="events">to add</param>
+        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
 	    void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext);
 
-	    /// <summary>
-	    /// Add event to table.
-	    /// </summary>
-	    /// <param name="event">to add</param>
-	    void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
+        /// <summary>
+        /// Add event to table.
+        /// </summary>
+        /// <param name="event">to add</param>
+        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
+        void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
 
-	    /// <summary>
-	    /// Remove events from table.
-	    /// </summary>
-	    /// <param name="events">to remove</param>
-	    void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext);
+        /// <summary>
+        /// Remove events from table.
+        /// </summary>
+        /// <param name="events">to remove</param>
+        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
+        void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext);
 
-	    /// <summary>
-	    /// Remove event from table.
-	    /// </summary>
-	    /// <param name="event">to remove</param>
-	    void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
+        /// <summary>
+        /// Remove event from table.
+        /// </summary>
+        /// <param name="event">to remove</param>
+        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
+        void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
 
 	    /// <summary>
 	    /// Returns true if the index is empty, or false if not

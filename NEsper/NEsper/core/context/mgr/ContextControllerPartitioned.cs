@@ -21,6 +21,7 @@ namespace com.espertech.esper.core.context.mgr
         : ContextController
         , ContextControllerPartitionedInstanceCreateCallback
     {
+        private readonly object _lock;
         private readonly int _pathId;
         private readonly ContextControllerLifecycleCallback _activationCallback;
         private readonly ContextControllerPartitionedFactoryImpl _factory;
@@ -36,6 +37,7 @@ namespace com.espertech.esper.core.context.mgr
 
         public ContextControllerPartitioned(int pathId, ContextControllerLifecycleCallback activationCallback, ContextControllerPartitionedFactoryImpl factory)
         {
+            _lock = new object();
             _pathId = pathId;
             _activationCallback = activationCallback;
             _factory = factory;
@@ -161,7 +163,7 @@ namespace com.espertech.esper.core.context.mgr
 
         public void Deactivate()
         {
-            lock (this)
+            lock (_lock)
             {
                 var factoryContext = _factory.FactoryContext;
                 foreach (var callback in _filterCallbacks)
@@ -177,7 +179,7 @@ namespace com.espertech.esper.core.context.mgr
 
         public void Create(Object key, EventBean theEvent)
         {
-            lock (this)
+            lock (_lock)
             {
                 var exists = _partitionKeys.ContainsKey(key);
                 if (exists)

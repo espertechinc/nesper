@@ -46,9 +46,12 @@ namespace com.espertech.esper.epl.metric
         private readonly IDictionary<String, StatementMetricHandle> _statementMetricHandles;
         private readonly MetricsExecutor _metricsExecutor;
 
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="specification">configuration</param>
         /// <param name="engineUri">engine URI</param>
+        /// <param name="rwLockManager">The rw lock manager.</param>
         public MetricReportingServiceImpl(
             ConfigurationMetricsReporting specification, String engineUri,
             IReaderWriterLockManager rwLockManager)

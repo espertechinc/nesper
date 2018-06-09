@@ -25,20 +25,32 @@ namespace com.espertech.esper.dataflow.ops
     public class Filter : DataFlowOpLifecycle {
     
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
-        [DataFlowOpParameter]
-        private ExprNode filter;
-    
+
+#pragma warning disable CS0649
+        [DataFlowOpParameter] private ExprNode filter;
+        [DataFlowContext] private EPDataFlowEmitter graphContext;
+#pragma warning restore CS0649
+
         private ExprEvaluator _evaluator;
         private EventBeanSPI _theEvent;
         private readonly EventBean[] _eventsPerStream = new EventBean[1];
         private bool _singleOutputPort;
-    
-        [DataFlowContext]
-        private EPDataFlowEmitter graphContext;
-    
-        public DataFlowOpInitializeResult Initialize(DataFlowOpInitializateContext prepareContext) {
-    
+
+        /// <summary>
+        /// Initializes the specified prepare context.
+        /// </summary>
+        /// <param name="prepareContext">The prepare context.</param>
+        /// <returns></returns>
+        /// <exception cref="ExprValidationException">
+        /// Filter requires single input port
+        /// or
+        /// Required parameter 'filter' providing the filter expression is not provided
+        /// </exception>
+        /// <exception cref="ArgumentException">Filter operator requires one or two output Stream(s) but produces " + prepareContext.OutputPorts.Count + " streams</exception>
+#pragma warning disable RCS1168
+        public DataFlowOpInitializeResult Initialize(DataFlowOpInitializateContext prepareContext)
+#pragma warning restore RCS1168
+        {
             if (prepareContext.InputPorts.Count != 1) {
                 throw new ExprValidationException("Filter requires single input port");
             }
@@ -96,9 +108,11 @@ namespace com.espertech.esper.dataflow.ops
         public void Open(DataFlowOpOpenContext openContext) {
             // no action
         }
-    
+
+#pragma warning disable RCS1168
         public void Close(DataFlowOpCloseContext openContext) {
             // no action
         }
+#pragma warning restore RCS1168
     }
 } // end of namespace

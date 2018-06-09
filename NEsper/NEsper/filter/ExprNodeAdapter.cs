@@ -39,6 +39,7 @@ namespace com.espertech.esper.filter
         /// <param name="exprNode">is the bool expression</param>
         /// <param name="prototype">is the row of events the we are matching on</param>
         /// <param name="variableService">for setting variable version for evaluating variables, if required</param>
+        /// <param name="threadLocalManager">The thread local manager.</param>
         public ExprNodeAdapter(
             ExprNode exprNode,
             EventBean[] prototype,

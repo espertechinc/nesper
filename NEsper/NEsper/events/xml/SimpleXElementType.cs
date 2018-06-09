@@ -34,6 +34,7 @@ namespace com.espertech.esper.events.xml
         /// <param name="eventTypeId">The event type id.</param>
         /// <param name="configurationEventTypeXMLDOM">configures the event type</param>
         /// <param name="eventAdapterService">for type looking and registration</param>
+        /// <param name="lockManager">The lock manager.</param>
         public SimpleXElementType(
             EventTypeMetadata eventTypeMetadata,
             int eventTypeId,

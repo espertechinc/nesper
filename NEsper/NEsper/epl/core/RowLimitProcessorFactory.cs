@@ -24,13 +24,27 @@ namespace com.espertech.esper.epl.core
 	    private readonly int _currentRowLimit;
 	    private readonly int _currentOffset;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="rowLimitSpec">specification for row limit, or null if no row limit is defined</param>
-	    /// <param name="variableService">for retrieving variable state for use with row limiting</param>
-	    /// <throws>com.espertech.esper.epl.expression.core.ExprValidationException if row limit specification validation fails</throws>
-	    public RowLimitProcessorFactory(RowLimitSpec rowLimitSpec, VariableService variableService, string optionalContextName)
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="rowLimitSpec">specification for row limit, or null if no row limit is defined</param>
+        /// <param name="variableService">for retrieving variable state for use with row limiting</param>
+        /// <param name="optionalContextName">Name of the optional context.</param>
+        /// <exception cref="ExprValidationException">
+        /// Limit clause variable by name '" + rowLimitSpec.NumRowsVariable + "' has not been declared
+        /// or
+        /// or
+        /// Limit clause requires a variable of numeric type
+        /// or
+        /// Limit clause variable by name '" + rowLimitSpec.OptionalOffsetVariable + "' has not been declared
+        /// or
+        /// or
+        /// Limit clause requires a variable of numeric type
+        /// or
+        /// Limit clause requires a positive offset
+        /// </exception>
+        /// <throws>com.espertech.esper.epl.expression.core.ExprValidationException if row limit specification validation fails</throws>
+        public RowLimitProcessorFactory(RowLimitSpec rowLimitSpec, VariableService variableService, string optionalContextName)
 	    {
 	        if (rowLimitSpec.NumRowsVariable != null)
 	        {

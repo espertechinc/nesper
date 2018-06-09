@@ -119,35 +119,17 @@ namespace com.espertech.esper.epl.view
                 typeof (OutputConditionExpressionFactory).FullName, OutputConditionExpressionTypeUtil.TYPEINFO);
         }
 
-        public ExprEvaluator WhenExpressionNodeEval
-        {
-            get { return _whenExpressionNodeEval; }
-        }
+        public ExprEvaluator WhenExpressionNodeEval => _whenExpressionNodeEval;
 
-        public ExprEvaluator AndWhenTerminatedExpressionNodeEval
-        {
-            get { return _andWhenTerminatedExpressionNodeEval; }
-        }
+        public ExprEvaluator AndWhenTerminatedExpressionNodeEval => _andWhenTerminatedExpressionNodeEval;
 
-        public VariableReadWritePackage VariableReadWritePackage
-        {
-            get { return _variableReadWritePackage; }
-        }
+        public VariableReadWritePackage VariableReadWritePackage => _variableReadWritePackage;
 
-        public VariableReadWritePackage VariableReadWritePackageAfterTerminated
-        {
-            get { return _variableReadWritePackageAfterTerminated; }
-        }
+        public VariableReadWritePackage VariableReadWritePackageAfterTerminated => _variableReadWritePackageAfterTerminated;
 
-        public EventType BuiltinPropertiesEventType
-        {
-            get { return _builtinPropertiesEventType; }
-        }
+        public EventType BuiltinPropertiesEventType => _builtinPropertiesEventType;
 
-        public ISet<string> VariableNames
-        {
-            get { return _variableNames; }
-        }
+        public ISet<string> VariableNames => _variableNames;
 
         private bool ContainsBuiltinProperties(ExprNode expr)
         {

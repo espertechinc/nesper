@@ -32,9 +32,10 @@ namespace com.espertech.esper.compat.collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObsoleteConcurrentDictionary&lt;K, V&gt;"/> class.
+        /// Initializes a new instance of the <see cref="ObsoleteConcurrentDictionary&lt;K, V&gt;" /> class.
         /// </summary>
         /// <param name="subDictionary">The sub dictionary.</param>
+        /// <param name="rwLockManager">The rw lock manager.</param>
         public ObsoleteConcurrentDictionary(IDictionary<K, V> subDictionary, IReaderWriterLockManager rwLockManager)
         {
             _subDictionary = subDictionary;

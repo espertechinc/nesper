@@ -14,7 +14,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.join.table;
 using com.espertech.esper.epl.join.util;
@@ -22,10 +21,8 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.lookup
 {
-    public class SubordinateQueryPlannerUtil
+    public static class SubordinateQueryPlannerUtil
     {
-        private EventBean[] events;
-
         public static void QueryPlanLogOnExpr(
             bool queryPlanLogging,
             ILog queryPlanLog,

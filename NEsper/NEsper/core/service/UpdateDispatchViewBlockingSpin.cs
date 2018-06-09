@@ -26,11 +26,14 @@ namespace com.espertech.esper.core.service
         private readonly long _msecTimeout;
         private readonly TimeSourceService _timeSourceService;
 
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="statementResultService">handles result delivery</param>
         /// <param name="dispatchService">for performing the dispatch</param>
         /// <param name="msecTimeout">timeout for preserving dispatch order through blocking</param>
-        /// <param name="statementResultService">handles result delivery</param>
         /// <param name="timeSourceService">time source provider</param>
+        /// <param name="threadLocalManager">The thread local manager.</param>
         public UpdateDispatchViewBlockingSpin(StatementResultService statementResultService, DispatchService dispatchService, long msecTimeout, TimeSourceService timeSourceService, IThreadLocalManager threadLocalManager)
             : base(statementResultService, dispatchService, threadLocalManager)
         {

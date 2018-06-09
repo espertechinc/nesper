@@ -32,8 +32,6 @@ namespace com.espertech.esper.core.service
     /// </summary>
     public interface EPServiceProviderSPI : EPServiceProvider
     {
-        IContainer Container { get; }
-
         /// <summary>Returns statement management service for the engine. </summary>
         /// <value>the StatementLifecycleSvc</value>
         StatementLifecycleSvc StatementLifecycleSvc { get; }
@@ -133,7 +131,7 @@ namespace com.espertech.esper.core.service
         void Initialize(long? currentTime);
     }
 
-    public class EPServiceProviderConstants
+    public static class EPServiceProviderConstants
     {
         /// <summary>For the default provider instance, which carries a null provider URI, the URI value is "default". </summary>
         public static readonly String DEFAULT_ENGINE_URI = "default";

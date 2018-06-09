@@ -28,9 +28,12 @@ namespace com.espertech.esper.epl.metric
         private readonly ConfigurationMetricsReporting _specification;
         private readonly IDictionary<String, int> _statementGroups;
 
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="engineURI">engine URI</param>
         /// <param name="specification">specifies statement groups</param>
+        /// <param name="rwLockManager">The rw lock manager.</param>
         public StatementMetricRepository(
             String engineURI, 
             ConfigurationMetricsReporting specification,

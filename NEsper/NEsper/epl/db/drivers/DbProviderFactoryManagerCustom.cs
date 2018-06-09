@@ -23,6 +23,23 @@ namespace com.espertech.esper.epl.db.drivers
         private readonly IDictionary<string, DbProviderFactory> _nameToProviderFactory;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="DbProviderFactoryManagerCustom"/> class.
+        /// </summary>
+        public DbProviderFactoryManagerCustom()
+        {
+            _nameToProviderFactory = new Dictionary<string, DbProviderFactory>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DbProviderFactoryManagerCustom"/> class.
+        /// </summary>
+        /// <param name="nameToProviderFactory">The name to provider factory.</param>
+        public DbProviderFactoryManagerCustom(IDictionary<string, DbProviderFactory> nameToProviderFactory)
+        {
+            _nameToProviderFactory = nameToProviderFactory;
+        }
+
+        /// <summary>
         /// Adds the provider.
         /// </summary>
         /// <param name="name">The name.</param>

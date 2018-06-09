@@ -29,13 +29,17 @@ namespace com.espertech.esper.epl.view
 	    private readonly VariableReadWritePackage _variableReadWritePackage;
 	    private readonly EventType _oatypeBuiltinProperties;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="whenExpressionNode">the expression to evaluate, returning true when to output</param>
-	    /// <param name="assignments">is the optional then-clause variable assignments, or null or empty if none</param>
-	    /// <throws>ExprValidationException when validation fails</throws>
-	    public OutputConditionPolledExpressionFactory(ExprNode whenExpressionNode, IList<OnTriggerSetAssignment> assignments, StatementContext statementContext)
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="whenExpressionNode">the expression to evaluate, returning true when to output</param>
+        /// <param name="assignments">is the optional then-clause variable assignments, or null or empty if none</param>
+        /// <param name="statementContext">The statement context.</param>
+        /// <throws>ExprValidationException when validation fails</throws>
+        public OutputConditionPolledExpressionFactory(
+            ExprNode whenExpressionNode, 
+            IList<OnTriggerSetAssignment> assignments, 
+            StatementContext statementContext)
 	    {
 	        _whenExpressionNode = whenExpressionNode.ExprEvaluator;
 
@@ -89,15 +93,9 @@ namespace com.espertech.esper.epl.view
 	        return new OutputConditionPolledExpression(this, state, agentInstanceContext, builtinProperties);
 	    }
 
-	    public ExprEvaluator WhenExpressionNode
-	    {
-	        get { return _whenExpressionNode; }
-	    }
+	    public ExprEvaluator WhenExpressionNode => _whenExpressionNode;
 
-	    public VariableReadWritePackage VariableReadWritePackage
-	    {
-	        get { return _variableReadWritePackage; }
-	    }
+	    public VariableReadWritePackage VariableReadWritePackage => _variableReadWritePackage;
 
 	    private bool ContainsBuiltinProperties(ExprNode expr)
 	    {

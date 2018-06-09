@@ -994,7 +994,6 @@ namespace com.espertech.esper.core.service
         {
             var ret = PackageName.INVALID;
             int index = 0, dotex = -1;
-            var needStart = true;
 
             if (String.IsNullOrWhiteSpace(name))
                 return ret;
@@ -1032,7 +1031,6 @@ namespace com.espertech.esper.core.service
                     }
                     else
                     {
-                        needStart = true;
                         int start = dotex + 1;
                         int end = index;
                         var test = name.Between(start, end);

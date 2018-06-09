@@ -47,12 +47,14 @@ namespace com.espertech.esper.collection
             Assert.IsTrue(_pair2 != _pair5);
             Assert.IsTrue(_pair3 != _pair4);
             Assert.IsTrue(_pair4 != _pair5);
-    
+
+#pragma warning disable CS1718 // Comparison made to same variable
             Assert.IsTrue(_pair1 == _pair1);
             Assert.IsTrue(_pair2 == _pair2);
             Assert.IsTrue(_pair3 == _pair3);
             Assert.IsTrue(_pair4 == _pair4);
             Assert.IsTrue(_pair5 == _pair5);
+#pragma warning restore CS1718 // Comparison made to same variable
         }
     }
 }

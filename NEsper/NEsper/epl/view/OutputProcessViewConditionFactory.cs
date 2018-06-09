@@ -69,40 +69,19 @@ namespace com.espertech.esper.epl.view
             _resultSetProcessorHelperFactory = resultSetProcessorHelperFactory;
         }
 
-        public OutputConditionFactory OutputConditionFactory
-        {
-            get { return _outputConditionFactory; }
-        }
+        public OutputConditionFactory OutputConditionFactory => _outputConditionFactory;
 
-        public int StreamCount
-        {
-            get { return _streamCount; }
-        }
+        public int StreamCount => _streamCount;
 
-        public OutputLimitLimitType OutputLimitLimitType
-        {
-            get { return _outputLimitLimitType; }
-        }
+        public OutputLimitLimitType OutputLimitLimitType => _outputLimitLimitType;
 
-        public bool IsTerminable
-        {
-            get { return _terminable; }
-        }
+        public bool IsTerminable => _terminable;
 
-        public bool HasAfter
-        {
-            get { return _hasAfter; }
-        }
+        public bool HasAfter => _hasAfter;
 
-        public bool IsUnaggregatedUngrouped
-        {
-            get { return _isUnaggregatedUngrouped; }
-        }
+        public bool IsUnaggregatedUngrouped => _isUnaggregatedUngrouped;
 
-        public SelectClauseStreamSelectorEnum SelectClauseStreamSelectorEnum
-        {
-            get { return _selectClauseStreamSelectorEnum; }
-        }
+        public SelectClauseStreamSelectorEnum SelectClauseStreamSelectorEnum => _selectClauseStreamSelectorEnum;
 
         public override OutputProcessViewBase MakeView(
             ResultSetProcessor resultSetProcessor,

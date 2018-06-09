@@ -52,6 +52,7 @@ namespace com.espertech.esper.filter
         /// Remove a filter callback.
         /// </summary>
         /// <param name="callback">is the callback to be removed</param>
+        /// <param name="filterServiceEntry">The filter service entry.</param>
         void Remove(FilterHandle callback, FilterServiceEntry filterServiceEntry);
 
         /// <summary>

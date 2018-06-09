@@ -34,10 +34,7 @@ namespace com.espertech.esper.epl.view
 	        }
 	    }
 
-	    public int NumChangesetRows
-	    {
-	        get { return Math.Max(_viewEventsList.Count, _joinEventsSet.Count); }
-	    }
+	    public int NumChangesetRows => Math.Max(_viewEventsList.Count, _joinEventsSet.Count);
 
 	    public void AddView(UniformPair<EventBean[]> uniformPair)
         {
@@ -60,14 +57,8 @@ namespace com.espertech.esper.epl.view
 	        Clear();
 	    }
 
-	    public IList<UniformPair<ISet<MultiKey<EventBean>>>> JoinEventsSet
-	    {
-	        get { return _joinEventsSet; }
-	    }
+	    public IList<UniformPair<ISet<MultiKey<EventBean>>>> JoinEventsSet => _joinEventsSet;
 
-	    public IList<UniformPair<EventBean[]>> ViewEventsSet
-	    {
-	        get { return _viewEventsList; }
-	    }
+	    public IList<UniformPair<EventBean[]>> ViewEventsSet => _viewEventsList;
 	}
 } // end of namespace

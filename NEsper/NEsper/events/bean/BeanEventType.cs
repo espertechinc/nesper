@@ -82,6 +82,7 @@ namespace com.espertech.esper.events.bean
             EventAdapterService eventAdapterService,
             ConfigurationEventTypeLegacy optionalLegacyDef)
         {
+            _container = container;
             _metadata = metadata;
             _clazz = clazz;
             _eventAdapterService = eventAdapterService;

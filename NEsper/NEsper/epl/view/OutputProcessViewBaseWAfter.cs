@@ -26,37 +26,43 @@ namespace com.espertech.esper.epl.view
 	        _afterConditionState = resultSetProcessorHelperFactory.MakeOutputConditionAfter(afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, agentInstanceContext);
 	    }
 
-	    public override OutputProcessViewAfterState OptionalAfterConditionState
-	    {
-	        get { return _afterConditionState; }
-	    }
+	    public override OutputProcessViewAfterState OptionalAfterConditionState => _afterConditionState;
 
-	    /// <summary>
-	    /// Returns true if the after-condition is satisfied.
-	    /// </summary>
-	    /// <param name="newEvents">is the view new events</param>
-	    /// <returns>indicator for output condition</returns>
-	    public bool CheckAfterCondition(EventBean[] newEvents, StatementContext statementContext)
-	    {
-	        return _afterConditionState.CheckUpdateAfterCondition(newEvents, statementContext);
-	    }
-
-	    /// <summary>
-	    /// Returns true if the after-condition is satisfied.
-	    /// </summary>
-	    /// <param name="newEvents">is the join new events</param>
-	    /// <returns>indicator for output condition</returns>
-	    public bool CheckAfterCondition(ISet<MultiKey<EventBean>> newEvents, StatementContext statementContext)
+        /// <summary>
+        /// Returns true if the after-condition is satisfied.
+        /// </summary>
+        /// <param name="newEvents">is the view new events</param>
+        /// <param name="statementContext">The statement context.</param>
+        /// <returns>
+        /// indicator for output condition
+        /// </returns>
+        public bool CheckAfterCondition(EventBean[] newEvents, StatementContext statementContext)
 	    {
 	        return _afterConditionState.CheckUpdateAfterCondition(newEvents, statementContext);
 	    }
 
-	    /// <summary>
-	    /// Returns true if the after-condition is satisfied.
-	    /// </summary>
-	    /// <param name="newOldEvents">is the new and old events pair</param>
-	    /// <returns>indicator for output condition</returns>
-	    public bool CheckAfterCondition(UniformPair<EventBean[]> newOldEvents, StatementContext statementContext)
+        /// <summary>
+        /// Returns true if the after-condition is satisfied.
+        /// </summary>
+        /// <param name="newEvents">is the join new events</param>
+        /// <param name="statementContext">The statement context.</param>
+        /// <returns>
+        /// indicator for output condition
+        /// </returns>
+        public bool CheckAfterCondition(ISet<MultiKey<EventBean>> newEvents, StatementContext statementContext)
+	    {
+	        return _afterConditionState.CheckUpdateAfterCondition(newEvents, statementContext);
+	    }
+
+        /// <summary>
+        /// Returns true if the after-condition is satisfied.
+        /// </summary>
+        /// <param name="newOldEvents">is the new and old events pair</param>
+        /// <param name="statementContext">The statement context.</param>
+        /// <returns>
+        /// indicator for output condition
+        /// </returns>
+        public bool CheckAfterCondition(UniformPair<EventBean[]> newOldEvents, StatementContext statementContext)
 	    {
 	        return _afterConditionState.CheckUpdateAfterCondition(newOldEvents, statementContext);
 	    }

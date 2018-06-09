@@ -34,8 +34,6 @@ namespace com.espertech.esper.compat.container
         /// <summary>
         /// Resolves an object within a container.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
         public object Resolve(Type serviceType)
         {
             return _container.Resolve(serviceType);

@@ -57,11 +57,14 @@ namespace com.espertech.esper.epl.metric
 
         // Statements ids to remove with the next flush
 
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="engineURI">engine URI</param>
         /// <param name="name">name of statement group</param>
         /// <param name="initialSize">initial size of array</param>
         /// <param name="isReportInactive">true to indicate to report on inactive statements</param>
+        /// <param name="rwLockManager">The rw lock manager.</param>
         public StatementMetricArray(
             String engineURI, 
             String name, 

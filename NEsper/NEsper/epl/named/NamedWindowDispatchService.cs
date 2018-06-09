@@ -63,12 +63,13 @@ namespace com.espertech.esper.epl.named
 	    /// <returns>send events to consuming statements</returns>
 	    bool Dispatch();
 
-	    /// <summary>
-	    /// For use to add a result of a named window that must be dispatched to consuming views.
-	    /// </summary>
-	    /// <param name="delta">is the result to dispatch</param>
-	    /// <param name="consumers">is the destination of the dispatch, a map of statements to one or more consuming views</param>
-	    void AddDispatch(NamedWindowConsumerLatchFactory latchFactory, NamedWindowDeltaData delta, IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> consumers);
+        /// <summary>
+        /// For use to add a result of a named window that must be dispatched to consuming views.
+        /// </summary>
+        /// <param name="latchFactory">The latch factory.</param>
+        /// <param name="delta">is the result to dispatch</param>
+        /// <param name="consumers">is the destination of the dispatch, a map of statements to one or more consuming views</param>
+        void AddDispatch(NamedWindowConsumerLatchFactory latchFactory, NamedWindowDeltaData delta, IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> consumers);
 
 	    /// <summary>
 	    /// Dispose service.

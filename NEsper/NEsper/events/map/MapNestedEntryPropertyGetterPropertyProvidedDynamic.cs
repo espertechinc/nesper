@@ -82,23 +82,27 @@ namespace com.espertech.esper.events.map
             return null;
         }
 
-        public override ICodegenExpression HandleNestedValueCodegen(ICodegenExpression valueExpression, ICodegenContext context)
+        public override ICodegenExpression HandleNestedValueCodegen(
+            ICodegenExpression valueExpression, ICodegenContext context)
         {
             return LocalMethod(HandleNestedValueCodegen(context), valueExpression);
         }
 
-        public override ICodegenExpression HandleNestedValueFragmentCodegen(ICodegenExpression name, ICodegenContext context)
+        public override ICodegenExpression HandleNestedValueFragmentCodegen(
+            ICodegenExpression name, ICodegenContext context)
         {
             return ConstantNull();
         }
 
-        public virtual ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression,
+        public override ICodegenExpression CodegenEventBeanExists(
+            ICodegenExpression beanExpression,
             ICodegenContext context)
         {
             return CodegenUnderlyingExists(CastUnderlying(typeof(Map), beanExpression), context);
         }
 
-        public virtual ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression,
+        public override ICodegenExpression CodegenUnderlyingExists(
+            ICodegenExpression underlyingExpression,
             ICodegenContext context)
         {
             return LocalMethod(IsExistsPropertyCodegen(context), underlyingExpression);

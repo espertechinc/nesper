@@ -28,25 +28,13 @@ namespace com.espertech.esper.epl.view
             _callback = callback;
         }
 
-        public override int NumChangesetRows
-        {
-            get { return 0; }
-        }
+        public override int NumChangesetRows => 0;
 
-        public override OutputCondition OptionalOutputCondition
-        {
-            get { return null; }
-        }
+        public override OutputCondition OptionalOutputCondition => null;
 
-        public override OutputProcessViewConditionDeltaSet OptionalDeltaSet
-        {
-            get { return null; }
-        }
+        public override OutputProcessViewConditionDeltaSet OptionalDeltaSet => null;
 
-        public override OutputProcessViewAfterState OptionalAfterConditionState
-        {
-            get { return null; }
-        }
+        public override OutputProcessViewAfterState OptionalAfterConditionState => null;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {

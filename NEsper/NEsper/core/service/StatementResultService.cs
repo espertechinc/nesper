@@ -65,8 +65,11 @@ namespace com.espertech.esper.core.service
         /// <summary>Dispatch the remaining results, if any, to listeners as the statement is about to be stopped. </summary>
         void DispatchOnStop();
 
-        /// <summary>Indicate a change in Update listener. </summary>
+        /// <summary>
+        /// Indicate a change in Update listener.
+        /// </summary>
         /// <param name="updateListeners">is the new listeners and subscriber</param>
+        /// <param name="isRecovery">if set to <c>true</c> [is recovery].</param>
         void SetUpdateListeners(EPStatementListenerSet updateListeners, bool isRecovery);
     
         /// <summary>Stores for dispatching the statement results. </summary>

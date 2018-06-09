@@ -112,12 +112,10 @@ namespace com.espertech.esper.regression.dataflow
         /// </summary>
     
         public class MyWordTestSource : DataFlowSourceOperator {
-    
-            [DataFlowContext]
-            private EPDataFlowEmitter graphContext;
-    
-            private int count;
-    
+#pragma warning disable CS0649
+            [DataFlowContext] private EPDataFlowEmitter graphContext;
+#pragma warning restore CS0649
+
             public void Next() {
                 Thread.Sleep(100);
                 var words = new string[]{"this", "is", "a", "test"};

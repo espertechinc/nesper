@@ -135,17 +135,20 @@ namespace com.espertech.esper.epl.join.plan {
         }
 
         /// <summary>
-        ///     Looks at the key and index (aka. left and right) properties of the 2 streams and checks
-        ///     for each property if any equivalent index properties exist for other streams.
+        /// Looks at the key and index (aka. left and right) properties of the 2 streams and checks
+        /// for each property if any equivalent index properties exist for other streams.
         /// </summary>
-        /// <param name="typesPerStream">The <see cref="EventType[]" /></param>
-        /// <param name="queryGraph">The <see cref="QueryGraph" /></param>
-        /// <param name="lookupStream">The <see cref="int" /></param>
-        /// <param name="indexedStream">The <see cref="int" /></param>
-        /// <returns>The <see cref="bool" /></returns>
+        /// <param name="typesPerStream">The types per stream.</param>
+        /// <param name="queryGraph">The query graph.</param>
+        /// <param name="lookupStream">The lookup stream.</param>
+        /// <param name="indexedStream">The indexed stream.</param>
+        /// <exception cref="IllegalStateException">Unexpected key and index property number mismatch</exception>
         private static bool FillEquivalentNav(
-            EventType[] typesPerStream, QueryGraph queryGraph, int lookupStream,
-            int indexedStream) {
+            EventType[] typesPerStream, 
+            QueryGraph queryGraph, 
+            int lookupStream,
+            int indexedStream)
+        {
             var addedEquivalency = false;
 
             var value = queryGraph.GetGraphValue(lookupStream, indexedStream);

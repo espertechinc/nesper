@@ -48,8 +48,11 @@ namespace com.espertech.esper.epl.join.plan
         /// Add key and index property.
         /// </summary>
         /// <param name="keyProperty">key property</param>
+        /// <param name="keyPropNode">The key property node.</param>
         /// <param name="indexPropertyIdent">index property</param>
-        /// <returns>true if added and either property did not exist, false if either already existed</returns>
+        /// <returns>
+        /// true if added and either property did not exist, false if either already existed
+        /// </returns>
         public bool AddStrictCompare(string keyProperty, ExprIdentNode keyPropNode, ExprIdentNode indexPropertyIdent)
         {
             var value = FindIdentEntry(indexPropertyIdent);

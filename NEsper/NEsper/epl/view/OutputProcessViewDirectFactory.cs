@@ -46,14 +46,8 @@ namespace com.espertech.esper.epl.view
             return new OutputProcessViewDirectPostProcess(resultSetProcessor, this, postProcess);
         }
 
-        public StatementResultService StatementResultService
-        {
-            get { return _statementResultService; }
-        }
+        public StatementResultService StatementResultService => _statementResultService;
 
-        public StatementContext StatementContext
-        {
-            get { return _statementContext; }
-        }
+        public StatementContext StatementContext => _statementContext;
     }
 } // end of namespace

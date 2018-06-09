@@ -37,6 +37,7 @@ namespace com.espertech.esper.core.service
         /// <param name="statement">the statement.</param>
         /// <param name="subscriber">is the subscriber to deliver to</param>
         /// <param name="method">the method to invoke</param>
+        /// <param name="engineImportService">The engine import service.</param>
         public ResultDeliveryStrategyObjectArr(EPStatement statement, Object subscriber, MethodInfo method, EngineImportService engineImportService)
         {
             _statement = statement;

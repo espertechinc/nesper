@@ -40,8 +40,8 @@ namespace com.espertech.esper.epl.view
 
         public virtual Viewable Parent
         {
-            get { return ParentView; }
-            set { ParentView = value; }
+            get => ParentView;
+            set => ParentView = value;
         }
 
         public ResultSetProcessor ResultSetProcessor { get; protected set; }
@@ -93,10 +93,7 @@ namespace com.espertech.esper.epl.view
             return true;
         }
 
-        public virtual bool HasViews
-        {
-            get { return ChildView != null; }
-        }
+        public virtual bool HasViews => ChildView != null;
 
         public virtual EventType EventType
         {

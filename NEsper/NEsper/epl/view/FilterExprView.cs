@@ -37,10 +37,7 @@ namespace com.espertech.esper.epl.view
             _exprEvaluatorContext = exprEvaluatorContext;
         }
 
-        public override EventType EventType
-        {
-            get { return Parent.EventType; }
-        }
+        public override EventType EventType => Parent.EventType;
 
         /// <summary>
         /// Gets the enumerator.

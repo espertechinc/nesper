@@ -18,8 +18,9 @@ namespace com.espertech.esper.supportregression.dataflow
     [OutputType(Name = "line", TypeName = "String")]
     public class MyLineFeedSource : DataFlowSourceOperator
     {
-        [DataFlowContext]
-        private readonly EPDataFlowEmitter _dataFlowEmitter;
+#pragma warning disable CS0649
+        [DataFlowContext] private readonly EPDataFlowEmitter _dataFlowEmitter;
+#pragma warning restore CS0649
 
         private readonly IEnumerator<String> _lines;
 

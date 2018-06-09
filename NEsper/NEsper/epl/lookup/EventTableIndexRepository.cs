@@ -152,10 +152,12 @@ namespace com.espertech.esper.epl.lookup
         /// <summary>
         /// The FindTable
         /// </summary>
-        /// <param name="keyPropertyNames">The <see cref="ISet{string}"/></param>
-        /// <param name="rangePropertyNames">The <see cref="ISet{string}"/></param>
-        /// <param name="optionalIndexHintInstructions">The <see cref="IList{IndexHintInstruction}"/></param>
-        /// <returns>The <see cref="Pair{IndexMultiKey, EventTableAndNamePair}"/></returns>
+        /// <param name="keyPropertyNames">The key property names.</param>
+        /// <param name="rangePropertyNames">The range property names.</param>
+        /// <param name="optionalIndexHintInstructions">The <see cref="IList{IndexHintInstruction}" /></param>
+        /// <returns>
+        /// The <see cref="Pair{IndexMultiKey, EventTableAndNamePair}" />
+        /// </returns>
         public Pair<IndexMultiKey, EventTableAndNamePair> FindTable(
             ISet<string> keyPropertyNames,
             ISet<string> rangePropertyNames,
@@ -174,7 +176,7 @@ namespace com.espertech.esper.epl.lookup
         /// <summary>
         /// The GetIndexDescriptors
         /// </summary>
-        /// <returns>The <see cref="IndexMultiKey[]"/></returns>
+        /// <returns>The <see cref="IndexMultiKey"/> array</returns>
         public IndexMultiKey[] IndexDescriptors
         {
             get
@@ -330,7 +332,7 @@ namespace com.espertech.esper.epl.lookup
         /// <summary>
         /// The GetExplicitIndexNames
         /// </summary>
-        /// <returns>The <see cref="string[]"/></returns>
+        /// <returns>The <see cref="string"/> array</returns>
         public string[] ExplicitIndexNames => _explicitIndexes.Keys.ToArray();
 
         /// <summary>

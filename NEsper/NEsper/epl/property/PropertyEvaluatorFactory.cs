@@ -40,6 +40,7 @@ namespace com.espertech.esper.epl.property
         /// <summary>
         /// Makes the property evaluator.
         /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="spec">is the property specification</param>
         /// <param name="sourceEventType">the event type</param>
         /// <param name="optionalSourceStreamName">the source stream name</param>
@@ -58,23 +59,8 @@ namespace com.espertech.esper.epl.property
         /// <param name="namedWindowMgmtService">The named window service.</param>
         /// <param name="statementExtensionSvcContext">The statement extension SVC context.</param>
         /// <returns>
-        /// propert evaluator
+        /// property evaluator
         /// </returns>
-        /// <exception cref="ExprValidationException">Missing @type(name) declaration providing the event type name of the return type for expression ' +
-        /// ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(atom.SplitterExpression) + '
-        /// or
-        /// Event type by name ' + atom.OptionalResultEventType + ' could not be found
-        /// or
-        /// Event type ' + streamEventType.Name + ' underlying type  + streamEventType.UnderlyingType.Name +
-        /// cannot be assigned a value of type  + returnType.GetCleanName()
-        /// or
-        /// Return type of expression ' + ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(atom.SplitterExpression) + ' is ' + returnType.Name + ', expected an Iterable or array result
-        /// or
-        /// Property rename ' + rawStreamSpec.MaskTypeName + ' not found in path
-        /// or
-        /// Expression in a property-selection may not utilize  + isMinimal</exception>
-        /// <exception cref="IllegalStateException">Unknown select clause item: + raw</exception>
-        /// <throws>ExprValidationException if any expressions could not be verified</throws>
         public static PropertyEvaluator MakeEvaluator(
             IContainer container,
             PropertyEvalSpec spec,

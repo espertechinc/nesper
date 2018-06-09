@@ -31,13 +31,13 @@ namespace com.espertech.esper.epl.db
         private readonly ScheduleBucket _scheduleBucket;
         private readonly EngineImportService _engineImportService;
 
-        /// <summary> Ctor.</summary>
-        /// <param name="mapDatabaseRef">is a map of database name and database configuration entries
-        /// </param>
-        /// <param name="schedulingService">is for scheduling callbacks for a cache
-        /// </param>
-        /// <param name="scheduleBucket">is a system bucket for all scheduling callbacks for caches
-        /// </param>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="mapDatabaseRef">is a map of database name and database configuration entries</param>
+        /// <param name="schedulingService">is for scheduling callbacks for a cache</param>
+        /// <param name="scheduleBucket">is a system bucket for all scheduling callbacks for caches</param>
+        /// <param name="engineImportService">The engine import service.</param>
         public DatabaseConfigServiceImpl(
             IDictionary<String, ConfigurationDBRef> mapDatabaseRef,
             SchedulingService schedulingService,
@@ -130,8 +130,14 @@ namespace com.espertech.esper.epl.db
         /// Returns a new cache implementation for this database.
         /// </summary>
         /// <param name="databaseName">the name of the database to return a new cache implementation for for</param>
+        /// <param name="statementContext">The statement context.</param>
         /// <param name="epStatementAgentInstanceHandle">is the statements-own handle for use in registering callbacks with services</param>
-        /// <returns>cache implementation</returns>
+        /// <param name="dataCacheFactory">The data cache factory.</param>
+        /// <param name="streamNumber">The stream number.</param>
+        /// <returns>
+        /// cache implementation
+        /// </returns>
+        /// <exception cref="DatabaseConfigException">Cannot locate configuration information for database '" + databaseName + "'</exception>
         /// <throws>  DatabaseConfigException is thrown to indicate database configuration errors </throws>
         public virtual DataCache GetDataCache(String databaseName, StatementContext statementContext, EPStatementAgentInstanceHandle epStatementAgentInstanceHandle, DataCacheFactory dataCacheFactory, int streamNumber)
         {

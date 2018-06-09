@@ -28,16 +28,15 @@ namespace com.espertech.esper.dataflow.ops
     {
         private static readonly ILog Logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        [DataFlowOpParameter]
-        private string title;
-        [DataFlowOpParameter]
-        private string layout;
-        [DataFlowOpParameter]
-        private string format;
-        [DataFlowOpParameter]
-        private bool log = true;
-        [DataFlowOpParameter]
-        private bool linefeed = true;
+#pragma warning disable CS0649
+        [DataFlowOpParameter] private string title;
+        [DataFlowOpParameter] private string layout;
+        [DataFlowOpParameter] private string format;
+        [DataFlowOpParameter] private bool log = true;
+        [DataFlowOpParameter] private bool linefeed = true;
+#pragma warning restore CS0649
+
+        private readonly object _lock = new object();
 
         private String _dataflowName;
         private String _dataFlowInstanceId;
@@ -180,7 +179,7 @@ namespace com.espertech.esper.dataflow.ops
 
             if (_shellPerStream[port] != null)
             {
-                lock (this)
+                lock (_lock)
                 {
                     _shellPerStream[port].Underlying = theEvent;
                     _renderer.Render(_shellPerStream[port], writer);

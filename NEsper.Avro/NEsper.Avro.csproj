@@ -26,6 +26,7 @@
     <Version>6.1.0</Version>
     <AssemblyVersion>6.1.0.0</AssemblyVersion>
     <FileVersion>6.1.0.0</FileVersion>
+    <NoWarn>CS1591;</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -49,7 +50,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Apache.Avro" Version="1.7.7.2" />
+    <PackageReference Include="Confluent.Apache.Avro" Version="1.7.7.5" />
   </ItemGroup>
 
   <ItemGroup>

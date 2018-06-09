@@ -35,10 +35,13 @@ namespace com.espertech.esper.epl.variable
         /// indicator whether the variable is known and it's state, or whether it doesn't have state (false)
         /// </returns>
         Pair<bool, object> GetHasState(string variableName, int variableNumber, int agentInstanceId, Type type, EventType eventType, StatementExtensionSvcContext statementExtContext, bool isConstant);
-    
-        /// <summary>Sets the new variable value </summary>
+
+        /// <summary>
+        /// Sets the new variable value
+        /// </summary>
         /// <param name="variableName">name of the variable</param>
         /// <param name="variableNumber">number of the variable</param>
+        /// <param name="agentInstanceId">The agent instance identifier.</param>
         /// <param name="newValue">new variable value, null values allowed</param>
         void SetState(String variableName, int variableNumber, int agentInstanceId, Object newValue);
 

@@ -25,10 +25,16 @@ namespace com.espertech.esper.epl.core
         private readonly ExprEvaluator _optionalHavingExpr;
         private readonly OutputLimitSpec _outputLimitSpec;
 
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="selectExprProcessor">for processing the select expression and generting the readonly output rows</param>
         /// <param name="optionalHavingNode">having clause expression node</param>
         /// <param name="isSelectRStream">true if remove stream events should be generated</param>
+        /// <param name="outputLimitSpec">The output limit spec.</param>
+        /// <param name="enableOutputLimitOpt">if set to <c>true</c> [enable output limit opt].</param>
+        /// <param name="resultSetProcessorHelperFactory">The result set processor helper factory.</param>
+        /// <param name="numStreams">The number streams.</param>
         public ResultSetProcessorSimpleFactory(
             SelectExprProcessor selectExprProcessor,
             ExprEvaluator optionalHavingNode,
@@ -42,9 +48,9 @@ namespace com.espertech.esper.epl.core
             _optionalHavingExpr = optionalHavingNode;
             _isSelectRStream = isSelectRStream;
             _outputLimitSpec = outputLimitSpec;
-            this.IsEnableOutputLimitOpt = enableOutputLimitOpt;
-            this.ResultSetProcessorHelperFactory = resultSetProcessorHelperFactory;
-            this.NumStreams = numStreams;
+            IsEnableOutputLimitOpt = enableOutputLimitOpt;
+            ResultSetProcessorHelperFactory = resultSetProcessorHelperFactory;
+            NumStreams = numStreams;
         }
 
         public ResultSetProcessorType ResultSetProcessorType

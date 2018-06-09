@@ -146,17 +146,21 @@ namespace com.espertech.esper.regression.nwtable.tbl
         }
     
         public class MyEvent {
+#pragma warning disable CS0649
             private int mySortValue;
-    
+#pragma warning restore CS0649
+
             public int GetMySortValue() {
                 return mySortValue;
             }
         }
     
         public class TrafficEvent {
+#pragma warning disable CS0649
             private string carId;
             private double speed;
-    
+#pragma warning restore CS0649
+
             public string GetCarId() {
                 return carId;
             }
@@ -167,9 +171,11 @@ namespace com.espertech.esper.regression.nwtable.tbl
         }
     
         public class IntrusionEvent {
+#pragma warning disable CS0649
             private string fromAddress;
             private string toAddress;
-    
+#pragma warning restore CS0649
+
             public string GetFromAddress() {
                 return fromAddress;
             }

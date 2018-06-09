@@ -28,7 +28,7 @@ using com.espertech.esper.type;
 
 namespace com.espertech.esper.epl.parse
 {
-    public class ASTExprHelper
+    public static class ASTExprHelper
     {
         public static ExprNode ResolvePropertyOrVariableIdentifier(String identifier, VariableService variableService, StatementSpecRaw spec)
         {
@@ -173,8 +173,11 @@ namespace com.espertech.esper.epl.parse
         /// <summary>
         /// Returns the list of set-variable assignments under the given node.
         /// </summary>
+        /// <param name="ctx">The CTX.</param>
         /// <param name="astExprNodeMap">map of AST to expression</param>
-        /// <returns>list of assignments</returns>
+        /// <returns>
+        /// list of assignments
+        /// </returns>
         internal static IList<OnTriggerSetAssignment> GetOnTriggerSetAssignments(
             EsperEPL2GrammarParser.OnSetAssignmentListContext ctx,
             IDictionary<ITree, ExprNode> astExprNodeMap)

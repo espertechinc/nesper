@@ -35,10 +35,7 @@ namespace com.espertech.esper.epl.view
             _optionalVariableReader = optionalVariableReader;
         }
 
-        public OutputConditionPolledState State
-        {
-            get { return _state; }
-        }
+        public OutputConditionPolledState State => _state;
 
         public bool UpdateOutputCondition(int newDataCount, int oldDataCount)
         {
@@ -69,10 +66,7 @@ namespace com.espertech.esper.epl.view
             return false;
         }
 
-        private bool IsSatisfied
-        {
-            get { return (_state.NewEventsCount >= _state.EventRate) || (_state.OldEventsCount >= _state.EventRate); }
-        }
+        private bool IsSatisfied => (_state.NewEventsCount >= _state.EventRate) || (_state.OldEventsCount >= _state.EventRate);
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }

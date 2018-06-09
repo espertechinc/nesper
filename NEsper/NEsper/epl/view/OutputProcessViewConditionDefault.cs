@@ -90,25 +90,13 @@ namespace com.espertech.esper.epl.view
             joinEventsSet.AddJoin(new UniformPair<ISet<MultiKey<EventBean>>>(copyNew, copyOld));
         }
 
-        public override int NumChangesetRows
-        {
-            get { return _deltaSet.NumChangesetRows; }
-        }
+        public override int NumChangesetRows => _deltaSet.NumChangesetRows;
 
-        public override OutputProcessViewConditionDeltaSet OptionalDeltaSet
-        {
-            get { return _deltaSet; }
-        }
+        public override OutputProcessViewConditionDeltaSet OptionalDeltaSet => _deltaSet;
 
-        public override OutputCondition OptionalOutputCondition
-        {
-            get { return _outputCondition; }
-        }
+        public override OutputCondition OptionalOutputCondition => _outputCondition;
 
-        public override OutputProcessViewAfterState OptionalAfterConditionState
-        {
-            get { return null; }
-        }
+        public override OutputProcessViewAfterState OptionalAfterConditionState => null;
 
         /// <summary>
         /// The update method is called if the view does not participate in a join.
@@ -188,6 +176,7 @@ namespace com.espertech.esper.epl.view
         /// </summary>
         /// <param name="newEvents">- new events</param>
         /// <param name="oldEvents">- old events</param>
+        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
         public override void Process(
             ISet<MultiKey<EventBean>> newEvents,
             ISet<MultiKey<EventBean>> oldEvents,

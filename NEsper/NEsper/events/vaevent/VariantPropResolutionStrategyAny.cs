@@ -20,8 +20,11 @@ namespace com.espertech.esper.events.vaevent
     {
         private int _currentPropertyNumber;
         private readonly VariantPropertyGetterCache _propertyGetterCache;
-    
-        /// <summary>Ctor. </summary>
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="lockManager">The lock manager.</param>
         /// <param name="variantSpec">specified the preconfigured types</param>
         public VariantPropResolutionStrategyAny(ILockManager lockManager, VariantSpec variantSpec)
         {

@@ -202,7 +202,10 @@ namespace com.espertech.esper.epl.join.plan
         /// <param name="typesPerStream">event types for each stream</param>
         /// <param name="isHistorical">indicator for each stream if it is a historical streams or not</param>
         /// <param name="historicalStreamIndexLists">index management, populated for the query plan</param>
-        /// <returns>NestedIterationNode with lookups attached underneath</returns>
+        /// <param name="tablesPerStream">The tables per stream.</param>
+        /// <returns>
+        /// NestedIterationNode with lookups attached underneath
+        /// </returns>
         internal static QueryPlanNode CreateStreamPlan(
             int lookupStream,
             int[] bestChain,
@@ -254,10 +257,15 @@ namespace com.espertech.esper.epl.join.plan
         /// <param name="indexedStream">stream to look up in</param>
         /// <param name="indexSpecs">index specification defining indexes to be created for stream</param>
         /// <param name="typesPerStream">event types for each stream</param>
-        /// <returns>plan for performing a lookup in a given table using one of the indexes supplied</returns>
-        public static TableLookupPlan CreateLookupPlan(QueryGraph queryGraph, int currentLookupStream, int indexedStream,
-                                                   QueryPlanIndex indexSpecs, EventType[] typesPerStream,
-                                                   TableMetadata indexedStreamTableMeta)
+        /// <param name="indexedStreamTableMeta">The indexed stream table meta.</param>
+        /// <returns>
+        /// plan for performing a lookup in a given table using one of the indexes supplied
+        /// </returns>
+        /// <exception cref="IllegalStateException">Failed to query plan as index for " + hashIndexProps.Render() + " and " + rangeIndexProps.Render() + " in the index specification</exception>
+        public static TableLookupPlan CreateLookupPlan(
+            QueryGraph queryGraph, int currentLookupStream, int indexedStream,
+            QueryPlanIndex indexSpecs, EventType[] typesPerStream,
+            TableMetadata indexedStreamTableMeta)
         {
             var queryGraphValue = queryGraph.GetGraphValue(currentLookupStream, indexedStream);
             var hashKeyProps = queryGraphValue.HashKeyProps;

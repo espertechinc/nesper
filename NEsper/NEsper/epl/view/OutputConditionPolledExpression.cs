@@ -37,10 +37,7 @@ namespace com.espertech.esper.epl.view
             _agentInstanceContext = agentInstanceContext;
         }
 
-        public OutputConditionPolledState State
-        {
-            get { return _state; }
-        }
+        public OutputConditionPolledState State => _state;
 
         public virtual bool UpdateOutputCondition(int newEventsCount, int oldEventsCount)
         {

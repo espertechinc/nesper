@@ -40,17 +40,11 @@ namespace com.espertech.esper.epl.view
 
         /// <summary>Returns the number of new events. </summary>
         /// <value>number of new events</value>
-        public int NewEventsCount
-        {
-            get { return _newEventsCount; }
-        }
+        public int NewEventsCount => _newEventsCount;
 
         /// <summary>Returns the number of old events. </summary>
         /// <value>number of old events</value>
-        public int OldEventsCount
-        {
-            get { return _oldEventsCount; }
-        }
+        public int OldEventsCount => _oldEventsCount;
 
         public override void UpdateOutputCondition(int newDataCount, int oldDataCount)
         {
@@ -91,10 +85,7 @@ namespace com.espertech.esper.epl.view
                     " eventRate=" + _eventRate;
         }
 
-        private bool IsSatisfied
-        {
-            get { return (_newEventsCount >= _eventRate) || (_oldEventsCount >= _eventRate); }
-        }
+        private bool IsSatisfied => (_newEventsCount >= _eventRate) || (_oldEventsCount >= _eventRate);
 
         public override void Terminated()
         {

@@ -53,6 +53,7 @@ namespace com.espertech.esper.core.service
         /// <summary>
         /// Constructor.
         /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="stmtEngineServices">is the engine services for the statement</param>
         /// <param name="schedulingService">implementation for schedule registration</param>
         /// <param name="scheduleBucket">is for ordering scheduled callbacks within the view statements</param>

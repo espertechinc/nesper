@@ -2036,6 +2036,7 @@ namespace com.espertech.esper.util
         /// Visits the base classes for the provided type.
         /// </summary>
         /// <param name="type">The type.</param>
+        /// <param name="visitor">The visitor.</param>
         public static void VisitBaseClasses(this Type type, Action<Type> visitor)
         {
             if (type != null)
@@ -2414,6 +2415,7 @@ namespace com.espertech.esper.util
         /// </summary>
         /// <param name="constant">The constant.</param>
         /// <param name="engineImportService">The engine import service.</param>
+        /// <param name="isAnnotation">if set to <c>true</c> [is annotation].</param>
         /// <returns></returns>
         public static Object ResolveIdentAsEnumConst(String constant, EngineImportService engineImportService, bool isAnnotation)
         {
@@ -2430,7 +2432,11 @@ namespace com.espertech.esper.util
         /// </summary>
         /// <param name="constant">to resolve</param>
         /// <param name="engineImportService">for engine-level use to resolve enums, can be null</param>
-        /// <returns>null or enumeration value</returns>
+        /// <param name="isAnnotation">if set to <c>true</c> [is annotation].</param>
+        /// <returns>
+        /// null or enumeration value
+        /// </returns>
+        /// <exception cref="ArgumentException">Exception accessing field '" + field.Name + "': " + e.Message</exception>
         /// <throws>ExprValidationException if there is an error accessing the enum</throws>
         public static Object ResolveIdentAsEnumConst(
             string constant,

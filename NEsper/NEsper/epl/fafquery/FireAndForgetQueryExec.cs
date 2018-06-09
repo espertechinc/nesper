@@ -40,7 +40,7 @@ namespace com.espertech.esper.epl.fafquery
         /// The snapshot
         /// </summary>
         /// <param name="queryGraph">The <see cref="QueryGraph"/></param>
-        /// <param name="attributes">The <see cref="Attribute[]"/></param>
+        /// <param name="attributes">The <see cref="Attribute" /> array</param>
         /// <param name="virtualDataWindow">The <see cref="VirtualDWView"/></param>
         /// <param name="indexRepository">The <see cref="EventTableIndexRepository"/></param>
         /// <param name="queryPlanLogging">The <see cref="bool"/></param>
@@ -110,12 +110,12 @@ namespace com.espertech.esper.epl.fafquery
         /// <summary>
         /// The FindIndex
         /// </summary>
-        /// <param name="keyNamesAvailable">The <see cref="ISet{string}"/></param>
-        /// <param name="rangeNamesAvailable">The <see cref="ISet{string}"/></param>
-        /// <param name="indexRepository">The <see cref="EventTableIndexRepository"/></param>
-        /// <param name="virtualDataWindow">The <see cref="VirtualDWView"/></param>
-        /// <param name="attributes">The <see cref="Attribute[]"/></param>
-        /// <returns>The <see cref="Pair{IndexMultiKey, EventTableAndNamePair}"/></returns>
+        /// <param name="keyNamesAvailable">The key names available.</param>
+        /// <param name="rangeNamesAvailable">The range names available.</param>
+        /// <param name="indexRepository">The <see cref="EventTableIndexRepository" /></param>
+        /// <param name="virtualDataWindow">The <see cref="VirtualDWView" /></param>
+        /// <param name="attributes">The <see cref="Attribute" /> array</param>
+        /// <returns></returns>
         private static Pair<IndexMultiKey, EventTableAndNamePair> FindIndex(
             ISet<string> keyNamesAvailable,
             ISet<string> rangeNamesAvailable,
@@ -139,12 +139,12 @@ namespace com.espertech.esper.epl.fafquery
         /// <param name="queryGraphValue">The <see cref="QueryGraphValue"/></param>
         /// <param name="indexRepository">The <see cref="EventTableIndexRepository"/></param>
         /// <param name="virtualDataWindow">The <see cref="VirtualDWView"/></param>
-        /// <param name="attributes">The <see cref="Attribute[]"/></param>
+        /// <param name="attributes">The <see cref="Attribute" /> array</param>
         /// <param name="agentInstanceContext">The <see cref="AgentInstanceContext"/></param>
         /// <param name="queryPlanLogging">The <see cref="bool"/></param>
         /// <param name="queryPlanLogDestination">The <see cref="ILog"/></param>
         /// <param name="objectName">The <see cref="string"/></param>
-        /// <returns>The <see cref="NullableObject{ICollection{EventBean}}"/></returns>
+        /// <returns>The collection of event beans</returns>
         private static NullableObject<ICollection<EventBean>> SnapshotInKeyword(
             QueryGraphValue queryGraphValue,
             EventTableIndexRepository indexRepository,
@@ -216,7 +216,7 @@ namespace com.espertech.esper.epl.fafquery
         /// <param name="rangesAvailable">The <see cref="QueryGraphValuePairRangeIndex"/></param>
         /// <param name="tablePair">The <see cref="Pair{IndexMultiKey, EventTableAndNamePair}"/></param>
         /// <param name="virtualDataWindow">The <see cref="VirtualDWView"/></param>
-        /// <param name="attributes">The <see cref="Attribute[]"/></param>
+        /// <param name="attributes">The <see cref="Attribute"/> array</param>
         /// <param name="agentInstanceContext">The <see cref="AgentInstanceContext"/></param>
         /// <param name="queryPlanLogging">The <see cref="bool"/></param>
         /// <param name="queryPlanLogDestination">The <see cref="ILog"/></param>
@@ -339,7 +339,7 @@ namespace com.espertech.esper.epl.fafquery
         /// </summary>
         /// <param name="queryGraphValue">The <see cref="QueryGraphValue"/></param>
         /// <param name="indexRepository">The <see cref="EventTableIndexRepository"/></param>
-        /// <param name="attributes">The <see cref="Attribute[]"/></param>
+        /// <param name="attributes">The <see cref="Attribute"/> array</param>
         /// <param name="agentInstanceContext">The <see cref="AgentInstanceContext"/></param>
         /// <param name="queryPlanLogging">The <see cref="bool"/></param>
         /// <param name="queryPlanLogDestination">The <see cref="ILog"/></param>
@@ -444,9 +444,9 @@ namespace com.espertech.esper.epl.fafquery
         /// <param name="virtualDataWindow">The <see cref="VirtualDWView"/></param>
         /// <param name="indexMultiKey">The <see cref="IndexMultiKey"/></param>
         /// <param name="eventTable">The <see cref="EventTable"/></param>
-        /// <param name="keyValues">The <see cref="Object[]"/></param>
-        /// <param name="rangeValues">The <see cref="RangeIndexLookupValue[]"/></param>
-        /// <param name="attributes">The <see cref="Attribute[]"/></param>
+        /// <param name="keyValues">The <see cref="Object"/> array</param>
+        /// <param name="rangeValues">The <see cref="RangeIndexLookupValue" /> array</param>
+        /// <param name="attributes">The <see cref="Attribute" /> array</param>
         /// <returns>The <see cref="ICollection{EventBean}"/></returns>
         private static ICollection<EventBean> FafTableLookup(
             VirtualDWView virtualDataWindow,
@@ -516,7 +516,7 @@ namespace com.espertech.esper.epl.fafquery
         /// <summary>
         /// The QueryPlanReportTableScan
         /// </summary>
-        /// <param name="attributes">The <see cref="Attribute[]"/></param>
+        /// <param name="attributes">The <see cref="Attribute"/> array</param>
         /// <param name="agentInstanceContext">The <see cref="AgentInstanceContext"/></param>
         /// <param name="queryPlanLogging">The <see cref="bool"/></param>
         /// <param name="queryPlanLogDestination">The <see cref="ILog"/></param>
@@ -536,7 +536,7 @@ namespace com.espertech.esper.epl.fafquery
         /// </summary>
         /// <param name="indexNameOrNull">The <see cref="string"/></param>
         /// <param name="eventTableOrNull">The <see cref="EventTable"/></param>
-        /// <param name="attributes">The <see cref="Attribute[]"/></param>
+        /// <param name="attributes">The <see cref="Attribute"/> array</param>
         /// <param name="agentInstanceContext">The <see cref="AgentInstanceContext"/></param>
         /// <param name="queryPlanLogging">The <see cref="bool"/></param>
         /// <param name="queryPlanLogDestination">The <see cref="ILog"/></param>

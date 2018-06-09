@@ -47,25 +47,13 @@ namespace com.espertech.esper.epl.view
             _outputCondition = parent.OutputConditionFactory.Make(agentInstanceContext, outputCallback);
         }
 
-        public override int NumChangesetRows
-        {
-            get { return 0; }
-        }
+        public override int NumChangesetRows => 0;
 
-        public override OutputCondition OptionalOutputCondition
-        {
-            get { return _outputCondition; }
-        }
+        public override OutputCondition OptionalOutputCondition => _outputCondition;
 
-        public override OutputProcessViewConditionDeltaSet OptionalDeltaSet
-        {
-            get { return null; }
-        }
+        public override OutputProcessViewConditionDeltaSet OptionalDeltaSet => null;
 
-        public override OutputProcessViewAfterState OptionalAfterConditionState
-        {
-            get { return null; }
-        }
+        public override OutputProcessViewAfterState OptionalAfterConditionState => null;
 
         public override void Update(EventBean[] newData, EventBean[] oldData) {
             if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled)) {
@@ -95,13 +83,18 @@ namespace com.espertech.esper.epl.view
     
             _outputCondition.UpdateOutputCondition(newDataLength, oldDataLength);
         }
-    
+
         /// <summary>
         /// This process (update) method is for participation in a join.
         /// </summary>
         /// <param name="newEvents">- new events</param>
         /// <param name="oldEvents">- old events</param>
-        public override void Process(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, ExprEvaluatorContext exprEvaluatorContext) {
+        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
+        public override void Process(
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents, 
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
             if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled)) {
                 Log.Debug(".process Received update, " +
                         "  newData.Length==" + ((newEvents == null) ? 0 : newEvents.Count) +

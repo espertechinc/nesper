@@ -83,14 +83,8 @@ namespace com.espertech.esper.epl.view
                 AfterConditionNumberOfEvents, isAfterConditionSatisfied, this, postProcess);
         }
 
-        public bool IsDistinct
-        {
-            get { return _isDistinct; }
-        }
+        public bool IsDistinct => _isDistinct;
 
-        public EventBeanReader EventBeanReader
-        {
-            get { return _eventBeanReader; }
-        }
+        public EventBeanReader EventBeanReader => _eventBeanReader;
     }
 } // end of namespace

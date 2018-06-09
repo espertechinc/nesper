@@ -218,8 +218,10 @@ namespace com.espertech.esper.regression.dataflow {
         }
 
         public class MyOperatorTwoInner {
+#pragma warning disable CS0649
             [DataFlowOpParameter] private string fieldOne;
             [DataFlowOpParameter] private int fieldTwo;
+#pragma warning restore CS0649
 
             public string FieldOne => fieldOne;
 

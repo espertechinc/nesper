@@ -91,11 +91,13 @@ namespace com.espertech.esper.regression.dataflow
         public class MyOp : DataFlowSourceOperator
         {
             private readonly string _id;
-    
+
+#pragma warning disable CS0649
             [DataFlowOpParameter] private string propOne;
             [DataFlowOpParameter] private string propTwo;
             [DataFlowOpParameter] private string propThree;
-    
+#pragma warning restore CS0649
+
             public MyOp(string id) {
                 _id = id;
             }

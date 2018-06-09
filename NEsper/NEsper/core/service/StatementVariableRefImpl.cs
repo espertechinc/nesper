@@ -35,8 +35,13 @@ namespace com.espertech.esper.core.service
         private readonly NamedWindowMgmtService _namedWindowMgmtService;
         private readonly ICollection<String> _configuredVariables;
 
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="variableService">variables</param>
+        /// <param name="tableService">The table service.</param>
+        /// <param name="namedWindowMgmtService">The named window MGMT service.</param>
+        /// <param name="lockManager">The lock manager.</param>
         public StatementVariableRefImpl(
             VariableService variableService, 
             TableService tableService, 

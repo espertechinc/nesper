@@ -23,7 +23,7 @@ using com.espertech.esper.events.bean;
 
 namespace com.espertech.esper.util
 {
-    public class StatementSelectionUtil
+    public static class StatementSelectionUtil
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -108,8 +108,7 @@ namespace com.espertech.esper.util
                             {
                                 match = true;
                             }
-                            if ((epStmt.State != null) &&
-                                (epStmt.State.ToString().ToLowerInvariant().Contains(searchString)))
+                            if (epStmt.State.ToString().ToLowerInvariant().Contains(searchString))
                             {
                                 match = true;
                             }

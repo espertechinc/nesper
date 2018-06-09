@@ -64,6 +64,7 @@ namespace com.espertech.esper.filter
         /// <param name="filterValueSet">is the filter information</param>
         /// <param name="filterCallback">is the callback</param>
         /// <param name="lockFactory">The lock factory.</param>
+        /// <returns></returns>
         /// <exception cref="IllegalStateException">Callback for filter specification already exists in collection</exception>
         public FilterServiceEntry Add(FilterValueSet filterValueSet, FilterHandle filterCallback, FilterServiceGranularLockFactory lockFactory)
         {
@@ -113,6 +114,7 @@ namespace com.espertech.esper.filter
         /// Remove a filter callback from the given index node.
         /// </summary>
         /// <param name="filterCallback">is the callback to remove</param>
+        /// <param name="filterServiceEntry">The filter service entry.</param>
         public void Remove(FilterHandle filterCallback, FilterServiceEntry filterServiceEntry)
         {
             EventTypeIndexBuilderValueIndexesPair pair;

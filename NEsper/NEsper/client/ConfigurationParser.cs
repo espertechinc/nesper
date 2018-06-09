@@ -57,9 +57,9 @@ namespace com.espertech.esper.client
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationParser"/> class.
+        /// Initializes a new instance of the <see cref="ConfigurationParser" /> class.
         /// </summary>
-        /// <param name="resourceManager">The resource manager.</param>
+        /// <param name="container">The container.</param>
         public ConfigurationParser(IContainer container)
         {
             _container = container;

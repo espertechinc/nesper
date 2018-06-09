@@ -25,12 +25,14 @@ namespace com.espertech.esper.epl.view
 	    private readonly StatementContext _statementContext;
 	    private readonly string _variableName;
 
-	    /// <summary>
-	    /// Constructor.
-	    /// </summary>
-	    /// <param name="eventRate">is the number of old or new events thatmust arrive in order for the condition to be satisfied
-	    /// </param>
-	    public OutputConditionPolledCountFactory(int eventRate, StatementContext statementContext, string variableName)
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="eventRate">is the number of old or new events thatmust arrive in order for the condition to be satisfied</param>
+        /// <param name="statementContext">The statement context.</param>
+        /// <param name="variableName">Name of the variable.</param>
+        /// <exception cref="ArgumentException">Limiting output by event count requires an event count of at least 1 or a variable name</exception>
+        public OutputConditionPolledCountFactory(int eventRate, StatementContext statementContext, string variableName)
 	    {
 	        if ((eventRate < 1) && (variableName == null)) {
 	            throw new ArgumentException("Limiting output by event count requires an event count of at least 1 or a variable name");

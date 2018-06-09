@@ -53,7 +53,7 @@ namespace com.espertech.esper.supportregression.util {
 
         public override int GetHashCode() {
             var result = Name != null ? Name.GetHashCode() : 0;
-            result = 31 * result + (Op != null ? Op.GetHashCode() : 0);
+            result = 31 * result + Op.GetHashCode();
             return result;
         }
     }

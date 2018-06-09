@@ -65,6 +65,7 @@ namespace com.espertech.esper.epl.expression.time
         /// <param name="hasMillisecond">true if the expression has that part, false if not</param>
         /// <param name="hasMicrosecond">if set to <c>true</c> [has microsecond].</param>
         /// <param name="timeAbacus">The time abacus.</param>
+        /// <param name="lockManager">The lock manager.</param>
         public ExprTimePeriodImpl(
             TimeZoneInfo timeZone,
             bool hasYear,

@@ -29,7 +29,6 @@ namespace com.espertech.esper.core.service
         private readonly VirtualDWViewProviderForAgentInstance[] _viewExternal;
         private readonly string[][][] _uniqueKeys;
         private readonly TableMetadata[] _tablesPerStream;
-        private bool unidirectionalAll;
 
         /// <summary>
         /// Ctor.

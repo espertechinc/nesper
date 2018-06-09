@@ -22,10 +22,13 @@ namespace com.espertech.esper.core.service
         private UpdateDispatchFutureWait _currentFutureWait;
         private readonly long _msecTimeout;
 
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="statementResultServiceImpl">handles result delivery</param>
         /// <param name="dispatchService">for performing the dispatch</param>
         /// <param name="msecTimeout">timeout for preserving dispatch order through blocking</param>
-        /// <param name="statementResultServiceImpl">handles result delivery</param>
+        /// <param name="threadLocalManager">The thread local manager.</param>
         public UpdateDispatchViewBlockingWait(StatementResultService statementResultServiceImpl, DispatchService dispatchService, long msecTimeout, IThreadLocalManager threadLocalManager)
             : base(statementResultServiceImpl, dispatchService, threadLocalManager)
         {

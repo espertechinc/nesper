@@ -71,7 +71,9 @@ namespace com.espertech.esper.regression.multithread
             }
         }
 
+#pragma warning disable 612
         private sealed class MyKeepFirstPerStmtListener : StatementAwareUpdateListener
+#pragma warning restore 612
         {
             public IDictionary<EPStatement, UniformPair<EventBean>> FirstLastPerStmt { get; } =
                 new Dictionary<EPStatement, UniformPair<EventBean>>();

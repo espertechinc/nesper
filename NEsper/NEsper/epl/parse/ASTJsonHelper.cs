@@ -28,8 +28,11 @@ namespace com.espertech.esper.epl.parse
         /// <summary>
         /// Walk an annotation root name or child node (nested annotations).
         /// </summary>
+        /// <param name="tokenStream">The token stream.</param>
         /// <param name="node">annotation walk node</param>
-        /// <returns>annotation descriptor</returns>
+        /// <returns>
+        /// annotation descriptor
+        /// </returns>
         /// <throws>com.espertech.esper.epl.parse.ASTWalkException if the walk failed</throws>
         public static Object Walk(CommonTokenStream tokenStream, EsperEPL2GrammarParser.JsonvalueContext node)
         {

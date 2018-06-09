@@ -58,6 +58,7 @@ namespace com.espertech.esper.epl.named
         /// <param name="eventProcessingRWLock">The event processing rw lock.</param>
         /// <param name="exceptionHandlingService">The exception handling service.</param>
         /// <param name="metricReportingService">The metric reporting service.</param>
+        /// <param name="threadLocalManager">The thread local manager.</param>
         public NamedWindowDispatchServiceImpl(
             SchedulingService schedulingService,
             VariableService variableService,

@@ -28,10 +28,13 @@ namespace com.espertech.esper.core.service
         /// <param name="variableName">name</param>
         /// <returns>set of statements or null if none found</returns>
         ICollection<String> GetStatementNamesForVar(String variableName);
-        
-        /// <summary>Add a reference from a statement name to a set of variables. </summary>
+
+        /// <summary>
+        /// Add a reference from a statement name to a set of variables.
+        /// </summary>
         /// <param name="statementName">name of statement</param>
         /// <param name="variablesReferenced">types</param>
+        /// <param name="tableNodes">The table nodes.</param>
         void AddReferences(String statementName, ICollection<String> variablesReferenced, ExprTableAccessNode[] tableNodes);
 
         /// <summary>Add a reference from a statement name to a single variable.</summary>

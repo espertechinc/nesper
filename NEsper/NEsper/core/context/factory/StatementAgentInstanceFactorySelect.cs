@@ -121,12 +121,12 @@ namespace com.espertech.esper.core.context.factory
         /// Initializes a new instance of the <see cref="StatementAgentInstanceFactorySelect"/> class.
         /// </summary>
         /// <param name="numStreams">The <see cref="int"/></param>
-        /// <param name="eventStreamParentViewableActivators">The <see cref="ViewableActivator[]"/></param>
+        /// <param name="eventStreamParentViewableActivators">The <see cref="ViewableActivator"/> array</param>
         /// <param name="statementContext">The <see cref="StatementContext"/></param>
         /// <param name="statementSpec">The <see cref="StatementSpecCompiled"/></param>
         /// <param name="services">The <see cref="EPServicesContext"/></param>
         /// <param name="typeService">The <see cref="StreamTypeService"/></param>
-        /// <param name="unmaterializedViewChain">The <see cref="ViewFactoryChain[]"/></param>
+        /// <param name="unmaterializedViewChain">The <see cref="ViewFactoryChain"/> array</param>
         /// <param name="resultSetProcessorFactoryDesc">The <see cref="ResultSetProcessorFactoryDesc"/></param>
         /// <param name="joinAnalysisResult">The <see cref="StreamJoinAnalysisResult"/></param>
         /// <param name="recoveringResilient">The <see cref="bool"/></param>
@@ -705,14 +705,14 @@ namespace com.espertech.esper.core.context.factory
         /// <summary>
         /// The HandleJoin
         /// </summary>
-        /// <param name="streamNames">The <see cref="string[]"/></param>
-        /// <param name="streamViews">The <see cref="Viewable[]"/></param>
-        /// <param name="resultSetProcessor">The <see cref="ResultSetProcessor"/></param>
-        /// <param name="agentInstanceContext">The <see cref="AgentInstanceContext"/></param>
-        /// <param name="stopCallbacks">The <see cref="IList{StopCallback}"/></param>
-        /// <param name="joinAnalysisResult">The <see cref="StreamJoinAnalysisResult"/></param>
-        /// <param name="isRecoveringResilient">The <see cref="bool"/></param>
-        /// <returns>The <see cref="JoinPlanResult"/></returns>
+        /// <param name="streamNames">The stream names.</param>
+        /// <param name="streamViews">The stream views.</param>
+        /// <param name="resultSetProcessor">The result set processor.</param>
+        /// <param name="agentInstanceContext">The agent instance context.</param>
+        /// <param name="stopCallbacks">The stop callbacks.</param>
+        /// <param name="joinAnalysisResult">The join analysis result.</param>
+        /// <param name="isRecoveringResilient">if set to <c>true</c> [is recovering resilient].</param>
+        /// <returns></returns>
         private JoinPlanResult HandleJoin(
             string[] streamNames,
             Viewable[] streamViews,

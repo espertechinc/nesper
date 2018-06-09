@@ -25,7 +25,6 @@ namespace com.espertech.esper.core.service
         private readonly EPStatementObjectModel _model;
         private readonly IList<SubstitutionParameterExpressionBase> _subParams;
         private readonly String _optionalEPL;
-        private bool _initialized;
 
         /// <summary>Ctor. </summary>
         /// <param name="model">is the statement object model</param>

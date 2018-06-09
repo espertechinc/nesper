@@ -32,25 +32,13 @@ namespace com.espertech.esper.epl.view
             _parent = parent;
         }
 
-        public override int NumChangesetRows
-        {
-            get { return 0; }
-        }
+        public override int NumChangesetRows => 0;
 
-        public override OutputCondition OptionalOutputCondition
-        {
-            get { return null; }
-        }
+        public override OutputCondition OptionalOutputCondition => null;
 
-        public override OutputProcessViewConditionDeltaSet OptionalDeltaSet
-        {
-            get { return null; }
-        }
+        public override OutputProcessViewConditionDeltaSet OptionalDeltaSet => null;
 
-        public override OutputProcessViewAfterState OptionalAfterConditionState
-        {
-            get { return null; }
-        }
+        public override OutputProcessViewAfterState OptionalAfterConditionState => null;
 
         /// <summary>The Update method is called if the view does not participate in a join. </summary>
         /// <param name="newData">new events</param>

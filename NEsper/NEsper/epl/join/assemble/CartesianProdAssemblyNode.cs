@@ -48,6 +48,7 @@ namespace com.espertech.esper.epl.join.assemble
         /// <param name="streamNum">is the stream number</param>
         /// <param name="numStreams">is the number of streams</param>
         /// <param name="allSubStreamsOptional">true if all child nodes to this node are optional, or false ifone or more child nodes are required for a result.</param>
+        /// <param name="childStreamIndex">Index of the child stream.</param>
         public CartesianProdAssemblyNode(int streamNum, int numStreams, bool allSubStreamsOptional, int[] childStreamIndex)
             : base(streamNum, numStreams)
         {

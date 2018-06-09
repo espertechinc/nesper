@@ -199,9 +199,11 @@ namespace com.espertech.esper.regression.client
                     if (expected[i][0].Equals(entry.Key)) {
                         matchFound = true;
                         matchNumber.Add(i);
+#if false
                         if (expected[i][1] == null && entry.Value == null) {
                             continue;
                         }
+#endif
                         if (!expected[i][1].Equals(entry.Value)) {
                             ScopeTestHelper.Fail("Failed to match value for key '" + entry.Key + "' expected '" + expected[i][i] + "' received '" + entry.Value + "'");
                         }

@@ -20,10 +20,11 @@ namespace com.espertech.esper.supportregression.dataflow
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
         private readonly IEnumerator<object[]> _enumerator;
-    
-        [DataFlowContext]
-        private EPDataFlowEmitter _graphContext;
-    
+
+#pragma warning disable CS0649
+        [DataFlowContext] private EPDataFlowEmitter _graphContext;
+#pragma warning restore CS0649
+
         public MyObjectArrayGraphSource(IEnumerator<object[]> enumerator) {
             this._enumerator = enumerator;
         }

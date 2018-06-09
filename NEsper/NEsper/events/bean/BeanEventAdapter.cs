@@ -100,7 +100,6 @@ namespace com.espertech.esper.events.bean
         /// <summary>
         /// Creates a new EventType object for a object of the specified class if this is the first time the class has been seen. Else uses a cached EventType instance, i.e. client classes do not need to cache.
         /// </summary>
-        /// <param name="container">The container.</param>
         /// <param name="name">is the name</param>
         /// <param name="clazz">is the class of the object.</param>
         /// <param name="isPreconfiguredStatic">if from static engine config</param>

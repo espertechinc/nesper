@@ -151,10 +151,11 @@ namespace com.espertech.esper.regression.dataflow
     
         [DataFlowOperator]
         public class MyFactorialOp {
-    
-            [DataFlowContext]
-            private EPDataFlowEmitter graphContext;
-    
+
+#pragma warning disable CS0649
+            [DataFlowContext] private EPDataFlowEmitter graphContext;
+#pragma warning restore CS0649
+
             public void OnInput(int number) {
                 graphContext.SubmitPort(0, new object[]{number, (long) number});
             }
@@ -172,10 +173,11 @@ namespace com.espertech.esper.regression.dataflow
     
         [DataFlowOperator]
         public class MyCustomOp {
-    
-            [DataFlowContext]
-            private EPDataFlowEmitter graphContext;
-    
+
+#pragma warning disable CS0649
+            [DataFlowContext] private EPDataFlowEmitter graphContext;
+#pragma warning restore CS0649
+
             public void OnS0(string value) {
                 string output = "S0-" + value;
                 graphContext.SubmitPort(1, new object[]{output});

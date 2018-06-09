@@ -17,9 +17,10 @@ namespace com.espertech.esper.epl.expression.funcs.cast
         private readonly TimeZoneInfo _timeZoneInfo;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StringToDtoWDynamicFormatComputer"/> class.
+        /// Initializes a new instance of the <see cref="StringToDtoWDynamicFormatComputer" /> class.
         /// </summary>
         /// <param name="dateFormatEval">The date format eval.</param>
+        /// <param name="timeZoneInfo">The time zone information.</param>
         public StringToDtoWDynamicFormatComputer(ExprEvaluator dateFormatEval, TimeZoneInfo timeZoneInfo)
             : base(dateFormatEval)
         {

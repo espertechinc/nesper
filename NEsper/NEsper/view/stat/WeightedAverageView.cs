@@ -230,7 +230,11 @@ namespace com.espertech.esper.view.stat
         /// Creates the event type for this view.
         /// </summary>
         /// <param name="statementContext">is the event adapter service</param>
-        /// <returns>event type of view</returns>
+        /// <param name="additionalProps">The additional props.</param>
+        /// <param name="streamNum">The stream number.</param>
+        /// <returns>
+        /// event type of view
+        /// </returns>
         public static EventType CreateEventType(StatementContext statementContext, StatViewAdditionalProps additionalProps, int streamNum)
         {
             IDictionary<string, object> schemaMap = new Dictionary<string, object>();

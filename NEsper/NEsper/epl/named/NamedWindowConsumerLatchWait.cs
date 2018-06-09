@@ -34,6 +34,9 @@ namespace com.espertech.esper.epl.named
         /// <summary>
         /// Ctor.
         /// </summary>
+        /// <param name="deltaData">The delta data.</param>
+        /// <param name="dispatchTo">The dispatch to.</param>
+        /// <param name="factory">The factory.</param>
         /// <param name="earlier">the latch before this latch that this latch should be waiting for</param>
         public NamedWindowConsumerLatchWait(NamedWindowDeltaData deltaData, IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> dispatchTo, NamedWindowConsumerLatchFactory factory, NamedWindowConsumerLatchWait earlier)
             : base(deltaData, dispatchTo)
@@ -81,7 +84,9 @@ namespace com.espertech.esper.epl.named
                 return;
             }
 
+#pragma warning disable RCS1059 // Avoid locking on publicly accessible instance.
             lock (this)
+#pragma warning restore RCS1059 // Avoid locking on publicly accessible instance.
             {
                 if (!_earlier._isCompleted)
                 {

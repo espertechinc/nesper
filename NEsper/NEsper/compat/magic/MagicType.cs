@@ -351,7 +351,6 @@ namespace com.espertech.esper.compat.magic
                             return _parent.ResolveProperty(propertyName, resolutionStyle);
                         return null;
                     } while (false);
-                    break;
 
                 case PropertyResolutionStyle.CASE_INSENSITIVE:
                     do {
@@ -362,7 +361,6 @@ namespace com.espertech.esper.compat.magic
                             return _parent.ResolveProperty(propertyName, resolutionStyle);
                         return null;
                     } while (false);
-                    break;
 
                 case PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE:
                     do {
@@ -380,7 +378,6 @@ namespace com.espertech.esper.compat.magic
                             return _parent.ResolveProperty(propertyName, resolutionStyle);
                         return null;
                     } while (false);
-                    break;
             }
 
             return null;
@@ -395,7 +392,7 @@ namespace com.espertech.esper.compat.magic
         public MethodInfo ResolvePropertyMethod( string propertyName, PropertyResolutionStyle resolutionStyle)
         {
             var property = ResolveProperty(propertyName, resolutionStyle) as SimpleMagicPropertyInfo;
-            return property != null ? property.GetMethod : null;
+            return property?.GetMethod;
         }
 
         /// <summary>

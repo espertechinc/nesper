@@ -39,6 +39,7 @@ namespace com.espertech.esper.epl.spec
         /// <summary>
         /// Ctor.
         /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="engineImportService">engine imports</param>
         /// <param name="variableService">variable names</param>
         /// <param name="configuration">the configuration</param>
@@ -50,9 +51,6 @@ namespace com.espertech.esper.epl.spec
         /// <param name="exprDeclaredService">The expr declared service.</param>
         /// <param name="contextDescriptor">optional context description</param>
         /// <param name="tableService">The table service.</param>
-        /// <param name="lockManager">The lock manager.</param>
-        /// <param name="rwLockManager">The rw lock manager.</param>
-        /// <param name="threadLocalManager">The thread local manager.</param>
         public StatementSpecMapContext(
             IContainer container,
             EngineImportService engineImportService,

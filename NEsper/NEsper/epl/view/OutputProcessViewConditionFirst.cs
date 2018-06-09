@@ -65,25 +65,13 @@ namespace com.espertech.esper.epl.view
             _outputCondition = parent.OutputConditionFactory.Make(agentInstanceContext, outputCallback);
         }
 
-        public override int NumChangesetRows
-        {
-            get { return Math.Max(_viewEventsList.Count, _joinEventsSet.Count); }
-        }
+        public override int NumChangesetRows => Math.Max(_viewEventsList.Count, _joinEventsSet.Count);
 
-        public override OutputCondition OptionalOutputCondition
-        {
-            get { return _outputCondition; }
-        }
+        public override OutputCondition OptionalOutputCondition => _outputCondition;
 
-        public override OutputProcessViewConditionDeltaSet OptionalDeltaSet
-        {
-            get { return null; }
-        }
+        public override OutputProcessViewConditionDeltaSet OptionalDeltaSet => null;
 
-        public override OutputProcessViewAfterState OptionalAfterConditionState
-        {
-            get { return null; }
-        }
+        public override OutputProcessViewAfterState OptionalAfterConditionState => null;
 
         private static void AddToChangeSet(
             ICollection<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet,
@@ -190,10 +178,11 @@ namespace com.espertech.esper.epl.view
         }
 
         /// <summary>
-        ///     This process (update) method is for participation in a join.
+        /// This process (update) method is for participation in a join.
         /// </summary>
         /// <param name="newEvents">- new events</param>
         /// <param name="oldEvents">- old events</param>
+        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
         public override void Process(
             ISet<MultiKey<EventBean>> newEvents,
             ISet<MultiKey<EventBean>> oldEvents,

@@ -19,8 +19,9 @@ namespace com.espertech.esper.supportregression.dataflow
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        [DataFlowContext]
-        private EPDataFlowEmitter graphContext;
+#pragma warning disable CS0649
+        [DataFlowContext] private EPDataFlowEmitter graphContext;
+#pragma warning restore CS0649
 
         private readonly MyWordCountStats _aggregate = new MyWordCountStats();
 

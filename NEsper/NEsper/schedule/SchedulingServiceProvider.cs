@@ -21,7 +21,10 @@ namespace com.espertech.esper.schedule
         /// Creates an implementation of the SchedulingService interface.
         /// </summary>
         /// <param name="timeSourceService">time source provider</param>
-        /// <returns>implementation</returns>
+        /// <param name="lockManager">The lock manager.</param>
+        /// <returns>
+        /// implementation
+        /// </returns>
         public static SchedulingServiceSPI NewService(
             TimeSourceService timeSourceService,
             ILockManager lockManager)

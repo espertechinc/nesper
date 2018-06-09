@@ -13,9 +13,7 @@ using System.Xml.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.dataflow;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.dataflow.annotations;
@@ -30,8 +28,9 @@ namespace com.espertech.esper.dataflow.ops
         private EventAdapterService _eventAdapterService;
         private EPRuntimeEventSender _runtimeEventSender;
 
-        [DataFlowOpParameter]
-        private EPDataFlowEventCollector collector;
+#pragma warning disable CS0649
+        [DataFlowOpParameter] private EPDataFlowEventCollector collector;
+#pragma warning restore CS0649
 
         private EventBusCollector _eventBusCollector;
         private EventBeanAdapterFactory[] _adapterFactories;
@@ -43,7 +42,9 @@ namespace com.espertech.esper.dataflow.ops
             _collectorDataTL = threadLocalManager.Create<EPDataFlowEventCollectorContext>(() => null);
         }
 
+#pragma warning disable RCS1168
         public DataFlowOpInitializeResult Initialize(DataFlowOpInitializateContext context)
+#pragma warning restore RCS1168
         {
             if (!context.OutputPorts.IsEmpty())
             {
@@ -110,7 +111,9 @@ namespace com.espertech.esper.dataflow.ops
             // no action
         }
 
+#pragma warning disable RCS1168
         public void Close(DataFlowOpCloseContext openContext)
+#pragma warning restore RCS1168
         {
             // no action
         }

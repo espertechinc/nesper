@@ -43,6 +43,7 @@ namespace com.espertech.esper.epl.core
         /// <summary>
         /// Returns the processor to use for a given select-clause.
         /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="assignedTypeNumberStack">The assigned type number stack.</param>
         /// <param name="selectionList">the list of select clause elements/items, which are expected to have been validated</param>
         /// <param name="isUsingWildcard">true if the wildcard (*) occurs in the select clause</param>
@@ -54,7 +55,7 @@ namespace com.espertech.esper.epl.core
         /// <param name="statementResultService">handles listeners/subscriptions awareness to reduce output result generation</param>
         /// <param name="valueAddEventService">service that handles update events and variant events</param>
         /// <param name="selectExprEventTypeRegistry">registry for event type to statements</param>
-        /// <param name="engineImportService"></param>
+        /// <param name="engineImportService">The engine import service.</param>
         /// <param name="exprEvaluatorContext">context for expression evalauation</param>
         /// <param name="variableService">The variable service.</param>
         /// <param name="scriptingService">The scripting service.</param>
@@ -69,8 +70,8 @@ namespace com.espertech.esper.epl.core
         /// <param name="selectExprProcessorCallback">The select expr processor callback.</param>
         /// <param name="namedWindowMgmtService">The named window service.</param>
         /// <param name="intoTableClause">The into table clause.</param>
-        /// <param name="groupByRollupInfo"></param>
-        /// <param name="statementExtensionSvcContext"></param>
+        /// <param name="groupByRollupInfo">The group by rollup information.</param>
+        /// <param name="statementExtensionSvcContext">The statement extension SVC context.</param>
         /// <returns>
         /// select-clause expression processor
         /// </returns>

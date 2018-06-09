@@ -78,6 +78,7 @@ namespace com.espertech.esper.core.service
         /// <param name="statementLifecycleSvc">handles persistence for statements</param>
         /// <param name="metricReportingService">for metrics reporting</param>
         /// <param name="threadingService">for outbound threading</param>
+        /// <param name="threadLocalManager">The thread local manager.</param>
         public StatementResultServiceImpl(
             String statementName,
             StatementLifecycleSvc statementLifecycleSvc,

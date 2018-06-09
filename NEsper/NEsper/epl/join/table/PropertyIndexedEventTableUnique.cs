@@ -36,12 +36,13 @@ namespace com.espertech.esper.epl.join.table
 	        _canClear = false;
 	    }
 
-	    /// <summary>
-	    /// Remove then add events.
-	    /// </summary>
-	    /// <param name="newData">to add</param>
-	    /// <param name="oldData">to remove</param>
-	    public override void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext)
+        /// <summary>
+        /// Remove then add events.
+        /// </summary>
+        /// <param name="newData">to add</param>
+        /// <param name="oldData">to remove</param>
+        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
+        public override void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext)
         {
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QIndexAddRemove(this, newData, oldData);}
 	        if (oldData != null) {

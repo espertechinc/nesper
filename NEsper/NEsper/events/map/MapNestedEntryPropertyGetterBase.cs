@@ -73,7 +73,7 @@ namespace com.espertech.esper.events.map
             return CodegenUnderlyingGet(CastUnderlying(typeof(Map), beanExpression), context);
         }
 
-        public ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        public virtual ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
         {
             return ConstantTrue();
         }
@@ -88,7 +88,7 @@ namespace com.espertech.esper.events.map
             return LocalMethod(GetMapCodegen(context), underlyingExpression);
         }
 
-        public ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression,
+        public virtual ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression,
             ICodegenContext context)
         {
             return ConstantTrue();

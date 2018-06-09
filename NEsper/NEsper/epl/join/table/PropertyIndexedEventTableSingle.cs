@@ -70,12 +70,13 @@ namespace com.espertech.esper.epl.join.table
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AIndexAddRemove();}
 	    }
 
-	    /// <summary>
-	    /// Add an array of events. Same event instance is not added twice. Event properties should be immutable.
-	    /// Allow null passed instead of an empty array.
-	    /// </summary>
-	    /// <param name="events">to add</param>
-	    /// <throws>ArgumentException if the event was already existed in the index</throws>
+        /// <summary>
+        /// Add an array of events. Same event instance is not added twice. Event properties should be immutable.
+        /// Allow null passed instead of an empty array.
+        /// </summary>
+        /// <param name="events">to add</param>
+        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
+        /// <throws>ArgumentException if the event was already existed in the index</throws>
         public virtual void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
 	    {
 	        if (events != null) {
@@ -95,11 +96,12 @@ namespace com.espertech.esper.epl.join.table
 	        }
 	    }
 
-	    /// <summary>
-	    /// Remove events.
-	    /// </summary>
-	    /// <param name="events">to be removed, can be null instead of an empty array.</param>
-	    /// <throws>ArgumentException when the event could not be removed as its not in the index</throws>
+        /// <summary>
+        /// Remove events.
+        /// </summary>
+        /// <param name="events">to be removed, can be null instead of an empty array.</param>
+        /// <param name="exprEvaluatorContext"></param>
+        /// <throws>ArgumentException when the event could not be removed as its not in the index</throws>
         public virtual void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
 	    {
 	        if (events != null) {

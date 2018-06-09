@@ -41,7 +41,7 @@ namespace com.espertech.esper.core.service
         private readonly DeliveryConvertor _deliveryConvertor;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ResultDeliveryStrategyImpl"/> class.
+        /// Initializes a new instance of the <see cref="ResultDeliveryStrategyImpl" /> class.
         /// </summary>
         /// <param name="statement">The statement.</param>
         /// <param name="subscriber">The subscriber.</param>
@@ -50,6 +50,7 @@ namespace com.espertech.esper.core.service
         /// <param name="startMethod">The start method.</param>
         /// <param name="endMethod">The end method.</param>
         /// <param name="rStreamMethod">The r stream method.</param>
+        /// <param name="engineImportService">The engine import service.</param>
         public ResultDeliveryStrategyImpl(
             EPStatement statement,
             object subscriber,

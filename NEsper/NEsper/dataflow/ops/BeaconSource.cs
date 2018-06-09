@@ -37,12 +37,14 @@ namespace com.espertech.esper.dataflow.ops
             "iterations",
             "initialDelay"
         };
-    
+
+#pragma warning disable CS0649
         [DataFlowContext] private EPDataFlowEmitter graphContext;
         [DataFlowOpParameter] private long iterations;
         [DataFlowOpParameter] private double initialDelay;
         [DataFlowOpParameter] private double interval;
-    
+#pragma warning restore CS0649
+
         private readonly IDictionary<string, Object> _allProperties = new LinkedHashMap<string, Object>();
     
         private long _initialDelayMSec;

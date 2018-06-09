@@ -219,7 +219,9 @@ namespace com.espertech.esper.epl.datetime.calop
         /// <param name="dateTime">The date time.</param>
         /// <param name="field">The field.</param>
         /// <param name="value">The value.</param>
+        /// <param name="timeZone">The time zone.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentException">invalid datetime</exception>
         public static DateTimeOffset SetFieldValue(this DateTimeOffset dateTime, int field, int value, TimeZoneInfo timeZone)
         {
             switch (field)

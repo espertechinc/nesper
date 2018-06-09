@@ -424,6 +424,7 @@ namespace com.espertech.esper.type
         /// </summary>
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
+        /// <param name="optionalMathContext">The optional math context.</param>
         /// <returns></returns>
         public static object DivideDecimalChecked(object d1, object d2, MathContext optionalMathContext)
         {
@@ -441,6 +442,7 @@ namespace com.espertech.esper.type
         /// </summary>
         /// <param name="d1">The d1.</param>
         /// <param name="d2">The d2.</param>
+        /// <param name="optionalMathContext">The optional math context.</param>
         /// <returns></returns>
         public static object DivideDecimalUnchecked(object d1, object d2, MathContext optionalMathContext)
         {

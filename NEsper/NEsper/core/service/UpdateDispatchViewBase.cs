@@ -45,9 +45,12 @@ namespace com.espertech.esper.core.service
             get { return _isDispatchWaiting.GetOrCreate(); }
         }
 
-        /// <summary>Ctor. </summary>
-        /// <param name="dispatchService">for performing the dispatch</param>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="statementResultService">handles result delivery</param>
+        /// <param name="dispatchService">for performing the dispatch</param>
+        /// <param name="threadLocalManager">The thread local manager.</param>
         protected UpdateDispatchViewBase(
             StatementResultService statementResultService, 
             DispatchService dispatchService,

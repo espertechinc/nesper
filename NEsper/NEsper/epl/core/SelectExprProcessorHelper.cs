@@ -467,7 +467,9 @@ namespace com.espertech.esper.epl.core
                         targetFragment = insertIntoTargetType.GetFragmentType(columnNames[i]);
                     }
                     if ((insertIntoTargetType != null) &&
+#pragma warning disable CS0253 // Possible unintended reference comparison; right hand side needs cast
                         (fragmentType.FragmentType.UnderlyingType == expressionReturnTypes[i]) &&
+#pragma warning restore CS0253 // Possible unintended reference comparison; right hand side needs cast
                         ((targetFragment == null) || (targetFragment != null && targetFragment.IsNative)))
                     {
                         EventPropertyGetter getter = eventTypeStream.GetGetter(propertyName);
@@ -1097,7 +1099,9 @@ namespace com.espertech.esper.epl.core
                             {
                                 var wrapperType = (WrapperEventType) insertIntoTargetType;
                                 // Map and Object both supported
+#pragma warning disable CS0253 // Possible unintended reference comparison; right hand side needs cast
                                 if (wrapperType.UnderlyingEventType.UnderlyingType == columnOneType)
+#pragma warning restore CS0253 // Possible unintended reference comparison; right hand side needs cast
                                 {
                                     singleColumnWrapOrBeanCoercion = true;
                                     resultEventType = insertIntoTargetType;

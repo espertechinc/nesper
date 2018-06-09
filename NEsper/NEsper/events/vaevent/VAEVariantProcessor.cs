@@ -40,10 +40,11 @@ namespace com.espertech.esper.events.vaevent
         /// <param name="variantSpec">specifies how to handle the disparate events</param>
         /// <param name="eventTypeIdGenerator">The event type id generator.</param>
         /// <param name="config">The config.</param>
+        /// <param name="lockManager">The lock manager.</param>
         public VAEVariantProcessor(
-            EventAdapterService eventAdapterService, 
-            VariantSpec variantSpec, 
-            EventTypeIdGenerator eventTypeIdGenerator, 
+            EventAdapterService eventAdapterService,
+            VariantSpec variantSpec,
+            EventTypeIdGenerator eventTypeIdGenerator,
             ConfigurationVariantStream config,
             ILockManager lockManager)
         {

@@ -54,9 +54,13 @@ namespace com.espertech.esper.epl.join.table
         /// Returns the set of events that have the same property value as the given event.
         /// </summary>
         /// <param name="keyStart">to compare against</param>
+        /// <param name="includeStart">if set to <c>true</c> [include start].</param>
         /// <param name="keyEnd">to compare against</param>
+        /// <param name="includeEnd">if set to <c>true</c> [include end].</param>
         /// <param name="allowRangeReversal">indicate whether "a between 60 and 50" should return no results (equivalent to a&gt;= X and a &lt;=Y) or should return results (equivalent to 'between' and 'in'</param>
-        /// <returns>set of events with property value, or null if none found (never returns zero-sized set)</returns>
+        /// <returns>
+        /// set of events with property value, or null if none found (never returns zero-sized set)
+        /// </returns>
         public override ISet<EventBean> LookupRange(object keyStart, bool includeStart, object keyEnd, bool includeEnd, bool allowRangeReversal)
         {
             if (keyStart == null || keyEnd == null)

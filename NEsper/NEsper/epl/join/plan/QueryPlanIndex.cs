@@ -74,10 +74,13 @@ namespace com.espertech.esper.epl.join.plan
         }
 
         /// <summary>
-        ///     Find a matching index for the property names supplied.
+        /// Find a matching index for the property names supplied.
         /// </summary>
         /// <param name="indexProps">property names to search for</param>
-        /// <returns>-1 if not found, or offset within indexes if found</returns>
+        /// <param name="rangeProps">The range props.</param>
+        /// <returns>
+        /// -1 if not found, or offset within indexes if found
+        /// </returns>
         internal Pair<TableLookupIndexReqKey, int[]> GetIndexNum(string[] indexProps, string[] rangeProps)
         {
             // find an exact match first

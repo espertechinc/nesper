@@ -19,8 +19,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.dataflow;
 using com.espertech.esper.supportregression.execution;
 
-using NUnit.Framework;
-
 namespace com.espertech.esper.regression.dataflow
 {
     public class ExecDataflowInvalidGraph : RegressionExecution {
@@ -153,10 +151,13 @@ namespace com.espertech.esper.regression.dataflow
     
         [DataFlowOperator]
         public class MyTestOp {
-    
-            [DataFlowOpParameter]
-            private string theString;
-    
+
+#pragma warning disable CS0169
+#pragma warning disable CS0649
+            [DataFlowOpParameter] private string theString;
+#pragma warning restore CS0649
+#pragma warning restore CS0169
+
             public void OnInput(Object o) {
             }
         }

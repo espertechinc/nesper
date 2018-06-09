@@ -31,7 +31,10 @@ namespace com.espertech.esper.events.vaevent
         private IDictionary<EventType, VariantPropertyGetterRow> _allGetters;
         private readonly ILockable _iLock;
 
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="lockManager">The lock manager.</param>
         /// <param name="knownTypes">types known at cache construction type, may be an empty list for the ANY type variance.</param>
         public VariantPropertyGetterCache(ILockManager lockManager, EventType[] knownTypes)
         {

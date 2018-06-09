@@ -160,6 +160,7 @@ namespace com.espertech.esper.client.soda
         /// Renders the clause in textual representation.
         /// </summary>
         /// <param name="writer">to output to</param>
+        /// <param name="formatter">for NewLine-whitespace formatting</param>
         public override void ToEPLStream(TextWriter writer, EPStatementFormatter formatter)
         {
             ToEPLProjectedStream(writer, formatter);

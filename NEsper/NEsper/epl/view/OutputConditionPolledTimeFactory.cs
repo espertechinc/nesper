@@ -37,9 +37,6 @@ namespace com.espertech.esper.epl.view
 	        return new OutputConditionPolledTime(this, agentInstanceContext, timeState);
 	    }
 
-	    public ExprTimePeriod TimePeriod
-	    {
-	        get { return _timePeriod; }
-	    }
+	    public ExprTimePeriod TimePeriod => _timePeriod;
 	}
 } // end of namespace

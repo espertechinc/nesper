@@ -94,8 +94,8 @@ namespace com.espertech.esper.client
         /// <summary>
         /// Resolves the driver from the type.
         /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="driverType">Type of the driver.</param>
-        /// <returns></returns>
         public static DbDriver ResolveDriverFromType(IContainer container, Type driverType)
         {
             if (typeof(DbDriver).IsAssignableFrom(driverType)) {

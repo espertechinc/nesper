@@ -939,20 +939,42 @@ namespace com.espertech.esper.regression.context
                 set => _value = value;
             }
 
-            public override bool Equals(object obj) {
-                if (this == obj) {
+            protected bool Equals(Event other)
+            {
+                return string.Equals(_grp, other._grp) &&
+                       string.Equals(_subGrp, other._subGrp) &&
+                       _type == other._type &&
+                       Math.Abs(_value - other._value) < 1e-6;
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked {
+                    var hashCode = (_grp != null ? _grp.GetHashCode() : 0);
+                    hashCode = (hashCode * 397) ^ (_subGrp != null ? _subGrp.GetHashCode() : 0);
+                    hashCode = (hashCode * 397) ^ _type;
+                    hashCode = (hashCode * 397) ^ _value.GetHashCode();
+                    return hashCode;
+                }
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) {
+                    return false;
+                }
+
+                if (ReferenceEquals(this, obj)) {
                     return true;
                 }
-                if (obj is Event evt) {
-                    return Grp.Equals(evt._grp) && 
-                           _subGrp.Equals(evt._subGrp) && 
-                           _type == evt._type && 
-                           Math.Abs(_value - evt._value) < 1e-6;
+
+                if (obj.GetType() != this.GetType()) {
+                    return false;
                 }
-    
-                return false;
+
+                return Equals((Event) obj);
             }
-    
+
             public override string ToString() {
                 return "(" + _grp + ", " + _subGrp + ")@" + _type + "=" + _value;
             }

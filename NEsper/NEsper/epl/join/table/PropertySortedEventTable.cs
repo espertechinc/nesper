@@ -95,6 +95,7 @@ namespace com.espertech.esper.epl.join.table
         /// Allow null passed instead of an empty array.
         /// </summary>
         /// <param name="events">to add</param>
+        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
         /// <throws>ArgumentException if the event was already existed in the index</throws>
         public void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
         {
@@ -123,6 +124,7 @@ namespace com.espertech.esper.epl.join.table
         /// Remove events.
         /// </summary>
         /// <param name="events">to be removed, can be null instead of an empty array.</param>
+        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
         /// <throws>ArgumentException when the event could not be removed as its not in the index</throws>
         public void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
         {

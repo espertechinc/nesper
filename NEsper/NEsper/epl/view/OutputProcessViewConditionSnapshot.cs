@@ -51,25 +51,13 @@ namespace com.espertech.esper.epl.view
             _outputCondition.Stop();
         }
 
-        public override int NumChangesetRows
-        {
-            get { return 0; }
-        }
+        public override int NumChangesetRows => 0;
 
-        public override OutputCondition OptionalOutputCondition
-        {
-            get { return _outputCondition; }
-        }
+        public override OutputCondition OptionalOutputCondition => _outputCondition;
 
-        public override OutputProcessViewConditionDeltaSet OptionalDeltaSet
-        {
-            get { return null; }
-        }
+        public override OutputProcessViewConditionDeltaSet OptionalDeltaSet => null;
 
-        public override OutputProcessViewAfterState OptionalAfterConditionState
-        {
-            get { return null; }
-        }
+        public override OutputProcessViewAfterState OptionalAfterConditionState => null;
 
         /// <summary>
         /// The update method is called if the view does not participate in a join.
@@ -101,13 +89,17 @@ namespace com.espertech.esper.epl.view
     
             _outputCondition.UpdateOutputCondition(newDataLength, oldDataLength);
         }
-    
+
         /// <summary>
         /// This process (update) method is for participation in a join.
         /// </summary>
         /// <param name="newEvents">- new events</param>
         /// <param name="oldEvents">- old events</param>
-        public override void Process(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, ExprEvaluatorContext exprEvaluatorContext)
+        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
+        public override void Process(
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents, 
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled)) {
                 Log.Debug(".Process Received update, " +

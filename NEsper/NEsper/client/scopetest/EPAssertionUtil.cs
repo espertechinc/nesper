@@ -434,7 +434,10 @@ namespace com.espertech.esper.client.scopetest
             AssertPropsPerRow(EnumeratorToArray(enumerator), propertyNames, expected);
         }
 
-        /// <summary>Assert that property values of rows, wherein each row can either be Map or PONO objects, matches the expected values. </summary>
+        /// <summary>
+        /// Assert that property values of rows, wherein each row can either be Map or PONO objects, matches the expected values.
+        /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="received">array of objects may contain Map and PONO events</param>
         /// <param name="propertyNames">property names</param>
         /// <param name="expected">expected value</param>
@@ -768,10 +771,14 @@ namespace com.espertech.esper.client.scopetest
             }
         }
 
-        /// <summary>Compare the properties of an object against the expected values. </summary>
-        /// <param name="propertyNames">property names</param>
+        /// <summary>
+        /// Compare the properties of an object against the expected values.
+        /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="received">provides events</param>
+        /// <param name="propertyNames">property names</param>
         /// <param name="expected">expected values</param>
+        /// <exception cref="ArgumentException">No object provided to compare to</exception>
         public static void AssertPropsPono(
             IContainer container, 
             object received, 
@@ -1290,7 +1297,10 @@ namespace com.espertech.esper.client.scopetest
             return true;
         }
 
-        /// <summary>Assert that property values of rows, wherein each row can either be Map or PONO objects, matches the expected values. </summary>
+        /// <summary>
+        /// Assert that property values of rows, wherein each row can either be Map or PONO objects, matches the expected values.
+        /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="received">array of objects may contain Map and PONO events</param>
         /// <param name="propertyNames">property names</param>
         /// <param name="expected">expected value</param>
@@ -1307,7 +1317,10 @@ namespace com.espertech.esper.client.scopetest
             }
         }
 
-        /// <summary>Assert that property values, wherein the row can either be a Map or a PONO object, matches the expected values. </summary>
+        /// <summary>
+        /// Assert that property values, wherein the row can either be a Map or a PONO object, matches the expected values.
+        /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="received">Map or PONO</param>
         /// <param name="propertyNames">property names</param>
         /// <param name="expected">expected value</param>

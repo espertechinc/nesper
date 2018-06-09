@@ -93,7 +93,9 @@ namespace com.espertech.esper.regression.client
             }
         }
 
+#pragma warning disable 612
         public class MyListener : StatementAwareUpdateListener
+#pragma warning restore 612
         {
             private int _secretValue;
 

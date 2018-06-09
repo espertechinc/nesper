@@ -20,7 +20,7 @@ namespace com.espertech.esper.epl.join.table
     /// <summary>
     /// Defines the <see cref="EventTableUtil" />
     /// </summary>
-    public class EventTableUtil
+    public static class EventTableUtil
     {
         /// <summary>
         /// Build an index/table instance using the event properties for the event type.
@@ -131,8 +131,8 @@ namespace com.espertech.esper.epl.join.table
         /// <summary>
         /// The Normalize
         /// </summary>
-        /// <param name="types">The <see cref="Type[]"/></param>
-        /// <returns>The <see cref="Type[]"/></returns>
+        /// <param name="types">The types.</param>
+        /// <returns></returns>
         private static IList<Type> Normalize(IList<Type> types)
         {
             if (types == null)

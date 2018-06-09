@@ -47,6 +47,7 @@ namespace com.espertech.esper.view.std
         /// <summary>
         /// Constructor.
         /// </summary>
+        /// <param name="viewFactory">The view factory.</param>
         /// <param name="agentInstanceViewFactoryContext">context for expression evaluation</param>
         public UniqueByPropertyView(UniqueByPropertyViewFactory viewFactory, AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {

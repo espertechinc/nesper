@@ -67,7 +67,8 @@ namespace com.espertech.esper.compat
         /// <summary>
         /// Gets the datetime that matches the number of milliseconds provided.
         /// </summary>
-        /// <param name="millis"></param>
+        /// <param name="millis">The millis.</param>
+        /// <param name="offset">The offset.</param>
         /// <returns></returns>
         public static DateTimeOffset TimeFromMillis(this long millis, TimeSpan offset)
         {
@@ -78,7 +79,8 @@ namespace com.espertech.esper.compat
         /// <summary>
         /// Gets the datetime that matches the number of milliseconds provided.
         /// </summary>
-        /// <param name="millis"></param>
+        /// <param name="millis">The millis.</param>
+        /// <param name="timeZone">The time zone.</param>
         /// <returns></returns>
         public static DateTimeOffset TimeFromMillis(this long millis, TimeZoneInfo timeZone)
         {

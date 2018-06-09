@@ -39,10 +39,13 @@ namespace com.espertech.esper.rowregex
         /// </summary>
         /// <param name="getter">for "prev" function access</param>
         /// <param name="meta">general metadata for grouping</param>
-        public RegexPartitionStateRepoGroup(RegexPartitionStateRandomAccessGetter getter,
-                                            RegexPartitionStateRepoGroupMeta meta,
-                                            bool keepScheduleState,
-                                            RegexPartitionTerminationStateComparator terminationStateCompare)
+        /// <param name="keepScheduleState">if set to <c>true</c> [keep schedule state].</param>
+        /// <param name="terminationStateCompare">The termination state compare.</param>
+        public RegexPartitionStateRepoGroup(
+            RegexPartitionStateRandomAccessGetter getter,
+            RegexPartitionStateRepoGroupMeta meta,
+            bool keepScheduleState,
+            RegexPartitionTerminationStateComparator terminationStateCompare)
         {
             _getter = getter;
             _meta = meta;

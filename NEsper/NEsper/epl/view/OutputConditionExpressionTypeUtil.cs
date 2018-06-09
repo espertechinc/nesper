@@ -26,10 +26,7 @@ namespace com.espertech.esper.epl.view
             TYPEINFO.Put("last_output_timestamp", typeof(long));
         }
 
-        public static object[] OAPrototype
-        {
-            get { return new Object[TYPEINFO.Count]; }
-        }
+        public static object[] OAPrototype => new Object[TYPEINFO.Count];
 
         public static void Populate(Object[] builtinProperties, int totalNewEventsCount, int totalOldEventsCount,
                                     int totalNewEventsSum, int totalOldEventsSum, long? lastOutputTimestamp)

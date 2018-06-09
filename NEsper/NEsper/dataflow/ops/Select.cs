@@ -45,11 +45,11 @@ namespace com.espertech.esper.dataflow.ops
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        [DataFlowOpParameter]
-        private StatementSpecRaw select;
-
-        [DataFlowOpParameter]
-        private bool iterate;
+#pragma warning disable CS0649
+        [DataFlowOpParameter] private StatementSpecRaw select;
+        [DataFlowOpParameter] private bool iterate;
+        [DataFlowContext] private EPDataFlowEmitter graphContext;
+#pragma warning restore CS0649
 
         private EPLSelectViewable[] _viewablesPerPort;
         private EventBeanAdapterFactory[] _adapterFactories;
@@ -58,9 +58,6 @@ namespace com.espertech.esper.dataflow.ops
         private StatementAgentInstanceFactorySelectResult _selectResult;
         private bool _isOutputLimited;
         private bool _submitEventBean;
-
-        [DataFlowContext]
-        private EPDataFlowEmitter graphContext;
 
         public DataFlowOpInitializeResult Initialize(DataFlowOpInitializateContext context)
         {

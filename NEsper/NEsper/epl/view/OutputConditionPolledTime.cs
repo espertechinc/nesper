@@ -26,10 +26,7 @@ namespace com.espertech.esper.epl.view
             _state = state;
         }
 
-        public OutputConditionPolledState State
-        {
-            get { return _state; }
-        }
+        public OutputConditionPolledState State => _state;
 
         public bool UpdateOutputCondition(int newEventsCount, int oldEventsCount)
         {

@@ -28,14 +28,14 @@ namespace com.espertech.esper.epl.lookup
         private readonly ExprNode[] _indexedExpressions;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AdvancedIndexDesc"/> class.
+        /// Initializes a new instance of the <see cref="AdvancedIndexDesc" /> class.
         /// </summary>
-        /// <param name="indexTypeName">The <see cref="string"/></param>
-        /// <param name="indexedExpressions">The <see cref="ExprNode[]"/></param>
+        /// <param name="indexTypeName">Name of the index type.</param>
+        /// <param name="indexedExpressions">The indexed expressions.</param>
         public AdvancedIndexDesc(string indexTypeName, ExprNode[] indexedExpressions)
         {
-            this._indexTypeName = indexTypeName;
-            this._indexedExpressions = indexedExpressions;
+            _indexTypeName = indexTypeName;
+            _indexedExpressions = indexedExpressions;
         }
 
         /// <summary>

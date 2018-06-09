@@ -37,14 +37,8 @@ namespace com.espertech.esper.epl.view
             return new OutputConditionTime(outputCallback, agentInstanceContext, this, _isStartConditionOnCreation);
         }
 
-        public ExprTimePeriod TimePeriod
-        {
-            get { return _timePeriod; }
-        }
+        public ExprTimePeriod TimePeriod => _timePeriod;
 
-        public ExprTimePeriodEvalDeltaNonConst TimePeriodDeltaComputation
-        {
-            get { return _timePeriodDeltaComputation; }
-        }
+        public ExprTimePeriodEvalDeltaNonConst TimePeriodDeltaComputation => _timePeriodDeltaComputation;
     }
 }

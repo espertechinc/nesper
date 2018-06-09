@@ -22,11 +22,12 @@ namespace com.espertech.esper.epl.lookup
         private readonly ExprEvaluator _joinExpr;
         private readonly EventBean[] _eventsPerStream;
         private readonly IEnumerable<EventBean> _iterableEvents;
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="joinExpr">is the where clause</param>
+        /// <param name="iterable">The iterable.</param>
         public SubordWMatchExprLookupStrategyAllFiltered(ExprEvaluator joinExpr, IEnumerable<EventBean> iterable)
         {
             _joinExpr = joinExpr;
