@@ -61,11 +61,6 @@ namespace com.espertech.esper.epl.named
 
         public override NamedWindowConsumerLatch Earlier => _earlier;
 
-        public override NamedWindowConsumerLatch Earlier
-        {
-            get => _earlier;
-        }
-
         /// <summary>
         /// Hand a later latch to use for indicating completion via notify.
         /// </summary>
