@@ -19,7 +19,9 @@ namespace com.espertech.esper.supportunit.core
 {
     public class SupportEPStatementSPI : EPStatementSPI
     {
+#pragma warning disable CS0414
         public event UpdateEventHandler Events;
+#pragma warning restore CS0414
 
         public void RemoveAllEventHandlers()
         {

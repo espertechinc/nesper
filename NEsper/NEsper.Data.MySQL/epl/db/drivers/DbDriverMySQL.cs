@@ -36,6 +36,12 @@ namespace com.espertech.esper.epl.db.drivers
             _dbProviderFactory = new MySqlClientFactory();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DbDriverMySQL"/> class.
+        /// </summary>
+        /// <param name="info">The information.</param>
+        /// <param name="context">The context.</param>
+        /// <exception cref="IllegalStateException">context is not set to container</exception>
         protected DbDriverMySQL(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {

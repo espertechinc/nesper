@@ -14,6 +14,10 @@ namespace com.espertech.esper.compat.logger
 {
     using LogManager = com.espertech.esper.compat.logging.LogManager;
 
+    /// <summary>
+    /// A logger implementation based on NLog.
+    /// </summary>
+    /// <seealso cref="com.espertech.esper.compat.logging.ILog" />
     public class LoggerNLog : ILog
     {
         private readonly NLog.ILogger _log;
@@ -61,16 +65,50 @@ namespace com.espertech.esper.compat.logger
             IsFatalEnabled = _log.IsFatalEnabled;
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance severity for debug is enabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is debug enabled; otherwise, <c>false</c>.
+        /// </value>
         public bool IsDebugEnabled { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance severity for info is enabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is information enabled; otherwise, <c>false</c>.
+        /// </value>
         public bool IsInfoEnabled { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance severity for warning is enabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is warn enabled; otherwise, <c>false</c>.
+        /// </value>
         public bool IsWarnEnabled { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance severity for error is enabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is error enabled; otherwise, <c>false</c>.
+        /// </value>
         public bool IsErrorEnabled { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance severity for fatal is enabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is fatal enabled; otherwise, <c>false</c>.
+        /// </value>
         public bool IsFatalEnabled { get; set; }
 
+        /// <summary>
+        /// Writes the specified message to the logger at debug severity.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public void Debug(string message)
         {
             if (IsDebugEnabled)
@@ -79,6 +117,11 @@ namespace com.espertech.esper.compat.logger
             }
         }
 
+        /// <summary>
+        /// Writes the specified message to the logger at debug severity.
+        /// </summary>
+        /// <param name="messageFormat">The message format.</param>
+        /// <param name="args">The arguments.</param>
         public void Debug(string messageFormat, params object[] args)
         {
             if (IsDebugEnabled)
@@ -87,6 +130,11 @@ namespace com.espertech.esper.compat.logger
             }
         }
 
+        /// <summary>
+        /// Writes the specified message to the logger at debug severity.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="e">The e.</param>
         public void Debug(string message, Exception e)
         {
             if (IsDebugEnabled)
@@ -95,6 +143,10 @@ namespace com.espertech.esper.compat.logger
             }
         }
 
+        /// <summary>
+        /// Writes the specified message to the logger at info severity.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public void Info(string message)
         {
             if (IsInfoEnabled)
@@ -103,6 +155,11 @@ namespace com.espertech.esper.compat.logger
             }
         }
 
+        /// <summary>
+        /// Writes the specified message to the logger at info severity.
+        /// </summary>
+        /// <param name="messageFormat">The message format.</param>
+        /// <param name="args">The arguments.</param>
         public void Info(string messageFormat, params object[] args)
         {
             if (IsInfoEnabled)
@@ -111,6 +168,11 @@ namespace com.espertech.esper.compat.logger
             }
         }
 
+        /// <summary>
+        /// Writes the specified message to the logger at info severity.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="e">The e.</param>
         public void Info(string message, Exception e)
         {
             if (IsInfoEnabled)
@@ -119,6 +181,10 @@ namespace com.espertech.esper.compat.logger
             }
         }
 
+        /// <summary>
+        /// Writes the specified message to the logger at warning severity.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public void Warn(string message)
         {
             if (IsWarnEnabled)
@@ -127,6 +193,11 @@ namespace com.espertech.esper.compat.logger
             }
         }
 
+        /// <summary>
+        /// Writes the specified message to the logger at warning severity.
+        /// </summary>
+        /// <param name="messageFormat">The message format.</param>
+        /// <param name="args">The arguments.</param>
         public void Warn(string messageFormat, params object[] args)
         {
             if (IsWarnEnabled)
@@ -135,6 +206,11 @@ namespace com.espertech.esper.compat.logger
             }
         }
 
+        /// <summary>
+        /// Writes the specified message to the logger at warning severity.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="e">The e.</param>
         public void Warn(string message, Exception e)
         {
             if (IsWarnEnabled)
@@ -143,6 +219,10 @@ namespace com.espertech.esper.compat.logger
             }
         }
 
+        /// <summary>
+        /// Writes the specified message to the logger at error severity.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public void Error(string message)
         {
             if (IsErrorEnabled)
@@ -151,6 +231,11 @@ namespace com.espertech.esper.compat.logger
             }
         }
 
+        /// <summary>
+        /// Writes the specified message to the logger at error severity.
+        /// </summary>
+        /// <param name="messageFormat">The message format.</param>
+        /// <param name="args">The arguments.</param>
         public void Error(string messageFormat, params object[] args)
         {
             if (IsErrorEnabled)
@@ -159,6 +244,11 @@ namespace com.espertech.esper.compat.logger
             }
         }
 
+        /// <summary>
+        /// Writes the specified message to the logger at error severity.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="e">The e.</param>
         public void Error(string message, Exception e)
         {
             if (IsErrorEnabled)
@@ -167,6 +257,10 @@ namespace com.espertech.esper.compat.logger
             }
         }
 
+        /// <summary>
+        /// Writes the specified message to the logger at fatal severity.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public void Fatal(string message)
         {
             if (IsFatalEnabled)
@@ -175,6 +269,11 @@ namespace com.espertech.esper.compat.logger
             }
         }
 
+        /// <summary>
+        /// Writes the specified message to the logger at fatal severity.
+        /// </summary>
+        /// <param name="messageFormat">The message format.</param>
+        /// <param name="args">The arguments.</param>
         public void Fatal(string messageFormat, params object[] args)
         {
             if (IsFatalEnabled)
@@ -183,6 +282,11 @@ namespace com.espertech.esper.compat.logger
             }
         }
 
+        /// <summary>
+        /// Writes the specified message to the logger at fatal severity.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="e">The e.</param>
         public void Fatal(string message, Exception e)
         {
             if (IsFatalEnabled)

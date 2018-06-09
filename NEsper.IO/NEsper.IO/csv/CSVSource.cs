@@ -25,9 +25,10 @@ namespace com.espertech.esperio.csv
         /// <summary>
         /// Ctor.
         /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="source">the AdapterInputSource from which to obtain the underlying resource</param>
 
-		public CSVSource(IContainer container, AdapterInputSource source)
+        public CSVSource(IContainer container, AdapterInputSource source)
         {
             _container = container;
 

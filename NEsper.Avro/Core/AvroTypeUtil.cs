@@ -97,6 +97,7 @@ namespace NEsper.Avro.Core
                     }
                     return unionTypes.First();
                 }
+#if NOT_NEEDED
                 bool allNumeric = true;
                 foreach (var unioned in unionTypes)
                 {
@@ -105,6 +106,7 @@ namespace NEsper.Avro.Core
                         allNumeric = false;
                     }
                 }
+#endif
                 //if (allNumeric)
                 //{
                 //    return typeof (Numeric);
