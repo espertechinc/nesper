@@ -112,7 +112,7 @@ namespace com.espertech.esper.util
 
         private class MyClassWithFields
         {
-#pragma warning disable CS0169
+#pragma warning disable CS0649
             public int? IntBoxed;
             public int IntPrimitive;
             public IEnumerable<int?> iterable;
@@ -125,7 +125,7 @@ namespace com.espertech.esper.util
             public IDictionary<String, Object> mapObject;
             public Hashtable mapUndefined;
             public ICollection<MyClassWithGetters> nested;
-#pragma warning restore CS0169
+#pragma warning restore CS0649
         }
 
         [Test]
