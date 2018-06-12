@@ -1,46 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Release-All">
   <PropertyGroup>
-    <MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\dependencies\MSBuild.Community.Tasks</MSBuildCommunityTasksPath>
-    <MSBuildCommunityTasksTargets>MSBuild.Community.Tasks.Targets</MSBuildCommunityTasksTargets>
-    <SolutionDir>$(MSBuildProjectDirectory)</SolutionDir>
-  </PropertyGroup>
-
-  <Import Project="$(MSBuildCommunityTasksPath)\$(MSBuildCommunityTasksTargets)"/>
-  <Import Project="$(MSBuildProjectDirectory)\.nuget\NuGet.targets"/>
-
-  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
-    <!-- .NET version -->
     <Framework Condition=" '$(Framework)' == '' ">net46</Framework>
+
+    <SolutionDir>$(MSBuildProjectDirectory)</SolutionDir>
     <!-- Distribution version -->
     <Version Condition=" '$(CCNetLabel)' != '' ">$(CCNetLabel)</Version>
     <Version Condition=" '$(Version)' == '' ">6.1.0</Version>
+
     <!-- Build Directories -->
     <BuildPath>$(MSBuildProjectDirectory)\build</BuildPath>
     <BuildRoot>$(BuildPath)\NEsper-$(Version)</BuildRoot>
     <BuildSourceDir>$(BuildRoot)\src</BuildSourceDir>
     <BuildSourceZip>$(BuildRoot)\src.zip</BuildSourceZip>
-    <NuGet>$(MSBuildProjectDirectory)/.nuget/NuGet.exe</NuGet>
+
     <!-- Test Directories -->
     <TestDir>test</TestDir>
     <LicenseFile>NEsper.Install\License.rtf</LicenseFile>
   </PropertyGroup>
-
-  <Target Name="Update-Packages">
-    <Exec Command="$(NuGet) restore $(MSBuildProjectDirectory)/NEsperAll.sln" />
-  </Target>
 
   <Target Name="ApplyLabel">
     <FileUpdate
        Files="$(MSBuildProjectDirectory)\NEsper.Documentation\NEsper.Documentation.shfbproj"
        Regex="build\\NEsper-[0-9\.]+\\"
        ReplacementText="build\NEsper-$(Version)" />
-  </Target>
-
-  <Target Name="BuildInfo">
-    <Message Text="Extensions: $(TPath)"/>
   </Target>
 
   <Target Name="Rebuild">
@@ -65,7 +50,7 @@
 
   <!-- SECTION BREAK -->
 
-  <Target Name="Release-All" DependsOnTargets="Update-Packages">
+  <Target Name="Release-All">
     <MSBuild
       Projects="NEsper.proj"
       Properties="Configuration=$(Configuration);Platform=Any CPU"
@@ -77,7 +62,7 @@
     <MSBuild Projects="NEsper.proj" Properties="Configuration=Release;Platform=Any CPU" Targets="Build"/>
   </Target>
 
-  <Target Name="Build" DependsOnTargets="Update-Packages">
+  <Target Name="Build">
     <Message Text="Building NEsper $(Configuration)" />
     <MSBuild Projects="NEsperAll.sln" Targets="Build" />
   </Target>
