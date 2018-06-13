@@ -9,15 +9,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 using Avro;
 using Avro.Generic;
-using Avro.IO;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat.container;
-using com.espertech.esper.core.support;
 using com.espertech.esper.events;
 using com.espertech.esper.events.avro;
 
@@ -29,12 +25,12 @@ using NEsper.Avro.IO;
 
 namespace NEsper.Avro.Util.Support
 {
-    public class SupportAvroUtil
+    public static class SupportAvroUtil
     {
 
         public static string AvroToJson(EventBean theEvent)
         {
-            var schema = (Schema) ((AvroSchemaEventType) theEvent.EventType).Schema;
+            //var schema = (Schema) ((AvroSchemaEventType) theEvent.EventType).Schema;
             var record = (GenericRecord) theEvent.Underlying;
             return AvroToJson(record);
         }
@@ -69,6 +65,7 @@ namespace NEsper.Avro.Util.Support
         {
             throw new NotImplementedException();
 
+#if NOT_IMPLEMENTED
             using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
             {
                 try
@@ -84,6 +81,7 @@ namespace NEsper.Avro.Util.Support
                     throw new EPException("Failed to parse json: " + ex.Message, ex);
                 }
             }
+#endif
         }
 
         public static string CompareSchemas(Schema schemaOne, Schema schemaTwo)
@@ -128,7 +126,7 @@ namespace NEsper.Avro.Util.Support
             var metadata = EventTypeMetadata.CreateNonPonoApplicationType(
                     ApplicationType.AVRO, "typename", true, true, true, false, false);
             return new AvroEventType(
-                metadata, "typename", 1, 
+                metadata, "typename", 1,
                 eventAdapterService,
                 schema.AsRecordSchema(),
                 null, null, null, null);

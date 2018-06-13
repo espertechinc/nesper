@@ -22,10 +22,12 @@
   </PropertyGroup>
 
   <Target Name="ApplyLabel">
+  <!--
     <FileUpdate
        Files="$(MSBuildProjectDirectory)\NEsper.Documentation\NEsper.Documentation.shfbproj"
        Regex="build\\NEsper-[0-9\.]+\\"
        ReplacementText="build\NEsper-$(Version)" />
+  -->
   </Target>
 
   <Target Name="Rebuild">
@@ -184,11 +186,7 @@
   <Target Name="Copy-Binaries-All">
     <MSBuild
       Projects="NEsper.proj"
-      Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net46"
-      Targets="Copy-Binaries-Main"/>
-    <MSBuild
-      Projects="NEsper.proj"
-      Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net471"
+      Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net452"
       Targets="Copy-Binaries-Main"/>
     <MSBuild
       Projects="NEsper.proj"

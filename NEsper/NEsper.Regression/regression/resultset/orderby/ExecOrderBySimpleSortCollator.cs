@@ -34,6 +34,9 @@ namespace com.espertech.esper.regression.resultset.orderby
                 frenchForSin
             };
 
+            // CurrentCulture cannot be assigned in .NET 4.5 and below
+
+#if NET46 || NET47 || NETSTANDARD2_0
             var englishUS = CultureInfo.GetCultureInfo("en-US");
             var englishUSComparer = StringComparer.Create(englishUS, false);
 
@@ -88,6 +91,7 @@ namespace com.espertech.esper.regression.resultset.orderby
             epService.EPRuntime.SendEvent(new SupportBean("abc", 1));
     
             Assert.AreEqual(frenchForSin, listener.LastOldData[0].Get("TheString"));
+#endif
         }
     }
 } // end of namespace

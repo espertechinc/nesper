@@ -7,9 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
-using Common.Logging.Configuration;
-using Common.Logging.Log4Net;
+using com.espertech.esper.compat.logger;
 
 using NEsper.Avro.Extensions;
 
@@ -30,6 +28,9 @@ namespace com.espertech.esper
         [OneTimeSetUp]
         public void RunBeforeAnyTests()
         {
+            LoggerNLog.BasicConfig();
+            LoggerNLog.Register();
+
 #if NETSTANDARD2_0
 #else
             var clearScript = typeof(ScriptingEngineJScript);
@@ -43,20 +44,6 @@ namespace com.espertech.esper
             {
                 Environment.CurrentDirectory = dir;
                 Directory.SetCurrentDirectory(dir);
-
-                var logConfigurationProperties = new NameValueCollection();
-                logConfigurationProperties["configType"] = "FILE";
-                logConfigurationProperties["configFile"] = "log4net.config";
-
-                var logConfiguration = new LogConfiguration();
-                logConfiguration.FactoryAdapter = new FactoryAdapterConfiguration();
-                logConfiguration.FactoryAdapter.Type = typeof(Log4NetLoggerFactoryAdapter).AssemblyQualifiedName;
-                logConfiguration.FactoryAdapter.Arguments = logConfigurationProperties;
-
-                Common.Logging.LogManager.Configure(logConfiguration);
-
-                var logInstance = Common.Logging.LogManager.GetLogger(GetType());
-                var logAdapter = Common.Logging.LogManager.Adapter;
             }
         }
 

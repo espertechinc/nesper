@@ -67,7 +67,10 @@ namespace com.espertech.esper.events.bean
                 Assert.IsFalse(test.HasGetter, "getGetter null on '" + propertyName + "',");
             } else {
                 Assert.IsTrue(test.HasGetter, "getGetter not null on '" + propertyName + "',");
-                if (test.GetterReturnValue == typeof(NullReferenceException)) {
+#pragma warning disable CS0252 // Possible unintended reference comparison; left hand side needs cast
+                if (test.GetterReturnValue == typeof(NullReferenceException))
+                {
+#pragma warning restore CS0252 // Possible unintended reference comparison; left hand side needs cast
                     try {
                         getter.Get(eventBean);
                         Assert.Fail("getGetter not throwing null pointer on '" + propertyName);
@@ -372,15 +375,15 @@ namespace com.espertech.esper.events.bean
                 GetterReturnValue = getterReturnValue;
             }
 
-            public string PropertyName { get; private set; }
+            public string PropertyName { get; }
 
-            public bool IsProperty { get; private set; }
+            public bool IsProperty { get; }
 
-            public Type Clazz { get; private set; }
+            public Type Clazz { get; }
 
-            public bool HasGetter { get; private set; }
+            public bool HasGetter { get; }
 
-            public object GetterReturnValue { get; private set; }
+            public object GetterReturnValue { get; }
         }
 
         public class NonSerializableNonCopyable

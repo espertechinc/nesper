@@ -1,16 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net46;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
     <Language>en-US</Language>
-    <AssemblyName>NEsper.Benchmark.Perforator</AssemblyName>
-    <AssemblyTitle>NEsper.Benchmark.Perforator</AssemblyTitle>
+    <AssemblyName>NEsper.Codegen.Roslyn</AssemblyName>
+    <AssemblyTitle>NEsper.Codegen.Roslyn</AssemblyTitle>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <PackageId>NEsper.Benchmark.Perforator</PackageId>
-    <RootNamespace>NEsper.Benchmark.Perforator</RootNamespace>
+    <PackageId>NEsper.Codegen.Roslyn</PackageId>
+    <RootNamespace>com.espertech.esper</RootNamespace>
+    <Summary>Roslyn-based code generation for NEsper.</Summary>
+    <Description>Roslyn-based code generation for NEsper.</Description>
     <PackageCopyright>Copyright (C) 2014-2017 Espertech. All rights reserved.</PackageCopyright>
+    <PackageTags>NEsper Esper ESP CEP</PackageTags>
     <PackageProjectUrl>http://www.espertech.com/esper</PackageProjectUrl>
     <PackageLicenseUrl>http://www.espertech.com/esper/esper-license-and-trademark/</PackageLicenseUrl>
     <IconUrl>http://static.espertech.com/espertech_logo.png</IconUrl>
@@ -18,10 +21,12 @@
     <Copyright>Espertech, 2014-2017</Copyright>
     <RepositoryType>Github</RepositoryType>
     <Company>Espertech</Company>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Version>6.1.0</Version>
     <AssemblyVersion>6.1.0.0</AssemblyVersion>
     <FileVersion>6.1.0.0</FileVersion>
+    <NoWarn>CS0612;CS0105;CS3021;CS1591;</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -58,22 +63,17 @@
     <DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.8.2" />
+  </ItemGroup>
+  
   <ItemGroup Condition="'$(NetCore)'=='true'">
-    <PackageReference Include="System.Data.Common" Version="4.3.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.5.0" />
-    <PackageReference Include="System.Configuration.Abstractions" Version="2.0.2.45" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(NetFramework)' == 'net471'">
   </ItemGroup>
-
+  
   <ItemGroup>
-    <PackageReference Include="NLog" Version="4.5.6" />
-    <PackageReference Include="NUnit" Version="3.10.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\NEsper.Log.NLog\NEsper.Log.NLog.csproj" />
-    <ProjectReference Include="..\..\NEsper\NEsper.csproj" />
+    <ProjectReference Include="..\NEsper\NEsper.csproj" />
   </ItemGroup>
 </Project>

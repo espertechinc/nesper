@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net46;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -26,8 +26,8 @@
     <Version>6.1.0</Version>
     <AssemblyVersion>6.1.0.0</AssemblyVersion>
     <FileVersion>6.1.0.0</FileVersion>
-    <NoWarn>CS0612;CS0105;CS3021;CS1591;</NoWarn>
-    <!-- <NoWarn>1701;1702;1705;CS1591;</NoWarn> -->
+    <NoWarn>CS1591;</NoWarn>
+    <!-- <NoWarn>CS0612;CS0105;CS3021;CS1591;</NoWarn> -->
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -82,15 +82,14 @@
     <PackageReference Include="Common.Logging.Core" Version="3.4.1" />
     <PackageReference Include="Crc32.NET" Version="1.2.0" />
     <PackageReference Include="XLR8.CGLib" Version="1.1.0" />
+    <!--
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.8.2" />
+    -->
   </ItemGroup>
   
   <ItemGroup Condition="'$(NetCore)'=='true'">
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.5.0" />
     <PackageReference Include="System.Configuration.Abstractions" Version="2.0.2.45" />
-  </ItemGroup>
-  
-  <ItemGroup Condition="'$(NetFramework)' == 'net471'">
   </ItemGroup>
 </Project>

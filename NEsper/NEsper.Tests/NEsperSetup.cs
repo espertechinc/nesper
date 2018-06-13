@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.compat.logger;
 using NUnit.Framework;
 
 namespace com.espertech.esper
@@ -20,6 +20,9 @@ namespace com.espertech.esper
         [OneTimeSetUp]
         public void RunBeforeAnyTests()
         {
+            LoggerNLog.BasicConfig();
+            LoggerNLog.Register();
+
             var dir = TestContext.CurrentContext.TestDirectory;
             if (dir != null)
             {

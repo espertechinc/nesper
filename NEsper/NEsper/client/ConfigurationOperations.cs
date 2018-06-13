@@ -149,7 +149,7 @@ namespace com.espertech.esper.client
             ValueCacheEnum valueCache,
             FilterOptimizableEnum filterOptimizable,
             bool rethrowExceptions);
-        
+
         /// <summary>
         /// Adds a package or class to the list of automatically-imported types.
         /// <para/>
@@ -645,14 +645,14 @@ namespace com.espertech.esper.client
         ///         The method does not remove variant streams and does not remove revision event types.
         ///     </para>
         /// </summary>
-        /// <param name="name">the name of the event type to remove</param>
+        /// <param name="eventTypeName">the name of the event type to remove</param>
         /// <param name="force">
         ///     false to include a check that the type is no longer in use, true to force the remove
         ///     even though there can be one or more statements relying on that type
         /// </param>
         /// <exception cref="ConfigurationException">thrown to indicate that the remove operation failed</exception>
         /// <returns>indicator whether the event type was found and removed</returns>
-        bool RemoveEventType(string name, bool force);
+        bool RemoveEventType(string eventTypeName, bool force);
 
         /// <summary>
         ///     Return the set of statement names of statements that are in started or stopped state and

@@ -25,33 +25,33 @@ namespace com.espertech.esper.epl.approx
         public void TestSimpleFlow()
         {
             var state = CountMinSketchStateHashes.MakeState(GetDefaultSpec());
-    
+
             Add(state, "hello", 100);
             Assert.AreEqual(100, EstimateCount(state, "hello"));
-    
+
             Add(state, "text", 1);
             Assert.AreEqual(1, EstimateCount(state, "text"));
-    
+
             Add(state, "hello", 3);
             Assert.AreEqual(103, EstimateCount(state, "hello"));
             Assert.AreEqual(1, EstimateCount(state, "text"));
         }
-    
+
         [Test]
         public void TestSpace()
         {
             const double eps = 0.001;
             const double confidence = 0.999;
-    
+
             const int space = 2000;
             const int points = 100000;
-    
+
             const bool randomized = true;
-    
+
             var random = new Random();
             var spec = new CountMinSketchSpecHashes(eps, confidence, 123456);
             var state = CountMinSketchStateHashes.MakeState(spec);
-    
+
             var sent = new Dictionary<Blob, long?>();
             for (var i = 0; i < points; i++)
             {
@@ -62,7 +62,7 @@ namespace com.espertech.esper.epl.approx
                     bytes = TestCountMinSketchStateTopK.GenerateBytesModulo(i, space);
                 }
                 state.Add(bytes.Data, 1);
-    
+
                 var count = sent.Get(bytes);
                 if (count == null) {
                     sent.Put(bytes, 1L);
@@ -70,13 +70,13 @@ namespace com.espertech.esper.epl.approx
                 else {
                     sent.Put(bytes, count + 1);
                 }
-    
+
                 if (i > 0 && i % 100000 == 0)
                 {
                     Console.WriteLine("Completed {0}", i);
                 }
             }
-    
+
             // compare
             var errors = 0;
             foreach (var entry in sent) {
@@ -95,14 +95,14 @@ namespace com.espertech.esper.epl.approx
         {
             const int warmupLoopCount = 1; // 1000000;
             const int measureLoopCount = 1; // 1000000000;
-    
+
             // init
             var texts = new string[] {"joe", "melissa", "townhall", "ballpark", "trial-by-error", "house", "teamwork", "recommendation", "partial", "soccer ball"};
             var bytes = new byte[texts.Length][];
             for (var i = 0; i < texts.Length; i++) {
                 bytes[i] = Encoding.Unicode.GetBytes(texts[i]);
             }
-    
+
             // warmup
             for (var i = 0; i < warmupLoopCount; i++) {
                 var bytearr = bytes[i % bytes.Length];
@@ -111,7 +111,7 @@ namespace com.espertech.esper.epl.approx
                     Console.WriteLine("A zero code");
                 }
             }
-    
+
             // run
             // 23.3 for 1G for MurmurHash.hash
             var delta = PerformanceObserver.TimeNano(() =>
@@ -128,7 +128,7 @@ namespace com.espertech.esper.epl.approx
             });
             // Comment me in - Console.WriteLine("Delta " + (delta / 1000000000.0));
         }
-    
+
         internal static CountMinSketchSpecHashes GetDefaultSpec()
         {
             const double epsOfTotalCount = 0.0001;
@@ -136,21 +136,20 @@ namespace com.espertech.esper.epl.approx
             const int seed = 1234567;
             return new CountMinSketchSpecHashes(epsOfTotalCount, confidence, seed);
         }
-    
+
         private static long EstimateCount(CountMinSketchStateHashes state, string item)
         {
             return state.EstimateCount(GetBytes(item));
         }
-    
+
         private static void Add(CountMinSketchStateHashes state, string item, long count)
         {
             state.Add(GetBytes(item), count);
         }
-    
+
         private static byte[] GetBytes(string item) {
             return Encoding.Unicode.GetBytes(item);
             //return item.GetBytes("UTF-16");
         }
     }
-    
 }

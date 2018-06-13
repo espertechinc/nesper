@@ -537,21 +537,21 @@ namespace com.espertech.esper.core.service
             return processor.ValueAddEventType is VariantEventType;
         }
     
-        public bool RemoveEventType(string name, bool force) {
+        public bool RemoveEventType(string eventTypeName, bool force) {
             if (!force) {
-                var statements = _statementEventTypeRef.GetStatementNamesForType(name);
+                var statements = _statementEventTypeRef.GetStatementNamesForType(eventTypeName);
                 if ((statements != null) && (!statements.IsEmpty())) {
-                    throw new ConfigurationException("Event type '" + name + "' is in use by one or more statements");
+                    throw new ConfigurationException("Event type '" + eventTypeName + "' is in use by one or more statements");
                 }
             }
     
-            EventType type = _eventAdapterService.GetEventTypeByName(name);
+            EventType type = _eventAdapterService.GetEventTypeByName(eventTypeName);
             if (type == null) {
                 return false;
             }
     
-            _eventAdapterService.RemoveType(name);
-            _statementEventTypeRef.RemoveReferencesType(name);
+            _eventAdapterService.RemoveType(eventTypeName);
+            _statementEventTypeRef.RemoveReferencesType(eventTypeName);
             _filterService.RemoveType(type);
             return true;
         }

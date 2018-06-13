@@ -14,7 +14,7 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.metrics.instrumentation
 {
-    public class InstrumentationHelper
+    public static class InstrumentationHelper
     {
         //public const bool ENABLED = true;
 
