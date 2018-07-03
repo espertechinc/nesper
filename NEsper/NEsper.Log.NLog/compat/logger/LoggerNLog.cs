@@ -10,9 +10,13 @@ using System;
 
 using com.espertech.esper.compat.logging;
 
+using NLog.Config;
+using NLog.Layouts;
+using NLog.Targets;
+
 namespace com.espertech.esper.compat.logger
 {
-    using LogManager = com.espertech.esper.compat.logging.LogManager;
+    using LogManager = LogManager;
 
     /// <summary>
     /// A logger implementation based on NLog.
@@ -21,6 +25,28 @@ namespace com.espertech.esper.compat.logger
     public class LoggerNLog : ILog
     {
         private readonly NLog.ILogger _log;
+
+        /// <summary>
+        /// Gets the simple layout.
+        /// </summary>
+        public static Layout SimpleLayout { get; } = new SimpleLayout() {
+            Text = "${threadid}|${level}|${logger}|${message}"
+        };
+
+        /// <summary>
+        /// Gets the console target.
+        /// </summary>
+        public static Target Console { get; } = new ConsoleTarget() {
+            Layout = SimpleLayout,
+            DetectConsoleAvailable = true
+        };
+
+        /// <summary>
+        /// Gets the memory target - this should only be used for debugging purposes.
+        /// </summary>
+        public static MemoryTarget MemoryTarget { get; } = new MemoryTarget() {
+            Layout = SimpleLayout
+        };
 
         /// <summary>
         /// Registers this logger.
@@ -34,13 +60,23 @@ namespace com.espertech.esper.compat.logger
         }
 
         /// <summary>
+        /// Resets the configuration.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        public static void ResetConfig(LoggingConfiguration configuration)
+        {
+            NLog.LogManager.Configuration = configuration;
+        }
+
+        /// <summary>
         /// A simple configuration for "basic" setups - mostly testing.
         /// </summary>
-        public static void BasicConfig()
+        public static LoggingConfiguration BasicConfig()
         {
-            var config = new NLog.Config.LoggingConfiguration();
-            var console = new NLog.Targets.ConsoleTarget();
-            config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, console);
+            var config = new LoggingConfiguration();
+            config.AddRule(NLog.LogLevel.Warn, NLog.LogLevel.Fatal, Console);
+            NLog.LogManager.Configuration = config;
+            return config;
         }
 
         /// <summary>
@@ -164,7 +200,7 @@ namespace com.espertech.esper.compat.logger
         {
             if (IsInfoEnabled)
             {
-                _log.Info(messageFormat, args);
+                _log.Info(string.Format(messageFormat, args));
             }
         }
 

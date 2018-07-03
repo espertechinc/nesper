@@ -8,6 +8,8 @@
 
 using System;
 
+using com.espertech.esper.compat.logger;
+
 using NUnit.Framework;
 
 namespace com.espertech.esperio
@@ -26,6 +28,10 @@ namespace com.espertech.esperio
                 Environment.CurrentDirectory = dir;
                 Directory.SetCurrentDirectory(dir);
             }
+
+            var logConfig = LoggerNLog.BasicConfig();
+            LoggerNLog.ResetConfig(logConfig);
+            LoggerNLog.Register();
         }
     }
 }

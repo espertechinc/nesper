@@ -10,7 +10,7 @@ using System;
 using com.espertech.esper.compat.logger;
 
 using NEsper.Avro.Extensions;
-
+using NLog;
 #if NETSTANDARD2_0
 #else
 using NEsper.Scripting.ClearScript;
@@ -28,9 +28,6 @@ namespace com.espertech.esper
         [OneTimeSetUp]
         public void RunBeforeAnyTests()
         {
-            LoggerNLog.BasicConfig();
-            LoggerNLog.Register();
-
 #if NETSTANDARD2_0
 #else
             var clearScript = typeof(ScriptingEngineJScript);
@@ -45,6 +42,17 @@ namespace com.espertech.esper
                 Environment.CurrentDirectory = dir;
                 Directory.SetCurrentDirectory(dir);
             }
+
+            var logConfig = LoggerNLog.BasicConfig();
+
+            logConfig.AddRule(
+                LogLevel.Info,
+                LogLevel.Fatal,
+                LoggerNLog.Console,
+                "com.espertech.esper.supportregression.execution.RegressionRunner");
+
+            LoggerNLog.ResetConfig(logConfig);
+            LoggerNLog.Register();
         }
 
         public void UnusedMethodToBindAvro()

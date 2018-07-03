@@ -283,7 +283,7 @@ namespace com.espertech.esper.epl.core
                 optionalInsertIntoEventType, isUsingWildcard, typeService, eventAdapterService, valueAddEventService,
                 selectExprEventTypeRegistry, engineImportService, statementId, statementName, annotations, configuration,
                 namedWindowMgmtService, tableService, groupByRollupInfo);
-            SelectExprProcessor processor = factory.Evaluator;
+            SelectExprProcessor processor = factory.GetEvaluator();
 
             // add reference to the type obtained
             var type = (EventTypeSPI)processor.ResultEventType;

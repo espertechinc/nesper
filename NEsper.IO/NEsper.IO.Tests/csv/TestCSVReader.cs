@@ -96,7 +96,7 @@ namespace com.espertech.esperio.csv
             Assert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
-            expected = new[] {string.Format("value{0}with newline", "\n")};
+            expected = new[] {string.Format("value{0}with newline", Environment.NewLine)};//"\n")};
             Assert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();

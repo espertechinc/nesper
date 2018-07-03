@@ -422,12 +422,10 @@ namespace com.espertech.esper.core.service
                     for (int ii = 0; ii < eventListLength; ii++)
                     {
                         var eventHandler = eventList[ii];
-                        try
-                        {
+                        try {
                             eventHandler.Invoke(this, ev);
                         }
-                        catch (Exception e)
-                        {
+                        catch (Exception e) {
                             Log.Error("Unexpected exception invoking event handler", e);
                         }
                     }

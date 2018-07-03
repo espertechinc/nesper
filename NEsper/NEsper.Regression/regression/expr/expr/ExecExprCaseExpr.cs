@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
@@ -17,7 +15,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.util;
-
 
 using NUnit.Framework;
 
@@ -314,11 +311,11 @@ namespace com.espertech.esper.regression.expr.expr
     
             SendSupportBeanEvent(epService, true, new bool?(false), 5, new int?(0), 5L, 0L, '0', 'a', (short) 0, (short) 0, (byte) 0, (byte) 0, 0.0f, (float) 0, 0.0, new double?(0.0), null, SupportEnum.ENUM_VALUE_1);
             theEvent = listener.GetAndResetLastNewData()[0];
-            Assert.AreEqual("5", theEvent.Get("p1"));
+            Assert.AreEqual("5L", theEvent.Get("p1"));
     
             SendSupportBeanEvent(epService, true, new bool?(false), 6, new int?(0), 0L, 6L, '0', 'a', (short) 0, (short) 0, (byte) 0, (byte) 0, 0.0f, (float) 0, 0.0, new double?(0.0), null, SupportEnum.ENUM_VALUE_1);
             theEvent = listener.GetAndResetLastNewData()[0];
-            Assert.AreEqual("6", theEvent.Get("p1"));
+            Assert.AreEqual("6L", theEvent.Get("p1"));
     
             SendSupportBeanEvent(epService, true, new bool?(false), 7, new int?(0), 0L, 0L, 'A', 'a', (short) 0, (short) 0, (byte) 0, (byte) 0, 0.0f, (float) 0, 0.0, new double?(0.0), null, SupportEnum.ENUM_VALUE_1);
             theEvent = listener.GetAndResetLastNewData()[0];
@@ -346,11 +343,11 @@ namespace com.espertech.esper.regression.expr.expr
     
             SendSupportBeanEvent(epService, true, new bool?(false), 13, new int?(0), 0L, 0L, 'A', 'a', (short) 9, (short) 10, (byte) 11, (byte) 12, 13.0f, (float) 14, 15.0, new double?(16.0), "testCoercion", SupportEnum.ENUM_VALUE_1);
             theEvent = listener.GetAndResetLastNewData()[0];
-            Assert.AreEqual("13.0", theEvent.Get("p1"));
+            Assert.AreEqual("13.0f", theEvent.Get("p1"));
     
             SendSupportBeanEvent(epService, true, new bool?(false), 14, new int?(0), 0L, 0L, 'A', 'a', (short) 9, (short) 10, (byte) 11, (byte) 12, 13.0f, (float) 14, 15.0, new double?(16.0), "testCoercion", SupportEnum.ENUM_VALUE_1);
             theEvent = listener.GetAndResetLastNewData()[0];
-            Assert.AreEqual("14.0", theEvent.Get("p1"));
+            Assert.AreEqual("14.0f", theEvent.Get("p1"));
     
             SendSupportBeanEvent(epService, true, new bool?(false), 15, new int?(0), 0L, 0L, 'A', 'a', (short) 9, (short) 10, (byte) 11, (byte) 12, 13.0f, (float) 14, 15.0, new double?(16.0), "testCoercion", SupportEnum.ENUM_VALUE_1);
             theEvent = listener.GetAndResetLastNewData()[0];

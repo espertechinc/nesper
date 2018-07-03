@@ -173,13 +173,13 @@ namespace com.espertech.esper.regression.client
                 MakePair("varargsW1Param('abc')", "abc"));
 
             RunVarargAssertion(
-                epService, MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0,3,4"),
-                MakePair("varargsW2Param(1, 2.0, 3L)", "1,2.0,3"),
+                epService, MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0,3L,4L"),
+                MakePair("varargsW2Param(1, 2.0, 3L)", "1,2.0,3L"),
                 MakePair("varargsW2Param(1, 2.0)", "1,2.0"),
-                MakePair("varargsW2Param(1, 2.0, 3, 4L)", "1,2.0,3,4"),
-                MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0,3,4"),
-                MakePair("varargsW2Param(1, 2.0, 3, 4)", "1,2.0,3,4"),
-                MakePair("varargsW2Param(1, 2.0, 3L, 4)", "1,2.0,3,4"));
+                MakePair("varargsW2Param(1, 2.0, 3, 4L)", "1,2.0,3L,4L"),
+                MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0,3L,4L"),
+                MakePair("varargsW2Param(1, 2.0, 3, 4)", "1,2.0,3L,4L"),
+                MakePair("varargsW2Param(1, 2.0, 3L, 4)", "1,2.0,3L,4L"));
 
             RunVarargAssertion(
                 epService, MakePair("varargsOnlyWCtx(1, 2, 3)", "CTX+1,2,3"),
@@ -204,10 +204,10 @@ namespace com.espertech.esper.regression.client
                 epService, MakePair("varargsOnlyObject('a', 1, new BigInteger(2))", "a,1,2"));
 
             RunVarargAssertion(
-                epService, MakePair("varargsOnlyNumber(1f, 2L, 3, new BigInteger(4))", "1.0,2,3,4"));
+                epService, MakePair("varargsOnlyNumber(1f, 2L, 3, new BigInteger(4))", "1.0f,2L,3,4"));
 
             RunVarargAssertion(
-                epService, MakePair("varargsOnlyNumber(1f, 2L, 3, new BigInteger(4))", "1.0,2,3,4"));
+                epService, MakePair("varargsOnlyNumber(1f, 2L, 3, new BigInteger(4))", "1.0f,2L,3,4"));
 
             RunVarargAssertion(
                 epService,

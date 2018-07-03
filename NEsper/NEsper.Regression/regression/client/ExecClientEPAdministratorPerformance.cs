@@ -41,19 +41,22 @@ namespace com.espertech.esper.regression.client
             epService.EPAdministrator.DestroyAllStatements();
         }
     
-        private void RunAssertion1kInvalidStmts(EPServiceProvider epService) {
-            long start = PerformanceObserver.MilliTime;
-            for (int i = 0; i < 1000; i++) {
-                try {
-                    string text = "select xxx from " + typeof(SupportBean).FullName;
-                    epService.EPAdministrator.CreateEPL(text, "s1");
-                } catch (Exception) {
-                    // expected
-                }
-            }
-            long end = PerformanceObserver.MilliTime;
-            long delta = end - start;
-            Assert.IsTrue(delta < 2500, ".test1kInvalid delta=" + delta);
+        private void RunAssertion1kInvalidStmts(EPServiceProvider epService)
+        {
+            var delta = PerformanceObserver.TimeMillis(
+                () => {
+                    for (int i = 0; i < 1000; i++) {
+                        try {
+                            string text = "select xxx from " + typeof(SupportBean).FullName;
+                            epService.EPAdministrator.CreateEPL(text, "s1");
+                        }
+                        catch (Exception) {
+                            // expected
+                        }
+                    }
+                });
+
+            Assert.That(delta, Is.LessThan(2500), "RunAssertion1kInvalidStmts delta=" + delta);
             epService.EPAdministrator.DestroyAllStatements();
         }
     }

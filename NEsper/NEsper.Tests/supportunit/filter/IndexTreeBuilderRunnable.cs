@@ -13,7 +13,9 @@ using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.logger;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.filter;
 using com.espertech.esper.supportunit.util;
@@ -43,7 +45,7 @@ namespace com.espertech.esper.supportunit.filter
             _matchedEvents = matchedEvents;
             _unmatchedEvents = unmatchedEvents;
         }
-    
+
         public void Run()
         {
             long currentThreadId = Thread.CurrentThread.ManagedThreadId;
@@ -54,18 +56,27 @@ namespace com.espertech.esper.supportunit.filter
             EventBean matchedEvent = null;
     
             var index = 0;
-            do
-            {
+            do {
+                //index = (int) (atomic.IncrementAndGet() % _testFilterSpecs.Count);
                 index = Random.Next(_testFilterSpecs.Count);
                 filterSpec = _testFilterSpecs[index];
                 unmatchedEvent = _unmatchedEvents[index];
                 matchedEvent = _matchedEvents[index];
             }
             while(!ObjectReservationSingleton.Instance.Reserve(filterSpec));
-    
+
+#if DEBUG && DIAGNOSTIC
+            Log.Info("Reserved: {0} = {1}", index, filterSpec);
+#endif
+
             // Add expression
             var filterValues = filterSpec.GetValueSet(null, null, null);
-            FilterHandle filterCallback = new SupportFilterHandle();
+            var filterCallback = new SupportFilterHandle();
+
+#if DEBUG && DIAGNOSTIC
+            Log.Info("TestMultithreaded: {0}", filterValues);
+#endif
+
             var pathAddedTo = IndexTreeBuilder.Add(filterValues, filterCallback, _topNode, _lockFactory);
     
             // Fire a no-match
@@ -74,7 +85,7 @@ namespace com.espertech.esper.supportunit.filter
     
             if (matches.Count != 0)
             {
-                Log.Fatal(".run (" + currentThreadId + ") Got a match but expected no-match, matchCount=" + matches.Count + "  bean=" + unmatchedEvent +
+                Log.Fatal(".Run (" + currentThreadId + ") Got a match but expected no-match, matchCount=" + matches.Count + "  bean=" + unmatchedEvent +
                           "  match=" + matches[0].GetHashCode());
                 Assert.IsFalse(true);
             }
@@ -84,14 +95,16 @@ namespace com.espertech.esper.supportunit.filter
     
             if (matches.Count != 1)
             {
-                Log.Fatal(".run (" + currentThreadId + ") Got zero or two or more match but expected a match, count=" + matches.Count +
+                Log.Fatal(".Run (" + currentThreadId + ") Got zero or two or more match but expected a match, count=" + matches.Count +
                         "  bean=" + matchedEvent);
+                foreach (var entry in LoggerNLog.MemoryTarget.Logs) {
+                    System.Diagnostics.Debug.WriteLine(entry);
+                }
                 Assert.IsFalse(true);
             }
     
             // Remove the same expression again
             IndexTreeBuilder.Remove(_eventType, filterCallback, pathAddedTo[0].ToArray(), _topNode);
-            Log.Debug(".run (" + Thread.CurrentThread.ManagedThreadId + ")" + " Completed");
     
             ObjectReservationSingleton.Instance.Unreserve(filterSpec);
         }

@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.metrics.instrumentation;
@@ -24,6 +25,11 @@ namespace com.espertech.esper.filter
     /// </summary>
     public sealed class FilterHandleSetNode : EventEvaluator
     {
+#if DEBUG && DIAGNOSTICS
+        private static readonly AtomicLong _sid = new AtomicLong();
+        private readonly long _id = _sid.GetAndIncrement();
+#endif
+
         private readonly LinkedHashSet<FilterHandle> _callbackSet;
         private readonly List<FilterParamIndexBase> _indizes;
         private readonly IReaderWriterLock _nodeRwLock;
@@ -34,6 +40,9 @@ namespace com.espertech.esper.filter
             _callbackSet = new LinkedHashSet<FilterHandle>();
             _indizes = new List<FilterParamIndexBase>();
             _nodeRwLock = readWriteLock;
+#if DEBUG && DIAGNOSTICS
+            System.Diagnostics.Debug.WriteLine("{0}: Alloc: {1}", System.Threading.Thread.CurrentThread.ManagedThreadId, _id);
+#endif
         }
 
         /// <summary>
@@ -54,61 +63,44 @@ namespace com.espertech.esper.filter
         /// the read-write lock of this object to lock, if required by the client code.
         /// </summary>
         /// <value>number of filter callbacks stored</value>
-        public int FilterCallbackCount
-        {
-            get { return _callbackSet.Count; }
-        }
+        public int FilterCallbackCount => _callbackSet.Count;
 
         /// <summary>
         /// Returns to lock to use for making changes to the filter callback or inzides collections stored by this node.
         /// </summary>
         /// <value>lock to use in multithreaded environment</value>
-        public IReaderWriterLock NodeRWLock
-        {
-            get { return _nodeRwLock; }
-        }
+        public IReaderWriterLock NodeRWLock => _nodeRwLock;
 
         /// <summary>Returns list of indexes - not returning an iterator. Client classes should not change this collection. </summary>
         /// <value>list of indizes</value>
-        public IList<FilterParamIndexBase> Indizes
-        {
-            get { return _indizes; }
-        }
+        public IList<FilterParamIndexBase> Indizes => _indizes;
 
         /// <summary>Evaluate an event by asking each index to match the event. Any filter callbacks at this node automatically match the event and do not need to be further evaluated, and are thus added to the "matches" list of callbacks. NOTE: This client should not use the lock before calling this method. </summary>
         /// <param name="theEvent">is the event wrapper supplying the event property values</param>
         /// <param name="matches">is the list of callbacks to add to for any matches found</param>
         public void MatchEvent(EventBean theEvent, ICollection<FilterHandle> matches)
         {
-            using (_nodeRwLock.AcquireReadLock())
-            {
-                if (InstrumentationHelper.ENABLED)
-                {
-                    if (_indizes.IsNotEmpty())
-                    {
+            using (_nodeRwLock.AcquireReadLock()) {
+                if (InstrumentationHelper.ENABLED) {
+                    if (_indizes.IsNotEmpty()) {
                         InstrumentationHelper.Get().QFilterHandleSetIndexes(_indizes);
                     }
                 }
 
                 // Ask each of the indizes to match against the attribute values
                 var length = _indizes.Count;
-                for (int ii = 0; ii < length; ii++)
-                {
+                for (int ii = 0; ii < length; ii++) {
                     _indizes[ii].MatchEvent(theEvent, matches);
                 }
 
-                if (InstrumentationHelper.ENABLED)
-                {
-                    if (_indizes.IsNotEmpty())
-                    {
+                if (InstrumentationHelper.ENABLED) {
+                    if (_indizes.IsNotEmpty()) {
                         InstrumentationHelper.Get().AFilterHandleSetIndexes();
                     }
                 }
 
-                if (InstrumentationHelper.ENABLED)
-                {
-                    if (_callbackSet.IsNotEmpty())
-                    {
+                if (InstrumentationHelper.ENABLED) {
+                    if (_callbackSet.IsNotEmpty()) {
                         InstrumentationHelper.Get().QaFilterHandleSetCallbacks(_callbackSet);
                     }
                 }
@@ -168,6 +160,9 @@ namespace com.espertech.esper.filter
         public void Add(FilterHandle filterCallback)
         {
             _callbackSet.Add(filterCallback);
+#if DEBUG && DIAGNOSTICS
+            System.Diagnostics.Debug.WriteLine("{0}: Add: {1} / {2} / {3}", System.Threading.Thread.CurrentThread.ManagedThreadId, _id, _callbackSet.Count, System.Threading.Thread.CurrentThread.ManagedThreadId);
+#endif
         }
 
         /// <summary>
@@ -185,9 +180,21 @@ namespace com.espertech.esper.filter
         /// Gets the callback set.
         /// </summary>
         /// <value></value>
-        public ICollection<FilterHandle> CallbackSet
+        public ICollection<FilterHandle> CallbackSet => _callbackSet;
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
         {
-            get { return _callbackSet; }
+#if DEBUG && DIAGNOSTICS
+            return _id.ToString();
+#else
+            return base.ToString();
+#endif
         }
     }
 }

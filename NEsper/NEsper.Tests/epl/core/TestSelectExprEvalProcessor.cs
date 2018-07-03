@@ -64,12 +64,12 @@ namespace com.espertech.esper.epl.core
         [Test]
 	    public void TestGetResultEventType()
 	    {
-	        var type = _methodOne.Evaluator.ResultEventType;
+	        var type = _methodOne.GetEvaluator().ResultEventType;
 	        EPAssertionUtil.AssertEqualsAnyOrder(type.PropertyNames, new string[]{"resultOne", "resultTwo"});
 	        Assert.AreEqual(typeof(double?), type.GetPropertyType("resultOne"));
 	        Assert.AreEqual(typeof(int?), type.GetPropertyType("resultTwo"));
 
-	        type = _methodTwo.Evaluator.ResultEventType;
+	        type = _methodTwo.GetEvaluator().ResultEventType;
 	        EPAssertionUtil.AssertEqualsAnyOrder(type.PropertyNames, new string[]{"a", "b"});
 	        Assert.AreEqual(typeof(double?), type.GetPropertyType("a"));
 	        Assert.AreEqual(typeof(int?), type.GetPropertyType("b"));
@@ -80,14 +80,14 @@ namespace com.espertech.esper.epl.core
 	    {
 	        var events = new EventBean[] {MakeEvent(8.8, 3, 4)};
 
-	        var result = _methodOne.Evaluator.Process(events, true, false, null);
+	        var result = _methodOne.GetEvaluator().Process(events, true, false, null);
 	        Assert.AreEqual(8.8d, result.Get("resultOne"));
 	        Assert.AreEqual(12, result.Get("resultTwo"));
 
-	        result = _methodTwo.Evaluator.Process(events, true, false, null);
+	        result = _methodTwo.GetEvaluator().Process(events, true, false, null);
 	        Assert.AreEqual(8.8d, result.Get("a"));
 	        Assert.AreEqual(12, result.Get("b"));
-	        Assert.AreSame(result.EventType, _methodTwo.Evaluator.ResultEventType);
+	        Assert.AreSame(result.EventType, _methodTwo.GetEvaluator().ResultEventType);
 	    }
 
 	    private EventBean MakeEvent(double doubleBoxed, int intPrimitive, int intBoxed)

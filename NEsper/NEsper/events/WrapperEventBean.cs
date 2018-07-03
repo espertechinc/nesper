@@ -54,18 +54,7 @@ namespace com.espertech.esper.events
         /// <returns> the value of a simple property with the specified name.
         /// </returns>
         /// <throws>  PropertyAccessException - if there is no property of the specified name, or the property cannot be accessed </throws>
-        public Object this[String property]
-        {
-            get
-            {
-                EventPropertyGetter getter = _eventType.GetGetter(property);
-                if (getter == null)
-                {
-                    throw new PropertyAccessException("Property named '" + property + "' is not a valid property name for this type");
-                }
-                return getter.Get(this);
-            }
-        }
+        public Object this[String property] => GetInternal(property);
 
         /// <summary>
         /// Returns the value of an event property.  This method is a proxy of the indexer.
@@ -77,7 +66,23 @@ namespace com.espertech.esper.events
         /// <throws>  PropertyAccessException - if there is no property of the specified name, or the property cannot be accessed </throws>
         public virtual Object Get(String property)
         {
-            return this[property];
+            return GetInternal(property);
+        }
+
+        /// <summary>
+        /// Internal getter implementation.
+        /// </summary>
+        /// <param name="property">The property.</param>
+        /// <returns></returns>
+        /// <exception cref="PropertyAccessException">Property named '" + property + "' is not a valid property name for this type</exception>
+        private object GetInternal(string property)
+        {
+            EventPropertyGetter getter = _eventType.GetGetter(property);
+            if (getter == null)
+            {
+                throw new PropertyAccessException("Property named '" + property + "' is not a valid property name for this type");
+            }
+            return getter.Get(this);
         }
 
         /// <summary>

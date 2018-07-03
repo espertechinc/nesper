@@ -4,47 +4,15 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Language>en-US</Language>
     <AssemblyName>NEsper.IO</AssemblyName>
     <AssemblyTitle>NEsper.IO</AssemblyTitle>
-    <NeutralLanguage>en-US</NeutralLanguage>
     <PackageId>NEsper.IO</PackageId>
     <RootNamespace>com.espertech.esperio</RootNamespace>
     <PackageCopyright>Copyright (C) 2014-2017 Espertech. All rights reserved.</PackageCopyright>
     <PackageTags>NEsper Esper ESP CEP</PackageTags>
-    <PackageProjectUrl>http://www.espertech.com/esper</PackageProjectUrl>
-    <PackageLicenseUrl>http://www.espertech.com/esper/esper-license-and-trademark/</PackageLicenseUrl>
-    <IconUrl>http://static.espertech.com/espertech_logo.png</IconUrl>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Copyright>Espertech, 2014-2017</Copyright>
-    <RepositoryType>Github</RepositoryType>
-    <Company>Espertech</Company>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>6.1.0</Version>
-    <AssemblyVersion>6.1.0.0</AssemblyVersion>
-    <FileVersion>6.1.0.0</FileVersion>
     <NoWarn>CS1591;</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DefineConstants>TRACE;DEBUG;</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
-    <DefineConstants>$(DefineConstants);NETFULL;NET40;</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)'=='net46'">
-    <DefineConstants>$(DefineConstants);NETFULL;NET46;</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)'=='net471'">
-    <DefineConstants>$(DefineConstants);NETFULL;NET46;</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

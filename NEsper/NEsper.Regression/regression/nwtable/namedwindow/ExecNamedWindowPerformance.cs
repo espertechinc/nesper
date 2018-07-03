@@ -11,13 +11,10 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
-
 
 using NUnit.Framework;
 
@@ -140,13 +137,15 @@ namespace com.espertech.esper.regression.nwtable.namedwindow
             // delete rows
             var listener = new SupportUpdateListener();
             stmtCreate.Events += listener.Update;
-            long startTime = PerformanceObserver.MilliTime;
-            for (int i = 0; i < 10000; i++) {
-                SendSupportBean_A(epService, "S" + i);
-            }
-            long endTime = PerformanceObserver.MilliTime;
-            long delta = endTime - startTime;
-            Assert.IsTrue(delta < 500, "Delta=" + delta);
+
+            var delta = PerformanceObserver.TimeMillis(
+                () => {
+                    for (int i = 0; i < 10000; i++) {
+                        SendSupportBean_A(epService, "S" + i);
+                    }
+                });
+
+            Assert.IsTrue(delta < 100, "Delta=" + delta);
     
             // assert they are deleted
             Assert.AreEqual(50000 - 10000, EPAssertionUtil.EnumeratorCount(stmtCreate.GetEnumerator()));

@@ -50,7 +50,7 @@ namespace com.espertech.esper.epl.core
                 container.Resolve<EventAdapterService>(), null,
                 selectExprEventTypeRegistry, statementContext.EngineImportService, 1, "stmtname", null,
                 new Configuration(container), null, new TableServiceImpl(container), null);
-            _selectExprProcessor = factory.Evaluator;
+            _selectExprProcessor = factory.GetEvaluator();
             _orderByProcessor = null;
     
             var prototype = new ResultSetProcessorSimpleFactory(_selectExprProcessor, null, true, null, false, null, 1);

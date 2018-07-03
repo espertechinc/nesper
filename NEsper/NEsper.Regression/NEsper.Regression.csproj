@@ -1,60 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net462</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Language>en-US</Language>
     <AssemblyName>NEsper.Regression</AssemblyName>
     <AssemblyTitle>NEsper.Regression</AssemblyTitle>
-    <NeutralLanguage>en-US</NeutralLanguage>
     <PackageId>NEsper.Regression</PackageId>
     <RootNamespace>com.espertech.esper</RootNamespace>
     <Description>Regression tests for NEsper.</Description>
     <Summary>Regression tests for NEsper.</Summary>
-    <PackageCopyright>Copyright (C) 2014-2017 Espertech. All rights reserved.</PackageCopyright>
-    <PackageTags>NEsper Esper ESP CEP</PackageTags>
-    <PackageProjectUrl>http://www.espertech.com/esper</PackageProjectUrl>
-    <PackageLicenseUrl>http://www.espertech.com/esper/esper-license-and-trademark/</PackageLicenseUrl>
-    <IconUrl>http://static.espertech.com/espertech_logo.png</IconUrl>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Copyright>Espertech, 2014-2017</Copyright>
-    <RepositoryType>Github</RepositoryType>
-    <Company>Espertech</Company>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>6.1.0</Version>
-    <AssemblyVersion>6.1.0.0</AssemblyVersion>
-    <FileVersion>6.1.0.0</FileVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DefineConstants>TRACE;DEBUG;</DefineConstants>
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-    <Optimize>false</Optimize>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <DefineConstants></DefineConstants>
-    <DebugType>pdbonly</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-    <Optimize>true</Optimize>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
-    <DefineConstants>$(DefineConstants);NETFULL;NET40;</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)'=='net46'">
-    <DefineConstants>$(DefineConstants);NETFULL;NET46;</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)'=='net471'">
-    <DefineConstants>$(DefineConstants);NETFULL;NET47;</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -62,8 +18,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Confluent.Apache.Avro" Version="1.7.7.5" />
     <PackageReference Include="NUnit" Version="3.10.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'!='netstandard2.0'">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Confluent.Apache.Avro" Version="1.7.7.5" />
   </ItemGroup>
 
   <ItemGroup>

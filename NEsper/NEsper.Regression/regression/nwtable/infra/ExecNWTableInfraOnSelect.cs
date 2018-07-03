@@ -57,6 +57,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             RunAssertionInvalid(epService, false);
 
             RunAssertionSelectCondition(epService, true);
+            epService.Initialize(); // BUG: Incompatible event types used
             RunAssertionSelectCondition(epService, false);
 
             RunAssertionSelectJoinColumnsLimit(epService, true);
@@ -72,6 +73,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             RunAssertionSelectAggregationGrouping(epService, false);
 
             RunAssertionSelectCorrelationDelete(epService, true);
+            epService.Initialize(); // BUG: Incompatible event types used
             RunAssertionSelectCorrelationDelete(epService, false);
 
             RunAssertionPatternCorrelation(epService, true);
@@ -305,7 +307,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
             var resultType = stmtSelect.EventType;
             Assert.AreEqual(2, resultType.PropertyNames.Length);
             Assert.AreEqual(typeof(string), resultType.GetPropertyType("a"));
-            Assert.AreEqual(typeof(int?), resultType.GetPropertyType("sumb"));
+            Assert.AreEqual(typeof(int), resultType.GetPropertyType("sumb"));
 
             stmtSelect.Dispose();
             stmtCreate.Dispose();
@@ -365,7 +367,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
 
             var resultType = stmtSelect.EventType;
             Assert.AreEqual(1, resultType.PropertyNames.Length);
-            Assert.AreEqual(typeof(int?), resultType.GetPropertyType("sumb"));
+            Assert.AreEqual(typeof(int), resultType.GetPropertyType("sumb"));
 
             stmtSelect.Dispose();
             stmtCreate.Dispose();
@@ -432,7 +434,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
 
             var resultType = stmtSelect.EventType;
             Assert.AreEqual(1, resultType.PropertyNames.Length);
-            Assert.AreEqual(typeof(int?), resultType.GetPropertyType("sumb"));
+            Assert.AreEqual(typeof(int), resultType.GetPropertyType("sumb"));
 
             stmtSelect.Dispose();
             stmtCreate.Dispose();
@@ -579,7 +581,7 @@ namespace com.espertech.esper.regression.nwtable.infra {
 
             SupportMessageAssertUtil.TryInvalid(
                 epService, "on " + typeof(SupportBean_A).FullName + " select prev(1, TheString) from MyInfraInvalid",
-                "Error starting statement: Failed to validate select-clause expression 'Prev(1,TheString)': Previous function cannot be used in this context [");
+                "Error starting statement: Failed to validate select-clause expression 'prev(1,TheString)': Previous function cannot be used in this context [");
 
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.Configuration.RemoveEventType("MyInfraInvalid", false);
@@ -738,19 +740,19 @@ namespace com.espertech.esper.regression.nwtable.infra {
                 EPAssertionUtil.AssertEqualsExactOrder(expectedWhere, (ICollection<object>) received.Get("c1"));
             }
 
-            EPAssertionUtil.AssertPropsMap((Map) received.Get("c2"), mapKeys, mapValues);
+            EPAssertionUtil.AssertPropsMap((IDictionary<object, object>) received.Get("c2"), mapKeys, mapValues);
         }
 
         private void RunAssertionOnSelectIndexChoice(EPServiceProvider epService, bool isNamedWindow) {
             epService.EPAdministrator.Configuration.AddEventType("SSB1", typeof(SupportSimpleBeanOne));
             epService.EPAdministrator.Configuration.AddEventType("SSB2", typeof(SupportSimpleBeanTwo));
 
-            var backingUniqueS1 = "unique hash={S1(string)} btree={} advanced={}";
-            var backingUniqueS1L1 = "unique hash={S1(string),L1(long)} btree={} advanced={}";
-            var backingNonUniqueS1 = "non-unique hash={S1(string)} btree={} advanced={}";
-            var backingUniqueS1D1 = "unique hash={S1(string),D1(double)} btree={} advanced={}";
-            var backingBtreeI1 = "non-unique hash={} btree={I1(int)} advanced={}";
-            var backingBtreeD1 = "non-unique hash={} btree={D1(double)} advanced={}";
+            var backingUniqueS1 = "unique hash={s1(string)} btree={} advanced={}";
+            var backingUniqueS1L1 = "unique hash={s1(string),l1(long)} btree={} advanced={}";
+            var backingNonUniqueS1 = "non-unique hash={s1(string)} btree={} advanced={}";
+            var backingUniqueS1D1 = "unique hash={s1(string),d1(double)} btree={} advanced={}";
+            var backingBtreeI1 = "non-unique hash={} btree={i1(int)} advanced={}";
+            var backingBtreeD1 = "non-unique hash={} btree={d1(double)} advanced={}";
             var expectedIdxNameS1 = isNamedWindow ? null : "MyInfra";
             var listener = new SupportUpdateListener();
 

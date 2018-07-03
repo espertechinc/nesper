@@ -21,6 +21,7 @@ using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.filter;
 using com.espertech.esper.supportunit.util;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.filter
@@ -72,8 +73,9 @@ namespace com.espertech.esper.filter
     
             _testFilterSpecs.Add(MakeSpec(new Object[] { "DoublePrimitive", FilterOperator.EQUAL, 99.99,
                                                          "IntPrimitive", FilterOperator.LESS, 1}));
-            _matchedEvents.Add(MakeEvent(0, 99.99)); 
-    
+            _matchedEvents.Add(MakeEvent(0, 99.99));
+            _unmatchedEvents.Add(MakeEvent(2, 0.5));
+
             _testFilterSpecs.Add(MakeSpec(new Object[] { "DoublePrimitive", FilterOperator.GREATER, .99,
                                                          "IntPrimitive", FilterOperator.EQUAL, 5001}));
             _matchedEvents.Add(MakeEvent(5001, 1.1));
@@ -158,10 +160,11 @@ namespace com.espertech.esper.filter
             PerformMultithreadedTest(new FilterHandleSetNode(_container.RWLockManager().CreateDefaultLock()), 4, 1000, 1);
         }
     
-        private void PerformMultithreadedTest(FilterHandleSetNode topNode,
-                                 int numberOfThreads,
-                                 int numberOfRunnables,
-                                 int numberOfSecondsSleep)
+        private void PerformMultithreadedTest(
+            FilterHandleSetNode topNode,
+            int numberOfThreads,
+            int numberOfRunnables,
+            int numberOfSecondsSleep)
         {
             Log.Info(".performMultithreadedTest Loading thread pool work queue,numberOfRunnables=" + numberOfRunnables);
 
@@ -169,7 +172,11 @@ namespace com.espertech.esper.filter
     
             for (var i = 0; i < numberOfRunnables; i++)
             {
-                var runnable = new IndexTreeBuilderRunnable(_eventType, topNode, _testFilterSpecs, _matchedEvents, _unmatchedEvents);
+                var runnable = new IndexTreeBuilderRunnable(
+                    _eventType, topNode, 
+                    _testFilterSpecs, 
+                    _matchedEvents, 
+                    _unmatchedEvents);
                 pool.Submit(runnable.Run);
             }
     
@@ -183,8 +190,9 @@ namespace com.espertech.esper.filter
                      "  completed=" + pool.NumExecuted);
     
             pool.Shutdown();
-            pool.AwaitTermination(TimeSpan.FromSeconds(1));
-    
+            pool.AwaitTermination(TimeSpan.FromSeconds(5));
+            //pool.AwaitTermination(TimeSpan.FromSeconds(1));
+
             Assert.AreEqual(pool.NumExecuted, numberOfRunnables);
         }
     

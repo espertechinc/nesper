@@ -9,7 +9,7 @@
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.epl.@join.plan;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.lookup;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.epl;
@@ -50,7 +50,7 @@ namespace com.espertech.esper.regression.epl.other
         {
             SupportQueryPlanIndexHook.Reset();
             var epl = INDEX_CALLBACK_HOOK + "select * from S0 as s0 unidirectional, S1#keepall as s1 " +
-                      "where p00 not in (p10, p11)";
+                      "where P00 not in (P10, P11)";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
@@ -66,13 +66,13 @@ namespace com.espertech.esper.regression.epl.other
             // assert join
             SupportQueryPlanIndexHook.Reset();
             var epl = INDEX_CALLBACK_HOOK + "select * from S0 as s0 unidirectional, S1#keepall as s1 " +
-                      "where p00 in (p10, p11) and p01 in (p12, p13)";
+                      "where P00 in (P10, P11) and P01 in (P12, P13)";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
             var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
-            Assert.AreEqual("[p10][p11]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+            Assert.AreEqual("[P10][P11]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
 
             TryAssertionMultiIdx(epService, listener);
             epService.EPAdministrator.DestroyAllStatements();
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPAdministrator.CreateEPL("insert into S1Window select * from S1");
 
             var eplNamedWindow = INDEX_CALLBACK_HOOK + "on S0 as s0 select * from S1Window as s1 " +
-                                 "where p00 in (p10, p11) and p01 in (p12, p13)";
+                                 "where P00 in (P10, P11) and P01 in (P12, P13)";
             var stmtNamedWindow = epService.EPAdministrator.CreateEPL(eplNamedWindow);
             stmtNamedWindow.Events += listener.Update;
 
@@ -94,15 +94,21 @@ namespace com.espertech.esper.regression.epl.other
 
             // assert table
             epService.EPAdministrator.CreateEPL(
-                "create table S1Table(id int primary key, p10 string primary key, p11 string primary key, p12 string primary key, p13 string primary key)");
+                "create table S1Table("
+                + "Id int primary key, "
+                + "P10 string primary key, "
+                + "P11 string primary key, "
+                + "P12 string primary key, "
+                + "P13 string primary key)"
+                );
             epService.EPAdministrator.CreateEPL("insert into S1Table select * from S1");
-            epService.EPAdministrator.CreateEPL("create index S1Idx1 on S1Table(p10)");
-            epService.EPAdministrator.CreateEPL("create index S1Idx2 on S1Table(p11)");
-            epService.EPAdministrator.CreateEPL("create index S1Idx3 on S1Table(p12)");
-            epService.EPAdministrator.CreateEPL("create index S1Idx4 on S1Table(p13)");
+            epService.EPAdministrator.CreateEPL("create index S1Idx1 on S1Table(P10)");
+            epService.EPAdministrator.CreateEPL("create index S1Idx2 on S1Table(P11)");
+            epService.EPAdministrator.CreateEPL("create index S1Idx3 on S1Table(P12)");
+            epService.EPAdministrator.CreateEPL("create index S1Idx4 on S1Table(P13)");
 
             var eplTable = INDEX_CALLBACK_HOOK + "on S0 as s0 select * from S1Table as s1 " +
-                           "where p00 in (p10, p11) and p01 in (p12, p13)";
+                           "where P00 in (P10, P11) and P01 in (P12, P13)";
             var stmtTable = epService.EPAdministrator.CreateEPL(eplTable);
             stmtTable.Events += listener.Update;
 
@@ -117,10 +123,10 @@ namespace com.espertech.esper.regression.epl.other
 
         private void RunAssertionMultiIdxSubquery(EPServiceProvider epService)
         {
-            var epl = INDEX_CALLBACK_HOOK + "select s0.id as c0," +
+            var epl = INDEX_CALLBACK_HOOK + "select s0.Id as c0," +
                       "(select * from S1#keepall as s1 " +
-                      "  where s0.p00 in (s1.p10, s1.p11) and s0.p01 in (s1.p12, s1.p13))" +
-                      ".selectFrom(a=>S1.id) as c1 " +
+                      "  where s0.P00 in (s1.P10, s1.P11) and s0.P01 in (s1.P12, s1.P13))" +
+                      ".selectFrom(a=>S1.Id) as c1 " +
                       "from S0 as s0";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -187,7 +193,7 @@ namespace com.espertech.esper.regression.epl.other
 
             // test coercion absence - types the same
             var eplCoercion = INDEX_CALLBACK_HOOK + "select *," +
-                              "(select * from S0#keepall as s0 where sb.LongPrimitive in (id)) from SupportBean as sb";
+                              "(select * from S0#keepall as s0 where sb.LongPrimitive in (Id)) from SupportBean as sb";
             stmt = epService.EPAdministrator.CreateEPL(eplCoercion);
             var subqueryCoercion = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
             Assert.AreEqual(
@@ -200,13 +206,13 @@ namespace com.espertech.esper.regression.epl.other
             // assert join
             SupportQueryPlanIndexHook.Reset();
             var epl = INDEX_CALLBACK_HOOK + "select * from S0#keepall as s0, S1 as s1 unidirectional " +
-                      "where p00 in (p10, p11) and p01 in (p12, p13)";
+                      "where P00 in (P10, P11) and P01 in (P12, P13)";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
             var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[0].Items;
-            Assert.AreEqual("[p00]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+            Assert.AreEqual("[P00]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
 
             TryAssertionSingleIdx(epService, listener);
             epService.EPAdministrator.DestroyAllStatements();
@@ -216,7 +222,7 @@ namespace com.espertech.esper.regression.epl.other
             epService.EPAdministrator.CreateEPL("insert into S0Window select * from S0");
 
             var eplNamedWindow = INDEX_CALLBACK_HOOK + "on S1 as s1 select * from S0Window as s0 " +
-                                 "where p00 in (p10, p11) and p01 in (p12, p13)";
+                                 "where P00 in (P10, P11) and P01 in (P12, P13)";
             var stmtNamedWindow = epService.EPAdministrator.CreateEPL(eplNamedWindow);
             stmtNamedWindow.Events += listener.Update;
 
@@ -228,13 +234,13 @@ namespace com.espertech.esper.regression.epl.other
 
             // assert table
             epService.EPAdministrator.CreateEPL(
-                "create table S0Table(id int primary key, p00 string primary key, p01 string primary key, p02 string primary key, p03 string primary key)");
+                "create table S0Table(Id int primary key, P00 string primary key, P01 string primary key, P02 string primary key, P03 string primary key)");
             epService.EPAdministrator.CreateEPL("insert into S0Table select * from S0");
-            epService.EPAdministrator.CreateEPL("create index S0Idx1 on S0Table(p00)");
-            epService.EPAdministrator.CreateEPL("create index S0Idx2 on S0Table(p01)");
+            epService.EPAdministrator.CreateEPL("create index S0Idx1 on S0Table(P00)");
+            epService.EPAdministrator.CreateEPL("create index S0Idx2 on S0Table(P01)");
 
             var eplTable = INDEX_CALLBACK_HOOK + "on S1 as s1 select * from S0Table as s0 " +
-                           "where p00 in (p10, p11) and p01 in (p12, p13)";
+                           "where P00 in (P10, P11) and P01 in (P12, P13)";
             var stmtTable = epService.EPAdministrator.CreateEPL(eplTable);
             stmtTable.Events += listener.Update;
 
@@ -250,10 +256,10 @@ namespace com.espertech.esper.regression.epl.other
         private void RunAssertionSingleIdxSubquery(EPServiceProvider epService)
         {
             SupportQueryPlanIndexHook.Reset();
-            var epl = INDEX_CALLBACK_HOOK + "select s1.id as c0," +
+            var epl = INDEX_CALLBACK_HOOK + "select s1.Id as c0," +
                       "(select * from S0#keepall as s0 " +
-                      "  where s0.p00 in (s1.p10, s1.p11) and s0.p01 in (s1.p12, s1.p13))" +
-                      ".selectFrom(a=>S0.id) as c1 " +
+                      "  where s0.P00 in (s1.P10, s1.P11) and s0.P01 in (s1.P12, s1.P13))" +
+                      ".selectFrom(a=>S0.Id) as c1 " +
                       " from S1 as s1";
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
@@ -320,7 +326,7 @@ namespace com.espertech.esper.regression.epl.other
 
             // test coercion absence - types the same
             var eplCoercion = INDEX_CALLBACK_HOOK + "select *," +
-                              "(select * from SupportBean#keepall as sb where sb.LongPrimitive in (s0.id)) from S0 as s0";
+                              "(select * from SupportBean#keepall as sb where sb.LongPrimitive in (s0.Id)) from S0 as s0";
             stmt = epService.EPAdministrator.CreateEPL(eplCoercion);
             var subqueryCoercion = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
             Assert.AreEqual(
@@ -330,7 +336,7 @@ namespace com.espertech.esper.regression.epl.other
 
         private void TryAssertionSingleIdx(EPServiceProvider epService, SupportUpdateListener listener)
         {
-            var fields = "s0.id,s1.id".Split(',');
+            var fields = "s0.Id,s1.Id".Split(',');
 
             // single row tests
             epService.EPRuntime.SendEvent(new SupportBean_S0(100, "a", "c"));
@@ -394,7 +400,7 @@ namespace com.espertech.esper.regression.epl.other
 
         private void TryAssertionMultiIdx(EPServiceProvider epService, SupportUpdateListener listener)
         {
-            var fields = "s0.id,s1.id".Split(',');
+            var fields = "s0.Id,s1.Id".Split(',');
 
             // single row tests
             epService.EPRuntime.SendEvent(new SupportBean_S1(101, "a", "b", "c", "d"));
@@ -460,14 +466,14 @@ namespace com.espertech.esper.regression.epl.other
         {
             SupportQueryPlanIndexHook.Reset();
             var epl = INDEX_CALLBACK_HOOK + "select * from S0 as s0 unidirectional, S1#keepall as s1 " +
-                      "where p10 in ('a', 'b')";
-            var fields = "s0.id,s1.id".Split(',');
+                      "where P10 in ('a', 'b')";
+            var fields = "s0.Id,s1.Id".Split(',');
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
             var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
-            Assert.AreEqual("[p10]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+            Assert.AreEqual("[P10]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
 
             epService.EPRuntime.SendEvent(new SupportBean_S1(100, "x"));
             epService.EPRuntime.SendEvent(new SupportBean_S1(101, "a"));
@@ -488,14 +494,14 @@ namespace com.espertech.esper.regression.epl.other
         {
             SupportQueryPlanIndexHook.Reset();
             var epl = INDEX_CALLBACK_HOOK + "select * from S0 as s0 unidirectional, S1#keepall as s1 " +
-                      "where 'a' in (p10, p11)";
-            var fields = "s0.id,s1.id".Split(',');
+                      "where 'a' in (P10, P11)";
+            var fields = "s0.Id,s1.Id".Split(',');
             var stmt = epService.EPAdministrator.CreateEPL(epl);
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
             var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
-            Assert.AreEqual("[p10][p11]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+            Assert.AreEqual("[P10][P11]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
 
             epService.EPRuntime.SendEvent(new SupportBean_S1(100, "x", "y"));
             epService.EPRuntime.SendEvent(new SupportBean_S1(101, "x", "a"));
@@ -518,12 +524,12 @@ namespace com.espertech.esper.regression.epl.other
 
             // 3-stream join with in-multiindex directional
             var planInMidx = new InKeywordTableLookupPlanMultiIdx(
-                0, 1, GetIndexKeys("i1a", "i1b"), SupportExprNodeFactory.MakeIdentExprNode("p00"));
+                0, 1, GetIndexKeys("i1a", "i1b"), SupportExprNodeFactory.MakeIdentExprNode("P00"));
             TryAssertion(
-                epService, epl + " where p00 in (p10, p11)",
+                epService, epl + " where P00 in (P10, P11)",
                 SupportQueryPlanBuilder.Start(3)
-                    .AddIndexHashSingleNonUnique(1, "i1a", "p10")
-                    .AddIndexHashSingleNonUnique(1, "i1b", "p11")
+                    .AddIndexHashSingleNonUnique(1, "i1a", "P10")
+                    .AddIndexHashSingleNonUnique(1, "i1b", "P11")
                     .SetIndexFullTableScan(2, "i2")
                     .SetLookupPlanInstruction(
                         0, "s0", new[]
@@ -539,9 +545,10 @@ namespace com.espertech.esper.regression.epl.other
                     .Get());
 
             var planInMidxMulitiSrc = new InKeywordTableLookupPlanMultiIdx(
-                0, 1, GetIndexKeys("i1", "i2"), SupportExprNodeFactory.MakeIdentExprNode("p00"));
+                0, 1, GetIndexKeys("i1", "i2"), SupportExprNodeFactory.MakeIdentExprNode("P00"));
+
             TryAssertion(
-                epService, epl + " where p00 in (p10, p20)",
+                epService, epl + " where P00 in (P10, P20)",
                 SupportQueryPlanBuilder.Start(3)
                     .SetIndexFullTableScan(1, "i1")
                     .SetIndexFullTableScan(2, "i2")
@@ -561,13 +568,13 @@ namespace com.espertech.esper.regression.epl.other
 
             // 3-stream join with in-singleindex directional
             var planInSidx = new InKeywordTableLookupPlanSingleIdx(
-                0, 1, GetIndexKey("i1"), SupportExprNodeFactory.MakeIdentExprNodes("p00", "p01"));
-            TryAssertion(epService, epl + " where p10 in (p00, p01)", GetSingleIndexPlan(planInSidx));
+                0, 1, GetIndexKey("i1"), SupportExprNodeFactory.MakeIdentExprNodes("P00", "P01"));
+            TryAssertion(epService, epl + " where P10 in (P00, P01)", GetSingleIndexPlan(planInSidx));
 
             // 3-stream join with in-singleindex multi-sourced
             var planInSingleMultiSrc = new InKeywordTableLookupPlanSingleIdx(
-                0, 1, GetIndexKey("i1"), SupportExprNodeFactory.MakeIdentExprNodes("p00"));
-            TryAssertion(epService, epl + " where p10 in (p00, p20)", GetSingleIndexPlan(planInSingleMultiSrc));
+                0, 1, GetIndexKey("i1"), SupportExprNodeFactory.MakeIdentExprNodes("P00"));
+            TryAssertion(epService, epl + " where P10 in (P00, P20)", GetSingleIndexPlan(planInSingleMultiSrc));
         }
 
         private void RunAssertionQueryPlan2Stream(EPServiceProvider epService)
@@ -582,81 +589,81 @@ namespace com.espertech.esper.regression.epl.other
             TryAssertion(epService, epl, fullTableScan);
 
             var planEquals = SupportQueryPlanBuilder.Start(2)
-                .AddIndexHashSingleNonUnique(1, "a", "p10")
+                .AddIndexHashSingleNonUnique(1, "a", "P10")
                 .SetLookupPlanInner(
                     0,
-                    new IndexedTableLookupPlanSingle(0, 1, GetIndexKey("a"), SupportExprNodeFactory.MakeKeyed("p00")))
+                    new IndexedTableLookupPlanSingle(0, 1, GetIndexKey("a"), SupportExprNodeFactory.MakeKeyed("P00")))
                 .Get();
-            TryAssertion(epService, epl + "where p00 = p10", planEquals);
-            TryAssertion(epService, epl + "where p00 = p10 and p00 in (p11, p12, p13)", planEquals);
+            TryAssertion(epService, epl + "where P00 = P10", planEquals);
+            TryAssertion(epService, epl + "where P00 = P10 and P00 in (P11, P12, P13)", planEquals);
 
             var planInMultiInner = SupportQueryPlanBuilder.Start(2)
-                .AddIndexHashSingleNonUnique(1, "a", "p11")
-                .AddIndexHashSingleNonUnique(1, "b", "p12")
+                .AddIndexHashSingleNonUnique(1, "a", "P11")
+                .AddIndexHashSingleNonUnique(1, "b", "P12")
                 .SetLookupPlanInner(
                     0,
                     new InKeywordTableLookupPlanMultiIdx(
-                        0, 1, GetIndexKeys("a", "b"), SupportExprNodeFactory.MakeIdentExprNode("p00")))
+                        0, 1, GetIndexKeys("a", "b"), SupportExprNodeFactory.MakeIdentExprNode("P00")))
                 .Get();
-            TryAssertion(epService, epl + "where p00 in (p11, p12)", planInMultiInner);
-            TryAssertion(epService, epl + "where p00 = p11 or p00 = p12", planInMultiInner);
+            TryAssertion(epService, epl + "where P00 in (P11, P12)", planInMultiInner);
+            TryAssertion(epService, epl + "where P00 = P11 or P00 = P12", planInMultiInner);
 
             var planInMultiOuter = SupportQueryPlanBuilder.Start(planInMultiInner)
                 .SetLookupPlanOuter(
                     0,
                     new InKeywordTableLookupPlanMultiIdx(
-                        0, 1, GetIndexKeys("a", "b"), SupportExprNodeFactory.MakeIdentExprNode("p00")))
+                        0, 1, GetIndexKeys("a", "b"), SupportExprNodeFactory.MakeIdentExprNode("P00")))
                 .Get();
             var eplOuterJoin = "select * from S0 as s0 unidirectional full outer join S1#keepall ";
-            TryAssertion(epService, eplOuterJoin + "where p00 in (p11, p12)", planInMultiOuter);
+            TryAssertion(epService, eplOuterJoin + "where P00 in (P11, P12)", planInMultiOuter);
 
             var planInMultiWConst = SupportQueryPlanBuilder.Start(2)
-                .AddIndexHashSingleNonUnique(1, "a", "p11")
-                .AddIndexHashSingleNonUnique(1, "b", "p12")
+                .AddIndexHashSingleNonUnique(1, "a", "P11")
+                .AddIndexHashSingleNonUnique(1, "b", "P12")
                 .SetLookupPlanInner(
                     0,
                     new InKeywordTableLookupPlanMultiIdx(
                         0, 1, GetIndexKeys("a", "b"), SupportExprNodeFactory.MakeConstExprNode("A")))
                 .Get();
-            TryAssertion(epService, epl + "where 'A' in (p11, p12)", planInMultiWConst);
-            TryAssertion(epService, epl + "where 'A' = p11 or 'A' = p12", planInMultiWConst);
+            TryAssertion(epService, epl + "where 'A' in (P11, P12)", planInMultiWConst);
+            TryAssertion(epService, epl + "where 'A' = P11 or 'A' = P12", planInMultiWConst);
 
             var planInMultiWAddConst = SupportQueryPlanBuilder.Start(2)
-                .AddIndexHashSingleNonUnique(1, "a", "p12")
+                .AddIndexHashSingleNonUnique(1, "a", "P12")
                 .SetLookupPlanInner(
                     0,
                     new InKeywordTableLookupPlanMultiIdx(
                         0, 1, GetIndexKeys("a"), SupportExprNodeFactory.MakeConstExprNode("A")))
                 .Get();
-            TryAssertion(epService, epl + "where 'A' in ('B', p12)", planInMultiWAddConst);
+            TryAssertion(epService, epl + "where 'A' in ('B', P12)", planInMultiWAddConst);
             TryAssertion(epService, epl + "where 'A' in ('B', 'C')", fullTableScan);
 
             var planInSingle = SupportQueryPlanBuilder.Start(2)
-                .AddIndexHashSingleNonUnique(1, "a", "p10")
+                .AddIndexHashSingleNonUnique(1, "a", "P10")
                 .SetLookupPlanInner(
                     0,
                     new InKeywordTableLookupPlanSingleIdx(
-                        0, 1, GetIndexKey("a"), SupportExprNodeFactory.MakeIdentExprNodes("p00", "p01")))
+                        0, 1, GetIndexKey("a"), SupportExprNodeFactory.MakeIdentExprNodes("P00", "P01")))
                 .Get();
-            TryAssertion(epService, epl + "where p10 in (p00, p01)", planInSingle);
+            TryAssertion(epService, epl + "where P10 in (P00, P01)", planInSingle);
 
             var planInSingleWConst = SupportQueryPlanBuilder.Start(2)
-                .AddIndexHashSingleNonUnique(1, "a", "p10")
+                .AddIndexHashSingleNonUnique(1, "a", "P10")
                 .SetLookupPlanInner(
                     0,
                     new InKeywordTableLookupPlanSingleIdx(
-                        0, 1, GetIndexKey("a"), SupportExprNodeFactory.MakeConstAndIdentNode("A", "p01")))
+                        0, 1, GetIndexKey("a"), SupportExprNodeFactory.MakeConstAndIdentNode("A", "P01")))
                 .Get();
-            TryAssertion(epService, epl + "where p10 in ('A', p01)", planInSingleWConst);
+            TryAssertion(epService, epl + "where P10 in ('A', P01)", planInSingleWConst);
 
             var planInSingleJustConst = SupportQueryPlanBuilder.Start(2)
-                .AddIndexHashSingleNonUnique(1, "a", "p10")
+                .AddIndexHashSingleNonUnique(1, "a", "P10")
                 .SetLookupPlanInner(
                     0,
                     new InKeywordTableLookupPlanSingleIdx(
                         0, 1, GetIndexKey("a"), SupportExprNodeFactory.MakeConstAndConstNode("A", "B")))
                 .Get();
-            TryAssertion(epService, epl + "where p10 in ('A', 'B')", planInSingleJustConst);
+            TryAssertion(epService, epl + "where P10 in ('A', 'B')", planInSingleJustConst);
         }
 
         private void TryAssertion(EPServiceProvider epService, string epl, QueryPlan expectedPlan)
@@ -682,7 +689,7 @@ namespace com.espertech.esper.regression.epl.other
         private QueryPlan GetSingleIndexPlan(InKeywordTableLookupPlanSingleIdx plan)
         {
             return SupportQueryPlanBuilder.Start(3)
-                .AddIndexHashSingleNonUnique(1, "i1", "p10")
+                .AddIndexHashSingleNonUnique(1, "i1", "P10")
                 .SetIndexFullTableScan(2, "i2")
                 .SetLookupPlanInstruction(
                     0, "s0", new[]

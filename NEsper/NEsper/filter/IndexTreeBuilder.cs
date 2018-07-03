@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 using System.Threading;
 
@@ -63,6 +62,9 @@ namespace com.espertech.esper.filter
             {
                 treePathInfo = AllocateTreePath(1);
                 treePathInfo[0] = new ArrayDeque<EventTypeIndexBuilderIndexLookupablePair>(1);
+#if DEBUG && DIAGNOSTICS
+                System.Diagnostics.Debug.WriteLine("{0}: Add -> AddToNode[1]: {0}", Thread.CurrentThread.ManagedThreadId, topNode);
+#endif
                 AddToNode(new ArrayDeque<FilterValueSetParam>(1), filterCallback, topNode, treePathInfo[0], lockFactory);
             }
             else
@@ -74,6 +76,9 @@ namespace com.espertech.esper.filter
                     treePathInfo[i] = new ArrayDeque<EventTypeIndexBuilderIndexLookupablePair>(filterValueSet.Parameters[i].Length);
                     remainingParameters.Clear();
                     remainingParameters.AddAll(filterValueSet.Parameters[i]);
+#if DEBUG && DIAGNOSTICS
+                    System.Diagnostics.Debug.WriteLine("{0}: Add -> AddToNode[0]: {1}", Thread.CurrentThread.ManagedThreadId, topNode);
+#endif
                     AddToNode(remainingParameters, filterCallback, topNode, treePathInfo[i], lockFactory);
                 }
             }
@@ -131,6 +136,9 @@ namespace com.espertech.esper.filter
             {
                 using (currentNode.NodeRWLock.AcquireWriteLock())
                 {
+#if DEBUG && DIAGNOSTICS
+                    System.Diagnostics.Debug.WriteLine("{0}: AddToNode[1] -> Add: {1}", Thread.CurrentThread.ManagedThreadId, currentNode);
+#endif
                     currentNode.Add(filterCallback);
                 }
                 return;
@@ -149,6 +157,9 @@ namespace com.espertech.esper.filter
                     var filterForValue = pair.First.FilterForValue;
                     var index = pair.Second;
                     treePathInfo.Add(new EventTypeIndexBuilderIndexLookupablePair(index, filterForValue));
+#if DEBUG && DIAGNOSTICS
+                    System.Diagnostics.Debug.WriteLine(string.Format("{0}: AddToNode[2] -> AddToIndex: {1} / {2}", Thread.CurrentThread.ManagedThreadId, currentNode, index));
+#endif
                     AddToIndex(remainingParameters, filterCallback, index, filterForValue, treePathInfo, lockFactory);
                     return;
                 }
@@ -166,6 +177,9 @@ namespace com.espertech.esper.filter
                     var filterForValue = pair.First.FilterForValue;
                     var indexX = pair.Second;
                     treePathInfo.Add(new EventTypeIndexBuilderIndexLookupablePair(indexX, filterForValue));
+#if DEBUG && DIAGNOSTICS
+                    System.Diagnostics.Debug.WriteLine("{0}: AddToNode[3] -> AddToIndex: {1} / {2}", Thread.CurrentThread.ManagedThreadId, currentNode, indexX);
+#endif
                     AddToIndex(remainingParameters, filterCallback, indexX, filterForValue, treePathInfo, lockFactory);
                     return;
                 }
@@ -178,6 +192,9 @@ namespace com.espertech.esper.filter
 
                 currentNode.Indizes.Add(index);
                 treePathInfo.Add(new EventTypeIndexBuilderIndexLookupablePair(index, parameterPickedForIndex.FilterForValue));
+#if DEBUG && DIAGNOSTICS
+                System.Diagnostics.Debug.WriteLine("{0}: AddToNode[4] -> AddToIndex: {1}", Thread.CurrentThread.ManagedThreadId, index);
+#endif
                 AddToIndex(remainingParameters, filterCallback, index, parameterPickedForIndex.FilterForValue, treePathInfo, lockFactory);
             }
         }
@@ -278,7 +295,7 @@ namespace com.espertech.esper.filter
                 if (nextPair == null)
                 {
                     Log.Fatal(".removeFromIndex Expected an inner index to this index, this=" + filterCallback);
-                    Debug.Assert(false);
+                    System.Diagnostics.Debug.Assert(false);
                     return false;
                 }
 
@@ -286,7 +303,7 @@ namespace com.espertech.esper.filter
                 {
                     Log.Fatal(".removeFromIndex Expected an index for filterCallback that differs from the found index, this=" + filterCallback +
                             "  expected=" + nextPair.Index);
-                    Debug.Assert(false);
+                    System.Diagnostics.Debug.Assert(false);
                     return false;
                 }
 
@@ -327,15 +344,27 @@ namespace com.espertech.esper.filter
                     Thread.CurrentThread.ManagedThreadId, index, filterForValue);
             }
 
+#if DEBUG && DIAGNOSTICS
+            System.Diagnostics.Debug.WriteLine("{0}: AddToIndex[-2] - Adding to index {1}  expressionValue={2}",
+                Thread.CurrentThread.ManagedThreadId, index, filterForValue);
+#endif
+
             EventEvaluator eventEvaluator;
 
             using (index.ReadWriteLock.AcquireReadLock())
             {
                 eventEvaluator = index[filterForValue];
+#if DEBUG && DIAGNOSTICS
+                System.Diagnostics.Debug.WriteLine("{0}: AddToIndex[-1] - eventEvaluator = {1}",
+                    Thread.CurrentThread.ManagedThreadId, eventEvaluator);
+#endif
 
                 // The filter parameter value already existed in bean, add and release locks
                 if (eventEvaluator != null)
                 {
+#if DEBUG && DIAGNOSTICS
+                    System.Diagnostics.Debug.WriteLine("{0}: AddToIndex[0] -> AddToEvaluator: {1}", Thread.CurrentThread.ManagedThreadId, eventEvaluator);
+#endif
                     var added = AddToEvaluator(remainingParameters, filterCallback, eventEvaluator, treePathInfo, lockFactory);
                     if (added)
                     {
@@ -352,6 +381,10 @@ namespace com.espertech.esper.filter
                 // It may exist now since another thread could have added the entry
                 if (eventEvaluator != null)
                 {
+#if DEBUG && DIAGNOSTICS
+                    System.Diagnostics.Debug.WriteLine("{0}: AddToIndex[1] -> AddToEvaluator: {1}", Thread.CurrentThread.ManagedThreadId, eventEvaluator);
+#endif
+
                     var added = AddToEvaluator(remainingParameters, filterCallback, eventEvaluator, treePathInfo, lockFactory);
                     if (added)
                     {
@@ -359,7 +392,10 @@ namespace com.espertech.esper.filter
                     }
 
                     // The found eventEvaluator must be converted to a new FilterHandleSetNode
-                    var nextIndexX = (FilterParamIndexBase)eventEvaluator;
+                    var nextIndexX = (FilterParamIndexBase) eventEvaluator;
+#if DEBUG && DIAGNOSTICS
+                    System.Diagnostics.Debug.WriteLine("{0}: new[2]", Thread.CurrentThread.ManagedThreadId);
+#endif
                     var newNode = new FilterHandleSetNode(lockFactory.ObtainNew());
                     newNode.Add(nextIndexX);
                     index.Remove(filterForValue);
@@ -373,6 +409,9 @@ namespace com.espertech.esper.filter
                 // if there are no remaining parameters, create a node
                 if (remainingParameters.IsEmpty())
                 {
+#if DEBUG && DIAGNOSTICS
+                    System.Diagnostics.Debug.WriteLine("{0}: new[3]", Thread.CurrentThread.ManagedThreadId);
+#endif
                     var node = new FilterHandleSetNode(lockFactory.ObtainNew());
                     AddToNode(remainingParameters, filterCallback, node, treePathInfo, lockFactory);
                     index[filterForValue] = node;
@@ -386,6 +425,9 @@ namespace com.espertech.esper.filter
 
                 index[filterForValue] = nextIndex;
                 treePathInfo.Add(new EventTypeIndexBuilderIndexLookupablePair(nextIndex, parameterPickedForIndex.FilterForValue));
+#if DEBUG && DIAGNOSTICS
+                System.Diagnostics.Debug.WriteLine("{0}: AddToIndex[2] -> AddToEvaluator: {1}", Thread.CurrentThread.ManagedThreadId, eventEvaluator);
+#endif
                 AddToIndex(remainingParameters, filterCallback, nextIndex, parameterPickedForIndex.FilterForValue, treePathInfo, lockFactory);
             }
         }
@@ -411,6 +453,9 @@ namespace com.espertech.esper.filter
             if (eventEvaluator is FilterHandleSetNode)
             {
                 var node = (FilterHandleSetNode)eventEvaluator;
+#if DEBUG && DIAGNOSTICS
+                System.Diagnostics.Debug.WriteLine("{0}: AddToEvaluator: {1}", Thread.CurrentThread.ManagedThreadId, node);
+#endif
                 AddToNode(remainingParameters, filterCallback, node, treePathInfo, lockFactory);
                 return true;
             }
@@ -423,6 +468,9 @@ namespace com.espertech.esper.filter
             {
                 remainingParameters.Remove(parameter);
                 treePathInfo.Add(new EventTypeIndexBuilderIndexLookupablePair(nextIndex, parameter.FilterForValue));
+#if DEBUG && DIAGNOSTICS
+                System.Diagnostics.Debug.WriteLine("{0}: AddToEvaluator -> AddToIndex: {1}", Thread.CurrentThread.ManagedThreadId, nextIndex);
+#endif
                 AddToIndex(remainingParameters, filterCallback, nextIndex, parameter.FilterForValue, treePathInfo, lockFactory);
                 return true;
             }

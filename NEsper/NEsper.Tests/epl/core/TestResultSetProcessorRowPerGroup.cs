@@ -53,7 +53,7 @@ namespace com.espertech.esper.epl.core
                 new Configuration(_container), null, 
                 new TableServiceImpl(_container),
                 null);
-            var selectProcessor = factory.Evaluator;
+            var selectProcessor = factory.GetEvaluator();
             _supportAggregationService = new SupportAggregationService();
     
             var groupKeyNodes = new ExprEvaluator[2];

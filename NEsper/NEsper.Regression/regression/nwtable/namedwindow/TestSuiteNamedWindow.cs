@@ -8,12 +8,7 @@
 
 using NUnit.Framework;
 
-using System;
-
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.supportregression.execution;
 
 namespace com.espertech.esper.regression.nwtable.namedwindow

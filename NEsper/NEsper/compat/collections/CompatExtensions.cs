@@ -1089,15 +1089,36 @@ namespace com.espertech.esper.compat.collections
                 return (string) value;
             }
 
-            if (value is decimal ||
-                value is double ||
-                value is float) {
+            if (value is decimal) {
                 var text = value.ToString();
                 if (text.IndexOf('.') == -1) {
                     text += ".0";
                 }
 
-                return text;
+                return text + 'm';
+            }
+
+            if (value is double) {
+                var text = value.ToString();
+                if (text.IndexOf('.') == -1) {
+                    text += ".0";
+                }
+
+                return text; // + 'd'
+            }
+
+            if (value is float) {
+                var text = value.ToString();
+                if (text.IndexOf('.') == -1) {
+                    text += ".0";
+                }
+
+                return text + 'f';
+            }
+
+            if (value is long) {
+                var text = value.ToString();
+                return text + 'L';
             }
 
             if (value is DateTimeOffset) {

@@ -26,14 +26,14 @@ namespace com.espertech.esper.supportunit.util
 
         private static readonly ObjectReservationSingleton OurInstance = new ObjectReservationSingleton();
 
-        private readonly HashSet<Object> _reservedObjects;
+        private readonly HashSet<object> _reservedObjects;
         private readonly ILockable _reservedIdsLock;
 
         public static ObjectReservationSingleton Instance { get; } = new ObjectReservationSingleton();
 
         private ObjectReservationSingleton()
         {
-            _reservedObjects = new HashSet<Object>();
+            _reservedObjects = new HashSet<object>();
             _reservedIdsLock = SupportContainer.Instance.LockManager().CreateLock(GetType());
         }
 
@@ -45,10 +45,18 @@ namespace com.espertech.esper.supportunit.util
         /// <returns>
         /// true if reserved, false to indicate already reserved
         /// </returns>
-        public bool Reserve(Object @object)
+        public bool Reserve(object @object)
         {
-            bool rvalue = false;
-            _reservedIdsLock.Call(() => rvalue = !_reservedObjects.Add(@object));
+            var rvalue = _reservedIdsLock.Call(() => {
+#if DEBUG && DIAGNOSTIC
+                Log.Info("Reserved / Value = {0} / {1}", @object, _reservedObjects.Count);
+#endif
+                return _reservedObjects.Add(@object);
+            });
+
+#if DEBUG && DIAGNOSTIC
+            Log.Info("Reserved / Result = {0} / {1}", @object, rvalue);
+#endif
             return rvalue;
         }
 
@@ -56,7 +64,7 @@ namespace com.espertech.esper.supportunit.util
         /// Unreserve an object. Logs a fatal error if the unreserve failed.
         /// </summary>
         /// <param name="object">object to unreserve</param>
-        public void Unreserve(Object @object)
+        public void Unreserve(object @object)
         {
             bool wasRemoved;
             using (_reservedIdsLock.Acquire()) {
@@ -64,9 +72,13 @@ namespace com.espertech.esper.supportunit.util
             }
 
             if (!wasRemoved) {
-                Log.Error(".unreserve FAILED, object=" + @object);
+                Log.Error(".Unreserve[FAILED]: object={0}", @object);
                 return;
             }
+
+#if DEBUG && DIAGNOSTIC
+            Log.Info(".Unreserve: object = {0}", @object);
+#endif
         }
     }
 }

@@ -78,8 +78,6 @@ namespace com.espertech.esper.regression.multithread
             public IDictionary<EPStatement, UniformPair<EventBean>> FirstLastPerStmt { get; } =
                 new Dictionary<EPStatement, UniformPair<EventBean>>();
 
-
-
             public void Update(
                 EventBean[] newEvents,
                 EventBean[] oldEvents,

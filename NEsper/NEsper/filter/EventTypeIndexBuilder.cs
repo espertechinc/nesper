@@ -83,8 +83,7 @@ namespace com.espertech.esper.filter
                     using(_callbacksLock.Acquire())
                     {
                         rootNode = _eventTypeIndex.Get(eventType);
-                        if (rootNode == null)
-                        {
+                        if (rootNode == null) {
                             rootNode = new FilterHandleSetNode(lockFactory.ObtainNew());
                             _eventTypeIndex.Add(eventType, rootNode);
                         }

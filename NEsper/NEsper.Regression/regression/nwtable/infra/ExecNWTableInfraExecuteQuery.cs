@@ -155,20 +155,20 @@ namespace com.espertech.esper.regression.nwtable.infra
             epl = "select prev(1, TheString) from MyInfra";
             TryInvalidFAF(
                 epService, epl,
-                "Error executing statement: Failed to validate select-clause expression 'Prev(1,TheString)': Previous function cannot be used in this context [select prev(1, TheString) from MyInfra]");
+                "Error executing statement: Failed to validate select-clause expression 'prev(1,TheString)': Previous function cannot be used in this context [select prev(1, TheString) from MyInfra]");
 
             epl = "insert into MyInfra(IntPrimitive) select 'a'";
             if (isNamedWindow)
             {
                 TryInvalidFAF(
                     epService, epl,
-                    "Error executing statement: Invalid assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as 'int', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
+                    "Error executing statement: Invalid assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as '" + typeof(int).GetCleanName() + "', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
             }
             else
             {
                 TryInvalidFAF(
                     epService, epl,
-                    "Error executing statement: Invalid assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as '" + Name.Clean<int>() + "', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
+                    "Error executing statement: Invalid assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as '" + typeof(int).GetCleanName() + "', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
             }
 
             epl = "insert into MyInfra(IntPrimitive, TheString) select 1";
@@ -376,7 +376,10 @@ namespace com.espertech.esper.regression.nwtable.infra
 
         private void InsertInfra2Event(EPServiceProvider epService, string keyJoin, double value)
         {
-            epService.EPRuntime.ExecuteQuery("insert into Infra2 values ('" + keyJoin + "', " + value + ")");
+            // BUG: if a double is 'rendered' as an integer, it will get stored in the underlying
+            // map as an integer.  this can cause secondary problems if the data type is denoted
+            // as something else.
+            epService.EPRuntime.ExecuteQuery("insert into Infra2 values ('" + keyJoin + "', " + value.RenderAny() + ")");
         }
 
         private void RunAssertionAggUngroupedRowForEvent(EPServiceProvider epService, bool isNamedWindow)
@@ -811,13 +814,23 @@ namespace com.espertech.esper.regression.nwtable.infra
             }
 
             var result = epService.EPRuntime.ExecuteQuery("update MyInfra set TheString = 'ABC'");
-            EPAssertionUtil.AssertPropsPerRow(
+
+            // Esper test in Java assumes order of rows.  However, tables are implemented with maps
+            // (aka hashtables) and thus cannot be assumed to return a "fixed" order of rows.
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(
                 epService.EPAdministrator.GetStatement("TheInfra").GetEnumerator(), fields,
-                new[] {new object[] {"ABC", 0}, new object[] {"ABC", 1}});
+                new[] {
+                    new object[] {"ABC", 0},
+                    new object[] {"ABC", 1}
+                });
+
             if (isNamedWindow)
             {
-                EPAssertionUtil.AssertPropsPerRow(
-                    result.Array, fields, new[] {new object[] {"ABC", 0}, new object[] {"ABC", 1}});
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    result.Array, fields, new[] {
+                        new object[] {"ABC", 0},
+                        new object[] {"ABC", 1}
+                    });
             }
 
             // test update with where-clause
@@ -915,7 +928,7 @@ namespace com.espertech.esper.regression.nwtable.infra
                 epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("doubleInt", GetType(), "DoubleInt");
                 epService.EPRuntime.ExecuteQuery("delete from MyInfra");
                 epService.EPRuntime.SendEvent(new SupportBean("A", 10));
-                epService.EPRuntime.ExecuteQuery("update MyInfra mw set Mw.TheString = 'XYZ', doubleInt(mw)");
+                epService.EPRuntime.ExecuteQuery("update MyInfra mw set mw.TheString = 'XYZ', doubleInt(mw)");
                 EPAssertionUtil.AssertPropsPerRow(
                     epService.EPAdministrator.GetStatement("TheInfra").GetEnumerator(),
                     "TheString,IntPrimitive".Split(','), new[] {new object[] {"XYZ", 20}});
