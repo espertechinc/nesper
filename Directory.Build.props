@@ -1,0 +1,57 @@
+<Project>
+	<PropertyGroup>
+		<Language>en-US</Language>
+		<NeutralLanguage>en-US</NeutralLanguage>
+	    <PackageTags>NEsper Esper ESP CEP</PackageTags>
+		<PackageCopyright>Copyright (C) 2014-2017 Espertech. All rights reserved.</PackageCopyright>
+		<PackageProjectUrl>http://www.espertech.com/esper</PackageProjectUrl>
+		<PackageLicenseUrl>http://www.espertech.com/esper/esper-license-and-trademark/</PackageLicenseUrl>
+		<IconUrl>http://static.espertech.com/espertech_logo.png</IconUrl>
+		<Copyright>Espertech, 2014-2017</Copyright>
+		<RepositoryType>Github</RepositoryType>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<VersionPrefix Condition="'$(VersionPrefix)' == ''">6.1.0</VersionPrefix>
+		<VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<DefineConstants>TRACE;DEBUG;</DefineConstants>
+		<DebugType>full</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<Optimize>false</Optimize>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DefineConstants/>
+		<DebugType>pdbonly</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<Optimize>true</Optimize>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='net40'">
+		<NetFramework>true</NetFramework>
+		<DefineConstants>$(DefineConstants);NETFRAMEWORK;NET40;</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='net46'">
+		<NetFramework>true</NetFramework>
+		<DefineConstants>$(DefineConstants);NETFRAMEWORK;NET46;</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='net471'">
+		<NetFramework>true</NetFramework>
+		<DefineConstants>$(DefineConstants);NETFRAMEWORK;NET471;</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+		<NetCore>true</NetCore>
+		<DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
+	</PropertyGroup>
+</Project>

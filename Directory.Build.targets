@@ -1,0 +1,5 @@
+<Project InitialTargets="CheckVersion">
+	<Target Name="CheckVersion">
+		<Message Text="Version: $(Version)" />
+	</Target>
+</Project>
