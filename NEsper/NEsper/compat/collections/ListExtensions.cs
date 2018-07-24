@@ -20,17 +20,16 @@ namespace com.espertech.esper.compat.collections
     {
         public static IList<object> AsObjectList(this object value)
         {
-            if (value == null)
-            {
+            if (value == null) {
                 return null;
             }
-            else if (value is IList<object>)
-            {
-                return ((IList<object>) value);
+            else if (value is IList<object> asList) {
+                return asList;
             }
-            else if (value.GetType().IsGenericList())
-            {
-                return MagicMarker.NewMagicList<object>(value);
+            else if (value.GetType().IsGenericList()) {
+                return MagicMarker
+                    .GetListFactory(value.GetType())
+                    .Invoke(value);
             }
 
             throw new ArgumentException("invalid value for object list");

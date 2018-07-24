@@ -55,11 +55,11 @@ namespace com.espertech.esper.client.metric
 
         /// <summary>Returns number of output rows in remove stream. </summary>
         /// <returns>number of output rows in remove stream</returns>
-        public long NumOutputRStream => Interlocked.Read(ref _numOutputRStream);
+        public long OutputRStreamCount => Interlocked.Read(ref _numOutputRStream);
 
         /// <summary>Returns number of output rows in insert stream. </summary>
         /// <returns>number of output rows in insert stream</returns>
-        public long NumOutputIStream => Interlocked.Read(ref _numOutputIStream);
+        public long OutputIStreamCount => Interlocked.Read(ref _numOutputIStream);
 
         /// <summary>Adds number of output rows in insert stream. </summary>
         /// <param name="numIStream">to add</param>

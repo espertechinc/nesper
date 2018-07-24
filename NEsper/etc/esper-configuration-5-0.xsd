@@ -235,9 +235,12 @@
 	</xs:simpleType>
 	<xs:element name="driver">
 		<xs:complexType>
-			<xs:sequence minOccurs="0" maxOccurs="unbound">
+			<xs:attribute name="type" type="xs:string" use="required" />
+			<!--
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
 				<xs:attribute name="type" type="xs:string" use="required"/>
 			</xs:sequence>
+			-->
 			<xs:anyAttribute />
 		</xs:complexType>
 	</xs:element>

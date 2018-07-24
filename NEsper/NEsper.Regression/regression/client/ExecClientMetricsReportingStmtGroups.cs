@@ -62,7 +62,7 @@ namespace com.espertech.esper.regression.client
             Assert.IsFalse(listener.IsInvoked);
     
             SendTimer(epService, 8000);
-            string[] fields = "StatementName,NumOutputIStream,NumInput".Split(',');
+            string[] fields = "StatementName,OutputIStreamCount,NumInput".Split(',');
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new object[]{"GroupOne", 0L, 0L});
     
             SendTimer(epService, 12000);

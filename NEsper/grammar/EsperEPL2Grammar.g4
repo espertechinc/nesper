@@ -1594,7 +1594,7 @@ Sign
 
 fragment
 FloatTypeSuffix
-    :   [fFdD]
+    :   [fFdDm]
     ;
 
 fragment

@@ -111,8 +111,8 @@ namespace com.espertech.esper.regression.client
             Assert.IsTrue((wallTwo + 50) > WALL_GOAL_TWO_MSEC, "wallTwo=" + wallTwo);
     
             for (int i = 0; i < 4; i++) {
-                Assert.AreEqual(1L, received[i].Get("numOutputIStream"));
-                Assert.AreEqual(0L, received[i].Get("numOutputRStream"));
+                Assert.AreEqual(1L, received[i].Get("OutputIStreamCount"));
+                Assert.AreEqual(0L, received[i].Get("OutputRStreamCount"));
                 Assert.AreEqual(timestamp, received[i].Get("timestamp"));
             }
     
