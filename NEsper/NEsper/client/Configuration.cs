@@ -5,12 +5,14 @@
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Xml;
+
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.client.hook;
 using com.espertech.esper.collection;
@@ -21,6 +23,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.dataflow.ops;
 using com.espertech.esper.events;
 using com.espertech.esper.util;
+
 namespace com.espertech.esper.client
 {
     /// <summary>
@@ -43,14 +46,16 @@ namespace com.espertech.esper.client
         : ConfigurationOperations
         , ConfigurationInformation
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        /// <summary>Default name of the configuration file.</summary>
+        internal static readonly string ESPER_DEFAULT_CONFIG = "esper.cfg.xml";
+
         /// <summary>
         /// Import name of the package that hosts the annotation classes.
         /// </summary>
-        public readonly static String ANNOTATION_IMPORT = typeof(NameAttribute).Namespace;
-        /// <summary>Default name of the configuration file.</summary>
-        internal static readonly string ESPER_DEFAULT_CONFIG = "esper.cfg.xml";
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public static readonly String ANNOTATION_IMPORT = typeof(NameAttribute).Namespace;
+
         /// <summary>Map of event name and fully-qualified class name.</summary>
         private IDictionary<string, string> _eventClasses;
         /// <summary>Map of event type name and XML DOM configuration.</summary>
@@ -148,6 +153,18 @@ namespace com.espertech.esper.client
         private IDictionary<string, ConfigurationVariantStream> _variantStreams;
         [NonSerialized] private IDictionary<string, Object> _transientConfiguration;
         [NonSerialized] private IContainer _container;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Configuration"/> class.
+        /// </summary>
+        public Configuration()
+        {
+            _container = ContainerExtensions.CreateDefaultContainer(false)
+                .InitializeDefaultServices()
+                .InitializeDatabaseDrivers();
+            Reset();
+        }
+
         /// <summary>
         /// Constructs an empty configuration. The auto import values
         /// are set by default to System, System.Collections and
@@ -159,6 +176,7 @@ namespace com.espertech.esper.client
             _container = container;
             Reset();
         }
+
         /// <summary>
         /// Get the configuration file as an <tt>InputStream</tt>. Might be overridden
         /// by subclasses to allow the configuration to be located by some arbitrary
@@ -174,6 +192,7 @@ namespace com.espertech.esper.client
         {
             return GetResourceAsStream(resource);
         }
+
         /// <summary>
         /// Returns an input stream from an application resource in the classpath.
         /// <para>
@@ -213,6 +232,7 @@ namespace com.espertech.esper.client
             }
             return stream;
         }
+
         public string EPServicesContextFactoryClassName => _epServicesContextFactoryClassName;
         /// <summary>
         /// Sets the class name of the services context factory class to use.
@@ -222,6 +242,7 @@ namespace com.espertech.esper.client
         {
             _epServicesContextFactoryClassName = epServicesContextFactoryClassName;
         }
+
         public void AddPlugInAggregationFunctionFactory(string functionName, string aggregationFactoryClassName)
         {
             var entry = new ConfigurationPlugInAggregationFunction();
@@ -229,6 +250,7 @@ namespace com.espertech.esper.client
             entry.FactoryClassName = aggregationFactoryClassName;
             _plugInAggregationFunctions.Add(entry);
         }
+
         /// <summary>
         /// Adds a plug-in aggregation function given a EPL function name and an aggregation factory class name.
         /// <para />
@@ -241,6 +263,7 @@ namespace com.espertech.esper.client
         {
             AddPlugInAggregationFunctionFactory(functionName, aggregationFactoryClass.AssemblyQualifiedName);
         }
+
         /// <summary>
         /// Adds the plug in aggregation function factory.
         /// </summary>
@@ -250,23 +273,28 @@ namespace com.espertech.esper.client
         {
             AddPlugInAggregationFunctionFactory(functionName, typeof(T).AssemblyQualifiedName);
         }
+
         public void AddPlugInAggregationMultiFunction(ConfigurationPlugInAggregationMultiFunction config)
         {
             _plugInAggregationMultiFunctions.Add(config);
         }
+
         public void AddPlugInSingleRowFunction(ConfigurationPlugInSingleRowFunction singleRowFunction)
         {
             _plugInSingleRowFunctions.Add(singleRowFunction);
         }
+
         public void AddPlugInSingleRowFunction(string functionName, Type clazz, string methodName)
         {
             AddPlugInSingleRowFunction(functionName, clazz.AssemblyQualifiedName, methodName);
         }
+
         public void AddPlugInSingleRowFunction(string functionName, string className, string methodName)
         {
             AddPlugInSingleRowFunction(
                 functionName, className, methodName, ValueCacheEnum.DISABLED);
         }
+
         public void AddPlugInSingleRowFunction(
             string functionName,
             Type clazz,
@@ -275,6 +303,7 @@ namespace com.espertech.esper.client
         {
             AddPlugInSingleRowFunction(functionName, clazz.AssemblyQualifiedName, methodName, valueCache);
         }
+
         public void AddPlugInSingleRowFunction(
             string functionName,
             string className,
@@ -284,6 +313,7 @@ namespace com.espertech.esper.client
             AddPlugInSingleRowFunction(
                 functionName, className, methodName, valueCache, FilterOptimizableEnum.ENABLED);
         }
+
         public void AddPlugInSingleRowFunction(
             string functionName,
             Type clazz,
@@ -292,6 +322,7 @@ namespace com.espertech.esper.client
         {
             AddPlugInSingleRowFunction(functionName, clazz.AssemblyQualifiedName, methodName, filterOptimizable);
         }
+
         public void AddPlugInSingleRowFunction(
             string functionName,
             string className,
@@ -301,6 +332,7 @@ namespace com.espertech.esper.client
             AddPlugInSingleRowFunction(
                 functionName, className, methodName, ValueCacheEnum.DISABLED, filterOptimizable);
         }
+
         /// <summary>
         /// Returns transient configuration, i.e. information that is passed along as a reference and not as a value
         /// </summary>
@@ -310,10 +342,13 @@ namespace com.espertech.esper.client
             get => _transientConfiguration;
             set => _transientConfiguration = value;
         }
-        public IContainer Container {
+
+        public IContainer Container
+        {
             get => _container;
             set => _container = value;
         }
+
         public IResourceManager ResourceManager => _container.ResourceManager();
         /// <summary>
         /// Add single-row function with configurations.
@@ -333,6 +368,7 @@ namespace com.espertech.esper.client
         {
             AddPlugInSingleRowFunction(functionName, className, methodName, valueCache, filterOptimizable, false);
         }
+
         public void AddPlugInSingleRowFunction(
             string functionName,
             Type clazz,
@@ -343,6 +379,7 @@ namespace com.espertech.esper.client
         {
             AddPlugInSingleRowFunction(functionName, clazz.AssemblyQualifiedName, methodName, valueCache, filterOptimizable, rethrowExceptions);
         }
+
         /// <summary>
         /// Add single-row function with configurations.
         /// </summary>
@@ -370,6 +407,7 @@ namespace com.espertech.esper.client
             entry.IsRethrowExceptions = rethrowExceptions;
             AddPlugInSingleRowFunction(entry);
         }
+
         /// <summary>
         /// Checks if an event type has already been registered for that name.
         /// </summary>
@@ -385,6 +423,7 @@ namespace com.espertech.esper.client
                    || _eventTypesAvro.ContainsKey(eventTypeName);
             //note: no need to check legacy as they get added as class event type
         }
+
         /// <summary>
         /// Add an name for an event type represented by object events.
         /// Note that when adding multiple names for the same class the names represent an
@@ -396,6 +435,7 @@ namespace com.espertech.esper.client
         {
             _eventClasses[eventTypeName] = eventClassName;
         }
+
         /// <summary>
         /// Add an name for an event type represented by plain-old object events.
         /// Note that when adding multiple names for the same class the names represent an
@@ -407,6 +447,7 @@ namespace com.espertech.esper.client
         {
             AddEventType(eventTypeName, eventClass.AssemblyQualifiedName);
         }
+
         /// <summary>
         /// Add event type represented by plain-old object events,
         /// and the name is the simple class name of the class.
@@ -416,6 +457,7 @@ namespace com.espertech.esper.client
         {
             AddEventType(eventClass.Name, eventClass.AssemblyQualifiedName);
         }
+
         /// <summary>
         /// Adds a name for an event type represented by the type parameter.
         /// </summary>
@@ -425,6 +467,7 @@ namespace com.espertech.esper.client
         {
             AddEventType(eventTypeName, typeof(T).AssemblyQualifiedName);
         }
+
         /// <summary>
         /// Adds a name for an event type represented by the type parameter.
         /// </summary>
@@ -433,6 +476,7 @@ namespace com.espertech.esper.client
         {
             AddEventType(typeof(T).Name, typeof(T).AssemblyQualifiedName);
         }
+
         /// <summary>
         /// Add an name for an event type that represents IDictionary events.
         /// <para>
@@ -449,10 +493,12 @@ namespace com.espertech.esper.client
         {
             _mapNames.Put(eventTypeName, typeMap);
         }
+
         public void AddEventType(string eventTypeName, IDictionary<string, Object> typeMap)
         {
             _nestableMapNames.Put(eventTypeName, new Dictionary<string, Object>(typeMap));
         }
+
         public void AddEventType(string eventTypeName, IDictionary<string, Object> typeMap, string[] superTypes)
         {
             _nestableMapNames.Put(eventTypeName, new Dictionary<string, Object>(typeMap));
@@ -464,6 +510,7 @@ namespace com.espertech.esper.client
                 }
             }
         }
+
         public void AddEventType(
             string eventTypeName,
             IDictionary<string, Object> typeMap,
@@ -472,6 +519,7 @@ namespace com.espertech.esper.client
             _nestableMapNames.Put(eventTypeName, new Dictionary<string, Object>(typeMap));
             _mapTypeConfigurations.Put(eventTypeName, mapConfig);
         }
+
         /// <summary>
         /// Add, for a given Map event type identified by the first parameter, the supertype (by its event type name).
         /// <para>
@@ -491,6 +539,7 @@ namespace com.espertech.esper.client
             ICollection<string> superTypes = current.SuperTypes;
             superTypes.Add(mapSupertypeName);
         }
+
         /// <summary>
         /// Add, for a given Object-array event type identified by the first parameter, the supertype (by its event type name).
         /// <para>
@@ -514,6 +563,7 @@ namespace com.espertech.esper.client
             }
             superTypes.Add(supertypeName);
         }
+
         /// <summary>
         /// Add configuration for a map event type.
         /// </summary>
@@ -523,6 +573,7 @@ namespace com.espertech.esper.client
         {
             _mapTypeConfigurations.Put(mapeventTypeName, config);
         }
+
         /// <summary>
         /// Add configuration for a object array event type.
         /// </summary>
@@ -534,6 +585,7 @@ namespace com.espertech.esper.client
         {
             _objectArrayTypeConfigurations.Put(objectArrayeventTypeName, config);
         }
+
         /// <summary>
         /// Add an name for an event type that represents org.w3c.dom.Node events.
         /// </summary>
@@ -543,12 +595,14 @@ namespace com.espertech.esper.client
         {
             _eventTypesXmldom.Put(eventTypeName, xmlDOMEventTypeDesc);
         }
+
         public void AddEventType(string eventTypeName, string[] propertyNames, Object[] propertyTypes)
         {
             var propertyTypesMap = EventTypeUtility.ValidateObjectArrayDef(
                 propertyNames, propertyTypes);
             _nestableObjectArrayNames.Put(eventTypeName, propertyTypesMap);
         }
+
         public void AddEventType(
             string eventTypeName,
             string[] propertyNames,
@@ -564,12 +618,14 @@ namespace com.espertech.esper.client
                 throw new ConfigurationException(ConfigurationEventTypeObjectArray.SINGLE_SUPERTYPE_MSG);
             }
         }
+
         public void AddRevisionEventType(
             string revisioneventTypeName,
             ConfigurationRevisionEventType revisionEventTypeConfig)
         {
             _revisionEventTypes.Put(revisioneventTypeName, revisionEventTypeConfig);
         }
+
         /// <summary>
         /// Add a database reference with a given database name.
         /// </summary>
@@ -579,14 +635,17 @@ namespace com.espertech.esper.client
         {
             _databaseReferences.Put(name, configurationDBRef);
         }
+
         public void AddEventType<T>(ConfigurationEventTypeLegacy legacyEventTypeDesc)
         {
             AddEventType(typeof(T).Name, typeof(T).AssemblyQualifiedName, legacyEventTypeDesc);
         }
+
         public void AddEventType<T>(string eventTypeName, ConfigurationEventTypeLegacy legacyEventTypeDesc)
         {
             AddEventType(eventTypeName, typeof(T).AssemblyQualifiedName, legacyEventTypeDesc);
         }
+
         /// <summary>
         /// Add an name for an event type that represents legacy object type events.
         /// Note that when adding multiple names for the same class the names represent an
@@ -604,6 +663,7 @@ namespace com.espertech.esper.client
             _eventClasses.Put(eventTypeName, eventClass);
             _eventTypesLegacy.Put(eventTypeName, legacyEventTypeDesc);
         }
+
         public void AddEventType(
             string eventTypeName,
             Type eventClass,
@@ -611,6 +671,7 @@ namespace com.espertech.esper.client
         {
             AddEventType(eventTypeName, eventClass.AssemblyQualifiedName, legacyEventTypeDesc);
         }
+
         /// <summary>
         /// Add a namespace. Adding will suppress the use of the default namespaces.
         /// </summary>
@@ -619,7 +680,7 @@ namespace com.espertech.esper.client
         /// ConfigurationException if incorrect package or class names are encountered
         /// </throws>
         public void AddImport(string importName)
-       {
+        {
             string[] importParts = importName.Split(',');
             if (importParts.Length == 1)
             {
@@ -630,6 +691,7 @@ namespace com.espertech.esper.client
                 AddImport(importParts[0], importName.Substring(importParts[0].Length + 1).TrimStart());
             }
         }
+
         /// <summary>
         /// Adds the class or namespace (importName) ot the list of automatically imported types.
         /// </summary>
@@ -639,6 +701,7 @@ namespace com.espertech.esper.client
         {
             _imports.Add(new AutoImportDesc(importName, assemblyNameOrFile));
         }
+
         /// <summary>
         /// Adds an import for a specific type.
         /// </summary>
@@ -647,6 +710,7 @@ namespace com.espertech.esper.client
         {
             AddImport(importClass.AssemblyQualifiedName);
         }
+
         /// <summary>
         /// Adds the import.
         /// </summary>
@@ -655,6 +719,7 @@ namespace com.espertech.esper.client
         {
             AddImport(typeof(T));
         }
+
         /// <summary>
         /// Adds an import for the namespace associated with the given type.
         /// </summary>
@@ -663,6 +728,7 @@ namespace com.espertech.esper.client
         {
             AddImport(typeof(T).Namespace);
         }
+
         /// <summary>
         /// Adds the annotation import.
         /// </summary>
@@ -672,6 +738,7 @@ namespace com.espertech.esper.client
         {
             _annotationImports.Add(new AutoImportDesc(importName, assemblyNameOrFile));
         }
+
         /// <summary>
         /// Adds the annotation import.
         /// </summary>
@@ -689,6 +756,7 @@ namespace com.espertech.esper.client
                 AddAnnotationImport(importParts[0], importParts[1]);
             }
         }
+
         /// <summary>
         /// Adds the annotation import.
         /// </summary>
@@ -697,6 +765,7 @@ namespace com.espertech.esper.client
         {
             AddAnnotationImport(autoImport.FullName, autoImport.Assembly.FullName);
         }
+
         /// <summary>
         /// Adds the annotation import.
         /// </summary>
@@ -713,6 +782,7 @@ namespace com.espertech.esper.client
                 AddAnnotationImport(typeof(T).FullName, typeof(T).Assembly.FullName);
             }
         }
+
         /// <summary>
         /// Remove an import.
         /// </summary>
@@ -721,6 +791,7 @@ namespace com.espertech.esper.client
         {
             _imports.Remove(autoImportDesc);
         }
+
         /// <summary>
         /// Adds a cache configuration for a class providing methods for use in the from-clause.
         /// </summary>
@@ -730,6 +801,7 @@ namespace com.espertech.esper.client
         {
             _methodInvocationReferences.Put(className, methodInvocationConfig);
         }
+
         /// <summary>
         /// Adds a cache configuration for a class providing methods for use in the from-clause.
         /// </summary>
@@ -739,6 +811,7 @@ namespace com.espertech.esper.client
         {
             _methodInvocationReferences.Put(clazz.FullName, methodInvocationConfig);
         }
+
         public IDictionary<string, string> EventTypeNames => _eventClasses;
         public IDictionary<string, Properties> EventTypesMapEvents => _mapNames;
         public IDictionary<string, IDictionary<string, object>> EventTypesNestableMapEvents => _nestableMapNames;
@@ -761,6 +834,7 @@ namespace com.espertech.esper.client
         public IDictionary<string, ConfigurationMethodRef> MethodInvocationReferences => _methodInvocationReferences;
         public IDictionary<string, ConfigurationRevisionEventType> RevisionEventTypes => _revisionEventTypes;
         public IDictionary<string, ConfigurationEventTypeMap> MapTypeConfigurations => _mapTypeConfigurations;
+
         /// <summary>
         /// Add a plugin loader (f.e. an input/output adapter loader).
         /// <para>
@@ -774,6 +848,7 @@ namespace com.espertech.esper.client
         {
             AddPluginLoader(loaderName, className, configuration, null);
         }
+
         /// <summary>
         /// Add a plugin loader (f.e. an input/output adapter loader) without any additional loader configuration
         /// <para>
@@ -786,6 +861,7 @@ namespace com.espertech.esper.client
         {
             AddPluginLoader(loaderName, className, null, null);
         }
+
         /// <summary>
         /// Add a plugin loader (f.e. an input/output adapter loader).
         /// <para>
@@ -809,6 +885,7 @@ namespace com.espertech.esper.client
             pluginLoader.ConfigurationXML = configurationXML;
             _pluginLoaders.Add(pluginLoader);
         }
+
         /// <summary>
         /// Add a view for plug-in.
         /// </summary>
@@ -823,10 +900,12 @@ namespace com.espertech.esper.client
             configurationPlugInView.FactoryClassName = viewFactoryClass;
             _plugInViews.Add(configurationPlugInView);
         }
+
         public void AddPlugInView(string @namespace, string name, Type viewFactoryClass)
         {
             AddPlugInView(@namespace, name, viewFactoryClass.AssemblyQualifiedName);
         }
+
         /// <summary>
         /// Add a virtual data window for plug-in.
         /// </summary>
@@ -837,6 +916,7 @@ namespace com.espertech.esper.client
         {
             AddPlugInVirtualDataWindow(@namespace, name, factoryClass, null);
         }
+
         /// <summary>
         /// Add a virtual data window for plug-in.
         /// </summary>
@@ -857,6 +937,7 @@ namespace com.espertech.esper.client
             configurationPlugInVirtualDataWindow.Config = customConfigurationObject;
             _plugInVirtualDataWindows.Add(configurationPlugInVirtualDataWindow);
         }
+
         /// <summary>
         /// Add a pattern event observer for plug-in.
         /// </summary>
@@ -872,6 +953,7 @@ namespace com.espertech.esper.client
             entry.PatternObjectType = ConfigurationPlugInPatternObject.PatternObjectTypeEnum.OBSERVER;
             _plugInPatternObjects.Add(entry);
         }
+
         /// <summary>
         /// Add a pattern guard for plug-in.
         /// </summary>
@@ -882,6 +964,7 @@ namespace com.espertech.esper.client
         {
             AddPlugInPatternGuard(@namespace, name, guardFactoryClass.AssemblyQualifiedName);
         }
+
         /// <summary>
         /// Add a pattern guard for plug-in.
         /// </summary>
@@ -897,18 +980,22 @@ namespace com.espertech.esper.client
             entry.PatternObjectType = ConfigurationPlugInPatternObject.PatternObjectTypeEnum.GUARD;
             _plugInPatternObjects.Add(entry);
         }
+
         public void AddEventTypeAutoName(string @namespace)
         {
             _eventTypeAutoNamePackages.Add(@namespace);
         }
+
         public void AddVariable<TValue>(string variableName, TValue initializationValue)
         {
             AddVariable(variableName, typeof(TValue).FullName, initializationValue, false);
         }
+
         public void AddVariable(string variableName, Type type, Object initializationValue)
         {
             AddVariable(variableName, type.FullName, initializationValue, false);
         }
+
         /// <summary>
         /// Add variable that can be a constant.
         /// </summary>
@@ -920,10 +1007,12 @@ namespace com.espertech.esper.client
         {
             AddVariable(variableName, type.FullName, initializationValue, constant);
         }
+
         public void AddVariable(string variableName, string type, Object initializationValue)
         {
             AddVariable(variableName, type, initializationValue, false);
         }
+
         public void AddVariable(string variableName, string type, Object initializationValue, bool constant)
         {
             var configVar = new ConfigurationVariable();
@@ -932,6 +1021,7 @@ namespace com.espertech.esper.client
             configVar.IsConstant = constant;
             _variables.Put(variableName, configVar);
         }
+
         /// <summary>
         /// Adds an event representation responsible for creating event types (event metadata) and event bean instances (events) for
         /// a certain kind of object representation that holds the event property values.
@@ -952,6 +1042,7 @@ namespace com.espertech.esper.client
             config.Initializer = initializer;
             _plugInEventRepresentation.Put(eventRepresentationRootUri, config);
         }
+
         /// <summary>
         /// Adds an event representation responsible for creating event types (event metadata) and event bean instances (events) for
         /// a certain kind of object representation that holds the event property values.
@@ -972,6 +1063,7 @@ namespace com.espertech.esper.client
                 eventRepresentationClass.AssemblyQualifiedName,
                 initializer);
         }
+
         public void AddPlugInEventType(string eventTypeName, Uri[] resolutionURIs, object initializer)
         {
             var config = new ConfigurationPlugInEventType();
@@ -979,76 +1071,95 @@ namespace com.espertech.esper.client
             config.Initializer = initializer;
             _plugInEventTypes.Put(eventTypeName, config);
         }
+
         public IList<Uri> PlugInEventTypeResolutionURIs
         {
             get => _plugInEventTypeResolutionUris;
             set => _plugInEventTypeResolutionUris = value;
         }
+
         public IDictionary<Uri, ConfigurationPlugInEventRepresentation> PlugInEventRepresentation => _plugInEventRepresentation;
         public IDictionary<string, ConfigurationPlugInEventType> PlugInEventTypes => _plugInEventTypes;
         public ISet<string> EventTypeAutoNamePackages => _eventTypeAutoNamePackages;
         public ConfigurationEngineDefaults EngineDefaults => _engineDefaults;
+
         public void AddVariantStream(string variantStreamName, ConfigurationVariantStream variantStreamConfig)
         {
             _variantStreams.Put(variantStreamName, variantStreamConfig);
         }
+
         public IDictionary<string, ConfigurationVariantStream> VariantStreams => _variantStreams;
+
         public void UpdateMapEventType(string mapeventTypeName, IDictionary<string, Object> typeMap)
         {
             throw new UnsupportedOperationException("Map type update is only available in runtime configuration");
         }
+
         public void UpdateObjectArrayEventType(string myEvent, string[] namesNew, Object[] typesNew)
         {
             throw new UnsupportedOperationException(
                 "Object-array type update is only available in runtime configuration");
         }
+
         public void ReplaceXMLEventType(string xmlEventTypeName, ConfigurationEventTypeXMLDOM config)
         {
             throw new UnsupportedOperationException("XML type update is only available in runtime configuration");
         }
+
         public ICollection<string> GetEventTypeNameUsedBy(string eventTypeName)
         {
             throw new UnsupportedOperationException("Get event type by name is only available in runtime configuration");
         }
+
         public bool IsVariantStreamExists(string name)
         {
             return _variantStreams.ContainsKey(name);
         }
+
         public void SetMetricsReportingInterval(string stmtGroupName, long newIntervalMSec)
         {
             EngineDefaults.MetricsReporting.SetStatementGroupInterval(stmtGroupName, newIntervalMSec);
         }
+
         public void SetMetricsReportingStmtEnabled(string statementName)
         {
             throw new UnsupportedOperationException(
                 "Statement metric reporting can only be enabled or disabled at runtime");
         }
+
         public void SetMetricsReportingStmtDisabled(string statementName)
         {
             throw new UnsupportedOperationException(
                 "Statement metric reporting can only be enabled or disabled at runtime");
         }
+
         public EventType GetEventType(string eventTypeName)
         {
             throw new UnsupportedOperationException("Obtaining an event type by name is only available at runtime");
         }
+
         public ICollection<EventType> EventTypes => throw new UnsupportedOperationException("Obtaining event types is only available at runtime");
+
         public void SetMetricsReportingEnabled()
         {
             EngineDefaults.MetricsReporting.IsEnableMetricsReporting = true;
         }
+
         public void SetMetricsReportingDisabled()
         {
             EngineDefaults.MetricsReporting.IsEnableMetricsReporting = false;
         }
+
         public long PatternMaxSubexpressions
         {
             set => EngineDefaults.Patterns.MaxSubexpressions = value;
         }
+
         public long? MatchRecognizeMaxStates
         {
             set => EngineDefaults.MatchRecognize.MaxStates = value;
         }
+
         /// <summary>
         /// Use the configuration specified in an application
         /// resource named <tt>esper.cfg.xml</tt>.
@@ -1060,6 +1171,7 @@ namespace com.espertech.esper.client
             Configure('/' + ESPER_DEFAULT_CONFIG);
             return this;
         }
+
         /// <summary>
         /// Use the configuration specified in the given application
         /// resource. The format of the resource is defined in
@@ -1086,6 +1198,7 @@ namespace com.espertech.esper.client
                 .DoConfigure(this, stream, resource);
             return this;
         }
+
         /// <summary>
         /// Use the configuration specified by the given URL.
         /// The format of the document obtained from the URL is defined in
@@ -1111,6 +1224,7 @@ namespace com.espertech.esper.client
                 throw new EPException("could not configure from URL: " + url, ioe);
             }
         }
+
         /// <summary>
         /// Use the configuration specified in the given application
         /// file. The format of the file is defined in
@@ -1138,6 +1252,7 @@ namespace com.espertech.esper.client
             }
             return this;
         }
+
         public bool RemoveEventType(string eventTypeName, bool force)
         {
             _eventClasses.Remove(eventTypeName);
@@ -1152,19 +1267,23 @@ namespace com.espertech.esper.client
             _variantStreams.Remove(eventTypeName);
             return true;
         }
+
         public ICollection<string> GetVariableNameUsedBy(string variableName)
         {
             throw new UnsupportedOperationException(
                 "Get variable use information is only available in runtime configuration");
         }
+
         public bool RemoveVariable(string name, bool force)
         {
             return _variables.Remove(name);
         }
+
         public void AddEventTypeAvro(string eventTypeName, ConfigurationEventTypeAvro avro)
         {
             _eventTypesAvro.Put(eventTypeName, avro);
         }
+
         /// <summary>
         /// Use the mappings and properties specified in the given XML document.
         /// The format of the file is defined in
@@ -1184,7 +1303,10 @@ namespace com.espertech.esper.client
             _container.Resolve<IConfigurationParser>().DoConfigure(this, document);
             return this;
         }
-        /// <summary>Reset to an empty configuration.</summary>
+
+        /// <summary>
+        /// Reset to an empty configuration.
+        /// </summary>
         protected void Reset()
         {
             _eventClasses = new Dictionary<string, string>();
@@ -1217,7 +1339,10 @@ namespace com.espertech.esper.client
             _objectArrayTypeConfigurations = new Dictionary<string, ConfigurationEventTypeObjectArray>();
             _transientConfiguration = new Dictionary<string, object>();
         }
-        /// <summary>Use these imports until the user specifies something else.</summary>
+
+        /// <summary>
+        /// Use these imports until the user specifies something else.
+        /// </summary>
         private void AddDefaultImports()
         {
             _imports.Add(new AutoImportDesc("System"));
@@ -1227,6 +1352,7 @@ namespace com.espertech.esper.client
             _imports.Add(new AutoImportDesc(typeof(BeaconSource).Namespace, (string) null));
         }
     }
+
     public static class ConfigurationExtensions
     {
         public static void AddPlugInVirtualDataWindow(
@@ -1238,6 +1364,7 @@ namespace com.espertech.esper.client
             configuration.AddPlugInVirtualDataWindow(
                 @namespace, name, factoryClass.AssemblyQualifiedName);
         }
+
         public static void AddPlugInVirtualDataWindow(
             this Configuration configuration,
             string @namespace,
