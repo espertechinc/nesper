@@ -56,28 +56,28 @@ namespace NEsper.Benchmark.Perforator
         {
             var statementArray = new[]
             {
-                //TextWinLengthWithGroup,
-                //TextWinLength,
-                //TextAggregationWithTimeWindow,
-                //TextAggregationWithNoWindow,
-                //TextWithPropertyNames,
+                TextWinLengthWithGroup,
+                TextWinLength,
+                TextAggregationWithTimeWindow,
+                TextAggregationWithNoWindow,
+                TextWithPropertyNames,
                 TextWithWildcard,
             };
 
             var statementActions = new Runnable[]
             {
-                //TestWinLengthWithGroup,
-                //TestWinLength,
-                //TestAggregationWithTimeWindow,
-                //TestAggregationWithNoWindow,
-                //TestWithPropertyNames,
+                TestWinLengthWithGroup,
+                TestWinLength,
+                TestAggregationWithTimeWindow,
+                TestAggregationWithNoWindow,
+                TestWithPropertyNames,
                 TestWithWildcard,
             };
 
             for (var nn = 0; nn < statementArray.Length; nn++ ) {
                 var statementText = statementArray[nn];
                 var statementAction = statementActions[nn];
-                //Console.WriteLine("=>> {0}", statementText);
+                Console.WriteLine("=>> {0}", statementText);
 
                 SetupEPL(statementText);
 

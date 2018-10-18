@@ -8,6 +8,9 @@
     <AssemblyTitle>NEsper.Benchmark.Perforator</AssemblyTitle>
     <PackageId>NEsper.Benchmark.Perforator</PackageId>
     <RootNamespace>NEsper.Benchmark.Perforator</RootNamespace>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup Condition="'$(NetCore)'=='true'">

@@ -8,6 +8,9 @@
     <AssemblyTitle>NEsper.Benchmark.Stats</AssemblyTitle>
     <PackageId>NEsper.Benchmark.Stats</PackageId>
     <RootNamespace>NEsper.Benchmark.Stats</RootNamespace>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup Condition="'$(NetCore)'=='true'">

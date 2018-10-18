@@ -292,14 +292,14 @@ namespace com.espertech.esper.compat.collections
 
         public static void Fill<T>(this T[] arrayThis, T value)
         {
-            for (var ii = 0; ii < arrayThis.Length; ii++) {
+            for (var ii = arrayThis.Length - 1; ii >= 0; ii--) {
                 arrayThis[ii] = value;
             }
         }
 
         public static void Fill<T>(this T[] arrayThis, Func<T> generator)
         {
-            for (var ii = 0; ii < arrayThis.Length; ii++) {
+            for (var ii = arrayThis.Length - 1; ii >= 0; ii--) {
                 arrayThis[ii] = generator.Invoke();
             }
         }
@@ -313,11 +313,13 @@ namespace com.espertech.esper.compat.collections
 
         public static bool IsEqual<T>(this T[] arrayThis, T[] arrayThat)
         {
-            if (arrayThis.Length != arrayThat.Length) {
+            var arrayThisLength = arrayThis.Length;
+            var arrayThatLength = arrayThat.Length;
+            if (arrayThisLength != arrayThatLength) {
                 return false;
             }
 
-            for (var ii = 0; ii < arrayThis.Length; ii++) {
+            for (var ii = 0; ii < arrayThisLength; ii++) {
                 if (!Equals(arrayThis[ii], arrayThat[ii])) {
                     return false;
                 }
@@ -533,8 +535,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="source">The source.</param>
         public static void AddAll<T>(this ICollection<T> pthis, IEnumerable<T> source)
         {
-            if (source is IList<T>) {
-                var asList = (IList<T>) source;
+            if (source is IList<T> asList) {
                 var asListCount = asList.Count;
                 for (var ii = 0; ii < asListCount; ii++) {
                     pthis.Add(asList[ii]);

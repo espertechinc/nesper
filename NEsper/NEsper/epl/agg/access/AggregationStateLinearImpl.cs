@@ -31,7 +31,7 @@ namespace com.espertech.esper.epl.agg.access
             StreamId = streamId;
         }
 
-        public int StreamId { get; }
+        internal int StreamId;
 
         public IList<EventBean> Events => _events;
 

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 using XLR8.CGLib;
@@ -48,6 +49,7 @@ namespace com.espertech.esper.epl.expression.dot
 
         private bool _isCachedResult;
         private Object _cachedResult;
+        private Type[] _methodParameterTypes;
 
         public ExprDotEvalStaticMethod(String statementName,
                                        String classOrPropertyName,
@@ -68,6 +70,9 @@ namespace com.espertech.esper.epl.expression.dot
             _resultWrapLambda = resultWrapLambda;
             _chainEval = chainEval;
             _rethrowExceptions = rethrowExceptions;
+            _methodParameterTypes = _staticMethod.Target.GetParameters()
+                .Select(param => param.ParameterType)
+                .ToArray();
         }
 
         public Type ReturnType
@@ -127,13 +132,14 @@ namespace com.espertech.esper.epl.expression.dot
                 return _cachedResult;
             }
 
-            var methodParameters = _staticMethod.Target.GetParameters();
+            //var methodParameters = _staticMethod.Target.GetParameters();
 
-            var args = new Object[_childEvals.Length];
-            for (var i = 0; i < args.Length; i++)
+            var argsLength = _childEvals.Length;
+            var args = new Object[argsLength];
+            for (var i = argsLength - 1; i >= 0; i--)
             {
                 var arg = _childEvals[i].Evaluate(evaluateParams);
-                args[i] = RewriteArgument(arg, methodParameters[i].ParameterType);
+                args[i] = RewriteArgument(arg, _methodParameterTypes[i]);
             }
 
             // The method is static so the object it is invoked on
@@ -143,10 +149,7 @@ namespace com.espertech.esper.epl.expression.dot
                 var result = _staticMethod.Invoke(_targetObject, args);
 
                 result = ExprDotNodeUtility.EvaluateChainWithWrap(
-                    _resultWrapLambda, result, null, _staticMethod.ReturnType, _chainEval,
-                    evaluateParams.EventsPerStream,
-                    evaluateParams.IsNewData,
-                    evaluateParams.ExprEvaluatorContext);
+                    _resultWrapLambda, result, null, _staticMethod.ReturnType, _chainEval, evaluateParams);
 
                 if (_isConstantParameters)
                 {

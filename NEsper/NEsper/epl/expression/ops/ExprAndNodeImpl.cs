@@ -63,19 +63,20 @@ namespace com.espertech.esper.epl.expression.ops
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprAnd(this); }
 
-            bool? result = true;
+            bool resultFlag = true;
 
             unchecked
             {
                 var evaluators = _evaluators;
                 var evaluatorsLength = evaluators.Length;
 
-                for (int ii = 0; ii < evaluatorsLength; ii++)
-                {
-                    var evaluated = evaluators[ii].Evaluate(evaluateParams);
+                int ii = 0;
+                while(ii < evaluatorsLength) {
+                    var evaluated = evaluators[ii++].Evaluate(evaluateParams);
                     if (evaluated == null)
                     {
-                        result = null;
+                        resultFlag = false;
+                        break;
                     }
                     else if (false.Equals(evaluated))
                     {
@@ -83,6 +84,23 @@ namespace com.espertech.esper.epl.expression.ops
                         return false;
                     }
                 }
+
+                while (ii < evaluatorsLength)
+                {
+                    var evaluated = evaluators[ii++].Evaluate(evaluateParams);
+                    if (evaluated != null && false.Equals(evaluated))
+                    {
+                        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprAnd(false); }
+                        return false;
+                    }
+                }
+            }
+
+            bool? result;
+            if (resultFlag) {
+                result = true;
+            } else {
+                result = null;
             }
 
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprAnd(result); }
