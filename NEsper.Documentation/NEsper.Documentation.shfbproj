@@ -14,7 +14,7 @@
     <Name>NEsper.Documentation</Name>
     <!-- SHFB properties -->
     <FrameworkVersion>.NET Framework 4.5.2</FrameworkVersion>
-    <OutputPath>..\build\NEsper-6.1.0-alpha.1\docs\</OutputPath>
+    <OutputPath>..\build\NEsper-6.1.1\docs\</OutputPath>
     <HtmlHelpName>NEsper</HtmlHelpName>
     <Language>en-US</Language>
     <TransformComponentArguments>
@@ -46,7 +46,7 @@
     <MSHelpViewerSdkLinkType>Msdn</MSHelpViewerSdkLinkType>
     <CatalogVersion>100</CatalogVersion>
     <CatalogProductId>VS</CatalogProductId>
-    <HelpFileVersion>6.1.0-alpha.1</HelpFileVersion>
+    <HelpFileVersion>6.1.1</HelpFileVersion>
     <MaximumGroupParts>2</MaximumGroupParts>
     <NamespaceGrouping>False</NamespaceGrouping>
     <SyntaxFilters>C#</SyntaxFilters>

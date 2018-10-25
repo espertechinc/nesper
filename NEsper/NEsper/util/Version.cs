@@ -9,6 +9,6 @@
 namespace com.espertech.esper.util
 {
     public class Version {
-        public static readonly string VERSION = "6.1.0-alpha.1";
+        public static readonly string VERSION = "6.1.1";
     }
 } // end of namespace

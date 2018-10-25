@@ -8,6 +8,9 @@
     <AssemblyTitle>NEsper.Benchmark.Client</AssemblyTitle>
     <PackageId>NEsper.Benchmark.Client</PackageId>
     <RootNamespace>NEsper.Benchmark.Client</RootNamespace>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup Condition="'$(NetCore)'=='true'">
