@@ -10,38 +10,26 @@ using com.espertech.esper.client;
 
 namespace com.espertech.esper.epl.expression.core
 {
-    public class EvaluateParams
+    public struct EvaluateParams
     {
         public static readonly EvaluateParams EmptyTrue = new EvaluateParams(null, true, null);
         public static readonly EvaluateParams EmptyFalse = new EvaluateParams(null, false, null);
 
+#if false
         private readonly EventBean[] _eventsPerStream;
-
         private readonly ExprEvaluatorContext _exprEvaluatorContext;
         private readonly bool _isNewData;
+#endif
 
         public EvaluateParams(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
         {
-            _eventsPerStream = eventsPerStream;
-
-            _isNewData = isNewData;
-
-            _exprEvaluatorContext = exprEvaluatorContext;
+            EventsPerStream = eventsPerStream;
+            IsNewData = isNewData;
+            ExprEvaluatorContext = exprEvaluatorContext;
         }
 
-        public EventBean[] EventsPerStream
-        {
-            get { return _eventsPerStream; }
-        }
-
-        public bool IsNewData
-        {
-            get { return _isNewData; }
-        }
-
-        public ExprEvaluatorContext ExprEvaluatorContext
-        {
-            get { return _exprEvaluatorContext; }
-        }
+        public readonly EventBean[] EventsPerStream;
+        public readonly bool IsNewData;
+        public readonly ExprEvaluatorContext ExprEvaluatorContext;
     }
 }

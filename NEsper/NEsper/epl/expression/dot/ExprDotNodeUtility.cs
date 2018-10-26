@@ -312,14 +312,82 @@ namespace com.espertech.esper.epl.expression.dot
             }
         }
 
-        public static object EvaluateChainWithWrap(ExprDotStaticMethodWrap resultWrapLambda,
-                                                   object result,
-                                                   EventType optionalResultSingleEventType,
-                                                   Type resultType,
-                                                   ExprDotEval[] chainEval,
-                                                   EventBean[] eventsPerStream,
-                                                   bool newData,
-                                                   ExprEvaluatorContext exprEvaluatorContext)
+        public static object EvaluateChainWithWrap(
+            ExprDotStaticMethodWrap resultWrapLambda,
+            object result,
+            EventType optionalResultSingleEventType,
+            Type resultType,
+            ExprDotEval[] chainEval,
+            EvaluateParams evaluateParams)
+        {
+            if (result == null)
+            {
+                return null;
+            }
+
+            if (resultWrapLambda != null)
+            {
+                result = resultWrapLambda.Convert(result);
+            }
+
+            if (InstrumentationHelper.ENABLED)
+            {
+                EPType typeInfo;
+                if (resultWrapLambda != null)
+                {
+                    typeInfo = resultWrapLambda.TypeInfo;
+                }
+                else
+                {
+                    if (optionalResultSingleEventType != null)
+                    {
+                        typeInfo = EPTypeHelper.SingleEvent(optionalResultSingleEventType);
+                    }
+                    else
+                    {
+                        typeInfo = EPTypeHelper.SingleValue(resultType);
+                    }
+                }
+                InstrumentationHelper.Get().QExprDotChain(typeInfo, result, chainEval);
+
+                var i = -1;
+                foreach (var aChainEval in chainEval)
+                {
+                    i++;
+                    InstrumentationHelper.Get().QExprDotChainElement(i, aChainEval);
+                    result = aChainEval.Evaluate(result, evaluateParams);
+                    InstrumentationHelper.Get().AExprDotChainElement(aChainEval.TypeInfo, result);
+                    if (result == null)
+                    {
+                        break;
+                    }
+                }
+
+                InstrumentationHelper.Get().AExprDotChain();
+                return result;
+            }
+
+            foreach (var aChainEval in chainEval)
+            {
+                result = aChainEval.Evaluate(result, evaluateParams);
+                if (result == null)
+                {
+                    return null;
+                }
+            }
+
+            return result;
+        }
+
+        public static object EvaluateChainWithWrap(
+            ExprDotStaticMethodWrap resultWrapLambda,
+            object result,
+            EventType optionalResultSingleEventType,
+            Type resultType,
+            ExprDotEval[] chainEval,
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (result == null)
             {

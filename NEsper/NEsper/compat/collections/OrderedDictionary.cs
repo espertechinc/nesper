@@ -9,43 +9,43 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace com.espertech.esper.compat.collections
 {
     public class OrderedDictionary<TK,TV> : IDictionary<TK,TV>
     {
         /// <summary>
-        /// Value List
+        /// Item List
         /// </summary>
-        private readonly List<TK> _keyList;
-        /// <summary>
-        /// Value list
-        /// </summary>
-        private readonly List<TV> _valList;
+        private readonly List<KeyValuePair<TK, TV>> _itemList;
+
         /// <summary>
         /// Value comparer
         /// </summary>
-        private readonly IComparer<TK> _keyComparer;
+        private readonly KeyValuePairComparer _itemComparer;
+
+        /// <summary>
+        /// Gets the item comparer.
+        /// </summary>
+        /// <value>The item comparer.</value>
+        public IComparer<KeyValuePair<TK, TV>> ItemComparer => _itemComparer;
 
         /// <summary>
         /// Gets the key comparer.
         /// </summary>
         /// <value>The key comparer.</value>
-        public IComparer<TK> KeyComparer => _keyComparer;
+        public IComparer<TK> KeyComparer => _itemComparer.KeyComparer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OrderedDictionary{TK,TV}"/> class.
+        /// Initializes a new instance of the <see cref="OrderedDictionary{TK,TV}" /> class.
         /// </summary>
-        /// <param name="keyList">The key list.</param>
-        /// <param name="valList">The val list.</param>
+        /// <param name="itemList">The item list.</param>
         /// <param name="comparer">The comparer.</param>
-        internal OrderedDictionary(List<TK> keyList,
-                                   List<TV> valList,
-                                   IComparer<TK> comparer)
+        internal OrderedDictionary(List<KeyValuePair<TK, TV>> itemList, KeyValuePairComparer comparer)
         {
-            _keyList = keyList;
-            _valList = valList;
-            _keyComparer = comparer;
+            _itemList = itemList;
+            _itemComparer = comparer;
         }
 
         /// <summary>
@@ -54,9 +54,8 @@ namespace com.espertech.esper.compat.collections
         /// <param name="keyComparer">The key comparer.</param>
         public OrderedDictionary(IComparer<TK> keyComparer)
         {
-            _keyList = new List<TK>();
-            _valList = new List<TV>();
-            _keyComparer = keyComparer;
+            _itemList = new List<KeyValuePair<TK, TV>>();
+            _itemComparer = new KeyValuePairComparer(keyComparer, false);
         }
 
         /// <summary>
@@ -64,9 +63,8 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         public OrderedDictionary()
         {
-            _keyList = new List<TK>();
-            _valList = new List<TV>();
-            _keyComparer = null;
+            _itemList = new List<KeyValuePair<TK, TV>>();
+            _itemComparer = new KeyValuePairComparer(new DefaultComparer(), false);
         }
 
         /// <summary>
@@ -86,12 +84,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns></returns>
         public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator()
         {
-            for (int ii = 0; ii < _keyList.Count; ii++)
-            {
-                yield return new KeyValuePair<TK, TV>(
-                    _keyList[ii],
-                    _valList[ii]);
-            }
+            return _itemList.GetEnumerator();
         }
 
         public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator(TK startKey, bool isInclusive)
@@ -100,33 +93,22 @@ namespace com.espertech.esper.compat.collections
             if (index == -1)
                 index = 0;
 
-            for (int ii = index; ii < _keyList.Count; ii++)
-            {
-                yield return new KeyValuePair<TK, TV>(
-                    _keyList[ii],
-                    _valList[ii]);
+            for (int ii = index; ii < _itemList.Count; ii++) {
+                yield return _itemList[ii];
             }
         }
 
         public void ForEach(Action<KeyValuePair<TK, TV>> action)
         {
-            for (int ii = 0; ii < _keyList.Count; ii++)
-            {
-                action.Invoke(
-                    new KeyValuePair<TK, TV>(
-                        _keyList[ii],
-                        _valList[ii]));
+            for (int ii = 0; ii < _itemList.Count; ii++) {
+                action.Invoke(_itemList[ii]);
             }
         }
 
         public void ForEach(Action<int,KeyValuePair<TK,TV>> action)
         {
-            for (int ii = 0; ii < _keyList.Count; ii++)
-            {
-                action.Invoke(
-                    ii, new KeyValuePair<TK, TV>(
-                            _keyList[ii],
-                            _valList[ii]));
+            for (int ii = 0; ii < _itemList.Count; ii++) {
+                action.Invoke(ii, _itemList[ii]);
             }
         }
 
@@ -138,9 +120,8 @@ namespace com.espertech.esper.compat.collections
         /// <returns></returns>
         internal int BinarySearch(TK key)
         {
-            return _keyComparer != null
-                       ? _keyList.BinarySearch(key, _keyComparer)
-                       : _keyList.BinarySearch(key);
+            var keyValuePair = new KeyValuePair<TK, TV>(key, default(TV));
+            return _itemList.BinarySearch(keyValuePair, _itemComparer);
         }
 
         /// <summary>
@@ -156,8 +137,7 @@ namespace com.espertech.esper.compat.collections
             }
             else
             {
-                _keyList.Insert(~index, item.Key);
-                _valList.Insert(~index, item.Value);
+                _itemList.Insert(~index, item);
             }
         }
 
@@ -166,8 +146,7 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         public void Clear()
         {
-            _keyList.Clear();
-            _valList.Clear();
+            _itemList.Clear();
         }
 
         /// <summary>
@@ -191,11 +170,10 @@ namespace com.espertech.esper.compat.collections
         public void CopyTo(KeyValuePair<TK, TV>[] array, int arrayIndex)
         {
             int arrayLength = array.Length;
-            for (int ii = arrayIndex, listIndex = 0; ii < arrayLength && listIndex < _keyList.Count ; ii++, listIndex++ )
+            int itemLength = _itemList.Count;
+            for (int ii = arrayIndex, listIndex = 0; ii < arrayLength && listIndex < itemLength; ii++, listIndex++ )
             {
-                array[ii] = new KeyValuePair<TK, TV>(
-                    _keyList[listIndex],
-                    _valList[listIndex]);
+                array[ii] = _itemList[listIndex];
             }
         }
 
@@ -209,8 +187,7 @@ namespace com.espertech.esper.compat.collections
             var index = BinarySearch(item.Key);
             if (index < 0)
                 return false;
-            _keyList.RemoveAt(index);
-            _valList.RemoveAt(index);
+            _itemList.RemoveAt(index);
             return true;
         }
 
@@ -218,7 +195,7 @@ namespace com.espertech.esper.compat.collections
         /// Gets the count.
         /// </summary>
         /// <value>The count.</value>
-        public int Count => _keyList.Count;
+        public int Count => _itemList.Count;
 
         /// <summary>
         /// Gets a value indicating whether this instance is read only.
@@ -272,7 +249,7 @@ namespace com.espertech.esper.compat.collections
             var index = BinarySearch(key);
             if (index >= 0)
             {
-                value = _valList[index];
+                value = _itemList[index].Value;
                 return true;
             }
 
@@ -285,14 +262,11 @@ namespace com.espertech.esper.compat.collections
             var index = BinarySearch(key);
             if (index >= 0)
             {
-                return _valList[index];
+                return _itemList[index].Value;
             }
 
             var value = valueFactory.Invoke();
-
-            _keyList.Insert(~index, key);
-            _valList.Insert(~index, value);
-
+            _itemList.Insert(~index, new KeyValuePair<TK, TV>(key, value));
             return value;
         }
 
@@ -307,7 +281,7 @@ namespace com.espertech.esper.compat.collections
                 var index = BinarySearch(key);
                 if (index >= 0)
                 {
-                    return _valList[index];
+                    return _itemList[index].Value;
                 }
 
                 throw new KeyNotFoundException();
@@ -317,12 +291,11 @@ namespace com.espertech.esper.compat.collections
                 var index = BinarySearch(key);
                 if (index >= 0)
                 {
-                    _valList[index] = value;
+                    _itemList[index] = new KeyValuePair<TK, TV>(key, value);
                 }
                 else
                 {
-                    _keyList.Insert(~index, key);
-                    _valList.Insert(~index, value);
+                    _itemList.Insert(~index, new KeyValuePair<TK, TV>(key, value));
                 }
             }
         }
@@ -331,13 +304,13 @@ namespace com.espertech.esper.compat.collections
         /// Gets the keys.
         /// </summary>
         /// <value>The keys.</value>
-        public ICollection<TK> Keys => _keyList;
+        public ICollection<TK> Keys => _itemList.Select(item => item.Key).ToArray();
 
         /// <summary>
         /// Gets the values.
         /// </summary>
         /// <value>The values.</value>
-        public ICollection<TV> Values => _valList;
+        public ICollection<TV> Values => _itemList.Select(item => item.Value).ToArray();
 
         /// <summary>
         /// Returns a dictionary that includes everything up to the specified value.
@@ -388,9 +361,7 @@ namespace com.espertech.esper.compat.collections
                 int count = Count;
                 for( ; tailIndex < count ; tailIndex++ )
                 {
-                    yield return new KeyValuePair<TK, TV>(
-                        _keyList[tailIndex],
-                        _valList[tailIndex]);
+                    yield return _itemList[tailIndex];
                 }
             }
         }
@@ -437,9 +408,11 @@ namespace com.espertech.esper.compat.collections
 
         public IEnumerable<KeyValuePair<TK, TV>> EnumerateBetween(TK startValue, bool isStartInclusive, TK endValue, bool isEndInclusive)
         {
-            if (_keyComparer != null)
+            if (_itemComparer != null)
             {
-                if (_keyComparer.Compare(startValue, endValue) > 0)
+                var startValueKP = new KeyValuePair<TK, TV>(startValue, default(TV));
+                var endValueKP = new KeyValuePair<TK, TV>(endValue, default(TV));
+                if (_itemComparer.Compare(startValueKP, endValueKP) > 0)
                 {
                     throw new ArgumentException("invalid key order");
                 }
@@ -462,7 +435,7 @@ namespace com.espertech.esper.compat.collections
                 {
                     for (int ii = headIndex; ii <= tailIndex; ii++ )
                     {
-                        yield return new KeyValuePair<TK, TV>(_keyList[ii], _valList[ii]);
+                        yield return _itemList[ii];
                     }
                 }
             }
@@ -470,9 +443,11 @@ namespace com.espertech.esper.compat.collections
         
         public IDictionary<TK, TV> Between(TK startValue, bool isStartInclusive, TK endValue, bool isEndInclusive)
         {
-            if (_keyComparer != null)
+            if (_itemComparer != null)
             {
-                if (_keyComparer.Compare(startValue, endValue) > 0)
+                var startValueKP = new KeyValuePair<TK, TV>(startValue, default(TV));
+                var endValueKP = new KeyValuePair<TK, TV>(endValue, default(TV));
+                if (_itemComparer.Compare(startValueKP, endValueKP) > 0)
                 {
                     throw new ArgumentException("invalid key order");
                 }
@@ -495,9 +470,11 @@ namespace com.espertech.esper.compat.collections
 
         public int CountBetween(TK startValue, bool isStartInclusive, TK endValue, bool isEndInclusive)
         {
-            if (_keyComparer != null)
+            if (_itemComparer != null)
             {
-                if (_keyComparer.Compare(startValue, endValue) > 0)
+                var startValueKP = new KeyValuePair<TK, TV>(startValue, default(TV));
+                var endValueKP = new KeyValuePair<TK, TV>(endValue, default(TV));
+                if (_itemComparer.Compare(startValueKP, endValueKP) > 0)
                 {
                     throw new ArgumentException("invalid key order");
                 }
@@ -527,20 +504,60 @@ namespace com.espertech.esper.compat.collections
 
         public OrderedDictionary<TK, TV> Invert()
         {
-            var comparer = _keyComparer;
-            var inverted = new StandardComparer<TK>(
-                (a, b) => -comparer.Compare(a, b));
+            var inverted = _itemComparer.Invert();
+            var invertedList = new List<KeyValuePair<TK, TV>>(_itemList);
+            invertedList.Reverse();
 
-            var invertedKeyList = new List<TK>(_keyList);
-            var invertedValList = new List<TV>(_valList);
+            return new OrderedDictionary<TK, TV>(invertedList, inverted);
+        }
 
-            invertedKeyList.Reverse();
-            invertedValList.Reverse();
+        internal class DefaultComparer : IComparer<TK>
+        {
+            public int Compare(TK x, TK y)
+            {
+                return ((IComparable)x).CompareTo(y);
+            }
+        }
 
-            return new OrderedDictionary<TK, TV>(
-                invertedKeyList,
-                invertedValList,
-                inverted);
+        internal class InvertKeyComparer : IComparer<TK>
+        {
+            private readonly IComparer<TK> _keyComparer;
+
+            public InvertKeyComparer(IComparer<TK> keyComparer)
+            {
+                _keyComparer = keyComparer;
+            }
+
+            public int Compare(TK x, TK y)
+            {
+                return -_keyComparer.Compare(x, y);
+            }
+        }
+
+        internal class KeyValuePairComparer : IComparer<KeyValuePair<TK, TV>>
+        {
+            private readonly IComparer<TK> _keyComparer;
+            private readonly bool _invert;
+
+            public KeyValuePairComparer(IComparer<TK> keyComparer, bool invert)
+            {
+                _keyComparer = keyComparer;
+                _invert = invert;
+            }
+
+            public int Compare(KeyValuePair<TK, TV> x, KeyValuePair<TK, TV> y)
+            {
+                return _invert
+                    ? -_keyComparer.Compare(x.Key, y.Key)
+                    : _keyComparer.Compare(x.Key, y.Key);
+            }
+
+            public KeyValuePairComparer Invert()
+            {
+                return new KeyValuePairComparer(_keyComparer, !_invert);
+            }
+
+            public IComparer<TK> KeyComparer => _invert ? new InvertKeyComparer(_keyComparer) : _keyComparer;
         }
     }
 

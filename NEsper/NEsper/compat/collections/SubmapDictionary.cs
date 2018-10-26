@@ -20,8 +20,8 @@ namespace com.espertech.esper.compat.collections
     public class SubmapDictionary<K,V> : IDictionary<K,V>
     {
         private readonly OrderedDictionary<K, V> _subDictionary;
-        private Bound _lower;
-        private Bound _upper;
+        private readonly Bound _lower;
+        private readonly Bound _upper;
 
         private readonly Func<K, bool> _lowerTest;
         private readonly Func<K, bool> _upperTest;
@@ -47,15 +47,15 @@ namespace com.espertech.esper.compat.collections
 
         private Func<K, bool> MakeUpperTest(IComparer<K> keyComparer)
         {
-            if (_upper.HasValue)
-            {
+            if (_upper.HasValue) {
+                var upperKey = _upper.Key;
                 if (_upper.IsInclusive)
                 {
-                    return k1 => keyComparer.Compare(k1, _upper.Key) <= 0;
+                    return k1 => keyComparer.Compare(k1, upperKey) <= 0;
                 }
                 else
                 {
-                    return k1 => keyComparer.Compare(k1, _upper.Key) < 0;
+                    return k1 => keyComparer.Compare(k1, upperKey) < 0;
                 }
             }
             else
@@ -66,15 +66,15 @@ namespace com.espertech.esper.compat.collections
 
         private Func<K, bool> MakeLowerTest(IComparer<K> keyComparer)
         {
-            if (_lower.HasValue)
-            {
+            if (_lower.HasValue) {
+                var lowerKey = _lower.Key;
                 if (_lower.IsInclusive)
                 {
-                    return k1 => keyComparer.Compare(k1, _lower.Key) >= 0;
+                    return k1 => keyComparer.Compare(k1, lowerKey) >= 0;
                 }
                 else
                 {
-                     return k1 => keyComparer.Compare(k1, _lower.Key) > 0;
+                     return k1 => keyComparer.Compare(k1, lowerKey) > 0;
                 }
             }
             else

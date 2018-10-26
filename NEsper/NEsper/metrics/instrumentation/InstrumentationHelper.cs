@@ -16,9 +16,11 @@ namespace com.espertech.esper.metrics.instrumentation
 {
     public static class InstrumentationHelper
     {
-        //public const bool ENABLED = true;
-
+#if DEBUG
+        public const bool ENABLED = false;
+#else
         public static bool ENABLED { get; set; }
+#endif
 
         public const bool ASSERTIONENABLED = false;
 
