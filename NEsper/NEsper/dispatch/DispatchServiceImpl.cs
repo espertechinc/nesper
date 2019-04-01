@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.util;

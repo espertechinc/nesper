@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.datetime;
 
 namespace com.espertech.esper.epl.datetime.reformatop
 {

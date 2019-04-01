@@ -9,7 +9,7 @@
 using System.Xml.Linq;
 using System.Xml.XPath;
 using com.espertech.esper.client;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.events.xml;
 using com.espertech.esper.supportunit.events;

@@ -10,8 +10,7 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
-
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.epl.db.drivers
 {

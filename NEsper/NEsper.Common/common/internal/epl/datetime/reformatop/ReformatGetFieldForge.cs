@@ -1,0 +1,202 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
+using System;
+using System.Collections.Generic;
+
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.epl.datetime.calop;
+using com.espertech.esper.common.@internal.epl.datetime.eval;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.dot.core;
+using com.espertech.esper.common.@internal.epl.expression.time.abacus;
+using com.espertech.esper.common.@internal.epl.@join.analyze;
+using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.compat;
+
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
+namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
+{
+    public class ReformatGetFieldForge : ReformatForge,
+        ReformatOp
+    {
+        private readonly CalendarFieldEnum fieldNum;
+        private readonly TimeAbacus timeAbacus;
+
+        public ReformatGetFieldForge(
+            CalendarFieldEnum fieldNum,
+            TimeAbacus timeAbacus)
+        {
+            this.fieldNum = fieldNum;
+            this.timeAbacus = timeAbacus;
+        }
+
+        public ReformatOp Op => this;
+
+        public CodegenExpression CodegenLong(
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            var methodNode = codegenMethodScope.MakeChild(typeof(int), typeof(ReformatGetFieldForge), codegenClassScope)
+                .AddParam(typeof(long), "ts");
+            var timeZoneField =
+                codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
+            methodNode.Block
+                .DeclareVar(typeof(DateTimeEx), "dateTime", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
+                .Expression(timeAbacus.DateTimeSetCodegen(Ref("ts"), Ref("dateTime"), methodNode, codegenClassScope))
+                .MethodReturn(CodegenGet(Ref("dateTime")));
+            return LocalMethod(methodNode, inner);
+        }
+
+        public CodegenExpression CodegenDateTimeEx(
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return CodegenGet(inner);
+        }
+
+        public CodegenExpression CodegenDateTimeOffset(
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return CodegenGet(inner);
+        }
+
+        public CodegenExpression CodegenDateTime(
+            CodegenExpression inner,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return CodegenGet(inner);
+        }
+
+        public Type ReturnType => typeof(int?);
+
+        public FilterExprAnalyzerAffector GetFilterDesc(
+            EventType[] typesPerStream,
+            DatetimeMethodEnum currentMethod,
+            IList<ExprNode> currentParameters,
+            ExprDotNodeFilterAnalyzerInput inputDesc)
+        {
+            return null;
+        }
+
+        public object Evaluate(
+            long ts,
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            var dateTime = DateTimeEx.NowUtc();
+            timeAbacus.DateTimeSet(ts, dateTime);
+            return GetValueUsingFieldEnum(dateTime, fieldNum);
+        }
+
+        public object Evaluate(
+            DateTime dateTime,
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return GetValueUsingFieldEnum(dateTime, fieldNum);
+        }
+
+        public object Evaluate(
+            DateTimeEx dateTimeEx,
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return GetValueUsingFieldEnum(dateTimeEx, fieldNum);
+        }
+
+        public object Evaluate(
+            DateTimeOffset dateTimeOffset,
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return GetValueUsingFieldEnum(dateTimeOffset, fieldNum);
+        }
+
+        private CodegenExpression CodegenGet(CodegenExpression dateTime)
+        {
+            return StaticMethod(
+                typeof(ReformatGetFieldForge), "GetValueUsingFieldEnum",
+                dateTime, Constant(fieldNum));
+        }
+
+        public static int GetValueUsingFieldEnum(
+            DateTime dateTime,
+            CalendarFieldEnum fieldEnum)
+        {
+            return GetValueUsingFieldEnum(DateTimeEx.UtcInstance(dateTime), fieldEnum);
+        }
+
+        public static int GetValueUsingFieldEnum(
+            DateTimeEx dateTime,
+            CalendarFieldEnum fieldEnum)
+        {
+            switch (fieldEnum)
+            {
+                case CalendarFieldEnum.YEAR:
+                    return dateTime.Year;
+                case CalendarFieldEnum.MONTH:
+                    return dateTime.Month;
+                case CalendarFieldEnum.DAY:
+                    return dateTime.Day;
+                case CalendarFieldEnum.HOUR:
+                    return dateTime.Hour;
+                case CalendarFieldEnum.MINUTE:
+                    return dateTime.Minute;
+                case CalendarFieldEnum.SECOND:
+                    return dateTime.Second;
+                case CalendarFieldEnum.MILLISEC:
+                    return dateTime.Millisecond;
+            }
+
+            throw new ArgumentException("unknown field", nameof(fieldEnum));
+        }
+
+        public static int GetValueUsingFieldEnum(
+            DateTimeOffset dateTime,
+            CalendarFieldEnum fieldEnum)
+        {
+            switch (fieldEnum)
+            {
+                case CalendarFieldEnum.YEAR:
+                    return dateTime.Year;
+                case CalendarFieldEnum.MONTH:
+                    return dateTime.Month;
+                case CalendarFieldEnum.DAY:
+                    return dateTime.Day;
+                case CalendarFieldEnum.HOUR:
+                    return dateTime.Hour;
+                case CalendarFieldEnum.MINUTE:
+                    return dateTime.Minute;
+                case CalendarFieldEnum.SECOND:
+                    return dateTime.Second;
+                case CalendarFieldEnum.MILLISEC:
+                    return dateTime.Millisecond;
+            }
+
+            throw new ArgumentException("unknown field", nameof(fieldEnum));
+        }
+    }
+} // end of namespace

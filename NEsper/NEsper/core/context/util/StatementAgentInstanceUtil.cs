@@ -15,6 +15,7 @@ using com.espertech.esper.client.hook;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.core.context.factory;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.service;

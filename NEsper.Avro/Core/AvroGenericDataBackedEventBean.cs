@@ -8,9 +8,6 @@
 
 using Avro.Generic;
 
-using com.espertech.esper.client;
-using com.espertech.esper.events;
-
 namespace NEsper.Avro.Core
 {
     /// <summary>For events that are array of properties.</summary>

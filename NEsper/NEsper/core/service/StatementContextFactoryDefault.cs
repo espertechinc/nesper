@@ -13,6 +13,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.context.stmt;
 using com.espertech.esper.core.context.util;

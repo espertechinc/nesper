@@ -11,17 +11,6 @@ using System.Collections.Generic;
 
 using Avro;
 using Avro.Generic;
-
-using com.espertech.esper.client;
-using com.espertech.esper.client.hook;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.events;
-using com.espertech.esper.events.avro;
-using com.espertech.esper.util;
-
 using NEsper.Avro.Extensions;
 using NEsper.Avro.SelectExprRep;
 using Newtonsoft.Json.Linq;

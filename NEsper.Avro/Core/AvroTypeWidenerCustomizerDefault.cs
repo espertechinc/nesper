@@ -7,10 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.util;
 
 namespace NEsper.Avro.Core
 {

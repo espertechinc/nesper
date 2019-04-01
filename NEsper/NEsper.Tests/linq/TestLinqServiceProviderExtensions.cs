@@ -9,7 +9,7 @@
 using com.espertech.esper.client;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.util;
 using NUnit.Framework;

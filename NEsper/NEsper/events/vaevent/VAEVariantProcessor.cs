@@ -12,6 +12,7 @@ using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;

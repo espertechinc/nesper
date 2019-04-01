@@ -10,12 +10,6 @@ using System.Collections.Generic;
 
 using Avro;
 
-using com.espertech.esper.client;
-using com.espertech.esper.events;
-using com.espertech.esper.events.avro;
-
-using NEsper.Avro.Extensions;
-
 namespace NEsper.Avro.Core
 {
     public class EventAdapterAvroHandlerImpl : EventAdapterAvroHandlerBase

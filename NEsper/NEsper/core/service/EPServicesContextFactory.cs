@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.core.service
 {

@@ -1,0 +1,63 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
+using System;
+
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.metrics.instrumentation;
+using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
+namespace com.espertech.esper.common.@internal.epl.expression.dot.core
+{
+	public class ExprDotNodeForgeStreamEvalEventBean : ExprEvaluator {
+	    private readonly ExprDotNodeForgeStream forge;
+	    private readonly ExprDotEval[] evaluators;
+
+	    public ExprDotNodeForgeStreamEvalEventBean(ExprDotNodeForgeStream forge, ExprDotEval[] evaluators) {
+	        this.forge = forge;
+	        this.evaluators = evaluators;
+	    }
+
+	    public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+	        EventBean theEvent = eventsPerStream[forge.StreamNumber];
+	        if (theEvent == null) {
+	            return null;
+	        }
+	        return ExprDotNodeUtility.EvaluateChain(forge.Evaluators, evaluators, theEvent, eventsPerStream, isNewData, exprEvaluatorContext);
+	    }
+
+	    public static CodegenExpression Codegen(ExprDotNodeForgeStream forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
+	        CodegenMethod methodNode = codegenMethodScope.MakeChild(forge.EvaluationType, typeof(ExprDotNodeForgeStreamEvalEventBean), codegenClassScope);
+	        CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+
+	        CodegenExpression typeInformation = ConstantNull();
+	        if (codegenClassScope.IsInstrumented) {
+	            typeInformation = codegenClassScope.AddOrGetFieldSharable(new EPTypeCodegenSharable(EPTypeHelper.SingleEvent(forge.EventType), codegenClassScope));
+	        }
+
+	        methodNode.Block
+	                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(forge.StreamNumber)))
+	                .Apply(InstrumentationCode.Instblock(codegenClassScope, "qExprDotChain", typeInformation, @Ref("event"), Constant(forge.Evaluators.Length)))
+	                .IfRefNull("event")
+	                .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))
+	                .BlockReturn(ConstantNull())
+	                .DeclareVar(forge.EvaluationType, "result", ExprDotNodeUtility.EvaluateChainCodegen(methodNode, exprSymbol, codegenClassScope, @Ref("event"), typeof(EventBean), forge.Evaluators, null))
+	                .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))
+	                .MethodReturn(@Ref("result"));
+	        return LocalMethod(methodNode);
+	    }
+	}
+} // end of namespace

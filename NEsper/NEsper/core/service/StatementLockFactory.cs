@@ -8,6 +8,7 @@
 
 using System;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.core.service
 {

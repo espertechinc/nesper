@@ -11,7 +11,7 @@ using System.Configuration;
 using System.Xml;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 using Configuration = com.espertech.esper.client.Configuration;
 
 namespace com.espertech.esper.util

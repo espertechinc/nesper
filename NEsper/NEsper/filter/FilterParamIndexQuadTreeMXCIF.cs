@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.epl.index.quadtree;
 using com.espertech.esper.spatial.quadtree.core;
 using com.espertech.esper.spatial.quadtree.mxcif;

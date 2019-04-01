@@ -12,15 +12,6 @@ using System.Linq;
 
 using Avro;
 using Avro.Generic;
-
-using com.espertech.esper.client;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.epl.parse;
-using com.espertech.esper.events;
-using com.espertech.esper.events.avro;
-using com.espertech.esper.events.property;
-using com.espertech.esper.util;
-
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Getter;
 using NEsper.Avro.Writer;

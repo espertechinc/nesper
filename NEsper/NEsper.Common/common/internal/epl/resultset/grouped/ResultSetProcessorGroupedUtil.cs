@@ -1,0 +1,214 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
+using System.Collections.Generic;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.agg.core;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.resultset.codegen;
+using com.espertech.esper.common.@internal.epl.resultset.core;
+using com.espertech.esper.common.@internal.epl.resultset.rowperevent;
+using com.espertech.esper.common.@internal.epl.resultset.rowpergroup;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
+using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
+using static com.espertech.esper.common.@internal.metrics.instrumentation.InstrumentationCode;
+
+namespace com.espertech.esper.common.@internal.epl.resultset.grouped
+{
+    public class ResultSetProcessorGroupedUtil
+    {
+        public const string METHOD_APPLYAGGVIEWRESULTKEYEDVIEW = "applyAggViewResultKeyedView";
+        public const string METHOD_APPLYAGGJOINRESULTKEYEDJOIN = "applyAggJoinResultKeyedJoin";
+
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="aggregationService">aggs</param>
+        /// <param name="agentInstanceContext">ctx</param>
+        /// <param name="newData">new data</param>
+        /// <param name="newDataMultiKey">new data keys</param>
+        /// <param name="oldData">old data</param>
+        /// <param name="oldDataMultiKey">old data keys</param>
+        /// <param name="eventsPerStream">event buffer, transient buffer</param>
+        public static void ApplyAggViewResultKeyedView(
+            AggregationService aggregationService, AgentInstanceContext agentInstanceContext, EventBean[] newData,
+            object[] newDataMultiKey, EventBean[] oldData, object[] oldDataMultiKey, EventBean[] eventsPerStream)
+        {
+            // update aggregates
+            if (newData != null) {
+                // apply new data to aggregates
+                for (var i = 0; i < newData.Length; i++) {
+                    eventsPerStream[0] = newData[i];
+                    aggregationService.ApplyEnter(eventsPerStream, newDataMultiKey[i], agentInstanceContext);
+                }
+            }
+
+            if (oldData != null) {
+                // apply old data to aggregates
+                for (var i = 0; i < oldData.Length; i++) {
+                    eventsPerStream[0] = oldData[i];
+                    aggregationService.ApplyLeave(eventsPerStream, oldDataMultiKey[i], agentInstanceContext);
+                }
+            }
+        }
+
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="aggregationService">aggs</param>
+        /// <param name="agentInstanceContext">ctx</param>
+        /// <param name="newEvents">new data</param>
+        /// <param name="newDataMultiKey">new data keys</param>
+        /// <param name="oldEvents">old data</param>
+        /// <param name="oldDataMultiKey">old data keys</param>
+        public static void ApplyAggJoinResultKeyedJoin(
+            AggregationService aggregationService, AgentInstanceContext agentInstanceContext,
+            ISet<MultiKey<EventBean>> newEvents, object[] newDataMultiKey, ISet<MultiKey<EventBean>> oldEvents,
+            object[] oldDataMultiKey)
+        {
+            // update aggregates
+            if (!newEvents.IsEmpty()) {
+                // apply old data to aggregates
+                var count = 0;
+                foreach (var eventsPerStream in newEvents) {
+                    aggregationService.ApplyEnter(eventsPerStream.Array, newDataMultiKey[count], agentInstanceContext);
+                    count++;
+                }
+            }
+
+            if (oldEvents != null && !oldEvents.IsEmpty()) {
+                // apply old data to aggregates
+                var count = 0;
+                foreach (var eventsPerStream in oldEvents) {
+                    aggregationService.ApplyLeave(eventsPerStream.Array, oldDataMultiKey[count], agentInstanceContext);
+                    count++;
+                }
+            }
+        }
+
+        public static CodegenMethod GenerateGroupKeySingleCodegen(
+            ExprNode[] groupKeyExpressions, CodegenClassScope classScope, CodegenInstanceAux instance)
+        {
+            Consumer<CodegenMethod> code = methodNode => {
+                string[] expressions = null;
+                if (classScope.IsInstrumented) {
+                    expressions = ExprNodeUtilityPrint.ToExpressionStringsMinPrecedence(groupKeyExpressions);
+                }
+
+                methodNode.Block.Apply(
+                    Instblock(
+                        classScope, "qResultSetProcessComputeGroupKeys", ExprForgeCodegenNames.REF_ISNEWDATA, Constant(expressions),
+                        REF_EPS));
+
+                if (groupKeyExpressions.Length == 1) {
+                    var expression = CodegenLegoMethodExpression.CodegenExpression(
+                        groupKeyExpressions[0].Forge, methodNode, classScope);
+                    methodNode.Block
+                        .DeclareVar(
+                            typeof(object), "key",
+                            LocalMethod(
+                                expression, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA, REF_AGENTINSTANCECONTEXT))
+                        .Apply(
+                            Instblock(
+                                classScope, "aResultSetProcessComputeGroupKeys", ExprForgeCodegenNames.REF_ISNEWDATA,
+                                Ref("key")))
+                        .MethodReturn(Ref("key"));
+                    return;
+                }
+
+                methodNode.Block.DeclareVar(
+                    typeof(object[]), "keys", NewArrayByLength(typeof(object), Constant(groupKeyExpressions.Length)));
+                for (var i = 0; i < groupKeyExpressions.Length; i++) {
+                    var expression = CodegenLegoMethodExpression.CodegenExpression(
+                        groupKeyExpressions[i].Forge, methodNode, classScope);
+                    methodNode.Block.AssignArrayElement(
+                        "keys", Constant(i),
+                        LocalMethod(
+                            expression, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA, REF_AGENTINSTANCECONTEXT));
+                }
+
+                methodNode.Block
+                    .DeclareVar(typeof(HashableMultiKey), "key", NewInstance(typeof(HashableMultiKey), Ref("keys")))
+                    .Apply(
+                        Instblock(
+                            classScope, "aResultSetProcessComputeGroupKeys", ExprForgeCodegenNames.REF_ISNEWDATA,
+                            Ref("key")))
+                    .MethodReturn(Ref("key"));
+            };
+
+            return instance.Methods.AddMethod(
+                typeof(object), "generateGroupKeySingle",
+                CodegenNamedParam.From(
+                    typeof(EventBean[]), NAME_EPS, typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA),
+                typeof(ResultSetProcessorUtil), classScope, code);
+        }
+
+        public static CodegenMethod GenerateGroupKeyArrayViewCodegen(
+            ExprNode[] groupKeyExpressions, CodegenClassScope classScope, CodegenInstanceAux instance)
+        {
+            var generateGroupKeySingle = GenerateGroupKeySingleCodegen(groupKeyExpressions, classScope, instance);
+
+            Consumer<CodegenMethod> code = method => {
+                method.Block.IfRefNullReturnNull("events")
+                    .DeclareVar(
+                        typeof(EventBean[]), "eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
+                    .DeclareVar(typeof(object[]), "keys", NewArrayByLength(typeof(object), ArrayLength(Ref("events"))));
+                {
+                    var forLoop = method.Block.ForLoopIntSimple("i", ArrayLength(Ref("events")));
+                    forLoop.AssignArrayElement("eventsPerStream", Constant(0), ArrayAtIndex(Ref("events"), Ref("i")))
+                        .AssignArrayElement(
+                            "keys", Ref("i"),
+                            LocalMethod(
+                                generateGroupKeySingle, Ref("eventsPerStream"), ExprForgeCodegenNames.REF_ISNEWDATA));
+                }
+                method.Block.MethodReturn(Ref("keys"));
+            };
+            return instance.Methods.AddMethod(
+                typeof(object[]), "generateGroupKeyArrayView",
+                CodegenNamedParam.From(
+                    typeof(EventBean[]), "events", typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA),
+                typeof(ResultSetProcessorRowPerGroup), classScope, code);
+        }
+
+        public static CodegenMethod GenerateGroupKeyArrayJoinCodegen(
+            ExprNode[] groupKeyExpressions, CodegenClassScope classScope, CodegenInstanceAux instance)
+        {
+            var generateGroupKeySingle = GenerateGroupKeySingleCodegen(groupKeyExpressions, classScope, instance);
+            Consumer<CodegenMethod> code = method => {
+                method.Block.IfCondition(ExprDotMethod(Ref("resultSet"), "isEmpty")).BlockReturn(ConstantNull())
+                    .DeclareVar(
+                        typeof(object[]), "keys",
+                        NewArrayByLength(typeof(object), ExprDotMethod(Ref("resultSet"), "size")))
+                    .DeclareVar(typeof(int), "count", Constant(0))
+                    .ForEach(typeof(MultiKey<object>), "eventsPerStream", Ref("resultSet"))
+                    .AssignArrayElement(
+                        "keys", Ref("count"),
+                        LocalMethod(
+                            generateGroupKeySingle,
+                            Cast(
+                                typeof(EventBean[]), ExprDotMethod(Ref("eventsPerStream"), "getArray")),
+                            ExprForgeCodegenNames.REF_ISNEWDATA))
+                    .Increment("count")
+                    .BlockEnd()
+                    .MethodReturn(Ref("keys"));
+            };
+            return instance.Methods.AddMethod(
+                typeof(object[]), "generateGroupKeyArrayJoin",
+                CodegenNamedParam.From(typeof(ISet<object>), "resultSet", typeof(bool), "isNewData"),
+                typeof(ResultSetProcessorRowPerEventImpl), classScope, code);
+        }
+    }
+} // end of namespace

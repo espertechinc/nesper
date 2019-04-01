@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.metric;

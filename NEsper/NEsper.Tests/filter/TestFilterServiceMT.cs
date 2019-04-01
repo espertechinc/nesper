@@ -8,8 +8,8 @@
 
 using System;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.container;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.filter;

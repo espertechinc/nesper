@@ -14,9 +14,9 @@ using System.Threading;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logger;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.container;
 using com.espertech.esper.filter;
 using com.espertech.esper.supportunit.util;
 

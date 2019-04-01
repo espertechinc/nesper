@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.funcs;
 using com.espertech.esper.supportunit.epl;

@@ -9,7 +9,7 @@
 using System;
 
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.schedule;
 using com.espertech.esper.supportunit.guard;

@@ -12,6 +12,7 @@ using System.Reflection;
 
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 

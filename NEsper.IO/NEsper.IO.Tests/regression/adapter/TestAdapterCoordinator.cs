@@ -13,8 +13,8 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.time;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.container;
 using com.espertech.esperio.csv;
 using com.espertech.esperio.support.util;
 

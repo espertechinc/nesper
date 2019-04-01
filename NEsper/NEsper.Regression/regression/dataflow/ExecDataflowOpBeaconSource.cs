@@ -17,7 +17,7 @@ using com.espertech.esper.client.dataflow;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.dataflow;

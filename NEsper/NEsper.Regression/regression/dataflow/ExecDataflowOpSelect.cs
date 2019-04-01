@@ -16,7 +16,7 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 using com.espertech.esper.core.service;
 using com.espertech.esper.dataflow.ops;
 using com.espertech.esper.dataflow.util;

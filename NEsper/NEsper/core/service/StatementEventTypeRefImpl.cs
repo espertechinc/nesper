@@ -10,9 +10,9 @@ using System;
 using System.Collections.Generic;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.service

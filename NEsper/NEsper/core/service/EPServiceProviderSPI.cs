@@ -9,7 +9,6 @@
 using System;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat.container;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.deploy;
 using com.espertech.esper.core.thread;

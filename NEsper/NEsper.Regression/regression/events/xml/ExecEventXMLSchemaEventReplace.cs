@@ -10,7 +10,7 @@ using System.Xml;
 using System.Xml.XPath;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.execution;
 using com.espertech.esper.supportregression.util;

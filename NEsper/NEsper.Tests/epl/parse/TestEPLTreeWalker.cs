@@ -13,7 +13,7 @@ using System.Linq;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression.baseagg;
 using com.espertech.esper.epl.expression.core;

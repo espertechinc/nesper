@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using com.espertech.esper.compat.container;
 using com.espertech.esper.core.start;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core;

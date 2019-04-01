@@ -12,7 +12,7 @@ using System.Xml;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.util;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 using com.espertech.esper.regression.events;
 using com.espertech.esper.supportregression.events;
 using com.espertech.esper.supportregression.execution;

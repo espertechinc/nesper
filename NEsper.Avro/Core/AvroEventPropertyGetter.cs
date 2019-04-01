@@ -10,8 +10,6 @@ using System;
 
 using Avro.Generic;
 
-using com.espertech.esper.events;
-
 namespace NEsper.Avro.Core
 {
     public interface AvroEventPropertyGetter : EventPropertyGetterSPI

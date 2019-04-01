@@ -10,9 +10,6 @@ using System;
 
 using Avro.Generic;
 
-using com.espertech.esper.client;
-using com.espertech.esper.events;
-
 namespace NEsper.Avro.Core
 {
     public class EventBeanFactoryAvro : EventBeanFactory

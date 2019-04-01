@@ -10,9 +10,8 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
-
+using com.espertech.esper.container;
 using NUnit.Framework;
 
 namespace com.espertech.esper.supportregression.util

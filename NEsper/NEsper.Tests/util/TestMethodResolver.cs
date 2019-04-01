@@ -11,7 +11,7 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.supportunit.bean;

@@ -52,5 +52,4 @@ namespace com.espertech.esper.epl.parse
         {
         }
     }
-    
 }

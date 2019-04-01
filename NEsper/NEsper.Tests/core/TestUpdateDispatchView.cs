@@ -11,7 +11,7 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.collection;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.thread;
 using com.espertech.esper.dispatch;

@@ -7,19 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-
 using Avro;
-
-using com.espertech.esper.client;
-using com.espertech.esper.client.annotation;
-using com.espertech.esper.client.hook;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.events;
-using com.espertech.esper.events.map;
-using com.espertech.esper.util;
-
 using Newtonsoft.Json.Linq;
 
 using NEsper.Avro.Extensions;

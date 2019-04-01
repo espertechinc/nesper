@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 using com.espertech.esper.core.service;
 using com.espertech.esper.supportunit.util;
 using NUnit.Framework;

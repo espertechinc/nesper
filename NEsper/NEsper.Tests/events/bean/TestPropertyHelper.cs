@@ -13,8 +13,8 @@ using System.Reflection;
 using XLR8.CGLib;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.magic;
+using com.espertech.esper.container;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.util;

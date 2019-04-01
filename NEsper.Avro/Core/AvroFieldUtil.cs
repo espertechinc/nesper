@@ -7,9 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using Avro;
-
-using com.espertech.esper.events.property;
-
 using NEsper.Avro.Extensions;
 
 namespace NEsper.Avro.Core

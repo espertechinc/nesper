@@ -9,8 +9,9 @@
 using System;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.locks;
+using com.espertech.esper.container;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.script;
 using com.espertech.esper.epl.table.mgmt;

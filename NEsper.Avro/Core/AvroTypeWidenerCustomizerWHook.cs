@@ -8,11 +8,6 @@
 
 using System;
 
-using com.espertech.esper.client;
-using com.espertech.esper.client.hook;
-using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.util;
-
 namespace NEsper.Avro.Core
 {
     public class AvroTypeWidenerCustomizerWHook : TypeWidenerCustomizer

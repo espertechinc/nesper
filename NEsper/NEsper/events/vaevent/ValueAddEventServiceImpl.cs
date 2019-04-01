@@ -13,6 +13,7 @@ using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.view;
 
 namespace com.espertech.esper.events.vaevent

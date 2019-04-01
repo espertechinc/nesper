@@ -12,7 +12,7 @@ using System.IO;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 using com.espertech.esperio.support.util;
 
 using NUnit.Framework;

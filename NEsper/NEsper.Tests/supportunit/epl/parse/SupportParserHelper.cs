@@ -13,7 +13,6 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
 using com.espertech.esper.collection;
-using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core;

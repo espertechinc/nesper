@@ -10,11 +10,6 @@ using System.Collections.Generic;
 
 using Avro;
 using Avro.Generic;
-
-using com.espertech.esper.client;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.events;
-
 using NEsper.Avro.Extensions;
 
 namespace NEsper.Avro.Core

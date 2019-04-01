@@ -12,8 +12,7 @@ using System.Diagnostics;
 using System.Runtime.Serialization;
 
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.container;
-
+using com.espertech.esper.container;
 using MySql.Data.MySqlClient;
 
 namespace com.espertech.esper.epl.db.drivers

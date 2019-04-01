@@ -8,7 +8,7 @@
 
 
 using System.Collections.Generic;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 using com.espertech.esper.supportunit.dispatch;
 using com.espertech.esper.supportunit.util;
 using NUnit.Framework;

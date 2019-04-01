@@ -14,6 +14,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.epl.index.quadtree;
 using com.espertech.esper.spatial.quadtree.core;
 using com.espertech.esper.spatial.quadtree.pointregion;
