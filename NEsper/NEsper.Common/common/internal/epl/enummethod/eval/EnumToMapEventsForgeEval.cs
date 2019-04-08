@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         private readonly ExprEvaluator secondExpression;
 
         public EnumToMapEventsForgeEval(
-            EnumToMapEventsForge forge, ExprEvaluator innerExpression, ExprEvaluator secondExpression)
+            EnumToMapEventsForge forge,
+            ExprEvaluator innerExpression,
+            ExprEvaluator secondExpression)
         {
             this.forge = forge;
             this.innerExpression = innerExpression;
@@ -33,14 +35,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public object EvaluateEnumMethod(
-            EventBean[] eventsLambda, ICollection<object> enumcoll, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             if (enumcoll.IsEmpty()) {
-                return Collections.EmptyMap();
+                return new EmptyDictionary<object, object>();
             }
 
             var map = new Dictionary<object, object>();
-
             var beans = (ICollection<EventBean>) enumcoll;
             foreach (var next in beans) {
                 eventsLambda[forge.streamNumLambda] = next;
@@ -54,7 +58,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public static CodegenExpression Codegen(
-            EnumToMapEventsForge forge, EnumForgeCodegenParams args, CodegenMethodScope codegenMethodScope,
+            EnumToMapEventsForge forge,
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             var scope = new ExprForgeCodegenSymbol(false, null);

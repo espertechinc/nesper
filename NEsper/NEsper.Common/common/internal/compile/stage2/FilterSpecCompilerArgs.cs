@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -17,17 +18,17 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public class FilterSpecCompilerArgs
     {
-        public readonly LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes;
+        public readonly IDictionary<string, Pair<EventType, string>> arrayEventTypes;
         public readonly StatementCompileTimeServices compileTimeServices;
         public readonly ContextCompileTimeDescriptor contextDescriptor;
         public readonly StatementRawInfo statementRawInfo;
         public readonly StreamTypeService streamTypeService;
 
-        public readonly LinkedHashMap<string, Pair<EventType, string>> taggedEventTypes;
+        public readonly IDictionary<string, Pair<EventType, string>> taggedEventTypes;
 
         public FilterSpecCompilerArgs(
-            LinkedHashMap<string, Pair<EventType, string>> taggedEventTypes,
-            LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes, StreamTypeService streamTypeService,
+            IDictionary<string, Pair<EventType, string>> taggedEventTypes,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes, StreamTypeService streamTypeService,
             ContextCompileTimeDescriptor contextDescriptor, StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {

@@ -23,6 +23,6 @@ namespace com.espertech.esper.common.client.annotation
         /// <value>
         /// The event underlying type.
         /// </value>
-        public EventUnderlyingType Value { get; set; }
+        public virtual EventUnderlyingType Value { get; set; }
 	}
 } // end of namespace

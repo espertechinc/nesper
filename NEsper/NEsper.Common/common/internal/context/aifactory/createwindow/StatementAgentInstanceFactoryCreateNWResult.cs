@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.subselect;
+using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -41,11 +42,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 stopCallback,
                 agentInstanceContext, 
                 null,
-                Collections.GetEmptyMap<int, SubSelectFactoryResult>(),
+                new EmptyDictionary<int, SubSelectFactoryResult>(), 
                 null,
                 null,
                 null,
-                Collections.GetEmptyMap(),
+                new EmptyDictionary<int, ExprTableEvalStrategy>(), 
                 null)
         {
             this.eventStreamParentViewable = eventStreamParentViewable;

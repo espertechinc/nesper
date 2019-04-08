@@ -279,10 +279,16 @@ namespace com.espertech.esper.common.@internal.support
                         // fine
                     }
                     else if (resultGet is XmlNodeList) {
-                        ScopeTestHelper.AssertEquals(failedMessage, ((XmlNodeList) resultGet).Length, ((XmlNodeList) resultGetter).Length);
+                        ScopeTestHelper.AssertEquals(
+                            failedMessage, 
+                            ((XmlNodeList) resultGet).Count, 
+                            ((XmlNodeList) resultGetter).Count);
                     }
                     else if (resultGet.GetType().IsArray) {
-                        ScopeTestHelper.AssertEquals(failedMessage, Array.GetLength(resultGet), Array.GetLength(resultGetter));
+                        ScopeTestHelper.AssertEquals(
+                            failedMessage, 
+                            ((Array) resultGet).Length,
+                            ((Array) resultGetter).Length);
                     }
                     else {
                         ScopeTestHelper.AssertEquals(failedMessage, resultGet, resultGetter);
@@ -435,14 +441,14 @@ namespace com.espertech.esper.common.@internal.support
                 return;
             }
 
-            if (result.GetType().IsArray) {
+            if (result is Array resultArray) {
                 writer.Write("Array len=");
-                writer.Write(Convert.ToString(Array.GetLength(result)));
+                writer.Write(Convert.ToString(resultArray.Length));
                 writer.Write("{");
                 var delimiter = "";
-                for (var i = 0; i < Array.GetLength(result); i++) {
+                for (var i = 0; i < resultArray.Length; i++) {
                     writer.Write(delimiter);
-                    WriteValue(writer, Array.Get(result, i));
+                    WriteValue(writer, resultArray.GetValue(i));
                     delimiter = ", ";
                 }
 
@@ -465,7 +471,7 @@ namespace com.espertech.esper.common.@internal.support
                 for (var i = 0; i < assertions.Length; i++) {
                     var assertion = assertions[i];
                     var expected = expectedArr[propNum][i];
-                    object value = assertion.Extractor.Extract(prop, eventType);
+                    object value = assertion.GetExtractor().Invoke(prop, eventType);
                     ScopeTestHelper.AssertEquals(message + " at assertion " + assertion, expected, value);
                 }
             }

@@ -7,27 +7,27 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client.annotation;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.type
 {
-	public class AnnotationAudit : AuditAttribute {
-	    private readonly string value;
+    public class AnnotationAudit : AuditAttribute
+    {
+        private string value;
 
-	    public AnnotationAudit(string value) {
-	        this.value = value;
-	    }
+        public AnnotationAudit(string value)
+        {
+            this.value = value;
+        }
 
-	    public override string Value {
-	        get { return value; }
-	        set { this.value = value; }
-	    }
+        public override string Value {
+            get => value;
+            set => this.value = value;
+        }
 
-	    public Type AnnotationType() {
-	        return typeof(Audit);
-	    }
-	}
+        public Type AnnotationType()
+        {
+            return typeof(AuditAttribute);
+        }
+    }
 } // end of namespace

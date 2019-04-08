@@ -9,6 +9,7 @@
 using System.IO;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.collections;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.lookup
@@ -16,7 +17,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
     public class AdvancedIndexIndexMultiKeyPart
     {
         public AdvancedIndexIndexMultiKeyPart(
-            string indexTypeName, string[] indexExpressions, string[] indexedProperties)
+            string indexTypeName,
+            string[] indexExpressions,
+            string[] indexedProperties)
         {
             IndexTypeName = indexTypeName;
             IndexExpressions = indexExpressions;
@@ -31,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
         public bool EqualsAdvancedIndex(AdvancedIndexIndexMultiKeyPart that)
         {
-            return IndexTypeName.Equals(that.IndexTypeName) && Arrays.Equals(IndexExpressions, that.IndexExpressions);
+            return IndexTypeName.Equals(that.IndexTypeName) && IndexExpressions.AreEqual(that.IndexExpressions);
         }
 
         public string ToQueryPlan()
@@ -48,7 +51,9 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             return writer.ToString();
         }
 
-        public CodegenExpression CodegenMake(CodegenMethodScope parent, CodegenClassScope classScope)
+        public CodegenExpression CodegenMake(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             return NewInstance(
                 typeof(AdvancedIndexIndexMultiKeyPart), Constant(IndexTypeName), Constant(IndexExpressions),

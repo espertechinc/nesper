@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.view.util
         /// <throws>ViewParameterException if assertion fails</throws>
         public static void AssertReturnsNonConstant(string viewName, ExprNode expression, int index)
         {
-            if (expression.Forge.ForgeConstantType.IsCompileTimeConstant()) {
+            if (expression.Forge.ForgeConstantType.IsCompileTimeConstant) {
                 var message = "Invalid view parameter expression " + index + GetViewDesc(viewName) +
                               ", the expression returns a constant result value, are you sure?";
                 throw new ViewParameterException(message);
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.view.util
             expression.Accept(visitor);
             if (!visitor.IsPlain) {
                 var message = "Invalid view parameter expression " + index + GetViewDesc(viewName) + ", " +
-                              visitor.GetMessage() + " are not allowed within the expression";
+                              visitor.Message + " are not allowed within the expression";
                 throw new ViewParameterException(message);
             }
         }
@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.view.util
                 throw new ViewParameterException(GetViewParamMessage(viewName));
             }
 
-            if (sizeNode.Forge.ForgeConstantType.IsCompileTimeConstant()) {
+            if (sizeNode.Forge.ForgeConstantType.IsCompileTimeConstant) {
                 var size = Evaluate(forge.ExprEvaluator, expressionNumber, viewName);
                 EnsureNumeric(size);
                 if (!ValidateSize(size)) {
@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.view.util
                     viewName, expr, streamTypeService, viewForgeEnv, expressionNumber, streamNumber);
                 results.Add(validated);
 
-                if (!allowConstantResult && validated.Forge.ForgeConstantType.IsCompileTimeConstant()) {
+                if (!allowConstantResult && validated.Forge.ForgeConstantType.IsCompileTimeConstant) {
                     var message = "Invalid view parameter expression " + expressionNumber + GetViewDesc(viewName) +
                                   ", the expression returns a constant result value, are you sure?";
                     throw new ViewParameterException(message);

@@ -8,13 +8,12 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.join.analyze;
-using com.espertech.esper.common.@internal.epl.join.hint;
-using com.espertech.esper.common.@internal.epl.join.querygraph;
-using com.espertech.esper.common.@internal.epl.join.queryplan;
+using com.espertech.esper.common.@internal.epl.@join.analyze;
+using com.espertech.esper.common.@internal.epl.@join.hint;
+using com.espertech.esper.common.@internal.epl.@join.querygraph;
+using com.espertech.esper.common.@internal.epl.@join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookupplan;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -22,285 +21,322 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
-	/// <summary>
-	/// Build query index plans.
-	/// </summary>
-	public class QueryPlanIndexBuilder {
-	    /// <summary>
-	    /// Build index specification from navigability info.
-	    /// <para />Looks at each stream and determines which properties in the stream must be indexed
-	    /// in order for other streams to look up into the stream. Determines the unique set of properties
-	    /// to avoid building duplicate indexes on the same set of properties.
-	    /// </summary>
-	    /// <param name="queryGraph">navigability info</param>
-	    /// <param name="typePerStream">type info</param>
-	    /// <param name="indexedStreamsUniqueProps">per-stream unique props</param>
-	    /// <returns>query index specs for each stream</returns>
-	    public static QueryPlanIndexForge[] BuildIndexSpec(QueryGraphForge queryGraph, EventType[] typePerStream, string[][][] indexedStreamsUniqueProps) {
-	        int numStreams = queryGraph.NumStreams;
-	        QueryPlanIndexForge[] indexSpecs = new QueryPlanIndexForge[numStreams];
+    /// <summary>
+    ///     Build query index plans.
+    /// </summary>
+    public class QueryPlanIndexBuilder
+    {
+        /// <summary>
+        ///     Build index specification from navigability info.
+        ///     <para />
+        ///     Looks at each stream and determines which properties in the stream must be indexed
+        ///     in order for other streams to look up into the stream. Determines the unique set of properties
+        ///     to avoid building duplicate indexes on the same set of properties.
+        /// </summary>
+        /// <param name="queryGraph">navigability info</param>
+        /// <param name="typePerStream">type info</param>
+        /// <param name="indexedStreamsUniqueProps">per-stream unique props</param>
+        /// <returns>query index specs for each stream</returns>
+        public static QueryPlanIndexForge[] BuildIndexSpec(
+            QueryGraphForge queryGraph,
+            EventType[] typePerStream,
+            string[][][] indexedStreamsUniqueProps)
+        {
+            var numStreams = queryGraph.NumStreams;
+            var indexSpecs = new QueryPlanIndexForge[numStreams];
 
-	        // For each stream compile a list of index property sets.
-	        for (int streamIndexed = 0; streamIndexed < numStreams; streamIndexed++) {
-	            IList<QueryPlanIndexItemForge> indexesSet = new List<QueryPlanIndexItemForge>();
+            // For each stream compile a list of index property sets.
+            for (var streamIndexed = 0; streamIndexed < numStreams; streamIndexed++) {
+                IList<QueryPlanIndexItemForge> indexesSet = new List<QueryPlanIndexItemForge>();
 
-	            // Look at the index from the viewpoint of the stream looking up in the index
-	            for (int streamLookup = 0; streamLookup < numStreams; streamLookup++) {
-	                if (streamIndexed == streamLookup) {
-	                    continue;
-	                }
+                // Look at the index from the viewpoint of the stream looking up in the index
+                for (var streamLookup = 0; streamLookup < numStreams; streamLookup++) {
+                    if (streamIndexed == streamLookup) {
+                        continue;
+                    }
 
-	                QueryGraphValueForge value = queryGraph.GetGraphValue(streamLookup, streamIndexed);
-	                QueryGraphValuePairHashKeyIndexForge hashKeyAndIndexProps = value.HashKeyProps;
+                    var value = queryGraph.GetGraphValue(streamLookup, streamIndexed);
+                    var hashKeyAndIndexProps = value.HashKeyProps;
 
-	                // Sort index properties, but use the sorted properties only to eliminate duplicates
-	                string[] hashIndexProps = hashKeyAndIndexProps.Indexed;
-	                IList<QueryGraphValueEntryHashKeyedForge> hashKeyProps = hashKeyAndIndexProps.Keys;
-	                CoercionDesc indexCoercionTypes = CoercionUtil.GetCoercionTypesHash(typePerStream, streamLookup, streamIndexed, hashKeyProps, hashIndexProps);
-	                Type[] hashCoercionTypeArr = indexCoercionTypes.CoercionTypes;
+                    // Sort index properties, but use the sorted properties only to eliminate duplicates
+                    var hashIndexProps = hashKeyAndIndexProps.Indexed;
+                    var hashKeyProps = hashKeyAndIndexProps.Keys;
+                    var indexCoercionTypes = CoercionUtil.GetCoercionTypesHash(
+                        typePerStream, streamLookup, streamIndexed, hashKeyProps, hashIndexProps);
+                    var hashCoercionTypeArr = indexCoercionTypes.CoercionTypes;
 
-	                QueryGraphValuePairRangeIndexForge rangeAndIndexProps = value.RangeProps;
-	                string[] rangeIndexProps = rangeAndIndexProps.Indexed;
-	                IList<QueryGraphValueEntryRangeForge> rangeKeyProps = rangeAndIndexProps.Keys;
-	                CoercionDesc rangeCoercionTypes = CoercionUtil.GetCoercionTypesRange(typePerStream, streamIndexed, rangeIndexProps, rangeKeyProps);
-	                Type[] rangeCoercionTypeArr = rangeCoercionTypes.CoercionTypes;
+                    var rangeAndIndexProps = value.RangeProps;
+                    var rangeIndexProps = rangeAndIndexProps.Indexed;
+                    var rangeKeyProps = rangeAndIndexProps.Keys;
+                    var rangeCoercionTypes = CoercionUtil.GetCoercionTypesRange(typePerStream, streamIndexed, rangeIndexProps, rangeKeyProps);
+                    var rangeCoercionTypeArr = rangeCoercionTypes.CoercionTypes;
 
-	                if (hashIndexProps.Length == 0 && rangeIndexProps.Length == 0) {
-	                    QueryGraphValuePairInKWSingleIdxForge singles = value.InKeywordSingles;
-	                    if (!singles.Key.IsEmpty()) {
-	                        string indexedProp = singles.Indexed[0];
-	                        Type indexedType = typePerStream[streamIndexed].GetPropertyType(indexedProp);
-	                        QueryPlanIndexItemForge indexItem = new QueryPlanIndexItemForge(new string[]{indexedProp}, new Type[]{indexedType}, new string[0], new Type[0], false, null, typePerStream[streamIndexed]);
-	                        CheckDuplicateOrAdd(indexItem, indexesSet);
-	                    }
+                    if (hashIndexProps.Length == 0 && rangeIndexProps.Length == 0) {
+                        var singles = value.InKeywordSingles;
+                        if (!singles.Key.IsEmpty()) {
+                            var indexedProp = singles.Indexed[0];
+                            var indexedType = typePerStream[streamIndexed].GetPropertyType(indexedProp);
+                            var indexItem = new QueryPlanIndexItemForge(
+                                new[] {indexedProp}, new[] {indexedType}, new string[0], new Type[0], false, null, typePerStream[streamIndexed]);
+                            CheckDuplicateOrAdd(indexItem, indexesSet);
+                        }
 
-	                    IList<QueryGraphValuePairInKWMultiIdx> multis = value.InKeywordMulti;
-	                    if (!multis.IsEmpty()) {
-	                        QueryGraphValuePairInKWMultiIdx multi = multis.Get(0);
-	                        foreach (ExprNode propIndexed in multi.Indexed) {
-	                            ExprIdentNode identNode = (ExprIdentNode) propIndexed;
-	                            Type type = identNode.Forge.EvaluationType;
-	                            QueryPlanIndexItemForge indexItem = new QueryPlanIndexItemForge(new string[]{identNode.ResolvedPropertyName}, new Type[]{type}, new string[0], new Type[0], false, null, typePerStream[streamIndexed]);
-	                            CheckDuplicateOrAdd(indexItem, indexesSet);
-	                        }
-	                    }
-	                    continue;
-	                }
+                        var multis = value.InKeywordMulti;
+                        if (!multis.IsEmpty()) {
+                            QueryGraphValuePairInKWMultiIdx multi = multis[0];
+                            foreach (var propIndexed in multi.Indexed) {
+                                var identNode = (ExprIdentNode) propIndexed;
+                                var type = identNode.Forge.EvaluationType;
+                                var indexItem = new QueryPlanIndexItemForge(
+                                    new[] {identNode.ResolvedPropertyName}, new[] {type}, new string[0], new Type[0], false, null,
+                                    typePerStream[streamIndexed]);
+                                CheckDuplicateOrAdd(indexItem, indexesSet);
+                            }
+                        }
 
-	                // reduce to any unique index if applicable
-	                bool unique = false;
-	                QueryPlanIndexUniqueHelper.ReducedHashKeys reduced = QueryPlanIndexUniqueHelper.ReduceToUniqueIfPossible(hashIndexProps, hashCoercionTypeArr, hashKeyProps, indexedStreamsUniqueProps[streamIndexed]);
-	                if (reduced != null) {
-	                    hashIndexProps = reduced.PropertyNames;
-	                    hashCoercionTypeArr = reduced.CoercionTypes;
-	                    unique = true;
-	                    rangeIndexProps = new string[0];
-	                    rangeCoercionTypeArr = new Type[0];
-	                }
+                        continue;
+                    }
 
-	                QueryPlanIndexItemForge proposed = new QueryPlanIndexItemForge(hashIndexProps, hashCoercionTypeArr,
-	                        rangeIndexProps, rangeCoercionTypeArr, unique, null, typePerStream[streamIndexed]);
-	                CheckDuplicateOrAdd(proposed, indexesSet);
-	            }
+                    // reduce to any unique index if applicable
+                    var unique = false;
+                    var reduced = QueryPlanIndexUniqueHelper.ReduceToUniqueIfPossible(
+                        hashIndexProps, hashCoercionTypeArr, hashKeyProps, indexedStreamsUniqueProps[streamIndexed]);
+                    if (reduced != null) {
+                        hashIndexProps = reduced.PropertyNames;
+                        hashCoercionTypeArr = reduced.CoercionTypes;
+                        unique = true;
+                        rangeIndexProps = new string[0];
+                        rangeCoercionTypeArr = new Type[0];
+                    }
 
-	            // create full-table-scan
-	            if (indexesSet.IsEmpty()) {
-	                indexesSet.Add(new QueryPlanIndexItemForge(new string[0], new Type[0], new string[0], new Type[0], false, null, typePerStream[streamIndexed]));
-	            }
+                    var proposed = new QueryPlanIndexItemForge(
+                        hashIndexProps, hashCoercionTypeArr,
+                        rangeIndexProps, rangeCoercionTypeArr, unique, null, typePerStream[streamIndexed]);
+                    CheckDuplicateOrAdd(proposed, indexesSet);
+                }
 
-	            indexSpecs[streamIndexed] = QueryPlanIndexForge.MakeIndex(indexesSet);
-	        }
+                // create full-table-scan
+                if (indexesSet.IsEmpty()) {
+                    indexesSet.Add(
+                        new QueryPlanIndexItemForge(
+                            new string[0], new Type[0], new string[0], new Type[0], false, null, typePerStream[streamIndexed]));
+                }
 
-	        return indexSpecs;
-	    }
+                indexSpecs[streamIndexed] = QueryPlanIndexForge.MakeIndex(indexesSet);
+            }
 
-	    public static SubordPropPlan GetJoinProps(ExprNode filterExpr, int outsideStreamCount, EventType[] allStreamTypesZeroIndexed, ExcludePlanHint excludePlanHint) {
-	        // No filter expression means full table scan
-	        if (filterExpr == null) {
-	            return new SubordPropPlan();
-	        }
+            return indexSpecs;
+        }
 
-	        // analyze query graph
-	        QueryGraphForge queryGraph = new QueryGraphForge(outsideStreamCount + 1, excludePlanHint, true);
-	        FilterExprAnalyzer.Analyze(filterExpr, queryGraph, false);
+        public static SubordPropPlan GetJoinProps(
+            ExprNode filterExpr,
+            int outsideStreamCount,
+            EventType[] allStreamTypesZeroIndexed,
+            ExcludePlanHint excludePlanHint)
+        {
+            // No filter expression means full table scan
+            if (filterExpr == null) {
+                return new SubordPropPlan();
+            }
 
-	        // Build a list of streams and indexes
-	        LinkedHashMap<string, SubordPropHashKeyForge> joinProps = new LinkedHashMap<string, SubordPropHashKeyForge>();
-	        LinkedHashMap<string, SubordPropRangeKeyForge> rangeProps = new LinkedHashMap<string, SubordPropRangeKeyForge>();
-	        IDictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge> customIndexOps = Collections.EmptyMap();
+            // analyze query graph
+            var queryGraph = new QueryGraphForge(outsideStreamCount + 1, excludePlanHint, true);
+            FilterExprAnalyzer.Analyze(filterExpr, queryGraph, false);
 
-	        for (int stream = 0; stream < outsideStreamCount; stream++) {
-	            int lookupStream = stream + 1;
+            // Build a list of streams and indexes
+            var joinProps = new LinkedHashMap<string, SubordPropHashKeyForge>();
+            var rangeProps = new LinkedHashMap<string, SubordPropRangeKeyForge>();
+            IDictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge> customIndexOps =
+                new EmptyDictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge>();
 
-	            QueryGraphValueForge queryGraphValue = queryGraph.GetGraphValue(lookupStream, 0);
-	            QueryGraphValuePairHashKeyIndexForge hashKeysAndIndexes = queryGraphValue.HashKeyProps;
+            for (var stream = 0; stream < outsideStreamCount; stream++) {
+                var lookupStream = stream + 1;
 
-	            // determine application functions
-	            foreach (QueryGraphValueDescForge item in queryGraphValue.Items) {
-	                if (item.Entry is QueryGraphValueEntryCustomForge) {
-	                    if (customIndexOps.IsEmpty()) {
-	                        customIndexOps = new Dictionary<>();
-	                    }
-	                    QueryGraphValueEntryCustomForge custom = (QueryGraphValueEntryCustomForge) item.Entry;
-	                    custom.MergeInto(customIndexOps);
-	                }
-	            }
+                var queryGraphValue = queryGraph.GetGraphValue(lookupStream, 0);
+                var hashKeysAndIndexes = queryGraphValue.HashKeyProps;
 
-	            // handle key-lookups
-	            IList<QueryGraphValueEntryHashKeyedForge> keyPropertiesJoin = hashKeysAndIndexes.Keys;
-	            string[] indexPropertiesJoin = hashKeysAndIndexes.Indexed;
-	            if (!keyPropertiesJoin.IsEmpty()) {
-	                if (keyPropertiesJoin.Count != indexPropertiesJoin.Length) {
-	                    throw new IllegalStateException("Invalid query key and index property collection for stream " + stream);
-	                }
+                // determine application functions
+                foreach (var item in queryGraphValue.Items) {
+                    if (item.Entry is QueryGraphValueEntryCustomForge) {
+                        if (customIndexOps.IsEmpty()) {
+                            customIndexOps = new Dictionary<>();
+                        }
 
-	                for (int i = 0; i < keyPropertiesJoin.Count; i++) {
-	                    QueryGraphValueEntryHashKeyedForge keyDesc = keyPropertiesJoin.Get(i);
-	                    ExprNode compareNode = keyDesc.KeyExpr;
+                        var custom = (QueryGraphValueEntryCustomForge) item.Entry;
+                        custom.MergeInto(customIndexOps);
+                    }
+                }
 
-	                    Type keyPropType = Boxing.GetBoxedType(compareNode.Forge.EvaluationType);
-	                    Type indexedPropType = Boxing.GetBoxedType(allStreamTypesZeroIndexed[0].GetPropertyType(indexPropertiesJoin[i]));
-	                    Type coercionType = indexedPropType;
-	                    if (keyPropType != indexedPropType) {
-	                        coercionType = TypeHelper.GetCompareToCoercionType(keyPropType, indexedPropType);
-	                    }
+                // handle key-lookups
+                var keyPropertiesJoin = hashKeysAndIndexes.Keys;
+                var indexPropertiesJoin = hashKeysAndIndexes.Indexed;
+                if (!keyPropertiesJoin.IsEmpty()) {
+                    if (keyPropertiesJoin.Count != indexPropertiesJoin.Length) {
+                        throw new IllegalStateException("Invalid query key and index property collection for stream " + stream);
+                    }
 
-	                    SubordPropHashKeyForge desc;
-	                    if (keyPropertiesJoin.Get(i) is QueryGraphValueEntryHashKeyedForgeExpr) {
-	                        QueryGraphValueEntryHashKeyedForgeExpr keyExpr = (QueryGraphValueEntryHashKeyedForgeExpr) keyPropertiesJoin.Get(i);
-	                        int? keyStreamNum = keyExpr.IsRequiresKey ? stream : null;
-	                        desc = new SubordPropHashKeyForge(keyDesc, keyStreamNum, coercionType);
-	                    } else {
-	                        QueryGraphValueEntryHashKeyedForgeProp prop = (QueryGraphValueEntryHashKeyedForgeProp) keyDesc;
-	                        desc = new SubordPropHashKeyForge(prop, stream, coercionType);
-	                    }
-	                    joinProps.Put(indexPropertiesJoin[i], desc);
-	                }
-	            }
+                    for (var i = 0; i < keyPropertiesJoin.Count; i++) {
+                        QueryGraphValueEntryHashKeyedForge keyDesc = keyPropertiesJoin[i];
+                        var compareNode = keyDesc.KeyExpr;
 
-	            // handle range lookups
-	            QueryGraphValuePairRangeIndexForge rangeKeysAndIndexes = queryGraphValue.RangeProps;
-	            string[] rangeIndexes = rangeKeysAndIndexes.Indexed;
-	            IList<QueryGraphValueEntryRangeForge> rangeDescs = rangeKeysAndIndexes.Keys;
-	            if (rangeDescs.IsEmpty()) {
-	                continue;
-	            }
+                        var keyPropType = compareNode.Forge.EvaluationType.GetBoxedType();
+                        var indexedPropType = allStreamTypesZeroIndexed[0].GetPropertyType(indexPropertiesJoin[i]).GetBoxedType();
+                        var coercionType = indexedPropType;
+                        if (keyPropType != indexedPropType) {
+                            coercionType = keyPropType.GetCompareToCoercionType(indexedPropType);
+                        }
 
-	            // get all ranges lookups
-	            int count = -1;
-	            foreach (QueryGraphValueEntryRangeForge rangeDesc in rangeDescs) {
-	                count++;
-	                string rangeIndexProp = rangeIndexes[count];
+                        SubordPropHashKeyForge desc;
+                        if (keyPropertiesJoin[i] is QueryGraphValueEntryHashKeyedForgeExpr) {
+                            var keyExpr = (QueryGraphValueEntryHashKeyedForgeExpr) keyPropertiesJoin[i];
+                            var keyStreamNum = keyExpr.IsRequiresKey ? stream : null;
+                            desc = new SubordPropHashKeyForge(keyDesc, keyStreamNum, coercionType);
+                        }
+                        else {
+                            var prop = (QueryGraphValueEntryHashKeyedForgeProp) keyDesc;
+                            desc = new SubordPropHashKeyForge(prop, stream, coercionType);
+                        }
 
-	                SubordPropRangeKeyForge subqRangeDesc = rangeProps.Get(rangeIndexProp);
+                        joinProps.Put(indexPropertiesJoin[i], desc);
+                    }
+                }
 
-	                // other streams may specify the start or end endpoint of a range, therefore this operation can be additive
-	                if (subqRangeDesc != null) {
-	                    if (subqRangeDesc.RangeInfo.Type.IsRange) {
-	                        continue;
-	                    }
+                // handle range lookups
+                var rangeKeysAndIndexes = queryGraphValue.RangeProps;
+                var rangeIndexes = rangeKeysAndIndexes.Indexed;
+                var rangeDescs = rangeKeysAndIndexes.Keys;
+                if (rangeDescs.IsEmpty()) {
+                    continue;
+                }
 
-	                    // see if we can make this additive by using a range
-	                    QueryGraphValueEntryRangeRelOpForge relOpOther = (QueryGraphValueEntryRangeRelOpForge) subqRangeDesc.RangeInfo;
-	                    QueryGraphValueEntryRangeRelOpForge relOpThis = (QueryGraphValueEntryRangeRelOpForge) rangeDesc;
+                // get all ranges lookups
+                var count = -1;
+                foreach (var rangeDesc in rangeDescs) {
+                    count++;
+                    var rangeIndexProp = rangeIndexes[count];
 
-	                    QueryGraphRangeConsolidateDesc opsDesc = QueryGraphRangeUtil.GetCanConsolidate(relOpThis.Type, relOpOther.Type);
-	                    if (opsDesc != null) {
-	                        ExprNode start;
-	                        ExprNode end;
-	                        if (!opsDesc.IsReverse) {
-	                            start = relOpOther.Expression;
-	                            end = relOpThis.Expression;
-	                        } else {
-	                            start = relOpThis.Expression;
-	                            end = relOpOther.Expression;
-	                        }
-	                        bool allowRangeReversal = relOpOther.IsBetweenPart && relOpThis.IsBetweenPart;
-	                        QueryGraphValueEntryRangeInForge rangeIn = new QueryGraphValueEntryRangeInForge(opsDesc.Type, start, end, allowRangeReversal);
+                    var subqRangeDesc = rangeProps.Get(rangeIndexProp);
 
-	                        Type indexedPropType = Boxing.GetBoxedType(allStreamTypesZeroIndexed[0].GetPropertyType(rangeIndexProp));
-	                        Type coercionType = indexedPropType;
-	                        Type proposedType = CoercionUtil.GetCoercionTypeRangeIn(indexedPropType, rangeIn.ExprStart, rangeIn.ExprEnd);
-	                        if (proposedType != null && proposedType != indexedPropType) {
-	                            coercionType = proposedType;
-	                        }
+                    // other streams may specify the start or end endpoint of a range, therefore this operation can be additive
+                    if (subqRangeDesc != null) {
+                        if (subqRangeDesc.RangeInfo.Type.IsRange) {
+                            continue;
+                        }
 
-	                        subqRangeDesc = new SubordPropRangeKeyForge(rangeIn, coercionType);
-	                        rangeProps.Put(rangeIndexProp, subqRangeDesc);
-	                    }
-	                    // ignore
-	                    continue;
-	                }
+                        // see if we can make this additive by using a range
+                        var relOpOther = (QueryGraphValueEntryRangeRelOpForge) subqRangeDesc.RangeInfo;
+                        var relOpThis = (QueryGraphValueEntryRangeRelOpForge) rangeDesc;
 
-	                // an existing entry has not been found
-	                if (rangeDesc.Type.IsRange) {
-	                    QueryGraphValueEntryRangeInForge rangeIn = (QueryGraphValueEntryRangeInForge) rangeDesc;
-	                    Type indexedPropType = Boxing.GetBoxedType(allStreamTypesZeroIndexed[0].GetPropertyType(rangeIndexProp));
-	                    Type coercionType = indexedPropType;
-	                    Type proposedType = CoercionUtil.GetCoercionTypeRangeIn(indexedPropType, rangeIn.ExprStart, rangeIn.ExprEnd);
-	                    if (proposedType != null && proposedType != indexedPropType) {
-	                        coercionType = proposedType;
-	                    }
-	                    subqRangeDesc = new SubordPropRangeKeyForge(rangeDesc, coercionType);
-	                } else {
-	                    QueryGraphValueEntryRangeRelOpForge relOp = (QueryGraphValueEntryRangeRelOpForge) rangeDesc;
-	                    Type keyPropType = relOp.Expression.Forge.EvaluationType;
-	                    Type indexedPropType = Boxing.GetBoxedType(allStreamTypesZeroIndexed[0].GetPropertyType(rangeIndexProp));
-	                    Type coercionType = indexedPropType;
-	                    if (keyPropType != indexedPropType) {
-	                        coercionType = TypeHelper.GetCompareToCoercionType(keyPropType, indexedPropType);
-	                    }
-	                    subqRangeDesc = new SubordPropRangeKeyForge(rangeDesc, coercionType);
-	                }
-	                rangeProps.Put(rangeIndexProp, subqRangeDesc);
-	            }
-	        }
+                        var opsDesc = QueryGraphRangeUtil.GetCanConsolidate(relOpThis.Type, relOpOther.Type);
+                        if (opsDesc != null) {
+                            ExprNode start;
+                            ExprNode end;
+                            if (!opsDesc.IsReverse) {
+                                start = relOpOther.Expression;
+                                end = relOpThis.Expression;
+                            }
+                            else {
+                                start = relOpThis.Expression;
+                                end = relOpOther.Expression;
+                            }
 
-	        SubordPropInKeywordSingleIndex inKeywordSingleIdxProp = null;
-	        SubordPropInKeywordMultiIndex inKeywordMultiIdxProp = null;
-	        if (joinProps.IsEmpty() && rangeProps.IsEmpty()) {
-	            for (int stream = 0; stream < outsideStreamCount; stream++) {
-	                int lookupStream = stream + 1;
-	                QueryGraphValueForge queryGraphValue = queryGraph.GetGraphValue(lookupStream, 0);
+                            var allowRangeReversal = relOpOther.IsBetweenPart && relOpThis.IsBetweenPart;
+                            var rangeIn = new QueryGraphValueEntryRangeInForge(opsDesc.Type, start, end, allowRangeReversal);
 
-	                QueryGraphValuePairInKWSingleIdxForge inkwSingles = queryGraphValue.InKeywordSingles;
-	                if (inkwSingles.Indexed.Length != 0) {
-	                    ExprNode[] keys = inkwSingles.Key.Get(0).KeyExprs;
-	                    string key = inkwSingles.Indexed[0];
-	                    if (inKeywordSingleIdxProp != null) {
-	                        continue;
-	                    }
-	                    Type coercionType = keys[0].Forge.EvaluationType;  // for in-comparison the same type is required
-	                    inKeywordSingleIdxProp = new SubordPropInKeywordSingleIndex(key, coercionType, keys);
-	                }
+                            var indexedPropType = allStreamTypesZeroIndexed[0].GetPropertyType(rangeIndexProp).GetBoxedType();
+                            var coercionType = indexedPropType;
+                            var proposedType = CoercionUtil.GetCoercionTypeRangeIn(indexedPropType, rangeIn.ExprStart, rangeIn.ExprEnd);
+                            if (proposedType != null && proposedType != indexedPropType) {
+                                coercionType = proposedType;
+                            }
 
-	                IList<QueryGraphValuePairInKWMultiIdx> inkwMultis = queryGraphValue.InKeywordMulti;
-	                if (!inkwMultis.IsEmpty()) {
-	                    QueryGraphValuePairInKWMultiIdx multi = inkwMultis.Get(0);
-	                    inKeywordMultiIdxProp = new SubordPropInKeywordMultiIndex(ExprNodeUtilityQuery.GetIdentResolvedPropertyNames(multi.Indexed), multi.Indexed[0].Forge.EvaluationType, multi.Key.KeyExpr);
-	                }
+                            subqRangeDesc = new SubordPropRangeKeyForge(rangeIn, coercionType);
+                            rangeProps.Put(rangeIndexProp, subqRangeDesc);
+                        }
 
-	                if (inKeywordSingleIdxProp != null && inKeywordMultiIdxProp != null) {
-	                    inKeywordMultiIdxProp = null;
-	                }
-	            }
-	        }
+                        // ignore
+                        continue;
+                    }
 
-	        return new SubordPropPlan(joinProps, rangeProps, inKeywordSingleIdxProp, inKeywordMultiIdxProp, customIndexOps);
-	    }
+                    // an existing entry has not been found
+                    if (rangeDesc.Type.IsRange) {
+                        var rangeIn = (QueryGraphValueEntryRangeInForge) rangeDesc;
+                        var indexedPropType = allStreamTypesZeroIndexed[0].GetPropertyType(rangeIndexProp).GetBoxedType();
+                        var coercionType = indexedPropType;
+                        var proposedType = CoercionUtil.GetCoercionTypeRangeIn(indexedPropType, rangeIn.ExprStart, rangeIn.ExprEnd);
+                        if (proposedType != null && proposedType != indexedPropType) {
+                            coercionType = proposedType;
+                        }
 
-	    private static void CheckDuplicateOrAdd(QueryPlanIndexItemForge proposed, IList<QueryPlanIndexItemForge> indexesSet) {
-	        bool found = false;
-	        foreach (QueryPlanIndexItemForge index in indexesSet) {
-	            if (proposed.EqualsCompareSortedProps(index)) {
-	                found = true;
-	                break;
-	            }
-	        }
+                        subqRangeDesc = new SubordPropRangeKeyForge(rangeDesc, coercionType);
+                    }
+                    else {
+                        var relOp = (QueryGraphValueEntryRangeRelOpForge) rangeDesc;
+                        var keyPropType = relOp.Expression.Forge.EvaluationType;
+                        var indexedPropType = allStreamTypesZeroIndexed[0].GetPropertyType(rangeIndexProp).GetBoxedType();
+                        var coercionType = indexedPropType;
+                        if (keyPropType != indexedPropType) {
+                            coercionType = keyPropType.GetCompareToCoercionType(indexedPropType);
+                        }
 
-	        if (!found) {
-	            indexesSet.Add(proposed);
-	        }
-	    }
-	}
+                        subqRangeDesc = new SubordPropRangeKeyForge(rangeDesc, coercionType);
+                    }
+
+                    rangeProps.Put(rangeIndexProp, subqRangeDesc);
+                }
+            }
+
+            SubordPropInKeywordSingleIndex inKeywordSingleIdxProp = null;
+            SubordPropInKeywordMultiIndex inKeywordMultiIdxProp = null;
+            if (joinProps.IsEmpty() && rangeProps.IsEmpty()) {
+                for (var stream = 0; stream < outsideStreamCount; stream++) {
+                    var lookupStream = stream + 1;
+                    var queryGraphValue = queryGraph.GetGraphValue(lookupStream, 0);
+
+                    var inkwSingles = queryGraphValue.InKeywordSingles;
+                    if (inkwSingles.Indexed.Length != 0) {
+                        ExprNode[] keys = inkwSingles.Key[0].KeyExprs;
+                        var key = inkwSingles.Indexed[0];
+                        if (inKeywordSingleIdxProp != null) {
+                            continue;
+                        }
+
+                        var coercionType = keys[0].Forge.EvaluationType; // for in-comparison the same type is required
+                        inKeywordSingleIdxProp = new SubordPropInKeywordSingleIndex(key, coercionType, keys);
+                    }
+
+                    var inkwMultis = queryGraphValue.InKeywordMulti;
+                    if (!inkwMultis.IsEmpty()) {
+                        QueryGraphValuePairInKWMultiIdx multi = inkwMultis[0];
+                        inKeywordMultiIdxProp = new SubordPropInKeywordMultiIndex(
+                            ExprNodeUtilityQuery.GetIdentResolvedPropertyNames(multi.Indexed), multi.Indexed[0].Forge.EvaluationType,
+                            multi.Key.KeyExpr);
+                    }
+
+                    if (inKeywordSingleIdxProp != null && inKeywordMultiIdxProp != null) {
+                        inKeywordMultiIdxProp = null;
+                    }
+                }
+            }
+
+            return new SubordPropPlan(joinProps, rangeProps, inKeywordSingleIdxProp, inKeywordMultiIdxProp, customIndexOps);
+        }
+
+        private static void CheckDuplicateOrAdd(
+            QueryPlanIndexItemForge proposed,
+            IList<QueryPlanIndexItemForge> indexesSet)
+        {
+            var found = false;
+            foreach (var index in indexesSet) {
+                if (proposed.EqualsCompareSortedProps(index)) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                indexesSet.Add(proposed);
+            }
+        }
+    }
 } // end of namespace

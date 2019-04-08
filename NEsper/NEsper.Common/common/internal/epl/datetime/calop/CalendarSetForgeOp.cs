@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 	        CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(void), typeof(CalendarSetForgeOp), codegenClassScope).AddParam(typeof(DateTimeEx), "cal");
 	        CodegenExpression valueExpr = forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope);
 	        methodNode.Block
-	                .DeclareVar(typeof(int), "value", SimpleNumberCoercerFactory.SimpleNumberCoercerInt.CoerceCodegenMayNull(valueExpr, forge.valueExpr.EvaluationType, methodNode, codegenClassScope))
+	                .DeclareVar(typeof(int), "value", SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(valueExpr, forge.valueExpr.EvaluationType, methodNode, codegenClassScope))
 	                .IfRefNullReturnNull("value")
 	                .Expression(ExprDotMethod(cal, "set", calField, @Ref("value")))
 	                .MethodEnd();
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 	        Type evaluationType = forge.valueExpr.EvaluationType;
 
 	        methodNode.Block
-	                .DeclareVar(typeof(int), "value", SimpleNumberCoercerFactory.SimpleNumberCoercerInt.CoerceCodegenMayNull(forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope), evaluationType, methodNode, codegenClassScope))
+	                .DeclareVar(typeof(int), "value", SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope), evaluationType, methodNode, codegenClassScope))
 	                .IfRefNull("value").BlockReturn(@Ref("dto"))
 	                .MethodReturn(ExprDotMethod(@Ref("dto"), "with", EnumValue(typeof(ChronoField), chronoField.Name()), @Ref("value")));
 	        return LocalMethod(methodNode, dto);
@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 	        Type evaluationType = forge.valueExpr.EvaluationType;
 
 	        methodNode.Block
-	                .DeclareVar(typeof(int), "value", SimpleNumberCoercerFactory.SimpleNumberCoercerInt.CoerceCodegenMayNull(forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope), evaluationType, methodNode, codegenClassScope))
+	                .DeclareVar(typeof(int), "value", SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope), evaluationType, methodNode, codegenClassScope))
 	                .IfRefNull("value").BlockReturn(@Ref("dateTime"))
 	                .MethodReturn(ExprDotMethod(@Ref("dateTime"), "with", EnumValue(typeof(ChronoField), chronoField.Name()), @Ref("value")));
 	        return LocalMethod(methodNode, dateTime);

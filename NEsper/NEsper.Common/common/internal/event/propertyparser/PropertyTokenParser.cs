@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using com.espertech.esper.common.@internal.@event.property;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.propertyparser
@@ -18,7 +19,9 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
         private bool dynamic;
         private Token lookahead;
 
-        public PropertyTokenParser(ArrayDeque<Token> tokens, bool rootedDynamic)
+        public PropertyTokenParser(
+            ArrayDeque<Token> tokens,
+            bool rootedDynamic)
         {
             if (tokens.IsEmpty()) {
                 throw new PropertyParseNodepException("Empty property name");
@@ -37,7 +40,7 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
                 return first;
             }
 
-            IList<Property> props = new List<>(4);
+            IList<Property> props = new List<Property>(4);
             props.Add(first);
 
             while (lookahead.token == TokenType.DOT) {
@@ -95,7 +98,7 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
                     lookahead.token == TokenType.SINGLEQUOTEDLITERAL) {
                     var type = lookahead.token;
                     var value = lookahead.sequence.Trim();
-                    var key = value.Substring(1, value.Length() - 1);
+                    var key = value.Substring(1, value.Length - 1);
                     NextToken();
 
                     ExpectOrFail(type, TokenType.RPAREN);
@@ -135,10 +138,12 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
                 return ident;
             }
 
-            return ident.ReplaceAll("\\\\.", ".");
+            return ident.RegexReplaceAll("\\\\.", ".");
         }
 
-        private void ExpectOrFail(TokenType before, TokenType expected)
+        private void ExpectOrFail(
+            TokenType before,
+            TokenType expected)
         {
             if (lookahead.token != expected) {
                 throw new PropertyParseNodepException(

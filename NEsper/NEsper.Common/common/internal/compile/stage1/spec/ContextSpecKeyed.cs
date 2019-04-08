@@ -30,14 +30,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         public IList<ContextSpecKeyedItem> Items { get; }
 
-        public ContextSpecCondition OptionalTermination { get; private set; }
+        public ContextSpecCondition OptionalTermination { get; set; }
 
         public IList<ContextSpecConditionFilter> OptionalInit { get; }
-
-        public void SetOptionalTermination(ContextSpecCondition optionalTermination)
-        {
-            OptionalTermination = optionalTermination;
-        }
 
         public CodegenExpression MakeCodegen(
             CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)

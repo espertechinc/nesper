@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
         {
             ContextManager contextManager =
                 statementContext.ContextManagementService.GetContextManager(statementContext.DeploymentId, contextName);
-            contextManager.StatementContext = statementContext;
+            contextManager.SetStatementContext(statementContext);
         }
 
         public StatementAgentInstanceFactoryResult NewContext(
@@ -53,18 +53,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
 
             ContextManagerRealization realization = manager.AllocateNewRealization(agentInstanceContext);
             return new StatementAgentInstanceFactoryCreateContextResult(
-                new ZeroDepthStreamNoIterate(StatementEventType), AgentInstanceStopCallback.INSTANCE_NO_ACTION,
-                agentInstanceContext, null, null, null, null, null, null, Collections.GetEmptyList<object>(), realization);
+                new ZeroDepthStreamNoIterate(StatementEventType), AgentInstanceStopCallbackConstants.INSTANCE_NO_ACTION,
+                agentInstanceContext, null, null, null, null, null, null, new EmptyList<StatementAgentInstancePreload>(),
+                realization);
         }
 
         public void StatementCreate(StatementContext statementContext)
         {
             CopyOnWriteList<ContextStateListener> listeners = statementContext.ContextManagementService.Listeners;
-            ContextStateEventUtil.dispatchContext(
+            ContextStateEventUtil.DispatchContext(
                 listeners,
                 () => new ContextStateEventContextCreated(
                     statementContext.RuntimeURI, statementContext.DeploymentId, contextName),
-                ContextStateListener::onContextCreated);
+                (listener, @event) => listener.OnContextCreated(@event));
         }
 
         public void StatementDestroyPreconditions(StatementContext statementContext)

@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.view.core
             int streamNumber, bool subselect, int subselectNumber) : base(eventType)
         {
             _agentInstanceContext = agentInstanceContext;
-            _filterSpecText = filterSpec.FilterText;
+            _filterSpecText = filterSpec.GetFilterText();
             _streamNumber = streamNumber;
             _subselect = subselect;
             _subselectNumber = subselectNumber;

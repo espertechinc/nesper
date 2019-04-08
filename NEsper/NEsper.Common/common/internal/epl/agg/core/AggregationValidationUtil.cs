@@ -27,9 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 	        if (boxedRequired != boxedProvided &&
 	                !TypeHelper.IsSubclassOrImplementsInterface(boxedProvided, boxedRequired)) {
 	            throw new ExprValidationException("The required parameter type is " +
-	                    TypeHelper.GetClassNameFullyQualPretty(requiredParam) +
+	                    TypeHelper.GetCleanName(requiredParam) +
 	                    " and provided is " +
-	                    TypeHelper.GetClassNameFullyQualPretty(providedParam));
+	                    TypeHelper.GetCleanName(providedParam));
 	        }
 	    }
 

@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             var evaluationType = forge.param.EvaluationType;
             if (evaluationType.IsNumeric()) {
-                var longDuration = SimpleNumberCoercerFactory.SimpleNumberCoercerLong.CodegenLong(
+                var longDuration = SimpleNumberCoercerFactory.CoercerLong.CodegenLong(
                     forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope),
                     evaluationType);
                 return StaticMethod(
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             var evaluationType = forge.param.EvaluationType;
             if (evaluationType.IsNumeric()) {
-                var longDuration = SimpleNumberCoercerFactory.SimpleNumberCoercerLong.CodegenLongMayNullBox(
+                var longDuration = SimpleNumberCoercerFactory.CoercerLong.CodegenLongMayNullBox(
                     forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope),
                     evaluationType, codegenMethodScope, codegenClassScope);
                 return StaticMethod(
@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             var evaluationType = forge.param.EvaluationType;
             if (evaluationType.IsNumeric()) {
-                var longDuration = SimpleNumberCoercerFactory.SimpleNumberCoercerLong.CodegenLongMayNullBox(
+                var longDuration = SimpleNumberCoercerFactory.CoercerLong.CodegenLongMayNullBox(
                     forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope),
                     evaluationType, codegenMethodScope, codegenClassScope);
                 return StaticMethod(

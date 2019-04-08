@@ -9,6 +9,7 @@
 using System;
 using System.Numerics;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -39,8 +40,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         private readonly CodegenExpressionRef sum;
 
         public AggregatorAvgBig(
-            AggregationFactoryMethodAvg factory, int col, CodegenCtor rowCtor, CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope, Type optionalDistinctValueType, bool hasFilter, ExprNode optionalFilter)
+            AggregationFactoryMethodAvg factory,
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope,
+            Type optionalDistinctValueType,
+            bool hasFilter,
+            ExprNode optionalFilter)
             : base(
                 factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter,
                 optionalFilter)
@@ -52,8 +59,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         }
 
         protected override void ApplyEvalEnterNonNull(
-            CodegenExpressionRef value, Type valueType, CodegenMethod method, ExprForgeCodegenSymbol symbols,
-            ExprForge[] forges, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             if (valueType == typeof(BigInteger)) {
                 method.Block.AssignRef(
@@ -72,8 +83,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         }
 
         protected override void ApplyEvalLeaveNonNull(
-            CodegenExpressionRef value, Type valueType, CodegenMethod method, ExprForgeCodegenSymbol symbols,
-            ExprForge[] forges, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type valueType,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            ExprForge[] forges,
+            CodegenClassScope classScope)
         {
             method.Block.IfCondition(Relational(cnt, LE, Constant(1)))
                 .Apply(ClearCode())
@@ -97,7 +112,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         }
 
         protected override void ApplyTableEnterNonNull(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             if (evaluationTypes[0] == typeof(BigInteger)) {
                 method.Block.AssignRef(
@@ -118,7 +136,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         }
 
         protected override void ApplyTableLeaveNonNull(
-            CodegenExpressionRef value, Type[] evaluationTypes, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef value,
+            Type[] evaluationTypes,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.IfCondition(Relational(cnt, LE, Constant(1)))
                 .Apply(ClearCode())
@@ -143,12 +164,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                     });
         }
 
-        protected override void ClearWODistinct(CodegenMethod method, CodegenClassScope classScope)
+        protected override void ClearWODistinct(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.Apply(ClearCode());
         }
 
-        public override void GetValueCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public override void GetValueCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             var math = factory.optionalMathContext == null
                 ? ConstantNull()
@@ -157,8 +182,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         }
 
         protected override void WriteWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block
                 .Apply(WriteLong(output, row, cnt))
@@ -166,8 +196,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         }
 
         protected override void ReadWODistinct(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenExpressionRef unitKey,
-            CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenExpressionRef unitKey,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block
                 .Apply(ReadLong(row, cnt, input))
@@ -182,7 +216,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         /// <param name="optionalMathContext">math ctx</param>
         /// <param name="sum">sum</param>
         /// <returns>result</returns>
-        public static decimal? GetValueDecimalDivide(long cnt, MathContext optionalMathContext, decimal sum)
+        public static decimal? GetValueDecimalDivide(
+            long cnt,
+            MathContext optionalMathContext,
+            decimal sum)
         {
             if (cnt == 0) {
                 return null;

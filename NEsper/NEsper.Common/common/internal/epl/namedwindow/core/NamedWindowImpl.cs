@@ -131,10 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 
 	    public StatementContext StatementContext {
 	        get => statementContext;
-	    }
-
-	    public void SetStatementContext(StatementContext statementContext) {
-	        this.statementContext = statementContext;
+	        set { this.statementContext = value; }
 	    }
 	}
 } // end of namespace

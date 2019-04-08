@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 
         EventTableIndexMetadata EventTableIndexMetadata { get; }
 
-        StatementContext StatementContext { get; }
+        StatementContext StatementContext { get; set; }
 
         NamedWindowInstance GetNamedWindowInstance(AgentInstanceContext agentInstanceContext);
 
@@ -39,7 +39,5 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         void ValidateAddIndex(
             string deploymentId, string statementName, string indexName, string indexModuleName,
             QueryPlanIndexItem explicitIndexDesc, IndexMultiKey indexMultiKey);
-
-        void SetStatementContext(StatementContext statementContext);
     }
 } // end of namespace

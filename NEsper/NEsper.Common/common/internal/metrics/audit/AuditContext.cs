@@ -13,32 +13,50 @@ namespace com.espertech.esper.common.@internal.metrics.audit
 {
     public class AuditContext
     {
-        public AuditContext(string engineURI, string statementName, AuditEnum category, string message)
+        public AuditContext(
+            string runtimeURI,
+            string deploymentId,
+            string statementName,
+            int agentInstanceId,
+            AuditEnum category,
+            string message)
         {
-            EngineURI = engineURI;
+            RuntimeURI = runtimeURI;
+            DeploymentId = deploymentId;
             StatementName = statementName;
+            AgentInstanceId = agentInstanceId;
             Category = category;
             Message = message;
         }
 
-        public string EngineURI { get; }
+        public string RuntimeURI { get; }
+
+        public string DeploymentId { get; }
 
         public string StatementName { get; }
 
         public AuditEnum Category { get; }
 
+        public int AgentInstanceId { get; }
+
         public string Message { get; }
 
         public string Format()
         {
-            return DefaultFormat(StatementName, Category, Message);
+            return DefaultFormat(StatementName, AgentInstanceId, Category, Message);
         }
 
-        public static string DefaultFormat(string statementName, AuditEnum category, string message)
+        public static string DefaultFormat(
+            string statementName,
+            int partition,
+            AuditEnum category,
+            string message)
         {
             var buf = new StringBuilder();
             buf.Append("Statement ");
             buf.Append(statementName);
+            buf.Append(" partition ");
+            buf.Append(partition);
             buf.Append(" ");
             buf.Append(category.PrettyPrintText);
             buf.Append(" ");

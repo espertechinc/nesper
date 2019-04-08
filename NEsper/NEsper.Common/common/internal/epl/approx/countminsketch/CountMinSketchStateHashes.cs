@@ -8,6 +8,7 @@
 
 using System;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 {
@@ -25,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
     /// </summary>
     public class CountMinSketchStateHashes
     {
-        public CountMinSketchStateHashes(int depth, int width, long[,] table, long[] hash, long total)
+        public CountMinSketchStateHashes(int depth, int width, long[][] table, long[] hash, long total)
         {
             Depth = depth;
             Width = width;
@@ -34,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             Total = total;
         }
 
-        public long[,] Table { get; }
+        public long[][] Table { get; }
 
         public long[] Hash { get; }
 
@@ -48,12 +49,14 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
         {
             var width = (int) Math.Ceiling(2 / spec.EpsOfTotalCount);
             var depth = (int) Math.Ceiling(-Math.Log(1 - spec.Confidence) / Math.Log(2));
-            var table = new long[depth,width];
+            var table = new long[depth][]; // width
             var hash = new long[depth];
             var r = new Random(spec.Seed);
             for (var i = 0; i < depth; ++i) {
                 hash[i] = r.Next(int.MaxValue);
             }
+
+            table.Fill(_ => new long[width]);
 
             return new CountMinSketchStateHashes(depth, width, table, hash, 0);
         }
@@ -68,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             long res = Int64.MaxValue;
             var buckets = GetHashBuckets(item, Depth, Width);
             for (var i = 0; i < Depth; ++i) {
-                res = Math.Min(res, Table[i,buckets[i]]);
+                res = Math.Min(res, Table[i][buckets[i]]);
             }
 
             return res;
@@ -82,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 
             var buckets = GetHashBuckets(item, Depth, Width);
             for (var i = 0; i < Depth; ++i) {
-                Table[i,buckets[i]] += count;
+                Table[i][buckets[i]] += count;
             }
 
             Total += count;

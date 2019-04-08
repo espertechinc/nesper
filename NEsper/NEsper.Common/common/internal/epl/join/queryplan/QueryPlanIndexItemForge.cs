@@ -30,8 +30,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         private readonly EventType eventType;
 
         public QueryPlanIndexItemForge(
-            string[] hashProps, Type[] hashTypes, string[] rangeProps, Type[] rangeTypes, bool unique,
-            EventAdvancedIndexProvisionCompileTime advancedIndexProvisionDesc, EventType eventType)
+            string[] hashProps,
+            Type[] hashTypes,
+            string[] rangeProps,
+            Type[] rangeTypes,
+            bool unique,
+            EventAdvancedIndexProvisionCompileTime advancedIndexProvisionDesc,
+            EventType eventType)
         {
             if (advancedIndexProvisionDesc == null) {
                 if (unique && hashProps.Length == 0) {
@@ -65,14 +70,18 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         }
 
         public QueryPlanIndexItemForge(
-            IList<IndexedPropDesc> hashProps, IList<IndexedPropDesc> btreeProps, bool unique,
-            EventAdvancedIndexProvisionCompileTime advancedIndexProvisionDesc, EventType eventType) : this(
-                GetNames(hashProps), 
-                GetTypes(hashProps), 
-                GetNames(btreeProps), 
-                GetTypes(btreeProps), 
+            IList<IndexedPropDesc> hashProps,
+            IList<IndexedPropDesc> btreeProps,
+            bool unique,
+            EventAdvancedIndexProvisionCompileTime advancedIndexProvisionDesc,
+            EventType eventType)
+            : this(
+                GetNames(hashProps),
+                GetTypes(hashProps),
+                GetNames(btreeProps),
+                GetTypes(btreeProps),
                 unique,
-                advancedIndexProvisionDesc, 
+                advancedIndexProvisionDesc,
                 eventType)
         {
             // EventAdvancedIndexProvisionDesc
@@ -95,7 +104,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         public IList<IndexedPropDesc> BtreePropsAsList => AsList(RangeProps, RangeTypes);
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return Make(parent, classScope);
         }
@@ -104,10 +115,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         {
             return "QueryPlanIndexItem{" +
                    "unique=" + IsUnique +
-                   ", hashProps=" + Arrays.AsList(HashProps) +
-                   ", rangeProps=" + Arrays.AsList(RangeProps) +
-                   ", hashTypes=" + Arrays.AsList(HashTypes) +
-                   ", rangeTypes=" + Arrays.AsList(RangeTypes) +
+                   ", hashProps=" + CompatExtensions.AsList(HashProps) +
+                   ", rangeProps=" + CompatExtensions.AsList(RangeProps) +
+                   ", hashTypes=" + CompatExtensions.AsList(HashTypes) +
+                   ", rangeTypes=" + CompatExtensions.AsList(RangeTypes) +
                    ", advanced=" + (AdvancedIndexProvisionDesc == null
                        ? null
                        : AdvancedIndexProvisionDesc.IndexDesc.IndexTypeName) +
@@ -120,16 +131,18 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 return false;
             }
 
-            string[] otherIndexProps = CollectionUtil.CopySortArray(other.HashProps);
-            string[] thisIndexProps = CollectionUtil.CopySortArray(HashProps);
-            string[] otherRangeProps = CollectionUtil.CopySortArray(other.RangeProps);
-            string[] thisRangeProps = CollectionUtil.CopySortArray(RangeProps);
-            bool compared = CollectionUtil.Compare(otherIndexProps, thisIndexProps) &&
-                            CollectionUtil.Compare(otherRangeProps, thisRangeProps);
+            var otherIndexProps = CollectionUtil.CopySortArray(other.HashProps);
+            var thisIndexProps = CollectionUtil.CopySortArray(HashProps);
+            var otherRangeProps = CollectionUtil.CopySortArray(other.RangeProps);
+            var thisRangeProps = CollectionUtil.CopySortArray(RangeProps);
+            var compared = CollectionUtil.Compare(otherIndexProps, thisIndexProps) &&
+                           CollectionUtil.Compare(otherRangeProps, thisRangeProps);
             return compared && AdvancedIndexProvisionDesc == null && other.AdvancedIndexProvisionDesc == null;
         }
 
-        private IList<IndexedPropDesc> AsList(string[] props, Type[] types)
+        private IList<IndexedPropDesc> AsList(
+            string[] props,
+            Type[] types)
         {
             if (props == null || props.Length == 0) {
                 return Collections.GetEmptyList<IndexedPropDesc>();
@@ -143,7 +156,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             return list;
         }
 
-        public CodegenExpression Make(CodegenMethodScope parent, CodegenClassScope classScope)
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(QueryPlanIndexItem), GetType(), classScope);
 

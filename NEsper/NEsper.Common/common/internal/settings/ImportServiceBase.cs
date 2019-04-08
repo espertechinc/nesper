@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.settings
         }
 
         public ClassLoader ClassLoader =>
-            TransientConfigurationResolver.ResolveClassLoader(transientConfiguration).Classloader();
+            TransientConfigurationResolver.ResolveClassLoader(transientConfiguration).GetClassLoader();
 
         public TimeAbacus TimeAbacus { get; }
 
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.settings
             try {
                 clazz = ResolveClassInternal(className, false, forAnnotation);
             }
-            catch (ClassNotFoundException e) {
+            catch (TypeLoadException e) {
                 throw MakeClassNotFoundEx(className, e);
             }
 
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.settings
             try {
                 return ClassForNameProvider.ClassForName(fullyQualClassName);
             }
-            catch (ClassNotFoundException ex) {
+            catch (TypeLoadException ex) {
                 // Attempt to resolve from auto-name packages
                 Type clazz = null;
                 foreach (var javaPackageName in eventTypeAutoNames) {
@@ -76,13 +76,13 @@ namespace com.espertech.esper.common.@internal.settings
                             throw new ImportException(
                                 "Failed to resolve name '" + fullyQualClassName +
                                 "', the class was ambigously found both in " +
-                                "package '" + clazz.Package.Name + "' and in " +
-                                "package '" + resolvedClass.Package.Name + "'", ex);
+                                "package '" + clazz.Namespace + "' and in " +
+                                "package '" + resolvedClass.Namespace + "'", ex);
                         }
 
                         clazz = resolvedClass;
                     }
-                    catch (ClassNotFoundException ex1) {
+                    catch (TypeLoadException ex1) {
                         // expected, class may not exists in all packages
                     }
                 }
@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.settings
             try {
                 clazz = ResolveClassInternal(className, false, false);
             }
-            catch (ClassNotFoundException e) {
+            catch (TypeLoadException e) {
                 throw new ImportException(
                     "Could not load class by name '" + className + "', please check imports", e);
             }
@@ -177,7 +177,7 @@ namespace com.espertech.esper.common.@internal.settings
             try {
                 return ClassForNameProvider.ClassForName(className);
             }
-            catch (ClassNotFoundException e) {
+            catch (TypeLoadException e) {
                 if (Log.IsDebugEnabled) {
                     Log.Debug("Class not found for resolving from name as-is '" + className + "'");
                 }
@@ -185,9 +185,9 @@ namespace com.espertech.esper.common.@internal.settings
 
             // check annotation-specific imports first
             if (forAnnotationUse) {
-                var clazz = CheckImports(annotationImports, requireAnnotation, className);
-                if (clazz != null) {
-                    return clazz;
+                var clazzInner = CheckImports(annotationImports, requireAnnotation, className);
+                if (clazzInner != null) {
+                    return clazzInner;
                 }
             }
 
@@ -198,7 +198,7 @@ namespace com.espertech.esper.common.@internal.settings
             }
 
             // No import worked, the class isn't resolved
-            throw new ClassNotFoundException("Unknown class " + className);
+            throw new TypeLoadException("Unknown class " + className);
         }
 
         private Type CheckImports(IList<string> imports, bool requireAnnotation, string className)
@@ -226,7 +226,7 @@ namespace com.espertech.esper.common.@internal.settings
                             return clazz;
                         }
                     }
-                    catch (ClassNotFoundException e) {
+                    catch (TypeLoadException e) {
                         if (Log.IsDebugEnabled) {
                             Log.Debug("Class not found for resolving from name '" + prefixedClassName + "'");
                         }
@@ -248,7 +248,7 @@ namespace com.espertech.esper.common.@internal.settings
                             return clazz;
                         }
                     }
-                    catch (ClassNotFoundException e) {
+                    catch (TypeLoadException e) {
                         if (Log.IsDebugEnabled) {
                             Log.Debug("Class not found for resolving from name '" + prefixedClassName + "'");
                         }
@@ -309,11 +309,11 @@ namespace com.espertech.esper.common.@internal.settings
 
             if (e.NearestMissCtor != null) {
                 message += " (nearest matching constructor ";
-                if (e.NearestMissCtor.ParameterTypes.Length == 0) {
+                if (e.NearestMissCtor.GetParameters().Length == 0) {
                     message += "taking no parameters";
                 }
                 else {
-                    message += "taking type(s) '" + TypeHelper.GetParameterAsString(e.NearestMissCtor.ParameterTypes) +
+                    message += "taking type(s) '" + TypeHelper.GetParameterAsString(e.NearestMissCtor.GetParameterTypes()) +
                                "'";
                 }
 
@@ -347,12 +347,12 @@ namespace com.espertech.esper.common.@internal.settings
 
             if (e.NearestMissMethod != null) {
                 message += " (nearest match found was '" + e.NearestMissMethod.Name;
-                if (e.NearestMissMethod.ParameterTypes.Length == 0) {
+                if (e.NearestMissMethod.GetParameters().Length == 0) {
                     message += "' taking no parameters";
                 }
                 else {
                     message += "' taking type(s) '" +
-                               TypeHelper.GetParameterAsString(e.NearestMissMethod.ParameterTypes) + "'";
+                               TypeHelper.GetParameterAsString(e.NearestMissMethod.GetParameterTypes()) + "'";
                 }
 
                 message += ")";

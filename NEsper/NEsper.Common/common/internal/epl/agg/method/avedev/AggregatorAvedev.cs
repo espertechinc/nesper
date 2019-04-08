@@ -162,7 +162,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
             method.Block
                 .DeclareVar(
                     typeof(double), "d",
-                    SimpleNumberCoercerFactory.SimpleNumberCoercerDouble.CodegenDouble(value, valueType))
+                    SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType))
                 .ExprDotMethod(valueSet, enter ? "add" : "remove", Ref("d"))
                 .AssignCompound(sum, enter ? "+" : "-", Ref("d"));
         }

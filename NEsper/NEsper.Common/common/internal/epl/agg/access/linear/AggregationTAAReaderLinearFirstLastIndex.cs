@@ -11,6 +11,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 {
@@ -20,23 +21,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         private int? optionalConstIndex;
         private ExprEvaluator optionalIndexEval;
 
-        public void SetAccessType(AggregationAccessorLinearType accessType)
-        {
-            this.accessType = accessType;
-        }
-
-        public void SetOptionalConstIndex(int? optionalConstIndex)
-        {
-            this.optionalConstIndex = optionalConstIndex;
-        }
-
-        public void SetOptionalIndexEval(ExprEvaluator optionalIndexEval)
-        {
-            this.optionalIndexEval = optionalIndexEval;
-        }
-
         public object GetValue(
-            int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData,
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var events = (IList<EventBean>) row.GetCollectionOfEvents(
@@ -54,39 +43,63 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         }
 
         public ICollection<object> GetValueCollectionEvents(
-            int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData,
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             return null;
         }
 
         public ICollection<object> GetValueCollectionScalar(
-            int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData,
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             return null;
         }
 
         public EventBean GetValueEventBean(
-            int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData,
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             return null;
+        }
+
+        public void SetAccessType(AggregationAccessorLinearType accessType)
+        {
+            this.accessType = accessType;
+        }
+
+        public void SetOptionalConstIndex(int? optionalConstIndex)
+        {
+            this.optionalConstIndex = optionalConstIndex;
+        }
+
+        public void SetOptionalIndexEval(ExprEvaluator optionalIndexEval)
+        {
+            this.optionalIndexEval = optionalIndexEval;
         }
 
         private EventBean GetBean(IList<EventBean> events)
         {
             int index;
             if (optionalConstIndex != null) {
-                index = optionalConstIndex;
+                index = optionalConstIndex.Value;
             }
             else {
-                object result = optionalIndexEval.Evaluate(null, true, null);
-                if (result == null || !(result is int?)) {
+                var result = optionalIndexEval.Evaluate(null, true, null);
+                if (result == null || !result.IsInt()) {
                     return null;
                 }
 
-                index = (int?) result;
+                index = result.AsInt();
             }
 
             if (index < 0) {
@@ -98,10 +111,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             }
 
             if (accessType == AggregationAccessorLinearType.FIRST) {
-                return events.Get(index);
+                return events[index];
             }
 
-            return events.Get(events.Count - index - 1);
+            return events[events.Count - index - 1];
         }
     }
 } // end of namespace

@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 	                    }
 	                }
 	                if (!foundMatch) {
-	                    throw new ExprValidationException("Mismatching parameter return type, expected any of " + CompatExtensions.RenderAny(acceptableValueTypes) + " but received " + TypeHelper.GetClassNameFullyQualPretty(clazz));
+	                    throw new ExprValidationException("Mismatching parameter return type, expected any of " + CompatExtensions.RenderAny(acceptableValueTypes) + " but received " + TypeHelper.GetCleanName(clazz));
 	                }
 	            }
 	        }

@@ -28,10 +28,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 	    /// <returns>builder/introspector implementation</returns>
 	    public static PropertyListBuilder CreateBuilder(ConfigurationCommonEventTypeBean optionalLegacyClassConfigs) {
 	        if (optionalLegacyClassConfigs == null) {
-	            return new PropertyListBuilderJavaBean(null);
+	            return new PropertyListBuilderNative(null);
 	        }
-	        if (optionalLegacyClassConfigs.AccessorStyle == AccessorStyle.JAVABEAN) {
-	            return new PropertyListBuilderJavaBean(optionalLegacyClassConfigs);
+	        if (optionalLegacyClassConfigs.AccessorStyle == AccessorStyle.NATIVE) {
+	            return new PropertyListBuilderNative(optionalLegacyClassConfigs);
 	        }
 	        if (optionalLegacyClassConfigs.AccessorStyle == AccessorStyle.EXPLICIT) {
 	            return new PropertyListBuilderExplicit(optionalLegacyClassConfigs);

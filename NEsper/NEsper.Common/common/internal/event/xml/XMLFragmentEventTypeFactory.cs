@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
 	            throw new IllegalStateException("Type '" + type.Name + "' is not public");
 	        }
 	        if (rootTypes == null) {
-	            rootTypes = new Dictionary<>();
+	            rootTypes = new Dictionary<string, SchemaXMLEventType>();
 	        }
 	        if (rootTypes.ContainsKey(type.Name)) {
 	            throw new IllegalStateException("Type '" + type.Name + "' already exists");
@@ -51,17 +51,17 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
 	    public EventType GetTypeByName(string derivedEventTypeName) {
 	        if (derivedTypes == null) {
-	            derivedTypes = new Dictionary<>();
+	            derivedTypes = new Dictionary<string, SchemaXMLEventType>();
 	        }
 	        return derivedTypes.Get(derivedEventTypeName);
 	    }
 
 	    public EventType GetCreateXMLDOMType(string rootTypeName, string derivedEventTypeName, string moduleName, SchemaElementComplex complex, string representsFragmentOfProperty) {
 	        if (rootTypes == null) {
-	            rootTypes = new Dictionary<>();
+	            rootTypes = new Dictionary<string, SchemaXMLEventType>();
 	        }
 	        if (derivedTypes == null) {
-	            derivedTypes = new Dictionary<>();
+	            derivedTypes = new Dictionary<string, SchemaXMLEventType>();
 	        }
 	        SchemaXMLEventType type = rootTypes.Get(rootTypeName);
 	        if (type == null) {
@@ -73,10 +73,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
 	        ConfigurationCommonEventTypeXMLDOM xmlDom = new ConfigurationCommonEventTypeXMLDOM();
 	        xmlDom.RootElementName = "//" + complex.Name;    // such the reload of the type can resolve it
 	        xmlDom.RootElementNamespace = complex.Namespace;
-	        xmlDom.AutoFragment = config.IsAutoFragment;
-	        xmlDom.EventSenderValidatesRoot = config.IsEventSenderValidatesRoot;
-	        xmlDom.XPathPropertyExpr = config.IsXPathPropertyExpr;
-	        xmlDom.XPathResolvePropertiesAbsolute = config.IsXPathResolvePropertiesAbsolute;
+	        xmlDom.IsAutoFragment = config.IsAutoFragment;
+	        xmlDom.IsEventSenderValidatesRoot = config.IsEventSenderValidatesRoot;
+	        xmlDom.IsXPathPropertyExpr = config.IsXPathPropertyExpr;
+	        xmlDom.IsXPathResolvePropertiesAbsolute = config.IsXPathResolvePropertiesAbsolute;
 	        xmlDom.SchemaResource = config.SchemaResource;
 	        xmlDom.SchemaText = config.SchemaText;
 	        xmlDom.XPathFunctionResolver = config.XPathFunctionResolver;

@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             if (footprint.Input != DotMethodFPInputEnum.ANY) {
                 var message = "Invalid input for built-in enumeration method '" + enumMethodUsedName + "' and " +
                               footprint.Parameters.Length + "-parameter footprint, expecting collection of ";
-                var received = " as input, received " + typeInfo.ToTypeDescriptive();
+                var received = " as input, received " + EPTypeHelper.ToTypeDescriptive(typeInfo);
                 if (footprint.Input == DotMethodFPInputEnum.EVENTCOLL && eventTypeColl == null) {
                     throw new ExprValidationException(message + "events" + received);
                 }

@@ -32,9 +32,15 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         private readonly IList<QueryGraphValueEntryRangeForge> rangeKeyPairs;
 
         public CompositeTableLookupPlanForge(
-            int lookupStream, int indexedStream, bool indexedStreamIsVDW, EventType[] typesPerStream,
-            TableLookupIndexReqKey indexNum, IList<QueryGraphValueEntryHashKeyedForge> hashKeys,
-            Type[] hashCoercionTypes, IList<QueryGraphValueEntryRangeForge> rangeKeyPairs, Type[] optRangeCoercionTypes)
+            int lookupStream,
+            int indexedStream,
+            bool indexedStreamIsVDW,
+            EventType[] typesPerStream,
+            TableLookupIndexReqKey indexNum,
+            IList<QueryGraphValueEntryHashKeyedForge> hashKeys,
+            Type[] hashCoercionTypes,
+            IList<QueryGraphValueEntryRangeForge> rangeKeyPairs,
+            Type[] optRangeCoercionTypes)
             : base(lookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, new[] {indexNum})
         {
             this.hashKeys = hashKeys;
@@ -51,7 +57,9 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         }
 
         public override ICollection<CodegenExpression> AdditionalParams(
-            CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var hashGetter = ConstantNull();
             if (!hashKeys.IsEmpty()) {
@@ -73,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
 
             rangeGetters.Block.MethodReturn(Ref("rangeGetters"));
 
-            return Arrays.AsList(hashGetter, LocalMethod(rangeGetters));
+            return CompatExtensions.AsList(hashGetter, LocalMethod(rangeGetters));
         }
 
         public override string ToString()

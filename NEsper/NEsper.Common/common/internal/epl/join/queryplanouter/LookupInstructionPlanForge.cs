@@ -8,123 +8,121 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
-using com.espertech.esper.common.@internal.epl.join.queryplan;
+using com.espertech.esper.common.@internal.epl.@join.queryplan;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
 {
-	/// <summary>
-	/// Plan for lookup using a from-stream event looking up one or more to-streams using a specified lookup plan for each
-	/// to-stream.
-	/// </summary>
-	public class LookupInstructionPlanForge : CodegenMakeable<SAIFFInitializeSymbol> {
-	    private readonly int fromStream;
-	    private readonly string fromStreamName;
-	    private readonly int[] toStreams;
-	    private readonly TableLookupPlanForge[] lookupPlans;
-	    private readonly bool[] requiredPerStream;
-	    private readonly HistoricalDataPlanNodeForge[] historicalPlans;
+    /// <summary>
+    ///     Plan for lookup using a from-stream event looking up one or more to-streams using a specified lookup plan for each
+    ///     to-stream.
+    /// </summary>
+    public class LookupInstructionPlanForge : CodegenMakeable<SAIFFInitializeSymbol>
+    {
+        /// <summary>
+        ///     Ctor.
+        /// </summary>
+        /// <param name="fromStream">the stream supplying the lookup event</param>
+        /// <param name="fromStreamName">the stream name supplying the lookup event</param>
+        /// <param name="toStreams">the set of streams to look up in</param>
+        /// <param name="lookupPlans">the plan to use for each stream to look up in</param>
+        /// <param name="requiredPerStream">indicates which of the lookup streams are required to build a result and which are not</param>
+        /// <param name="historicalPlans">plans for use with historical streams</param>
+        public LookupInstructionPlanForge(
+            int fromStream,
+            string fromStreamName,
+            int[] toStreams,
+            TableLookupPlanForge[] lookupPlans,
+            HistoricalDataPlanNodeForge[] historicalPlans,
+            bool[] requiredPerStream)
+        {
+            if (toStreams.Length != lookupPlans.Length) {
+                throw new ArgumentException("Invalid number of lookup plans for each stream");
+            }
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="fromStream">the stream supplying the lookup event</param>
-	    /// <param name="fromStreamName">the stream name supplying the lookup event</param>
-	    /// <param name="toStreams">the set of streams to look up in</param>
-	    /// <param name="lookupPlans">the plan to use for each stream to look up in</param>
-	    /// <param name="requiredPerStream">indicates which of the lookup streams are required to build a result and which are not</param>
-	    /// <param name="historicalPlans">plans for use with historical streams</param>
-	    public LookupInstructionPlanForge(int fromStream, string fromStreamName, int[] toStreams, TableLookupPlanForge[] lookupPlans, HistoricalDataPlanNodeForge[] historicalPlans, bool[] requiredPerStream) {
-	        if (toStreams.Length != lookupPlans.Length) {
-	            throw new ArgumentException("Invalid number of lookup plans for each stream");
-	        }
-	        if (requiredPerStream.Length < lookupPlans.Length) {
-	            throw new ArgumentException("Invalid required per stream array");
-	        }
-	        if ((fromStream < 0) || (fromStream >= requiredPerStream.Length)) {
-	            throw new ArgumentException("Invalid from stream");
-	        }
+            if (requiredPerStream.Length < lookupPlans.Length) {
+                throw new ArgumentException("Invalid required per stream array");
+            }
 
-	        this.fromStream = fromStream;
-	        this.fromStreamName = fromStreamName;
-	        this.toStreams = toStreams;
-	        this.lookupPlans = lookupPlans;
-	        this.historicalPlans = historicalPlans;
-	        this.requiredPerStream = requiredPerStream;
-	    }
+            if (fromStream < 0 || fromStream >= requiredPerStream.Length) {
+                throw new ArgumentException("Invalid from stream");
+            }
 
-	    /// <summary>
-	    /// Output the planned instruction.
-	    /// </summary>
-	    /// <param name="writer">to output to</param>
-	    public void Print(IndentWriter writer) {
-	        writer.WriteLine("LookupInstructionPlan" +
-	                " fromStream=" + fromStream +
-	                " fromStreamName=" + fromStreamName +
-	                " toStreams=" + CompatExtensions.RenderAny(toStreams)
-	        );
+            FromStream = fromStream;
+            FromStreamName = fromStreamName;
+            ToStreams = toStreams;
+            LookupPlans = lookupPlans;
+            HistoricalPlans = historicalPlans;
+            RequiredPerStream = requiredPerStream;
+        }
 
-	        writer.IncrIndent();
-	        for (int i = 0; i < lookupPlans.Length; i++) {
-	            if (lookupPlans[i] != null) {
-	                writer.WriteLine("plan " + i + " :" + lookupPlans[i].ToString());
-	            } else {
-	                writer.WriteLine("plan " + i + " : no lookup plan");
-	            }
-	        }
-	        writer.DecrIndent();
-	    }
+        public int FromStream { get; }
 
-	    public void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes) {
-	        for (int i = 0; i < lookupPlans.Length; i++) {
-	            if (lookupPlans[i] != null) {
-	                usedIndexes.AddAll(Arrays.AsList(lookupPlans[i].IndexNum));
-	            }
-	        }
-	    }
+        public string FromStreamName { get; }
 
-	    public CodegenExpression Make(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope) {
-	        return NewInstance(typeof(LookupInstructionPlan),
-	                Constant(fromStream),
-	                Constant(fromStreamName),
-	                Constant(toStreams),
-	                CodegenMakeableUtil.MakeArray("lookupPlans", typeof(TableLookupPlan), lookupPlans, this.GetType(), parent, symbols, classScope),
-	                CodegenMakeableUtil.MakeArray("historicalPlans", typeof(HistoricalDataPlanNode), historicalPlans, this.GetType(), parent, symbols, classScope),
-	                Constant(requiredPerStream));
-	    }
+        public int[] ToStreams { get; }
 
-	    public int FromStream {
-	        get => fromStream;
-	    }
+        public TableLookupPlanForge[] LookupPlans { get; }
 
-	    public string FromStreamName {
-	        get => fromStreamName;
-	    }
+        public bool[] RequiredPerStream { get; }
 
-	    public int[] GetToStreams() {
-	        return toStreams;
-	    }
+        public HistoricalDataPlanNodeForge[] HistoricalPlans { get; }
 
-	    public TableLookupPlanForge[] GetLookupPlans() {
-	        return lookupPlans;
-	    }
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            return NewInstance(
+                typeof(LookupInstructionPlan),
+                Constant(FromStream),
+                Constant(FromStreamName),
+                Constant(ToStreams),
+                CodegenMakeableUtil.MakeArray("lookupPlans", typeof(TableLookupPlan), LookupPlans, GetType(), parent, symbols, classScope),
+                CodegenMakeableUtil.MakeArray(
+                    "historicalPlans", typeof(HistoricalDataPlanNode), HistoricalPlans, GetType(), parent, symbols, classScope),
+                Constant(RequiredPerStream));
+        }
 
-	    public bool[] GetRequiredPerStream() {
-	        return requiredPerStream;
-	    }
+        /// <summary>
+        ///     Output the planned instruction.
+        /// </summary>
+        /// <param name="writer">to output to</param>
+        public void Print(IndentWriter writer)
+        {
+            writer.WriteLine(
+                "LookupInstructionPlan" +
+                " fromStream=" + FromStream +
+                " fromStreamName=" + FromStreamName +
+                " toStreams=" + ToStreams.RenderAny()
+            );
 
-	    public HistoricalDataPlanNodeForge[] GetHistoricalPlans() {
-	        return historicalPlans;
-	    }
-	}
+            writer.IncrIndent();
+            for (var i = 0; i < LookupPlans.Length; i++) {
+                if (LookupPlans[i] != null) {
+                    writer.WriteLine("plan " + i + " :" + LookupPlans[i].ToString());
+                }
+                else {
+                    writer.WriteLine("plan " + i + " : no lookup plan");
+                }
+            }
+
+            writer.DecrIndent();
+        }
+
+        public void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes)
+        {
+            for (var i = 0; i < LookupPlans.Length; i++) {
+                if (LookupPlans[i] != null) {
+                    usedIndexes.AddAll(CompatExtensions.AsList(LookupPlans[i].IndexNum));
+                }
+            }
+        }
+    }
 } // end of namespace

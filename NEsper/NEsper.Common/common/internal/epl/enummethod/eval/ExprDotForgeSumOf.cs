@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -23,7 +22,6 @@ using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -31,29 +29,38 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     public class ExprDotForgeSumOf : ExprDotForgeEnumMethodBase
     {
         public override EventType[] GetAddStreamTypes(
-            string enumMethodUsedName, IList<string> goesToNames, EventType inputEventType,
-            Type collectionComponentType, IList<ExprDotEvalParam> bodiesAndParameters,
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices services)
+            string enumMethodUsedName,
+            IList<string> goesToNames,
+            EventType inputEventType,
+            Type collectionComponentType,
+            IList<ExprDotEvalParam> bodiesAndParameters,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
         {
             return ExprDotNodeUtility.GetSingleLambdaParamEventType(
                 enumMethodUsedName, goesToNames, inputEventType, collectionComponentType, statementRawInfo, services);
         }
 
         public override EnumForge GetEnumForge(
-            StreamTypeService streamTypeService, string enumMethodUsedName, IList<ExprDotEvalParam> bodiesAndParameters,
-            EventType inputEventType, Type collectionComponentType, int numStreamsIncoming,
-            bool disablePropertyExpressionEventCollCache, StatementRawInfo statementRawInfo,
+            StreamTypeService streamTypeService,
+            string enumMethodUsedName,
+            IList<ExprDotEvalParam> bodiesAndParameters,
+            EventType inputEventType,
+            Type collectionComponentType,
+            int numStreamsIncoming,
+            bool disablePropertyExpressionEventCollCache,
+            StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
             if (bodiesAndParameters.IsEmpty()) {
-                var aggMethodFactory = GetAggregatorFactory(collectionComponentType);
-                TypeInfo = EPTypeHelper.SingleValue(Boxing.GetBoxedType(aggMethodFactory.ValueType));
-                return new EnumSumScalarForge(numStreamsIncoming, aggMethodFactory);
+                var aggMethodFactoryInner = GetAggregatorFactory(collectionComponentType);
+                TypeInfo = EPTypeHelper.SingleValue(aggMethodFactoryInner.ValueType.GetBoxedType());
+                return new EnumSumScalarForge(numStreamsIncoming, aggMethodFactoryInner);
             }
 
             var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
             var aggMethodFactory = GetAggregatorFactory(first.BodyForge.EvaluationType);
-            Type returnType = Boxing.GetBoxedType(aggMethodFactory.ValueType);
+            var returnType = aggMethodFactory.ValueType.GetBoxedType();
             TypeInfo = EPTypeHelper.SingleValue(returnType);
             if (inputEventType == null) {
                 return new EnumSumScalarLambdaForge(
@@ -66,19 +73,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
         private static ExprDotEvalSumMethodFactory GetAggregatorFactory(Type evalType)
         {
-            if (TypeHelper.IsFloatingPointClass(evalType)) {
+            if (evalType.IsFloatingPointClass()) {
                 return ExprDotEvalSumMethodFactoryDouble.INSTANCE;
             }
 
-            if (evalType == typeof(BigDecimal)) {
-                return ExprDotEvalSumMethodFactoryBigDecimal.INSTANCE;
+            if (evalType == typeof(decimal)) {
+                return ExprDotEvalSumMethodFactoryDecimal.INSTANCE;
             }
 
             if (evalType == typeof(BigInteger)) {
                 return ExprDotEvalSumMethodFactoryBigInteger.INSTANCE;
             }
 
-            if (Boxing.GetBoxedType(evalType) == typeof(long)) {
+            if (evalType.GetBoxedType() == typeof(long)) {
                 return ExprDotEvalSumMethodFactoryLong.INSTANCE;
             }
 
@@ -92,9 +99,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .MethodReturn(Ref("sum"));
         }
 
-        private class ExprDotEvalSumMethodFactoryDouble : ExprDotEvalSumMethodFactory
+        internal class ExprDotEvalSumMethodFactoryDouble : ExprDotEvalSumMethodFactory
         {
-            private static readonly ExprDotEvalSumMethodFactoryDouble
+            internal static readonly ExprDotEvalSumMethodFactoryDouble
                 INSTANCE = new ExprDotEvalSumMethodFactoryDouble();
 
             private ExprDotEvalSumMethodFactoryDouble()
@@ -111,13 +118,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 block.DeclareVar(typeof(long), "cnt", Constant(0));
             }
 
-            public void CodegenEnterNumberTypedNonNull(CodegenBlock block, CodegenExpressionRef value)
+            public void CodegenEnterNumberTypedNonNull(
+                CodegenBlock block,
+                CodegenExpressionRef value)
             {
                 block.Increment("cnt");
                 block.AssignCompound("sum", "+", value);
             }
 
-            public void CodegenEnterObjectTypedNonNull(CodegenBlock block, CodegenExpressionRef value)
+            public void CodegenEnterObjectTypedNonNull(
+                CodegenBlock block,
+                CodegenExpressionRef value)
             {
                 block.Increment("cnt");
                 block.AssignCompound("sum", "+", Cast(typeof(double?), value));
@@ -129,7 +140,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
         }
 
-        private class ExprDotEvalSumMethodDouble : ExprDotEvalSumMethod
+        internal class ExprDotEvalSumMethodDouble : ExprDotEvalSumMethod
         {
             internal long cnt;
             internal double sum;
@@ -155,12 +166,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
         }
 
-        private class ExprDotEvalSumMethodFactoryBigDecimal : ExprDotEvalSumMethodFactory
+        internal class ExprDotEvalSumMethodFactoryDecimal : ExprDotEvalSumMethodFactory
         {
-            private static readonly ExprDotEvalSumMethodFactoryBigDecimal INSTANCE =
-                new ExprDotEvalSumMethodFactoryBigDecimal();
+            internal static readonly ExprDotEvalSumMethodFactoryDecimal INSTANCE =
+                new ExprDotEvalSumMethodFactoryDecimal();
 
-            private ExprDotEvalSumMethodFactoryBigDecimal()
+            private ExprDotEvalSumMethodFactoryDecimal()
             {
             }
 
@@ -174,13 +185,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 block.DeclareVar(typeof(long), "cnt", Constant(0));
             }
 
-            public void CodegenEnterNumberTypedNonNull(CodegenBlock block, CodegenExpressionRef value)
+            public void CodegenEnterNumberTypedNonNull(
+                CodegenBlock block,
+                CodegenExpressionRef value)
             {
                 block.Increment("cnt")
                     .AssignRef("sum", ExprDotMethod(Ref("sum"), "add", value));
             }
 
-            public void CodegenEnterObjectTypedNonNull(CodegenBlock block, CodegenExpressionRef value)
+            public void CodegenEnterObjectTypedNonNull(
+                CodegenBlock block,
+                CodegenExpressionRef value)
             {
                 block.Increment("cnt")
                     .AssignRef("sum", ExprDotMethod(Ref("sum"), "add", Cast(typeof(decimal), value)));
@@ -192,7 +207,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
         }
 
-        private class ExprDotEvalSumMethodBigDecimal : ExprDotEvalSumMethod
+        internal class ExprDotEvalSumMethodBigDecimal : ExprDotEvalSumMethod
         {
             internal long cnt;
             internal decimal sum;
@@ -223,9 +238,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
         }
 
-        private class ExprDotEvalSumMethodFactoryBigInteger : ExprDotEvalSumMethodFactory
+        internal class ExprDotEvalSumMethodFactoryBigInteger : ExprDotEvalSumMethodFactory
         {
-            private static readonly ExprDotEvalSumMethodFactoryBigInteger INSTANCE =
+            internal static readonly ExprDotEvalSumMethodFactoryBigInteger INSTANCE =
                 new ExprDotEvalSumMethodFactoryBigInteger();
 
             private ExprDotEvalSumMethodFactoryBigInteger()
@@ -242,13 +257,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 block.DeclareVar(typeof(long), "cnt", Constant(0));
             }
 
-            public void CodegenEnterNumberTypedNonNull(CodegenBlock block, CodegenExpressionRef value)
+            public void CodegenEnterNumberTypedNonNull(
+                CodegenBlock block,
+                CodegenExpressionRef value)
             {
                 block.Increment("cnt")
                     .AssignRef("sum", ExprDotMethod(Ref("sum"), "add", value));
             }
 
-            public void CodegenEnterObjectTypedNonNull(CodegenBlock block, CodegenExpressionRef value)
+            public void CodegenEnterObjectTypedNonNull(
+                CodegenBlock block,
+                CodegenExpressionRef value)
             {
                 block.Increment("cnt")
                     .AssignRef("sum", ExprDotMethod(Ref("sum"), "add", Cast(typeof(BigInteger), value)));
@@ -260,7 +279,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
         }
 
-        private class ExprDotEvalSumMethodBigInteger : ExprDotEvalSumMethod
+        internal class ExprDotEvalSumMethodBigInteger : ExprDotEvalSumMethod
         {
             internal long cnt;
             internal BigInteger sum;
@@ -277,7 +296,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 }
 
                 cnt++;
-                sum = sum.Add((BigInteger) @object);
+                sum = BigInteger.Add(sum, (BigInteger) @object);
             }
 
             public object Value {
@@ -291,9 +310,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
         }
 
-        private class ExprDotEvalSumMethodFactoryLong : ExprDotEvalSumMethodFactory
+        internal class ExprDotEvalSumMethodFactoryLong : ExprDotEvalSumMethodFactory
         {
-            private static readonly ExprDotEvalSumMethodFactoryLong INSTANCE = new ExprDotEvalSumMethodFactoryLong();
+            internal static readonly ExprDotEvalSumMethodFactoryLong INSTANCE = new ExprDotEvalSumMethodFactoryLong();
 
             private ExprDotEvalSumMethodFactoryLong()
             {
@@ -309,13 +328,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 block.DeclareVar(typeof(long), "cnt", Constant(0));
             }
 
-            public void CodegenEnterNumberTypedNonNull(CodegenBlock block, CodegenExpressionRef value)
+            public void CodegenEnterNumberTypedNonNull(
+                CodegenBlock block,
+                CodegenExpressionRef value)
             {
                 block.Increment("cnt");
                 block.AssignCompound("sum", "+", value);
             }
 
-            public void CodegenEnterObjectTypedNonNull(CodegenBlock block, CodegenExpressionRef value)
+            public void CodegenEnterObjectTypedNonNull(
+                CodegenBlock block,
+                CodegenExpressionRef value)
             {
                 block.Increment("cnt");
                 block.AssignCompound("sum", "+", Cast(typeof(long), value));
@@ -327,7 +350,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
         }
 
-        private class ExprDotEvalSumMethodLong : ExprDotEvalSumMethod
+        internal class ExprDotEvalSumMethodLong : ExprDotEvalSumMethod
         {
             internal long cnt;
             internal long sum;
@@ -353,9 +376,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
         }
 
-        private class ExprDotEvalSumMethodFactoryInteger : ExprDotEvalSumMethodFactory
+        internal class ExprDotEvalSumMethodFactoryInteger : ExprDotEvalSumMethodFactory
         {
-            private static readonly ExprDotEvalSumMethodFactoryInteger INSTANCE =
+            internal static readonly ExprDotEvalSumMethodFactoryInteger INSTANCE =
                 new ExprDotEvalSumMethodFactoryInteger();
 
             private ExprDotEvalSumMethodFactoryInteger()
@@ -372,13 +395,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 block.DeclareVar(typeof(long), "cnt", Constant(0));
             }
 
-            public void CodegenEnterNumberTypedNonNull(CodegenBlock block, CodegenExpressionRef value)
+            public void CodegenEnterNumberTypedNonNull(
+                CodegenBlock block,
+                CodegenExpressionRef value)
             {
                 block.Increment("cnt");
                 block.AssignCompound("sum", "+", value);
             }
 
-            public void CodegenEnterObjectTypedNonNull(CodegenBlock block, CodegenExpressionRef value)
+            public void CodegenEnterObjectTypedNonNull(
+                CodegenBlock block,
+                CodegenExpressionRef value)
             {
                 block.Increment("cnt");
                 block.AssignCompound("sum", "+", Cast(typeof(int), value));
@@ -390,7 +417,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
         }
 
-        private class ExprDotEvalSumMethodInteger : ExprDotEvalSumMethod
+        internal class ExprDotEvalSumMethodInteger : ExprDotEvalSumMethod
         {
             internal long cnt;
             internal int sum;

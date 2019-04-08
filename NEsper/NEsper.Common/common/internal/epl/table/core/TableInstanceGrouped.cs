@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
     {
         //void HandleRowUpdated(ObjectArrayBackedEventBean row);
 
-        ISet<object> GroupKeys { get; }
+        ICollection<object> GroupKeys { get; }
         ObjectArrayBackedEventBean GetRowForGroupKey(object groupKey);
 
         ObjectArrayBackedEventBean GetCreateRowIntoTable(object groupByKey, ExprEvaluatorContext exprEvaluatorContext);

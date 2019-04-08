@@ -21,14 +21,13 @@ namespace com.espertech.esper.common.@internal.type
             this.value = value;
         }
 
-        public EventUnderlyingType Value()
-        {
-            return value;
+        public override EventUnderlyingType Value {
+            get { return value; }
         }
 
         public T AnnotationType<T>() where T : Attribute
         {
-            return typeof(EventRepresentation);
+            return typeof(EventRepresentationAttribute);
         }
     }
 } // end of namespace

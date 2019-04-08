@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventType local = locals.GetModuleTypes(typeName);
             EventType path = ResolvePath(typeName);
             EventType preconfigured = ResolvePreconfigured(typeName);
-            return CompileTimeResolver.ValidateAmbiguous(
+            return CompileTimeResolverCompileTimeResolverUtil.ValidateAmbiguous(
                 local, path, preconfigured, PathRegistryObjectType.EVENTTYPE, typeName);
         }
 
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return typeAndModule.First;
             }
             catch (PathException e) {
-                throw CompileTimeResolver.MakePathAmbiguous(PathRegistryObjectType.EVENTTYPE, typeName, e);
+                throw CompileTimeResolverUtil.MakePathAmbiguous(PathRegistryObjectType.EVENTTYPE, typeName, e);
             }
         }
     }

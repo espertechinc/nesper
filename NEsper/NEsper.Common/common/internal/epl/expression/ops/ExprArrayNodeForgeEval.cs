@@ -8,12 +8,14 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -25,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         private readonly ExprArrayNodeForge _forge;
 
-        public ExprArrayNodeForgeEval(ExprArrayNodeForge forge, ExprEvaluator[] evaluators)
+        public ExprArrayNodeForgeEval(
+            ExprArrayNodeForge forge,
+            ExprEvaluator[] evaluators)
         {
             _forge = forge;
             _evaluators = evaluators;
@@ -34,13 +38,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public ExprEnumerationEval ExprEvaluatorEnumeration => this;
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
 
         public ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             if (_forge.ForgeRenderable.ChildNodes.Length == 0) {
                 return Collections.GetEmptyList<object>();
@@ -50,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             foreach (var child in _evaluators) {
                 var result = child.Evaluate(eventsPerStream, isNewData, context);
                 if (result != null) {
-                    if (_forge.IsMustCoerce()) {
+                    if (_forge.IsMustCoerce) {
                         object coercedResult = _forge.Coercer.CoerceBoxed(result);
                         resultList.Add(coercedResult);
                     }
@@ -63,19 +71,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return resultList;
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var array = Array.CreateInstance(_forge.ArrayReturnType, _evaluators.Length);
             var index = 0;
             foreach (var child in _evaluators) {
                 var result = child.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 if (result != null) {
-                    if (_forge.IsMustCoerce()) {
+                    if (_forge.IsMustCoerce) {
                         object coercedResult = _forge.Coercer.CoerceBoxed(result);
                         array.SetValue(coercedResult, index);
                     }
@@ -91,7 +105,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenExpression Codegen(
-            ExprArrayNodeForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprArrayNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
@@ -108,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     childType, refname, child.EvaluateCodegen(childType, methodNode, exprSymbol, codegenClassScope));
 
                 if (child.EvaluationType.IsPrimitive) {
-                    if (!forge.IsMustCoerce()) {
+                    if (!forge.IsMustCoerce) {
                         block.AssignArrayElement("array", Constant(i), Ref(refname));
                     }
                     else {
@@ -118,7 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
                 else {
                     var ifNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
-                    if (!forge.IsMustCoerce()) {
+                    if (!forge.IsMustCoerce) {
                         ifNotNull.AssignArrayElement("array", Constant(i), Ref(refname));
                     }
                     else {
@@ -133,7 +149,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenExpression CodegenEvaluateGetROCollectionScalar(
-            ExprArrayNodeForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprArrayNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var children = forge.ForgeRenderable.ChildNodes;
@@ -163,7 +181,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var nonNullTest = returnType.IsPrimitive ? ConstantTrue() : NotEqualsNull(Ref(refname));
                 var blockIfNotNull = block.IfCondition(nonNullTest);
                 CodegenExpression added = Ref(refname);
-                if (forge.IsMustCoerce()) {
+                if (forge.IsMustCoerce) {
                     added = forge.Coercer.CoerceCodegen(Ref(refname), childForge.EvaluationType);
                 }
 

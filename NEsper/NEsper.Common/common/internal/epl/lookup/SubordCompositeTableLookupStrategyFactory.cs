@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.epl.index.composite;
 using com.espertech.esper.common.@internal.epl.@join.exec.composite;
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
 using com.espertech.esper.common.@internal.epl.virtualdw;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.lookup
 {
@@ -26,16 +27,21 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         internal readonly CompositeIndexQuery InnerIndexQuery;
 
         public SubordCompositeTableLookupStrategyFactory(
-            bool isNWOnTrigger, int numStreams, string[] expressions, ExprEvaluator hashEval,
+            bool isNWOnTrigger,
+            int numStreams,
+            string[] expressions,
+            ExprEvaluator hashEval,
             QueryGraphValueEntryRange[] rangeEvals)
         {
-            this._expressions = expressions;
+            _expressions = expressions;
             InnerIndexQuery = CompositeIndexQueryFactory.MakeSubordinate(
                 isNWOnTrigger, numStreams, hashEval, rangeEvals);
         }
 
         public SubordTableLookupStrategy MakeStrategy(
-            EventTable[] eventTable, AgentInstanceContext agentInstanceContext, VirtualDWView vdw)
+            EventTable[] eventTable,
+            AgentInstanceContext agentInstanceContext,
+            VirtualDWView vdw)
         {
             return new SubordCompositeTableLookupStrategy(this, (PropertyCompositeEventTable) eventTable[0]);
         }
@@ -45,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
         public string ToQueryPlan()
         {
-            return GetType().Name + " ranges=" + Arrays.AsList(_expressions);
+            return GetType().Name + " ranges=" + CompatExtensions.AsList(_expressions);
         }
     }
 } // end of namespace

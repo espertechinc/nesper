@@ -63,30 +63,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
         /// <summary>
         ///     Returns a message if the expression contains special-instruction expressions.
         /// </summary>
-        /// <returns>message</returns>
-        public string GetMessage()
-        {
-            if (HasProperties) {
-                return "event properties";
-            }
+        /// <value>message</value>
+        public string Message {
+            get {
+                if (HasProperties) {
+                    return "event properties";
+                }
 
-            if (HasAggregation) {
-                return "aggregation functions";
-            }
+                if (HasAggregation) {
+                    return "aggregation functions";
+                }
 
-            if (HasSubselect) {
-                return "sub-selects";
-            }
+                if (HasSubselect) {
+                    return "sub-selects";
+                }
 
-            if (HasStreamSelect) {
-                return "stream selects or event instance methods";
-            }
+                if (HasStreamSelect) {
+                    return "stream selects or event instance methods";
+                }
 
-            if (HasPreviousPrior) {
-                return "previous or prior functions";
-            }
+                if (HasPreviousPrior) {
+                    return "previous or prior functions";
+                }
 
-            return null;
+                return null;
+            }
         }
     }
 } // end of namespace

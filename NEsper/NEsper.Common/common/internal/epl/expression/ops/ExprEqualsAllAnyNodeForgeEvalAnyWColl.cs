@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -24,20 +23,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprEvaluator[] evaluators;
         private readonly ExprEqualsAllAnyNodeForge forge;
 
-        public ExprEqualsAllAnyNodeForgeEvalAnyWColl(ExprEqualsAllAnyNodeForge forge, ExprEvaluator[] evaluators)
+        public ExprEqualsAllAnyNodeForgeEvalAnyWColl(
+            ExprEqualsAllAnyNodeForge forge,
+            ExprEvaluator[] evaluators)
         {
             this.forge = forge;
             this.evaluators = evaluators;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var result = EvaluateInternal(eventsPerStream, isNewData, exprEvaluatorContext);
             return result;
         }
 
         private object EvaluateInternal(
-            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var leftResult = evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
@@ -50,7 +56,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         private object CompareAny(
-            object leftResult, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            object leftResult,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var isNot = forge.ForgeRenderable.IsNot;
             var len = forge.ForgeRenderable.ChildNodes.Length - 1;
@@ -64,61 +73,73 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     continue;
                 }
 
-                if (rightResult is ICollection) {
-                    if (leftResult == null) {
+                if (rightResult is Array rightResultArray)
+                {
+                    var arrayLength = rightResultArray.Length;
+                    if (arrayLength > 0 && leftResult == null)
+                    {
                         return null;
                     }
 
-                    var coll = (ICollection) rightResult;
-                    if (!isNot && coll.Contains(leftResult) || isNot && !coll.Contains(leftResult)) {
-                        return true;
-                    }
-
-                    hasNonNullRow = true;
-                }
-                else if (rightResult is IDictionary) {
-                    if (leftResult == null) {
-                        return null;
-                    }
-
-                    var coll = (IDictionary<object, object>) rightResult;
-                    if (!isNot && coll.ContainsKey(leftResult) || isNot && !coll.ContainsKey(leftResult)) {
-                        return true;
-                    }
-
-                    hasNonNullRow = true;
-                }
-                else if (rightResult.GetType().IsArray) {
-                    var arrayLength = Array.GetLength(rightResult);
-                    if (arrayLength > 0 && leftResult == null) {
-                        return null;
-                    }
-
-                    for (var index = 0; index < arrayLength; index++) {
-                        object item = Array.Get(rightResult, index);
-                        if (item == null) {
+                    for (var index = 0; index < arrayLength; index++)
+                    {
+                        var item = rightResultArray.GetValue(index);
+                        if (item == null)
+                        {
                             hasNullRow = true;
                             continue;
                         }
 
                         hasNonNullRow = true;
-                        if (!forge.IsMustCoerce) {
-                            if (!isNot && leftResult.Equals(item) || isNot && !leftResult.Equals(item)) {
+                        if (!forge.IsMustCoerce)
+                        {
+                            if (!isNot && leftResult.Equals(item) || isNot && !leftResult.Equals(item))
+                            {
                                 return true;
                             }
                         }
-                        else {
-                            if (!(item.IsNumber())) {
+                        else
+                        {
+                            if (!item.IsNumber())
+                            {
                                 continue;
                             }
 
                             var left = forge.Coercer.CoerceBoxed(leftResult);
                             var right = forge.Coercer.CoerceBoxed(item);
-                            if (!isNot && left.Equals(right) || isNot && !left.Equals(right)) {
+                            if (!isNot && left.Equals(right) || isNot && !left.Equals(right))
+                            {
                                 return true;
                             }
                         }
                     }
+                }
+                else if (rightResult is IDictionary<object, object>)
+                {
+                    if (leftResult == null)
+                    {
+                        return null;
+                    }
+
+                    var coll = (IDictionary<object, object>) rightResult;
+                    if (!isNot && coll.ContainsKey(leftResult) || isNot && !coll.ContainsKey(leftResult))
+                    {
+                        return true;
+                    }
+
+                    hasNonNullRow = true;
+                }
+                else if (rightResult is ICollection<object>) {
+                    if (leftResult == null) {
+                        return null;
+                    }
+
+                    var coll = (ICollection<object>) rightResult;
+                    if (!isNot && coll.Contains(leftResult) || isNot && !coll.Contains(leftResult)) {
+                        return true;
+                    }
+
+                    hasNonNullRow = true;
                 }
                 else {
                     if (leftResult == null) {
@@ -149,7 +170,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenExpression Codegen(
-            ExprEqualsAllAnyNodeForge forge, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
+            ExprEqualsAllAnyNodeForge forge,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var forges = ExprNodeUtilityQuery.GetForges(forge.ForgeRenderable.ChildNodes);

@@ -247,22 +247,22 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             block
                 .DeclareVar(
                     typeof(int?), "hour",
-                    SimpleNumberCoercerFactory.SimpleNumberCoercerInt.CoerceCodegenMayNull(
+                    SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
                         forge.hour.EvaluateCodegen(hourType, methodNode, exprSymbol, codegenClassScope), hourType,
                         methodNode, codegenClassScope))
                 .DeclareVar(
                     typeof(int?), "minute",
-                    SimpleNumberCoercerFactory.SimpleNumberCoercerInt.CoerceCodegenMayNull(
+                    SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
                         forge.min.EvaluateCodegen(minType, methodNode, exprSymbol, codegenClassScope), minType,
                         methodNode, codegenClassScope))
                 .DeclareVar(
                     typeof(int?), "second",
-                    SimpleNumberCoercerFactory.SimpleNumberCoercerInt.CoerceCodegenMayNull(
+                    SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
                         forge.sec.EvaluateCodegen(secType, methodNode, exprSymbol, codegenClassScope), secType,
                         methodNode, codegenClassScope))
                 .DeclareVar(
                     typeof(int?), "msec",
-                    SimpleNumberCoercerFactory.SimpleNumberCoercerInt.CoerceCodegenMayNull(
+                    SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
                         forge.msec.EvaluateCodegen(msecType, methodNode, exprSymbol, codegenClassScope), msecType,
                         methodNode, codegenClassScope));
         }

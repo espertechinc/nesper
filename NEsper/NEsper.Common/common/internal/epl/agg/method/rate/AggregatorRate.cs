@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         {
             var firstType = forges[0].EvaluationType;
             var firstExpr = forges[0].EvaluateCodegen(typeof(long), method, symbols, classScope);
-            method.Block.AssignRef(latest, SimpleNumberCoercerFactory.SimpleNumberCoercerLong.CodegenLong(firstExpr, firstType));
+            method.Block.AssignRef(latest, SimpleNumberCoercerFactory.CoercerLong.CodegenLong(firstExpr, firstType));
 
             var numFilters = factory.Parent.OptionalFilter != null ? 1 : 0;
             if (forges.Length == numFilters + 1) {
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
                 var secondType = forges[1].EvaluationType;
                 var secondExpr = forges[1].EvaluateCodegen(typeof(double), method, symbols, classScope);
                 method.Block.AssignCompound(
-                    accumulator, "+", SimpleNumberCoercerFactory.SimpleNumberCoercerDouble.CodegenDouble(secondExpr, secondType));
+                    accumulator, "+", SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(secondExpr, secondType));
             }
         }
 
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             var firstType = forges[0].EvaluationType;
             var firstExpr = forges[0].EvaluateCodegen(typeof(long), method, symbols, classScope);
 
-            method.Block.AssignRef(oldest, SimpleNumberCoercerFactory.SimpleNumberCoercerLong.CodegenLong(firstExpr, firstType))
+            method.Block.AssignRef(oldest, SimpleNumberCoercerFactory.CoercerLong.CodegenLong(firstExpr, firstType))
                 .IfCondition(Not(isSet)).AssignRef(isSet, ConstantTrue());
             if (forges.Length == numFilters + 1) {
                 method.Block.Decrement(accumulator);
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
                 var secondType = forges[1].EvaluationType;
                 var secondExpr = forges[1].EvaluateCodegen(typeof(double), method, symbols, classScope);
                 method.Block.AssignCompound(
-                    accumulator, "-", SimpleNumberCoercerFactory.SimpleNumberCoercerDouble.CodegenDouble(secondExpr, secondType));
+                    accumulator, "-", SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(secondExpr, secondType));
             }
         }
 

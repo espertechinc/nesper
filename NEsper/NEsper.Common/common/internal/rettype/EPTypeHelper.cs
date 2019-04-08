@@ -39,9 +39,9 @@ namespace com.espertech.esper.common.@internal.rettype
     ///         Such expression results cannot be used as input to enumeration methods, for example.
     ///     </para>
     /// </summary>
-    public class EPTypeHelper
+    public static class EPTypeHelper
     {
-        public static EventType GetEventTypeSingleValued(EPType type)
+        public static EventType GetEventTypeSingleValued(this EPType type)
         {
             if (type is EventEPType) {
                 return ((EventEPType) type).EventType;
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.rettype
             return null;
         }
 
-        public static EventType GetEventTypeMultiValued(EPType type)
+        public static EventType GetEventTypeMultiValued(this EPType type)
         {
             if (type is EventMultiValuedEPType) {
                 return ((EventMultiValuedEPType) type).Component;
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.rettype
             return null;
         }
 
-        public static Type GetClassMultiValued(EPType type)
+        public static Type GetClassMultiValued(this EPType type)
         {
             if (type is ClassMultiValuedEPType) {
                 return ((ClassMultiValuedEPType) type).Component;
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.rettype
             return null;
         }
 
-        public static Type GetClassMultiValuedContainer(EPType type)
+        public static Type GetClassMultiValuedContainer(this EPType type)
         {
             if (type is ClassMultiValuedEPType) {
                 return ((ClassMultiValuedEPType) type).Container;
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.rettype
             return null;
         }
 
-        public static Type GetClassSingleValued(EPType type)
+        public static Type GetClassSingleValued(this EPType type)
         {
             if (type is ClassEPType) {
                 return ((ClassEPType) type).Clazz;
@@ -86,12 +86,12 @@ namespace com.espertech.esper.common.@internal.rettype
             return null;
         }
 
-        public static bool IsCarryEvent(EPType epType)
+        public static bool IsCarryEvent(this EPType epType)
         {
             return epType is EventMultiValuedEPType || epType is EventEPType;
         }
 
-        public static EventType GetEventType(EPType epType)
+        public static EventType GetEventType(this EPType epType)
         {
             if (epType is EventMultiValuedEPType) {
                 return ((EventMultiValuedEPType) epType).Component;
@@ -214,7 +214,7 @@ namespace com.espertech.esper.common.@internal.rettype
         /// </summary>
         /// <param name="epType">type</param>
         /// <returns>descriptive text</returns>
-        public static string ToTypeDescriptive(EPType epType)
+        public static string ToTypeDescriptive(this EPType epType)
         {
             if (epType is EventEPType) {
                 var type = (EventEPType) epType;
@@ -251,7 +251,7 @@ namespace com.espertech.esper.common.@internal.rettype
             throw new ArgumentException("Unrecognized type " + epType);
         }
 
-        public static Type GetNormalizedClass(EPType theType)
+        public static Type GetNormalizedClass(this EPType theType)
         {
             if (theType is EventMultiValuedEPType) {
                 var type = (EventMultiValuedEPType) theType;
@@ -280,7 +280,7 @@ namespace com.espertech.esper.common.@internal.rettype
             throw new ArgumentException("Unrecognized type " + theType);
         }
 
-        public static Type GetCodegenReturnType(EPType theType)
+        public static Type GetCodegenReturnType(this EPType theType)
         {
             if (theType is EventMultiValuedEPType) {
                 return typeof(ICollection<object>);
@@ -307,7 +307,9 @@ namespace com.espertech.esper.common.@internal.rettype
         }
 
         public static EPType OptionalFromEnumerationExpr(
-            StatementRawInfo raw, StatementCompileTimeServices services, ExprNode exprNode)
+            StatementRawInfo raw,
+            StatementCompileTimeServices services,
+            ExprNode exprNode)
         {
             if (!(exprNode is ExprEnumerationForge)) {
                 return null;
@@ -331,7 +333,7 @@ namespace com.espertech.esper.common.@internal.rettype
             return null;
         }
 
-        public static EventType OptionalIsEventTypeColl(EPType type)
+        public static EventType OptionalIsEventTypeColl(this EPType type)
         {
             if (type != null && type is EventMultiValuedEPType) {
                 return ((EventMultiValuedEPType) type).Component;
@@ -340,7 +342,7 @@ namespace com.espertech.esper.common.@internal.rettype
             return null;
         }
 
-        public static Type OptionalIsComponentTypeColl(EPType type)
+        public static Type OptionalIsComponentTypeColl(this EPType type)
         {
             if (type != null && type is ClassMultiValuedEPType) {
                 return ((ClassMultiValuedEPType) type).Component;
@@ -349,7 +351,7 @@ namespace com.espertech.esper.common.@internal.rettype
             return null;
         }
 
-        public static EventType OptionalIsEventTypeSingle(EPType type)
+        public static EventType OptionalIsEventTypeSingle(this EPType type)
         {
             if (type != null && type is EventEPType) {
                 return ((EventEPType) type).EventType;

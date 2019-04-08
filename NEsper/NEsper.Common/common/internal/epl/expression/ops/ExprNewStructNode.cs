@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var other = (ExprNewStructNode) node;
-            return Arrays.DeepEquals(other.ColumnNames, ColumnNames);
+            return CompatExtensions.DeepEquals(other.ColumnNames, ColumnNames);
         }
 
         public override void ToPrecedenceFreeEPL(StringWriter writer)

@@ -198,14 +198,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
 
             if (intervalForge == null) { // only calendar op
                 var inner = GetForge(calendarForges, timeAbacus, getterResultType, null, null, null);
-                return new DTLocalBeanCalOpsForge(getter, getterResultType, inner, TypeInfo.GetNormalizedClass());
+                return new DTLocalBeanCalOpsForge(getter, getterResultType, inner, EPTypeHelper.GetNormalizedClass(TypeInfo));
             }
 
             // have interval op but no end timestamp
             if (inputEventType.EndTimestampPropertyName == null) {
                 var inner = GetForge(calendarForges, timeAbacus, getterResultType, null, null, intervalForge);
                 return new DTLocalBeanIntervalNoEndTSForge(
-                    getter, getterResultType, inner, TypeInfo.GetNormalizedClass());
+                    getter, getterResultType, inner, EPTypeHelper.GetNormalizedClass(TypeInfo));
             }
 
             // interval op and have end timestamp

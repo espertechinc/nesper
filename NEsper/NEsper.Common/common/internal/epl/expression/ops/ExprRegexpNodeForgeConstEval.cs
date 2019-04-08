@@ -26,13 +26,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ExprRegexpNodeForgeConst forge;
         private readonly ExprEvaluator lhsEval;
 
-        internal ExprRegexpNodeForgeConstEval(ExprRegexpNodeForgeConst forge, ExprEvaluator lhsEval)
+        internal ExprRegexpNodeForgeConstEval(
+            ExprRegexpNodeForgeConst forge,
+            ExprEvaluator lhsEval)
         {
             this.forge = forge;
             this.lhsEval = lhsEval;
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             var value = lhsEval.Evaluate(eventsPerStream, isNewData, context);
             if (value == null) {
@@ -49,8 +54,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public static CodegenMethod Codegen(
-            ExprRegexpNodeForgeConst forge, ExprNode lhs, CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope)
+            ExprRegexpNodeForgeConst forge,
+            ExprNode lhs,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
             CodegenExpression mPattern = codegenClassScope.AddFieldUnshared<Regex>(true, forge.PatternInit);
             var methodNode = codegenMethodScope.MakeChild(
@@ -76,8 +84,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return methodNode;
         }
 
-        private static CodegenExpression GetRegexpCode(
-            ExprRegexpNodeForge forge, CodegenExpression pattern, CodegenExpression stringExpr)
+        internal static CodegenExpression GetRegexpCode(
+            ExprRegexpNodeForge forge,
+            CodegenExpression pattern,
+            CodegenExpression stringExpr)
         {
             CodegenExpression eval = ExprDotMethodChain(pattern).Add("matcher", stringExpr).Add("matches");
             return !forge.ForgeRenderable.IsNot ? eval : Not(eval);

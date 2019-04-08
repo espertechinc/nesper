@@ -20,7 +20,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
     public class AggregationAccessorWindowNoEval
     {
         public static void GetValueCodegen(
-            AggregationAccessorWindowNoEvalForge forge, AggregationStateLinearForge accessStateFactory,
+            AggregationAccessorWindowNoEvalForge forge,
+            AggregationStateLinearForge accessStateFactory,
             AggregationAccessorForgeGetCodegenContext context)
         {
             var size = accessStateFactory.AggregatorLinear.SizeCodegen();
@@ -29,20 +30,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 
             context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0))).BlockReturn(ConstantNull())
                 .DeclareVar(
-                    TypeHelper.GetArrayType(forge.GetElementType()), "array", NewArrayByLength(forge.GetElementType(), size))
+                    TypeHelper.GetArrayType(forge.ComponentType), "array", NewArrayByLength(forge.ComponentType, size))
                 .DeclareVar(typeof(int), "count", Constant(0))
                 .DeclareVar(typeof(IEnumerator<EventBean>), "it", iterator)
                 .WhileLoop(ExprDotMethod(Ref("it"), "hasNext"))
                 .DeclareVar(typeof(EventBean), "bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "next")))
                 .AssignArrayElement(
-                    Ref("array"), Ref("count"), Cast(forge.GetElementType(), ExprDotUnderlying(Ref("bean"))))
+                    Ref("array"), Ref("count"), Cast(forge.ComponentType, ExprDotUnderlying(Ref("bean"))))
                 .Increment("count")
                 .BlockEnd()
                 .MethodReturn(Ref("array"));
         }
 
         public static void GetEnumerableEventsCodegen(
-            AggregationAccessorWindowNoEvalForge forge, AggregationStateLinearForge stateForge,
+            AggregationAccessorWindowNoEvalForge forge,
+            AggregationStateLinearForge stateForge,
             AggregationAccessorForgeGetCodegenContext context)
         {
             context.Method.Block.IfCondition(EqualsIdentity(stateForge.AggregatorLinear.SizeCodegen(), Constant(0)))
@@ -53,7 +55,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         }
 
         public static void GetEnumerableScalarCodegen(
-            AggregationAccessorWindowNoEvalForge forge, AggregationStateLinearForge stateForge,
+            AggregationAccessorWindowNoEvalForge forge,
+            AggregationStateLinearForge stateForge,
             AggregationAccessorForgeGetCodegenContext context)
         {
             context.Method.Block.DeclareVar(typeof(int), "size", stateForge.AggregatorLinear.SizeCodegen())
@@ -65,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         context.ClassScope, context.Method, context.NamedMethods))
                 .WhileLoop(ExprDotMethod(Ref("it"), "hasNext"))
                 .DeclareVar(typeof(EventBean), "bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "next")))
-                .DeclareVar(forge.GetElementType(), "value", Cast(forge.GetElementType(), ExprDotUnderlying(Ref("bean"))))
+                .DeclareVar(forge.ComponentType, "value", Cast(forge.ComponentType, ExprDotUnderlying(Ref("bean"))))
                 .ExprDotMethod(Ref("values"), "add", Ref("value"))
                 .BlockEnd()
                 .MethodReturn(Ref("values"));

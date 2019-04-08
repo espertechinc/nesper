@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 	                .DeclareVar(typeof(ExprFilterSpecLookupable), "lookupable", LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
 	                .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.Name()));
 
-	        CodegenExpressionNewAnonymousClass inner = NewAnonymousClass(method.Block, typeof(FilterSpecParam), Arrays.AsList(@Ref("lookupable"), @Ref("op")));
+	        CodegenExpressionNewAnonymousClass inner = NewAnonymousClass(method.Block, typeof(FilterSpecParam), CompatExtensions.AsList(@Ref("lookupable"), @Ref("op")));
 	        CodegenMethod getFilterValue = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), classScope).AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
 	        inner.AddMethod("getFilterValue", getFilterValue);
 	        getFilterValue.Block.MethodReturn(Constant(filterConstant));

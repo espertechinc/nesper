@@ -28,7 +28,10 @@ namespace com.espertech.esper.common.client.annotation
         /// <summary>For internal use, aggregation level reporting.</summary>
         INTERNAL_AGGLOCALLEVEL,
 
-        /// <summary>For internal use, context state cache. </summary>
-        CONTEXT_STATE_CACHE
+        /// <summary>For internal use, pattern objects visibility.</summary>
+        INTERNAL_PATTERNCOMPILE,
+
+        /// <summary>For internal use, statement spec compiled reporting.</summary>
+        INTERNAL_COMPILE
     }
 }

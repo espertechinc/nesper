@@ -61,12 +61,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         continue;
                     }
 
-                    if (valueRight is ICollection<object>) {
-                        var coll = (ICollection<object>) valueRight;
+                    if (valueRight is Array valueRightArray)
+                    {
                         hasRows = true;
-                        foreach (object item in coll) {
-                            if (!(item.IsNumber())) {
-                                if (isAll && item == null) {
+                        var arrayLength = valueRightArray.Length;
+                        for (var index = 0; index < arrayLength; index++)
+                        {
+                            object item = valueRightArray.GetValue(index);
+                            if (item == null)
+                            {
+                                if (isAll)
+                                {
                                     return null;
                                 }
 
@@ -74,14 +79,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             }
 
                             hasNonNullRow = true;
-                            if (valueLeft != null) {
-                                if (isAll) {
-                                    if (!computer.Compare(valueLeft, item)) {
+                            if (valueLeft != null)
+                            {
+                                if (isAll)
+                                {
+                                    if (!computer.Compare(valueLeft, item))
+                                    {
                                         return false;
                                     }
                                 }
-                                else {
-                                    if (computer.Compare(valueLeft, item)) {
+                                else
+                                {
+                                    if (computer.Compare(valueLeft, item))
+                                    {
                                         return true;
                                     }
                                 }
@@ -115,13 +125,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             }
                         }
                     }
-                    else if (valueRight.GetType().IsArray) {
+                    else if (valueRight is ICollection<object>)
+                    {
+                        var coll = (ICollection<object>) valueRight;
                         hasRows = true;
-                        var arrayLength = Array.GetLength(valueRight);
-                        for (var index = 0; index < arrayLength; index++) {
-                            object item = Array.Get(valueRight, index);
-                            if (item == null) {
-                                if (isAll) {
+                        foreach (object item in coll)
+                        {
+                            if (!(item.IsNumber()))
+                            {
+                                if (isAll && item == null)
+                                {
                                     return null;
                                 }
 
@@ -129,14 +142,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             }
 
                             hasNonNullRow = true;
-                            if (valueLeft != null) {
-                                if (isAll) {
-                                    if (!computer.Compare(valueLeft, item)) {
+                            if (valueLeft != null)
+                            {
+                                if (isAll)
+                                {
+                                    if (!computer.Compare(valueLeft, item))
+                                    {
                                         return false;
                                     }
                                 }
-                                else {
-                                    if (computer.Compare(valueLeft, item)) {
+                                else
+                                {
+                                    if (computer.Compare(valueLeft, item))
+                                    {
                                         return true;
                                     }
                                 }

@@ -20,7 +20,6 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
 using com.espertech.esper.common.@internal.epl.expression.prev;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
@@ -56,13 +55,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var expandedPatternNode = RowRecogPatternExpandUtil.Expand(matchRecognizeSpec.Pattern);
 
             // Determine single-row and multiple-row variables
-            LinkedHashSet<string> variablesSingle = new LinkedHashSet<>();
-            ISet<string> variablesMultiple = new LinkedHashSet<>();
+            var variablesSingle = new LinkedHashSet<string>();
+            var variablesMultiple = new LinkedHashSet<string>();
             RowRecogHelper.RecursiveInspectVariables(expandedPatternNode, false, variablesSingle, variablesMultiple);
 
             // each variable gets associated with a stream number (multiple-row variables as well to hold the current event for the expression).
             var streamNum = 0;
-            LinkedHashMap<string, Pair<int, bool>> variableStreams = new LinkedHashMap<string, Pair<int, bool>>();
+            var variableStreams = new LinkedHashMap<string, Pair<int, bool>>();
             foreach (var variableSingle in variablesSingle) {
                 variableStreams.Put(variableSingle, new Pair<int, bool>(streamNum, false));
                 streamNum++;
@@ -74,8 +73,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             }
 
             // mapping of stream to variable
-            OrderedDictionary<int, string> streamVariables = new OrderedDictionary<>();
-            foreach (KeyValuePair<string, Pair<int, bool>> entry in variableStreams) {
+            var streamVariables = new OrderedDictionary<int, string>();
+            foreach (var entry in variableStreams) {
                 streamVariables.Put(entry.Value.First, entry.Key);
             }
 
@@ -104,10 +103,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             ISet<string> definedVariables = new HashSet<string>();
             IList<ExprAggregateNode> aggregateNodes = new List<ExprAggregateNode>();
             var isExprRequiresMultimatchState = new bool[variableStreams.Count];
-            OrderedDictionary<int, IList<ExprPreviousMatchRecognizeNode>> previousNodes = new OrderedDictionary<>();
+            var previousNodes = new OrderedDictionary<int, IList<ExprPreviousMatchRecognizeNode>>();
 
             for (var defineIndex = 0; defineIndex < matchRecognizeSpec.Defines.Count; defineIndex++) {
-                MatchRecognizeDefineItem defineItem = matchRecognizeSpec.Defines.Get(defineIndex);
+                MatchRecognizeDefineItem defineItem = matchRecognizeSpec.Defines[defineIndex];
                 if (definedVariables.Contains(defineItem.Identifier)) {
                     throw new ExprValidationException(
                         "Variable '" + defineItem.Identifier + "' has already been defined");
@@ -150,7 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 var streamsRequired = visitor.StreamsRequired;
                 foreach (var streamRequired in streamsRequired) {
                     if (streamRequired >= variableStreams.Count) {
-                        int streamNumIdent = variableStreams.Get(defineItem.Identifier).First;
+                        var streamNumIdent = variableStreams.Get(defineItem.Identifier).First;
                         isExprRequiresMultimatchState[streamNumIdent] = true;
                         break;
                     }
@@ -226,7 +225,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 if (streamRequired != null) {
                     var streamVariable = streamVariables.Get(streamRequired.Value);
                     if (streamVariable != null) {
-                        Pair<int, bool> def = variableStreams.Get(streamVariable);
+                        var def = variableStreams.Get(streamVariable);
                         if (def != null && def.Second) {
                             measureReferencesMultivar = true;
                             break;
@@ -263,7 +262,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 }
 
                 matchRecognizeSpec.PartitionByExpressions = validated;
-                partitionBy = ExprNodeUtilityQuery.ToArray();
+                partitionBy = ExprNodeUtilityQuery.ToArray(validated);
             }
             else {
                 partitionBy = null;
@@ -298,7 +297,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             // build states
             var strand = RowRecogHelper.BuildStartStates(
                 expandedPatternNode, variableDefinitions, variableStreams, isExprRequiresMultimatchState);
-            RowRecogNFAStateForge[] startStates = strand.StartStates.ToArray();
+            var startStates = strand.StartStates.ToArray();
             RowRecogNFAStateForge[] allStates = strand.AllStates.ToArray();
 
             if (Log.IsInfoEnabled) {
@@ -318,9 +317,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 multimatchVariablesArray = new string[variableStreams.Count - variablesSingle.Count];
                 multimatchVariableToStreamNum = new int[multimatchVariablesArray.Length];
                 multimatchStreamNumToVariable = new int[variableStreams.Count];
-                Arrays.Fill(multimatchStreamNumToVariable, -1);
+                CompatExtensions.Fill(multimatchStreamNumToVariable, -1);
                 count = 0;
-                foreach (KeyValuePair<string, Pair<int, bool>> entry in variableStreams) {
+                foreach (var entry in variableStreams) {
                     if (entry.Value.Second) {
                         var index = count;
                         multimatchVariablesArray[index] = entry.Key;
@@ -378,14 +377,15 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
         private static AggregationServiceForgeDesc[] PlanAggregations(
             IList<ExprAggregateNode> measureAggregateExprNodes,
-            StreamTypeService compositeTypeServiceMeasure, string[] allStreamNames,
+            StreamTypeService compositeTypeServiceMeasure,
+            string[] allStreamNames,
             EventType[] allTypes,
             OrderedDictionary<int, string> streamVariables,
             ISet<string> variablesMultiple,
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {
-            IDictionary<int, IList<ExprAggregateNode>> measureExprAggNodesPerStream = new Dictionary<>();
+            IDictionary<int, IList<ExprAggregateNode>> measureExprAggNodesPerStream = new Dictionary<int, IList<ExprAggregateNode>>();
 
             foreach (var aggregateNode in measureAggregateExprNodes) {
                 // validate node and params
@@ -414,7 +414,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
                 // verify properties used within the aggregation
                 ISet<int> aggregatedStreams = new HashSet<int>();
-                foreach (Pair<int, string> pair in visitor.ExprProperties) {
+                foreach (var pair in visitor.ExprProperties) {
                     aggregatedStreams.Add(pair.First);
                 }
 
@@ -437,10 +437,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         "Aggregation functions in the measure-clause must refer to one or more properties of exactly one group variable returning multiple events");
                 }
 
-                var aggNodesForStream = measureExprAggNodesPerStream.Get(multipleVarStream);
+                var aggNodesForStream = measureExprAggNodesPerStream.Get(multipleVarStream.Value);
                 if (aggNodesForStream == null) {
-                    aggNodesForStream = new List<>();
-                    measureExprAggNodesPerStream.Put(multipleVarStream, aggNodesForStream);
+                    aggNodesForStream = new List<ExprAggregateNode>();
+                    measureExprAggNodesPerStream.Put(multipleVarStream.Value, aggNodesForStream);
                 }
 
                 aggNodesForStream.Add(aggregateNode);
@@ -460,12 +460,17 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             // get aggregation service per variable
             var aggServices = new AggregationServiceForgeDesc[allStreamNames.Length];
-            IList<ExprDeclaredNode> declareds = Arrays.AsList(@base.StatementSpec.DeclaredExpressions);
+            var declareds = CompatExtensions.AsList(@base.StatementSpec.DeclaredExpressions);
             foreach (var entry in measureExprAggNodesPerStream) {
                 EventType[] typesPerStream = {allTypes[entry.Key]};
                 var desc = AggregationServiceFactoryFactory.GetService(
-                    entry.Value, Collections.EmptyMap(), declareds,
-                    new ExprNode[0], Collections.GetEmptyList<object>(), Collections.GetEmptyList<object>(), Collections.GetEmptyList<object>(),
+                    entry.Value,
+                    new EmptyDictionary<ExprNode, string>(),
+                    declareds,
+                    new ExprNode[0], 
+                    new EmptyList<ExprAggregateNode>(), 
+                    new EmptyList<ExprAggregateNode>(),
+                    new EmptyList<ExprAggregateNodeGroupKey>(), 
                     false, @base.StatementRawInfo.Annotations,
                     services.VariableCompileTimeResolver, true, null, null,
                     typesPerStream, null, @base.ContextName, null, services.TableCompileTimeResolver,
@@ -477,11 +482,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         }
 
         private static EventType GetDefineMultimatchEventType(
-            LinkedHashMap<string, Pair<int, bool>> variableStreams, EventType parentEventType, StatementBaseInfo @base,
+            LinkedHashMap<string, Pair<int, bool>> variableStreams,
+            EventType parentEventType,
+            StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {
             IDictionary<string, object> multievent = new LinkedHashMap<string, object>();
-            foreach (KeyValuePair<string, Pair<int, bool>> entry in variableStreams) {
+            foreach (var entry in variableStreams) {
                 if (entry.Value.Second) {
                     multievent.Put(entry.Key, new[] {parentEventType});
                 }
@@ -500,8 +507,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         }
 
         private static ExprNode ValidateMeasureClause(
-            ExprNode measureNode, StreamTypeService typeServiceMeasure, ISet<string> variablesMultiple,
-            ISet<string> variablesSingle, StatementRawInfo statementRawInfo, StatementCompileTimeServices services)
+            ExprNode measureNode,
+            StreamTypeService typeServiceMeasure,
+            ISet<string> variablesMultiple,
+            ISet<string> variablesSingle,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
         {
             try {
                 var validationContext = new ExprValidationContextBuilder(typeServiceMeasure, statementRawInfo, services)
@@ -530,7 +541,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         }
 
         private static ExprNode HandlePreviousFunctions(
-            ExprNode defineItemExpression, OrderedDictionary<int, IList<ExprPreviousMatchRecognizeNode>> previousNodes)
+            ExprNode defineItemExpression,
+            OrderedDictionary<int, IList<ExprPreviousMatchRecognizeNode>> previousNodes)
         {
             var previousVisitor = new ExprNodePreviousVisitorWParent();
             defineItemExpression.Accept(previousVisitor);
@@ -539,8 +551,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 return defineItemExpression;
             }
 
-            foreach (Pair<ExprNode, ExprPreviousNode> previousNodePair in previousVisitor.Previous) {
-                ExprPreviousNode previousNode = previousNodePair.Second;
+            foreach (var previousNodePair in previousVisitor.Previous) {
+                var previousNode = previousNodePair.Second;
                 var matchRecogPrevNode = new ExprPreviousMatchRecognizeNode();
 
                 if (previousNodePair.Second.ChildNodes.Length == 1) {
@@ -572,10 +584,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 }
 
                 // store in a list per index such that we can consolidate this into a single buffer
-                int index = matchRecogPrevNode.ConstantIndexNumber;
+                var index = matchRecogPrevNode.ConstantIndexNumber;
                 var callbackList = previousNodes.Get(index);
                 if (callbackList == null) {
-                    callbackList = new List<>();
+                    callbackList = new List<ExprPreviousMatchRecognizeNode>();
                     previousNodes.Put(index, callbackList);
                 }
 
@@ -601,9 +613,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var streamNamesDefine = new string[variableStreams.Count + 1];
             var typesDefine = new EventType[variableStreams.Count + 1];
             var isIStreamOnly = new bool[variableStreams.Count + 1];
-            Arrays.Fill(isIStreamOnly, true);
+            CompatExtensions.Fill(isIStreamOnly, true);
 
-            int streamNumDefine = variableStreams.Get(defineItem.Identifier).First;
+            var streamNumDefine = variableStreams.Get(defineItem.Identifier).First;
             streamNamesDefine[streamNumDefine] = defineItem.Identifier;
             typesDefine[streamNumDefine] = parentViewType;
 
@@ -612,7 +624,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var hasVisibleMultimatch = false;
             if (visibles != null) {
                 foreach (var visible in visibles) {
-                    Pair<int, bool> def = variableStreams.Get(visible);
+                    var def = variableStreams.Get(visible);
                     if (!def.Second) {
                         streamNamesDefine[def.First] = visible;
                         typesDefine[def.First] = parentViewType;
@@ -626,7 +638,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             // compile multi-matching event type (in last position), if any are used
             if (hasVisibleMultimatch) {
                 IDictionary<string, object> multievent = new LinkedHashMap<string, object>();
-                foreach (KeyValuePair<string, Pair<int, bool>> entry in variableStreams) {
+                foreach (var entry in variableStreams) {
                     var identifier = entry.Key;
                     if (entry.Value.Second) {
                         if (visibles.Contains(identifier)) {

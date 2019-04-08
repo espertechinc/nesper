@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.dataflow.core;
@@ -53,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 
             // determine binding of each channel to input methods (ports)
             IList<LogicalChannelBinding> operatorChannelBindings = new List<LogicalChannelBinding>();
-            foreach (LogicalChannel channel in dataflow.LogicalChannels) {
+            foreach (var channel in dataflow.LogicalChannels) {
                 var targetClass = operators.Get(channel.ConsumingOpNum).GetType();
                 var consumingMethod = FindMatchingMethod(channel.ConsumingOpPrettyPrint, targetClass, channel, false);
                 LogicalChannelBindingMethodDesc onSignalMethod = null;
@@ -77,28 +76,36 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                     continue;
                 }
 
-                OperatorMetadataDescriptor meta = dataflow.OperatorMetadata.Get(operatorEntry.Key);
+                var meta = dataflow.OperatorMetadata.Get(operatorEntry.Key);
 
                 var graphSource = (DataFlowSourceOperator) operatorEntry.Value;
                 var runnable = new GraphSourceRunnable(
-                    agentInstanceContext, graphSource, dataflow.DataflowName, options.WithDataFlowInstanceId,
-                    meta.OperatorName, operatorEntry.Key, meta.OperatorPrettyPrint, options.WithExceptionHandler, audit);
+                    agentInstanceContext, graphSource, dataflow.DataflowName, options.DataFlowInstanceId,
+                    meta.OperatorName, operatorEntry.Key, meta.OperatorPrettyPrint, options.ExceptionHandler, audit);
                 sourceRunnables.Add(runnable);
 
                 dataFlowSignalManager.AddSignalListener(operatorEntry.Key, runnable);
             }
 
             return new EPDataFlowInstanceImpl(
-                options.WithDataFlowInstanceUserObject, options.WithDataFlowInstanceId, statistics, operators,
-                sourceRunnables, dataflow, agentInstanceContext, statistics, options.ParametersURIs);
+                options.DataFlowInstanceUserObject,
+                options.DataFlowInstanceId,
+                statistics, operators,
+                sourceRunnables,
+                dataflow,
+                agentInstanceContext,
+                statistics,
+                options.ParametersURIs);
         }
 
         private static IDictionary<int, object> InstantiateOperators(
-            AgentInstanceContext agentInstanceContext, EPDataFlowInstantiationOptions options, DataflowDesc dataflow)
+            AgentInstanceContext agentInstanceContext,
+            EPDataFlowInstantiationOptions options,
+            DataflowDesc dataflow)
         {
             IDictionary<int, object> operators = new Dictionary<int, object>();
 
-            foreach (int operatorNum in dataflow.OperatorMetadata.Keys) {
+            foreach (var operatorNum in dataflow.OperatorMetadata.Keys) {
                 var @operator = InstantiateOperator(operatorNum, dataflow, options, agentInstanceContext);
                 operators.Put(operatorNum, @operator);
             }
@@ -107,19 +114,21 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         }
 
         private static object InstantiateOperator(
-            int operatorNum, DataflowDesc dataflow, EPDataFlowInstantiationOptions options,
+            int operatorNum,
+            DataflowDesc dataflow,
+            EPDataFlowInstantiationOptions options,
             AgentInstanceContext agentInstanceContext)
         {
-            DataFlowOperatorFactory operatorFactory = dataflow.OperatorFactories.Get(operatorNum);
-            OperatorMetadataDescriptor metadata = dataflow.OperatorMetadata.Get(operatorNum);
+            var operatorFactory = dataflow.OperatorFactories.Get(operatorNum);
+            var metadata = dataflow.OperatorMetadata.Get(operatorNum);
 
             // see if the operator is already provided by options
-            if (options.WithOperatorProvider != null) {
-                object @operator = options.WithOperatorProvider.Provide(
+            if (options.OperatorProvider != null) {
+                var operatorX = options.OperatorProvider.Provide(
                     new EPDataFlowOperatorProviderContext(
                         dataflow.DataflowName, metadata.OperatorName, operatorFactory));
-                if (@operator != null) {
-                    return @operator;
+                if (operatorX != null) {
+                    return operatorX;
                 }
             }
 
@@ -132,10 +141,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                     }
 
                     if (additionalParameters == null) {
-                        additionalParameters = new Dictionary<>();
+                        additionalParameters = new Dictionary<string, object>();
                     }
 
-                    additionalParameters.Put(entry.Key.Substring(prefix.Length()), entry.Value);
+                    additionalParameters.Put(entry.Key.Substring(prefix.Length), entry.Value);
                 }
             }
 
@@ -145,11 +154,13 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                     new DataFlowOpInitializeContext(
                         dataflow.DataflowName,
                         metadata.OperatorName, operatorNum, agentInstanceContext, additionalParameters,
-                        options.WithDataFlowInstanceId, options.WithParameterProvider, operatorFactory,
-                        options.WithDataFlowInstanceUserObject));
+                        options.DataFlowInstanceId,
+                        options.ParameterProvider,
+                        operatorFactory,
+                        options.DataFlowInstanceUserObject));
             }
-            catch (Throwable t) {
-                OperatorMetadataDescriptor meta = dataflow.OperatorMetadata.Get(operatorNum);
+            catch (Exception t) {
+                var meta = dataflow.OperatorMetadata.Get(operatorNum);
                 throw new EPException(
                     "Failed to obtain operator instance for '" + meta.OperatorName + "': " + t.Message, t);
             }
@@ -158,11 +169,14 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         }
 
         private static LogicalChannelBindingMethodDesc FindMatchingMethod(
-            string operatorName, Type target, LogicalChannel channelDesc, bool isPunctuation)
+            string operatorName,
+            Type target,
+            LogicalChannel channelDesc,
+            bool isPunctuation)
         {
             if (isPunctuation) {
-                foreach (MethodInfo method in target.Methods) {
-                    if (method.Name.Equals("onSignal")) {
+                foreach (var method in target.GetMethods()) {
+                    if (method.Name.Equals("OnSignal")) {
                         return new LogicalChannelBindingMethodDesc(method, LogicalChannelBindingTypePassAlong.INSTANCE);
                     }
                 }
@@ -199,7 +213,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                 channelSpecificMethodName = "on" + channelDesc.ConsumingOptStreamAliasName;
             }
 
-            foreach (MethodInfo method in target.Methods) {
+            foreach (var method in target.GetMethods()) {
                 var eligible = method.Name.Equals("onInput");
                 if (!eligible && method.Name.Equals(channelSpecificMethodName)) {
                     eligible = true;
@@ -210,8 +224,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                 }
 
                 // handle Object[]
-                int numParams = method.ParameterTypes.Length;
-                Type[] paramTypes = method.ParameterTypes;
+                var paramTypes = method.GetParameterTypes();
+                var numParams = paramTypes.Length;
 
                 if (expectedUnderlying != null) {
                     if (numParams == 1 &&
@@ -227,19 +241,23 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                 }
 
                 if (numParams == 1 && (paramTypes[0] == typeof(object) ||
-                                       paramTypes[0] == typeof(object[]) && method.IsVarArgs)) {
+                                       paramTypes[0] == typeof(object[]) &&
+                                       method.IsVarArgs())) {
                     return new LogicalChannelBindingMethodDesc(method, LogicalChannelBindingTypePassAlong.INSTANCE);
                 }
 
-                if (numParams == 2 && paramTypes[0] == typeof(int) &&
-                    (paramTypes[1] == typeof(object) || paramTypes[1] == typeof(object[]) && method.IsVarArgs)) {
+                if (numParams == 2 &&
+                    paramTypes[0] == typeof(int) &&
+                    (paramTypes[1] == typeof(object) ||
+                     paramTypes[1] == typeof(object[]) &&
+                     method.IsVarArgs())) {
                     return new LogicalChannelBindingMethodDesc(
                         method, new LogicalChannelBindingTypePassAlongWStream(channelDesc.ConsumingOpStreamNum));
                 }
 
                 // if exposing a method that exactly matches each property type in order, use that, i.e. "onInut(String p0, int p1)"
                 if (expectedUnderlyingType is ObjectArrayEventType &&
-                    TypeHelper.IsSignatureCompatible(expectedIndividual, method.ParameterTypes)) {
+                    TypeHelper.IsSignatureCompatible(expectedIndividual, paramTypes)) {
                     return new LogicalChannelBindingMethodDesc(method, LogicalChannelBindingTypeUnwind.INSTANCE);
                 }
             }

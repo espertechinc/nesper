@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 	/// Implementation for a property list builder that considers JavaBean-style methods
 	/// as the exposed event properties, plus any explicitly configured props.
 	/// </summary>
-	public class PropertyListBuilderJavaBean : PropertyListBuilder {
+	public class PropertyListBuilderNative : PropertyListBuilder {
 	    private ConfigurationCommonEventTypeBean optionalLegacyConfig;
 
 	    /// <summary>
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 	    /// </summary>
 	    /// <param name="optionalLegacyConfig">configures legacy type, or null informationhas been supplied.
 	    /// </param>
-	    public PropertyListBuilderJavaBean(ConfigurationCommonEventTypeBean optionalLegacyConfig) {
+	    public PropertyListBuilderNative(ConfigurationCommonEventTypeBean optionalLegacyConfig) {
 	        this.optionalLegacyConfig = optionalLegacyConfig;
 	    }
 

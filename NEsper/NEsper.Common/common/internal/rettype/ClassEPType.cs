@@ -7,23 +7,29 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.rettype
 {
     /// <summary>
-    /// Any primitive type as well as any class and other non-array or non-collection type
+    ///     Any primitive type as well as any class and other non-array or non-collection type
     /// </summary>
     public class ClassEPType : EPType
     {
-        private readonly Type _type;
-
-        internal ClassEPType(Type type) {
-            _type = type;
+        internal ClassEPType(Type type)
+        {
+            Clazz = type;
         }
 
-        public Type Clazz
+        public Type Clazz { get; }
+
+        public CodegenExpression Codegen(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenExpression typeInitSvcRef)
         {
-            get { return _type; }
+            return CodegenExpressionBuilder.NewInstance(typeof(ClassEPType), CodegenExpressionBuilder.Constant(Clazz));
         }
     }
 }

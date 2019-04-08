@@ -6,49 +6,40 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-
-using com.espertech.esper.compat;
+using com.espertech.esper.common.client;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.historical.common
 {
-	public class HistoricalViewableDesc {
-	    private bool hasHistorical;
-	    private readonly SortedSet<int>[] dependenciesPerHistorical;
-	    private readonly bool[] isHistorical;
+    public class HistoricalViewableDesc
+    {
+        public HistoricalViewableDesc(int numStreams)
+        {
+            DependenciesPerHistorical = new SortedSet<int>[numStreams];
+            Historical = new bool[numStreams];
+        }
 
-	    public HistoricalViewableDesc(int numStreams) {
-	        this.dependenciesPerHistorical = new SortedSet[numStreams];
-	        this.isHistorical = new bool[numStreams];
-	    }
+        public bool IsHistorical { get; private set; }
 
-	    public void SetHistorical(int streamNum, SortedSet<int> dependencies) {
-	        hasHistorical = true;
-	        isHistorical[streamNum] = true;
-	        if (dependenciesPerHistorical[streamNum] != null) {
-	            throw new RuntimeException("Dependencies for stream " + streamNum + "already initialized");
-	        }
-	        dependenciesPerHistorical[streamNum] = new SortedSet<int>();
-	        if (dependencies != null) {
-	            dependenciesPerHistorical[streamNum].AddAll(dependencies);
-	        }
-	    }
+        public SortedSet<int>[] DependenciesPerHistorical { get; }
 
-	    public bool IsHistorical
-	    {
-	        get => hasHistorical;
-	    }
+        public bool[] Historical { get; }
 
-	    public SortedSet<int>[] DependenciesPerHistorical
-	    {
-	        get => dependenciesPerHistorical;
-	    }
+        public void SetHistorical(
+            int streamNum,
+            SortedSet<int> dependencies)
+        {
+            IsHistorical = true;
+            Historical[streamNum] = true;
+            if (DependenciesPerHistorical[streamNum] != null) {
+                throw new EPRuntimeException("Dependencies for stream " + streamNum + "already initialized");
+            }
 
-	    public bool[] Historical
-	    {
-	        get => isHistorical;
-	    }
-	}
+            DependenciesPerHistorical[streamNum] = new SortedSet<int>();
+            if (dependencies != null) {
+                DependenciesPerHistorical[streamNum].AddAll(dependencies);
+            }
+        }
+    }
 } // end of namespace

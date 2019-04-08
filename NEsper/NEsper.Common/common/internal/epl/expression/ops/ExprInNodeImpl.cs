@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
 	    public override void ToPrecedenceFreeEPL(StringWriter writer) {
 	        string delimiter = "";
-	        IEnumerator<ExprNode> it = Arrays.AsList(this.ChildNodes).GetEnumerator();
+	        IEnumerator<ExprNode> it = CompatExtensions.AsList(this.ChildNodes).GetEnumerator();
 	        it.Current.ToEPL(writer, Precedence);
 	        if (isNotIn) {
 	            writer.Write(" not in (");

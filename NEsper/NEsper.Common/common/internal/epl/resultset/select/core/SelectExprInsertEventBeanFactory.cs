@@ -8,15 +8,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
-using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.arr;
@@ -29,12 +23,11 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using XLR8.CGLib;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
-    public class SelectExprInsertEventBeanFactory
+    public partial class SelectExprInsertEventBeanFactory
     {
         public static SelectExprProcessorForge GetInsertUnderlyingNonJoin(
             EventType eventType,
@@ -124,8 +117,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         }
 
         public static SelectExprProcessorForge GetInsertUnderlyingJoinWildcard(
-            EventType eventType, string[] streamNames, EventType[] streamTypes,
-            ImportServiceCompileTime importService, string statementName,
+            EventType eventType,
+            string[] streamNames,
+            EventType[] streamTypes,
+            ImportServiceCompileTime importService,
+            string statementName,
             EventTypeAvroHandler eventTypeAvroHandler)
         {
             var writableProps = EventTypeUtility.GetWriteableProperties(eventType, false);
@@ -167,7 +163,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         }
 
         private static bool CheckEligible(
-            EventType eventType, ISet<WriteablePropertyDescriptor> writableProps, bool allowNestableTargetFragmentTypes)
+            EventType eventType,
+            ISet<WriteablePropertyDescriptor> writableProps,
+            bool allowNestableTargetFragmentTypes)
         {
             if (writableProps == null) {
                 return false; // no writable properties, not a writable type, proceed
@@ -187,10 +185,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         }
 
         private static SelectExprProcessorForge InitializeSetterManufactor(
-            EventType eventType, ISet<WriteablePropertyDescriptor> writables, bool isUsingWildcard,
-            StreamTypeService typeService, ExprForge[] expressionForges, string[] columnNames,
-            object[] expressionReturnTypes, string statementName,
-            ImportServiceCompileTime importService, EventTypeAvroHandler eventTypeAvroHandler)
+            EventType eventType,
+            ISet<WriteablePropertyDescriptor> writables,
+            bool isUsingWildcard,
+            StreamTypeService typeService,
+            ExprForge[] expressionForges,
+            string[] columnNames,
+            object[] expressionReturnTypes,
+            string statementName,
+            ImportServiceCompileTime importService,
+            EventTypeAvroHandler eventTypeAvroHandler)
         {
             var typeWidenerCustomizer = eventTypeAvroHandler.GetTypeWidenerCustomizer(eventType);
             IList<WriteablePropertyDescriptor> writablePropertiesList = new List<WriteablePropertyDescriptor>();
@@ -212,7 +216,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     if (columnType == null) {
                         try {
                             TypeWidenerFactory.GetCheckPropertyAssignType(
-                                columnNames[i], null, desc.Type, desc.PropertyName, false, typeWidenerCustomizer,
+                                columnNames[i], null, desc.PropertyType, desc.PropertyName, false, typeWidenerCustomizer,
                                 statementName);
                         }
                         catch (TypeWidenerException ex) {
@@ -224,7 +228,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         var returnType = columnEventType.UnderlyingType;
                         try {
                             widener = TypeWidenerFactory.GetCheckPropertyAssignType(
-                                columnNames[i], columnEventType.UnderlyingType, desc.Type, desc.PropertyName, false,
+                                columnNames[i], columnEventType.UnderlyingType, desc.PropertyType, desc.PropertyName, false,
                                 typeWidenerCustomizer, statementName);
                         }
                         catch (TypeWidenerException ex) {
@@ -232,7 +236,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         }
 
                         // handle evaluator returning an event
-                        if (TypeHelper.IsSubclassOrImplementsInterface(returnType, desc.Type)) {
+                        if (TypeHelper.IsSubclassOrImplementsInterface(returnType, desc.PropertyType)) {
                             selectedWritable = desc;
                             widener = new ProxyTypeWidenerSPI {
                                 ProcWiden = input => {
@@ -243,8 +247,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     return input;
                                 },
 
-                                ProcWidenCodegen = (expression, codegenMethodScope, codegenClassScope) => {
-                                    CodegenMethod method = codegenMethodScope
+                                ProcWidenCodegen = (
+                                    expression,
+                                    codegenMethodScope,
+                                    codegenClassScope) => {
+                                    var method = codegenMethodScope
                                         .MakeChild(typeof(object), typeof(TypeWidenerSPI), codegenClassScope)
                                         .AddParam(typeof(object), "input").Block
                                         .IfCondition(InstanceOf(Ref("input"), typeof(EventBean)))
@@ -273,12 +280,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         // handle case where the select-clause contains an fragment array
                         var columnEventType = ((EventType[]) columnType)[0];
                         var componentReturnType = columnEventType.UnderlyingType;
-                        Type arrayReturnType = Array.CreateInstance(componentReturnType, 0).GetType();
+                        var arrayReturnType = Array.CreateInstance(componentReturnType, 0).GetType();
 
                         var allowObjectArrayToCollectionConversion = eventType is AvroSchemaEventType;
                         try {
                             widener = TypeWidenerFactory.GetCheckPropertyAssignType(
-                                columnNames[i], arrayReturnType, desc.Type, desc.PropertyName,
+                                columnNames[i], arrayReturnType, desc.PropertyType, desc.PropertyName,
                                 allowObjectArrayToCollectionConversion, typeWidenerCustomizer, statementName);
                         }
                         catch (TypeWidenerException ex) {
@@ -292,14 +299,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         var message = "Invalid assignment of column '" + columnNames[i] +
                                       "' of type '" + columnType +
                                       "' to event property '" + desc.PropertyName +
-                                      "' typed as '" + desc.Type.Name +
+                                      "' typed as '" + desc.PropertyType.Name +
                                       "', column and parameter types mismatch";
                         throw new ExprValidationException(message);
                     }
                     else {
                         try {
                             widener = TypeWidenerFactory.GetCheckPropertyAssignType(
-                                columnNames[i], (Type) columnType, desc.Type, desc.PropertyName, false,
+                                columnNames[i], (Type) columnType,
+                                desc.PropertyType,
+                                desc.PropertyName, false,
                                 typeWidenerCustomizer, statementName);
                         }
                         catch (TypeWidenerException ex) {
@@ -325,7 +334,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
             // handle wildcard
             if (isUsingWildcard) {
-                EventType sourceType = typeService.EventTypes[0];
+                var sourceType = typeService.EventTypes[0];
                 foreach (var eventPropDescriptor in sourceType.PropertyDescriptors) {
                     if (eventPropDescriptor.IsRequiresIndex || eventPropDescriptor.IsRequiresMapKey) {
                         continue;
@@ -342,8 +351,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
                         try {
                             widener = TypeWidenerFactory.GetCheckPropertyAssignType(
-                                eventPropDescriptor.PropertyName, eventPropDescriptor.PropertyType, writableDesc.Type,
-                                writableDesc.PropertyName, false, typeWidenerCustomizer, statementName);
+                                eventPropDescriptor.PropertyName,
+                                eventPropDescriptor.PropertyType,
+                                writableDesc.PropertyType,
+                                writableDesc.PropertyName,
+                                false, typeWidenerCustomizer, statementName);
                         }
                         catch (TypeWidenerException ex) {
                             throw new ExprValidationException(ex.Message, ex);
@@ -387,19 +399,26 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         }
 
         private static SelectExprProcessorForge InitializeCtorInjection(
-            BeanEventType beanEventType, ExprForge[] forges, object[] expressionReturnTypes,
+            BeanEventType beanEventType,
+            ExprForge[] forges,
+            object[] expressionReturnTypes,
             ImportServiceCompileTime importService)
         {
-            Pair<FastConstructor, ExprForge[]> pair = InstanceManufacturerUtil.GetManufacturer(
-                beanEventType.UnderlyingType, importService, forges, expressionReturnTypes);
+            var pair = InstanceManufacturerUtil.GetManufacturer(
+                beanEventType.UnderlyingType,
+                importService,
+                forges,
+                expressionReturnTypes);
             var eventManufacturer = new EventBeanManufacturerCtorForge(pair.First, beanEventType);
             return new SelectExprInsertNativeNoWiden(beanEventType, eventManufacturer, pair.Second);
         }
 
         private static SelectExprProcessorForge InitializeJoinWildcardInternal(
             EventType eventType,
-            ISet<WriteablePropertyDescriptor> writables, string[] streamNames,
-            EventType[] streamTypes, string statementName,
+            ISet<WriteablePropertyDescriptor> writables,
+            string[] streamNames,
+            EventType[] streamTypes,
+            string statementName,
             ImportServiceCompileTime importService,
             EventTypeAvroHandler eventTypeAvroHandler)
         {
@@ -420,7 +439,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
                     try {
                         widener = TypeWidenerFactory.GetCheckPropertyAssignType(
-                            streamNames[i], streamTypes[i].UnderlyingType, desc.Type, desc.PropertyName, false,
+                            streamNames[i], streamTypes[i].UnderlyingType, desc.PropertyType, desc.PropertyName, false,
                             typeWidenerCustomizer, statementName);
                     }
                     catch (TypeWidenerException ex) {
@@ -460,500 +479,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             }
 
             return new SelectExprInsertNativeWidening(eventType, eventManufacturer, exprForges, wideners);
-        }
-
-        public abstract class SelectExprInsertNativeExpressionCoerceBase : SelectExprProcessorForge
-        {
-            internal readonly EventType eventType;
-            internal readonly ExprForge exprForge;
-            internal ExprEvaluator evaluator;
-
-            protected SelectExprInsertNativeExpressionCoerceBase(EventType eventType, ExprForge exprForge)
-            {
-                this.eventType = eventType;
-                this.exprForge = exprForge;
-            }
-
-            public EventType ResultEventType => eventType;
-
-            public abstract CodegenMethod ProcessCodegen(
-                CodegenExpression resultEventType, 
-                CodegenExpression eventBeanFactory, 
-                CodegenMethodScope codegenMethodScope,
-                SelectExprProcessorCodegenSymbol selectSymbol, 
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope);
-        }
-
-        public class SelectExprInsertNativeExpressionCoerceMap : SelectExprInsertNativeExpressionCoerceBase
-        {
-            protected SelectExprInsertNativeExpressionCoerceMap(EventType eventType, ExprForge exprForge)
-                : base(eventType, exprForge)
-            {
-            }
-
-            public override CodegenMethod ProcessCodegen(
-                CodegenExpression resultEventType,
-                CodegenExpression eventBeanFactory,
-                CodegenMethodScope codegenMethodScope,
-                SelectExprProcessorCodegenSymbol selectSymbol,
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope)
-            {
-                var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-                var expr = exprForge.EvaluateCodegen(typeof(IDictionary<string,object>), methodNode, exprSymbol, codegenClassScope);
-                if (!TypeHelper.IsSubclassOrImplementsInterface(exprForge.EvaluationType, typeof(IDictionary<string, object>))) {
-                    expr = Cast(typeof(IDictionary<string, object>), expr);
-                }
-
-                methodNode.Block.DeclareVar(typeof(IDictionary<string, object>), "result", expr)
-                    .IfRefNullReturnNull("result")
-                    .MethodReturn(
-                        ExprDotMethod(eventBeanFactory, "adapterForTypedMap", Ref("result"), resultEventType));
-                return methodNode;
-            }
-        }
-
-        public class SelectExprInsertNativeExpressionCoerceAvro : SelectExprInsertNativeExpressionCoerceBase
-        {
-            protected SelectExprInsertNativeExpressionCoerceAvro(EventType eventType, ExprForge exprForge)
-                : base(eventType, exprForge)
-            {
-            }
-
-            public override CodegenMethod ProcessCodegen(
-                CodegenExpression resultEventType,
-                CodegenExpression eventBeanFactory,
-                CodegenMethodScope codegenMethodScope,
-                SelectExprProcessorCodegenSymbol selectSymbol,
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope)
-            {
-                var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-                methodNode.Block
-                    .DeclareVar(
-                        typeof(object), "result",
-                        exprForge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
-                    .IfRefNullReturnNull("result")
-                    .MethodReturn(
-                        ExprDotMethod(eventBeanFactory, "adapterForTypedAvro", Ref("result"), resultEventType));
-                return methodNode;
-            }
-        }
-
-        public class SelectExprInsertNativeExpressionCoerceObjectArray : SelectExprInsertNativeExpressionCoerceBase
-        {
-            protected SelectExprInsertNativeExpressionCoerceObjectArray(EventType eventType, ExprForge exprForge)
-                : base(eventType, exprForge)
-            {
-            }
-
-            public override CodegenMethod ProcessCodegen(
-                CodegenExpression resultEventType,
-                CodegenExpression eventBeanFactory,
-                CodegenMethodScope codegenMethodScope,
-                SelectExprProcessorCodegenSymbol selectSymbol,
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope)
-            {
-                var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-                methodNode.Block
-                    .DeclareVar(
-                        typeof(object[]), "result",
-                        exprForge.EvaluateCodegen(typeof(object[]), methodNode, exprSymbol, codegenClassScope))
-                    .IfRefNullReturnNull("result")
-                    .MethodReturn(
-                        ExprDotMethod(eventBeanFactory, "adapterForTypedObjectArray", Ref("result"), resultEventType));
-                return methodNode;
-            }
-        }
-
-        public class SelectExprInsertNativeExpressionCoerceNative : SelectExprInsertNativeExpressionCoerceBase
-        {
-            protected SelectExprInsertNativeExpressionCoerceNative(EventType eventType, ExprForge exprForge)
-                : base(eventType, exprForge)
-            {
-            }
-
-            public override CodegenMethod ProcessCodegen(
-                CodegenExpression resultEventType,
-                CodegenExpression eventBeanFactory,
-                CodegenMethodScope codegenMethodScope,
-                SelectExprProcessorCodegenSymbol selectSymbol,
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope)
-            {
-                var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-                methodNode.Block
-                    .DeclareVar(
-                        typeof(object), "result",
-                        exprForge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
-                    .IfRefNullReturnNull("result")
-                    .MethodReturn(
-                        ExprDotMethod(eventBeanFactory, "adapterForTypedBean", Ref("result"), resultEventType));
-                return methodNode;
-            }
-        }
-
-        public abstract class SelectExprInsertNativeBase : SelectExprProcessorForge
-        {
-            internal readonly EventBeanManufacturerForge eventManufacturer;
-            internal readonly ExprForge[] exprForges;
-
-            protected SelectExprInsertNativeBase(
-                EventType eventType, EventBeanManufacturerForge eventManufacturer, ExprForge[] exprForges)
-            {
-                ResultEventType = eventType;
-                this.eventManufacturer = eventManufacturer;
-                this.exprForges = exprForges;
-            }
-
-            public EventType ResultEventType { get; }
-
-            public abstract CodegenMethod ProcessCodegen(
-                CodegenExpression resultEventType, 
-                CodegenExpression eventBeanFactory,
-                CodegenMethodScope codegenMethodScope,
-                SelectExprProcessorCodegenSymbol selectSymbol, 
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope);
-        }
-
-        public class SelectExprInsertNativeWidening : SelectExprInsertNativeBase
-        {
-            private readonly TypeWidenerSPI[] wideners;
-
-            public SelectExprInsertNativeWidening(
-                EventType eventType, EventBeanManufacturerForge eventManufacturer, ExprForge[] exprForges,
-                TypeWidenerSPI[] wideners)
-                : base(eventType, eventManufacturer, exprForges)
-            {
-                this.wideners = wideners;
-            }
-
-            public override CodegenMethod ProcessCodegen(
-                CodegenExpression resultEventType,
-                CodegenExpression eventBeanFactory,
-                CodegenMethodScope codegenMethodScope,
-                SelectExprProcessorCodegenSymbol selectSymbol,
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope)
-            {
-                var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-                var manufacturer = codegenClassScope.AddFieldUnshared(
-                    true, typeof(EventBeanManufacturer), eventManufacturer.Make(codegenMethodScope, codegenClassScope));
-                var block = methodNode.Block
-                    .DeclareVar(
-                        typeof(object[]), "values", NewArrayByLength(typeof(object), Constant(exprForges.Length)));
-                for (var i = 0; i < exprForges.Length; i++) {
-                    var expression = CodegenLegoMayVoid.ExpressionMayVoid(
-                        exprForges[i].EvaluationType, exprForges[i], methodNode, exprSymbol, codegenClassScope);
-                    if (wideners[i] == null) {
-                        block.AssignArrayElement("values", Constant(i), expression);
-                    }
-                    else {
-                        var refname = "evalResult" + i;
-                        block.DeclareVar(exprForges[i].EvaluationType, refname, expression);
-                        if (!exprForges[i].EvaluationType.IsPrimitive) {
-                            block.IfRefNotNull(refname)
-                                .AssignArrayElement(
-                                    "values", Constant(i),
-                                    wideners[i].WidenCodegen(Ref(refname), methodNode, codegenClassScope))
-                                .BlockEnd();
-                        }
-                        else {
-                            block.AssignArrayElement(
-                                "values", Constant(i),
-                                wideners[i].WidenCodegen(Ref(refname), methodNode, codegenClassScope));
-                        }
-                    }
-                }
-
-                block.MethodReturn(ExprDotMethod(manufacturer, "make", Ref("values")));
-                return methodNode;
-            }
-        }
-
-        public class SelectExprInsertNativeNoWiden : SelectExprInsertNativeBase
-        {
-            public SelectExprInsertNativeNoWiden(
-                EventType eventType, EventBeanManufacturerForge eventManufacturer, ExprForge[] exprForges)
-                : base(eventType, eventManufacturer, exprForges)
-            {
-            }
-
-            public override CodegenMethod ProcessCodegen(
-                CodegenExpression resultEventType, 
-                CodegenExpression eventBeanFactory,
-                CodegenMethodScope codegenMethodScope, 
-                SelectExprProcessorCodegenSymbol selectSymbol,
-                ExprForgeCodegenSymbol exprSymbol, 
-                CodegenClassScope codegenClassScope)
-            {
-                var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-                var manufacturer = codegenClassScope.AddFieldUnshared(
-                    true, typeof(EventBeanManufacturer), eventManufacturer.Make(codegenMethodScope, codegenClassScope));
-                var block = methodNode.Block
-                    .DeclareVar(
-                        typeof(object[]), "values", NewArrayByLength(typeof(object), Constant(exprForges.Length)));
-                for (var i = 0; i < exprForges.Length; i++) {
-                    var expression = CodegenLegoMayVoid.ExpressionMayVoid(
-                        typeof(object), exprForges[i], methodNode, exprSymbol, codegenClassScope);
-                    block.AssignArrayElement("values", Constant(i), expression);
-                }
-
-                block.MethodReturn(ExprDotMethod(manufacturer, "make", Ref("values")));
-                return methodNode;
-            }
-        }
-
-        public class SelectExprInsertNativeNoEval : SelectExprProcessorForge
-        {
-            private readonly EventBeanManufacturerForge eventManufacturer;
-
-            public SelectExprInsertNativeNoEval(EventType eventType, EventBeanManufacturerForge eventManufacturer)
-            {
-                ResultEventType = eventType;
-                this.eventManufacturer = eventManufacturer;
-            }
-
-            public EventType ResultEventType { get; }
-
-            public CodegenMethod ProcessCodegen(
-                CodegenExpression resultEventType,
-                CodegenExpression eventBeanFactory,
-                CodegenMethodScope codegenMethodScope,
-                SelectExprProcessorCodegenSymbol selectSymbol,
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope)
-            {
-                var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-                var manufacturer = codegenClassScope.AddFieldUnshared(
-                    true, typeof(EventBeanManufacturer), eventManufacturer.Make(codegenMethodScope, codegenClassScope));
-                methodNode.Block.MethodReturn(
-                    ExprDotMethod(manufacturer, "make", PublicConstValue(typeof(CollectionUtil), "OBJECTARRAY_EMPTY")));
-                return methodNode;
-            }
-        }
-
-        public class ExprForgeJoinWildcard : ExprForge,
-            ExprEvaluator,
-            ExprNodeRenderable
-        {
-            private readonly int streamNum;
-
-            public ExprForgeJoinWildcard(int streamNum, Type returnType)
-            {
-                this.streamNum = streamNum;
-                EvaluationType = returnType;
-            }
-
-            public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
-            {
-                var bean = eventsPerStream[streamNum];
-                if (bean == null) {
-                    return null;
-                }
-
-                return bean.Underlying;
-            }
-
-            public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
-
-            public ExprEvaluator ExprEvaluator => this;
-
-            public CodegenExpression EvaluateCodegen(
-                Type requiredType,
-                CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope)
-            {
-                var methodNode = codegenMethodScope.MakeChild(
-                    EvaluationType, typeof(ExprForgeJoinWildcard), codegenClassScope);
-                var refEPS = exprSymbol.GetAddEPS(methodNode);
-                methodNode.Block
-                    .DeclareVar(typeof(EventBean), "bean", ArrayAtIndex(refEPS, Constant(streamNum)))
-                    .IfRefNullReturnNull("bean")
-                    .MethodReturn(Cast(EvaluationType, ExprDotUnderlying(Ref("bean"))));
-                return LocalMethod(methodNode);
-            }
-
-            public Type EvaluationType { get; }
-
-            public ExprNodeRenderable ForgeRenderable => this;
-
-            public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
-            {
-                writer.Write(GetType().GetSimpleName());
-            }
-        }
-
-        public class ExprForgeStreamUnderlying : ExprForge,
-            ExprEvaluator,
-            ExprNodeRenderable
-        {
-            private readonly Type returnType;
-
-            private readonly int streamNumEval;
-
-            public ExprForgeStreamUnderlying(int streamNumEval, Type returnType)
-            {
-                this.streamNumEval = streamNumEval;
-                this.returnType = returnType;
-            }
-
-            public object Evaluate(
-                EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
-            {
-                var theEvent = eventsPerStream[streamNumEval];
-                if (theEvent != null) {
-                    return theEvent.Underlying;
-                }
-
-                return null;
-            }
-
-            public ExprEvaluator ExprEvaluator => this;
-
-            public CodegenExpression EvaluateCodegen(
-                Type requiredType,
-                CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope)
-            {
-                var methodNode = codegenMethodScope.MakeChild(returnType, GetType(), codegenClassScope);
-
-                var refEPS = exprSymbol.GetAddEPS(methodNode);
-                methodNode.Block
-                    .DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(refEPS, Constant(streamNumEval)))
-                    .IfRefNullReturnNull("theEvent")
-                    .MethodReturn(Cast(returnType, ExprDotUnderlying(Ref("theEvent"))));
-                return LocalMethod(methodNode);
-            }
-
-            public Type EvaluationType => typeof(object);
-
-            public ExprNodeRenderable ForgeRenderable => this;
-
-            public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
-
-            public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
-            {
-                writer.Write(typeof(ExprForgeStreamUnderlying).GetSimpleName());
-            }
-        }
-
-        public class ExprForgeStreamWithInner : ExprForge,
-            ExprEvaluator,
-            ExprNodeRenderable
-        {
-            private readonly Type componentReturnType;
-
-            private readonly ExprForge inner;
-
-            public ExprForgeStreamWithInner(ExprForge inner, Type componentReturnType)
-            {
-                this.inner = inner;
-                this.componentReturnType = componentReturnType;
-            }
-
-            public object Evaluate(
-                EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
-            {
-                throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
-            }
-
-            public ExprEvaluator ExprEvaluator => this;
-
-            public CodegenExpression EvaluateCodegen(
-                Type requiredType,
-                CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope)
-            {
-                var arrayType = TypeHelper.GetArrayType(componentReturnType);
-                var methodNode = codegenMethodScope.MakeChild(arrayType, GetType(), codegenClassScope);
-
-                methodNode.Block
-                    .DeclareVar(
-                        typeof(EventBean[]), "events",
-                        Cast(
-                            typeof(EventBean[]),
-                            inner.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope)))
-                    .IfRefNullReturnNull("events")
-                    .DeclareVar(arrayType, "values", NewArrayByLength(componentReturnType, ArrayLength(Ref("events"))))
-                    .ForLoopIntSimple("i", ArrayLength(Ref("events")))
-                    .AssignArrayElement(
-                        "values", Ref("i"),
-                        Cast(componentReturnType, ExprDotUnderlying(ArrayAtIndex(Ref("events"), Ref("i")))))
-                    .BlockEnd()
-                    .MethodReturn(Ref("values"));
-                return LocalMethod(methodNode);
-            }
-
-            public Type EvaluationType => TypeHelper.GetArrayType(componentReturnType);
-
-            public ExprNodeRenderable ForgeRenderable => this;
-
-            public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
-
-            public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
-            {
-                writer.Write(typeof(ExprForgeStreamWithInner).GetSimpleName());
-            }
-        }
-
-        public class ExprForgeStreamWithGetter : ExprForge,
-            ExprEvaluator,
-            ExprNodeRenderable
-        {
-            private readonly EventPropertyGetterSPI getter;
-
-            public ExprForgeStreamWithGetter(EventPropertyGetterSPI getter)
-            {
-                this.getter = getter;
-            }
-
-            public object Evaluate(
-                EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
-            {
-                var theEvent = eventsPerStream[0];
-                if (theEvent != null) {
-                    return getter.Get(theEvent);
-                }
-
-                return null;
-            }
-
-            public CodegenExpression EvaluateCodegen(
-                Type requiredType,
-                CodegenMethodScope codegenMethodScope,
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope)
-            {
-                var methodNode = codegenMethodScope.MakeChild(
-                    typeof(object), typeof(ExprForgeStreamWithGetter), codegenClassScope);
-                var refEPS = exprSymbol.GetAddEPS(methodNode);
-                methodNode.Block
-                    .DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(refEPS, Constant(0)))
-                    .IfRefNotNull("theEvent")
-                    .BlockReturn(getter.EventBeanGetCodegen(Ref("theEvent"), methodNode, codegenClassScope))
-                    .MethodReturn(ConstantNull());
-                return LocalMethod(methodNode);
-            }
-
-            public ExprEvaluator ExprEvaluator => this;
-
-            public Type EvaluationType => typeof(object);
-
-            public ExprNodeRenderable ForgeRenderable => this;
-
-            public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
-
-            public void ToEPL(StringWriter writer, ExprPrecedenceEnum parentPrecedence)
-            {
-                writer.Write(typeof(ExprForgeStreamWithGetter).GetSimpleName());
-            }
         }
     }
 } // end of namespace

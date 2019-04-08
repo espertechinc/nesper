@@ -6,87 +6,100 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.schedule;
-using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.initterm
 {
-	public class ContextControllerInitTermUtil {
-	    public static ContextControllerInitTermSvc GetService(ContextControllerInitTermFactory factory) {
-	        if (factory.FactoryEnv.IsRoot) {
-	            return new ContextControllerInitTermSvcLevelOne();
-	        }
-	        return new ContextControllerInitTermSvcLevelAny();
-	    }
+    public class ContextControllerInitTermUtil
+    {
+        public static ContextControllerInitTermSvc GetService(ContextControllerInitTermFactory factory)
+        {
+            if (factory.FactoryEnv.IsRoot) {
+                return new ContextControllerInitTermSvcLevelOne();
+            }
 
-	    public static bool DetermineCurrentlyRunning(ContextControllerCondition startCondition, ContextControllerInitTerm controller) {
-	        if (startCondition.IsImmediate) {
-	            return true;
-	        }
+            return new ContextControllerInitTermSvcLevelAny();
+        }
 
-	        ContextControllerDetailInitiatedTerminated spec = controller.Factory.InitTermSpec;
-	        if (spec.IsOverlapping) {
-	            return false;
-	        }
+        public static bool DetermineCurrentlyRunning(
+            ContextControllerCondition startCondition,
+            ContextControllerInitTerm controller)
+        {
+            if (startCondition.IsImmediate) {
+                return true;
+            }
 
-	        // we are not currently running if either of the endpoints is not crontab-triggered
-	        if ((spec.StartCondition is ContextConditionDescriptorCrontab) &&
-	                ((spec.EndCondition is ContextConditionDescriptorCrontab))) {
-	            ScheduleSpec scheduleStart = ((ContextControllerConditionCrontab) startCondition).Schedule;
+            ContextControllerDetailInitiatedTerminated spec = controller.Factory.InitTermSpec;
+            if (spec.IsOverlapping) {
+                return false;
+            }
 
-	            ContextConditionDescriptorCrontab endCron = (ContextConditionDescriptorCrontab) spec.EndCondition;
-	            ScheduleSpec scheduleEnd = ScheduleExpressionUtil.CrontabScheduleBuild(endCron.Evaluators, controller.Realization.AgentInstanceContextCreate);
+            // we are not currently running if either of the endpoints is not crontab-triggered
+            if (spec.StartCondition is ContextConditionDescriptorCrontab &&
+                spec.EndCondition is ContextConditionDescriptorCrontab) {
+                var scheduleStart = ((ContextControllerConditionCrontab) startCondition).Schedule;
 
-	            ImportServiceRuntime importService = controller.Realization.AgentInstanceContextCreate.ImportServiceRuntime;
-	            long time = controller.Realization.AgentInstanceContextCreate.SchedulingService.Time;
-	            long nextScheduledStartTime = ScheduleComputeHelper.ComputeNextOccurance(scheduleStart, time, importService.TimeZone, importService.TimeAbacus);
-	            long nextScheduledEndTime = ScheduleComputeHelper.ComputeNextOccurance(scheduleEnd, time, importService.TimeZone, importService.TimeAbacus);
-	            return nextScheduledStartTime >= nextScheduledEndTime;
-	        }
+                var endCron = (ContextConditionDescriptorCrontab) spec.EndCondition;
+                var scheduleEnd = ScheduleExpressionUtil.CrontabScheduleBuild(endCron.Evaluators, controller.Realization.AgentInstanceContextCreate);
 
-	        if (startCondition.Descriptor is ContextConditionDescriptorTimePeriod) {
-	            ContextConditionDescriptorTimePeriod descriptor = (ContextConditionDescriptorTimePeriod) startCondition.Descriptor;
-	            long? endTime = descriptor.GetExpectedEndTime(controller.Realization);
-	            if (endTime != null && endTime <= 0) {
-	                return true;
-	            }
-	        }
+                var importService = controller.Realization.AgentInstanceContextCreate.ImportServiceRuntime;
+                var time = controller.Realization.AgentInstanceContextCreate.SchedulingService.Time;
+                var nextScheduledStartTime = ScheduleComputeHelper.ComputeNextOccurance(
+                    scheduleStart, time, importService.TimeZone, importService.TimeAbacus);
+                var nextScheduledEndTime = ScheduleComputeHelper.ComputeNextOccurance(
+                    scheduleEnd, time, importService.TimeZone, importService.TimeAbacus);
+                return nextScheduledStartTime >= nextScheduledEndTime;
+            }
 
-	        return startCondition is ContextConditionDescriptorImmediate;
-	    }
+            if (startCondition.Descriptor is ContextConditionDescriptorTimePeriod) {
+                var descriptor = (ContextConditionDescriptorTimePeriod) startCondition.Descriptor;
+                var endTime = descriptor.GetExpectedEndTime(controller.Realization);
+                if (endTime != null && endTime <= 0) {
+                    return true;
+                }
+            }
 
-	    public static ContextControllerInitTermPartitionKey BuildPartitionKey(EventBean optionalTriggeringEvent, IDictionary<string, object> optionalTriggeringPattern, ContextControllerCondition endCondition, ContextControllerInitTerm controller) {
-	        long startTime = controller.realization.AgentInstanceContextCreate.SchedulingService.Time;
-	        long? expectedEndTime = endCondition.ExpectedEndTime;
-	        return new ContextControllerInitTermPartitionKey(optionalTriggeringEvent, optionalTriggeringPattern, startTime, expectedEndTime);
-	    }
+            return startCondition is ContextConditionDescriptorImmediate;
+        }
 
-	    public static ContextPartitionIdentifierInitiatedTerminated KeyToIdentifier(int subpathIdOrCPId, ContextControllerInitTermPartitionKey key, ContextControllerInitTerm controller) {
-	        ContextPartitionIdentifierInitiatedTerminated identifier = new ContextPartitionIdentifierInitiatedTerminated();
-	        identifier.StartTime = key.StartTime;
-	        identifier.EndTime = key.ExpectedEndTime;
+        public static ContextControllerInitTermPartitionKey BuildPartitionKey(
+            EventBean optionalTriggeringEvent,
+            IDictionary<string, object> optionalTriggeringPattern,
+            ContextControllerCondition endCondition,
+            ContextControllerInitTerm controller)
+        {
+            var startTime = controller.realization.AgentInstanceContextCreate.SchedulingService.Time;
+            var expectedEndTime = endCondition.ExpectedEndTime;
+            return new ContextControllerInitTermPartitionKey(optionalTriggeringEvent, optionalTriggeringPattern, startTime, expectedEndTime);
+        }
 
-	        ContextConditionDescriptor start = controller.Factory.InitTermSpec.StartCondition;
-	        if (start is ContextConditionDescriptorFilter) {
-	            ContextConditionDescriptorFilter filter = (ContextConditionDescriptorFilter) start;
-	            if (filter.OptionalFilterAsName != null) {
-	                identifier.Properties = Collections.SingletonMap(filter.OptionalFilterAsName, key.TriggeringEvent);
-	            }
-	        }
+        public static ContextPartitionIdentifierInitiatedTerminated KeyToIdentifier(
+            int subpathIdOrCPId,
+            ContextControllerInitTermPartitionKey key,
+            ContextControllerInitTerm controller)
+        {
+            var identifier = new ContextPartitionIdentifierInitiatedTerminated();
+            identifier.StartTime = key.StartTime;
+            identifier.EndTime = key.ExpectedEndTime;
 
-	        if (controller.Factory.FactoryEnv.IsLeaf) {
-	            identifier.ContextPartitionId = subpathIdOrCPId;
-	        }
+            ContextConditionDescriptor start = controller.Factory.InitTermSpec.StartCondition;
+            if (start is ContextConditionDescriptorFilter) {
+                var filter = (ContextConditionDescriptorFilter) start;
+                if (filter.OptionalFilterAsName != null) {
+                    identifier.Properties = Collections.SingletonMap(filter.OptionalFilterAsName, key.TriggeringEvent);
+                }
+            }
 
-	        return identifier;
-	    }
-	}
+            if (controller.Factory.FactoryEnv.IsLeaf) {
+                identifier.ContextPartitionId = subpathIdOrCPId;
+            }
+
+            return identifier;
+        }
+    }
 } // end of namespace

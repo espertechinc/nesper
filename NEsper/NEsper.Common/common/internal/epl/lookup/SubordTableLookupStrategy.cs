@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -30,5 +31,19 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         ICollection<EventBean> Lookup(EventBean[] events, ExprEvaluatorContext context);
 
         string ToQueryPlan();
+    }
+
+    public class ProxySubordTableLookupStrategy : SubordTableLookupStrategy
+    {
+        public Func<LookupStrategyDesc> ProcStrategyDesc;
+        public LookupStrategyDesc StrategyDesc => ProcStrategyDesc.Invoke();
+
+        public Func<EventBean[], ExprEvaluatorContext, ICollection<EventBean>> ProcLookup;
+        public ICollection<EventBean> Lookup(
+            EventBean[] events,
+            ExprEvaluatorContext context) => ProcLookup.Invoke(events, context);
+
+        public Func<string> ProcToQueryPlan;
+        public string ToQueryPlan() => ProcToQueryPlan.Invoke();
     }
 } // end of namespace

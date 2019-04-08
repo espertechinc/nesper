@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
     {
         internal readonly PropertyCompositeEventTableFactory factory;
 
-        public abstract IDictionary<object, object> Index { get; }
+        public abstract IDictionary<object, CompositeIndexEntry> Index { get; }
 
         public abstract CompositeIndexQueryResultPostProcessor PostProcessor { get; }
 

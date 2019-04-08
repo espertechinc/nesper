@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Reflection;
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -34,8 +35,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             string eventTypeName,
             IList<ExprNode> filterExpessions,
             PropertyEvalSpec optionalPropertyEvalSpec,
-            LinkedHashMap<string, Pair<EventType, string>> taggedEventTypes,
-            LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes,
+            IDictionary<string, Pair<EventType, string>> taggedEventTypes,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
             StreamTypeService streamTypeService,
             string optionalStreamName,
             StatementRawInfo statementRawInfo,
@@ -56,8 +57,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             EventType eventType,
             string eventTypeName,
             PropertyEvalSpec optionalPropertyEvalSpec,
-            LinkedHashMap<string, Pair<EventType, string>> taggedEventTypes,
-            LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes,
+            IDictionary<string, Pair<EventType, string>> taggedEventTypes,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
             StreamTypeService streamTypeService,
             string optionalStreamName,
             StatementRawInfo statementRawInfo,
@@ -74,8 +75,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             string eventTypeName,
             string optionalStreamName,
             PropertyEvalSpec optionalPropertyEvalSpec,
-            LinkedHashMap<string, Pair<EventType, string>> taggedEventTypes,
-            LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes,
+            IDictionary<string, Pair<EventType, string>> taggedEventTypes,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
             StreamTypeService streamTypeService,
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices
@@ -102,8 +103,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             ExprNodeOrigin exprNodeOrigin,
             IList<ExprNode> exprNodes,
             StreamTypeService streamTypeService,
-            LinkedHashMap<string, Pair<EventType, string>> taggedEventTypes,
-            LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes,
+            IDictionary<string, Pair<EventType, string>> taggedEventTypes,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {

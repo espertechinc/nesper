@@ -76,8 +76,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         }
 
         public static StreamSpecCompiled CompileFilter(
-            FilterStreamSpecRaw streamSpec, bool isInsertInto, bool isJoin, bool isContextDeclaration, bool isOnTrigger,
-            string optionalStreamName, StatementRawInfo statementRawInfo, StatementCompileTimeServices services)
+            FilterStreamSpecRaw streamSpec,
+            bool isInsertInto,
+            bool isJoin,
+            bool isContextDeclaration,
+            bool isOnTrigger,
+            string optionalStreamName,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
         {
             // Determine the event type
             var rawFilterSpec = streamSpec.RawFilterSpec;
@@ -106,7 +112,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var namedWindowInfo = services.NamedWindowCompileTimeResolver.Resolve(eventTypeName);
             if (namedWindowInfo != null) {
                 StreamTypeService streamTypeService = new StreamTypeServiceImpl(
-                    new EventType[] {namedWindowInfo.EventType}, new[] {optionalStreamName}, new[] {true}, false,
+                    new[] {namedWindowInfo.EventType}, new[] {optionalStreamName}, new[] {true}, false,
                     false);
 
                 var validatedNodes = FilterSpecCompiler.ValidateAllowSubquery(
@@ -223,8 +229,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             return new PatternStreamSpecCompiled(
-                root, tags.TaggedEventTypes, tags.ArrayEventTypes, allTagNamesOrdered, streamSpecRaw.ViewSpecs,
-                streamSpecRaw.OptionalStreamName, streamSpecRaw.Options, streamSpecRaw.IsSuppressSameEventMatches,
+                root, 
+                tags.TaggedEventTypes,
+                tags.ArrayEventTypes,
+                allTagNamesOrdered,
+                streamSpecRaw.ViewSpecs,
+                streamSpecRaw.OptionalStreamName,
+                streamSpecRaw.Options, 
+                streamSpecRaw.IsSuppressSameEventMatches,
                 streamSpecRaw.IsDiscardPartialsOnMatch);
         }
 
@@ -234,7 +246,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             bool isInsertInto,
             MatchEventSpec tags,
             Stack<EvalForgeNode> parentNodeStack,
-            LinkedHashSet<string> allTagNamesOrdered,
+            ISet<string> allTagNamesOrdered,
             int streamNum,
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
@@ -248,8 +260,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             parentNodeStack.Pop();
 
-            LinkedHashMap<string, Pair<EventType, string>> newTaggedEventTypes = null;
-            LinkedHashMap<string, Pair<EventType, string>> newArrayEventTypes = null;
+            IDictionary<string, Pair<EventType, string>> newTaggedEventTypes = null;
+            IDictionary<string, Pair<EventType, string>> newArrayEventTypes = null;
 
             if (evalNode is EvalFilterForgeNode) {
                 var filterNode = (EvalFilterForgeNode) evalNode;
@@ -329,7 +341,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 filterTaggedEventTypes.Remove(optionalTag);
 
                 // handle array tags (match-until clause)
-                LinkedHashMap<string, Pair<EventType, string>> arrayCompositeEventTypes = null;
+                IDictionary<string, Pair<EventType, string>> arrayCompositeEventTypes = null;
                 if (tags.ArrayEventTypes != null && !tags.ArrayEventTypes.IsEmpty()) {
                     arrayCompositeEventTypes = new LinkedHashMap<string, Pair<EventType, string>>();
 
@@ -364,14 +376,16 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
                 var spec = FilterSpecCompiler.MakeFilterSpec(
                     resolvedEventType, eventName, exprNodes,
-                    filterNode.RawFilterSpec.OptionalPropertyEvalSpec, filterTaggedEventTypes, arrayCompositeEventTypes,
+                    filterNode.RawFilterSpec.OptionalPropertyEvalSpec, 
+                    filterTaggedEventTypes, 
+                    arrayCompositeEventTypes,
                     streamTypeService, null, statementRawInfo, services);
                 filterNode.FilterSpec = spec;
             }
             else if (evalNode is EvalObserverForgeNode) {
                 var observerNode = (EvalObserverForgeNode) evalNode;
                 try {
-                    ObserverForge observerForge =
+                    var observerForge =
                         services.PatternResolutionService.Create(observerNode.PatternObserverSpec);
 
                     var streamTypeService = GetStreamTypeService(
@@ -403,7 +417,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             else if (evalNode is EvalGuardForgeNode) {
                 var guardNode = (EvalGuardForgeNode) evalNode;
                 try {
-                    GuardForge guardForge = services.PatternResolutionService.Create(guardNode.PatternGuardSpec);
+                    var guardForge = services.PatternResolutionService.Create(guardNode.PatternGuardSpec);
 
                     var streamTypeService = GetStreamTypeService(
                         tags.TaggedEventTypes, tags.ArrayEventTypes, guardNode, streamNum, statementRawInfo, services);
@@ -445,7 +459,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     throw new ExprValidationPropertyException(
                         ex.Message +
                         ", every-distinct requires that all properties resolve from sub-expressions to the every-distinct",
-                        ex.Cause);
+                        ex.InnerException);
                 }
 
                 var convertor = new MatchedEventConvertorForge(
@@ -468,7 +482,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                         var timePeriodExpr = (ExprTimePeriod) expiryTimeExp;
                         timePeriodComputeForge = timePeriodExpr.TimePeriodComputeForge;
                     }
-                    else if (expr.Forge.ForgeConstantType.IsCompileTimeConstant()) {
+                    else if (expr.Forge.ForgeConstantType.IsCompileTimeConstant) {
                         if (count == last) {
                             var value = expr.Forge.ExprEvaluator.Evaluate(null, true, null);
                             if (!value.IsNumber()) {
@@ -478,11 +492,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
                             var secondsExpire = expr.Forge.ExprEvaluator.Evaluate(null, true, null);
                             var timeExpire = secondsExpire == null
-                                ? null
-                                : services.ImportServiceCompileTime.TimeAbacus.DeltaForSecondsNumber(
-                                    secondsExpire);
+                                ? (long?) null
+                                : (long?) services.ImportServiceCompileTime.TimeAbacus.DeltaForSecondsNumber(secondsExpire);
                             if (timeExpire != null && timeExpire > 0) {
-                                timePeriodComputeForge = new TimePeriodComputeConstGivenDeltaForge(timeExpire);
+                                timePeriodComputeForge = new TimePeriodComputeConstGivenDeltaForge(timeExpire.Value);
                                 expiryTimeExp = expr;
                             }
                             else {
@@ -585,7 +598,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
                 if (followedByNode.OptionalMaxExpressions != null) {
                     IList<ExprNode> validated = new List<ExprNode>();
-                    foreach (ExprNode maxExpr in followedByNode.OptionalMaxExpressions) {
+                    foreach (var maxExpr in followedByNode.OptionalMaxExpressions) {
                         if (maxExpr == null) {
                             validated.Add(null);
                         }
@@ -624,7 +637,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
         }
 
-        private static ExprNode ValidateBounds(ExprNode bounds, ExprValidationContext validationContext)
+        private static ExprNode ValidateBounds(
+            ExprNode bounds,
+            ExprValidationContext validationContext)
         {
             var message = "Match-until bounds value expressions must return a numeric value";
             if (bounds != null) {
@@ -641,7 +656,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return null;
         }
 
-        private static int[] GetIndexesForTags(LinkedHashSet<string> allTagNamesOrdered, ISet<string> arrayTags)
+        private static int[] GetIndexesForTags(
+            ISet<string> allTagNamesOrdered,
+            ISet<string> arrayTags)
         {
             if (arrayTags == null || arrayTags.IsEmpty()) {
                 return new int[0];
@@ -659,9 +676,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return indexes;
         }
 
-        private static bool IsParentMatchUntil(EvalForgeNode currentNode, Stack<EvalForgeNode> parentNodeStack)
+        private static bool IsParentMatchUntil(
+            EvalForgeNode currentNode,
+            Stack<EvalForgeNode> parentNodeStack)
         {
-            if (parentNodeStack.IsEmpty()) {
+            if (parentNodeStack.IsEmptyCollection()) {
                 return false;
             }
 
@@ -735,8 +754,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         private static StreamTypeService GetStreamTypeService(
             IDictionary<string, Pair<EventType, string>> taggedEventTypes,
-            IDictionary<string, Pair<EventType, string>> arrayEventTypes, EvalForgeNode forge, int streamNum,
-            StatementRawInfo statementRawInfo, StatementCompileTimeServices services)
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+            EvalForgeNode forge,
+            int streamNum,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
         {
             var filterTypes = new LinkedHashMap<string, Pair<EventType, string>>();
             filterTypes.PutAll(taggedEventTypes);
@@ -768,7 +790,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return new StreamTypeServiceImpl(filterTypes, true, false);
         }
 
-        private static int FindTagNumber(string findTag, LinkedHashSet<string> allTagNamesOrdered)
+        private static int FindTagNumber(
+            string findTag,
+            ISet<string> allTagNamesOrdered)
         {
             var index = 0;
             foreach (var tag in allTagNamesOrdered) {
@@ -783,7 +807,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         }
 
         private static IList<ExprNode> ValidateExpressions(
-            ExprNodeOrigin exprNodeOrigin, IList<ExprNode> objectParameters, ExprValidationContext validationContext)
+            ExprNodeOrigin exprNodeOrigin,
+            IList<ExprNode> objectParameters,
+            ExprValidationContext validationContext)
         {
             if (objectParameters == null) {
                 return objectParameters;
@@ -798,7 +824,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         }
 
         public static EventType ResolveTypeName(
-            string eventTypeName, EventTypeCompileTimeResolver eventTypeCompileTimeResolver)
+            string eventTypeName,
+            EventTypeCompileTimeResolver eventTypeCompileTimeResolver)
         {
             var eventType = eventTypeCompileTimeResolver.GetTypeByName(eventTypeName);
             if (eventType == null) {
@@ -833,14 +860,17 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         /// <param name="isAllowLowerZero">true to allow zero value for lower range</param>
         /// <returns>true if closed range of constants and the constants are the same value</returns>
         /// <throws>ExprValidationException validation ex</throws>
-        public static bool ValidateMatchUntil(ExprNode lowerBounds, ExprNode upperBounds, bool isAllowLowerZero)
+        public static bool ValidateMatchUntil(
+            ExprNode lowerBounds,
+            ExprNode upperBounds,
+            bool isAllowLowerZero)
         {
             var isConstants = true;
             object constantLower = null;
             var numericMessage = "Match-until bounds expect a numeric or expression value";
             if (lowerBounds != null && lowerBounds.Forge.ForgeConstantType == ExprForgeConstantType.COMPILETIMECONST) {
                 constantLower = lowerBounds.Forge.ExprEvaluator.Evaluate(null, true, null);
-                if (constantLower == null || !(constantLower.IsNumber())) {
+                if (constantLower == null || !constantLower.IsNumber()) {
                     throw new ExprValidationException(numericMessage);
                 }
             }
@@ -851,7 +881,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             object constantUpper = null;
             if (upperBounds != null && upperBounds.Forge.ForgeConstantType == ExprForgeConstantType.COMPILETIMECONST) {
                 constantUpper = upperBounds.Forge.ExprEvaluator.Evaluate(null, true, null);
-                if (constantUpper == null || !(constantUpper.IsNumber())) {
+                if (constantUpper == null || !constantUpper.IsNumber()) {
                     throw new ExprValidationException(numericMessage);
                 }
             }
@@ -864,8 +894,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             if (constantLower != null && constantUpper != null) {
-                int lower = constantLower.AsInt();
-                int upper = constantUpper.AsInt();
+                var lower = constantLower.AsInt();
+                var upper = constantUpper.AsInt();
                 if (lower > upper) {
                     throw new ExprValidationException(
                         "Incorrect range specification, lower bounds value '" + lower +
@@ -879,10 +909,12 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return constantLower != null && constantUpper != null && constantLower.Equals(constantUpper);
         }
 
-        private static void VerifyMatchUntilConstant(object value, bool isAllowZero)
+        private static void VerifyMatchUntilConstant(
+            object value,
+            bool isAllowZero)
         {
             if (value != null) {
-                int bound = value.AsInt();
+                var bound = value.AsInt();
                 if (isAllowZero) {
                     if (bound < 0) {
                         throw new ExprValidationException(

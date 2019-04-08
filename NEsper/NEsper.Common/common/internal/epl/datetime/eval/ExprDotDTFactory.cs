@@ -51,14 +51,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             else {
                 if (!(inputType is ClassEPType || inputType is NullEPType)) {
                     throw new ExprValidationException(
-                        message + " but received " + inputType.ToTypeDescriptive());
+                        message + " but received " + EPTypeHelper.ToTypeDescriptive(inputType));
                 }
 
                 if (inputType is ClassEPType) {
                     var classEPType = (ClassEPType) inputType;
                     if (!TypeHelper.IsDatetimeClass(classEPType.Clazz)) {
                         throw new ExprValidationException(
-                            message + " but received " + TypeHelper.GetClassNameFullyQualPretty(classEPType.Clazz));
+                            message + " but received " + TypeHelper.GetCleanName(classEPType.Clazz));
                     }
                 }
             }
@@ -142,8 +142,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             EPType returnType;
 
             dotForge = new ExprDotDTForge(
-                calendarForges, timeAbacus, reformatForge, intervalForge, inputType.GetClassSingleValued(),
-                inputType.GetEventTypeSingleValued());
+                calendarForges, timeAbacus, reformatForge, intervalForge,
+                EPTypeHelper.GetClassSingleValued(inputType),
+                EPTypeHelper.GetEventTypeSingleValued(inputType));
             returnType = dotForge.TypeInfo;
             return new ExprDotDTMethodDesc(dotForge, returnType, filterAnalyzerDesc);
         }

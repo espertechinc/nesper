@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 	                .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.Name()));
 
 	        // getFilterValue-FilterSpecParamExprNode code
-	        CodegenExpressionNewAnonymousClass param = NewAnonymousClass(method.Block, typeof(FilterSpecParamExprNode), Arrays.AsList(@Ref("lookupable"), @Ref("op")));
+	        CodegenExpressionNewAnonymousClass param = NewAnonymousClass(method.Block, typeof(FilterSpecParamExprNode), CompatExtensions.AsList(@Ref("lookupable"), @Ref("op")));
 	        CodegenMethod getFilterValue = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), classScope).AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
 	        param.AddMethod("getFilterValue", getFilterValue);
 

@@ -455,7 +455,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 return StaticMethod(typeof(Collections), "emptyMap");
             }
 
-            Func<StatementProperty, CodegenExpression> field = x => EnumValue(typeof(StatementProperty), x.Name());
+            Func<StatementProperty, CodegenExpression> field = x => EnumValue(typeof(StatementProperty), x.GetName());
             Func<object, CodegenExpression> value = Constant;
             if (properties.Count == 1) {
                 var first = properties.First();

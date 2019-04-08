@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -47,8 +48,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            var allStreamsZeroIndexed = {eventTypeIndexed, filterEventType};
-            var outerStreams = {filterEventType};
+            var allStreamsZeroIndexed = new EventType[]{ eventTypeIndexed, filterEventType };
+            var outerStreams = new EventType[]{ filterEventType };
             SubordPropPlan joinedPropPlan = QueryPlanIndexBuilder.GetJoinProps(
                 joinExpr, 1, allStreamsZeroIndexed, excludePlanHint);
 
@@ -116,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                         if (IsCustomIndexMatch(index, op)) {
                             EventAdvancedIndexProvisionRuntime provisionDesc =
                                 index.Value.OptionalQueryPlanIndexItem.AdvancedIndexProvisionDesc;
-                            SubordTableLookupStrategyFactoryQuadTreeForge lookupStrategyFactory =
+                            SubordTableLookupStrategyFactoryQuadTreeForge lookupStrategyFactoryX =
                                 provisionDesc.Factory.Forge.GetSubordinateLookupStrategy(
                                     op.Key.OperationName, op.Value.PositionalExpressions, isNWOnTrigger,
                                     outerStreams.Length);
@@ -128,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                             var indexDesc = new SubordinateQueryIndexDescForge(
                                 null, index.Value.OptionalIndexName, index.Value.OptionalIndexModuleName, index.Key,
                                 indexItemForge);
-                            return new SubordinateQueryPlanDescForge(lookupStrategyFactory, new[] {indexDesc});
+                            return new SubordinateQueryPlanDescForge(lookupStrategyFactoryX, new[] {indexDesc});
                         }
                     }
                 }
@@ -149,7 +150,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                     single.CoercionType);
                 var indexDesc = FindOrSuggestIndex(
                     Collections.SingletonMap(single.IndexedProp, keyInfo),
-                    Collections.EmptyMap(), optionalIndexHint, indexShare, subqueryNumber,
+                    new EmptyDictionary<string, SubordPropRangeKeyForge>(), 
+                    optionalIndexHint, indexShare, subqueryNumber,
                     indexMetadata, optionalUniqueKeyProps, onlyUseExistingIndexes, eventTypeIndexed);
                 if (indexDesc == null) {
                     return null;
@@ -170,7 +172,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                         new QueryGraphValueEntryHashKeyedForgeExpr(multi.Expression, false), null, multi.CoercionType);
                     var indexDesc = FindOrSuggestIndex(
                         Collections.SingletonMap(multi.IndexedProp[i], keyInfo),
-                        Collections.EmptyMap(), optionalIndexHint, indexShare, subqueryNumber,
+                        new EmptyDictionary<string, SubordPropRangeKeyForge>(), 
+                        optionalIndexHint, indexShare, subqueryNumber,
                         indexMetadata, optionalUniqueKeyProps, onlyUseExistingIndexes, eventTypeIndexed);
                     if (indexDesc == null) {
                         return null;
@@ -234,7 +237,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             var opExpressions = op.Key.ExprNodes;
             var opProperties = GetPropertiesPerExpressionExpectSingle(opExpressions);
             string[] indexProperties = index.Key.AdvancedIndexDesc.IndexedProperties;
-            return Arrays.Equals(indexProperties, opProperties);
+            return CompatExtensions.AreEqual(indexProperties, opProperties);
         }
 
         private static SubordinateQueryIndexDescForge FindOrSuggestIndex(
@@ -276,7 +279,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 optionalIndexHintInstructions);
             if (indexFoundPair != null) {
                 var hintIndex = indexMetadata.Indexes.Get(indexFoundPair);
-                existing = new Pair<>(
+                existing = new Pair<IndexMultiKey, NameAndModule>(
                     indexFoundPair, new NameAndModule(hintIndex.OptionalIndexName, hintIndex.OptionalIndexModuleName));
             }
 
@@ -309,7 +312,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 
                     if (newHashProps != null) {
                         proposedHashedProps = newHashProps;
-                        proposedBtreeProps = Collections.GetEmptyList<object>();
+                        proposedBtreeProps = new EmptyList<IndexedPropDesc>();
                         unique = true;
                         coerce = false;
                     }
@@ -403,7 +406,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 
             var indexItem = new QueryPlanIndexItemForge(
                 indexProps, indexCoercionTypes, rangeProps, rangeCoercionTypes, unique, null, eventTypeIndexed);
-            return new Pair<>(indexItem, indexPropKey);
+            return new Pair<QueryPlanIndexItemForge, IndexMultiKey>(indexItem, indexPropKey);
         }
     }
 } // end of namespace

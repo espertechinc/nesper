@@ -21,14 +21,19 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
         private readonly ILockable _lock;
 
         public TableLookupExecNodeTableLocking(
-            int indexedStream, JoinExecTableLookupStrategy lookupStrategy, ILockable @lock) : base(
-            indexedStream, lookupStrategy)
+            int indexedStream,
+            JoinExecTableLookupStrategy lookupStrategy,
+            ILockable @lock)
+            : base(
+                indexedStream, lookupStrategy)
         {
             _lock = @lock;
         }
 
         public override void Process(
-            EventBean lookupEvent, EventBean[] prefillPath, ICollection<EventBean[]> result,
+            EventBean lookupEvent,
+            EventBean[] prefillPath,
+            ICollection<EventBean[]> result,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             // acquire table index lock

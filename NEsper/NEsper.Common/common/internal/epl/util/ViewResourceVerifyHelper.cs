@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                 }
 
                 perStream[i] = new ViewResourceDelegateDesc(
-                    previousPerStream[i], new SortedSet<>(priorPerStream[i].Keys));
+                    previousPerStream[i], new SortedSet<int>(priorPerStream[i].Keys));
             }
 
             return perStream;
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.util
 
                 if (forge is GroupByViewFactoryForge) {
                     var group = (GroupByViewFactoryForge) forge;
-                    return FindDataWindow(group.GetGroupeds());
+                    return FindDataWindow(group.Groupeds);
                 }
             }
 

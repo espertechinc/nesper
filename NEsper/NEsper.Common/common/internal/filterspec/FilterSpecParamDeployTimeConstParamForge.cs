@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.Name()));
 
             var param = NewAnonymousClass(
-                method.Block, typeof(FilterSpecParam), Arrays.AsList(Ref("lookupable"), Ref("op")));
+                method.Block, typeof(FilterSpecParam), CompatExtensions.AsList(Ref("lookupable"), Ref("op")));
             var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
                 .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             param.AddMethod("getFilterValue", getFilterValue);

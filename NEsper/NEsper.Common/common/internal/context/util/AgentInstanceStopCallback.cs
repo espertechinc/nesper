@@ -15,6 +15,13 @@ namespace com.espertech.esper.common.@internal.context.util
         void Stop(AgentInstanceStopServices services);
     }
 
+    public class AgentInstanceStopCallbackConstants
+    {
+        public static readonly AgentInstanceStopCallback INSTANCE_NO_ACTION = new ProxyAgentInstanceStopCallback() {
+            ProcStop = _ => { }
+        };
+    }
+
     public class ProxyAgentInstanceStopCallback : AgentInstanceStopCallback
     {
         public Action<AgentInstanceStopServices> ProcStop;

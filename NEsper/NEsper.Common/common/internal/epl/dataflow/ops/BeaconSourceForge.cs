@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 {
     public class BeaconSourceForge : DataFlowOperatorForge
     {
-        private static readonly IList<string> PARAMETER_PROPERTIES = Arrays.AsList(
+        private static readonly IList<string> PARAMETER_PROPERTIES = Collections.List(
             "interval", "iterations", "initialDelay");
 
         private readonly IDictionary<string, ExprNode> allProperties = new LinkedHashMap<string, ExprNode>();
@@ -48,12 +48,6 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 
         private bool produceEventBean;
 
-        [DataFlowOpParameter(IsAll = true)]
-        public void SetProperty(string name, ExprNode value)
-        {
-            allProperties.Put(name, value);
-        }
-
         public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
         {
             iterations = DataFlowParameterValidation.Validate("iterations", iterations, typeof(object), context);
@@ -66,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                     " streams");
             }
 
-            DataFlowOpOutputPort port = context.OutputPorts[0];
+            var port = context.OutputPorts[0];
 
             // Check if a type is declared
             if (port.OptionalDeclaredType == null || port.OptionalDeclaredType.EventType == null) {
@@ -76,94 +70,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             return InitializeTypeDeclared(port, context);
         }
 
-        private DataFlowOpForgeInitializeResult InitializeTypeDeclared(
-            DataFlowOpOutputPort port, DataFlowOpForgeInitializeContext context)
-        {
-            produceEventBean = port.OptionalDeclaredType != null && !port.OptionalDeclaredType.IsUnderlying;
-
-            // compile properties to populate
-            outputEventType = port.OptionalDeclaredType.EventType;
-            ISet<string> props = allProperties.Keys;
-            props.RemoveAll(PARAMETER_PROPERTIES);
-            var writables = SetupProperties(props.ToArray(), outputEventType);
-            try {
-                eventBeanManufacturer = EventTypeUtility.GetManufacturer(
-                    outputEventType, writables, context.Services.ImportServiceCompileTime, false,
-                    context.Services.EventTypeAvroHandler);
-            }
-            catch (EventBeanManufactureException e) {
-                throw new ExprValidationException(
-                    "Cannot manufacture event for the provided type '" + outputEventType.Name + "': " + e.Message, e);
-            }
-
-            var index = 0;
-            evaluatorForges = new ExprForge[writables.Length];
-            TypeWidenerCustomizer typeWidenerCustomizer =
-                context.Services.EventTypeAvroHandler.GetTypeWidenerCustomizer(outputEventType);
-            foreach (var writable in writables) {
-                object providedProperty = allProperties.Get(writable.PropertyName);
-                var exprNode = (ExprNode) providedProperty;
-                ExprNode validated = EPLValidationUtil.ValidateSimpleGetSubtree(
-                    ExprNodeOrigin.DATAFLOWBEACON, exprNode, null, false, context.Base.StatementRawInfo,
-                    context.Services);
-                TypeWidenerSPI widener;
-                try {
-                    widener = TypeWidenerFactory.GetCheckPropertyAssignType(
-                        ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(validated),
-                        validated.Forge.EvaluationType,
-                        writable.Type, writable.PropertyName, false, typeWidenerCustomizer, context.Base.StatementName);
-                }
-                catch (TypeWidenerException e) {
-                    throw new ExprValidationException("Failed for property '" + writable.PropertyName + "'");
-                }
-
-                if (widener != null) {
-                    evaluatorForges[index] = new ExprEvalWithTypeWidener(widener, validated, writable.Type);
-                }
-                else {
-                    evaluatorForges[index] = validated.Forge;
-                }
-
-                index++;
-            }
-
-            return null;
-        }
-
-        private DataFlowOpForgeInitializeResult InitializeTypeUndeclared(DataFlowOpForgeInitializeContext context)
-        {
-            // No type has been declared, we can create one
-            IDictionary<string, object> types = new LinkedHashMap<string, object>();
-            ISet<string> props = allProperties.Keys;
-            props.RemoveAll(PARAMETER_PROPERTIES);
-
-            var count = 0;
-            evaluatorForges = new ExprForge[props.Count];
-            foreach (var propertyName in props) {
-                var exprNode = allProperties.Get(propertyName);
-                ExprNode validated = EPLValidationUtil.ValidateSimpleGetSubtree(
-                    ExprNodeOrigin.DATAFLOWBEACON, exprNode, null, false, context.StatementRawInfo, context.Services);
-                types.Put(propertyName, validated.Forge.EvaluationType);
-                evaluatorForges[count] = validated.Forge;
-                count++;
-            }
-
-            string eventTypeName =
-                context.Services.EventTypeNameGeneratorStatement.GetDataflowOperatorTypeName(context.OperatorNumber);
-            var metadata = new EventTypeMetadata(
-                eventTypeName, context.Base.ModuleName, EventTypeTypeClass.DBDERIVED,
-                EventTypeApplicationType.OBJECTARR, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
-                EventTypeIdPair.Unassigned());
-            outputEventType = BaseNestableEventUtil.MakeOATypeCompileTime(
-                metadata, types, null, null, null, null, context.Services.BeanEventTypeFactoryPrivate,
-                context.Services.EventTypeCompileTimeResolver);
-            context.Services.EventTypeCompileTimeRegistry.NewType(outputEventType);
-
-            return new DataFlowOpForgeInitializeResult(new[] {new GraphTypeDesc(false, true, outputEventType)});
-        }
-
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             return new SAIFFInitializeBuilder(
                     OP_PACKAGE_NAME + ".beaconsource.BeaconSourceFactory", GetType(), "factory", parent, symbols,
@@ -178,10 +88,109 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                 .Build();
         }
 
-        private static WriteablePropertyDescriptor[] SetupProperties(
-            string[] propertyNamesOffered, EventType outputEventType)
+        [DataFlowOpParameter(IsAll = true)]
+        public void SetProperty(
+            string name,
+            ExprNode value)
         {
-            ISet<WriteablePropertyDescriptor> writeables =
+            allProperties.Put(name, value);
+        }
+
+        private DataFlowOpForgeInitializeResult InitializeTypeDeclared(
+            DataFlowOpOutputPort port,
+            DataFlowOpForgeInitializeContext context)
+        {
+            produceEventBean = port.OptionalDeclaredType != null && !port.OptionalDeclaredType.IsUnderlying;
+
+            // compile properties to populate
+            outputEventType = port.OptionalDeclaredType.EventType;
+            var props = allProperties.Keys;
+            props.RemoveAll(PARAMETER_PROPERTIES);
+            var writables = SetupProperties(props.ToArray(), outputEventType);
+            try {
+                eventBeanManufacturer = EventTypeUtility.GetManufacturer(
+                    outputEventType, writables, context.Services.ImportServiceCompileTime, false,
+                    context.Services.EventTypeAvroHandler);
+            }
+            catch (EventBeanManufactureException e) {
+                throw new ExprValidationException(
+                    "Cannot manufacture event for the provided type '" + outputEventType.Name + "': " + e.Message, e);
+            }
+
+            var index = 0;
+            evaluatorForges = new ExprForge[writables.Length];
+            var typeWidenerCustomizer =
+                context.Services.EventTypeAvroHandler.GetTypeWidenerCustomizer(outputEventType);
+            foreach (var writable in writables) {
+                object providedProperty = allProperties.Get(writable.PropertyName);
+                var exprNode = (ExprNode) providedProperty;
+                var validated = EPLValidationUtil.ValidateSimpleGetSubtree(
+                    ExprNodeOrigin.DATAFLOWBEACON, exprNode, null, false, context.Base.StatementRawInfo,
+                    context.Services);
+                TypeWidenerSPI widener;
+                try {
+                    widener = TypeWidenerFactory.GetCheckPropertyAssignType(
+                        ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(validated),
+                        validated.Forge.EvaluationType,
+                        writable.PropertyType, 
+                        writable.PropertyName, false, 
+                        typeWidenerCustomizer, 
+                        context.Base.StatementName);
+                }
+                catch (TypeWidenerException e) {
+                    throw new ExprValidationException("Failed for property '" + writable.PropertyName + "'");
+                }
+
+                if (widener != null) {
+                    evaluatorForges[index] = new ExprEvalWithTypeWidener(widener, validated, writable.PropertyType);
+                }
+                else {
+                    evaluatorForges[index] = validated.Forge;
+                }
+
+                index++;
+            }
+
+            return null;
+        }
+
+        private DataFlowOpForgeInitializeResult InitializeTypeUndeclared(DataFlowOpForgeInitializeContext context)
+        {
+            // No type has been declared, we can create one
+            var types = new LinkedHashMap<string, object>();
+            var props = allProperties.Keys;
+            props.RemoveAll(PARAMETER_PROPERTIES);
+
+            var count = 0;
+            evaluatorForges = new ExprForge[props.Count];
+            foreach (var propertyName in props) {
+                var exprNode = allProperties.Get(propertyName);
+                var validated = EPLValidationUtil.ValidateSimpleGetSubtree(
+                    ExprNodeOrigin.DATAFLOWBEACON, exprNode, null, false, context.StatementRawInfo, context.Services);
+                types.Put(propertyName, validated.Forge.EvaluationType);
+                evaluatorForges[count] = validated.Forge;
+                count++;
+            }
+
+            var eventTypeName =
+                context.Services.EventTypeNameGeneratorStatement.GetDataflowOperatorTypeName(context.OperatorNumber);
+            var metadata = new EventTypeMetadata(
+                eventTypeName, context.Base.ModuleName, EventTypeTypeClass.DBDERIVED,
+                EventTypeApplicationType.OBJECTARR, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
+                EventTypeIdPair.Unassigned());
+            outputEventType = BaseNestableEventUtil.MakeOATypeCompileTime(
+                metadata, types, null, null, null, null, context.Services.BeanEventTypeFactoryPrivate,
+                context.Services.EventTypeCompileTimeResolver);
+            context.Services.EventTypeCompileTimeRegistry.NewType(outputEventType);
+
+            return new DataFlowOpForgeInitializeResult(new[] {new GraphTypeDesc(false, true, outputEventType)});
+        }
+
+        private static WriteablePropertyDescriptor[] SetupProperties(
+            string[] propertyNamesOffered,
+            EventType outputEventType)
+        {
+            var writeables =
                 EventTypeUtility.GetWriteableProperties(outputEventType, false);
 
             IList<WriteablePropertyDescriptor> writablesList = new List<WriteablePropertyDescriptor>();

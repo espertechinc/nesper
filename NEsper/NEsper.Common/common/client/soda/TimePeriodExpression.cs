@@ -329,63 +329,63 @@ namespace com.espertech.esper.common.client.soda
 	        string delimiter = "";
 	        int countExpr = 0;
 	        if (hasYears) {
-	            this.Children.Get(countExpr).ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+	            this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 	            writer.Write(" years");
 	            delimiter = " ";
 	            countExpr++;
 	        }
 	        if (hasMonths) {
 	            writer.Write(delimiter);
-	            this.Children.Get(countExpr).ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+	            this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 	            writer.Write(" months");
 	            delimiter = " ";
 	            countExpr++;
 	        }
 	        if (hasWeeks) {
 	            writer.Write(delimiter);
-	            this.Children.Get(countExpr).ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+	            this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 	            writer.Write(" weeks");
 	            delimiter = " ";
 	            countExpr++;
 	        }
 	        if (hasDays) {
 	            writer.Write(delimiter);
-	            this.Children.Get(countExpr).ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+	            this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 	            writer.Write(" days");
 	            delimiter = " ";
 	            countExpr++;
 	        }
 	        if (hasHours) {
 	            writer.Write(delimiter);
-	            this.Children.Get(countExpr).ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+	            this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 	            writer.Write(" hours");
 	            delimiter = " ";
 	            countExpr++;
 	        }
 	        if (hasMinutes) {
 	            writer.Write(delimiter);
-	            this.Children.Get(countExpr).ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+	            this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 	            writer.Write(" minutes");
 	            delimiter = " ";
 	            countExpr++;
 	        }
 	        if (hasSeconds) {
 	            writer.Write(delimiter);
-	            this.Children.Get(countExpr).ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+	            this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 	            writer.Write(" seconds");
 	            delimiter = " ";
 	            countExpr++;
 	        }
 	        if (hasMilliseconds) {
 	            writer.Write(delimiter);
-	            this.Children.Get(countExpr).ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+	            this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 	            writer.Write(" milliseconds");
 	            delimiter = " ";
 	            countExpr++;
 	        }
 	        if (hasMicroseconds) {
 	            writer.Write(delimiter);
-	            this.Children.Get(countExpr).ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+	            this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 	            writer.Write(" microseconds");
 	        }
 	    }

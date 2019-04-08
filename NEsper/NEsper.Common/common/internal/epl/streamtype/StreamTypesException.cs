@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.collection;
 
 namespace com.espertech.esper.common.@internal.epl.streamtype
@@ -17,19 +16,18 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
     {
         private readonly StreamTypesExceptionSuggestionGen _optionalSuggestionGenerator;
 
-        public StreamTypesException(string message, StreamTypesExceptionSuggestionGen optionalSuggestionGenerator)
+        public StreamTypesException(
+            string message,
+            StreamTypesExceptionSuggestionGen optionalSuggestionGenerator)
             : base(message)
         {
             _optionalSuggestionGenerator = optionalSuggestionGenerator;
         }
 
         /// <summary>
-        /// Returns the optional suggestion for a matching name.
+        ///     Returns the optional suggestion for a matching name.
         /// </summary>
         /// <value>suggested match</value>
-        public Pair<int, string> OptionalSuggestion
-        {
-            get { return _optionalSuggestionGenerator != null ? _optionalSuggestionGenerator.Invoke() : null; }
-        }
+        public Pair<int, string> OptionalSuggestion => _optionalSuggestionGenerator != null ? _optionalSuggestionGenerator.Invoke() : null;
     }
 } // end of namespace

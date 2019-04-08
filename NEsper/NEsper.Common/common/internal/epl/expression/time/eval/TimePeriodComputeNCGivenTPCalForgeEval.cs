@@ -7,114 +7,133 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.expression.time.adder;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.time.eval
 {
-	public class TimePeriodComputeNCGivenTPCalForgeEval : TimePeriodCompute {
-	    private ExprEvaluator[] evaluators;
-	    private TimePeriodAdder[] adders;
-	    private TimeAbacus timeAbacus;
-	    private TimeZone timeZone;
-	    private int indexMicroseconds;
+    public class TimePeriodComputeNCGivenTPCalForgeEval : TimePeriodCompute
+    {
+        public TimePeriodComputeNCGivenTPCalForgeEval()
+        {
+        }
 
-	    public TimePeriodComputeNCGivenTPCalForgeEval() {
-	    }
+        public TimePeriodComputeNCGivenTPCalForgeEval(
+            ExprEvaluator[] evaluators,
+            TimePeriodAdder[] adders,
+            TimeAbacus timeAbacus,
+            TimeZoneInfo timeZone,
+            int indexMicroseconds)
+        {
+            Evaluators = evaluators;
+            Adders = adders;
+            TimeAbacus = timeAbacus;
+            TimeZone = timeZone;
+            IndexMicroseconds = indexMicroseconds;
+        }
 
-	    public TimePeriodComputeNCGivenTPCalForgeEval(ExprEvaluator[] evaluators, TimePeriodAdder[] adders, TimeAbacus timeAbacus, TimeZone timeZone, int indexMicroseconds) {
-	        this.evaluators = evaluators;
-	        this.adders = adders;
-	        this.timeAbacus = timeAbacus;
-	        this.timeZone = timeZone;
-	        this.indexMicroseconds = indexMicroseconds;
-	    }
+        public ExprEvaluator[] Evaluators { get; set; }
 
-	    public void SetEvaluators(ExprEvaluator[] evaluators) {
-	        this.evaluators = evaluators;
-	    }
+        public TimePeriodAdder[] Adders { get; set; }
 
-	    public void SetAdders(TimePeriodAdder[] adders) {
-	        this.adders = adders;
-	    }
+        public TimeAbacus TimeAbacus { get; set; }
 
-	    public void SetTimeAbacus(TimeAbacus timeAbacus) {
-	        this.timeAbacus = timeAbacus;
-	    }
+        public TimeZoneInfo TimeZone { get; set; }
 
-	    public void SetTimeZone(TimeZone timeZone) {
-	        this.timeZone = timeZone;
-	    }
+        public int IndexMicroseconds { get; set; }
 
-	    public void SetIndexMicroseconds(int indexMicroseconds) {
-	        this.indexMicroseconds = indexMicroseconds;
-	    }
+        public long DeltaAdd(
+            long currentTime,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return AddSubtract(currentTime, 1, eventsPerStream, isNewData, context);
+        }
 
-	    public long DeltaAdd(long currentTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        return AddSubtract(currentTime, 1, eventsPerStream, isNewData, context);
-	    }
+        public long DeltaSubtract(
+            long currentTime,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return AddSubtract(currentTime, -1, eventsPerStream, isNewData, context);
+        }
 
-	    public long DeltaSubtract(long currentTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        return AddSubtract(currentTime, -1, eventsPerStream, isNewData, context);
-	    }
+        public long DeltaUseRuntimeTime(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext,
+            TimeProvider timeProvider)
+        {
+            var currentTime = timeProvider.Time;
+            return AddSubtract(currentTime, 1, eventsPerStream, true, exprEvaluatorContext);
+        }
 
-	    public long DeltaUseRuntimeTime(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, TimeProvider timeProvider) {
-	        long currentTime = timeProvider.Time;
-	        return AddSubtract(currentTime, 1, eventsPerStream, true, exprEvaluatorContext);
-	    }
+        public TimePeriodDeltaResult DeltaAddWReference(
+            long current,
+            long reference,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            // find the next-nearest reference higher then the current time, compute delta, return reference one lower
+            if (reference > current) {
+                while (reference > current) {
+                    reference -= DeltaSubtract(reference, eventsPerStream, isNewData, context);
+                }
+            }
 
-	    public TimePeriodDeltaResult DeltaAddWReference(long current, long reference, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        // find the next-nearest reference higher then the current time, compute delta, return reference one lower
-	        if (reference > current) {
-	            while (reference > current) {
-	                reference = reference - DeltaSubtract(reference, eventsPerStream, isNewData, context);
-	            }
-	        }
+            var next = reference;
+            long last;
+            do {
+                last = next;
+                next += DeltaAdd(last, eventsPerStream, isNewData, context);
+            } while (next <= current);
 
-	        long next = reference;
-	        long last;
-	        do {
-	            last = next;
-	            next = next + DeltaAdd(last, eventsPerStream, isNewData, context);
-	        }
-	        while (next <= current);
-	        return new TimePeriodDeltaResult(next - current, last);
-	    }
+            return new TimePeriodDeltaResult(next - current, last);
+        }
 
-	    public TimePeriodProvide GetNonVariableProvide(ExprEvaluatorContext context) {
-	        int[] added = new int[evaluators.Length];
-	        for (int i = 0; i < evaluators.Length; i++) {
-	            added[i] = (evaluators[i].Evaluate(null, true, context)).AsInt();
-	        }
-	        return new TimePeriodComputeConstGivenCalAddEval(adders, added, timeAbacus, indexMicroseconds, timeZone);
-	    }
+        public TimePeriodProvide GetNonVariableProvide(ExprEvaluatorContext context)
+        {
+            var added = new int[Evaluators.Length];
+            for (var i = 0; i < Evaluators.Length; i++) {
+                added[i] = Evaluators[i].Evaluate(null, true, context).AsInt();
+            }
 
-	    private long AddSubtract(long currentTime, int factor, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext context) {
-	        Calendar cal = Calendar.GetInstance(timeZone);
-	        long remainder = timeAbacus.DateTimeSet(currentTime, cal);
+            return new TimePeriodComputeConstGivenCalAddEval(Adders, added, TimeAbacus, IndexMicroseconds, TimeZone);
+        }
 
-	        int usec = 0;
-	        for (int i = 0; i < adders.Length; i++) {
-	            int value = (evaluators[i].Evaluate(eventsPerStream, newData, context)).AsInt();
-	            if (i == indexMicroseconds) {
-	                usec = value;
-	            } else {
-	                adders[i].Add(cal, factor * value);
-	            }
-	        }
+        private long AddSubtract(
+            long currentTime,
+            int factor,
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext context)
+        {
+            var cal = DateTimeEx.GetInstance(TimeZone);
+            var remainder = TimeAbacus.DateTimeSet(currentTime, cal);
 
-	        long result = timeAbacus.DateTimeGet(cal, remainder);
-	        if (indexMicroseconds != -1) {
-	            result += factor * usec;
-	        }
-	        return result - currentTime;
-	    }
-	}
+            var usec = 0;
+            for (var i = 0; i < Adders.Length; i++) {
+                var value = Evaluators[i].Evaluate(eventsPerStream, newData, context).AsInt();
+                if (i == IndexMicroseconds) {
+                    usec = value;
+                }
+                else {
+                    Adders[i].Add(cal, factor * value);
+                }
+            }
+
+            var result = TimeAbacus.DateTimeGet(cal, remainder);
+            if (IndexMicroseconds != -1) {
+                result += factor * usec;
+            }
+
+            return result - currentTime;
+        }
+    }
 } // end of namespace

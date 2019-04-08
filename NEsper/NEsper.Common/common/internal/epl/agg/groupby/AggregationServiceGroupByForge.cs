@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -14,11 +13,13 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
-
+using com.espertech.esper.common.@internal.serde;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.epl.agg.core.AggregationServiceCodegenNames;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 using static com.espertech.esper.common.@internal.metrics.instrumentation.InstrumentationCode;
@@ -41,16 +42,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         protected internal CodegenExpression reclaimAge;
         protected internal CodegenExpression reclaimFreq;
 
-        public AggregationServiceGroupByForge(AggGroupByDesc aggGroupByDesc, TimeAbacus timeAbacus)
+        public AggregationServiceGroupByForge(
+            AggGroupByDesc aggGroupByDesc,
+            TimeAbacus timeAbacus)
         {
             this.aggGroupByDesc = aggGroupByDesc;
             this.timeAbacus = timeAbacus;
         }
 
+        private bool HasRefCounting => aggGroupByDesc.IsRefcounted || aggGroupByDesc.IsReclaimAged;
+
         public void ProviderCodegen(
-            CodegenMethod method, CodegenClassScope classScope, AggregationClassNames classNames)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            AggregationClassNames classNames)
         {
-            Type[] groupByTypes = ExprNodeUtilityQuery.GetExprResultTypes(aggGroupByDesc.GroupByNodes);
+            var groupByTypes = ExprNodeUtilityQuery.GetExprResultTypes(aggGroupByDesc.GroupByNodes);
 
             if (aggGroupByDesc.IsReclaimAged) {
                 reclaimAge = aggGroupByDesc.ReclaimEvaluationFunctionMaxAge.Make(classScope);
@@ -66,16 +73,23 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 .DeclareVar(
                     typeof(AggregationRowFactory), "rowFactory", NewInstance(classNames.RowFactoryTop, Ref("this")))
                 .DeclareVar(
-                    typeof(DataInputOutputSerdeWCollation), "rowSerde",
+                    typeof(DataInputOutputSerdeWCollation<object>), "rowSerde",
                     NewInstance(classNames.RowSerdeTop, Ref("this")))
                 .DeclareVar(
                     typeof(AggregationServiceFactory), "svcFactory",
                     NewInstance(classNames.ServiceFactory, Ref("this")))
                 .MethodReturn(
-                    ExprDotMethodChain(EPStatementInitServicesConstants.REF).Add(GETAGGREGATIONSERVICEFACTORYSERVICE).Add(
-                        "groupBy", Ref("svcFactory"), Ref("rowFactory"),
-                        aggGroupByDesc.RowStateForgeDescs.UseFlags.ToExpression(),
-                        Ref("rowSerde"), Constant(groupByTypes), reclaimAge, reclaimFreq, timeAbacus));
+                    ExprDotMethodChain(EPStatementInitServicesConstants.REF)
+                        .Add(EPStatementInitServicesConstants.GETAGGREGATIONSERVICEFACTORYSERVICE)
+                        .Add("groupBy", 
+                            Ref("svcFactory"), 
+                            Ref("rowFactory"),
+                            aggGroupByDesc.RowStateForgeDescs.UseFlags.ToExpression(),
+                            Ref("rowSerde"),
+                            Constant(groupByTypes), 
+                            reclaimAge, 
+                            reclaimFreq, 
+                            timeAbacus));
         }
 
         public void RowCtorCodegen(AggregationRowCtorDesc rowCtorDesc)
@@ -84,7 +98,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 HasRefCounting, aggGroupByDesc.IsReclaimAged, rowCtorDesc);
         }
 
-        public void RowWriteMethodCodegen(CodegenMethod method, int level)
+        public void RowWriteMethodCodegen(
+            CodegenMethod method,
+            int level)
         {
             if (HasRefCounting) {
                 method.Block.ExprDotMethod(Ref("output"), "writeInt", Ref("row.refcount"));
@@ -95,7 +111,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             }
         }
 
-        public void RowReadMethodCodegen(CodegenMethod method, int level)
+        public void RowReadMethodCodegen(
+            CodegenMethod method,
+            int level)
         {
             if (HasRefCounting) {
                 method.Block.AssignRef("row.refcount", ExprDotMethod(Ref("input"), "readInt"));
@@ -107,13 +125,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         }
 
         public void MakeServiceCodegen(
-            CodegenMethod method, CodegenClassScope classScope, AggregationClassNames classNames)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            AggregationClassNames classNames)
         {
             method.Block.MethodReturn(NewInstance(classNames.Service, Ref("o"), REF_AGENTINSTANCECONTEXT));
         }
 
         public void CtorCodegen(
-            CodegenCtor ctor, IList<CodegenTypedParam> explicitMembers, CodegenClassScope classScope,
+            CodegenCtor ctor,
+            IList<CodegenTypedParam> explicitMembers,
+            CodegenClassScope classScope,
             AggregationClassNames classNames)
         {
             ctor.CtorParams.Add(new CodegenTypedParam(typeof(AgentInstanceContext), NAME_AGENTINSTANCECONTEXT));
@@ -133,43 +155,53 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         }
 
         public void GetValueCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             method.Block.MethodReturn(
                 ExprDotMethod(
-                    REF_CURRENTROW, "getValue", AggregationServiceCodegenNames.REF_COLUMN, REF_EPS, REF_ISNEWDATA,
+                    REF_CURRENTROW, "getValue", REF_COLUMN, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA,
                     REF_EXPREVALCONTEXT));
         }
 
         public void GetEventBeanCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             method.Block.MethodReturn(
                 ExprDotMethod(
-                    REF_CURRENTROW, "getEventBean", AggregationServiceCodegenNames.REF_COLUMN, REF_EPS, REF_ISNEWDATA,
+                    REF_CURRENTROW, "getEventBean", REF_COLUMN, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA,
                     REF_EXPREVALCONTEXT));
         }
 
         public void GetCollectionScalarCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             method.Block.MethodReturn(
                 ExprDotMethod(
-                    REF_CURRENTROW, "getCollectionScalar", AggregationServiceCodegenNames.REF_COLUMN, REF_EPS,
-                    REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+                    REF_CURRENTROW, "getCollectionScalar", REF_COLUMN, REF_EPS,
+                    ExprForgeCodegenNames.REF_ISNEWDATA, REF_EXPREVALCONTEXT));
         }
 
         public void GetCollectionOfEventsCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
         {
             method.Block.MethodReturn(
                 ExprDotMethod(
-                    REF_CURRENTROW, "getCollectionOfEvents", AggregationServiceCodegenNames.REF_COLUMN, REF_EPS,
-                    REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+                    REF_CURRENTROW, "getCollectionOfEvents", REF_COLUMN, REF_EPS,
+                    ExprForgeCodegenNames.REF_ISNEWDATA, REF_EXPREVALCONTEXT));
         }
 
         public void ApplyEnterCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods,
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods,
             AggregationClassNames classNames)
         {
             method.Block
@@ -205,7 +237,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         }
 
         public void ApplyLeaveCodegen(
-            CodegenMethod method, CodegenClassScope classScope, CodegenNamedMethods namedMethods,
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods,
             AggregationClassNames classNames)
         {
             method.Block
@@ -240,7 +274,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             method.Block.Apply(Instblock(classScope, "aAggregationGroupedApplyEnterLeave", ConstantFalse()));
         }
 
-        public void StopMethodCodegen(AggregationServiceFactoryForgeWMethodGen forge, CodegenMethod method)
+        public void StopMethodCodegen(
+            AggregationServiceFactoryForgeWMethodGen forge,
+            CodegenMethod method)
         {
             // no code
         }
@@ -248,12 +284,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         public void SetRemovedCallbackCodegen(CodegenMethod method)
         {
             if (aggGroupByDesc.IsReclaimAged) {
-                method.Block.AssignRef("removedCallback", AggregationServiceCodegenNames.REF_CALLBACK);
+                method.Block.AssignRef("removedCallback", REF_CALLBACK);
             }
         }
 
         public void SetCurrentAccessCodegen(
-            CodegenMethod method, CodegenClassScope classScope, AggregationClassNames classNames)
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            AggregationClassNames classNames)
         {
             method.Block.AssignRef(REF_CURRENTGROUPKEY, REF_GROUPKEY)
                 .AssignRef(
@@ -263,7 +301,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop));
         }
 
-        public void ClearResultsCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void ClearResultsCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(REF_AGGREGATORSPERGROUP, "clear");
         }
@@ -271,14 +311,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         public AggregationCodegenRowLevelDesc RowLevelDesc =>
             AggregationCodegenRowLevelDesc.FromTopOnly(aggGroupByDesc.RowStateForgeDescs);
 
-        public void AcceptCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void AcceptCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(
                 REF_AGGVISITOR, "visitAggregations", ExprDotMethod(REF_AGGREGATORSPERGROUP, "size"),
                 REF_AGGREGATORSPERGROUP);
         }
 
-        public void GetGroupKeysCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void GetGroupKeysCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             if (aggGroupByDesc.IsRefcounted) {
                 method.Block.LocalMethod(HandleRemovedKeysCodegen(method, classScope));
@@ -287,12 +331,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             method.Block.MethodReturn(ExprDotMethod(REF_AGGREGATORSPERGROUP, "keySet"));
         }
 
-        public void GetGroupKeyCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void GetGroupKeyCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.MethodReturn(REF_CURRENTGROUPKEY);
         }
 
-        public void AcceptGroupDetailCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void AcceptGroupDetailCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(REF_AGGVISITOR, "visitGrouped", ExprDotMethod(REF_AGGREGATORSPERGROUP, "size"))
                 .ForEach(typeof(KeyValuePair<object, object>), "entry", ExprDotMethod(REF_AGGREGATORSPERGROUP, "entrySet"))
@@ -301,16 +349,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                     ExprDotMethod(Ref("entry"), "getValue"));
         }
 
-        public void IsGroupedCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public void IsGroupedCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.MethodReturn(ConstantTrue());
         }
 
-        private bool HasRefCounting {
-            get { return aggGroupByDesc.IsRefcounted || aggGroupByDesc.IsReclaimAged; }
-        }
-
-        private CodegenMethod HandleRemovedKeysCodegen(CodegenMethod scope, CodegenClassScope classScope)
+        private CodegenMethod HandleRemovedKeysCodegen(
+            CodegenMethod scope,
+            CodegenClassScope classScope)
         {
             var method = scope.MakeChild(typeof(void), typeof(AggregationServiceGroupByForge), classScope);
             method.Block.IfCondition(Not(ExprDotMethod(REF_REMOVEDKEYS, "isEmpty")))
@@ -321,4 +369,4 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             return method;
         }
     }
-} // end of namespace
+} // end of namespaceiceGroupBy

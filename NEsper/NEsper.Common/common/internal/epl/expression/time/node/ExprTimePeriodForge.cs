@@ -163,7 +163,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
                 Type evaluationType = forge.EvaluationType;
                 block.AssignRef(
                     "result",
-                    SimpleNumberCoercerFactory.SimpleNumberCoercerDouble.CodegenDoubleMayNullBoxedIncludeBig(
+                    SimpleNumberCoercerFactory.CoercerDouble.CodegenDoubleMayNullBoxedIncludeBig(
                         forge.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope),
                         evaluationType, methodNode, codegenClassScope));
                 block.IfRefNull("result").BlockThrow(
@@ -318,7 +318,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             var evaluationType = forge.EvaluationType;
             block.DeclareVar(
                 typeof(int?), variable,
-                SimpleNumberCoercerFactory.SimpleNumberCoercerInt.CoerceCodegenMayNull(
+                SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
                     forge.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope),
                     forge.EvaluationType, codegenMethodScope, codegenClassScope));
             return 1;

@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             }
         }
 
-        public override IDictionary<object, object> Index => index;
+        public override IDictionary<object, CompositeIndexEntry> Index => index;
 
         public override void Add(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
         {

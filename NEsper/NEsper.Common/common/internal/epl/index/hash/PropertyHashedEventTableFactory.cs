@@ -10,6 +10,7 @@ using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.index.hash
 {
@@ -22,7 +23,10 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         internal readonly bool Unique;
 
         public PropertyHashedEventTableFactory(
-            int streamNum, string[] propertyNames, bool unique, string optionalIndexName,
+            int streamNum,
+            string[] propertyNames,
+            bool unique,
+            string optionalIndexName,
             EventPropertyValueGetter propertyGetter)
         {
             StreamNum = streamNum;
@@ -39,7 +43,9 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         public EventTableOrganization Organization => new EventTableOrganization(
             OptionalIndexName, Unique, false, StreamNum, PropertyNames, EventTableOrganizationType.HASH);
 
-        public EventTable[] MakeEventTables(AgentInstanceContext agentInstanceContext, int? subqueryNumber)
+        public EventTable[] MakeEventTables(
+            AgentInstanceContext agentInstanceContext,
+            int? subqueryNumber)
         {
             if (Unique) {
                 return new EventTable[] {new PropertyHashedEventTableUnique(this)};
@@ -53,13 +59,9 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             return GetType().Name +
                    (Unique ? " unique" : " non-unique") +
                    " streamNum=" + StreamNum +
-                   " propertyNames=" + Arrays.AsList(PropertyNames);
+                   " propertyNames=" + CompatExtensions.AsList(PropertyNames);
         }
 
-        public Type EventTableClass {
-            get {
-                return Unique ? typeof(PropertyHashedEventTableUnique) : typeof(PropertyHashedEventTableUnadorned);
-            }
-        }
+        public Type EventTableClass => Unique ? typeof(PropertyHashedEventTableUnique) : typeof(PropertyHashedEventTableUnadorned);
     }
 } // end of namespace

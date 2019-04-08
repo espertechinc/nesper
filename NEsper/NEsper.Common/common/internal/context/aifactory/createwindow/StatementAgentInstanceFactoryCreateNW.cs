@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 var namedWindow = agentInstanceContext.NamedWindowManagementService.GetNamedWindow(
                     agentInstanceContext.DeploymentId, namedWindowName);
                 if (namedWindow == null) {
-                    throw new RuntimeException("Failed to obtain named window '" + namedWindowName + "'");
+                    throw new EPRuntimeException("Failed to obtain named window '" + namedWindowName + "'");
                 }
 
                 // Allocate processor instance

@@ -19,6 +19,8 @@ using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading.locks;
 
@@ -55,7 +57,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// </summary>
         public static bool isAuditEnabled = false;
 
-        private static readonly ILockable _lock = new MonitorLock();
+        private static readonly ILockable _lock = new MonitorLock(60000);
 
         public static bool IsInfoEnabled => AUDIT_LOG_DESTINATION.IsInfoEnabled || auditCallback != null;
 
@@ -71,7 +73,9 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// </summary>
         /// <param name="theEvent">event</param>
         /// <param name="exprEvaluatorContext">ctx</param>
-        public static void AuditInsert(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
+        public static void AuditInsert(
+            EventBean theEvent,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             AuditLog(exprEvaluatorContext, AuditEnum.INSERT, EventBeanSummarizer.Summarize(theEvent));
         }
@@ -84,7 +88,10 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// <param name="context">context</param>
         /// <param name="viewFactory">view factory</param>
         public static void AuditView(
-            EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext context, ViewFactory viewFactory)
+            EventBean[] newData,
+            EventBean[] oldData,
+            ExprEvaluatorContext context,
+            ViewFactory viewFactory)
         {
             if (IsInfoEnabled) {
                 AuditLog(
@@ -100,7 +107,10 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// <param name="event">event</param>
         /// <param name="context">context</param>
         /// <param name="filterText">text for filter</param>
-        public static void AuditStream(EventBean @event, ExprEvaluatorContext context, string filterText)
+        public static void AuditStream(
+            EventBean @event,
+            ExprEvaluatorContext context,
+            string filterText)
         {
             if (IsInfoEnabled) {
                 var eventText = EventBeanSummarizer.Summarize(@event);
@@ -116,7 +126,10 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// <param name="context">context</param>
         /// <param name="filterText">text for filter</param>
         public static void AuditStream(
-            EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext context, string filterText)
+            EventBean[] newData,
+            EventBean[] oldData,
+            ExprEvaluatorContext context,
+            string filterText)
         {
             if (IsInfoEnabled) {
                 var inserted = EventBeanSummarizer.Summarize(newData);
@@ -134,8 +147,11 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// <param name="name">name</param>
         /// <param name="objectType">object type</param>
         public static void AuditScheduleAdd(
-            long nextScheduledTime, AgentInstanceContext agentInstanceContext, ScheduleHandle scheduleHandle,
-            ScheduleObjectType objectType, string name)
+            long nextScheduledTime,
+            AgentInstanceContext agentInstanceContext,
+            ScheduleHandle scheduleHandle,
+            ScheduleObjectType objectType,
+            string name)
         {
             if (IsInfoEnabled) {
                 var message = new StringWriter();
@@ -154,7 +170,9 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// <param name="name">name</param>
         /// <param name="objectType">object type</param>
         public static void AuditScheduleRemove(
-            AgentInstanceContext agentInstanceContext, ScheduleHandle scheduleHandle, ScheduleObjectType objectType,
+            AgentInstanceContext agentInstanceContext,
+            ScheduleHandle scheduleHandle,
+            ScheduleObjectType objectType,
             string name)
         {
             if (IsInfoEnabled) {
@@ -172,7 +190,9 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// <param name="objectType">object type</param>
         /// <param name="name">name</param>
         public static void AuditScheduleFire(
-            AgentInstanceContext agentInstanceContext, ScheduleObjectType objectType, string name)
+            AgentInstanceContext agentInstanceContext,
+            ScheduleObjectType objectType,
+            string name)
         {
             if (IsInfoEnabled) {
                 var message = new StringWriter();
@@ -188,7 +208,10 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// <param name="name">name</param>
         /// <param name="value">value</param>
         /// <param name="exprEvaluatorContext">ctx</param>
-        public static void AuditProperty(string name, object value, ExprEvaluatorContext exprEvaluatorContext)
+        public static void AuditProperty(
+            string name,
+            object value,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (IsInfoEnabled) {
                 var message = new StringWriter();
@@ -205,7 +228,10 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// <param name="text">name</param>
         /// <param name="value">value</param>
         /// <param name="exprEvaluatorContext">ctx</param>
-        public static void AuditExpression(string text, object value, ExprEvaluatorContext exprEvaluatorContext)
+        public static void AuditExpression(
+            string text,
+            object value,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (IsInfoEnabled) {
                 var message = new StringWriter();
@@ -225,7 +251,10 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// <param name="isQuitted">quitted-flag</param>
         /// <param name="agentInstanceContext">ctx</param>
         public static void AuditPatternTrue(
-            EvalFactoryNode factoryNode, object from, MatchedEventMapMinimal matchEvent, bool isQuitted,
+            EvalFactoryNode factoryNode,
+            object from,
+            MatchedEventMapMinimal matchEvent,
+            bool isQuitted,
             AgentInstanceContext agentInstanceContext)
         {
             if (IsInfoEnabled) {
@@ -241,7 +270,9 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// <param name="from">from</param>
         /// <param name="agentInstanceContext">ctx</param>
         public static void AuditPatternFalse(
-            EvalFactoryNode factoryNode, object from, AgentInstanceContext agentInstanceContext)
+            EvalFactoryNode factoryNode,
+            object from,
+            AgentInstanceContext agentInstanceContext)
         {
             if (IsInfoEnabled) {
                 var message = PatternToStringEvaluateFalse(factoryNode, from);
@@ -255,7 +286,10 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// <param name="name">name</param>
         /// <param name="value">value</param>
         /// <param name="exprEvaluatorContext">ctx</param>
-        public static void AuditExprDef(string name, object value, ExprEvaluatorContext exprEvaluatorContext)
+        public static void AuditExprDef(
+            string name,
+            object value,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (IsInfoEnabled) {
                 var message = new StringWriter();
@@ -273,12 +307,14 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// <param name="factoryNode">factory</param>
         /// <param name="agentInstanceContext">ctx</param>
         public static void AuditPatternInstance(
-            bool increase, EvalFactoryNode factoryNode, AgentInstanceContext agentInstanceContext)
+            bool increase,
+            EvalFactoryNode factoryNode,
+            AgentInstanceContext agentInstanceContext)
         {
             using (_lock.Acquire()) {
                 if (IsInfoEnabled) {
                     if (patternInstanceCounts == null) {
-                        patternInstanceCounts = new LRUCache<>(100);
+                        patternInstanceCounts = new LRUCache<AuditPatternInstanceKey, int>(100);
                     }
 
                     var key = new AuditPatternInstanceKey(
@@ -290,7 +326,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
                         count = increase ? 1 : 0;
                     }
                     else {
-                        count = existing + (increase ? 1 : -1);
+                        count = existing.Value + (increase ? 1 : -1);
                     }
 
                     var writer = new StringWriter();
@@ -318,16 +354,19 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// <param name="newState">new state</param>
         /// <param name="agentInstanceContext">ctx</param>
         public static void AuditDataflowTransition(
-            string dataflowName, string dataFlowInstanceId, EPDataFlowState state, EPDataFlowState newState,
+            string dataflowName,
+            string dataFlowInstanceId,
+            EPDataFlowState? state,
+            EPDataFlowState newState,
             AgentInstanceContext agentInstanceContext)
         {
             if (IsInfoEnabled) {
                 var message = new StringWriter();
                 WriteDataflow(message, dataflowName, dataFlowInstanceId);
                 message.Write(" from state ");
-                message.Write(state == null ? "(none)" : state.Name());
-                message.Write(" to state ")
-                    .Write(newState.ToString());
+                message.Write(state == null ? "(none)" : state.GetName());
+                message.Write(" to state ");
+                message.Write(newState.ToString());
                 AuditLog(agentInstanceContext, AuditEnum.DATAFLOW_TRANSITION, message.ToString());
             }
         }
@@ -341,7 +380,10 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// <param name="operatorNumber">num of op</param>
         /// <param name="agentInstanceContext">ctx</param>
         public static void AuditDataflowSource(
-            string dataflowName, string dataFlowInstanceId, string operatorName, int operatorNumber,
+            string dataflowName,
+            string dataFlowInstanceId,
+            string operatorName,
+            int operatorNumber,
             AgentInstanceContext agentInstanceContext)
         {
             if (IsInfoEnabled) {
@@ -363,7 +405,11 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// <param name="agentInstanceContext">ctx</param>
         /// <param name="params">params</param>
         public static void AuditDataflowOp(
-            string dataflowName, string dataFlowInstanceId, string operatorName, int operatorNumber, object[] @params,
+            string dataflowName,
+            string dataFlowInstanceId,
+            string operatorName,
+            int operatorNumber,
+            object[] @params,
             AgentInstanceContext agentInstanceContext)
         {
             if (IsInfoEnabled) {
@@ -371,7 +417,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
                 WriteDataflow(message, dataflowName, dataFlowInstanceId);
                 WriteDataflowOp(message, operatorName, operatorNumber);
                 message.Write(" parameters ");
-                message.Write(CompatExtensions.RenderAny(@params));
+                message.Write(@params.RenderAny());
                 AuditLog(agentInstanceContext, AuditEnum.DATAFLOW_OP, message.ToString());
             }
         }
@@ -381,7 +427,9 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// </summary>
         /// <param name="allocate">allocate</param>
         /// <param name="agentInstanceContext">ctx</param>
-        public static void AuditContextPartition(bool allocate, AgentInstanceContext agentInstanceContext)
+        public static void AuditContextPartition(
+            bool allocate,
+            AgentInstanceContext agentInstanceContext)
         {
             if (IsInfoEnabled) {
                 var writer = new StringWriter();
@@ -392,7 +440,10 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             }
         }
 
-        private static void AuditLog(ExprEvaluatorContext ctx, AuditEnum category, string message)
+        private static void AuditLog(
+            ExprEvaluatorContext ctx,
+            AuditEnum category,
+            string message)
         {
             if (AuditPattern == null) {
                 var text = AuditContext.DefaultFormat(ctx.StatementName, ctx.AgentInstanceId, category, message);
@@ -410,23 +461,29 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             }
 
             if (auditCallback != null) {
-                auditCallback.Audit(
+                auditCallback.Invoke(
                     new AuditContext(
                         ctx.RuntimeURI, ctx.DeploymentId, ctx.StatementName, ctx.AgentInstanceId, category, message));
             }
         }
 
-        private static void PrintScheduleObjectType(TextWriter message, ScheduleObjectType objectType, string name)
+        private static void PrintScheduleObjectType(
+            TextWriter message,
+            ScheduleObjectType objectType,
+            string name)
         {
             message.Write(" ");
-            message.Write(objectType.Name());
+            message.Write(EnumHelper.GetName(objectType));
             message.Write(" '");
             message.Write(name);
             message.Write("'");
         }
 
         private static void PrintScheduleObjectType(
-            TextWriter message, ScheduleObjectType objectType, string name, ScheduleHandle scheduleHandle)
+            TextWriter message,
+            ScheduleObjectType objectType,
+            string name,
+            ScheduleHandle scheduleHandle)
         {
             PrintScheduleObjectType(message, objectType, name);
             message.Write(" handle '");
@@ -434,7 +491,9 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             message.Write("'");
         }
 
-        private static void PrintHandle(TextWriter message, ScheduleHandle handle)
+        private static void PrintHandle(
+            TextWriter message,
+            ScheduleHandle handle)
         {
             if (handle is EPStatementHandleCallbackSchedule) {
                 var callback = (EPStatementHandleCallbackSchedule) handle;
@@ -446,7 +505,10 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         }
 
         private static string PatternToStringEvaluateTrue(
-            EvalFactoryNode factoryNode, MatchedEventMapMinimal matchEvent, object fromNode, bool isQuitted)
+            EvalFactoryNode factoryNode,
+            MatchedEventMapMinimal matchEvent,
+            object fromNode,
+            bool isQuitted)
         {
             var writer = new StringWriter();
 
@@ -476,13 +538,15 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             }
 
             writer.Write("} quitted: ");
-            writer.Write(bool.ToString(isQuitted));
+            writer.Write(isQuitted);
 
             writer.Write("}");
             return writer.ToString();
         }
 
-        private static string PatternToStringEvaluateFalse(EvalFactoryNode factoryNode, object fromNode)
+        private static string PatternToStringEvaluateFalse(
+            EvalFactoryNode factoryNode,
+            object fromNode)
         {
             var writer = new StringWriter();
             WritePatternExpr(factoryNode, writer);
@@ -495,12 +559,17 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             return writer.ToString();
         }
 
-        private static void RenderNonParameterValue(TextWriter message, object value)
+        private static void RenderNonParameterValue(
+            TextWriter message,
+            object value)
         {
             TypeHelper.GetObjectValuePretty(value, message);
         }
 
-        private static void WriteDataflow(TextWriter message, string dataflowName, string dataFlowInstanceId)
+        private static void WriteDataflow(
+            TextWriter message,
+            string dataflowName,
+            string dataFlowInstanceId)
         {
             message.Write("dataflow ");
             message.Write(dataflowName);
@@ -508,7 +577,10 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             message.Write(dataFlowInstanceId == null ? "(unnamed)" : dataFlowInstanceId);
         }
 
-        private static void WriteDataflowOp(TextWriter message, string operatorName, int operatorNumber)
+        private static void WriteDataflowOp(
+            TextWriter message,
+            string operatorName,
+            int operatorNumber)
         {
             message.Write(" operator ");
             message.Write(operatorName);
@@ -517,7 +589,9 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             message.Write(")");
         }
 
-        private static void WritePatternExpr(EvalFactoryNode factoryNode, TextWriter writer)
+        private static void WritePatternExpr(
+            EvalFactoryNode factoryNode,
+            TextWriter writer)
         {
             if (factoryNode.TextForAudit != null) {
                 writer.Write('(');

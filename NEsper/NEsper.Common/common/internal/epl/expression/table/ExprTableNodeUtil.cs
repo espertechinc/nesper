@@ -48,8 +48,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 	                        tableName +
 	                        "', the " + providedName + " expression '" +
 	                        ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceAsList(providedExpr) + "' returns '" +
-	                        TypeHelper.GetClassNameFullyQualPretty(actual) + "' but the table expects '" +
-	                        TypeHelper.GetClassNameFullyQualPretty(expected) + "'");
+	                        TypeHelper.GetCleanName(actual) + "' but the table expects '" +
+	                        TypeHelper.GetCleanName(expected) + "'");
 	            }
 	        }
 	    }

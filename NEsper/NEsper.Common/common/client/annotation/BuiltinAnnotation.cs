@@ -19,38 +19,33 @@ namespace com.espertech.esper.common.client.annotation
     /// </summary>
     public class BuiltinAnnotation
     {
-
         /// <summary>
         /// List of built-in annotations.
         /// </summary>
-        public static readonly IDictionary<String, Type> BUILTIN = new Dictionary<String, Type>();
+
+        public static readonly Type[] VALUES = new Type[]
+        {
+            typeof (AuditAttribute),
+            typeof (DescriptionAttribute),
+            typeof (DropAttribute),
+            typeof (EventRepresentationAttribute),
+            typeof (HintAttribute),
+            typeof (HookAttribute),
+            typeof (IterableUnboundAttribute),
+            typeof (NameAttribute),
+            typeof (NoLockAttribute),
+            typeof (PriorityAttribute),
+            typeof (TagAttribute)
+        };
+
+        /// <summary>
+        /// Dictionary of built-in annotations.
+        /// </summary>
+        public static readonly IDictionary<string, Type> BUILTIN = new Dictionary<string, Type>();
 
         static BuiltinAnnotation()
         {
-            foreach (Type clazz in new Type[]
-            {
-                typeof (AuditAttribute),
-                typeof (DescriptionAttribute),
-                typeof (DropAttribute),
-                typeof (DurableAttribute),
-                typeof (EventRepresentationAttribute),
-                typeof (ExternalDWAttribute),
-                typeof (ExternalDWKeyAttribute),
-                typeof (ExternalDWListenerAttribute),
-                typeof (ExternalDWQueryAttribute),
-                typeof (ExternalDWSettingAttribute),
-                typeof (ExternalDWValueAttribute),
-                typeof (HintAttribute),
-                typeof (HookAttribute),
-                typeof (IterableUnboundAttribute),
-                typeof (NameAttribute),
-                typeof (NoLockAttribute),
-                typeof (OverflowAttribute),
-                typeof (PriorityAttribute),
-                typeof (ResilientAttribute),
-                typeof (TagAttribute),
-                typeof (TransientAttribute)
-            })
+            foreach (var clazz in VALUES)
             {
                 BUILTIN.Put(clazz.Name.ToLower(), clazz);
             }

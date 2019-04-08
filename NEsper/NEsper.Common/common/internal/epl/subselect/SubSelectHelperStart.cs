@@ -6,69 +6,66 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-
-using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.subselect
 {
-	public class SubSelectHelperStart {
+    public class SubSelectHelperStart
+    {
+        public static IDictionary<int, SubSelectFactoryResult> StartSubselects(
+            IDictionary<int, SubSelectFactory> subselects,
+            AgentInstanceContext agentInstanceContext,
+            IList<AgentInstanceStopCallback> stopCallbacks,
+            bool isRecoveringResilient)
+        {
+            if (subselects == null || subselects.IsEmpty()) {
+                return new EmptyDictionary<int, SubSelectFactoryResult>();
+            }
 
-	    public static IDictionary<int, SubSelectFactoryResult> StartSubselects(IDictionary<int, SubSelectFactory> subselects, AgentInstanceContext agentInstanceContext, IList<AgentInstanceStopCallback> stopCallbacks, bool isRecoveringResilient) {
-	        if (subselects == null || subselects.IsEmpty()) {
-	            return Collections.EmptyMap();
-	        }
+            IDictionary<int, SubSelectFactoryResult> subselectStrategies = new Dictionary<int, SubSelectFactoryResult>();
 
-	        IDictionary<int, SubSelectFactoryResult> subselectStrategies = new Dictionary<int,  SubSelectFactoryResult>();
+            foreach (var subselectEntry in subselects) {
+                var factory = subselectEntry.Value;
 
-	        foreach (KeyValuePair<int, SubSelectFactory> subselectEntry in subselects) {
+                // activate viewable
+                var subselectActivationResult = factory.Activator.Activate(agentInstanceContext, true, isRecoveringResilient);
+                stopCallbacks.Add(subselectActivationResult.StopCallback);
 
-	            SubSelectFactory factory = subselectEntry.Value;
+                // apply returning the strategy instance
+                var realization = factory.StrategyFactory.Instantiate(
+                    subselectActivationResult.Viewable, agentInstanceContext, stopCallbacks, subselectEntry.Key, isRecoveringResilient);
 
-	            // activate viewable
-	            ViewableActivationResult subselectActivationResult = factory.Activator.Activate(agentInstanceContext, true, isRecoveringResilient);
-	            stopCallbacks.Add(subselectActivationResult.StopCallback);
+                // set aggregation
+                var lookupStrategyDefault = realization.LookupStrategy;
+                var aggregationPreprocessor = realization.SubselectAggregationPreprocessor;
 
-	            // apply returning the strategy instance
-	            SubSelectStrategyRealization realization = factory.StrategyFactory.Instantiate(subselectActivationResult.Viewable, agentInstanceContext, stopCallbacks, subselectEntry.Key, isRecoveringResilient);
+                // determine strategy
+                var lookupStrategy = lookupStrategyDefault;
+                if (aggregationPreprocessor != null) {
+                    lookupStrategy = new ProxySubordTableLookupStrategy {
+                        ProcLookup = (
+                            events,
+                            context) => {
+                            var matchingEvents = lookupStrategyDefault.Lookup(events, context);
+                            aggregationPreprocessor.Evaluate(events, matchingEvents, context);
+                            return CollectionUtil.SINGLE_NULL_ROW_EVENT_SET;
+                        },
 
-	            // set aggregation
-	            SubordTableLookupStrategy lookupStrategyDefault = realization.LookupStrategy;
-	            SubselectAggregationPreprocessorBase aggregationPreprocessor = realization.SubselectAggregationPreprocessor;
+                        ProcToQueryPlan = () => { return lookupStrategyDefault.ToQueryPlan(); },
 
-	            // determine strategy
-	            SubordTableLookupStrategy lookupStrategy = lookupStrategyDefault;
-	            if (aggregationPreprocessor != null) {
-	                lookupStrategy = new ProxySubordTableLookupStrategy() {
-	                    I<EventBean> ProcLookup = (events, context) =>  {
-	                        ICollection<EventBean> matchingEvents = lookupStrategyDefault.Lookup(events, context);
-	                        aggregationPreprocessor.Evaluate(events, matchingEvents, context);
-	                        return CollectionUtil.SINGLE_NULL_ROW_EVENT_SET;
-	                    },
+                        ProcStrategyDesc = () => { return lookupStrategyDefault.StrategyDesc; }
+                    };
+                }
 
-	                    ProcToQueryPlan = () =>  {
-	                        return lookupStrategyDefault.ToQueryPlan();
-	                    },
+                var instance = new SubSelectFactoryResult(subselectActivationResult, realization, lookupStrategy);
+                subselectStrategies.Put(subselectEntry.Key, instance);
+            }
 
-	                    ProcGetStrategyDesc = () =>  {
-	                        return lookupStrategyDefault.StrategyDesc;
-	                    },
-	                };
-	            }
-
-	            SubSelectFactoryResult instance = new SubSelectFactoryResult(subselectActivationResult, realization, lookupStrategy);
-	            subselectStrategies.Put(subselectEntry.Key, instance);
-	        }
-
-	        return subselectStrategies;
-	    }
-	}
+            return subselectStrategies;
+        }
+    }
 } // end of namespace

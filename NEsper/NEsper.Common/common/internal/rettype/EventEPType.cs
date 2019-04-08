@@ -7,6 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.@event.core;
 
 namespace com.espertech.esper.common.@internal.rettype
 {
@@ -18,5 +21,15 @@ namespace com.espertech.esper.common.@internal.rettype
         }
 
         public EventType EventType { get; }
+
+        public CodegenExpression Codegen(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenExpression typeInitSvcRef)
+        {
+            return CodegenExpressionBuilder.NewInstance(
+                typeof(EventEPType),
+                EventTypeUtility.ResolveTypeCodegen(EventType, typeInitSvcRef));
+        }
     }
 }

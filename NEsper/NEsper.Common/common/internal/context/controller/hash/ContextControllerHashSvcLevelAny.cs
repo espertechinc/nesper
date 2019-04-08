@@ -6,154 +6,173 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.core;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.context.controller.hash
 {
-	public class ContextControllerHashSvcLevelAny : ContextControllerHashSvc {
-	    private readonly IDictionary<IntSeqKey, MgmtInfo> mgmt = new Dictionary<IntSeqKey, MgmtInfo>();
-	    private IDictionary<IntSeqKey, int> optionalHashes;
+    public class ContextControllerHashSvcLevelAny : ContextControllerHashSvc
+    {
+        private readonly IDictionary<IntSeqKey, MgmtInfo> mgmt = new Dictionary<IntSeqKey, MgmtInfo>();
+        private readonly IDictionary<IntSeqKey, int> optionalHashes;
 
-	    ContextControllerHashSvcLevelAny(bool preallocate) {
-	        if (!preallocate) {
-	            optionalHashes = new Dictionary<IntSeqKey, int>();
-	        }
-	    }
+        internal ContextControllerHashSvcLevelAny(bool preallocate)
+        {
+            if (!preallocate) {
+                optionalHashes = new Dictionary<IntSeqKey, int>();
+            }
+        }
 
-	    public void MgmtCreate(IntSeqKey controllerPath, object[] parentPartitionKeys) {
-	        mgmt.Put(controllerPath, new MgmtInfo(null, parentPartitionKeys));
-	    }
+        public void MgmtCreate(
+            IntSeqKey controllerPath,
+            object[] parentPartitionKeys)
+        {
+            mgmt.Put(controllerPath, new MgmtInfo(null, parentPartitionKeys));
+        }
 
-	    public int[] MgmtGetSubpathOrCPIdsWhenPreallocate(IntSeqKey path) {
-	        return mgmt.Get(path).SubpathOrCPIdsPreallocate;
-	    }
+        public int[] MgmtGetSubpathOrCPIdsWhenPreallocate(IntSeqKey path)
+        {
+            return mgmt.Get(path).SubpathOrCPIdsPreallocate;
+        }
 
-	    public void MgmtSetSubpathOrCPIdsWhenPreallocate(IntSeqKey path, int[] subpathOrCPIds) {
-	        mgmt.Get(path).SubpathOrCPIdsPreallocate = subpathOrCPIds;
-	    }
+        public void MgmtSetSubpathOrCPIdsWhenPreallocate(
+            IntSeqKey path,
+            int[] subpathOrCPIds)
+        {
+            mgmt.Get(path).SubpathOrCPIdsPreallocate = subpathOrCPIds;
+        }
 
-	    public void MgmtSetFilters(IntSeqKey controllerPath, ContextControllerFilterEntry[] filterEntries) {
-	        mgmt.Get(controllerPath).FilterEntries = filterEntries;
-	    }
+        public void MgmtSetFilters(
+            IntSeqKey controllerPath,
+            ContextControllerFilterEntry[] filterEntries)
+        {
+            mgmt.Get(controllerPath).FilterEntries = filterEntries;
+        }
 
-	    public object[] MgmtGetParentPartitionKeys(IntSeqKey controllerPath) {
-	        return mgmt.Get(controllerPath).ParentPartitionKeys;
-	    }
+        public object[] MgmtGetParentPartitionKeys(IntSeqKey controllerPath)
+        {
+            return mgmt.Get(controllerPath).ParentPartitionKeys;
+        }
 
-	    public ContextControllerFilterEntry[] MgmtGetFilters(IntSeqKey controllerPath) {
-	        return mgmt.Get(controllerPath).FilterEntries;
-	    }
+        public ContextControllerFilterEntry[] MgmtGetFilters(IntSeqKey controllerPath)
+        {
+            return mgmt.Get(controllerPath).FilterEntries;
+        }
 
-	    public bool HashHasSeenPartition(IntSeqKey controllerPath, int value) {
-	        return optionalHashes.ContainsKey(controllerPath.AddToEnd(value));
-	    }
+        public bool HashHasSeenPartition(
+            IntSeqKey controllerPath,
+            int value)
+        {
+            return optionalHashes.ContainsKey(controllerPath.AddToEnd(value));
+        }
 
-	    public void HashAddPartition(IntSeqKey controllerPath, int value, int subpathIdOrCPId) {
-	        optionalHashes.Put(controllerPath.AddToEnd(value), subpathIdOrCPId);
-	    }
+        public void HashAddPartition(
+            IntSeqKey controllerPath,
+            int value,
+            int subpathIdOrCPId)
+        {
+            optionalHashes.Put(controllerPath.AddToEnd(value), subpathIdOrCPId);
+        }
 
-	    public void HashVisit(IntSeqKey controllerPath, BiConsumer<int, int> hashAndCPId) {
-	        if (optionalHashes == null) {
-	            MgmtInfo mgmtInfo = mgmt.Get(controllerPath);
-	            if (mgmtInfo == null || mgmtInfo.SubpathOrCPIdsPreallocate == null) {
-	                return;
-	            }
-	            int[] subpathOrCPIds = mgmtInfo.SubpathOrCPIdsPreallocate;
-	            for (int i = 0; i < subpathOrCPIds.Length; i++) {
-	                hashAndCPId.Accept(i, subpathOrCPIds[i]);
-	            }
-	            return;
-	        }
+        public void HashVisit(
+            IntSeqKey controllerPath,
+            BiConsumer<int, int> hashAndCPId)
+        {
+            if (optionalHashes == null) {
+                var mgmtInfo = mgmt.Get(controllerPath);
+                if (mgmtInfo == null || mgmtInfo.SubpathOrCPIdsPreallocate == null) {
+                    return;
+                }
 
-	        foreach (KeyValuePair<IntSeqKey, int> entry in optionalHashes) {
-	            if (controllerPath.IsParentTo(entry.Key)) {
-	                hashAndCPId.Accept(entry.Key.Last(), entry.Value);
-	            }
-	        }
-	    }
+                var subpathOrCPIds = mgmtInfo.SubpathOrCPIdsPreallocate;
+                for (var i = 0; i < subpathOrCPIds.Length; i++) {
+                    hashAndCPId.Invoke(i, subpathOrCPIds[i]);
+                }
 
-	    public int HashGetSubpathOrCPId(IntSeqKey controllerPath, int hash) {
-	        if (optionalHashes == null) {
-	            MgmtInfo mgmtInfo = mgmt.Get(controllerPath);
-	            return mgmtInfo.SubpathOrCPIdsPreallocate[hash];
-	        }
+                return;
+            }
 
-	        int? found = optionalHashes.Get(controllerPath.AddToEnd(hash));
-	        return found == null ? -1 : found;
-	    }
+            foreach (var entry in optionalHashes) {
+                if (controllerPath.IsParentTo(entry.Key)) {
+                    hashAndCPId.Invoke(entry.Key.Last, entry.Value);
+                }
+            }
+        }
 
-	    public ICollection<int> Deactivate(IntSeqKey controllerPath) {
-	        MgmtInfo mgmtInfo = mgmt.Remove(controllerPath);
+        public int HashGetSubpathOrCPId(
+            IntSeqKey controllerPath,
+            int hash)
+        {
+            if (optionalHashes == null) {
+                var mgmtInfo = mgmt.Get(controllerPath);
+                return mgmtInfo.SubpathOrCPIdsPreallocate[hash];
+            }
 
-	        if (optionalHashes == null) {
-	            return MgmtInfoToIds(mgmtInfo);
-	        }
+            if (optionalHashes.TryGetValue(controllerPath.AddToEnd(hash), out var found)) {
+                return found;
+            }
 
-	        IEnumerator<KeyValuePair<IntSeqKey, int>> it = optionalHashes.GetEnumerator();
-	        IList<int> result = new List<>();
-	        while (it.MoveNext()) {
-	            KeyValuePair<IntSeqKey, int> entry = it.Current;
-	            if (controllerPath.IsParentTo(entry.Key)) {
-	                result.Add(entry.Value);
-	                it.Remove();
-	            }
-	        }
-	        return result;
-	    }
+            return -1;
+        }
 
-	    public void Destroy() {
-	        mgmt.Clear();
-	        if (optionalHashes != null) {
-	            optionalHashes.Clear();
-	        }
-	    }
+        public ICollection<int> Deactivate(IntSeqKey controllerPath)
+        {
+            var mgmtInfo = mgmt.Delete(controllerPath);
 
-	    private ICollection<int> MgmtInfoToIds(MgmtInfo mgmtInfo) {
-	        int[] subpathOrCPIdsPreallocate = mgmtInfo.SubpathOrCPIdsPreallocate;
-	        IList<int> ids = new List<>(subpathOrCPIdsPreallocate.Length);
-	        foreach (int id in subpathOrCPIdsPreallocate) {
-	            ids.Add(id);
-	        }
-	        return ids;
-	    }
+            if (optionalHashes == null) {
+                return MgmtInfoToIds(mgmtInfo);
+            }
 
-	    private class MgmtInfo {
-	        private ContextControllerFilterEntry[] filterEntries;
-	        private object[] parentPartitionKeys;
-	        private int[] subpathOrCPIdsPreallocate;
+            var it = optionalHashes.GetEnumerator();
+            IList<int> result = new List<int>();
+            while (it.MoveNext()) {
+                var entry = it.Current;
+                if (controllerPath.IsParentTo(entry.Key)) {
+                    result.Add(entry.Value);
+                    it.Remove();
+                }
+            }
 
-	        MgmtInfo(ContextControllerFilterEntry[] filterEntries, object[] parentPartitionKeys) {
-	            this.filterEntries = filterEntries;
-	            this.parentPartitionKeys = parentPartitionKeys;
-	        }
+            return result;
+        }
 
-	        ContextControllerFilterEntry[] GetFilterEntries() {
-	            return filterEntries;
-	        }
+        public void Destroy()
+        {
+            mgmt.Clear();
+            if (optionalHashes != null) {
+                optionalHashes.Clear();
+            }
+        }
 
-	        public object[] ParentPartitionKeys
-	        {
-	            get => parentPartitionKeys;
-	        }
+        private ICollection<int> MgmtInfoToIds(MgmtInfo mgmtInfo)
+        {
+            var subpathOrCPIdsPreallocate = mgmtInfo.SubpathOrCPIdsPreallocate;
+            IList<int> ids = new List<int>(subpathOrCPIdsPreallocate.Length);
+            foreach (var id in subpathOrCPIdsPreallocate) {
+                ids.Add(id);
+            }
 
-	        void SetFilterEntries(ContextControllerFilterEntry[] filterEntries) {
-	            this.filterEntries = filterEntries;
-	        }
+            return ids;
+        }
 
-	        int[] GetSubpathOrCPIdsPreallocate() {
-	            return subpathOrCPIdsPreallocate;
-	        }
+        private class MgmtInfo
+        {
+            internal MgmtInfo(
+                ContextControllerFilterEntry[] filterEntries,
+                object[] parentPartitionKeys)
+            {
+                FilterEntries = filterEntries;
+                ParentPartitionKeys = parentPartitionKeys;
+            }
 
-	        void SetSubpathOrCPIdsPreallocate(int[] subpathOrCPIdsPreallocate) {
-	            this.subpathOrCPIdsPreallocate = subpathOrCPIdsPreallocate;
-	        }
-	    }
-	}
+            internal ContextControllerFilterEntry[] FilterEntries { get; set; }
+
+            public object[] ParentPartitionKeys { get; }
+
+            internal int[] SubpathOrCPIdsPreallocate { get; set; }
+        }
+    }
 } // end of namespace

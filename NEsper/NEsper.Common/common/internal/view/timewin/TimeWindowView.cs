@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -40,8 +41,10 @@ namespace com.espertech.esper.common.@internal.view.timewin
         private readonly TimeWindowViewFactory timeWindowViewFactory;
 
         public TimeWindowView(
-            AgentInstanceViewFactoryChainContext agentInstanceContext, TimeWindowViewFactory timeWindowViewFactory,
-            ViewUpdatedCollection viewUpdatedCollection, TimePeriodProvide timePeriodProvide)
+            AgentInstanceViewFactoryChainContext agentInstanceContext,
+            TimeWindowViewFactory timeWindowViewFactory,
+            ViewUpdatedCollection viewUpdatedCollection,
+            TimePeriodProvide timePeriodProvide)
         {
             this.agentInstanceContext = agentInstanceContext.AgentInstanceContext;
             this.timeWindowViewFactory = timeWindowViewFactory;
@@ -90,7 +93,9 @@ namespace com.espertech.esper.common.@internal.view.timewin
 
         public override EventType EventType => Parent.EventType;
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public override void Update(
+            EventBean[] newData,
+            EventBean[] oldData)
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, timeWindowViewFactory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(timeWindowViewFactory, newData, oldData);
@@ -151,7 +156,7 @@ namespace com.espertech.esper.common.@internal.view.timewin
 
             // Remove from the timeWindow any events that have an older or timestamp then the given timestamp
             // The window : from X to (X - millisecondsBeforeExpiry + 1)
-            ArrayDeque<EventBean> expired = timeWindow.ExpireEvents(expireBeforeTimestamp);
+            var expired = timeWindow.ExpireEvents(expireBeforeTimestamp);
 
             // If there are child views, fireStatementStopped update method
             if (Child != null) {
@@ -177,7 +182,7 @@ namespace com.espertech.esper.common.@internal.view.timewin
                 return;
             }
 
-            long? oldestTimestamp = timeWindow.OldestTimestamp;
+            var oldestTimestamp = timeWindow.OldestTimestamp;
             var currentTimestamp = agentInstanceContext.StatementContext.SchedulingService.Time;
             long scheduleTime = timePeriodProvide.DeltaAdd(oldestTimestamp, null, true, agentInstanceContext) +
                                 oldestTimestamp - currentTimestamp;

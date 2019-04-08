@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             var eventTable =
                 (PropertyHashedEventTableUnique) table.PrimaryIndexFactory.MakeEventTables(agentInstanceContext, null)
                     [0];
-            rows = eventTable.PropertyIndex.UnwrapDictionary<object, ObjectArrayBackedEventBean>();
+            rows = CompatExtensions.UnwrapDictionary<object, ObjectArrayBackedEventBean>(eventTable.PropertyIndex);
             indexRepository.AddIndex(
                 table.MetaData.KeyIndexMultiKey,
                 new EventTableIndexRepositoryEntry(
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             return CreateRowIntoTable(groupByKey);
         }
 
-        public override ISet<object> GroupKeys => rows.Keys;
+        public override ICollection<object> GroupKeys => rows.Keys;
 
         public override void HandleRowUpdated(ObjectArrayBackedEventBean updatedEvent)
         {
@@ -124,11 +124,11 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             agentInstanceContext.InstrumentationProvider.QaTableUpdatedEventWKeyAfter(updatedEvent);
         }
 
-        private class PrimaryIndexIterable : IEnumerable<EventBean>
+        internal class PrimaryIndexIterable : IEnumerable<EventBean>
         {
             private readonly IDictionary<object, ObjectArrayBackedEventBean> rows;
 
-            private PrimaryIndexIterable(IDictionary<object, ObjectArrayBackedEventBean> rows)
+            internal PrimaryIndexIterable(IDictionary<object, ObjectArrayBackedEventBean> rows)
             {
                 this.rows = rows;
             }

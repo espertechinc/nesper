@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 string propName = mineMapped.EventType.PropertyNames[0];
                 EventBean[] mineEvents = (EventBean[])mineMapped.Properties.Get(propName);
                 EventBean[] otherEvents = (EventBean[])otherMapped.Properties.Get(propName);
-                if (!Arrays.Equals(mineEvents, otherEvents))
+                if (!CompatExtensions.AreEqual(mineEvents, otherEvents))
                 {
                     return false;
                 }

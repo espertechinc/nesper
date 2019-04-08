@@ -18,7 +18,7 @@ using com.espertech.esper.common.@internal.serde;
 namespace com.espertech.esper.common.@internal.context.mgr
 {
 	public interface ContextManager : FilterFaultHandler {
-	    void SetStatementContext(StatementContext statementContext);
+	    void SetStatementContext(StatementContext value);
 
 	    void AddStatement(ContextControllerStatementDesc statement, bool recovery);
 

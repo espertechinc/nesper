@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
 	        if (!type.IsPrimitive) {
 	            block.IfRefNullReturnNull(holder);
 	        }
-	        block.DeclareVar(typeof(double), variable, SimpleNumberCoercerFactory.SimpleNumberCoercerDouble.CodegenDouble(@Ref(holder), type));
+	        block.DeclareVar(typeof(double), variable, SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(@Ref(holder), type));
 	    }
 	}
 } // end of namespace

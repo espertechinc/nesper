@@ -18,12 +18,16 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         /// </summary>
         /// <param name="lock">lock</param>
         /// <param name="exprEvaluatorContext">ctx</param>
-        public static void ObtainLockUnless(ILockable @lock, ExprEvaluatorContext exprEvaluatorContext)
+        public static void ObtainLockUnless(
+            ILockable @lock,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             ObtainLockUnless(@lock, exprEvaluatorContext.TableExprEvaluatorContext);
         }
 
-        public static void ObtainLockUnless(ILockable @lock, TableExprEvaluatorContext tableExprEvaluatorContext)
+        public static void ObtainLockUnless(
+            ILockable @lock,
+            TableExprEvaluatorContext tableExprEvaluatorContext)
         {
             bool added = tableExprEvaluatorContext.AddAcquiredLock(@lock);
             if (added) {

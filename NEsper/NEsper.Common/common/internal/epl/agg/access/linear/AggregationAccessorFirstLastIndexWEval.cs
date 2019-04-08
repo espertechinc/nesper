@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 	            if (!evalType.IsPrimitive) {
 	                method.Block.IfRefNullReturnNull("indexResult");
 	            }
-	            method.Block.DeclareVar(typeof(int), "index", SimpleNumberCoercerFactory.SimpleNumberCoercerInt.CodegenInt(@Ref("indexResult"), evalType));
+	            method.Block.DeclareVar(typeof(int), "index", SimpleNumberCoercerFactory.CoercerInt.CodegenInt(@Ref("indexResult"), evalType));
 	        } else {
 	            method.Block.DeclareVar(typeof(int), "index", Constant(forge.Constant));
 	        }

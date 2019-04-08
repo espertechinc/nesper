@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.view.previous
             if (agentInstanceViewFactoryContext.PreviousNodeGetter != null)
             {
                 var getter = (RelativeAccessByEventNIndexGetter) agentInstanceViewFactoryContext.PreviousNodeGetter;
-                var observer = (IStreamRelativeAccessUpdateObserver) getter;
+                var observer = (IStreamRelativeAccess.IStreamRelativeAccessUpdateObserver) getter;
                 relativeAccessByEvent = new IStreamRelativeAccess(observer);
                 observer.Updated(relativeAccessByEvent, null);
             }

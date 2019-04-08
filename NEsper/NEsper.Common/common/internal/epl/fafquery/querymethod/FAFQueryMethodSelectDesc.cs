@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
 	        // obtain result set processor
 	        bool[] isIStreamOnly = new bool[namesPerStream.Length];
-	        Arrays.Fill(isIStreamOnly, true);
+	        CompatExtensions.Fill(isIStreamOnly, true);
 	        StreamTypeService typeService = new StreamTypeServiceImpl(typesPerStream, namesPerStream, isIStreamOnly, true, optionalStreamsIfAny);
 	        whereClause = EPStatementStartMethodHelperValidate.ValidateNodes(statementSpec.Raw, typeService, null, statementRawInfo, services);
 
@@ -148,7 +148,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 	        // plan joins or simple queries
 	        if (numStreams > 1) {
 	            StreamJoinAnalysisResultCompileTime streamJoinAnalysisResult = new StreamJoinAnalysisResultCompileTime(numStreams);
-	            Arrays.Fill(streamJoinAnalysisResult.NamedWindowsPerStream, null);
+	            CompatExtensions.Fill(streamJoinAnalysisResult.NamedWindowsPerStream, null);
 	            for (int i = 0; i < numStreams; i++) {
 	                string[][] uniqueIndexes = processors[i].UniqueIndexes;
 	                streamJoinAnalysisResult.UniqueKeys[i] = uniqueIndexes;

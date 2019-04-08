@@ -107,9 +107,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 	                    bool right = TypeHelper.IsSubclassOrImplementsInterface(typesBoxed[i], typeBoxed);
 	                    if (typeBoxed != typesBoxed[i] && !left && !right) {
 	                        throw new ExprValidationException("For context '" + contextName + "' for context '" + contextName + "' found mismatch of property types, property '" + names[i] +
-	                                "' of type '" + TypeHelper.GetClassNameFullyQualPretty(types[i]) +
+	                                "' of type '" + TypeHelper.GetCleanName(types[i]) +
 	                                "' compared to property '" + property +
-	                                "' of type '" + TypeHelper.GetClassNameFullyQualPretty(typeBoxed) + "'");
+	                                "' of type '" + TypeHelper.GetCleanName(typeBoxed) + "'");
 	                    }
 	                }
 	            }

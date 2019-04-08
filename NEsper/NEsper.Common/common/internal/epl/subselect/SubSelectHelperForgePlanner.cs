@@ -45,7 +45,6 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.statement.helper;
 using com.espertech.esper.common.@internal.view.access;
-using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.prior;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -134,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 subselecteventTypeName = ((TableQueryStreamSpec) filterStreamSpec).Table.TableName;
             }
 
-            IList<ViewFactoryForge> viewForges = subselectActivation.ViewForges;
+            var viewForges = subselectActivation.ViewForges;
             var eventType = viewForges.IsEmpty()
                 ? subselectActivation.ViewableType
                 : viewForges[viewForges.Count - 1].EventType;
@@ -250,7 +249,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             } // end of for loop
 
             // validate having-clause and collect aggregations
-            IList<ExprAggregateNode> aggExpressionNodesHaving = Collections.GetEmptyList<ExprAggregateNode>();
+            var aggExpressionNodesHaving = Collections.GetEmptyList<ExprAggregateNode>();
             if (subselectSpec.Raw.HavingClause != null) {
                 var validatedHavingClause = ExprNodeUtilityValidate.GetValidatedSubtree(
                     ExprNodeOrigin.HAVING, subselectSpec.Raw.HavingClause, validationContext);
@@ -270,7 +269,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     }
                     else {
                         subselectSpec.Raw.WhereClause = ExprNodeUtilityMake.ConnectExpressionsByLogicalAnd(
-                            Arrays.AsList(subselectSpec.Raw.WhereClause, subselectSpec.Raw.HavingClause));
+                            CompatExtensions.AsList(subselectSpec.Raw.WhereClause, subselectSpec.Raw.HavingClause));
                     }
 
                     subselectSpec.Raw.HavingClause = null;
@@ -364,7 +363,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
                 // determine whether select-clause has grouped-by expressions
                 IList<ExprAggregateNodeGroupKey> groupKeyExpressions = null;
-                ExprNode[] groupByExpressions = ExprNodeUtilityQuery.EMPTY_EXPR_ARRAY;
+                var groupByExpressions = ExprNodeUtilityQuery.EMPTY_EXPR_ARRAY;
                 if (hasGroupBy) {
                     groupByExpressions = subselectSpec.GroupByExpressions.GroupByNodes;
                     for (var i = 0; i < selectExpressions.Count; i++) {
@@ -511,7 +510,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             if (filterStreamSpec is NamedWindowConsumerStreamSpec) {
                 var namedSpec = (NamedWindowConsumerStreamSpec) filterStreamSpec;
                 if (namedSpec.FilterExpressions.IsEmpty()) {
-                    NamedWindowMetaData namedWindowInner = namedSpec.NamedWindow;
+                    var namedWindowInner = namedSpec.NamedWindow;
                     var disableIndexShare = HintEnum.DISABLE_WINDOW_SUBQUERY_INDEXSHARE.GetHint(annotations) != null;
                     if (disableIndexShare && namedWindowInner.IsVirtualDataWindow) {
                         disableIndexShare = false;
@@ -592,8 +591,11 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         }
 
         private static void ValidateSubqueryDataWindow(
-            ExprSubselectNode subselectNode, bool correlatedSubquery, bool hasNonAggregatedProperties,
-            ExprNodePropOrStreamSet propertiesGroupBy, ExprNodePropOrStreamSet nonAggregatedPropsSelect)
+            ExprSubselectNode subselectNode,
+            bool correlatedSubquery,
+            bool hasNonAggregatedProperties,
+            ExprNodePropOrStreamSet propertiesGroupBy,
+            ExprNodePropOrStreamSet nonAggregatedPropsSelect)
         {
             // validation applies only to type+filter subqueries that have no data window
             var streamSpec = subselectNode.StatementSpecCompiled.StreamSpecs[0];
@@ -652,7 +654,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 filterExpr, viewableEventType, outerEventTypes, subselectTypeService, fullTableScan,
                 optionalUniqueProps, statement, subselect, services);
 
-            QueryPlanIndexHook hook = QueryPlanIndexHookUtil.GetHook(
+            var hook = QueryPlanIndexHookUtil.GetHook(
                 statement.StatementSpec.Annotations, services.ImportServiceCompileTime);
             if (queryPlanLogging && (QUERY_PLAN_LOG.IsInfoEnabled || hook != null)) {
                 QUERY_PLAN_LOG.Info("local index");
@@ -672,7 +674,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         }
 
         private static string ValidateContextAssociation(
-            string optionalProvidedContextName, string entityDeclaredContextName, string entityDesc)
+            string optionalProvidedContextName,
+            string entityDeclaredContextName,
+            string entityDesc)
         {
             if (entityDeclaredContextName != null) {
                 if (optionalProvidedContextName == null ||
@@ -753,7 +757,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             CoercionDesc hashCoercionDesc;
             CoercionDesc rangeCoercionDesc;
             if (hashKeys.Count != 0 && rangeKeys.IsEmpty()) {
-                string[] indexedProps = hashKeys.Keys.ToArray();
+                var indexedProps = hashKeys.Keys.ToArray();
                 hashCoercionDesc = CoercionUtil.GetCoercionTypesHash(viewableEventType, indexedProps, hashKeyList);
                 rangeCoercionDesc = new CoercionDesc(false, null);
                 eventTableFactory = new PropertyHashedFactoryFactoryForge(
@@ -762,14 +766,14 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             else if (hashKeys.IsEmpty() && rangeKeys.IsEmpty()) {
                 rangeCoercionDesc = new CoercionDesc(false, null);
                 if (joinPropDesc.InKeywordSingleIndex != null) {
-                    string prop = joinPropDesc.InKeywordSingleIndex.IndexedProp;
+                    var prop = joinPropDesc.InKeywordSingleIndex.IndexedProp;
                     hashCoercionDesc = new CoercionDesc(false, new[] {viewableEventType.GetPropertyType(prop)});
                     eventTableFactory = new PropertyHashedFactoryFactoryForge(
                         0, subqueryNumber, false, new[] {prop}, viewableEventType, unique, hashCoercionDesc);
                     inKeywordSingleIdxKeys = joinPropDesc.InKeywordSingleIndex.Expressions;
                 }
                 else if (joinPropDesc.InKeywordMultiIndex != null) {
-                    string[] props = joinPropDesc.InKeywordMultiIndex.IndexedProp;
+                    var props = joinPropDesc.InKeywordMultiIndex.IndexedProp;
                     hashCoercionDesc = new CoercionDesc(
                         false, EventTypeUtility.GetPropertyTypes(viewableEventType, props));
                     eventTableFactory = new PropertyHashedArrayFactoryFactoryForge(
@@ -782,7 +786,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 }
             }
             else if (hashKeys.IsEmpty() && rangeKeys.Count == 1) {
-                string indexedProp = rangeKeys.Keys.First();
+                var indexedProp = rangeKeys.Keys.First();
                 var coercionRangeTypes = CoercionUtil.GetCoercionTypesRange(
                     viewableEventType, rangeKeys, outerEventTypes);
                 eventTableFactory = new PropertySortedFactoryFactoryForge(
@@ -791,9 +795,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 rangeCoercionDesc = coercionRangeTypes;
             }
             else {
-                string[] indexedKeyProps = hashKeys.Keys.ToArray();
+                var indexedKeyProps = hashKeys.Keys.ToArray();
                 var coercionKeyTypes = SubordPropUtil.GetCoercionTypes(hashKeys.Values);
-                string[] indexedRangeProps = rangeKeys.Keys.ToArray();
+                var indexedRangeProps = rangeKeys.Keys.ToArray();
                 var coercionRangeTypes = CoercionUtil.GetCoercionTypesRange(
                     viewableEventType, rangeKeys, outerEventTypes);
                 eventTableFactory = new PropertyCompositeEventTableFactoryFactoryForge(
@@ -805,7 +809,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
             var subqTableLookupStrategyFactory = SubordinateTableLookupStrategyUtil.GetLookupStrategy(
                 outerEventTypes,
-                hashKeyList, hashCoercionDesc, rangeKeyList, rangeCoercionDesc, 
+                hashKeyList, hashCoercionDesc, rangeKeyList, rangeCoercionDesc,
                 inKeywordSingleIdxKeys,
                 inKeywordMultiIdxKey, false);
 

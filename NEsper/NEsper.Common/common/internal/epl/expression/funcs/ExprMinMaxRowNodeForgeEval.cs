@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 	    public ExprMinMaxRowNodeForgeEval(ExprMinMaxRowNodeForge forge, ExprEvaluator[] evaluators, ExprForge[] forges) {
 	        this.forge = forge;
 	        if (forge.EvaluationType == typeof(BigInteger)) {
-	            SimpleNumberBigIntegerCoercer[] convertors = new SimpleNumberBigIntegerCoercer[evaluators.Length];
+	            BigIntegerCoercer[] convertors = new BigIntegerCoercer[evaluators.Length];
 	            for (int i = 0; i < evaluators.Length; i++) {
 	                convertors[i] = SimpleNumberCoercerFactory.GetCoercerBigInteger(forges[i].EvaluationType);
 	            }
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
 	        CodegenExpression expression;
 	        if (resultType == typeof(BigInteger)) {
-	            SimpleNumberBigIntegerCoercer[] convertors = new SimpleNumberBigIntegerCoercer[nodes.Length];
+	            BigIntegerCoercer[] convertors = new BigIntegerCoercer[nodes.Length];
 	            for (int i = 0; i < nodes.Length; i++) {
 	                convertors[i] = SimpleNumberCoercerFactory.GetCoercerBigInteger(nodes[i].Forge.EvaluationType);
 	            }

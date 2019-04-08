@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+using System.Linq;
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.pattern.core;
@@ -28,10 +30,15 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         StreamSpecCompiled
     {
         public PatternStreamSpecCompiled(
-            EvalRootForgeNode root, LinkedHashMap<string, Pair<EventType, string>> taggedEventTypes,
-            LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes, LinkedHashSet<string> allTags,
-            ViewSpec[] viewSpecs, string optionalStreamName, StreamSpecOptions streamSpecOptions,
-            bool suppressSameEventMatches, bool discardPartialsOnMatch)
+            EvalRootForgeNode root,
+            IDictionary<string, Pair<EventType, string>> taggedEventTypes,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+            ISet<string> allTags,
+            ViewSpec[] viewSpecs,
+            string optionalStreamName,
+            StreamSpecOptions streamSpecOptions,
+            bool suppressSameEventMatches,
+            bool discardPartialsOnMatch)
             : base(optionalStreamName, viewSpecs, streamSpecOptions)
         {
             IsSuppressSameEventMatches = suppressSameEventMatches;
@@ -56,7 +63,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         public bool IsConsumingFilters => IsConsumingFiltersRecursive(Root);
 
-        public LinkedHashSet<string> AllTags { get; }
+        public ISet<string> AllTags { get; }
 
         public bool IsSuppressSameEventMatches { get; }
 
@@ -66,13 +73,13 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         ///     Returns event types tagged in the pattern expression.
         /// </summary>
         /// <value>map of tag and event type tagged in pattern expression</value>
-        public LinkedHashMap<string, Pair<EventType, string>> TaggedEventTypes { get; }
+        public IDictionary<string, Pair<EventType, string>> TaggedEventTypes { get; }
 
         /// <summary>
         ///     Returns event types tagged in the pattern expression under a repeat-operator.
         /// </summary>
         /// <value>map of tag and event type tagged in pattern expression, repeated an thus producing array events</value>
-        public LinkedHashMap<string, Pair<EventType, string>> ArrayEventTypes { get; }
+        public IDictionary<string, Pair<EventType, string>> ArrayEventTypes { get; }
 
         public MatchedEventMapMeta MatchedEventMapMeta {
             get {
@@ -112,7 +119,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             }
 
             var consumption = false;
-            foreach (EvalForgeNode child in evalNode.ChildNodes) {
+            foreach (var child in evalNode.ChildNodes) {
                 consumption = consumption || IsConsumingFiltersRecursive(child);
             }
 

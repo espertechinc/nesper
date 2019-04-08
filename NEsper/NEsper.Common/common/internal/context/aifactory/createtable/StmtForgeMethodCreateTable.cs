@@ -27,7 +27,9 @@ using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
@@ -125,9 +127,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor();
             var informationals = StatementInformationalsUtil.GetInformationals(
                 @base,
-                Collections.GetEmptyList(),
-                Collections.GetEmptyList(),
-                Collections.GetEmptyList(), true,
+                new EmptyList<FilterSpecCompiled>(), 
+                new EmptyList<ScheduleHandleCallbackProvider>(), 
+                new EmptyList<NamedWindowConsumerStreamSpec>(), 
+                true,
                 selectSubscriberDescriptor, packageScope, services);
             forgables.Add(
                 new StmtClassForgableStmtProvider(
@@ -136,17 +139,17 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
 
             return new StmtForgeMethodResult(
                 forgables,
-                Collections.GetEmptyList(),
-                Collections.GetEmptyList(),
-                Collections.GetEmptyList(),
-                Collections.GetEmptyList());
+                new EmptyList<FilterSpecCompiled>(),
+                new EmptyList<ScheduleHandleCallbackProvider>(),
+                new EmptyList<NamedWindowConsumerStreamSpec>(),
+                new EmptyList<FilterSpecParamExprNodeForge>());
         }
 
         private void ValidateKeyTypes(
             IList<CreateTableColumn> columns, ImportServiceCompileTime importService)
         {
             foreach (var col in columns) {
-                if (col.PrimaryKey == null || !col.PrimaryKey) {
+                if (col.PrimaryKey == null || !col.PrimaryKey.Value) {
                     continue;
                 }
 
@@ -202,7 +205,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                         services.ImportServiceCompileTime);
                     descriptor = new TableColumnDescTyped(
                         positionInDeclaration, column.ColumnName, unresolvedType,
-                        column.PrimaryKey == null ? false : column.PrimaryKey);
+                        column.PrimaryKey.GetValueOrDefault(false));
                 }
 
                 descriptors.Add(descriptor);

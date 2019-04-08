@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -39,7 +40,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         /// <param name="typesPerStream">types</param>
         /// <param name="indexNum">index to use for lookup</param>
         protected TableLookupPlanForge(
-            int lookupStream, int indexedStream, bool indexedStreamIsVDW, EventType[] typesPerStream,
+            int lookupStream,
+            int indexedStream,
+            bool indexedStreamIsVDW,
+            EventType[] typesPerStream,
             TableLookupIndexReqKey[] indexNum)
         {
             this.lookupStream = lookupStream;
@@ -70,10 +74,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         public TableLookupIndexReqKey[] IndexNum { get; }
 
         public CodegenExpression Make(
-            CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(TypeOfPlanFactory(), GetType(), classScope);
-            IList<CodegenExpression> @params = new List<>(6);
+            IList<CodegenExpression> @params = new List<CodegenExpression>(6);
             @params.Add(Constant(lookupStream));
             @params.Add(Constant(indexedStream));
             @params.Add(
@@ -87,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             if (indexedStreamIsVDW) {
                 var keyDesc = KeyDescriptor;
                 var hashes = keyDesc.HashExpressions;
-                QueryGraphValueEntryRangeForge[] ranges = keyDesc.Ranges.ToArray();
+                var ranges = keyDesc.Ranges.ToArray();
                 var rangeResults = QueryGraphValueEntryRangeForge.GetRangeResultTypes(ranges);
                 method.Block
                     .ExprDotMethod(
@@ -108,13 +114,15 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         public abstract Type TypeOfPlanFactory();
 
         public abstract ICollection<CodegenExpression> AdditionalParams(
-            CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope);
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope);
 
         public virtual string ToString()
         {
             return "lookupStream=" + lookupStream +
                    " indexedStream=" + indexedStream +
-                   " indexNum=" + CompatExtensions.RenderAny(IndexNum);
+                   " indexNum=" + IndexNum.RenderAny();
         }
     }
 } // end of namespace

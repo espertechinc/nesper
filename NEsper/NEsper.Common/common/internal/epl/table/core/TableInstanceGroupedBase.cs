@@ -76,6 +76,6 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
         public abstract ObjectArrayBackedEventBean GetRowForGroupKey(object groupKey);
         public abstract ObjectArrayBackedEventBean GetCreateRowIntoTable(object groupByKey, ExprEvaluatorContext exprEvaluatorContext);
-        public abstract ISet<object> GroupKeys { get; }
+        public abstract ICollection<object> GroupKeys { get; }
     }
 } // end of namespace

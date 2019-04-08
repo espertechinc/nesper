@@ -32,20 +32,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         ///     Returns the time period.
         /// </summary>
         /// <returns>time period</returns>
-        public ExprTimePeriod TimePeriodExpr { get; private set; }
+        public ExprTimePeriod TimePeriodExpr { get; set; }
 
-        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation { get; private set; }
+        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation { get; set; }
 
-        public bool IsOrTerminated { get; }
-
-        public void SetTimePeriodExpr(ExprTimePeriod timePeriodExpr)
-        {
-            TimePeriodExpr = timePeriodExpr;
-        }
-
-        public void SetTimeDeltaComputation(ExprTimePeriodEvalDeltaConst timeDeltaComputation)
-        {
-            TimeDeltaComputation = timeDeltaComputation;
-        }
+        public bool IsOrTerminated { get; set; }
     }
 } // end of namespace

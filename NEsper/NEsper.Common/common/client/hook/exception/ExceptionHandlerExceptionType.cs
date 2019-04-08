@@ -14,6 +14,6 @@ namespace com.espertech.esper.common.client.hook.exception
     public enum ExceptionHandlerExceptionType
     {
         PROCESS,
-        STOP
+        UNDEPLOY
     }
 } // end of namespace

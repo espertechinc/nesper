@@ -104,9 +104,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             block.MethodReturn(
                 NewInstance(
                     typeof(RangeParameter),
-                    SimpleNumberCoercerFactory.SimpleNumberCoercerInt.CodegenInt(
+                    SimpleNumberCoercerFactory.CoercerInt.CodegenInt(
                         Ref("valueLower"), valueLower.EvaluationType),
-                    SimpleNumberCoercerFactory.SimpleNumberCoercerInt.CodegenInt(
+                    SimpleNumberCoercerFactory.CoercerInt.CodegenInt(
                         Ref("valueUpper"), valueUpper.EvaluationType)
                 ));
             return LocalMethod(methodNode);

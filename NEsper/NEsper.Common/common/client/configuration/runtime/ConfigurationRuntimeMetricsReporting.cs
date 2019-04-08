@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// </summary>
         public ConfigurationRuntimeMetricsReporting()
         {
-            IsJmxRuntimeMetrics = false;
+            IsRuntimeMetrics = false;
             IsEnableMetricsReporting = false;
             IsThreading = true;
             RuntimeInterval = 10 * 1000; // 10 seconds
@@ -60,17 +60,48 @@ namespace com.espertech.esper.common.client.configuration.runtime
         public long StatementInterval { get; set; }
 
         /// <summary>
-        ///     Returns true if the runtime registers JMX mbeans, with the platform mbean server,
         ///     that provide key runtime metrics.
         /// </summary>
         /// <returns>indicator</returns>
-        public bool IsJmxRuntimeMetrics { get; set; }
+        public bool IsRuntimeMetrics { get; set; }
 
         /// <summary>
         ///     Returns a map of statement group and metrics configuration for the statement group.
         /// </summary>
         /// <value>map of statement group and metrics configuration</value>
         public IDictionary<string, StmtGroupMetrics> StatementGroups { get; }
+
+
+        public ConfigurationRuntimeMetricsReporting WithMetricsReporting(bool value)
+        {
+            IsEnableMetricsReporting = value;
+            return this;
+        }
+
+        public ConfigurationRuntimeMetricsReporting WithThreading(bool value)
+        {
+            IsThreading = value;
+            return this;
+        }
+
+
+        public ConfigurationRuntimeMetricsReporting WithRuntimeInterval(long value)
+        {
+            RuntimeInterval = value;
+            return this;
+        }
+
+        public ConfigurationRuntimeMetricsReporting WithStatementInterval(long value)
+        {
+            StatementInterval = value;
+            return this;
+        }
+
+        public ConfigurationRuntimeMetricsReporting WithRuntimeMetrics(bool value)
+        {
+            IsRuntimeMetrics = value;
+            return this;
+        }
 
         /// <summary>
         ///     Add a statement group, allowing control of metrics reporting interval per statement or

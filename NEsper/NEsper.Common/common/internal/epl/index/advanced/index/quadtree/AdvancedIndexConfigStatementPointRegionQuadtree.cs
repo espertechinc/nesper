@@ -13,6 +13,10 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 {
     public class AdvancedIndexConfigStatementPointRegionQuadtree : EventAdvancedIndexConfigStatement
     {
+        public AdvancedIndexConfigStatementPointRegionQuadtree()
+        {
+        }
+
         public AdvancedIndexConfigStatementPointRegionQuadtree(ExprEvaluator xEval, ExprEvaluator yEval)
         {
             XEval = xEval;

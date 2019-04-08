@@ -7,103 +7,119 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.expression.time.adder;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.time.eval
 {
-	public class TimePeriodComputeConstGivenCalAddEval : TimePeriodCompute, TimePeriodProvide {
-	    private TimePeriodAdder[] adders;
-	    private int[] added;
-	    private TimeAbacus timeAbacus;
-	    private int indexMicroseconds;
-	    private TimeZone timeZone;
+    public class TimePeriodComputeConstGivenCalAddEval : TimePeriodCompute,
+        TimePeriodProvide
+    {
+        public TimePeriodComputeConstGivenCalAddEval()
+        {
+        }
 
-	    public TimePeriodComputeConstGivenCalAddEval() {
-	    }
+        public TimePeriodComputeConstGivenCalAddEval(
+            TimePeriodAdder[] adders,
+            int[] added,
+            TimeAbacus timeAbacus,
+            int indexMicroseconds,
+            TimeZoneInfo timeZone)
+        {
+            this.Adders = adders;
+            this.Added = added;
+            this.TimeAbacus = timeAbacus;
+            this.IndexMicroseconds = indexMicroseconds;
+            this.TimeZone = timeZone;
+        }
 
-	    public TimePeriodComputeConstGivenCalAddEval(TimePeriodAdder[] adders, int[] added, TimeAbacus timeAbacus, int indexMicroseconds, TimeZone timeZone) {
-	        this.adders = adders;
-	        this.added = added;
-	        this.timeAbacus = timeAbacus;
-	        this.indexMicroseconds = indexMicroseconds;
-	        this.timeZone = timeZone;
-	    }
+        public long DeltaAdd(
+            long fromTime,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            var target = AddSubtract(fromTime, 1);
+            return target - fromTime;
+        }
 
-	    public void SetAdders(TimePeriodAdder[] adders) {
-	        this.adders = adders;
-	    }
+        public long DeltaSubtract(
+            long fromTime,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            var target = AddSubtract(fromTime, -1);
+            return fromTime - target;
+        }
 
-	    public void SetAdded(int[] added) {
-	        this.added = added;
-	    }
+        public long DeltaUseRuntimeTime(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext context,
+            TimeProvider timeProvider)
+        {
+            return DeltaAdd(timeProvider.Time, eventsPerStream, true, context);
+        }
 
-	    public void SetTimeAbacus(TimeAbacus timeAbacus) {
-	        this.timeAbacus = timeAbacus;
-	    }
+        public TimePeriodDeltaResult DeltaAddWReference(
+            long fromTime,
+            long reference,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            // find the next-nearest reference higher then the current time, compute delta, return reference one lower
+            if (reference > fromTime) {
+                while (reference > fromTime) {
+                    reference = reference - DeltaSubtract(reference, eventsPerStream, isNewData, context);
+                }
+            }
 
-	    public void SetIndexMicroseconds(int indexMicroseconds) {
-	        this.indexMicroseconds = indexMicroseconds;
-	    }
+            var next = reference;
+            long last;
+            do {
+                last = next;
+                next = next + DeltaAdd(last, eventsPerStream, isNewData, context);
+            } while (next <= fromTime);
 
-	    public void SetTimeZone(TimeZone timeZone) {
-	        this.timeZone = timeZone;
-	    }
+            return new TimePeriodDeltaResult(next - fromTime, last);
+        }
 
-	    public long DeltaAdd(long fromTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        long target = AddSubtract(fromTime, 1);
-	        return target - fromTime;
-	    }
+        public TimePeriodProvide GetNonVariableProvide(ExprEvaluatorContext context)
+        {
+            return this;
+        }
 
-	    public long DeltaSubtract(long fromTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        long target = AddSubtract(fromTime, -1);
-	        return fromTime - target;
-	    }
+        public TimePeriodAdder[] Adders { get; set; }
 
-	    public long DeltaUseRuntimeTime(EventBean[] eventsPerStream, ExprEvaluatorContext context, TimeProvider timeProvider) {
-	        return DeltaAdd(timeProvider.Time, eventsPerStream, true, context);
-	    }
+        public int[] Added { get; set; }
 
-	    public TimePeriodDeltaResult DeltaAddWReference(long fromTime, long reference, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        // find the next-nearest reference higher then the current time, compute delta, return reference one lower
-	        if (reference > fromTime) {
-	            while (reference > fromTime) {
-	                reference = reference - DeltaSubtract(reference, eventsPerStream, isNewData, context);
-	            }
-	        }
+        public TimeAbacus TimeAbacus { get; set; }
 
-	        long next = reference;
-	        long last;
-	        do {
-	            last = next;
-	            next = next + DeltaAdd(last, eventsPerStream, isNewData, context);
-	        }
-	        while (next <= fromTime);
-	        return new TimePeriodDeltaResult(next - fromTime, last);
-	    }
+        public int IndexMicroseconds { get; set; }
 
-	    public TimePeriodProvide GetNonVariableProvide(ExprEvaluatorContext context) {
-	        return this;
-	    }
+        public TimeZoneInfo TimeZone { get; set; }
 
-	    private long AddSubtract(long fromTime, int factor) {
-	        Calendar cal = Calendar.GetInstance(timeZone);
-	        long remainder = timeAbacus.DateTimeSet(fromTime, cal);
-	        for (int i = 0; i < adders.Length; i++) {
-	            adders[i].Add(cal, factor * added[i]);
-	        }
-	        long result = timeAbacus.DateTimeGet(cal, remainder);
-	        if (indexMicroseconds != -1) {
-	            result += factor * added[indexMicroseconds];
-	        }
-	        return result;
-	    }
-	}
+        private long AddSubtract(
+            long fromTime,
+            int factor)
+        {
+            var dateTimeEx = DateTimeEx.GetInstance(TimeZone);
+            var remainder = TimeAbacus.DateTimeSet(fromTime, dateTimeEx);
+            for (var i = 0; i < Adders.Length; i++) {
+                Adders[i].Add(dateTimeEx, factor * Added[i]);
+            }
+
+            var result = TimeAbacus.DateTimeGet(dateTimeEx, remainder);
+            if (IndexMicroseconds != -1) {
+                result += factor * Added[IndexMicroseconds];
+            }
+
+            return result;
+        }
+    }
 } // end of namespace

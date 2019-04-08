@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -16,14 +15,12 @@ using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.agg.access.core;
-using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.util.CodegenFieldSharableComparator.CodegenSharableSerdeName;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
@@ -45,25 +42,30 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         internal readonly CodegenExpressionField sortedSerde;
 
         public AggregatorAccessSortedImpl(
-            bool join, AggregationStateSortedForge forge, int col, CodegenCtor ctor, CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope, ExprNode optionalFilter)
+            bool join,
+            AggregationStateSortedForge forge,
+            int col,
+            CodegenCtor ctor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope,
+            ExprNode optionalFilter)
             : base(optionalFilter)
 
         {
             this.forge = forge;
             sorted = membersColumnized.AddMember(col, typeof(OrderedDictionary<,>), "sorted");
             size = membersColumnized.AddMember(col, typeof(int), "size");
-            Type[] types = ExprNodeUtilityQuery.GetExprResultTypes(forge.Spec.Criteria);
+            var types = ExprNodeUtilityQuery.GetExprResultTypes(forge.Spec.Criteria);
             comparator = classScope.AddOrGetFieldSharable(
                 new CodegenFieldSharableComparator(
                     COMPARATORHASHABLEMULTIKEYS, types, forge.Spec.IsSortUsingCollator, forge.Spec.SortDescending));
             ctor.Block.AssignRef(sorted, NewInstance(typeof(OrderedDictionary<object, object>), comparator));
 
             sortedSerde = classScope.AddOrGetFieldSharable(
-                new ProxyCodegenFieldSharable() {
+                new ProxyCodegenFieldSharable {
                     ProcType = () => { return typeof(DIOSerdeTreeMapEventsMayDeque); },
                     ProcInitCtorScoped = () => {
-                        CodegenExpression type = EventTypeUtility.ResolveTypeCodegen(
+                        var type = EventTypeUtility.ResolveTypeCodegen(
                             forge.Spec.StreamEventType, EPStatementInitServicesConstants.REF);
                         return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
                             .Add(EPStatementInitServicesConstants.GETDATAINPUTOUTPUTSERDEPROVIDER).Add(
@@ -86,7 +88,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         public CodegenExpression ReverseIteratorCodegen => NewInstance(
             typeof(AggregationStateSortedIterator), sorted, ConstantTrue());
 
-        public override void ClearCodegen(CodegenMethod method, CodegenClassScope classScope)
+        public override void ClearCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(sorted, "clear")
                 .AssignRef(size, Constant(0));
@@ -95,13 +99,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             }
         }
 
-        public CodegenExpression GetFirstValueCodegen(CodegenClassScope classScope, CodegenMethod parent)
+        public CodegenExpression GetFirstValueCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod parent)
         {
             var method = parent.MakeChildWithScope(
                 typeof(EventBean), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
             method.Block.IfCondition(ExprDotMethod(sorted, "isEmpty"))
                 .BlockReturn(ConstantNull())
-                .DeclareVar(typeof(KeyValuePair<object,object>), "max", ExprDotMethod(sorted, "firstEntry"))
+                .DeclareVar(typeof(KeyValuePair<object, object>), "max", ExprDotMethod(sorted, "firstEntry"))
                 .MethodReturn(
                     StaticMethod(
                         typeof(AggregatorAccessSortedImpl), "checkedPayloadMayDeque",
@@ -109,7 +115,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             return LocalMethod(method);
         }
 
-        public CodegenExpression GetLastValueCodegen(CodegenClassScope classScope, CodegenMethod parent)
+        public CodegenExpression GetLastValueCodegen(
+            CodegenClassScope classScope,
+            CodegenMethod parent)
         {
             var method = parent.MakeChildWithScope(
                 typeof(EventBean), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
@@ -139,8 +147,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         }
 
         public override void WriteCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef output, CodegenExpressionRef unitKey,
-            CodegenExpressionRef writer, CodegenMethod method, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             method.Block
                 .Apply(WriteInt(output, row, size))
@@ -151,8 +164,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         }
 
         public override void ReadCodegen(
-            CodegenExpressionRef row, int col, CodegenExpressionRef input, CodegenMethod method,
-            CodegenExpressionRef unitKey, CodegenClassScope classScope)
+            CodegenExpressionRef row,
+            int col,
+            CodegenExpressionRef input,
+            CodegenMethod method,
+            CodegenExpressionRef unitKey,
+            CodegenClassScope classScope)
         {
             method.Block
                 .Apply(ReadInt(row, size, input))
@@ -166,11 +183,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         }
 
         internal override void ApplyEnterFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            CodegenExpressionRef eps = symbols.GetAddEPS(method);
-            CodegenExpressionRef ctx = symbols.GetAddExprEvalCtx(method);
+            var eps = symbols.GetAddEPS(method);
+            var ctx = symbols.GetAddExprEvalCtx(method);
             var referenceAddToColl = ReferenceAddToCollCodegen(method, namedMethods, classScope);
             method.Block.DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(eps, Constant(forge.Spec.StreamNum)))
                 .IfRefNull("theEvent").BlockReturnNoValue();
@@ -185,11 +204,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         }
 
         internal override void ApplyLeaveFiltered(
-            CodegenMethod method, ExprForgeCodegenSymbol symbols, CodegenClassScope classScope,
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            CodegenExpressionRef eps = symbols.GetAddEPS(method);
-            CodegenExpressionRef ctx = symbols.GetAddExprEvalCtx(method);
+            var eps = symbols.GetAddEPS(method);
+            var ctx = symbols.GetAddExprEvalCtx(method);
             var dereferenceRemove = DereferenceRemoveFromCollCodegen(method, namedMethods, classScope);
             method.Block.DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(eps, Constant(forge.Spec.StreamNum)))
                 .IfRefNull("theEvent").BlockReturnNoValue();
@@ -204,7 +225,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         }
 
         private static CodegenMethod GetComparableWMultiKeyCodegen(
-            ExprNode[] criteria, CodegenExpressionRef @ref, CodegenNamedMethods namedMethods,
+            ExprNode[] criteria,
+            CodegenExpressionRef @ref,
+            CodegenNamedMethods namedMethods,
             CodegenClassScope classScope)
         {
             var methodName = "getComparable_" + @ref.Ref;
@@ -242,7 +265,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         }
 
         private CodegenMethod ReferenceAddToCollCodegen(
-            CodegenMethod parent, CodegenNamedMethods namedMethods, CodegenClassScope classScope)
+            CodegenMethod parent,
+            CodegenNamedMethods namedMethods,
+            CodegenClassScope classScope)
         {
             var getComparable = GetComparableWMultiKeyCodegen(forge.Spec.Criteria, sorted, namedMethods, classScope);
 
@@ -271,7 +296,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         }
 
         private CodegenMethod DereferenceRemoveFromCollCodegen(
-            CodegenMethod parent, CodegenNamedMethods namedMethods, CodegenClassScope classScope)
+            CodegenMethod parent,
+            CodegenNamedMethods namedMethods,
+            CodegenClassScope classScope)
         {
             var getComparable = GetComparableWMultiKeyCodegen(forge.Spec.Criteria, sorted, namedMethods, classScope);
 
@@ -299,7 +326,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         }
 
         public static CodegenExpression CodegenGetAccessTableState(
-            int column, CodegenMethodScope parent, CodegenClassScope classScope)
+            int column,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
                 typeof(AggregationStateSorted), typeof(AggregatorAccessSortedImpl), classScope);

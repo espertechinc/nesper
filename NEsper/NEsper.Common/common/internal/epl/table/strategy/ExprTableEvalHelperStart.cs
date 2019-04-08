@@ -7,9 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.table.strategy
@@ -17,20 +15,19 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
     public class ExprTableEvalHelperStart
     {
         public static IDictionary<int, ExprTableEvalStrategy> StartTableAccess(
-            IDictionary<int, ExprTableEvalStrategyFactory> tableAccesses, AgentInstanceContext agentInstanceContext)
+            IDictionary<int, ExprTableEvalStrategyFactory> tableAccesses,
+            AgentInstanceContext agentInstanceContext)
         {
-            if (tableAccesses == null || tableAccesses.IsEmpty())
-            {
-                return Collections.EmptyMap();
+            if (tableAccesses == null || tableAccesses.IsEmpty()) {
+                return new EmptyDictionary<int, ExprTableEvalStrategy>();
             }
 
-            bool writesToTables = agentInstanceContext.StatementContext.StatementInformationals.IsWritesToTables;
-            IDictionary<int, ExprTableEvalStrategy> evals = new Dictionary<>(tableAccesses.Count, 1f);
-            foreach (KeyValuePair<int, ExprTableEvalStrategyFactory> entry in tableAccesses)
-            {
-                Table table = entry.Value.Table;
+            var writesToTables = agentInstanceContext.StatementContext.StatementInformationals.IsWritesToTables;
+            IDictionary<int, ExprTableEvalStrategy> evals = new Dictionary<int, ExprTableEvalStrategy>(tableAccesses.Count);
+            foreach (var entry in tableAccesses) {
+                var table = entry.Value.Table;
                 var provider = table.GetStateProvider(agentInstanceContext.AgentInstanceId, writesToTables);
-                ExprTableEvalStrategy strategy = entry.Value.MakeStrategy(provider);
+                var strategy = entry.Value.MakeStrategy(provider);
                 evals.Put(entry.Key, strategy);
             }
 

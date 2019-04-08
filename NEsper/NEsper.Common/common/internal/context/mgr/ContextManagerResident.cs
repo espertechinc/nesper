@@ -61,9 +61,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
             return AgentInstanceArrayIterator.Create(instances);
         }
 
-        public void SetStatementContext(StatementContext statementContext)
+        public void SetStatementContext(StatementContext value)
         {
-            StatementContextCreate = statementContext;
+            StatementContextCreate = value;
             ContextPartitionKeySerdes = StatementContextCreate.ContextServiceFactory
                 .GetContextPartitionKeyBindings(ContextDefinition);
             ContextPartitionIdService = StatementContextCreate.ContextServiceFactory

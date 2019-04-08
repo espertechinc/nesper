@@ -7,23 +7,26 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Numerics;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat;
 
-namespace com.espertech.esper.common.@internal.util
+namespace com.espertech.esper.common.@internal.type
 {
-    /// <summary>
-    ///     Interface for number coercion resulting in BigInteger.
-    /// </summary>
-    public interface SimpleNumberBigIntegerCoercer
+    public partial class RelationalOpEnum
     {
         /// <summary>
-        ///     Widen the number to BigInteger, if widening is required.
+        /// Computer for relational op compare.
         /// </summary>
-        /// <param name="numToCoerce">number to widen</param>
-        /// <returns>widened number</returns>
-        BigInteger CoerceBoxedBigInt(object numToCoerce);
+        public class LTDoubleComputer : Computer {
+            public bool Compare(object objOne, object objTwo) {
+                object s1 = (object) objOne;
+                object s2 = (object) objTwo;
+                return s1.AsDouble() < s2.AsDouble();
+            }
 
-        CodegenExpression CoerceBoxedBigIntCodegen(CodegenExpression expr, Type type);
+            public CodegenExpression Codegen(CodegenExpressionRef lhs, Type lhsType, CodegenExpression rhs, Type rhsType) {
+                return CodegenDouble(lhs, lhsType, rhs, rhsType, LT);
+            }
+        }
     }
-} // end of namespace
+}

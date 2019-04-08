@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             ExprForge[] forges, CodegenClassScope classScope)
         {
             ApplyEvalEnterNonNull(
-                method, SimpleNumberCoercerFactory.SimpleNumberCoercerDouble.CodegenDouble(value, valueType));
+                method, SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
         }
 
         protected override void ApplyEvalLeaveNonNull(
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             ExprForge[] forges, CodegenClassScope classScope)
         {
             ApplyEvalLeaveNonNull(
-                method, SimpleNumberCoercerFactory.SimpleNumberCoercerDouble.CodegenDouble(value, valueType));
+                method, SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
         }
 
         protected override void ApplyTableEnterNonNull(

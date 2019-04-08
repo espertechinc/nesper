@@ -8,94 +8,99 @@
 
 using System;
 using System.Collections.Generic;
-
-using com.espertech.esper.common.@internal.epl.join.querygraph;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+using com.espertech.esper.common.@internal.epl.@join.querygraph;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplan
 {
-	public class QueryPlanIndexUniqueHelper {
-	    public static ReducedHashKeys ReduceToUniqueIfPossible(string[] hashPropsProvided, Type[] hashCoercionTypes, IList<QueryGraphValueEntryHashKeyedForge> hashFunctions, string[][] hashPropsRequiredPerIndex) {
-	        if (hashPropsRequiredPerIndex == null || hashPropsRequiredPerIndex.Length == 0) {
-	            return null;
-	        }
-	        foreach (string[] hashPropsRequired in hashPropsRequiredPerIndex) {
-	            int[] indexes = CheckSufficientGetAssignment(hashPropsRequired, hashPropsProvided);
-	            if (indexes != null) {
-	                string[] props = new string[indexes.Length];
-	                Type[] types = new Type[indexes.Length];
-	                IList<QueryGraphValueEntryHashKeyedForge> functions = new List<QueryGraphValueEntryHashKeyedForge>();
-	                for (int i = 0; i < indexes.Length; i++) {
-	                    props[i] = hashPropsProvided[indexes[i]];
-	                    types[i] = hashCoercionTypes == null ? null : hashCoercionTypes[indexes[i]];
-	                    functions.Add(hashFunctions.Get(indexes[i]));
-	                }
-	                return new ReducedHashKeys(props, types, functions);
-	            }
-	        }
-	        return null;
-	    }
+    public class QueryPlanIndexUniqueHelper
+    {
+        public static ReducedHashKeys ReduceToUniqueIfPossible(
+            string[] hashPropsProvided,
+            Type[] hashCoercionTypes,
+            IList<QueryGraphValueEntryHashKeyedForge> hashFunctions,
+            string[][] hashPropsRequiredPerIndex)
+        {
+            if (hashPropsRequiredPerIndex == null || hashPropsRequiredPerIndex.Length == 0) {
+                return null;
+            }
 
-	    public static int[] CheckSufficientGetAssignment(string[] hashPropsRequired, string[] hashPropsProvided) {
-	        if (hashPropsProvided == null || hashPropsRequired == null || hashPropsProvided.Length < hashPropsRequired.Length) {
-	            return null;
-	        }
-	        // first pass: determine if possible
-	        foreach (string required in hashPropsRequired) {
-	            bool found = false;
-	            foreach (string provided in hashPropsProvided) {
-	                if (provided.Equals(required)) {
-	                    found = true;
-	                    break;
-	                }
-	            }
-	            if (!found) {
-	                return null;
-	            }
-	        }
+            foreach (var hashPropsRequired in hashPropsRequiredPerIndex) {
+                var indexes = CheckSufficientGetAssignment(hashPropsRequired, hashPropsProvided);
+                if (indexes != null) {
+                    var props = new string[indexes.Length];
+                    var types = new Type[indexes.Length];
+                    IList<QueryGraphValueEntryHashKeyedForge> functions = new List<QueryGraphValueEntryHashKeyedForge>();
+                    for (var i = 0; i < indexes.Length; i++) {
+                        props[i] = hashPropsProvided[indexes[i]];
+                        types[i] = hashCoercionTypes == null ? null : hashCoercionTypes[indexes[i]];
+                        functions.Add(hashFunctions[indexes[i]]);
+                    }
 
-	        // second pass: determine assignments
-	        int[] indexes = new int[hashPropsRequired.Length];
-	        for (int i = 0; i < indexes.Length; i++) {
-	            int foundIndex = -1;
-	            string required = hashPropsRequired[i];
-	            for (int j = 0; j < hashPropsProvided.Length; j++) {
-	                if (hashPropsProvided[j].Equals(required)) {
-	                    foundIndex = j;
-	                    break;
-	                }
-	            }
-	            indexes[i] = foundIndex;
-	        }
-	        return indexes;
-	    }
+                    return new ReducedHashKeys(props, types, functions);
+                }
+            }
 
-	    public class ReducedHashKeys {
-	        private readonly string[] propertyNames;
-	        private readonly Type[] coercionTypes;
-	        private readonly IList<QueryGraphValueEntryHashKeyedForge> hashKeyFunctions;
+            return null;
+        }
 
-	        private ReducedHashKeys(string[] propertyNames, Type[] coercionTypes, IList<QueryGraphValueEntryHashKeyedForge> hashKeyFunctions) {
-	            this.propertyNames = propertyNames;
-	            this.coercionTypes = coercionTypes;
-	            this.hashKeyFunctions = hashKeyFunctions;
-	        }
+        public static int[] CheckSufficientGetAssignment(
+            string[] hashPropsRequired,
+            string[] hashPropsProvided)
+        {
+            if (hashPropsProvided == null || hashPropsRequired == null || hashPropsProvided.Length < hashPropsRequired.Length) {
+                return null;
+            }
 
-	        public string[] PropertyNames
-	        {
-	            get => propertyNames;
-	        }
+            // first pass: determine if possible
+            foreach (var required in hashPropsRequired) {
+                var found = false;
+                foreach (var provided in hashPropsProvided) {
+                    if (provided.Equals(required)) {
+                        found = true;
+                        break;
+                    }
+                }
 
-	        public Type[] CoercionTypes
-	        {
-	            get => coercionTypes;
-	        }
+                if (!found) {
+                    return null;
+                }
+            }
 
-	        public IList<QueryGraphValueEntryHashKeyedForge> HashKeyFunctions
-	        {
-	            get => hashKeyFunctions;
-	        }
-	    }
-	}
+            // second pass: determine assignments
+            var indexes = new int[hashPropsRequired.Length];
+            for (var i = 0; i < indexes.Length; i++) {
+                var foundIndex = -1;
+                var required = hashPropsRequired[i];
+                for (var j = 0; j < hashPropsProvided.Length; j++) {
+                    if (hashPropsProvided[j].Equals(required)) {
+                        foundIndex = j;
+                        break;
+                    }
+                }
+
+                indexes[i] = foundIndex;
+            }
+
+            return indexes;
+        }
+
+        public class ReducedHashKeys
+        {
+            internal ReducedHashKeys(
+                string[] propertyNames,
+                Type[] coercionTypes,
+                IList<QueryGraphValueEntryHashKeyedForge> hashKeyFunctions)
+            {
+                PropertyNames = propertyNames;
+                CoercionTypes = coercionTypes;
+                HashKeyFunctions = hashKeyFunctions;
+            }
+
+            public string[] PropertyNames { get; }
+
+            public Type[] CoercionTypes { get; }
+
+            public IList<QueryGraphValueEntryHashKeyedForge> HashKeyFunctions { get; }
+        }
+    }
 } // end of namespace

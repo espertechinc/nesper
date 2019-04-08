@@ -6,162 +6,205 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.epl.table.strategy;
-using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.table
 {
-	/// <summary>
-	/// Implementation for handling aggregation without any grouping (no group-by).
-	/// </summary>
-	public class AggSvcGroupAllWTableImpl : AggregationService {
-	    private readonly TableInstanceUngrouped tableInstance;
-	    private readonly TableColumnMethodPairEval[] methodPairs;
-	    private readonly AggregationMultiFunctionAgent[] accessAgents;
-	    private readonly int[] accessColumnsZeroOffset;
+    /// <summary>
+    ///     Implementation for handling aggregation without any grouping (no group-by).
+    /// </summary>
+    public class AggSvcGroupAllWTableImpl : AggregationService
+    {
+        private readonly AggregationMultiFunctionAgent[] accessAgents;
+        private readonly int[] accessColumnsZeroOffset;
+        private readonly TableColumnMethodPairEval[] methodPairs;
+        private readonly TableInstanceUngrouped tableInstance;
 
-	    public AggSvcGroupAllWTableImpl(TableInstanceUngrouped tableInstance, TableColumnMethodPairEval[] methodPairs, AggregationMultiFunctionAgent[] accessAgents, int[] accessColumnsZeroOffset) {
-	        this.tableInstance = tableInstance;
-	        this.methodPairs = methodPairs;
-	        this.accessAgents = accessAgents;
-	        this.accessColumnsZeroOffset = accessColumnsZeroOffset;
-	    }
+        public AggSvcGroupAllWTableImpl(
+            TableInstanceUngrouped tableInstance,
+            TableColumnMethodPairEval[] methodPairs,
+            AggregationMultiFunctionAgent[] accessAgents,
+            int[] accessColumnsZeroOffset)
+        {
+            this.tableInstance = tableInstance;
+            this.methodPairs = methodPairs;
+            this.accessAgents = accessAgents;
+            this.accessColumnsZeroOffset = accessColumnsZeroOffset;
+        }
 
-	    public void ApplyEnter(EventBean[] eventsPerStream, object optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext) {
-	        // acquire table-level write lock
-	        TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock(), exprEvaluatorContext);
+        public void ApplyEnter(
+            EventBean[] eventsPerStream,
+            object optionalGroupKeyPerRow,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            // acquire table-level write lock
+            TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock, exprEvaluatorContext);
 
-	        ObjectArrayBackedEventBean @event = tableInstance.GetCreateRowIntoTable(exprEvaluatorContext);
-	        AggregationRow row = ExprTableEvalStrategyUtil.GetRow(@event);
+            var @event = tableInstance.GetCreateRowIntoTable(exprEvaluatorContext);
+            var row = ExprTableEvalStrategyUtil.GetRow(@event);
 
-	        for (int i = 0; i < methodPairs.Length; i++) {
-	            TableColumnMethodPairEval methodPair = methodPairs[i];
-	            object columnResult = methodPair.Evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-	            row.EnterAgg(methodPair.Column, columnResult);
-	        }
+            for (var i = 0; i < methodPairs.Length; i++) {
+                var methodPair = methodPairs[i];
+                var columnResult = methodPair.Evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                row.EnterAgg(methodPair.Column, columnResult);
+            }
 
-	        for (int i = 0; i < accessAgents.Length; i++) {
-	            accessAgents[i].ApplyEnter(eventsPerStream, exprEvaluatorContext, row, accessColumnsZeroOffset[i]);
-	        }
+            for (var i = 0; i < accessAgents.Length; i++) {
+                accessAgents[i].ApplyEnter(eventsPerStream, exprEvaluatorContext, row, accessColumnsZeroOffset[i]);
+            }
 
-	        tableInstance.HandleRowUpdated(@event);
-	    }
+            tableInstance.HandleRowUpdated(@event);
+        }
 
-	    public void ApplyLeave(EventBean[] eventsPerStream, object optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext) {
-	        // acquire table-level write lock
-	        TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock(), exprEvaluatorContext);
+        public void ApplyLeave(
+            EventBean[] eventsPerStream,
+            object optionalGroupKeyPerRow,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            // acquire table-level write lock
+            TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock, exprEvaluatorContext);
 
-	        ObjectArrayBackedEventBean @event = tableInstance.GetCreateRowIntoTable(exprEvaluatorContext);
-	        AggregationRow row = ExprTableEvalStrategyUtil.GetRow(@event);
+            var @event = tableInstance.GetCreateRowIntoTable(exprEvaluatorContext);
+            var row = ExprTableEvalStrategyUtil.GetRow(@event);
 
-	        for (int i = 0; i < methodPairs.Length; i++) {
-	            TableColumnMethodPairEval methodPair = methodPairs[i];
-	            object columnResult = methodPair.Evaluator.Evaluate(eventsPerStream, false, exprEvaluatorContext);
-	            row.LeaveAgg(methodPair.Column, columnResult);
-	        }
+            for (var i = 0; i < methodPairs.Length; i++) {
+                var methodPair = methodPairs[i];
+                var columnResult = methodPair.Evaluator.Evaluate(eventsPerStream, false, exprEvaluatorContext);
+                row.LeaveAgg(methodPair.Column, columnResult);
+            }
 
-	        for (int i = 0; i < accessAgents.Length; i++) {
-	            accessAgents[i].ApplyLeave(eventsPerStream, exprEvaluatorContext, row, accessColumnsZeroOffset[i]);
-	        }
+            for (var i = 0; i < accessAgents.Length; i++) {
+                accessAgents[i].ApplyLeave(eventsPerStream, exprEvaluatorContext, row, accessColumnsZeroOffset[i]);
+            }
 
-	        tableInstance.HandleRowUpdated(@event);
-	    }
+            tableInstance.HandleRowUpdated(@event);
+        }
 
-	    public void SetCurrentAccess(object groupKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel) {
-	        // no action needed - this implementation does not group and the current row is the single group
-	    }
+        public void SetCurrentAccess(
+            object groupKey,
+            int agentInstanceId,
+            AggregationGroupByRollupLevel rollupLevel)
+        {
+            // no action needed - this implementation does not group and the current row is the single group
+        }
 
-	    public object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-	        // acquire table-level write lock
-	        TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock(), exprEvaluatorContext);
+        public object GetValue(
+            int column,
+            int agentInstanceId,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            // acquire table-level write lock
+            TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock, exprEvaluatorContext);
 
-	        ObjectArrayBackedEventBean @event = tableInstance.EventUngrouped;
-	        if (@event == null) {
-	            return null;
-	        }
-	        AggregationRow row = ExprTableEvalStrategyUtil.GetRow(@event);
-	        return row.GetValue(column, eventsPerStream, isNewData, exprEvaluatorContext);
-	    }
+            var @event = tableInstance.EventUngrouped;
+            if (@event == null) {
+                return null;
+            }
 
-	    public ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        // acquire table-level write lock
-	        TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock(), context);
+            var row = ExprTableEvalStrategyUtil.GetRow(@event);
+            return row.GetValue(column, eventsPerStream, isNewData, exprEvaluatorContext);
+        }
 
-	        ObjectArrayBackedEventBean @event = tableInstance.EventUngrouped;
-	        if (@event == null) {
-	            return null;
-	        }
-	        AggregationRow row = ExprTableEvalStrategyUtil.GetRow(@event);
-	        return row.GetCollectionOfEvents(column, eventsPerStream, isNewData, context);
-	    }
+        public ICollection<EventBean> GetCollectionOfEvents(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            // acquire table-level write lock
+            TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock, context);
 
-	    public ICollection<object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        // acquire table-level write lock
-	        TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock(), context);
+            var @event = tableInstance.EventUngrouped;
+            if (@event == null) {
+                return null;
+            }
 
-	        ObjectArrayBackedEventBean @event = tableInstance.EventUngrouped;
-	        if (@event == null) {
-	            return null;
-	        }
-	        AggregationRow row = ExprTableEvalStrategyUtil.GetRow(@event);
-	        return row.GetCollectionScalar(column, eventsPerStream, isNewData, context);
-	    }
+            var row = ExprTableEvalStrategyUtil.GetRow(@event);
+            return row.GetCollectionOfEvents(column, eventsPerStream, isNewData, context);
+        }
 
-	    public EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-	        // acquire table-level write lock
-	        TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock(), context);
+        public ICollection<object> GetCollectionScalar(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            // acquire table-level write lock
+            TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock, context);
 
-	        ObjectArrayBackedEventBean @event = tableInstance.EventUngrouped;
-	        if (@event == null) {
-	            return null;
-	        }
-	        AggregationRow row = ExprTableEvalStrategyUtil.GetRow(@event);
-	        return row.GetEventBean(column, eventsPerStream, isNewData, context);
-	    }
+            var @event = tableInstance.EventUngrouped;
+            if (@event == null) {
+                return null;
+            }
 
-	    public void ClearResults(ExprEvaluatorContext exprEvaluatorContext) {
-	        // clear not required
-	    }
+            var row = ExprTableEvalStrategyUtil.GetRow(@event);
+            return row.GetCollectionScalar(column, eventsPerStream, isNewData, context);
+        }
 
-	    public void SetRemovedCallback(AggregationRowRemovedCallback callback) {
-	        // not applicable
-	    }
+        public EventBean GetEventBean(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            // acquire table-level write lock
+            TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock, context);
 
-	    public void Accept(AggregationServiceVisitor visitor) {
-	        // not applicable
-	    }
+            var @event = tableInstance.EventUngrouped;
+            if (@event == null) {
+                return null;
+            }
 
-	    public void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor) {
-	    }
+            var row = ExprTableEvalStrategyUtil.GetRow(@event);
+            return row.GetEventBean(column, eventsPerStream, isNewData, context);
+        }
 
-	    public bool IsGrouped
-	    {
-	        get => false;
-	    }
+        public void ClearResults(ExprEvaluatorContext exprEvaluatorContext)
+        {
+            // clear not required
+        }
 
-	    public object GetGroupKey(int agentInstanceId) {
-	        return null;
-	    }
+        public void SetRemovedCallback(AggregationRowRemovedCallback callback)
+        {
+            // not applicable
+        }
 
-	    public ICollection<object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext) {
-	        return null;
-	    }
+        public void Accept(AggregationServiceVisitor visitor)
+        {
+            // not applicable
+        }
 
-	    public void Stop() {
-	    }
+        public void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor)
+        {
+        }
 
-	    public AggregationService GetContextPartitionAggregationService(int agentInstanceId) {
-	        return this;
-	    }
-	}
+        public bool IsGrouped => false;
+
+        public object GetGroupKey(int agentInstanceId)
+        {
+            return null;
+        }
+
+        public ICollection<object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return null;
+        }
+
+        public void Stop()
+        {
+        }
+
+        public AggregationService GetContextPartitionAggregationService(int agentInstanceId)
+        {
+            return this;
+        }
+    }
 } // end of namespace

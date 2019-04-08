@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.median
             ExprForge[] forges, CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(
-                vector, "add", SimpleNumberCoercerFactory.SimpleNumberCoercerDouble.CodegenDouble(value, valueType));
+                vector, "add", SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
         }
 
         protected override void ApplyEvalLeaveNonNull(
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.median
             ExprForge[] forges, CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(
-                vector, "remove", SimpleNumberCoercerFactory.SimpleNumberCoercerDouble.CodegenDouble(value, valueType));
+                vector, "remove", SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
         }
 
         protected override void ApplyTableEnterNonNull(

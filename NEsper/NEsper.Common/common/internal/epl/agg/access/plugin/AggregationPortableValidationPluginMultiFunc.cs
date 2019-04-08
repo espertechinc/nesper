@@ -10,38 +10,36 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
 {
     public class AggregationPortableValidationPluginMultiFunc : AggregationPortableValidation
     {
-        private string aggregationFunctionName;
+        public string AggregationFunctionName { get; set; }
 
-        public void ValidateIntoTableCompatible(string tableExpression, AggregationPortableValidation intoTableAgg, string intoExpression, AggregationForgeFactory factory)
+        public void ValidateIntoTableCompatible(
+            string tableExpression,
+            AggregationPortableValidation intoTableAgg,
+            string intoExpression,
+            AggregationForgeFactory factory)
         {
             AggregationValidationUtil.ValidateAggregationType(this, tableExpression, intoTableAgg, intoExpression);
         }
 
-        public CodegenExpression Make(CodegenMethodScope parent, ModuleTableInitializeSymbol symbols, CodegenClassScope classScope)
+        public CodegenExpression Make(
+            CodegenMethodScope parent,
+            ModuleTableInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(AggregationPortableValidationPluginMultiFunc), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(AggregationPortableValidationPluginMultiFunc), GetType(), classScope);
             method.Block
-                    .DeclareVar(typeof(AggregationPortableValidationPluginMultiFunc), "portable", NewInstance(typeof(AggregationPortableValidationPluginMultiFunc)))
-                    .ExprDotMethod(@Ref("portable"), "setAggregationFunctionName", Constant(aggregationFunctionName))
-                    .MethodReturn(@Ref("portable"));
+                .DeclareVar(
+                    typeof(AggregationPortableValidationPluginMultiFunc), "portable",
+                    NewInstance(typeof(AggregationPortableValidationPluginMultiFunc)))
+                .ExprDotMethod(Ref("portable"), "setAggregationFunctionName", Constant(AggregationFunctionName))
+                .MethodReturn(Ref("portable"));
             return LocalMethod(method);
-        }
-
-        public string AggregationFunctionName
-        {
-            get => aggregationFunctionName;
-        }
-
-        public void SetAggregationFunctionName(string aggregationFunctionName)
-        {
-            this.aggregationFunctionName = aggregationFunctionName;
         }
     }
 } // end of namespace

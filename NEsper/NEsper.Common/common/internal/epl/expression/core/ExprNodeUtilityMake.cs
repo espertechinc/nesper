@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return new ExprEvalUnderlyingEvaluator(streamNum, resultType);
         }
 
-        private static Pair<ExprForge[], ExprEvaluator[]> MakeVarargArrayEval(MethodInfo method, ExprForge[] childForges)
+        internal static Pair<ExprForge[], ExprEvaluator[]> MakeVarargArrayEval(MethodInfo method, ExprForge[] childForges)
         {
             var methodParameterTypes = method.GetParameterTypes();
             ExprEvaluator[] evals = new ExprEvaluator[methodParameterTypes.Length];

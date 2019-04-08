@@ -37,6 +37,7 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// <param name="hashFields">The hash fields.</param>
         /// <param name="btreeFields">The btree fields.</param>
         public VirtualDataWindowLookupContext(
+            string deploymentId,
             string statementName,
             int statementId,
             Attribute[] statementAnnotations,
@@ -45,6 +46,7 @@ namespace com.espertech.esper.common.client.hook.vdw
             IList<VirtualDataWindowLookupFieldDesc> hashFields,
             IList<VirtualDataWindowLookupFieldDesc> btreeFields)
         {
+            DeploymentId = deploymentId;
             StatementName = statementName;
             StatementId = statementId;
             StatementAnnotations = statementAnnotations;
@@ -53,6 +55,13 @@ namespace com.espertech.esper.common.client.hook.vdw
             HashFields = hashFields;
             BtreeFields = btreeFields;
         }
+
+        /// <summary>
+        /// Gets or sets the deployment id.
+        /// </summary>
+        /// <value>The name of the deployment id.</value>
+
+        public string DeploymentId { get; private set; }
 
         /// <summary>
         /// Gets or sets the named window name.

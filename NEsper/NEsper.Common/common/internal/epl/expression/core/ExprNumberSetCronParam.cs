@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             block.MethodReturn(
                 NewInstance(
                     typeof(CronParameter), enumValue,
-                    SimpleNumberCoercerFactory.SimpleNumberCoercerInt.CodegenInt(Ref("value"), evaluationType)));
+                    SimpleNumberCoercerFactory.CoercerInt.CodegenInt(Ref("value"), evaluationType)));
             return LocalMethod(methodNode);
         }
 

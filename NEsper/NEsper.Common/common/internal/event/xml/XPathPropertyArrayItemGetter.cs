@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <param name="index">to get item at</param>
         /// <param name="fragmentFactory">for creating fragments, or null if not creating fragments</param>
         public XPathPropertyArrayItemGetter(
-            EventPropertyGetterSPI getter, int index, FragmentFactorySPI fragmentFactory)
+            EventPropertyGetterSPI getter,
+            int index,
+            FragmentFactorySPI fragmentFactory)
         {
             this.getter = getter;
             this.index = index;
@@ -63,7 +65,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         public CodegenExpression EventBeanGetCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
@@ -71,14 +74,16 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         public CodegenExpression EventBeanExistsCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
-            CodegenExpression beanExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             if (fragmentFactory == null) {
@@ -90,21 +95,24 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         public CodegenExpression UnderlyingGetCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(GetCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantTrue();
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
-            CodegenExpression underlyingExpression, CodegenMethodScope codegenMethodScope,
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             if (fragmentFactory == null) {
@@ -120,21 +128,25 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <param name="object">object</param>
         /// <param name="index">index</param>
         /// <returns>value</returns>
-        public static object GetXPathNodeListWCheck(object @object, int index)
+        public static object GetXPathNodeListWCheck(
+            object @object,
+            int index)
         {
             if (!(@object is XmlNodeList)) {
                 return null;
             }
 
             var nodeList = (XmlNodeList) @object;
-            if (nodeList.Length <= index) {
+            if (nodeList.Count <= index) {
                 return null;
             }
 
             return nodeList.Item(index);
         }
 
-        private CodegenMethod GetCodegen(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+        private CodegenMethod GetCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(XmlNode), "node").Block
@@ -145,7 +157,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
         }
 
         private CodegenMethod GetFragmentCodegen(
-            CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             var member = codegenClassScope.AddFieldUnshared(
                 true, typeof(FragmentFactory),

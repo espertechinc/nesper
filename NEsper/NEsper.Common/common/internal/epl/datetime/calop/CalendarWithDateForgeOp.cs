@@ -157,9 +157,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 	        Type yearType = forge.year.EvaluationType;
 	        Type monthType = forge.month.EvaluationType;
 	        Type dayType = forge.day.EvaluationType;
-	        block.DeclareVar(typeof(int?), "year", SimpleNumberCoercerFactory.SimpleNumberCoercerInt.CoerceCodegenMayNull(forge.year.EvaluateCodegen(yearType, methodNode, exprSymbol, codegenClassScope), yearType, methodNode, codegenClassScope))
-	                .DeclareVar(typeof(int?), "month", SimpleNumberCoercerFactory.SimpleNumberCoercerInt.CoerceCodegenMayNull(forge.month.EvaluateCodegen(monthType, methodNode, exprSymbol, codegenClassScope), monthType, methodNode, codegenClassScope))
-	                .DeclareVar(typeof(int?), "day", SimpleNumberCoercerFactory.SimpleNumberCoercerInt.CoerceCodegenMayNull(forge.day.EvaluateCodegen(dayType, methodNode, exprSymbol, codegenClassScope), dayType, methodNode, codegenClassScope));
+	        block.DeclareVar(typeof(int?), "year", SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(forge.year.EvaluateCodegen(yearType, methodNode, exprSymbol, codegenClassScope), yearType, methodNode, codegenClassScope))
+	                .DeclareVar(typeof(int?), "month", SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(forge.month.EvaluateCodegen(monthType, methodNode, exprSymbol, codegenClassScope), monthType, methodNode, codegenClassScope))
+	                .DeclareVar(typeof(int?), "day", SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(forge.day.EvaluateCodegen(dayType, methodNode, exprSymbol, codegenClassScope), dayType, methodNode, codegenClassScope));
 	    }
 	}
 } // end of namespace

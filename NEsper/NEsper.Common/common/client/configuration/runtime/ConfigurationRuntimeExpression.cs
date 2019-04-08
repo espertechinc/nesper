@@ -21,7 +21,8 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// </summary>
         public ConfigurationRuntimeExpression()
         {
-            TimeZone = TimeZone.CurrentTimeZone;
+            TimeZone = TimeZoneInfo.Local;
+            //TimeZone = TimeZone.CurrentTimeZone;
             IsSelfSubselectPreeval = true;
         }
 
@@ -29,7 +30,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         ///     Returns the time zone for calendar operations.
         /// </summary>
         /// <returns>time zone</returns>
-        public TimeZone TimeZone { get; set; }
+        public TimeZoneInfo TimeZone { get; set; }
 
         /// <summary>
         ///     Set to true (the default) to indicate that sub-selects within a statement are updated first when a new

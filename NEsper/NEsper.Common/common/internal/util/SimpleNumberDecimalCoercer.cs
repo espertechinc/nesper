@@ -7,24 +7,24 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util
 {
-	/// <summary>
-	/// Interface for number coercion resulting in BigInteger.
-	/// </summary>
-	public interface SimpleNumberDecimalCoercer {
-	    /// <summary>
-	    /// Widen the number to decimal, if widening is required.
-	    /// </summary>
-	    /// <param name="numToCoerce">number to widen</param>
-	    /// <returns>widened number</returns>
-	    decimal? CoerceBoxedDecimal(object numToCoerce);
+    /// <summary>
+    ///     Interface for number coercion resulting in decimal.
+    /// </summary>
+    public interface SimpleNumberDecimalCoercer
+    {
+        /// <summary>
+        ///     Widen the number to decimal, if widening is required.
+        /// </summary>
+        /// <param name="numToCoerce">number to widen</param>
+        /// <returns>widened number</returns>
+        decimal? CoerceBoxedDecimal(object numToCoerce);
 
-	    CodegenExpression CoerceBoxedDecimalCodegen(CodegenExpression expr, Type type);
-	}
+        CodegenExpression CoerceBoxedDecimalCodegen(
+            CodegenExpression expr,
+            Type type);
+    }
 } // end of namespace

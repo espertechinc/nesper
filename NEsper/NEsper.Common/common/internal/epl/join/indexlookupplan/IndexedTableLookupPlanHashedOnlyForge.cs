@@ -29,10 +29,16 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         private readonly Type[] optionalCoercionTypes;
 
         public IndexedTableLookupPlanHashedOnlyForge(
-            int lookupStream, int indexedStream, bool indexedStreamIsVDW, EventType[] typesPerStream,
-            TableLookupIndexReqKey indexNum, QueryGraphValueEntryHashKeyedForge[] hashKeys,
-            QueryPlanIndexForge indexSpecs, Type[] optionalCoercionTypes) : base(
-            lookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, new[] {indexNum})
+            int lookupStream,
+            int indexedStream,
+            bool indexedStreamIsVDW,
+            EventType[] typesPerStream,
+            TableLookupIndexReqKey indexNum,
+            QueryGraphValueEntryHashKeyedForge[] hashKeys,
+            QueryPlanIndexForge indexSpecs,
+            Type[] optionalCoercionTypes)
+            : base(
+                lookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, new[] {indexNum})
         {
             HashKeys = hashKeys;
             this.indexSpecs = indexSpecs;
@@ -40,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         }
 
         public override TableLookupKeyDesc KeyDescriptor => new TableLookupKeyDesc(
-            Arrays.AsList(HashKeys), Collections.GetEmptyList<QueryGraphValueEntryRangeForge>());
+            CompatExtensions.AsList(HashKeys), Collections.GetEmptyList<QueryGraphValueEntryRangeForge>());
 
         public QueryGraphValueEntryHashKeyedForge[] HashKeys { get; }
 
@@ -57,7 +63,9 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         }
 
         public override ICollection<CodegenExpression> AdditionalParams(
-            CodegenMethod method, SAIFFInitializeSymbol symbols, CodegenClassScope classScope)
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
         {
             var getterSPIS = QueryGraphValueEntryHashKeyedForge.GetGettersIfPropsOnly(HashKeys);
             var forges = QueryGraphValueEntryHashKeyedForge.GetForges(HashKeys);

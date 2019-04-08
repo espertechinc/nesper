@@ -58,5 +58,29 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// </summary>
         /// <value>indicator for statement-level locks</value>
         public bool IsDisableLocking { get; set; }
+
+        public ConfigurationRuntimeExecution WithFilterServiceProfile(FilterServiceProfile value)
+        {
+            FilterServiceProfile = value;
+            return this;
+        }
+
+        public ConfigurationRuntimeExecution WithDeclaredExprValueCacheSize(int value)
+        {
+            DeclaredExprValueCacheSize = value;
+            return this;
+        }
+
+        public ConfigurationRuntimeExecution WithPrioritized(bool value = true)
+        {
+            IsPrioritized = value;
+            return this;
+        }
+
+        public ConfigurationRuntimeExecution WithFairLock(bool value = true)
+        {
+            IsFairlock = value;
+            return this;
+        }
     }
 } // end of namespace

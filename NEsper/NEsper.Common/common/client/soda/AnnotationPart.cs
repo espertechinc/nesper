@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using com.espertech.esper.common.@internal.epl.annotation;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
@@ -43,7 +42,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="name">name of annotation</param>
         /// <param name="attributes">are the attribute values</param>
-        public AnnotationPart(string name, IList<AnnotationAttribute> attributes)
+        public AnnotationPart(
+            string name,
+            IList<AnnotationAttribute> attributes)
         {
             Name = name;
             Attributes = attributes;
@@ -91,7 +92,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="name">name</param>
         /// <param name="value">value</param>
-        public void AddValue(string name, object value)
+        public void AddValue(
+            string name,
+            object value)
         {
             Attributes.Add(new AnnotationAttribute(name, value));
         }
@@ -102,7 +105,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">to print to</param>
         /// <param name="annotations">annotations</param>
         /// <param name="formatter">for newline-whitespace formatting</param>
-        public static void ToEPL(StringWriter writer, IList<AnnotationPart> annotations, EPStatementFormatter formatter)
+        public static void ToEPL(
+            StringWriter writer,
+            IList<AnnotationPart> annotations,
+            EPStatementFormatter formatter)
         {
             if (annotations == null || annotations.IsEmpty()) {
                 return;
@@ -157,7 +163,9 @@ namespace com.espertech.esper.common.client.soda
             writer.Write(")");
         }
 
-        private void ToEPL(TextWriter writer, object second)
+        private void ToEPL(
+            TextWriter writer,
+            object second)
         {
             if (second is string) {
                 writer.Write("'");

@@ -19,18 +19,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         private AggregationAccessorLinearType accessType;
         private ExprEvaluator optionalEvaluator;
 
-        public void SetAccessType(AggregationAccessorLinearType accessType)
-        {
-            this.accessType = accessType;
+        public AggregationAccessorLinearType AccessType {
+            set => accessType = value;
         }
 
-        public void SetOptionalEvaluator(ExprEvaluator optionalEvaluator)
-        {
-            this.optionalEvaluator = optionalEvaluator;
+        public ExprEvaluator OptionalEvaluator {
+            set => optionalEvaluator = value;
         }
 
         public object GetValue(
-            int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData,
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var events = (IList<EventBean>) row.GetCollectionOfEvents(
@@ -44,33 +45,42 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 target = events[0];
             }
             else {
-                target = events.Get(events.Count - 1);
+                target = events[events.Count - 1];
             }
 
             if (optionalEvaluator == null) {
                 return target.Underlying;
             }
 
-            var eventsPerStreamBuf = {target};
+            var eventsPerStreamBuf = new EventBean[] {target};
             return optionalEvaluator.Evaluate(eventsPerStreamBuf, isNewData, exprEvaluatorContext);
         }
 
         public ICollection<object> GetValueCollectionScalar(
-            int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData,
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             return null;
         }
 
         public ICollection<object> GetValueCollectionEvents(
-            int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData,
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             return null;
         }
 
         public EventBean GetValueEventBean(
-            int aggColNum, AggregationRow row, EventBean[] eventsPerStream, bool isNewData,
+            int aggColNum,
+            AggregationRow row,
+            EventBean[] eventsPerStream,
+            bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var events = (IList<EventBean>) row.GetCollectionOfEvents(
@@ -83,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 return events[0];
             }
 
-            return events.Get(events.Count - 1);
+            return events[events.Count - 1];
         }
     }
 } // end of namespace

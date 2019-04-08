@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             Type valueType,
             CodegenClassScope codegenClassScope)
         {
-            return SimpleNumberCoercerFactory.SimpleNumberCoercerLong.CodegenLong(value, valueType);
+            return SimpleNumberCoercerFactory.CoercerLong.CodegenLong(value, valueType);
         }
     }
 }

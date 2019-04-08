@@ -272,7 +272,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public class ComputerBigIntCoerce : Computer
         {
             private readonly ExprEvaluator[] childNodes;
-            private readonly SimpleNumberBigIntegerCoercer[] convertors;
+            private readonly BigIntegerCoercer[] convertors;
             private readonly bool isMax;
 
             /// <summary>
@@ -282,7 +282,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             /// <param name="convertors">convertors to BigInteger</param>
             /// <param name="isMax">true if max, false if min</param>
             public ComputerBigIntCoerce(
-                ExprEvaluator[] childNodes, SimpleNumberBigIntegerCoercer[] convertors, bool isMax)
+                ExprEvaluator[] childNodes, BigIntegerCoercer[] convertors, bool isMax)
             {
                 this.childNodes = childNodes;
                 this.convertors = convertors;
@@ -335,7 +335,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             public static CodegenExpression Codegen(
                 bool max, CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope, ExprNode[] nodes, SimpleNumberBigIntegerCoercer[] convertors)
+                CodegenClassScope codegenClassScope, ExprNode[] nodes, BigIntegerCoercer[] convertors)
             {
                 var r0Type = nodes[0].Forge.EvaluationType;
                 var r1Type = nodes[1].Forge.EvaluationType;

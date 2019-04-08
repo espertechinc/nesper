@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     "sum",
                     Op(
                         @Ref("sum"), "+",
-                        SimpleNumberCoercerFactory.SimpleNumberCoercerDouble.CodegenDouble(@Ref("num"), innerType)))
+                        SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(@Ref("num"), innerType)))
                 .BlockEnd();
             block.IfCondition(EqualsIdentity(@Ref("count"), Constant(0))).BlockReturn(ConstantNull())
                 .MethodReturn(Op(@Ref("sum"), "/", @Ref("count")));

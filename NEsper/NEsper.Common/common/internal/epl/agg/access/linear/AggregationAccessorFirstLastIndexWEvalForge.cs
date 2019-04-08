@@ -17,8 +17,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
     /// </summary>
     public class AggregationAccessorFirstLastIndexWEvalForge : AggregationAccessorForge
     {
-        private readonly bool isFirst;
-
         /// <summary>
         ///     Ctor.
         /// </summary>
@@ -28,13 +26,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         /// <param name="constant">constant index</param>
         /// <param name="isFirst">true if returning first, false for returning last</param>
         public AggregationAccessorFirstLastIndexWEvalForge(
-            int streamNum, ExprForge childNode, ExprForge indexNode, int constant, bool isFirst)
+            int streamNum,
+            ExprForge childNode,
+            ExprForge indexNode,
+            int constant,
+            bool isFirst)
         {
             StreamNum = streamNum;
             ChildNode = childNode;
             IndexNode = indexNode;
             Constant = constant;
-            this.isFirst = isFirst;
+            IsFirst = isFirst;
         }
 
         public int StreamNum { get; }
@@ -44,6 +46,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         public ExprForge IndexNode { get; }
 
         public int Constant { get; }
+
+        public bool IsFirst { get; }
 
         public void GetValueCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
@@ -63,11 +67,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         public void GetEnumerableScalarCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
             AggregationAccessorFirstLastIndexWEval.GetEnumerableScalarCodegen(this, context);
-        }
-
-        public bool IsFirst()
-        {
-            return isFirst;
         }
     }
 } // end of namespace

@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
 	        string method = splitDots[indexMethod];
 	        int indexParan = method.IndexOf("(");
 	        method = method.Substring(0, indexParan);
-	        if (method.Length() == 0) {
+	        if (method.Length == 0) {
 	            return null;
 	        }
 

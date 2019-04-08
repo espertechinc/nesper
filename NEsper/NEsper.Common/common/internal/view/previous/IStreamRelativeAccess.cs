@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.view.previous
 
 	    public ICollection<EventBean> WindowToEventCollReadOnly
 	    {
-	        get => Arrays.AsList(lastNewData);
+	        get => CompatExtensions.AsList(lastNewData);
 	    }
 
 	    public int WindowToEventCount {

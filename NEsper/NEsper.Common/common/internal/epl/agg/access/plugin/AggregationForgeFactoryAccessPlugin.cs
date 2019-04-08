@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         {
             get
             {
-                AggregationPortableValidationPluginMultiFunc portable = new AggregationPortableValidationPluginMultiFunc();
+                var portable = new AggregationPortableValidationPluginMultiFunc();
                 portable.AggregationFunctionName = parent.AggregationFunctionName;
                 return portable;
             }

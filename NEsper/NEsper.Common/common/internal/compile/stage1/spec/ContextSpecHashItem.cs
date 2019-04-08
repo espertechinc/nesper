@@ -19,61 +19,53 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
-	public class ContextSpecHashItem {
+    public class ContextSpecHashItem
+    {
+        public ContextSpecHashItem(
+            ExprChainedSpec function,
+            FilterSpecRaw filterSpecRaw)
+        {
+            Function = function;
+            FilterSpecRaw = filterSpecRaw;
+        }
 
-	    private readonly ExprChainedSpec function;
-	    private readonly FilterSpecRaw filterSpecRaw;
+        public ExprChainedSpec Function { get; }
 
-	    private FilterSpecCompiled filterSpecCompiled;
-	    private ExprFilterSpecLookupableForge lookupable;
+        public FilterSpecRaw FilterSpecRaw { get; }
 
-	    public ContextSpecHashItem(ExprChainedSpec function, FilterSpecRaw filterSpecRaw) {
-	        this.function = function;
-	        this.filterSpecRaw = filterSpecRaw;
-	    }
+        public FilterSpecCompiled FilterSpecCompiled { get; set; }
 
-	    public ExprChainedSpec Function {
-	        get => function;
-	    }
+        public ExprFilterSpecLookupableForge Lookupable { get; set; }
 
-	    public FilterSpecRaw FilterSpecRaw {
-	        get => filterSpecRaw;
-	    }
+        public CodegenExpression MakeCodegen(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            var method = parent.MakeChild(typeof(ContextControllerDetailHashItem), GetType(), classScope);
+            method.Block.DeclareVar(
+                typeof(EventType), "eventType",
+                EventTypeUtility.ResolveTypeCodegen(FilterSpecCompiled.FilterForEventType, symbols.GetAddInitSvc(method)));
 
-	    public FilterSpecCompiled FilterSpecCompiled {
-	        get => filterSpecCompiled;
-	    }
+            var symbolsWithType = new SAIFFInitializeSymbolWEventType();
+            var methodLookupableMake = parent.MakeChildWithScope(typeof(ExprFilterSpecLookupable), GetType(), symbolsWithType, classScope)
+                .AddParam(typeof(EventType), "eventType").AddParam(typeof(EPStatementInitServices), SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
+            var methodLookupable = Lookupable.MakeCodegen(methodLookupableMake, symbolsWithType, classScope);
+            methodLookupableMake.Block.MethodReturn(LocalMethod(methodLookupable));
 
-	    public void SetFilterSpecCompiled(FilterSpecCompiled filterSpecCompiled) {
-	        this.filterSpecCompiled = filterSpecCompiled;
-	    }
+            method.Block
+                .DeclareVar(typeof(ContextControllerDetailHashItem), "item", NewInstance(typeof(ContextControllerDetailHashItem)))
+                .DeclareVar(
+                    typeof(ExprFilterSpecLookupable), "lookupable",
+                    LocalMethod(methodLookupableMake, Ref("eventType"), symbols.GetAddInitSvc(method)))
+                .ExprDotMethod(Ref("item"), "setFilterSpecActivatable", LocalMethod(FilterSpecCompiled.MakeCodegen(method, symbols, classScope)))
+                .ExprDotMethod(Ref("item"), "setLookupable", Ref("lookupable"))
+                .Expression(
+                    ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add(EPStatementInitServicesConstants.GETFILTERSHAREDLOOKUPABLEREGISTERY)
+                        .Add("registerLookupable", Ref("eventType"), Ref("lookupable")))
+                .MethodReturn(Ref("item"));
 
-	    public ExprFilterSpecLookupableForge Lookupable {
-	        get => lookupable;
-	    }
-
-	    public void SetLookupable(ExprFilterSpecLookupableForge lookupable) {
-	        this.lookupable = lookupable;
-	    }
-
-	    public CodegenExpression MakeCodegen(CodegenMethodScope parent, SAIFFInitializeSymbol symbols, CodegenClassScope classScope) {
-	        CodegenMethod method = parent.MakeChild(typeof(ContextControllerDetailHashItem), this.GetType(), classScope);
-	        method.Block.DeclareVar(typeof(EventType), "eventType", EventTypeUtility.ResolveTypeCodegen(filterSpecCompiled.FilterForEventType, symbols.GetAddInitSvc(method)));
-
-	        SAIFFInitializeSymbolWEventType symbolsWithType = new SAIFFInitializeSymbolWEventType();
-	        CodegenMethod methodLookupableMake = parent.MakeChildWithScope(typeof(ExprFilterSpecLookupable), this.GetType(), symbolsWithType, classScope).AddParam(typeof(EventType), "eventType").AddParam(typeof(EPStatementInitServices), SAIFFInitializeSymbolWEventType.REF_STMTINITSVC.Ref);
-	        CodegenMethod methodLookupable = lookupable.MakeCodegen(methodLookupableMake, symbolsWithType, classScope);
-	        methodLookupableMake.Block.MethodReturn(LocalMethod(methodLookupable));
-
-	        method.Block
-	                .DeclareVar(typeof(ContextControllerDetailHashItem), "item", NewInstance(typeof(ContextControllerDetailHashItem)))
-	                .DeclareVar(typeof(ExprFilterSpecLookupable), "lookupable", LocalMethod(methodLookupableMake, @Ref("eventType"), symbols.GetAddInitSvc(method)))
-	                .ExprDotMethod(@Ref("item"), "setFilterSpecActivatable", LocalMethod(filterSpecCompiled.MakeCodegen(method, symbols, classScope)))
-	                .ExprDotMethod(@Ref("item"), "setLookupable", @Ref("lookupable"))
-	                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add(EPStatementInitServicesConstants.GETFILTERSHAREDLOOKUPABLEREGISTERY).Add("registerLookupable", @Ref("eventType"), @Ref("lookupable")))
-	                .MethodReturn(@Ref("item"));
-
-	        return LocalMethod(method);
-	    }
-	}
+            return LocalMethod(method);
+        }
+    }
 } // end of namespace

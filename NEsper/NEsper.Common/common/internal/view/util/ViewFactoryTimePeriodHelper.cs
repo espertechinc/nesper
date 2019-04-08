@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.view.util
                     throw new ViewParameterException(expectedMessage);
                 }
 
-                if (validated.Forge.ForgeConstantType.IsCompileTimeConstant()) {
+                if (validated.Forge.ForgeConstantType.IsCompileTimeConstant) {
                     var timeAbacus = viewForgeEnv.ImportServiceCompileTime.TimeAbacus;
                     var secondsEvaluator = validated.Forge.ExprEvaluator;
                     var time = ViewForgeSupport.Evaluate(secondsEvaluator, 0, viewName);

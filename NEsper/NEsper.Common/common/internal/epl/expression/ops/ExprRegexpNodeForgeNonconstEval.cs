@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Text.RegularExpressions;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -48,9 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 evalValue = evalValue.ToString();
             }
 
-            var result = forge.ForgeRenderable.IsNot ^ pattern.Matcher((CharSequence) evalValue).Matches();
-
-            return result;
+            // Revisit: Did we previously have an issue where this was using search instead of match?  Revisit the
+            // previous version to see if we handled the matching differently.
+            return forge.ForgeRenderable.IsNot ^ pattern.IsMatch((string) evalValue);
         }
 
         /// <summary>
@@ -61,9 +62,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public static Regex ExprRegexNodeCompilePattern(string text)
         {
             try {
-                return Regex.Compile(text);
+                return new Regex(text);
             }
-            catch (PatternSyntaxException ex) {
+            catch (ArgumentException ex) {
                 throw new EPException("Error compiling regex pattern '" + text + "': " + ex.Message, ex);
             }
         }

@@ -22,18 +22,21 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly PropertyCompositeEventTable _index;
 
         public SubordCompositeTableLookupStrategy(
-            SubordCompositeTableLookupStrategyFactory factory, PropertyCompositeEventTable index)
+            SubordCompositeTableLookupStrategyFactory factory,
+            PropertyCompositeEventTable index)
         {
-            this._factory = factory;
-            this._index = index;
+            _factory = factory;
+            _index = index;
         }
 
-        public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext context)
         {
             if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(this, _index, null);
                 var keys = new List<object>(2); // can collect nulls
-                ICollection<EventBean> result = _factory.InnerIndexQuery.GetCollectKeys(
+                var result = _factory.InnerIndexQuery.GetCollectKeys(
                     eventsPerStream, _index.Index, context, keys, _index.PostProcessor);
                 context.InstrumentationProvider.AIndexSubordLookup(
                     result, keys.Count > 1 ? keys.ToArray() : keys[0]);

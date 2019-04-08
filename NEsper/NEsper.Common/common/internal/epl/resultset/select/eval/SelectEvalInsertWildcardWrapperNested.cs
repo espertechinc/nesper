@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 	    }
 
 	    public static EventBean WildcardNestedWrapper(EventBean @event, EventType innerWrapperType, EventType outerWrapperType, EventBeanTypedEventFactory factory, IDictionary<string, object> props) {
-	        EventBean inner = factory.AdapterForTypedWrapper(@event, Collections.EmptyMap(), innerWrapperType);
+	        EventBean inner = factory.AdapterForTypedWrapper(@event, new EmptyDictionary<string, object>(), innerWrapperType);
 	        return factory.AdapterForTypedWrapper(inner, props, outerWrapperType);
 	    }
 	}

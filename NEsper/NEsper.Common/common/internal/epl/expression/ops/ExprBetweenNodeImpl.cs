@@ -513,44 +513,37 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 CodegenExpressionRef higher, Type higherType, CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                var block = codegenMethodScope
-                    .MakeChild(typeof(bool), typeof(ExprBetweenCompDecimal), codegenClassScope)
+                var block = codegenMethodScope.MakeChild(typeof(bool), typeof(ExprBetweenCompDouble), codegenClassScope)
                     .AddParam(typeof(decimal), "value").AddParam(typeof(decimal), "lower")
                     .AddParam(typeof(decimal), "upper").Block
-                    .IfRefNullReturnFalse("value")
-                    .IfRefNullReturnFalse("lower")
-                    .IfRefNullReturnFalse("upper")
-                    .IfCondition(Relational(ExprDotMethod(Ref("lower"), "compareTo", Ref("upper")), GT, Constant(0)))
+                    .IfCondition(Relational(Ref("lower"), GT, Ref("upper")))
                     .DeclareVar(typeof(decimal), "temp", Ref("upper"))
                     .AssignRef("upper", Ref("lower"))
                     .AssignRef("lower", Ref("temp"))
                     .BlockEnd();
-                var ifValueGtLower = block.IfCondition(
-                    Relational(ExprDotMethod(Ref("value"), "compareTo", Ref("lower")), GT, Constant(0)));
+                var ifValueGtLower = block.IfCondition(Relational(Ref("value"), GT, Ref("lower")));
                 {
-                    ifValueGtLower
-                        .IfCondition(
-                            Relational(ExprDotMethod(Ref("value"), "compareTo", Ref("upper")), LT, Constant(0)))
-                        .BlockReturn(ConstantTrue());
-                    if (_isHighIncluded) {
-                        ifValueGtLower.BlockReturn(ExprDotMethod(Ref("value"), "equals", Ref("upper")));
+                    ifValueGtLower.IfCondition(Relational(Ref("value"), LT, Ref("upper"))).BlockReturn(ConstantTrue());
+                    if (_isHighIncluded)
+                    {
+                        ifValueGtLower.BlockReturn(EqualsIdentity(Ref("value"), Ref("upper")));
                     }
-                    else {
+                    else
+                    {
                         ifValueGtLower.BlockReturn(ConstantFalse());
                     }
                 }
                 CodegenMethod method;
-                if (_isLowIncluded) {
-                    method = block.MethodReturn(ExprDotMethod(Ref("value"), "equals", Ref("lower")));
+                if (_isLowIncluded)
+                {
+                    method = block.MethodReturn(EqualsIdentity(Ref("value"), Ref("lower")));
                 }
-                else {
+                else
+                {
                     method = block.MethodReturn(ConstantFalse());
                 }
 
-                CodegenExpression valueCoerced = _numberCoercerValue.CoerceBoxedBigDecCodegen(value, valueType);
-                CodegenExpression lowerCoerced = _numberCoercerValue.CoerceBoxedBigDecCodegen(lower, lowerType);
-                CodegenExpression higherCoerced = _numberCoercerValue.CoerceBoxedBigDecCodegen(higher, higherType);
-                return LocalMethod(method, valueCoerced, lowerCoerced, higherCoerced);
+                return LocalMethod(method, value, lower, higher);
             }
         }
 
@@ -558,9 +551,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             private readonly bool _isHighIncluded;
             private readonly bool _isLowIncluded;
-            private readonly SimpleNumberBigIntegerCoercer _numberCoercerLower;
-            private readonly SimpleNumberBigIntegerCoercer _numberCoercerUpper;
-            private readonly SimpleNumberBigIntegerCoercer _numberCoercerValue;
+            private readonly BigIntegerCoercer _numberCoercerLower;
+            private readonly BigIntegerCoercer _numberCoercerUpper;
+            private readonly BigIntegerCoercer _numberCoercerValue;
 
             public ExprBetweenCompBigInteger(
                 bool lowIncluded, bool highIncluded, Type valueType, Type lowerType, Type upperType)

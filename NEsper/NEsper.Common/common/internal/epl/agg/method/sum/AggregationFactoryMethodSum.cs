@@ -80,17 +80,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
 	    protected internal static SimpleNumberCoercer GetCoercerNonBigIntDec(Type inputValueType) {
 	        SimpleNumberCoercer coercer;
 	        if (inputValueType == typeof(long?) || inputValueType == typeof(long)) {
-	            coercer = SimpleNumberCoercerFactory.SimpleNumberCoercerLong.INSTANCE;
+	            coercer = SimpleNumberCoercerFactory.CoercerLong.INSTANCE;
 	        } else if (inputValueType == typeof(int?) || inputValueType == typeof(int)) {
-	            coercer = SimpleNumberCoercerFactory.SimpleNumberCoercerInt.INSTANCE;
+	            coercer = SimpleNumberCoercerFactory.CoercerInt.INSTANCE;
 	        } else if (inputValueType == typeof(decimal?) || inputValueType == typeof(decimal)) {
-	            coercer = SimpleNumberCoercerFactory.SimpleNumberCoercerDecimal.INSTANCE;
+	            coercer = SimpleNumberCoercerFactory.CoercerDecimal.INSTANCE;
             } else if (inputValueType == typeof(double?) || inputValueType == typeof(double)) {
-	            coercer = SimpleNumberCoercerFactory.SimpleNumberCoercerDouble.INSTANCE;
+	            coercer = SimpleNumberCoercerFactory.CoercerDouble.INSTANCE;
 	        } else if (inputValueType == typeof(float?) || inputValueType == typeof(float)) {
-	            coercer = SimpleNumberCoercerFactory.SimpleNumberCoercerFloat.INSTANCE;
+	            coercer = SimpleNumberCoercerFactory.CoercerFloat.INSTANCE;
 	        } else {
-	            coercer = SimpleNumberCoercerFactory.SimpleNumberCoercerInt.INSTANCE;
+	            coercer = SimpleNumberCoercerFactory.CoercerInt.INSTANCE;
 	        }
 	        return coercer;
 	    }
